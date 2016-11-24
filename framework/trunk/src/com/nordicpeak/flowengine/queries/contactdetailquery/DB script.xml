@@ -1,0 +1,157 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `contact_detail_queries` (
+				  `queryID` int(10) unsigned NOT NULL,
+				  `description` text,
+				  `helpText` text,
+				  `allowLetter` tinyint(1) unsigned NOT NULL,
+				  `allowSMS` tinyint(1) unsigned NOT NULL,
+				  `allowEmail` tinyint(1) unsigned NOT NULL,
+				  `allowPhone` tinyint(1) unsigned NOT NULL,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `contact_detail_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				  `queryID` int(10) unsigned NOT NULL,
+				  `name` varchar(255) DEFAULT NULL,
+				  `address` varchar(255) DEFAULT NULL,
+				  `zipCode` varchar(255) DEFAULT NULL,
+				  `postalAddress` varchar(255) DEFAULT NULL,
+				  `phone` varchar(255) DEFAULT NULL,
+				  `email` varchar(255) DEFAULT NULL,
+				  `mobilePhone` varchar(255) DEFAULT NULL,
+				  `contactByLetter` tinyint(1) unsigned DEFAULT NULL,
+				  `contactBySMS` tinyint(1) unsigned DEFAULT NULL,
+				  `contactByEmail` tinyint(1) unsigned DEFAULT NULL,
+				  `contactByPhone` tinyint(1) unsigned DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_contact_detail_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_contact_detail_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `contact_detail_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_query_instances` ADD COLUMN `persistUserProfile` TINYINT(1) UNSIGNED AFTER `contactByPhone`;
+			]]>
+		</Query>
+	</Script>
+			
+	<Script version="3">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_query_instances` CHANGE COLUMN `name` `firstname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+ 				ADD COLUMN `lastname` VARCHAR(255) AFTER `firstname`;
+			]]>
+		</Query>
+	</Script>
+		
+	<Script version="4">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` DROP COLUMN `allowLetter`,
+				 DROP COLUMN `allowEmail`,
+				 DROP COLUMN `allowPhone`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_query_instances` DROP COLUMN `contactByLetter`,
+				 DROP COLUMN `contactByEmail`,
+				 DROP COLUMN `contactByPhone`;
+			]]>
+		</Query>		
+	</Script>		
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `requireAddress` BOOLEAN NOT NULL AFTER `allowSMS`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `requireAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET `setAsAttribute` = 1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `showSocialSecurityNumberField` BOOLEAN NOT NULL AFTER `setAsAttribute`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_query_instances` ADD COLUMN `socialSecurityNumber` VARCHAR(16) AFTER `persistUserProfile`;			
+			]]>
+		</Query>		
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `requirePhone` BOOLEAN NOT NULL AFTER `showSocialSecurityNumberField`, ADD COLUMN `requireMobilePhone` BOOLEAN NOT NULL AFTER `requirePhone`;			
+			]]>
+		</Query>		
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `requireEmail` BOOLEAN NOT NULL AFTER `requireMobilePhone`;			
+			]]>
+		</Query>		
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `useOfficalAddress` BOOLEAN NOT NULL AFTER `requireEmail`;			
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_query_instances` ADD COLUMN `officalAddress` BOOLEAN AFTER `socialSecurityNumber`;			
+			]]>
+		</Query>			
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `disableProfileUpdate` BOOLEAN NOT NULL AFTER `useOfficalAddress`;		
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="13">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` DROP COLUMN `setAsAttribute`;		
+			]]>
+		</Query>
+	</Script>
+		    	
+</DBScripts>

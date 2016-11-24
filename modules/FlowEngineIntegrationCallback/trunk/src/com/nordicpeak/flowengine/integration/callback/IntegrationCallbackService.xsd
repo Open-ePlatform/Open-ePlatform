@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.oeplatform.org/version/1.0/schemas/integration/callback"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.oeplatform.org/version/1.0/schemas/integration/callback"
+			elementFormDefault="qualified"
+			attributeFormDefault="unqualified">
+
+	<xs:complexType name="FlowInstanceNotFound">
+		<xs:sequence />
+	</xs:complexType>
+			
+ 	<xs:element name="FlowInstanceNotFoundFault" type="FlowInstanceNotFound" />
+
+	<xs:complexType name="StatusNotFound">
+		<xs:sequence />
+	</xs:complexType>
+			
+ 	<xs:element name="StatusNotFoundFault" type="StatusNotFound" />
+
+	<xs:complexType name="AccessDenied">
+		<xs:sequence />
+	</xs:complexType>
+			
+ 	<xs:element name="AccessDeniedFault" type="AccessDenied" />
+
+	<xs:complexType name="Principal">
+		<xs:sequence>
+			<xs:element name="name" nillable="true" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="userID" nillable="true" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ExternalID">
+		<xs:sequence>
+			<xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="System" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="setStatus">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="statusID" type="xs:int"/>
+					<xs:element name="statusAlias" type="xs:string"/>
+				</xs:choice>				
+				<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="setStatusResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="eventID" type="xs:int" maxOccurs="1" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="addEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="date" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
+				<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="addEventResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="eventID" type="xs:int" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="addMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="message" type="IntegrationMessage" minOccurs="1" maxOccurs="1" />
+				<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="Attachment">
+		<xs:sequence>
+			<xs:element name="encodedData" type="xs:base64Binary" minOccurs="1" maxOccurs="1" />
+			<xs:element name="filename" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="size" type="xs:long" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="IntegrationMessage">
+		<xs:sequence>
+			<xs:element name="added" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
+			<xs:element name="attachments" nillable="true" type="Attachment" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+			
+			<!-- This field is not used and will be remove in future versions -->
+			<xs:element name="userID" type="xs:string" minOccurs="1" maxOccurs="1" >
+				<xs:annotation>
+					<xs:documentation>This field is not used and will be remove in future versions</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="addMessageResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="messageID" type="xs:int" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="confirmDelivery">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="flowInstanceID" type="xs:int" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="externalID" type="ExternalID" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="delivered" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="logMessage" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="confirmDeliveryResponse">
+		<xs:complexType />
+	</xs:element>
+	
+	<xs:element name="deleteInstance">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="logMessage" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="deleteInstanceResponse">
+		<xs:complexType />
+	</xs:element>
+
+	<xs:element name="setManagers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="managers" type="Principal" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="setManagersResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="setManagersReturn" type="xs:int" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

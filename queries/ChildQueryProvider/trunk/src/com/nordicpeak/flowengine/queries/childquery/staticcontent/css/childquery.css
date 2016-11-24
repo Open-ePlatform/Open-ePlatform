@@ -1,0 +1,38 @@
+@CHARSET "ISO-8859-1";
+
+.childquery label.radio {
+	padding-bottom: 0px;
+}
+
+.childquery label.radio p.tiny {
+	font-weight: 400;
+}
+
+.childquery .alternative {
+	padding: 10px;
+	padding-top: 0px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background: rgba(255,239,159,0.5);
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	cursor: pointer;
+}
+	
+.childquery .alternative label {
+	padding-top: 0px !important;
+}
+
+@media screen and (min-width: 767px) {
+	.childquery .alternative {
+		float: left;
+		width: 25%;
+		min-width: 200px;
+	}
+	
+	/* Left */
+	.childquery .alternative:nth-child(2n+1) {
+		margin-right: 20px;
+		clear: both;
+	}
+}

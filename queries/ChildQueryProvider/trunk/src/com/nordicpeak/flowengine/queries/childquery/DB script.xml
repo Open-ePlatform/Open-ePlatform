@@ -1,0 +1,172 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_queries` (
+					`queryID` INT UNSIGNED NOT NULL,
+					`description` TEXT NULL,
+					`helpText` VARCHAR(45) NULL,
+					PRIMARY KEY (`queryID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_instances` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`citizenIdentifier` BIGINT(20) UNSIGNED NOT NULL,
+					`firstname` VARCHAR(50) NULL DEFAULT NULL,
+					`lastname` VARCHAR(50) NULL DEFAULT NULL,
+					PRIMARY KEY (`queryInstanceID`),
+					INDEX `FK_child_query_instances_1` (`queryID`),
+					CONSTRAINT `FK_child_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `child_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `useMultipartSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_guardians` (
+					`guardianID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`citizenIdentifier` BIGINT(20) UNSIGNED NOT NULL,
+					`firstname` VARCHAR(50) NULL DEFAULT NULL,
+					`lastname` VARCHAR(50) NULL DEFAULT NULL,
+					`email` VARCHAR(50) NULL DEFAULT NULL,
+					`phone` VARCHAR(50) NULL DEFAULT NULL,
+					PRIMARY KEY (`guardianID`),
+					INDEX `FK_child_query_guardians_1` (`queryInstanceID`),
+					CONSTRAINT `FK_child_query_guardians_1` FOREIGN KEY (`queryInstanceID`) REFERENCES `child_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians` ALTER `citizenIdentifier` DROP DEFAULT;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians`	CHANGE COLUMN `citizenIdentifier` `citizenIdentifier` VARCHAR(13) NOT NULL AFTER `queryInstanceID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances` ALTER `citizenIdentifier` DROP DEFAULT;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances`	CHANGE COLUMN `citizenIdentifier` `citizenIdentifier` VARCHAR(13) NOT NULL AFTER `queryID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries`
+					ADD COLUMN `showAddress` TINYINT(1) UNSIGNED NOT NULL AFTER `useMultipartSigning`,
+					ADD COLUMN `requireGuardianEmail` TINYINT(1) UNSIGNED NOT NULL AFTER `showAddress`,
+					ADD COLUMN `requireGuardianPhone` TINYINT(1) UNSIGNED NOT NULL AFTER `requireGuardianEmail`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances`
+					ADD COLUMN `address` VARCHAR(255) NULL DEFAULT NULL AFTER `lastname`,
+					ADD COLUMN `zipcode` VARCHAR(50) NULL DEFAULT NULL AFTER `address`,
+					ADD COLUMN `postalAddress` VARCHAR(50) NULL DEFAULT NULL AFTER `zipcode`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries`
+					ADD COLUMN `otherGuardiansDescription` TEXT NULL AFTER `description`,
+					ADD COLUMN `alwaysShowOtherGuardians` TINYINT(1) UNSIGNED NOT NULL AFTER `requireGuardianPhone`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians`
+					ADD COLUMN `address` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`,
+					ADD COLUMN `zipcode` VARCHAR(50) NULL DEFAULT NULL AFTER `address`,
+					ADD COLUMN `postalAddress` VARCHAR(50) NULL DEFAULT NULL AFTER `zipcode`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `showGuardianAddress` TINYINT(1) UNSIGNED NOT NULL AFTER `showAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` MODIFY COLUMN `helpText` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances` CHANGE COLUMN `citizenIdentifier` `citizenIdentifier` VARCHAR(13) NULL DEFAULT NULL AFTER `queryID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians` ADD COLUMN `poster` TINYINT(1) UNSIGNED NOT NULL AFTER `phone`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries`
+					ADD COLUMN `requireGuardianContactInfoVerification` TINYINT(1) UNSIGNED NOT NULL AFTER `alwaysShowOtherGuardians`,
+					ADD COLUMN `minAge` TINYINT(3) UNSIGNED NULL AFTER `requireGuardianContactInfoVerification`,
+					ADD COLUMN `maxAge` TINYINT(3) UNSIGNED NULL AFTER `minAge`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `setMultipartsAsOwners` TINYINT(1) UNSIGNED NOT NULL AFTER `maxAge`;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

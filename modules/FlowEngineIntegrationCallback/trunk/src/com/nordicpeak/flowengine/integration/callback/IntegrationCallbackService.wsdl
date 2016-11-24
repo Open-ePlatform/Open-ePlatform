@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.oeplatform.org/version/1.0/schemas/integration/callback" 
+					xmlns:apachesoap="http://xml.apache.org/xml-soap"
+					xmlns:impl="http://www.oeplatform.org/version/1.0/schemas/integration/callback"
+					xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+					xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					xsd:schemaLocation="http://www.oeplatform.org/version/1.0/schemas/integration/callback IntegrationCallbackService.xsd">
+
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="http://www.oeplatform.org/version/1.0/schemas/integration/callback" schemaLocation="IntegrationCallbackService.xsd" />             
+        </xsd:schema>
+   </wsdl:types>
+
+	<wsdl:message name="addMessageRequest">
+
+		<wsdl:part element="impl:addMessage" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="addEventResponse">
+
+		<wsdl:part element="impl:addEventResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="addEventRequest">
+
+		<wsdl:part element="impl:addEvent" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="setManagersRequest">
+
+		<wsdl:part element="impl:setManagers" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="confirmDeliveryRequest">
+
+		<wsdl:part element="impl:confirmDelivery" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="addMessageResponse">
+
+		<wsdl:part element="impl:addMessageResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+	
+	<wsdl:message name="FlowInstanceNotFoundException">
+
+		<wsdl:part element="impl:FlowInstanceNotFoundFault" name="fault">
+
+		</wsdl:part>
+
+	</wsdl:message>	
+
+	<wsdl:message name="StatusNotFoundException">
+
+		<wsdl:part element="impl:StatusNotFoundFault" name="fault">
+
+		</wsdl:part>
+
+	</wsdl:message>	
+
+	<wsdl:message name="AccessDeniedException">
+
+		<wsdl:part element="impl:AccessDeniedFault" name="fault">
+
+		</wsdl:part>
+
+	</wsdl:message>	
+
+	<wsdl:message name="setManagersResponse">
+
+		<wsdl:part element="impl:setManagersResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="setStatusResponse">
+
+		<wsdl:part element="impl:setStatusResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="deleteInstanceResponse">
+
+		<wsdl:part element="impl:deleteInstanceResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="setStatusRequest">
+
+		<wsdl:part element="impl:setStatus" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="confirmDeliveryResponse">
+
+		<wsdl:part element="impl:confirmDeliveryResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="deleteInstanceRequest">
+
+		<wsdl:part element="impl:deleteInstance" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:portType name="IntegrationCallback">
+
+		<wsdl:operation name="setStatus">
+
+			<wsdl:documentation>This method is used update the status of flow instances. The statuses are referred to using their ID or an alias.</wsdl:documentation>
+
+			<wsdl:input message="impl:setStatusRequest" name="setStatusRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:setStatusResponse" name="setStatusResponse">
+
+			</wsdl:output>
+			
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+
+			<wsdl:fault message="impl:StatusNotFoundException" name="StatusNotFoundException"/>
+
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="addEvent">
+
+			<wsdl:documentation>This method is used to add events to the history flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+
+			<wsdl:input message="impl:addEventRequest" name="addEventRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:addEventResponse" name="addEventResponse">
+
+			</wsdl:output>
+			
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+			
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="addMessage">
+
+			<wsdl:documentation>This method is used to add messages to flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+
+			<wsdl:input message="impl:addMessageRequest" name="addMessageRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:addMessageResponse" name="addMessageResponse">
+
+			</wsdl:output>
+			
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+			
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="confirmDelivery">
+
+			<wsdl:documentation>This method is used by the various integration platforms to confirm whether or not a flow instance could be delivered to and external system. If the flow instance has been delivered and received a new ID in the external system then this new ID should be passed on to this method using the externalID parameter.</wsdl:documentation>
+
+			<wsdl:input message="impl:confirmDeliveryRequest" name="confirmDeliveryRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:confirmDeliveryResponse" name="confirmDeliveryResponse">
+
+			</wsdl:output>
+
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+			
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="deleteInstance">
+
+			<wsdl:documentation>This method is used to delete flow instances.</wsdl:documentation>
+
+			<wsdl:input message="impl:deleteInstanceRequest" name="deleteInstanceRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:deleteInstanceResponse" name="deleteInstanceResponse">
+
+			</wsdl:output>
+			
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+			
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="setManagers">
+		
+			<wsdl:documentation>This method is used to set the managers currently handling the flow instance.</wsdl:documentation>
+
+			<wsdl:input message="impl:setManagersRequest" name="setManagersRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:setManagersResponse" name="setManagersResponse">
+
+			</wsdl:output>
+
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException">
+
+			</wsdl:fault>
+
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException">
+
+			</wsdl:fault>
+
+		</wsdl:operation>
+
+	</wsdl:portType>
+
+	<wsdl:binding name="IntegrationCallbackSoapBinding" type="impl:IntegrationCallback">
+
+		<wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+		<wsdl:operation name="setStatus">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="setStatusRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="setStatusResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>
+			
+			<wsdl:fault name="StatusNotFoundException">
+
+				<wsdlsoap:fault name="StatusNotFoundException" use="literal" />
+
+			</wsdl:fault>					
+
+		</wsdl:operation>
+
+		<wsdl:operation name="addEvent">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="addEventRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="addEventResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>			
+
+		</wsdl:operation>
+
+		<wsdl:operation name="addMessage">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="addMessageRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="addMessageResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>			
+
+		</wsdl:operation>
+
+		<wsdl:operation name="confirmDelivery">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="confirmDeliveryRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="confirmDeliveryResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>			
+
+		</wsdl:operation>
+
+		<wsdl:operation name="deleteInstance">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="deleteInstanceRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="deleteInstanceResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>
+
+		</wsdl:operation>
+
+		<wsdl:operation name="setManagers">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="setManagersRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="setManagersResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>
+
+		</wsdl:operation>
+
+	</wsdl:binding>
+
+	<wsdl:service name="IntegrationCallbackService">
+
+		<wsdl:port binding="impl:IntegrationCallbackSoapBinding" name="IntegrationCallback">
+
+			<wsdlsoap:address location="http://localhost/oeplatform/services/IntegrationCallback" />
+
+		</wsdl:port>
+
+	</wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,37 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_allowed_search_services` (
+				  `queryID` int(10) unsigned NOT NULL,
+				  `service` varchar(8) NOT NULL,
+				  PRIMARY KEY (`queryID`,`service`),
+				  CONSTRAINT `FK_pud_query_allowed_search_services_1` FOREIGN KEY (`queryID`) REFERENCES `pud_query_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL,
+				  `queryID` int(10) unsigned NOT NULL,
+				  `propertyUnitDesignation` varchar(255) DEFAULT NULL,
+				  `propertyUnitNumber` varchar(255) DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_pud_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_pud_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `pud_query_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+</DBScripts>

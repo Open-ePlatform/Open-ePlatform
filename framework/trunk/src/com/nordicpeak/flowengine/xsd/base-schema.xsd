@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<xs:schema
+	xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.oeplatform.org/version/2.0/schemas/flowinstance"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xs:element name="FlowInstance" type="FlowInstance" />
+
+	<xs:complexType name="FlowInstance">
+		<xs:sequence>
+			<xs:element name="Header" type="Header" minOccurs="1" maxOccurs="1" />
+			<xs:element name="Values" type="Values" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Header">
+
+		<xs:sequence>
+			<xs:element name="Flow" minOccurs="1" maxOccurs="1" type="Flow" />
+
+			<xs:element name="FlowInstanceID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+
+			<xs:element name="Status" minOccurs="1" maxOccurs="1" type="Status" />
+
+			<xs:element name="Poster" minOccurs="0" maxOccurs="1" type="User" />
+			<xs:element name="Owner" minOccurs="0" maxOccurs="unbounded" type="User" />
+			<xs:element name="Posted" minOccurs="1" maxOccurs="1" type="xs:dateTime" />
+
+			<xs:element name="Editor" minOccurs="0" maxOccurs="1" type="User" />
+			<xs:element name="Updated" minOccurs="0" maxOccurs="1" type="xs:dateTime" />
+			<xs:element name="FirstSubmitted" minOccurs="1" maxOccurs="1" type="xs:dateTime" />
+			<xs:element name="LastSubmitted" minOccurs="1" maxOccurs="1" type="xs:dateTime" />
+		</xs:sequence>
+
+	</xs:complexType>
+
+	<xs:complexType name="Values">
+
+		<xs:sequence>
+
+		</xs:sequence>
+
+	</xs:complexType>
+
+	<xs:complexType name="User">
+		<xs:sequence>
+			<xs:element name="Firstname" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="Lastname" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="Email" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Flow">
+		<xs:sequence>
+			<xs:element name="FamilyID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="Version" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="FlowID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Status">
+		<xs:sequence>
+			<xs:element name="ID" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Query">
+		<xs:sequence>
+			<xs:element name="QueryID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="StringType">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+</xs:schema>

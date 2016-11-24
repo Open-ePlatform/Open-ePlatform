@@ -1,0 +1,32 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `format_validators` (
+				  `className` VARCHAR(255) NOT NULL,
+				  `name` VARCHAR(255) NOT NULL,
+				  `validationMessage` VARCHAR(1024) NOT NULL,
+				  PRIMARY KEY (`className`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO format_validators VALUES
+					('se.unlogic.emailutils.validation.StringEmailValidator', 'E-post', 'Du måste fylla i en giltig e-post adress'),
+					('se.unlogic.standardutils.validation.PositiveStringIntegerValidator', 'Positivt heltal', 'Du måste fylla i ett positivt heltal'),
+					('se.unlogic.standardutils.populators.SocialSecurityPopulator', 'Personnummer (ÅÅMMDD-XXXX eller ÅÅÅÅMMDD-XXXX)', 'Du måste fylla i ett giltigt personnummer med formatet ÅÅMMDD-XXXX eller ÅÅÅÅMMDD-XXXX');
+			]]>
+		</Query>				
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `format_validators` ADD COLUMN `placeholder` VARCHAR(255) AFTER `validationMessage`;
+			]]>
+		</Query>				
+	</Script>	
+
+</DBScripts>

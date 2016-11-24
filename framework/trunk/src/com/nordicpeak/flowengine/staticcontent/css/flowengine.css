@@ -1,0 +1,211 @@
+@CHARSET "ISO-8859-1";
+
+.ui-tooltip {
+  position: absolute !important;
+  z-index: 101 !important;
+  text-align: left !important;
+  font-style: normal !important;
+  font-family: 'Source Sans Pro', sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  color: #fff !important;
+  padding: 12px !important;
+  background: #303030 !important;
+  border-radius: 4px !important;
+  border: none !important;
+}
+.ui-tooltip .marker {
+  position: absolute !important;
+  display: block !important;
+  bottom: -8px !important;
+  right: 15px !important;
+  background: url(../pics/marker-sprite.png) 0 -20px no-repeat !important;
+  width: 16px !important;
+  height: 8px !important;
+}
+.ui-tooltip.ui-tooltip-flip .marker {
+  left: 15px !important;
+}
+
+#FlowBrowser .freeTextAlternativeValue {
+	margin-top: 5px;
+	margin-left: 3px;
+	width: 50%;
+}
+
+FlowBrowser.contentitem input[type="checkbox"], input[type="radio"] {
+	display: none;
+}
+
+#ajaxLoadingMessage h1, #submitLoadingMessage h1 {
+	background: url("../pics/loading.gif") no-repeat scroll 18px center transparent;
+    float: left;
+    font-size: 17px !important;
+    font-weight: 400;
+    margin: 10px 0;
+    padding: 0 18px 0 45px;
+    text-align: center;
+    text-transform: none;
+}
+
+#ajaxLoadingMessage p.tiny {
+	background: none repeat scroll 0 0 transparent;
+    float: right;
+    font-size: 10px;
+    margin: 20px 5px 0 0 !important;
+    padding: 0;
+}
+
+#ajaxErrorMessage {
+	cursor: default;
+	padding: 15px;
+}
+
+#ajaxErrorMessage h1 {
+	font-size: 17px !important;
+	text-align: center;
+	margin: 0 0 5px 0;
+	padding: 0;
+	text-transform: none;
+	font-weight: 400;
+}
+
+#ajaxErrorMessage p {
+	margin: 0 0 10px 0;
+}
+
+#ajaxErrorMessage input[type="button"] {
+	font-size: 1em;
+	margin-right: 5px;
+	display: inline;
+}
+
+.blockMsg {
+	width: auto !important;
+	border: 1px solid #2969BF !important;
+	border-radius: 3px;
+	background-color: #F3F8FF !important;
+}
+
+.blockOverlay {
+	opacity: 0 !important;
+}
+
+table.oep-table th {
+	white-space: normal;
+}
+
+table.oep-table thead.sortable tr .header {
+	cursor: pointer;
+}
+
+table.oep-table thead.sortable th.headerSortDown span:after, table.oep-table thead.sortable th.headerSortUp span:after {
+	display: inline-block;
+}
+
+table.oep-table tr.disabled td, table.oep-table tr.disabled td a {
+	color: #7b7b7b;
+}
+
+#sortingForm .affectedQuery {
+	background-color: #ffdddd;
+}
+
+.heading-wrapper p.description {
+	clear: both;
+	padding: 0 0 0 27px;
+}
+
+.usergroup-list{
+	padding: 0 0 0 0;
+}
+
+#OperatingMessageModule div.scrolllist {
+	height: 200px;
+}
+
+#FlowBrowser section.modal.warning {
+	padding: 10px 10px;
+}
+
+#FlowInstanceAdminModule div.top-right-slot{
+	float: right;
+	color: #424242;
+	margin-top: 20px;
+	margin-right: 42px;
+}
+
+#FlowInstanceAdminModule div.top-right-slot div.extensionlink{
+	
+	float:right;
+	clear:both;
+}
+
+.query:before {
+  display: block;
+  content: " ";
+  margin-top: -50px;
+  height: 50px;
+  visibility: hidden;
+}
+
+.queries .query:first-child:before { 
+  margin-top: -15px;
+  height: 15px; 
+}
+
+#FlowInstanceAdminModule .description strong.overview {
+	
+	width: 120px;
+	display: inline-block;
+}
+
+#FlowInstanceAdminModule .description span.overview {
+	
+	padding-left: 110px;
+	display: inline-block;
+}
+
+.upload.active .uploaded-flowtype-icon, .upload:hover .uploaded-flowtype-icon {
+  	background: #E5DEE8;
+  	border-color: #611C7B;
+}
+
+.flowtype-icon-upload {
+	position: relative;
+}
+
+.flowtype-icon-preview {
+	background-color: #fff;
+	left: calc(50% - 125px);
+	position: absolute;
+	top: 10px;
+	width: 250px;
+	text-align: center;
+}
+
+.uploaded-flowtype-icon a.btn {
+	width: 95px;
+}
+
+.flowtype-icon-upload input[type="file"] {
+	width: inherit;
+}
+
+.upload.flowtype-icon-upload:hover {
+	background-color: #FFF;
+}
+
+@media screen and (min-width: 1005px) {
+
+	.start-flow-panel.fixed {
+	    position: fixed;
+	    right: 0;
+	    top: 0;
+	    max-width: 400px;
+	    padding-top: 25px;
+	    margin: 0;
+	    z-index: 100;
+	}
+
+}

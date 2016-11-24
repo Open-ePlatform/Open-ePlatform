@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="FlowEngineIntegrationCallback">
+        <wb-resource deploy-path="/" source-path="/src"/>
+        <dependent-module archiveName="FlowEngine.jar" deploy-path="/" handle="module:/resource/FlowEngine/FlowEngine">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="JAX-WS-RI.jar" deploy-path="/" handle="module:/resource/JAX-WS-RI/JAX-WS-RI">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="WSModule.jar" deploy-path="/" handle="module:/resource/WSModule/WSModule">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

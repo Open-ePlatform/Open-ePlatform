@@ -1,0 +1,129 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `checkbox_payment_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `title` VARCHAR(255) NOT NULL,
+				  `description` TEXT NOT NULL,
+				  `minChecked` INTEGER UNSIGNED,
+				  `maxChecked` INTEGER UNSIGNED,
+				  PRIMARY KEY (`queryID`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `checkbox_payment_query_alternatives` (
+				  `alternativeID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `name` VARCHAR(255) NOT NULL,
+				  `amount` INTEGER UNSIGNED DEFAULT NULL,
+				  PRIMARY KEY (`alternativeID`),
+				  CONSTRAINT `FK_checkbox_payment_query_alternatives_1` FOREIGN KEY `FK_checkbox_payment_query_alternatives_1` (`queryID`)
+				    REFERENCES `checkbox_payment_queries` (`queryID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;	
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `checkbox_payment_query_instances` (
+				  `queryInstanceID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `minChecked` INTEGER UNSIGNED,
+				  `maxChecked` INTEGER UNSIGNED,
+				  PRIMARY KEY (`queryInstanceID`),
+				  CONSTRAINT `FK_checkbox_payment_query_instances_1` FOREIGN KEY `FK_checkbox_payment_query_instances_1` (`queryID`)
+				    REFERENCES `checkbox_payment_queries` (`queryID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;	
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `checkbox_payment_query_instance_alternatives` (
+				  `queryInstanceID` INTEGER UNSIGNED NOT NULL,
+				  `alternativeID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`queryInstanceID`, `alternativeID`),
+				  CONSTRAINT `FK_checkbox_payment_query_instance_alternatives_1` FOREIGN KEY `FK_checkbox_payment_query_instance_alternatives_1` (`queryInstanceID`)
+				    REFERENCES `checkbox_payment_query_instances` (`queryInstanceID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE,
+				  CONSTRAINT `FK_checkbox_payment_query_instance_alternatives_2` FOREIGN KEY `FK_checkbox_payment_query_instance_alternatives_2` (`alternativeID`)
+				    REFERENCES `checkbox_payment_query_alternatives` (`alternativeID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;	
+			]]>
+		</Query>		
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_queries` DROP COLUMN `title`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_queries` ADD COLUMN `helpText` TEXT AFTER `maxChecked`;	
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_queries` MODIFY COLUMN `description` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>		
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_query_alternatives` ADD COLUMN `sortIndex` INT(10) UNSIGNED NOT NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_queries` ADD COLUMN `freeTextAlternative` VARCHAR(255) AFTER `maxChecked`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_query_instances` ADD COLUMN `freeTextAlternativeValue` VARCHAR(255) AFTER `queryID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_query_instances` MODIFY COLUMN `queryInstanceID` INT(10) UNSIGNED NOT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_payment_query_alternatives` ADD COLUMN `description` VARCHAR(255) AFTER `amount`;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

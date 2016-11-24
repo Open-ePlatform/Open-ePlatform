@@ -1,0 +1,71 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `query_state_evaluators` (
+				  `evaluatorID` INTEGER UNSIGNED NOT NULL,
+				  `selectionMode` VARCHAR(45) NOT NULL,
+				  `queryState` VARCHAR(45) NOT NULL,
+				  PRIMARY KEY (`evaluatorID`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `query_state_evaluator_alternatives` (
+				  `evaluatorID` INTEGER UNSIGNED NOT NULL,
+				  `alternativeID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`evaluatorID`, `alternativeID`),
+				  CONSTRAINT `FK_query_state_evaluator_alternatives_1` FOREIGN KEY `FK_query_state_evaluator_alternatives_1` (`evaluatorID`)
+				    REFERENCES `query_state_evaluators` (`evaluatorID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `query_state_evaluator_queries` (
+				  `evaluatorID` INTEGER UNSIGNED NOT NULL,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`evaluatorID`, `queryID`),
+				  CONSTRAINT `FK_query_state_evaluator_queries_1` FOREIGN KEY `FK_query_state_evaluator_queries_1` (`evaluatorID`)
+				    REFERENCES `query_state_evaluators` (`evaluatorID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>				
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				DROP TABLE query_state_evaluator_queries;			
+			]]>
+		</Query>				
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `query_state_evaluators` ADD COLUMN `doNotResetQueryState` BOOLEAN NOT NULL AFTER `queryState`;		
+			]]>
+		</Query>				
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			DELETE FROM query_state_evaluators WHERE evaluatorID NOT IN (SELECT evaluatorID FROM flowengine_evaluator_descriptors);		    
+		</Query>	    
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			ALTER TABLE `query_state_evaluators` ADD COLUMN `freeTextAlternative` BOOLEAN NOT NULL AFTER `doNotResetQueryState`;
+		</Query>	    
+	</Script>
+</DBScripts>

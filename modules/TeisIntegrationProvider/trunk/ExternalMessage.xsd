@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<xs:schema xmlns="http://www.oeplatform.org/version/1.0/schemas/integration/externalmessage" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.oeplatform.org/version/1.0/schemas/integration/externalmessage" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:element name="Message" type="ExternalMessage"/>
+
+	<xs:complexType name="ExternalMessage">
+		<xs:sequence>
+			<xs:element name="flowInstanceID" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="externalID" type="ExternalID" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="messageID" type="xs:int" minOccurs="1" maxOccurs="1"/>	
+			<xs:element name="added" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
+			<xs:element name="attachments" nillable="true" type="Attachment" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Attachment">
+		<xs:sequence>
+			<xs:element name="encodedData" type="xs:base64Binary" minOccurs="1" maxOccurs="1" />
+			<xs:element name="filename" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="size" type="xs:long" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Principal">
+		<xs:sequence>
+			<xs:element name="name" nillable="true" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="userID" nillable="true" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ExternalID">
+		<xs:sequence>
+			<xs:element name="ID" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="System" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

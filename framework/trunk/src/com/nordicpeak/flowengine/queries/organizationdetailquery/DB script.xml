@@ -1,0 +1,103 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `organization_detail_queries` (
+				  `queryID` int(10) unsigned NOT NULL,
+				  `description` text,
+				  `helpText` text,
+				  `allowLetter` tinyint(1) unsigned NOT NULL,
+				  `allowSMS` tinyint(1) unsigned NOT NULL,
+				  `allowEmail` tinyint(1) unsigned NOT NULL,
+				  `allowPhone` tinyint(1) unsigned NOT NULL,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `organization_detail_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				  `queryID` int(10) unsigned NOT NULL,
+				  `name` varchar(255) DEFAULT NULL,
+				  `organizationNumber` varchar(16) DEFAULT NULL,
+				  `address` varchar(255) DEFAULT NULL,
+				  `zipCode` varchar(10) DEFAULT NULL,
+				  `postalAddress` varchar(255) DEFAULT NULL,
+				  `phone` varchar(255) DEFAULT NULL,
+				  `email` varchar(255) DEFAULT NULL,
+				  `mobilePhone` varchar(255) DEFAULT NULL,
+				  `contactByLetter` tinyint(1) unsigned DEFAULT NULL,
+				  `contactBySMS` tinyint(1) unsigned DEFAULT NULL,
+				  `contactByEmail` tinyint(1) unsigned DEFAULT NULL,
+				  `contactByPhone` tinyint(1) unsigned DEFAULT NULL,
+				  `organizationID` int(10) unsigned DEFAULT NULL,
+				  `persistOrganization` tinyint(1) unsigned DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_organization_detail_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_organization_detail_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `organization_detail_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+		
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_query_instances` ADD COLUMN `contactPerson` VARCHAR(255) AFTER `postalAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_query_instances` CHANGE COLUMN `contactPerson` `firstname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+ 				ADD COLUMN `lastname` VARCHAR(255) AFTER `firstname`;
+			]]>
+		</Query>
+	</Script>		
+				
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries` DROP COLUMN `allowLetter`,
+				 DROP COLUMN `allowEmail`,
+				 DROP COLUMN `allowPhone`,
+				 ADD COLUMN `requireAddress` BOOLEAN NOT NULL AFTER `allowSMS`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_query_instances` DROP COLUMN `contactByLetter`,
+				 DROP COLUMN `contactByEmail`,
+				 DROP COLUMN `contactByPhone`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `organization_detail_queries` ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `requireAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[		
+				UPDATE `organization_detail_queries` SET `setAsAttribute` = 1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `organization_detail_queries` DROP COLUMN `setAsAttribute`;		
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

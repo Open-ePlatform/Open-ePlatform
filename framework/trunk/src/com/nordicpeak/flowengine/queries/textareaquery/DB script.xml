@@ -1,0 +1,48 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `text_area_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  `maxLength` INTEGER UNSIGNED,
+				  PRIMARY KEY (`queryID`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `text_area_query_instances` (
+				  `queryInstanceID` INTEGER UNSIGNED NOT NULL,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `value` TEXT,
+				  PRIMARY KEY (`queryInstanceID`),
+				  CONSTRAINT `FK_text_area_query_instances_1` FOREIGN KEY `FK_text_area_query_instances_1` (`queryID`)
+				    REFERENCES `text_area_queries` (`queryID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>		
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `rows` INTEGER UNSIGNED AFTER `maxLength`;
+			]]>
+		</Query>	
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `rows`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
+			]]>
+		</Query>	
+	</Script>	
+	
+</DBScripts>
