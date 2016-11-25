@@ -34,7 +34,7 @@
 			
 			<div class="full display-table bigmarginbottom">
 				
-				<xsl:if test="not(ManualMultiSignQueryInstance/hideCitizenIdetifierInPDF = 'true')">
+				<xsl:if test="not(ManualMultiSignQueryInstance/ManualMultiSignQuery/hideCitizenIdetifierInPDF = 'true')">
 					<div class="floatleft full bigmarginbottom">
 						<strong><xsl:value-of select="$i18n.SocialSecurityNumber" /></strong><br/>
 						<xsl:value-of select="ManualMultiSignQueryInstance/socialSecurityNumber" />
