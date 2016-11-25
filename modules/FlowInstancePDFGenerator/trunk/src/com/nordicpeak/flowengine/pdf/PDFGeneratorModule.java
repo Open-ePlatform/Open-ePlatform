@@ -426,9 +426,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				}
 			}
 			
-			basePDF = createBasePDF(document, managerResponses, instanceManager.getFlowInstanceID(), event);
+			basePDF = createBasePDF(document, managerResponses, instanceManager.getFlowInstanceID(), event, temporary);
 			
-			pdfWithAttachments = addAttachments(basePDF, managerResponses, instanceManager.getFlowInstanceID(), event);
+			pdfWithAttachments = addAttachments(basePDF, managerResponses, instanceManager.getFlowInstanceID(), event, temporary);
 			
 			File outputFile = writePDFA(pdfWithAttachments, instanceManager, event, temporary);
 			
@@ -548,7 +548,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			return null;
 		}
 		
-		return new File(pdfDir + File.separator + flowInstanceID + File.separator + getFileSuffix(event) + ".pdf");
+		return new File(pdfDir + File.separator + flowInstanceID + File.separator + getFileSuffix(event, false) + ".pdf");
 	}
 	
 	private File getTempFile(FlowInstanceManager instanceManager) {
@@ -568,9 +568,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return null;
 	}
 	
-	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event) throws IOException, DocumentException {
+	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
 		
-		File pdfWithAttachments = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event) + ".pdf", getTempDir());
+		File pdfWithAttachments = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 		
 		OutputStream outputStream = null;
 		RandomAccessFileOrArray inputFileRandomAccess = null;
@@ -631,9 +631,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		writer.addFileAttachment(description, fs);
 	}
 	
-	private File createBasePDF(Node node, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event) throws DocumentException, IOException {
+	private File createBasePDF(Node node, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws DocumentException, IOException {
 		
-		File basePDF = File.createTempFile("basepdf", flowInstanceID + "-" + getFileSuffix(event) + ".pdf", getTempDir());
+		File basePDF = File.createTempFile("basepdf", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 		
 		OutputStream basePDFOutputStream = null;
 		
@@ -666,16 +666,14 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return basePDF;
 	}
 	
-	private String getFileSuffix(FlowInstanceEvent event) {
+	private String getFileSuffix(FlowInstanceEvent event, boolean temporary) {
 		
-		if (event != null) {
-			
-			return event.getEventID().toString();
-			
-		} else {
+		if (temporary) {
 			
 			return "temp";
 		}
+		
+		return event.getEventID().toString();
 	}
 	
 	private File getTempDir() {
