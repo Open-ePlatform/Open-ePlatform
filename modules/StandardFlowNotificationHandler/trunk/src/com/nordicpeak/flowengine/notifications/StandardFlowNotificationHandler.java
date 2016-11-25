@@ -39,6 +39,7 @@ import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleAccessInterface;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleSMS;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
@@ -121,7 +122,6 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
-import com.nordicpeak.persistingsmssender.PersistedSMS;
 
 public class StandardFlowNotificationHandler extends AnnotatedForegroundModule implements FlowNotificationHandler, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -1353,18 +1353,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagSource(signingParty));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler.getSigningURL(flowInstance, signingParty)));
 
-		PersistedSMS persistedSMS = new PersistedSMS();
+		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			persistedSMS.setSenderName(smsSenderName);
-			persistedSMS.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
-			persistedSMS.addRecipient(signingParty.getMobilePhone());
+			sms.setSenderName(smsSenderName);
+			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
+			sms.addRecipient(signingParty.getMobilePhone());
 
-			smsSender.send(persistedSMS);
+			smsSender.send(sms);
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending sms " + persistedSMS, e);
+			log.info("Error generating/sending sms " + sms, e);
 		}
 	}
 
@@ -1423,18 +1423,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", userFlowInstanceModuleAlias + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
-		PersistedSMS persistedSMS = new PersistedSMS();
+		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			persistedSMS.setSenderName(smsSenderName);
-			persistedSMS.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
-			persistedSMS.addRecipient(contact.getMobilePhone());
+			sms.setSenderName(smsSenderName);
+			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
+			sms.addRecipient(contact.getMobilePhone());
 
-			smsSender.send(persistedSMS);
+			smsSender.send(sms);
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending sms " + persistedSMS, e);
+			log.info("Error generating/sending sms " + sms, e);
 		}
 	}
 
