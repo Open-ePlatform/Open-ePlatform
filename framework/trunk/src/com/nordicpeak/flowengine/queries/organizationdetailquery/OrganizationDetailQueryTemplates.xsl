@@ -112,7 +112,7 @@
 						</xsl:call-template>
 					</div>
 					
-					<xsl:if test="OrganizationDetailQueryInstance/OrganizationDetailQuery/allowEmail = 'true'">
+					<xsl:if test="OrganizationDetailQueryInstance/email">
 			
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.Email" /></strong>
