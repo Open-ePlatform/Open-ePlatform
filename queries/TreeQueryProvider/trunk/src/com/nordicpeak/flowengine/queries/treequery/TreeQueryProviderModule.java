@@ -61,9 +61,9 @@ import com.nordicpeak.flowengine.queries.treequery.beans.TreeQuery;
 import com.nordicpeak.flowengine.queries.treequery.beans.TreeQueryInstance;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-import com.nordicpeak.treequerydataprovider.TreeNode;
 import com.nordicpeak.treequerydataprovider.TreeDataHandler;
 import com.nordicpeak.treequerydataprovider.TreeDataProvider;
+import com.nordicpeak.treequerydataprovider.TreeNode;
 
 public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryInstance> implements BaseQueryCRUDCallback, TreeDataHandler {
 
@@ -85,16 +85,16 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
-		if (!systemInterface.getInstanceHandler().addInstance(TreeQueryProviderModule.class, this)) {
+		if (!systemInterface.getInstanceHandler().addInstance(TreeDataHandler.class, this)) {
 
-			throw new RuntimeException("Unable to register module " + moduleDescriptor + " in global instance handler using key " + TreeQueryProviderModule.class.getSimpleName() + ", another instance is already registered using this key.");
+			throw new RuntimeException("Unable to register module " + moduleDescriptor + " in global instance handler using key " + TreeDataHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 	}
 
 	@Override
 	public void unload() throws Exception {
 
-		systemInterface.getInstanceHandler().removeInstance(TreeQueryProviderModule.class, this);
+		systemInterface.getInstanceHandler().removeInstance(TreeDataHandler.class, this);
 
 		super.unload();
 	}
@@ -427,7 +427,7 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 
 	private StoredTreeNode getStoredTreeNode(TreeNode treeNode) {
 
-		StoredTreeNode storedTreeNode = new StoredTreeNode(treeNode); 
+		StoredTreeNode storedTreeNode = new StoredTreeNode(treeNode);
 		
 		for(TreeNode subNode : treeNode.values()){
 		
@@ -437,6 +437,7 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		return storedTreeNode;
 	}
 
+	@Override
 	public void addTreeProvider(TreeDataProvider treeProvider) {
 
 		if (treeProviders.containsKey(treeProvider.getTreeID())) {
@@ -450,6 +451,7 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		log.info("TreeQueryDataProvider " + treeProvider.getTreeName() + " registered");
 	}
 
+	@Override
 	public boolean removeTreeProvider(TreeDataProvider treeProvider) {
 
 		boolean removed = treeProviders.remove(treeProvider.getTreeID(), treeProvider);
@@ -461,11 +463,13 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		return removed;
 	}
 
+	@Override
 	public TreeDataProvider getTreeProvider(String id) {
 
 		return treeProviders.get(id);
 	}
 
+	@Override
 	public Collection<TreeDataProvider> getTreeProviders() {
 
 		return treeProviders.values();
