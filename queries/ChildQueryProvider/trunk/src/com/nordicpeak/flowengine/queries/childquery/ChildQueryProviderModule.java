@@ -530,25 +530,33 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					return null;
 				}
 				
+//				Map<String, StoredChild> children = new HashMap<String, StoredChild>();
+//
+//				StoredChild child1 = new StoredChild("kalle", "kula", "200123456789");
+//				child1.setGuardians(Arrays.asList(new StoredGuardian[]{new StoredGuardian("förälder", "1", poster.getAttributeHandler().getString("citizenIdentifier")), new StoredGuardian("förälder", "2", "191234567890")}));
+//				children.put(child1.getCitizenIdentifier(), child1);
+//
+//				return children;
+				
 				if (childRelationProvider == null) {
-					
+
 					log.error("@InstanceManagerDependency childRelationProvider is null");
 					return null;
 				}
-				
+
 				log.info("Getting children information for user " + poster);
-				
+
 				Map<String, Child> childMap = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
-				
-				if(childMap != null){
-					
+
+				if (childMap != null) {
+
 					Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
-					
-					for(Entry<String,Child> entry : childMap.entrySet()){
-						
+
+					for (Entry<String, Child> entry : childMap.entrySet()) {
+
 						storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
 					}
-					
+
 					return storedChildMap;
 				}
 			}
