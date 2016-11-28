@@ -41,7 +41,7 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	@XMLElement
 	private String postalAddress;
 
-	@XMLElement(fixCase = true)
+	@XMLElement(name="Guardians")
 	private List<StoredGuardian> storedGuardians;
 
 	public StoredChild(Child child) {
@@ -128,7 +128,7 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	}
 
 	/**
-	 * @return Returns the age soly based on the birth year ignoring months and days
+	 * @return Returns the age solely based on the birth year ignoring months and days
 	 */
 	public Integer getAge() {
 

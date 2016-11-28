@@ -71,7 +71,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
-	@XMLElement(fixCase = true)
+	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
 
 	private Map<String, StoredChild> children;

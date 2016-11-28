@@ -74,6 +74,14 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 		this.zipcode = guardian.getZipCode();
 		this.postalAddress = guardian.getPostalAddress();
 	}
+	
+	public StoredGuardian(String firstname, String lastname, String citizenIdentifier) {
+		super();
+		
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.citizenIdentifier = citizenIdentifier;
+	}
 
 	public Integer getGuardianID() {
 
