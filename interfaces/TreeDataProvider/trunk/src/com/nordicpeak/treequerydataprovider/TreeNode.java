@@ -17,4 +17,6 @@ public interface TreeNode extends Map<String, TreeNode>{
 	public String getIcon();
 	
 	public TreeNode put(TreeNode node);
+	
+	public void setParent(TreeNode parent);
 }

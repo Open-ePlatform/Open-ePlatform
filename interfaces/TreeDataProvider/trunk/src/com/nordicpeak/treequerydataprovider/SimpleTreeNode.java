@@ -2,7 +2,8 @@ package com.nordicpeak.treequerydataprovider;
 
 import java.util.LinkedHashMap;
 
-public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements TreeNode, Comparable<SimpleTreeNode> {
+
+public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements TreeNode, Comparable<TreeNode> {
 
 	private static final long serialVersionUID = -4365397104915655961L;
 
@@ -16,17 +17,88 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 
 	private String icon;
 
-	private SimpleTreeNode parent;
+	private TreeNode parent;
 
 	public SimpleTreeNode() {};
 
 	public SimpleTreeNode(String name, String key) {
 		super();
-
+		
 		this.key = key;
 		this.name = name;
 	}
 	
+	@Override
+	public TreeNode put(TreeNode node) {
+
+		return put(node.getKey(), node);
+	}
+	
+	@Override
+	public TreeNode put(String key, TreeNode node) {
+
+		node.setParent(this);
+		return super.put(key, node);
+	}
+	
+	public TreeNode remove(TreeNode node) {
+
+		super.remove(node.getKey());
+		node.setParent(null);
+
+		return node;
+	}
+	
+	public TreeNode remove(String key) {
+
+		TreeNode node = super.remove(key);
+
+		if (node != null) {
+
+			node.setParent(null);
+		}
+
+		return node;
+	}
+
+	@Override
+	public TreeNode remove(Object key) {
+		
+		if (key instanceof TreeNode) {
+			
+			return remove((TreeNode) key);
+		}
+
+		throw new RuntimeException("Wrong key type");
+	}
+	
+	public TreeNode getParent() {
+
+		return parent;
+	}
+
+	@Override
+	public void setParent(TreeNode parent) {
+
+		this.parent = parent;
+
+		if (parent == null) {
+
+			parentNodeKey = null;
+
+		} else {
+
+			parentNodeKey = parent.getKey();
+		}
+	}
+	
+	@Override
+	public String getParentNodeKey() {
+
+		return parentNodeKey;
+	}
+	
+	@Override
 	public String getKey() {
 
 		return key;
@@ -37,6 +109,7 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		this.key = key;
 	}
 
+	@Override
 	public String getName() {
 
 		return name;
@@ -47,16 +120,7 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		this.name = name;
 	}
 
-	public String getParentNodeKey() {
-
-		return parentNodeKey;
-	}
-
-	public void setParentNodeKey(String parentNodeKey) {
-
-		this.parentNodeKey = parentNodeKey;
-	}
-
+	@Override
 	public boolean isFolder() {
 
 		return folder;
@@ -67,6 +131,7 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		this.folder = folder;
 	}
 
+	@Override
 	public String getIcon() {
 
 		return icon;
@@ -77,23 +142,8 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		this.icon = icon;
 	}
 
-	public SimpleTreeNode getParent() {
-
-		return parent;
-	}
-
-	public void setParent(SimpleTreeNode parent) {
-
-		this.parent = parent;
-	}
-
-	public TreeNode put(TreeNode node) {
-
-		return put(node.getKey(), node);
-	}
-	
 	@Override
-	public int compareTo(SimpleTreeNode o) {
+	public int compareTo(TreeNode o) {
 
 		if (isFolder() == o.isFolder()) {
 
@@ -103,5 +153,5 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 
 			return isFolder() ? -1 : 1;
 		}
-	}	
+	}
 }
