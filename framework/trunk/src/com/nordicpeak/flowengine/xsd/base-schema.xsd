@@ -12,6 +12,7 @@
 		<xs:sequence>
 			<xs:element name="Header" type="Header" minOccurs="1" maxOccurs="1" />
 			<xs:element name="Values" type="Values" minOccurs="1" maxOccurs="1" />
+			<xs:element name="Signed" type="Signed" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -40,6 +41,14 @@
 
 		<xs:sequence>
 
+		</xs:sequence>
+
+	</xs:complexType>
+	
+	<xs:complexType name="Signed">
+
+		<xs:sequence>
+			<xs:element name="SignEvent" minOccurs="0" maxOccurs="unbounded" type="SignEvent" />
 		</xs:sequence>
 
 	</xs:complexType>
@@ -73,6 +82,16 @@
 		<xs:sequence>
 			<xs:element name="QueryID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SignEvent">
+
+		<xs:sequence>
+			<xs:element name="SignedChecksum" minOccurs="1" maxOccurs="1" type="xs:string" />
+			<xs:element name="Date" minOccurs="1" maxOccurs="1" type="xs:dateTime" />
+			<xs:element name="Signer" minOccurs="1" maxOccurs="1" type="User" />
+		</xs:sequence>
+
 	</xs:complexType>
 
 	<xs:simpleType name="StringType">

@@ -22,9 +22,11 @@ import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.date.PooledSimpleDateFormat;
 import se.unlogic.standardutils.io.FileUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -33,9 +35,11 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.utils.SigningUtils;
 
 
 public class XMLProviderModule extends AnnotatedForegroundModule implements XMLProvider {
@@ -58,6 +62,9 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 	
 	@InstanceManagerDependency(required = true)
 	protected QueryHandler queryHandler;
+	
+	@InstanceManagerDependency(required = true)
+	protected FlowBrowserModule browserModule;
 
 	private FlowEngineDAOFactory daoFactory;
 
@@ -159,6 +166,43 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 				for(Element queryElement : queryElements){
 
 					valuesElement.appendChild(queryElement);
+				}
+			}
+			
+			String signChainID = event.getEvent().getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+			
+			if (!StringUtils.isEmpty(signChainID)) {
+				
+				List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(browserModule.getFlowInstanceEvents((FlowInstance) flowInstance), true);
+				
+				if (!CollectionUtils.isEmpty(signEvents)) {
+					
+					for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+						
+						if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
+							
+							log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + flowInstance);
+							signEvents.remove(signEvent);
+						}
+					}
+				}
+				
+				if (CollectionUtils.isEmpty(signEvents)) {
+					
+					log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + flowInstance);
+					
+				} else {
+					
+					Element signedElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Signed");
+					
+					for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+
+						Element signElement = XMLUtils.appendNewElement(doc, signedElement, "SignEvent");
+						
+						XMLUtils.appendNewElement(doc, signElement, "SignedChecksum", signEvent.getAttributeHandler().getString("signingChecksum"));
+						XMLUtils.appendNewElement(doc, signElement, "Date", DATE_TIME_FORMATTER.format(signEvent.getAdded()));
+						appendUser(signEvent.getPoster(), "Signer", doc, signElement);
+					}
 				}
 			}
 
