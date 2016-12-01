@@ -26,6 +26,10 @@
 	<xsl:template match="ShowQueryValues">
 	
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="CheckboxQueryInstance/CheckboxQuery/hideTitle = 'true'"> notitle</xsl:if>
+			</xsl:attribute>
 		
 			<article>
 				
@@ -74,11 +78,12 @@
 		<xsl:variable name="queryID" select="concat('query_', CheckboxQueryInstance/CheckboxQuery/queryID)" />
 	
 		<div class="query checkboxquery" id="{$queryID}">
+			<xsl:attribute name="class">
+				<xsl:text>query checkboxquery</xsl:text>
+				<xsl:if test="CheckboxQueryInstance/CheckboxQuery/hideTitle = 'true'"> notitle</xsl:if>
+				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+			</xsl:attribute>
 	
-			<xsl:if test="EnableAjaxPosting">
-				<xsl:attribute name="class">query checkboxquery enableAjaxPosting</xsl:attribute>
-			</xsl:if>
-			
 			<xsl:if test="CheckboxQueryInstance/CheckboxQuery/maxChecked">
 				<xsl:attribute name="data-maxchecked">
 					<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/maxChecked"/>

@@ -22,6 +22,10 @@
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideTitle = 'true'"> notitle</xsl:if>
+			</xsl:attribute>
 			
 			<article class="infoquery show-mode">
 				
@@ -63,10 +67,11 @@
 		<xsl:variable name="queryID" select="concat('query_', FileInfoQueryInstance/FileInfoQuery/queryID)" />
 	
 		<div class="query" id="{$queryID}">
-			
-			<xsl:if test="EnableAjaxPosting">
-				<xsl:attribute name="class">query enableAjaxPosting</xsl:attribute>
-			</xsl:if>
+			<xsl:attribute name="class">
+				<xsl:text>query fileinfoquery</xsl:text>
+				<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideTitle = 'true'"> notitle</xsl:if>
+				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+			</xsl:attribute>
 			
 			<a name="{$queryID}" />
 		

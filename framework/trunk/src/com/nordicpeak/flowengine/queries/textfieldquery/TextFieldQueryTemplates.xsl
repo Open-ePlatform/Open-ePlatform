@@ -31,6 +31,10 @@
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="TextFieldQueryInstance/TextFieldQuery/hideTitle = 'true'"> notitle</xsl:if>
+			</xsl:attribute>
 			
 			<article>
 				
@@ -77,10 +81,11 @@
 		<xsl:variable name="queryID" select="concat('query_', TextFieldQueryInstance/TextFieldQuery/queryID)" />
 	
 		<div class="query textfieldquery" id="{$queryID}">
-		
-			<xsl:if test="EnableAjaxPosting">
-				<xsl:attribute name="class">query enableAjaxPosting</xsl:attribute>
-			</xsl:if>
+			<xsl:attribute name="class">
+				<xsl:text>query textfieldquery</xsl:text>
+				<xsl:if test="TextFieldQueryInstance/TextFieldQuery/hideTitle = 'true'"> notitle</xsl:if>
+				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+			</xsl:attribute>
 			
 			<xsl:if test="ValidationErrors/validationError">
 			
