@@ -13,9 +13,11 @@
 			
 			<a name="query{CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			
-			<h2>
-				<xsl:value-of select="CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-			</h2>
+			<xsl:if test="not(CheckboxQueryInstance/CheckboxQuery/hideTitle = 'true')">
+				<h2>
+					<xsl:value-of select="CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+				</h2>
+			</xsl:if>
 			
 			<xsl:if test="Description">
 				

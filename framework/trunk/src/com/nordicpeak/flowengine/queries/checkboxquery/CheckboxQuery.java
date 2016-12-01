@@ -69,6 +69,11 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 	private Columns columns = Columns.ONE;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideTitle;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<CheckboxQueryInstance> instances;
@@ -147,6 +152,16 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 		this.columns = columns;
 	}
 	
+	public boolean isHideTitle() {
+		
+		return hideTitle;
+	}
+
+	public void setHideTitle(boolean hideTitle) {
+	
+		this.hideTitle = hideTitle;
+	}
+	
 	@Override
 	public String toString() {
 		
@@ -198,6 +213,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		
 		minChecked = XMLValidationUtils.validateParameter("minChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxChecked = XMLValidationUtils.validateParameter("maxChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);

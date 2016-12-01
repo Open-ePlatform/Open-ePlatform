@@ -133,4 +133,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `hideTitle` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `columns`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
