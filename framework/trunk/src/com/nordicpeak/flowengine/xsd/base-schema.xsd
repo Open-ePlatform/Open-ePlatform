@@ -12,7 +12,7 @@
 		<xs:sequence>
 			<xs:element name="Header" type="Header" minOccurs="1" maxOccurs="1" />
 			<xs:element name="Values" type="Values" minOccurs="1" maxOccurs="1" />
-			<xs:element name="Signed" type="Signed" minOccurs="0" maxOccurs="1" />
+			<xs:element name="SigningEvents" type="SigningEvents" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -45,7 +45,7 @@
 
 	</xs:complexType>
 	
-	<xs:complexType name="Signed">
+	<xs:complexType name="SigningEvents">
 
 		<xs:sequence>
 			<xs:element name="SignEvent" minOccurs="0" maxOccurs="unbounded" type="SignEvent" />

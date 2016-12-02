@@ -193,11 +193,11 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 					
 				} else {
 					
-					Element signedElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Signed");
+					Element signEventsElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "SigningEvents");
 					
 					for (ImmutableFlowInstanceEvent signEvent : signEvents) {
 
-						Element signElement = XMLUtils.appendNewElement(doc, signedElement, "SignEvent");
+						Element signElement = XMLUtils.appendNewElement(doc, signEventsElement, "SignEvent");
 						
 						XMLUtils.appendNewElement(doc, signElement, "SignedChecksum", signEvent.getAttributeHandler().getString("signingChecksum"));
 						XMLUtils.appendNewElement(doc, signElement, "Date", DATE_TIME_FORMATTER.format(signEvent.getAdded()));

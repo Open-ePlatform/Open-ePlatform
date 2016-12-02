@@ -73,7 +73,12 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 				
 				log.error("Unable to parse XSL stylesheet for dummy signing form in module " + this.moduleDescriptor, e);
 				
+				fragmentTransformer = null;
 			}
+			
+		}else{
+		
+			fragmentTransformer = null;
 		}
 	}
 	
