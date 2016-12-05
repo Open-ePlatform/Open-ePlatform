@@ -1255,32 +1255,35 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 						for (SigningParty signingParty : multiSigningQuery.getSigningParties()) {
 							
-							User signer = null;
+							if (signingParty.isAddAsOwner()) {
 							
-							if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
-							
-								signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
-							}
-							
-							if (signer == null && !StringUtils.isEmpty(signingParty.getEmail())) {
+								User signer = null;
 								
-								signer = systemInterface.getUserHandler().getUserByEmail(signingParty.getEmail(), false, true);
-							}
-							
-							if (signer != null) {
+								if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
 								
-								if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
-									
-									if (flowInstance.getOwners() == null) {
-										flowInstance.setOwners(new ArrayList<User>());
-									}
-									
-									flowInstance.getOwners().add(signer);
+									signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
 								}
 								
-							} else {
+								if (signer == null && !StringUtils.isEmpty(signingParty.getEmail())) {
+									
+									signer = systemInterface.getUserHandler().getUserByEmail(signingParty.getEmail(), false, true);
+								}
 								
-								log.error("User for signing party " + signingParty + " not found");
+								if (signer != null) {
+									
+									if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
+										
+										if (flowInstance.getOwners() == null) {
+											flowInstance.setOwners(new ArrayList<User>());
+										}
+										
+										flowInstance.getOwners().add(signer);
+									}
+									
+								} else {
+									
+									log.error("User for signing party " + signingParty + " not found");
+								}
 							}
 						}
 					}
