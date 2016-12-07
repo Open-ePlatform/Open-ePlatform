@@ -857,7 +857,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
 
-		query.addRelations(FlowInstance.FLOW_STATE_RELATION, FlowInstance.FLOW_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION);
+		query.addRelations(FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.FLOW_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION);
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 		query.addRelationParameter(QueryInstanceDescriptor.class, queryInstanceDescriptorFlowInstanceIDParamFactory.getParameter(flowInstanceID));
 
