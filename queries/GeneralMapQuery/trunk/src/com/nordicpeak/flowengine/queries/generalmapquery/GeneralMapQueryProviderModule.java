@@ -116,6 +116,9 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 	@XSLVariable(prefix = "java.")
 	private String pdfAttachmentFilename = "Map $scale";
 
+	@XSLVariable(prefix = "java.")
+	private String pdfAttachmentFilenameWithoutScale = "Map";
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Map client script URL", description = "The URL to the map client script", required = true)
 	private String openEMapScriptURL;
@@ -549,7 +552,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 			URLRewriter.setAbsoluteLinkUrls(queryInstance.getQuery(), req);
 		}
-		
+
 		queryInstance.getQuery().scanAttributeTags();
 
 		TextTagReplacer.replaceTextTags(queryInstance.getQuery(), instanceMetadata.getSiteProfile());
@@ -1060,7 +1063,15 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 				if (queryInstancePrint.getMapImage() != null) {
 
-					attachments.add(new BlobPDFAttachment(queryInstancePrint.getMapImage(), this.pdfAttachmentFilename.replace("$scale", queryInstancePrint.getScale() + "") + "." + queryInstancePrint.getFormat(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+					String namePrefix;
+
+					if (queryInstancePrint.getScale() != null) {
+						namePrefix = this.pdfAttachmentFilename.replace("$scale", queryInstancePrint.getScale() + "");
+					} else {
+						namePrefix = this.pdfAttachmentFilenameWithoutScale;
+					}
+
+					attachments.add(new BlobPDFAttachment(queryInstancePrint.getMapImage(), namePrefix + "." + queryInstancePrint.getFormat(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
 				}
 
 			}

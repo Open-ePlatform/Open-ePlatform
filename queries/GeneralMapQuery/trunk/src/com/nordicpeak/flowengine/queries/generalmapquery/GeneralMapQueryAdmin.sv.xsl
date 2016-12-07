@@ -8,6 +8,7 @@
 	<xsl:variable name="java.queryTypeName">Generell kartfråga</xsl:variable>
 	<xsl:variable name="java.pdfAttachmentDescriptionPrefix">En fil från fråga:</xsl:variable>
 	<xsl:variable name="java.pdfAttachmentFilename">Kartbild 1 till $scale</xsl:variable>
+	<xsl:variable name="java.pdfAttachmentFilenameWithoutScale">Kartbild</xsl:variable>
 	
 	<xsl:variable name="i18n.minimumScale">minsta skala för att rita på kartan</xsl:variable>
 	
