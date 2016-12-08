@@ -361,7 +361,7 @@
 	<xsl:variable name="i18n.InvalidFileExtension.Part2">är av en felaktig filtyp.</xsl:variable>
 	<xsl:variable name="i18n.InvalidFileExtension.Part3">Följande filtyper är tillåtna:</xsl:variable>
 	
-	<xsl:variable name="i18n.UnableToParseFile.part1">Den gick inte att tolka innehållet filen </xsl:variable>
+	<xsl:variable name="i18n.UnableToParseFile.part1">Den gick inte att tolka innehållet i filen </xsl:variable>
 	<xsl:variable name="i18n.UnableToParseFile.part2">.</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerUserError.MemberOfGroups">medlem i</xsl:variable>
 	
