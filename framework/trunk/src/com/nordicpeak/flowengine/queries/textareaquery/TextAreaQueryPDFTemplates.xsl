@@ -19,7 +19,7 @@
 				<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
 			</h2>
 			
-			<xsl:if test="Description">
+			<xsl:if test="Description and TextAreaQueryInstance/TextAreaQuery/hideDescriptionInPDF = 'false'">
 				
 				<xsl:choose>
 					<xsl:when test="isHTMLDescription = 'true'">

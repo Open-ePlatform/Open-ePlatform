@@ -43,6 +43,13 @@
 				ALTER TABLE `text_area_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `rows`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
 			]]>
 		</Query>	
-	</Script>	
+	</Script>
 	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `hideDescriptionInPDF` BOOLEAN NOT NULL AFTER `attributeName`;
+			]]>
+		</Query>	
+	</Script>
 </DBScripts>

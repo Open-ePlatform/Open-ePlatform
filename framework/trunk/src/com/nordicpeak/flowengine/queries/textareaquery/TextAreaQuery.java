@@ -55,6 +55,11 @@ public class TextAreaQuery extends BaseQuery {
 	private String attributeName;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideDescriptionInPDF;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<TextAreaQueryInstance> instances;
