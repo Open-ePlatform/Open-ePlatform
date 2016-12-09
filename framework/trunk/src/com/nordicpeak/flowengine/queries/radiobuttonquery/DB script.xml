@@ -107,4 +107,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_query_alternatives` ADD COLUMN `value` VARCHAR(255) NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

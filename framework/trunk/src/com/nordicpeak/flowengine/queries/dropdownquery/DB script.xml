@@ -88,6 +88,14 @@
 				ALTER TABLE `drop_down_query_instances` MODIFY COLUMN `queryInstanceID` INT(10) UNSIGNED NOT NULL;
 			]]>
 		</Query>
-	</Script>	
-					
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `drop_down_query_alternatives` ADD COLUMN `value` VARCHAR(255) NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

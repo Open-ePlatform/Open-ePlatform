@@ -38,6 +38,11 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 	@WebPopulate(required=true,maxLength=255)
 	@XMLElement
 	private String name;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String value;
 
 	@DAOManaged
 	@OrderBy
@@ -112,10 +117,18 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 		return instances;
 	}
 
-
 	public void setInstances(List<DropDownQueryInstance> instances) {
 
 		this.instances = instances;
+	}
+	
+	@Override
+	public String getValue() {
+		return value;
+	}
+	
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	@Override
@@ -164,6 +177,7 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 		alternativeID = XMLValidationUtils.validateParameter("alternativeID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
 		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, 1, 255, IntegerPopulator.getPopulator(), errors);
+		value = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
 		if(!errors.isEmpty()){
 

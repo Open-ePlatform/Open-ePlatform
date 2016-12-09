@@ -15,6 +15,11 @@
 
 	<xsl:variable name="scripts">
 		/common/js/queryadmin.js
+		/common/js/featherlight.min.js
+	</xsl:variable>
+	
+	<xsl:variable name="links">
+		/common/css/featherlight.min.css
 	</xsl:variable>
 
 	<xsl:template match="Document">	
@@ -43,6 +48,7 @@
 			<xsl:call-template name="createAlternativesForm">
 				<xsl:with-param name="alternatives" select="RadioButtonQuery/Alternatives/RadioButtonAlternative" />
 				<xsl:with-param name="freeTextAlternative" select="RadioButtonQuery/freeTextAlternative" />
+				<xsl:with-param name="editHiddenValue" select="'true'" />
 			</xsl:call-template>
 			
 			<xsl:variable name="options">
@@ -120,6 +126,8 @@
 			<xsl:with-param name="alternativeID" select="alternativeID" />
 			<xsl:with-param name="sortOrder" select="sortIndex" />
 			<xsl:with-param name="value" select="name" />
+			<xsl:with-param name="hiddenValue" select="value" />
+			<xsl:with-param name="editHiddenValue" select="'true'" />
 		</xsl:call-template>
 			
 	</xsl:template>

@@ -108,6 +108,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 	}
 
 
+	@Override
 	public CheckboxQuery getQuery() {
 
 		return query;

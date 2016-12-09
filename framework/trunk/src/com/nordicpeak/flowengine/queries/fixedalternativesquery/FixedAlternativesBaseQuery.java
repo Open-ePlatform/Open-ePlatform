@@ -7,6 +7,8 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.string.StringUtils;
+
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
@@ -30,6 +32,11 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 	}
 
 	public void toXSD(Document doc, int maxOccurs) {
+	
+		toXSD(doc, 1, maxOccurs);
+	}
+	
+	public void toXSD(Document doc, int minOccurs, int maxOccurs) {
 
 		Element complexTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:complexType");
 		complexTypeElement.setAttribute("name", getXSDTypeName());
@@ -60,7 +67,7 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 			valueElement.setAttribute("name", "Value");
 			valueElement.setAttribute("type", getXSDTypeName() + "Alternative");
 
-			valueElement.setAttribute("minOccurs", "1");
+			valueElement.setAttribute("minOccurs", Integer.toString(minOccurs));
 			valueElement.setAttribute("maxOccurs", Integer.toString(maxOccurs));
 
 			sequenceElement.appendChild(valueElement);
@@ -75,7 +82,15 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 			for(ImmutableAlternative alternative : this.getAlternatives()){
 
 				Element enumerationElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:enumeration");
-				enumerationElement.setAttribute("value", alternative.getName());
+				
+				if (!StringUtils.isEmpty(alternative.getValue())) {
+					
+					enumerationElement.setAttribute("value", alternative.getValue());
+					
+				} else {
+					enumerationElement.setAttribute("value", alternative.getName());
+				}
+				
 				restrictionElement.appendChild(enumerationElement);
 			}
 

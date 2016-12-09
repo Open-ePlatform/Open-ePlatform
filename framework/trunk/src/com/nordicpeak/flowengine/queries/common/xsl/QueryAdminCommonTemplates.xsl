@@ -4,45 +4,6 @@
 
 	<xsl:variable name="commonImagePath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/common/pics</xsl:variable>
 
-	<xsl:template name="createAlternative">
-		
-		<xsl:param name="alternativesContainerID" select="'alternativeContainer'" />
-		<xsl:param name="alternativeID" />
-		<xsl:param name="sortOrder" />
-		<xsl:param name="value" />
-		
-		<div id="alternativeHTML_{$alternativeID}" class="full floatleft margintop marginbottom">
-			<img class="vertical-align-middle marginright cursor-move" src="{$commonImagePath}/move.png" title="{$i18n.MoveAlternative}"/>
-			
-			<xsl:call-template name="createHiddenField">
-				<xsl:with-param name="id" select="concat('alternativeID_', $alternativeID)"/>
-				<xsl:with-param name="name" select="'alternativeID'"/>
-				<xsl:with-param name="value" select="$alternativeID"/>
-			</xsl:call-template>
-			<xsl:call-template name="createHiddenField">
-				<xsl:with-param name="id" select="concat('sortorder_', $alternativeID)" />
-				<xsl:with-param name="name" select="concat('sortorder_', $alternativeID)" />
-				<xsl:with-param name="value" select="$sortOrder" />
-				<xsl:with-param name="class" select="'sortorder'" />
-				<xsl:with-param name="requestparameters" select="//requestparameters" />
-			</xsl:call-template>
-			<xsl:call-template name="createTextField">
-				<xsl:with-param name="id" select="concat('alternative_', $alternativeID)"/>
-				<xsl:with-param name="name" select="concat('alternative_', $alternativeID)"/>
-				<xsl:with-param name="title" select="name"/>
-				<xsl:with-param name="value" select="name"/>
-				<xsl:with-param name="width" select="'89%'"/>
-				<xsl:with-param name="requestparameters" select="//requestparameters" />
-			</xsl:call-template>
-			
-			<a href="javascript:void(0);" onclick="deleteAlternative('#{$alternativesContainerID}','{$alternativeID}','{$i18n.DeleteAlternative}')" title="{$i18n.DeleteAlternative}">
-				<img class="vertical-align-middle marginleft" src="{$commonImagePath}/delete.png"/>
-			</a>
-			
-		</div>
-		
-	</xsl:template>
-
 	<xsl:template name="createCommonFieldsForm">
 	
 		<xsl:param name="element" />
@@ -187,7 +148,7 @@
 					<xsl:with-param name="element" select="$element/QueryDescriptor" />
 				</xsl:call-template>
 		    </div>
-		</div>		
+		</div>
 	
 	</xsl:template>
 
@@ -246,29 +207,91 @@
 		<xsl:param name="alternatives" />
 		<xsl:param name="freeTextAlternative" />
 		<xsl:param name="allowFreeTextAlternative" select="'true'"/>
+		<xsl:param name="allowValue" select="'false'"/>
 		<xsl:param name="requestparameters" select="requestparameters" />
+		<xsl:param name="editHiddenValue" select="'false'"/>
 		
-		<div class="full floatleft bigmarginbottom">
-			<label for="alternative" class="floatleft clearboth"><xsl:value-of select="$i18n.Alternative" /></label>
+		<script type="text/javascript">
+			Alternativesi18n = {
+				deleteConfirm: "<xsl:value-of select="$i18n.DeleteAlternativeConfirm"/>",
+				title: "<xsl:value-of select="$i18n.AlternativeExtraTitle"/>",
+			};
+		</script>
+		
+		<div class="alternatives-container full floatleft bigmarginbottom">
+			<label class="floatleft clearboth"><xsl:value-of select="$i18n.Alternative" /></label>
 			
-			<div id="alternativeContainer" class="full floatleft marginleft sortable">
+			<div class="alternatives full floatleft marginleft sortable">
 				
 				<xsl:choose>
 					<xsl:when test="$requestparameters">
-						<xsl:apply-templates select="$requestparameters/parameter[starts-with(name,'alternative_')]" mode="alternative" />
+						<xsl:apply-templates select="$requestparameters/parameter[starts-with(name,'alternative_')]" mode="alternative" >
+							<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+						</xsl:apply-templates>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:apply-templates select="$alternatives" />
+						<xsl:apply-templates select="$alternatives" >
+							<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+						</xsl:apply-templates>
 					</xsl:otherwise>
 				</xsl:choose>
 			
 			</div>
 			
+			<div class="alternative-template" style="display: none;">
+				<xsl:call-template name="createAlternative">
+					<xsl:with-param name="alternativeID" select="''" />
+					<xsl:with-param name="sortOrder" select="'sortIndex'" />
+					<xsl:with-param name="value" select="''" />
+					<xsl:with-param name="hiddenValue" select="''" />
+					<xsl:with-param name="disabled" select="'true'" />
+					<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+				</xsl:call-template>
+			</div>
+			
+			<div style="display: none;">
+			
+				<div class="alternatives-modal contentitem">
+					<div class="modal-content">
+					
+						<div class="modal-header bigmarginbottom">
+							<h1/>
+						</div>
+						
+						<div class="modal-body">
+						
+							<div class="floatleft full bigmarginbottom">
+							
+								<label for="alternative-value" class="floatleft clearboth">
+									<xsl:value-of select="$i18n.AlternativeValue" />
+								</label>
+								
+								<p class="tiny floatleft full">
+							  	<xsl:value-of select="$i18n.AlternativeValueDescription" />
+							  </p>
+								
+								<div class="floatleft full">
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="id" select="'alternative-value'"/>
+										<xsl:with-param name="name" select="'alternative-value'"/>
+									</xsl:call-template>
+							  </div>
+							</div>
+							
+							<input class="close bigmargintop floatright" type="button" value="{$i18n.CloseAlternativeExtra}" />
+							
+						</div>
+						
+					</div>
+				</div>
+			
+			</div>
+			
 			<div class="floatright marginright margintop">
-				<a href="javascript:void(0);" onclick="addAlternative('#alternativeContainer','{$commonImagePath}',$('#alternativeContainer').children().size(),'{$i18n.MoveAlternative}','{$i18n.DeleteAlternative}')" title="{$i18n.AddAlternative}">
+				<a href="#" onclick="addAlternative(this, event)" title="{$i18n.AddAlternative}">
 					<xsl:value-of select="$i18n.AddAlternative"/>
 				</a>
-				<a href="javascript:void(0);" onclick="addAlternative('#alternativeContainer','{$commonImagePath}',$('#alternativeContainer').children().size(),'{$i18n.MoveAlternative}','{$i18n.DeleteAlternative}')" title="{$i18n.AddAlternative}">
+				<a href="#" onclick="addAlternative(this, event)" title="{$i18n.AddAlternative}">
 					<img class="vertical-align-bottom marginleft" src="{$commonImagePath}/add.png"/>
 				</a>
 			</div>
@@ -302,8 +325,70 @@
 		</div>
 		
 	</xsl:template>
+	
+	<xsl:template name="createAlternative">
+		
+		<xsl:param name="alternativeID" />
+		<xsl:param name="sortOrder" />
+		<xsl:param name="value" />
+		<xsl:param name="hiddenValue" />
+		<xsl:param name="disabled" select="null" />
+		<xsl:param name="editHiddenValue" select="'false'"/>
+		
+		<div class="alternative full floatleft margintop marginbottom">
+			<img class="vertical-align-middle marginright cursor-move" src="{$commonImagePath}/move.png" title="{$i18n.MoveAlternative}"/>
+			
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('alternativeID_', $alternativeID)"/>
+				<xsl:with-param name="name" select="'alternativeID'"/>
+				<xsl:with-param name="value" select="$alternativeID"/>
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('sortorder_', $alternativeID)" />
+				<xsl:with-param name="name" select="concat('sortorder_', $alternativeID)" />
+				<xsl:with-param name="value" select="$sortOrder" />
+				<xsl:with-param name="class" select="'sortorder'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('alternativevalue_', $alternativeID)" />
+				<xsl:with-param name="name" select="concat('alternativevalue_', $alternativeID)" />
+				<xsl:with-param name="value" select="$hiddenValue" />
+				<xsl:with-param name="class" select="'hiddenValue'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createTextField">
+				<xsl:with-param name="id" select="concat('alternative_', $alternativeID)"/>
+				<xsl:with-param name="name" select="concat('alternative_', $alternativeID)"/>
+				<xsl:with-param name="title" select="name"/>
+				<xsl:with-param name="value" select="$value"/>
+				<xsl:with-param name="width" select="'89%'"/>
+				<xsl:with-param name="class" select="'name'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			
+			<xsl:if test="$editHiddenValue = 'true'">
+			
+				<a href="#" onclick="openAlternativeModal(this, event)" title="{$i18n.EditAlternativeExtra}">
+					<img class="vertical-align-middle marginleft" src="{$commonImagePath}/pen.png"/>
+				</a>
+			
+			</xsl:if>
+			
+			<a href="#" onclick="deleteAlternative(this, event)" title="{$i18n.DeleteAlternative}">
+				<img class="vertical-align-middle marginleft" src="{$commonImagePath}/delete.png"/>
+			</a>
+			
+		</div>
+		
+	</xsl:template>
 
 	<xsl:template match="parameter" mode="alternative">
+		<xsl:param name="editHiddenValue" select="'false'"/>
 		
 		<xsl:variable name="id" select="substring(name,13,47)" />
 		
@@ -311,6 +396,8 @@
 			<xsl:with-param name="alternativeID" select="$id" />
 			<xsl:with-param name="sortOrder" select="../parameter[name = concat('sortorder_',$id)]/value" />
 			<xsl:with-param name="value" select="value" />
+			<xsl:with-param name="hiddenValue" select="../parameter[name = concat('alternativevalue_',$id)]/value" />
+			<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
 		</xsl:call-template>
 			
 	</xsl:template>

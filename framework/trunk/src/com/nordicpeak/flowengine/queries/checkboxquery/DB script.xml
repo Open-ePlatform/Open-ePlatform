@@ -141,4 +141,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_query_alternatives` ADD COLUMN `value` VARCHAR(255) NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

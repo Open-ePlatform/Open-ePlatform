@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLParser;
@@ -42,21 +43,22 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 		
 		List<AlternativeType> alternatives = new ArrayList<AlternativeType>();
 		
-		if(alternativeIDs != null) {
+		if (alternativeIDs != null) {
 			
-			for(String alternativeID : alternativeIDs) {
+			for (String alternativeID : alternativeIDs) {
 				
 				String name = ValidationUtils.validateParameter("alternative_" + alternativeID, req, true, 1, maxLength, validationErrors);
 				
-				if(name == null) {
+				if (name == null) {
 					
 					continue;
 				}
 				
 				String sortOrder = req.getParameter("sortorder_" + alternativeID);
-
-				if(NumberUtils.isInt(sortOrder)) {
+				String value = req.getParameter("alternativevalue_" + alternativeID);
 				
+				if (NumberUtils.isInt(sortOrder)) {
+					
 					AlternativeType alternative = this.getNewAlternativeInstance();
 					
 					alternative.setName(name);
@@ -64,16 +66,20 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 					extraPopulation(alternative, req, alternativeID);
 					
-					if(NumberUtils.isInt(alternativeID)) {
+					if (NumberUtils.isInt(alternativeID)) {
 						
 						this.checkForExistingAlternatives(currentAlternatives, alternative, NumberUtils.toInt(alternativeID));
 						
 					}
-				
+					
+					if (!StringUtils.isEmpty(value)) {
+						
+						alternative.setValue(value);
+					}
+					
 					alternatives.add(alternative);
 					
 				}
-				
 			}
 			
 		}

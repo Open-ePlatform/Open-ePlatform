@@ -14,4 +14,5 @@ public interface FixedAlternativesQueryInstance extends QueryInstance{
 	public List<? extends ImmutableAlternative> getAlternatives();
 
 	public String getFreeTextAlternativeValue();
+	
 }

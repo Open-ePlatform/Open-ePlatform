@@ -13,7 +13,8 @@
 	<xsl:variable name="i18n.HelpText">Hjälptext</xsl:variable>
 	<xsl:variable name="i18n.helpText">Hjälptext</xsl:variable>
 	<xsl:variable name="i18n.MoveAlternative">Flytta alternativ</xsl:variable>
-	<xsl:variable name="i18n.DeleteAlternative">Är du säker på att du vill ta bort alternativet</xsl:variable>
+	<xsl:variable name="i18n.DeleteAlternative">Ta bort alternativet</xsl:variable>
+	<xsl:variable name="i18n.DeleteAlternativeConfirm">Är du säker på att du vill ta bort alternativet</xsl:variable>
 	<xsl:variable name="i18n.AddAlternative">Lägg till alternativ</xsl:variable>
 	<xsl:variable name="i18n.Alternative">Alternativ</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
@@ -41,6 +42,13 @@
 	<xsl:variable name="i18n.exportQuery.description">Välj om frågan skall inkluderas i den XML som skickas till andra system.</xsl:variable>
 	<xsl:variable name="i18n.exportQuery">Exportera frågan</xsl:variable>
 	<xsl:variable name="i18n.xsdElementName">XML-elementnamn</xsl:variable>
+	
+	<xsl:variable name="i18n.EditAlternativeExtra">Avancerade inställningar för alternativet</xsl:variable>
+	<xsl:variable name="i18n.AlternativeExtraTitle">Avancerade inställningar för alternativet:</xsl:variable>
+	<xsl:variable name="i18n.CloseAlternativeExtra">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.AlternativeValue">Värde i XML</xsl:variable>
+	<xsl:variable name="i18n.AlternativeValueDescription">Lämna tomt för att använda alternativets namn som värde.</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.validationError.alternative">alternativ</xsl:variable>
 	
