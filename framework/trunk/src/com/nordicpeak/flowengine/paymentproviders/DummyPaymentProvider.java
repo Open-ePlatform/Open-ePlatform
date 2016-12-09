@@ -69,7 +69,7 @@ public class DummyPaymentProvider extends AnnotatedForegroundModule implements P
 			
 			log.info("User " + user + " payed flow instance " + instanceManager.getFlowInstance());
 			
-			callback.paymentComplete(instanceManager, user, req, null, null);
+			callback.paymentComplete(instanceManager, user, req, true, null, null);
 			
 			res.sendRedirect(callback.getPaymentSuccessURL(instanceManager, req));
 			

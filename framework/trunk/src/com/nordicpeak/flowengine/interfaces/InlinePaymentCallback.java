@@ -15,7 +15,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 public interface InlinePaymentCallback {
 
-	void paymentComplete(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException;
+	void paymentComplete(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException;
 	
 	String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req);
 

@@ -27,9 +27,9 @@ public class BaseFlowModuleInlinePaymentCallback implements InlinePaymentCallbac
 	}
 
 	@Override
-	public void paymentComplete(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void paymentComplete(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
-		baseFlowModule.inlinePaymentComplete(instanceManager, req, user, actionID, details, eventAttributes);
+		baseFlowModule.inlinePaymentComplete(instanceManager, req, user, actionID, addPaymentEvent, details, eventAttributes);
 	}
 
 	@Override
