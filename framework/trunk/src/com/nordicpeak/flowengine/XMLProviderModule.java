@@ -201,7 +201,16 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 						
 						XMLUtils.appendNewElement(doc, signElement, "SignedChecksum", signEvent.getAttributeHandler().getString("signingChecksum"));
 						XMLUtils.appendNewElement(doc, signElement, "Date", DATE_TIME_FORMATTER.format(signEvent.getAdded()));
-						appendUser(signEvent.getPoster(), "Signer", doc, signElement);
+						
+						if(signEvent.getPoster() != null){
+							
+							appendUser(signEvent.getPoster(), "Signer", doc, signElement);
+							
+						}else{
+							
+							appendUserFromAttributes(signEvent, "Signer", doc, signElement);
+						}
+						
 					}
 				}
 			}
@@ -266,6 +275,15 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 		}
 	}
 
+	private void appendUserFromAttributes(ImmutableFlowInstanceEvent event, String elementName, Document doc, Element targetElement) {
+
+		Element userElement = XMLUtils.appendNewElement(doc, targetElement, elementName);
+		
+		XMLUtils.appendNewCDATAElement(doc, userElement, "Firstname", event.getAttributeHandler().getString("firstname"));
+		XMLUtils.appendNewCDATAElement(doc, userElement, "Lastname", event.getAttributeHandler().getString("lastname"));
+		XMLUtils.appendNewElement(doc, userElement, "ID", event.getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE));
+	}
+	
 	@Override
 	public File getXML(Integer flowInstanceID, Integer eventID) {
 
