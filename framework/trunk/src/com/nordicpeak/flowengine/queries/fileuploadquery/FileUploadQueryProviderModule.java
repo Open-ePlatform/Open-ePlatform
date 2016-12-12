@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -106,6 +107,10 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	@TextFieldSettingDescriptor(name = "Max allowed file size", description = "The max allowed file size for each file upload query", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected int maxAllowedFileSize = 50;
 
+	@ModuleSetting(allowsNull=true)
+	@TextAreaSettingDescriptor(name="Allowed file extensions", description="Default value for allowed file extensions.")
+	protected List<String> defaultAllowedFileExtensions;
+	
 	@XSLVariable(prefix = "java.")
 	protected String pdfAttachmentDescriptionPrefix = "A file from query:";
 
@@ -190,6 +195,11 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 		query.setQueryID(descriptor.getQueryID());
 
+		if(defaultAllowedFileExtensions != null){
+			
+			query.setAllowedFileExtensions(defaultAllowedFileExtensions);
+		}
+		
 		this.queryDAO.add(query, transactionHandler, null);
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
