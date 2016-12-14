@@ -145,7 +145,7 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 	protected void validateAddPopulation(Status bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
 		bean.setFlow((Flow) req.getAttribute("flow"));
-		
+		bean.setSortIndex(Integer.MAX_VALUE);
 		setDefaultStatusMappings(bean, req);
 	}
 

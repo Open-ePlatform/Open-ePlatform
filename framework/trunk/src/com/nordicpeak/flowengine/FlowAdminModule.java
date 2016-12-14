@@ -321,7 +321,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	@XSLVariable(prefix = "java.")
 	private String eventChangeFlowType = "eventChangeFlowType";
-
+	
+	@XSLVariable(prefix = "java.")
+	private String eventStatusSortMessage = "eventStatusSortMessage";
+	
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin groups", description = "Groups allowed to administrate global parts of this module such as standard statuses")
 	protected List<Integer> adminGroupIDs;
@@ -1377,6 +1380,65 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return new SimpleForegroundModuleResponse(doc);
 	}
 
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse sortStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+
+		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
+
+		if (flow == null) {
+
+			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
+
+		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+
+		} else if (flow.getStatuses() == null) {
+
+			log.info("User " + user + " requested sort statuses form for flow " + flow + " which has no statuses.");
+
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+
+			return null;
+		}
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+
+			for(Status status : flow.getStatuses()) {
+
+				String sortIndex = req.getParameter("sortorder_" + status.getStatusID());
+
+				if(NumberUtils.isInt(sortIndex)) {
+
+					status.setSortIndex(NumberUtils.toInt(sortIndex));
+				}
+				
+				status.setFlow(flow);
+			}
+
+			daoFactory.getStatusDAO().update(flow.getStatuses(), null);
+			
+			addFlowFamilyEvent(eventStatusSortMessage, flow, user);
+			
+			getEventHandler().sendEvent(Status.class, new CRUDEvent<Status>(Status.class, CRUDAction.UPDATE, flow.getStatuses()), EventTarget.ALL);
+
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#statuses");
+			
+			return null;
+		}
+
+		log.info("User " + user + " requesting sort status form for flow " + flow);
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element updateFlowIconElement = doc.createElement("SortStatuses");
+		doc.getDocumentElement().appendChild(updateFlowIconElement);
+
+		updateFlowIconElement.appendChild(flow.toXML(doc));
+
+		return new SimpleForegroundModuleResponse(doc);
+	}	
+	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateNotifications(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 

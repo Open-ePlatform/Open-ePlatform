@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	
 	<xsl:import href="FlowTestCommon.sv.xsl"/>
 	
@@ -37,6 +38,7 @@
 	<xsl:variable name="java.eventStatusUpdatedMessage">Uppdaterade status</xsl:variable>
 	<xsl:variable name="java.eventStatusDeletedMessage">Tog bort status</xsl:variable>
 	<xsl:variable name="java.eventChangeFlowType">Ändrade kategori till</xsl:variable>
+	<xsl:variable name="java.eventStatusSortMessage">Sorterade statusar</xsl:variable>
 	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>
 	
@@ -468,4 +470,7 @@
 	<xsl:variable name="i18n.ChangeFlowType.ChooseNewFlowType">Välj ny kategori</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.submit">Ändra kategori</xsl:variable>
 	
+	<xsl:variable name="i18n.sortStatuses">Sortera statusar</xsl:variable>
+	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
+	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
 </xsl:stylesheet>

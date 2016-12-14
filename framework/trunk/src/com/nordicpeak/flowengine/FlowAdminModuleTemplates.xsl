@@ -61,6 +61,7 @@
 			<xsl:apply-templates select="AddStatus" />
 			<xsl:apply-templates select="UpdateStatus" />
 			<xsl:apply-templates select="SortFlow" />
+			<xsl:apply-templates select="SortStatuses" />
 			<xsl:apply-templates select="ListStandardStatuses" />
 			<xsl:apply-templates select="AddStandardStatus" />
 			<xsl:apply-templates select="UpdateStandardStatus" />
@@ -1101,7 +1102,16 @@
 						<xsl:value-of select="$i18n.addStatus"/>
 						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 					</a>
-				</div>						
+				</div>
+				
+				<xsl:if test="Flow/Statuses/Status">
+					<div class="floatright marginright clearboth">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstatuses/{Flow/flowID}" title="{$i18n.sortStatuses}">
+							<xsl:value-of select="$i18n.sortStatuses"/>
+							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
+						</a>
+					</div>				
+				</xsl:if>				
 			</fieldset>		
 		
 			<a name="managers"/>
@@ -3170,6 +3180,46 @@
 			<xsl:with-param name="disabled" select="'true'" />
 		</xsl:call-template>
 		
+	</xsl:template>	
+	
+	<xsl:template match="SortStatuses">
+	
+		<h1>
+			<xsl:value-of select="$i18n.SortFlowStatuses.title" />
+			<xsl:text>:&#160;</xsl:text>
+			<xsl:value-of select="Flow/name" />
+		</h1>
+		
+		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
+		
+			<div class="floatleft full sortable">
+							
+				<xsl:apply-templates select="Flow/Statuses/Status" mode="sort" />
+							
+			</div>
+			
+			<div class="floatright margintop clearboth">
+				<input type="submit" value="{$i18n.SortFlow.submit}" />
+			</div>
+
+		</form>	
+	
+	</xsl:template>	
+	
+	<xsl:template match="Status" mode="sort">
+	
+		<div id="status_{statusID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
+			<div class="padding">
+				<img class="vertical-align-middle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" title="{$i18n.MoveStatus}" alt="" />
+				<xsl:value-of select="name" />
+				<xsl:call-template name="createHiddenField">
+					<xsl:with-param name="name" select="concat('sortorder_', statusID)" />
+					<xsl:with-param name="class" select="'sortorder'" />
+					<xsl:with-param name="value" select="sortIndex" />
+				</xsl:call-template>
+			</div>
+		</div>	
+	
 	</xsl:template>	
 	
 	<xsl:template match="ListStandardStatuses">

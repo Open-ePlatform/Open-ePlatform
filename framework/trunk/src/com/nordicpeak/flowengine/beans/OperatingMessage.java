@@ -72,25 +72,7 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@XMLElement
 	private Timestamp updated;
 	
-	@Override
-	public Element toXML(Document doc) {
-
-		Element element = super.toXML(doc);
-		
-		if (startTime != null && endTime != null) {
-
-			XMLUtils.appendNewElement(doc, element, "startTime", TimeUtils.TIME_FORMATTER.format(startTime));
-			XMLUtils.appendNewElement(doc, element, "endTime", TimeUtils.TIME_FORMATTER.format(endTime));
-
-			XMLUtils.appendNewElement(doc, element, "startDate", DateUtils.DATE_FORMATTER.format(startTime));
-			XMLUtils.appendNewElement(doc, element, "endDate", DateUtils.DATE_FORMATTER.format(endTime));
-
-		}
-		
-		return element;
-	}
-
-	@DAOManaged
+	@DAOManaged(dontUpdateIfNull=true)
 	@XMLElement(childName="poster")
 	private User poster;
 	
@@ -270,5 +252,23 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	public String toString() {
 
 		return StringUtils.toLogFormat(message, 30) + " (ID: " + messageID + ")";
+	}
+	
+	@Override
+	public Element toXML(Document doc) {
+
+		Element element = super.toXML(doc);
+		
+		if (startTime != null && endTime != null) {
+
+			XMLUtils.appendNewElement(doc, element, "startTime", TimeUtils.TIME_FORMATTER.format(startTime));
+			XMLUtils.appendNewElement(doc, element, "endTime", TimeUtils.TIME_FORMATTER.format(endTime));
+
+			XMLUtils.appendNewElement(doc, element, "startDate", DateUtils.DATE_FORMATTER.format(startTime));
+			XMLUtils.appendNewElement(doc, element, "endDate", DateUtils.DATE_FORMATTER.format(endTime));
+
+		}
+		
+		return element;
 	}
 }

@@ -435,7 +435,6 @@
 					<xsl:with-param name="id" select="concat('sortorder_', textFieldID)" />
 					<xsl:with-param name="name" select="concat('sortorder_', textFieldID)" />
 					<xsl:with-param name="value" select="sortIndex" />
-					<xsl:with-param name="requestparameters" select="//requestparameters" />
 				</xsl:call-template>
 			</div>
 		</div>

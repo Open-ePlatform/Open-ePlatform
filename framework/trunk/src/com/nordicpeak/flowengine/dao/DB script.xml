@@ -1513,4 +1513,12 @@
 		</Query>
 	</Script>
 
+	<Script version="74">
+		<Query>
+	  	<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` ADD COLUMN `sortIndex` INTEGER UNSIGNED NOT NULL AFTER `isAdminDeletable`;
+	 		]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

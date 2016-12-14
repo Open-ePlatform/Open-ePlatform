@@ -45,7 +45,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	private Integer statusID;
 
 	@DAOManaged
-	@OrderBy
+	@OrderBy(priority=1)
 	@StringTag
 	@WebPopulate(required = true, maxLength = 255)
 	@XMLElement
@@ -80,6 +80,11 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@WebPopulate
 	@XMLElement
 	private boolean isAdminDeletable;
+	
+	@DAOManaged
+	@OrderBy(priority=0)
+	@XMLElement
+	private Integer sortIndex;
 
 	@DAOManaged
 	@WebPopulate(required = true)
@@ -115,6 +120,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isAdminMutable = standardStatus.isAdminMutable();
 		this.isUserDeletable = standardStatus.isUserDeletable();
 		this.isUserMutable = standardStatus.isUserMutable();
+		this.sortIndex = 0;
 	}
 
 	@Override
@@ -321,10 +327,24 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 
 		this.contentType = XMLValidationUtils.validateParameter("contentType", xmlParser, true, new EnumPopulator<ContentType>(ContentType.class), errors);
 
+		this.sortIndex = xmlParser.getInt("sortIndex");
+		
 		if(!errors.isEmpty()){
 
 			throw new ValidationException(errors);
 		}
 
+	}
+
+	
+	public Integer getSortIndex() {
+	
+		return sortIndex;
+	}
+
+	
+	public void setSortIndex(Integer sortIndex) {
+	
+		this.sortIndex = sortIndex;
 	}
 }

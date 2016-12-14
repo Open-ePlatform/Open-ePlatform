@@ -90,7 +90,7 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule {
 
 
 	@Override
-	public void doFilter(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FilterChain filterChain) throws TransformerException, IOException {
+	public void processFilterRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FilterChain filterChain) throws TransformerException, IOException {
 
 		if (uriParser.size() == 1) {
 
