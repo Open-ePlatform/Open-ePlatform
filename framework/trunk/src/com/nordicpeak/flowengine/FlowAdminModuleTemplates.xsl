@@ -31,11 +31,13 @@
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
 		/js/UserGroupList.js
+		/js/colorpicker/jquery.minicolors.min.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css
 		/css/UserGroupList.css
+		/js/colorpicker/jquery.minicolors.css
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -4059,6 +4061,20 @@
 			
 			</div>
 		
+			<div class="floatleft full bigmarginbottom">
+				
+					<label for="flowTypeColor" class="floatleft full"><xsl:value-of select="$i18n.FlowType.IconColor" />:</label>
+					<div class="floatleft full">
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="id" select="'iconColor'"/>
+							<xsl:with-param name="name" select="'iconColor'"/>
+							<xsl:with-param name="class" select="'color-input'"/>
+							<xsl:with-param name="element" select="FlowType" />		
+						</xsl:call-template>
+					</div>
+							
+			</div>
+		
 		</xsl:if>
 		
 		<fieldset class="floatleft full bigmarginbottom">
@@ -5275,6 +5291,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'popularityBoost'">
 						<xsl:value-of select="$i18n.popularity.boost"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'iconColor'">
+						<xsl:value-of select="$i18n.FlowType.iconColor"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

@@ -1512,7 +1512,7 @@
 	 		]]>
 		</Query>
 	</Script>
-
+	
 	<Script version="74">
 		<Query>
 	  	<![CDATA[
@@ -1520,5 +1520,13 @@
 	 		]]>
 		</Query>
 	</Script>	
-	
+
+	<Script version="75">
+		<Query>
+	  	<![CDATA[
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `iconColor` VARCHAR(8) AFTER `icon`;
+	 		]]>
+		</Query>
+	</Script>
+
 </DBScripts>

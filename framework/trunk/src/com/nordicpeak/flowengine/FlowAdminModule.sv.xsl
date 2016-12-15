@@ -455,6 +455,8 @@
 	
 	<xsl:variable name="i18n.FlowType.UploadIcon">Tillåtna filtyper: jpg, png, gif, bmp</xsl:variable>
 	<xsl:variable name="i18n.FlowType.DeleteIcon">Ta bort</xsl:variable>
+	<xsl:variable name="i18n.FlowType.IconColor">Bakgrundsfärg</xsl:variable>
+	<xsl:variable name="i18n.FlowType.iconColor">bakgrundsfärg</xsl:variable>
 	
 	<xsl:variable name="i18n.All">Alla</xsl:variable>
 	<xsl:variable name="i18n.Published">Publicerade</xsl:variable>

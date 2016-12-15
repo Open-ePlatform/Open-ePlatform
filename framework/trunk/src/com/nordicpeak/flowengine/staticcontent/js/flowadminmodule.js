@@ -157,6 +157,8 @@ $(document).ready(function() {
 	
 	$("#flow-status-filter").trigger("change");
 	
+	$("input[type='text'].color-input").minicolors();
+	
 });
 
 function updateSortOrder(obj) {

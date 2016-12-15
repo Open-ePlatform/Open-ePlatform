@@ -1,20 +1,27 @@
 package com.nordicpeak.flowengine.beans;
 
+import java.awt.Color;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Blob;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.color.ColorUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.HexColorPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
 
@@ -33,7 +40,7 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	public static final Field ALLOWED_QUERIES_RELATION = ReflectionUtils.getField(FlowType.class, "allowedQueryTypes");
 
 	public static final Field ICON_BLOB_FIELD = ReflectionUtils.getField(Flow.class, "icon");
-	
+
 	private transient FlowTypeAdminAccessInterface adminAccessInterface = new FlowTypeAdminAccessInterface(this);
 	private transient FlowTypeUserAccessInterface userAccessInterface = new FlowTypeUserAccessInterface(this);
 
@@ -59,6 +66,11 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 
 	@DAOManaged
 	private transient Blob icon;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 8, populator = HexColorPopulator.class)
+	@XMLElement
+	private String iconColor;
 
 	@DAOManaged
 	@OneToMany
@@ -238,6 +250,16 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		this.icon = icon;
 	}
 
+	public String getIconColor() {
+
+		return iconColor;
+	}
+
+	public void setIconColor(String iconColor) {
+
+		this.iconColor = iconColor;
+	}
+
 	public List<Integer> getAllowedGroupIDs() {
 
 		return allowedGroupIDs;
@@ -285,4 +307,22 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 
 		return this;
 	}
+
+	@Override
+	public Element toXML(Document doc) {
+
+		Element element = super.toXML(doc);
+
+		if (iconColor != null) {
+
+			Color color = Color.decode(iconColor);
+			Color alphaColor = ColorUtils.getLightenColor(color, 0.5f);
+			XMLUtils.appendNewElement(doc, element, "alphaIconColorRGB", alphaColor.getRed() + "," + alphaColor.getGreen() + "," + alphaColor.getBlue());
+		}
+
+		return element;
+	}
+
+	
+
 }
