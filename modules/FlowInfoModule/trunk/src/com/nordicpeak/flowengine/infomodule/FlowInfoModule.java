@@ -48,26 +48,26 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowType;
 
 public class FlowInfoModule extends AnnotatedRESTModule implements EventListener<CRUDEvent<Flow>>, Runnable {
-	
+
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name="Intervall size", description="Controls how any hours back in time that the statistics should be based on")
+	@TextFieldSettingDescriptor(name = "Intervall size", description = "Controls how any hours back in time that the statistics should be based on")
 	private int interval = 72;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name="Flow count", description="Controls how many flows this module should display")
+	@TextFieldSettingDescriptor(name = "Flow count", description = "Controls how many flows this module should display")
 	private int flowCount = 100;
-	
+
 	private List<Flow> popularFlows;
 
 	private Scheduler scheduler;
 
 	@InstanceManagerDependency
 	private FlowBrowserModule flowBrowserModule;
-	
+
 	private AnnotatedDAO<Flow> flowDAO;
-	
-	private boolean needsEncodingFix; 
-	
+
+	private boolean needsEncodingFix;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(ForegroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -75,9 +75,9 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		super.init(descriptor, sectionInterface, dataSource);
 
 		needsEncodingFix = !systemInterface.getEncoding().equalsIgnoreCase("UTF-8");
-		
+
 		cacheFlows();
-		
+
 		systemInterface.getEventHandler().addEventListener(CRUDEvent.class, this, Flow.class);
 
 		scheduler = new Scheduler();
@@ -114,12 +114,12 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
 		flowDAO = daoFactory.getDAO(Flow.class);
 	}
-	
-	private void cacheFlows(){
-		
+
+	private void cacheFlows() {
+
 		popularFlows = PopularFlowFamiliesModule.cacheFlows(dataSource, flowDAO, log, interval, flowCount);
 	}
-	
+
 	@Override
 	public void processEvent(CRUDEvent<Flow> event, EventSource source) {
 
@@ -137,12 +137,12 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		return 0;
 	}
-	
+
 	@RESTMethod(alias = "getcategories/{responseType}", method = "get")
 	public void getCategories(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
 		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
-		
+
 		Set<FlowType> flowTypes = null;
 
 		if (!CollectionUtils.isEmpty(flows)) {
@@ -178,9 +178,9 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 			res.getWriter().write(getJsonpCallback(req, uriParser) + "(" + getJsonResponse(flowTypes).toJson() + ");");
 			res.getWriter().flush();
-			
-		}else{
-			
+
+		} else {
+
 			// Invalid requested response type
 			throw new URINotFoundException(uriParser);
 		}
@@ -193,7 +193,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		doc.appendChild(flowsElement);
 
 		if (!CollectionUtils.isEmpty(flowTypes)) {
-			
+
 			for (FlowType flow : flowTypes) {
 
 				Element flowElement = XMLUtils.appendNewElement(doc, flowsElement, "Category");
@@ -235,9 +235,9 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 	public void getFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType, @URIParam(name = "flowID") Integer flowID) throws Throwable {
 
 		log.info("User " + user + " requested flowID " + flowID + " as " + StringUtils.toLogFormat(responseType, 30));
-		
+
 		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
-		
+
 		Flow requestedFlow = getFlow(flowID, flows);
 
 		if (requestedFlow != null) {
@@ -253,13 +253,13 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 	private Flow getFlow(Integer flowID, Collection<Flow> flows) {
 
 		for (Flow flow : flows) {
-			
+
 			if (flow.getFlowID().equals(flowID)) {
-			
+
 				return flow;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -267,73 +267,77 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 	public void getFlows(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
 		log.info("User " + user + " requested flows as " + StringUtils.toLogFormat(responseType, 30));
-		
+
 		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
 
 		getResponse(req, res, responseType, flows, uriParser);
 	}
-	
+
 	@RESTMethod(alias = "search/{responseType}", method = "get")
 	public void search(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
 		String query = req.getParameter("q");
 
 		log.info("User " + user + " requested flows matching query " + StringUtils.toLogFormat(query, 30) + " as " + StringUtils.toLogFormat(responseType, 30));
-		
+
 		List<Flow> flowHits = null;
-		
-		if(query != null){
-			
-			if(needsEncodingFix){
-			
+
+		if (query != null) {
+
+			if (needsEncodingFix) {
+
 				query = StringUtils.parseUTF8(query);
 			}
-			
-			List<Integer> hits = flowBrowserModule.getFlowIndexer().search(query);
-			
-			if(hits != null){
-				
-				Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
-				
-				flowHits = new ArrayList<Flow>(hits.size());
-				
-				for(Integer flowID : hits){
-					
-					Flow flow = getFlow(flowID, flows);
-					
-					if(flow != null){
-						
-						flowHits.add(flow);
+
+			if (flowBrowserModule.getFlowIndexer() != null) {
+
+				List<Integer> hits = flowBrowserModule.getFlowIndexer().search(query);
+
+				if (hits != null) {
+
+					Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+
+					flowHits = new ArrayList<Flow>(hits.size());
+
+					for (Integer flowID : hits) {
+
+						Flow flow = getFlow(flowID, flows);
+
+						if (flow != null) {
+
+							flowHits.add(flow);
+						}
 					}
 				}
+
 			}
 		}
-		
-		getResponse(req, res, responseType, flowHits, uriParser);
-	}	
-	
-	@RESTMethod(alias = "getpopularflows/{resultCount}/{responseType}", method = "get")
-	public void getPopularFlows(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser,  @URIParam(name = "resultCount") Integer resultCount, @URIParam(name = "responseType") String responseType) throws Throwable {
 
-		if(resultCount < 0){
-			
+		getResponse(req, res, responseType, flowHits, uriParser);
+	}
+
+	@RESTMethod(alias = "getpopularflows/{resultCount}/{responseType}", method = "get")
+	public void getPopularFlows(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "resultCount") Integer resultCount, @URIParam(name = "responseType") String responseType) throws Throwable {
+
+		if (resultCount < 0) {
+
 			// Negative resultCount
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		log.info("User " + user + " requested popular flows with max count of " + resultCount + " as " + StringUtils.toLogFormat(responseType, 30));
-		
-		if(popularFlows != null) {
-			
-			if(resultCount > popularFlows.size()){
-				
+
+		if (popularFlows != null) {
+
+			if (resultCount > popularFlows.size()) {
+
 				resultCount = popularFlows.size();
 			}
-			
+
 			getResponse(req, res, responseType, popularFlows.subList(0, resultCount), uriParser);
-			
+
 		} else {
-			
+
 			getResponse(req, res, responseType, null, uriParser);
 		}
 	}
@@ -345,7 +349,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		List<Flow> flowsInCategory = null;
 
 		log.info("User " + user + " requested flows in categoryID " + categoryID + " as " + StringUtils.toLogFormat(responseType, 30));
-		
+
 		if (!CollectionUtils.isEmpty(flows)) {
 
 			flowsInCategory = new ArrayList<Flow>();
@@ -391,9 +395,9 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 			res.getWriter().write(getJsonpCallback(req, uriParser) + "(" + getJsonResponse(req, flows).toJson() + ");");
 			res.getWriter().flush();
-		
-		}else{
-		
+
+		} else {
+
 			// Invalid requested response type
 			throw new URINotFoundException(uriParser);
 		}
@@ -467,12 +471,12 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 			callback = req.getParameter("jsonp");
 		}
 
-		if(callback == null){
-			
+		if (callback == null) {
+
 			// No callback or jsonp parameter specified
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		return callback;
 	}
 
