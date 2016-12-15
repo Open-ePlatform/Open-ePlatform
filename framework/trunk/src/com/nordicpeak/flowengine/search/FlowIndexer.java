@@ -43,6 +43,7 @@ import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.webutils.http.HTTPUtils;
+import se.unlogic.webutils.http.SessionUtils;
 
 import com.nordicpeak.flowengine.beans.Flow;
 
@@ -152,6 +153,7 @@ public class FlowIndexer {
 
 		if (StringUtils.isEmpty(queryString)) {
 
+			resetLastSearch(req, user);
 			sendEmptyResponse(res);
 			return;
 		}
@@ -166,6 +168,7 @@ public class FlowIndexer {
 
 		try {
 			query = parser.parse(QueryParser.escape(queryString) + "*");
+			SessionUtils.setAttribute("lastsearch", queryString, req);
 
 		} catch (ParseException e) {
 
@@ -200,6 +203,12 @@ public class FlowIndexer {
 		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
 		return;
 	}
+	
+	public void resetLastSearch(HttpServletRequest req, User user) throws IOException{
+		
+		SessionUtils.removeAttribute("lastsearch", req);
+	}
+
 	
 	public List<Integer> search(String queryString) throws IOException{
 		

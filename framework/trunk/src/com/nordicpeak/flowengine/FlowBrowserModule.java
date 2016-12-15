@@ -65,7 +65,9 @@ import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
 
@@ -183,6 +185,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@CheckboxSettingDescriptor(name = "Register in instance handler", description = "Controls whether to register this module in instance handler or not")
 	protected boolean registerInInstanceHandler = true;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Save search in session", description = "Save service search in session")
+	private boolean saveSearchInSession = false;
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -302,15 +308,22 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		r.lock();
 
+		String lastSearch = (String)SessionUtils.getAttribute("lastsearch", req);
+		
 		try {
 			log.info("User " + user + " listing flows");
 
 			Document doc = this.createDocument(req, uriParser, user);
-
+			
 			Element showFlowTypesElement = doc.createElement("ShowFlowTypes");
 
 			doc.getDocumentElement().appendChild(showFlowTypesElement);
 
+			if(lastSearch != null && saveSearchInSession){
+				
+				XMLUtils.appendNewElement(doc, showFlowTypesElement, "lastSearch", lastSearch);
+			}
+			
 			if(flowTypes != null){
 
 				for(FlowType flowType : flowTypes){
@@ -611,6 +624,24 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return null;
 	}
 
+	@WebPublic(alias = "resetlastsearch")
+	public ForegroundModuleResponse resetLastSearch(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException {
+
+		FlowIndexer flowIndexer = this.flowIndexer;
+
+		if (flowIndexer != null) {
+
+			this.flowIndexer.resetLastSearch(req, user);
+
+		}
+		
+		HTTPUtils.sendReponse("", "text/plain", res);
+		
+		return null;
+	}
+	
+	
+	
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
