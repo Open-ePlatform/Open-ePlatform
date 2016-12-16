@@ -190,17 +190,12 @@
   					
   				</div>
   				
-  				<xsl:if test="hasPDF = 'true'">
-					<div class="section no-border">
-						<div class="btn-wrapper no-border">
-							<xsl:if test="not(Checks/check)"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
-							<xsl:choose>
-								<xsl:when test="$isDisabled"><a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}"><xsl:value-of select="$i18n.DownloadPDFForm" /></a></xsl:when>
-								<xsl:otherwise><a class="btn btn-blue xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowpdf/{flowID}" target="_blank"><xsl:value-of select="$i18n.DownloadPDFForm" /></a></xsl:otherwise>
-							</xsl:choose>
-						</div>
-					</div>
-				</xsl:if>
+  				<xsl:if test="FlowForms/FlowForm">
+						<xsl:call-template name="FlowFormButton">
+							<xsl:with-param name="isDisabled" select="$isDisabled"/>
+							<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
+						</xsl:call-template>
+					</xsl:if>
   					
   			</div>
   			

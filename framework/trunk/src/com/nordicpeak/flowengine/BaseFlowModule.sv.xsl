@@ -35,7 +35,8 @@
 	<xsl:variable name="i18n.PostedBy">Inskickat av</xsl:variable>
 	<xsl:variable name="i18n.Print">Skriv ut</xsl:variable>
 	<xsl:variable name="i18n.DownloadPDF">Hämta PDF</xsl:variable>
-	<xsl:variable name="i18n.DownloadPDFForm">Hämta blankett</xsl:variable>
+	<xsl:variable name="i18n.DownloadFlowForm">Hämta blankett</xsl:variable>
+	<xsl:variable name="i18n.DownloadFlowForms">Hämta blanketter</xsl:variable>
 	
 	<xsl:variable name="i18n.StepDescription.Part1">Steg</xsl:variable>
 	<xsl:variable name="i18n.StepDescription.Part2">av</xsl:variable>

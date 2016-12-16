@@ -76,6 +76,7 @@ import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessControl
 import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
@@ -717,7 +718,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				return;
 			}
 
-			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION);
+			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
 
 			if (listAllFlowTypes) {
 
@@ -1373,16 +1374,18 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse getFlowPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		if (flowAdminModule == null) {
 
 			throw new URINotFoundException(uriParser);
 		}
 
+		Integer flowFormID;
+		Integer flowID;
 		Flow flow;
 
-		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flow = flowMap.get(Integer.valueOf(uriParser.get(2)))) != null) {
+		if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowFormID = uriParser.getInt(3)) != null && (flow = flowMap.get(flowID)) != null) {
 
 			if (!flow.isPublished() || !flow.isEnabled()) {
 
@@ -1393,7 +1396,15 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			}
 
 			try {
-				return flowAdminModule.sendFlowFormPDF(flow, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+				for (FlowForm flowForm : flow.getFlowForms()) {
+					
+					if (flowForm.getFlowFormID().equals(flowFormID)) {
+						
+						flowForm.setFlow(flow);
+						
+						return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+					}
+				}
 
 			} catch (FlowNotAvailiableInRequestedFormat e) {
 

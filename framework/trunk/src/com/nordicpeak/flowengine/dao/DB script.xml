@@ -1528,5 +1528,34 @@
 	 		]]>
 		</Query>
 	</Script>
+	
+	<Script version="76">
+		<Query>
+	  	<![CDATA[
+				CREATE TABLE `flowengine_flow_forms` (
+					`flowFormID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NULL DEFAULT NULL,
+					`externalURL` VARCHAR(1024) NULL DEFAULT NULL,
+					PRIMARY KEY (`flowFormID`),
+					INDEX `flowID` (`flowID`),
+					CONSTRAINT `FK_flowengine_flow_forms_1` FOREIGN KEY (`flowID`) REFERENCES `flowengine_flows` (`flowID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+	 		]]>
+		</Query>
+		<Query>
+	  	<![CDATA[
+				INSERT INTO `flowengine_flow_forms` (flowFormID, flowID, externalURL) SELECT flowID, flowID, externalPDF FROM flowengine_flows WHERE hasPDF = 1;
+	 		]]>
+		</Query>
+		<Query>
+	  	<![CDATA[
+				ALTER TABLE `flowengine_flows`
+					DROP COLUMN `hasPDF`,
+					DROP COLUMN `externalPDF`;
+	 		]]>
+		</Query>
+	</Script>
 
 </DBScripts>

@@ -1002,4 +1002,64 @@
 		
 	</xsl:template>
 	
+	<xsl:template name="FlowFormButton">
+		<xsl:param name="flow" select="."/>
+		<xsl:param name="isDisabled"/>
+		<xsl:param name="operatingMessage"/>
+	
+		<div class="section no-border">
+			<div class="btn-wrapper no-border">
+				<xsl:if test="not($flow/Checks/check)"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
+				<xsl:choose>
+					<xsl:when test="$isDisabled">
+					
+						<a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
+					
+					</xsl:when>
+					<xsl:when test="count($flow/FlowForms/FlowForm) = 1">
+					
+						<a class="btn btn-blue xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{$flow/flowID}/{$flow/FlowForms/FlowForm[1]/flowFormID}" target="_blank"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
+						
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).find('span').toggle(); return false;">
+							<xsl:value-of select="$i18n.DownloadFlowForms" />
+							<span class="bigmarginleft" data-icon-before="^"/>
+							<span class="bigmarginleft" data-icon-before="_" style="display: none;"/>
+						</a>
+						
+						<div id="flowforms-list" class="bigpadding border" style="display: none">
+							<xsl:apply-templates select="$flow/FlowForms/FlowForm" mode="link"/>
+						</div>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+				
+			</div>
+		</div>
+	
+	</xsl:template>
+	
+	<xsl:template match="FlowForm" mode="link">
+	
+		<a class="display-block text-align-left padding" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
+		
+			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
+		
+			<xsl:choose>
+				<xsl:when test="name">
+					<xsl:value-of select="name"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$i18n.DownloadFlowForm" />
+					<xsl:text>:&#160;</xsl:text>
+					<xsl:value-of select="position()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+		</a>
+	
+	</xsl:template>
+	
 </xsl:stylesheet>

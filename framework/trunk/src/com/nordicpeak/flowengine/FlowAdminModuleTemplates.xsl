@@ -54,7 +54,6 @@
 			<xsl:apply-templates select="AddFlow" />
 			<xsl:apply-templates select="UpdateFlow" />
 			<xsl:apply-templates select="UpdateFlowIcon" />
-			<xsl:apply-templates select="UpdateFlowPDF" />	
 			<xsl:apply-templates select="UpdateNotifications"/>		
 			<xsl:apply-templates select="AddQueryDescriptor" />
 			<xsl:apply-templates select="AddEvaluatorDescriptor" />
@@ -84,6 +83,8 @@
 			<xsl:apply-templates select="ShowFlowOverview"/>
 			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
 			<xsl:apply-templates select="ChangeFlowType"/>
+			<xsl:apply-templates select="AddFlowForm" />
+			<xsl:apply-templates select="UpdateFlowForm" />	
 		</div>
 		
 	</xsl:template>
@@ -957,96 +958,36 @@
 		<a name="pdfform"/>
 		
 		<fieldset>
-			<legend><xsl:value-of select="$i18n.PDFForm"/></legend>
+			<legend><xsl:value-of select="$i18n.FlowForm"/></legend>
 			
 			<xsl:choose>
-				<xsl:when test="Flow/hasPDF = 'true'">
+				<xsl:when test="Flow/FlowForms/FlowForm">
 				
-					<xsl:choose>
-						<xsl:when test="Flow/externalPDF">
-
-							<a href="{Flow/externalPDF}" target="_blank">
-								<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
-								<xsl:value-of select="$i18n.DownloadPDFForm" />
-								<xsl:value-of select="'&#160;'" />
-								<xsl:text>(</xsl:text>
-								<xsl:value-of select="$i18n.link" />
-								<xsl:text>)</xsl:text>
-							</a>
-
-						</xsl:when>
-						<xsl:otherwise>
-
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowformpdf/{Flow/flowID}?raw=t" target="_blank">
-								<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
-								<xsl:value-of select="$i18n.DownloadPDFForm" />
-								
-								<xsl:if test="PDFSize">
-									<xsl:value-of select="' ('" />
-									<xsl:value-of select="PDFSize" />
-									<xsl:value-of select="')'" />
-								</xsl:if>
-							</a>
-
-						</xsl:otherwise>
-					</xsl:choose>
+					<div>
+						<xsl:apply-templates select="Flow/FlowForms/FlowForm" mode="list"/>
+					</div>
 				
 				</xsl:when>
 				<xsl:otherwise>
 				
-					<xsl:value-of select="$i18n.hasNoPDFForm"/>
+					<xsl:value-of select="$i18n.hasNoFlowForm"/>
 					
 				</xsl:otherwise>
 			</xsl:choose>
 			
-			<div class="floatright marginright">
+			<div class="clearboth floatright marginright">
 				
 				<xsl:choose>
-					<xsl:when test="Flow/hasPDF = 'true'">
+					<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForFlowForms)">
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowformpdf/{Flow/flowID}" title="{$i18n.updateFlowPDF.link.title}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
-						</a>
-						
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowformpdf/{Flow/flowID}" title="{$i18n.deleteFlowPDF.link.title}">
-						
-							<xsl:if test="MayNotRemovePDFFormIfNoSteps">
-								<xsl:attribute name="onclick">alert('<xsl:value-of select="$i18n.MayNotRemovePDFFormIfNoSteps"/>'); return false;</xsl:attribute>
-								<xsl:attribute name="href">
-									<xsl:value-of select="'#'"/>
-								</xsl:attribute>
-							</xsl:if>
-							
-							<xsl:variable name="img">
-								<xsl:choose>
-									<xsl:when test="MayNotRemovePDFFormIfNoSteps">
-										
-										<xsl:value-of select="'delete_gray.png'"/>
-										
-									</xsl:when>
-									<xsl:otherwise>
-										
-										<xsl:value-of select="'delete.png'"/>
-										
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/{$img}" alt="" />
-							
-						</a>
-					
-					</xsl:when>
-					<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForPDFForms)">
-					
-						<xsl:value-of select="$i18n.MayNotAddPDFFormIfOverviewSkipIsSet"/>
+						<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
 					
 					</xsl:when>
 					<xsl:otherwise>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowformpdf/{Flow/flowID}" title="{$i18n.addFlowPDF.link.title}">
-							<xsl:value-of select="$i18n.addFlowPDF.link.title"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowform/{Flow/flowID}" title="{$i18n.addFlowForm.link.title}">
+							<xsl:value-of select="$i18n.addFlowForm.link.title"/>
+							<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 						</a>
 						
 					</xsl:otherwise>
@@ -1054,12 +995,12 @@
 				
 			</div>
 			
-			<xsl:if test="Flow/hasPDF = 'true'">
+			<xsl:if test="Flow/FlowForms/FlowForm">
 			
 				<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
 						<xsl:value-of select="$i18n.testFlow"/>
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
+						<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
 					</a>
 			</div>
 			
@@ -1316,6 +1257,101 @@
 			
 		</fieldset>
 		
+	</xsl:template>
+	
+	<xsl:template match="FlowForm" mode="list">
+	
+		<div class="full">
+		
+			<xsl:choose>
+				<xsl:when test="externalURL">
+
+					<a href="{externalURL}" target="_blank">
+						<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
+						<xsl:value-of select="$i18n.DownloadFlowForm" />
+						<xsl:value-of select="'&#160;'" />
+						<xsl:text>(</xsl:text>
+						<xsl:value-of select="$i18n.link" />
+						<xsl:text>)</xsl:text>
+						<xsl:choose>
+							<xsl:when test="name">
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="name"/>
+							</xsl:when>
+							<xsl:when test="count(../FlowForm) = 1"></xsl:when>
+							<xsl:otherwise>
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="position()"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</a>
+
+				</xsl:when>
+				<xsl:otherwise>
+
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}?raw=t" target="_blank">
+						<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
+						<xsl:value-of select="$i18n.DownloadFlowForm" />
+						
+						<xsl:if test="formattedSize">
+							<xsl:value-of select="' ('" />
+							<xsl:value-of select="formattedSize" />
+							<xsl:value-of select="')'" />
+						</xsl:if>
+						
+						<xsl:choose>
+							<xsl:when test="name">
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="name"/>
+							</xsl:when>
+							<xsl:when test="count(../FlowForm) = 1"></xsl:when>
+							<xsl:otherwise>
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="position()"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</a>
+
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<div class="floatright marginright">
+		
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowform/{flowFormID}" title="{$i18n.updateFlowForm.link.title}">
+					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+				</a>
+				
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}">
+				
+					<xsl:if test="../../MayNotRemoveFlowFormIfNoSteps">
+						<xsl:attribute name="onclick">alert('<xsl:value-of select="$i18n.MayNotRemoveFlowFormIfNoSteps"/>'); return false;</xsl:attribute>
+						<xsl:attribute name="href">
+							<xsl:value-of select="'#'"/>
+						</xsl:attribute>
+					</xsl:if>
+					
+					<xsl:variable name="img">
+						<xsl:choose>
+							<xsl:when test="../../MayNotRemoveFlowFormIfNoSteps">
+								
+								<xsl:value-of select="'delete_gray.png'"/>
+								
+							</xsl:when>
+							<xsl:otherwise>
+								
+								<xsl:value-of select="'delete.png'"/>
+								
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					
+					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/{$img}" alt="" />
+				</a>
+			
+			</div>
+			
+		</div>
+	
 	</xsl:template>
 	
 	<xsl:template match="Flow" mode="list-versions">
@@ -1900,7 +1936,7 @@
 		
 		<div class="floatleft full bigmarginbottom margintop">
 		
-			<xsl:variable name="disableSkip" select="Flow/hasPDF = 'true' and not(AllowSkipOverviewForPDFForms)"/>
+			<xsl:variable name="disableSkip" select="Flow/FlowForms/FlowForm and not(AllowSkipOverviewForFlowForms)"/>
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
@@ -1915,7 +1951,7 @@
 					
 					<xsl:if test="$disableSkip">
 						<xsl:value-of select="' ('" />
-						<xsl:value-of select="$i18n.MayNotSetOverviewIfPDFIsSet.description" />
+						<xsl:value-of select="$i18n.MayNotSetOverviewIfFlowFormIsSet.description" />
 						<xsl:value-of select="')'" />
 					</xsl:if>
 				</label>
@@ -3024,51 +3060,96 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="UpdateFlowPDF">
+	<xsl:template match="AddFlowForm">
 	
 		<h1>
-			<xsl:value-of select="$i18n.UpdateFlowPDF.title"/>
+			<xsl:value-of select="$i18n.AddFlowForm.title"/>
 			<xsl:text>&#x20;</xsl:text>
 			<xsl:value-of select="Flow/name"/>
 		</h1>
 		
-		<p><xsl:value-of select="$i18n.UpdateFlowPDF.description"/></p>
+		<p><xsl:value-of select="$i18n.UpdateFlowForm.description"/></p>
 
-		<xsl:apply-templates select="validationError" />
+		<xsl:apply-templates select="validationException/validationError" />
 
 		<form method="post" action="{/Document/requestinfo/uri}" enctype="multipart/form-data">
 		
-			<div class="floatleft full bigmarginbottom">
-				
-				<label for="name" class="floatleft full">
-					<xsl:value-of select="$i18n.uploadNewPDFForm" />
-				</label>
-				
-				<div class="floatleft full">
-					<input type="file" name="pdf"/>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom">
-			
-				<label for="externalPDF" class="floatleft full">
-					<xsl:value-of select="$i18n.externalPDF" />
-				</label>
-				
-				<div class="floatleft full">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'externalPDF'"/>
-						<xsl:with-param name="name" select="'externalPDF'"/>
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-				</div>
-			</div>
+			<xsl:call-template name="editFlowForm"/>
 			
 			<div class="floatright">
-				<input type="submit" value="{$i18n.UpdateFlowPDF.submit}" />
+				<input type="submit" value="{$i18n.AddFlowForm.submit}" />
 			</div>
 		
 		</form>
+	
+	</xsl:template>
+	
+	<xsl:template match="UpdateFlowForm">
+	
+		<h1>
+			<xsl:value-of select="$i18n.UpdateFlowForm.title"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="Flow/name"/>
+		</h1>
+		
+		<p><xsl:value-of select="$i18n.UpdateFlowForm.description"/></p>
+
+		<xsl:apply-templates select="validationException/validationError" />
+
+		<form method="post" action="{/Document/requestinfo/uri}" enctype="multipart/form-data">
+		
+			<xsl:call-template name="editFlowForm"/>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.UpdateFlowForm.submit}" />
+			</div>
+		
+		</form>
+	
+	</xsl:template>
+	
+	<xsl:template name="editFlowForm">
+	
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="name" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowForm.name" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'name'"/>
+					<xsl:with-param name="name" select="'name'"/>
+					<xsl:with-param name="element" select="FlowForm" />
+				</xsl:call-template>
+			</div>
+		</div>
+	
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="name" class="floatleft full">
+				<xsl:value-of select="$i18n.uploadNewFlowForm" />
+			</label>
+			
+			<div class="floatleft full">
+				<input type="file" name="pdf"/>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="externalURL" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowForm.externalURL" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'externalURL'"/>
+					<xsl:with-param name="name" select="'externalURL'"/>
+					<xsl:with-param name="element" select="FlowForm" />
+				</xsl:call-template>
+			</div>
+		</div>
 	
 	</xsl:template>
 	
@@ -4822,10 +4903,10 @@
 		</p>	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='InvalidPDFFormFileFormat']">
+	<xsl:template match="validationError[messageKey='InvalidFlowFormFileFormat']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.InvalidPDFFormFileFormat"/>
+			<xsl:value-of select="$i18n.InvalidFlowFormFileFormat"/>
 		</p>	
 	</xsl:template>
 	
@@ -5079,26 +5160,26 @@
 		</p>	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='MayNotRemovePDFFormIfNoSteps']">
+	<xsl:template match="validationError[messageKey='MayNotRemoveFlowFormIfNoSteps']">
 		
 		<p class="error">
-			<xsl:value-of select="$i18n.MayNotRemovePDFFormIfNoSteps"/>
+			<xsl:value-of select="$i18n.MayNotRemoveFlowFormIfNoSteps"/>
 		</p>
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='MayNotAddPDFFormIfOverviewSkipIsSet']">
+	<xsl:template match="validationError[messageKey='MayNotAddFlowFormIfOverviewSkipIsSet']">
 		
 		<p class="error">
-			<xsl:value-of select="$i18n.MayNotAddPDFFormIfOverviewSkipIsSet"/>
+			<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
 		</p>
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='MayNotSetOverviewIfPDFIsSet']">
+	<xsl:template match="validationError[messageKey='MayNotSetOverviewIfFlowFormIsSet']">
 		
 		<p class="error">
-			<xsl:value-of select="$i18n.MayNotSetOverviewIfPDFIsSet"/>
+			<xsl:value-of select="$i18n.MayNotSetOverviewIfFlowFormIsSet"/>
 		</p>
 	
 	</xsl:template>
@@ -5270,6 +5351,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalLink'">
 						<xsl:value-of select="$i18n.externalLink"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'externalURL'">
+						<xsl:value-of select="$i18n.FlowForm.externalURL"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'ownerName'">
 						<xsl:value-of select="$i18n.owner.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.owner.name"/>

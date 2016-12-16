@@ -112,7 +112,6 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.image.ImageUtils;
-import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
@@ -135,7 +134,6 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
-import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
@@ -147,6 +145,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
+import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
@@ -161,6 +160,7 @@ import com.nordicpeak.flowengine.cruds.CategoryCRUD;
 import com.nordicpeak.flowengine.cruds.EvaluatorDescriptorCRUD;
 import com.nordicpeak.flowengine.cruds.FlowCRUD;
 import com.nordicpeak.flowengine.cruds.FlowFamilyCRUD;
+import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
 import com.nordicpeak.flowengine.cruds.FlowTypeCRUD;
 import com.nordicpeak.flowengine.cruds.QueryDescriptorCRUD;
 import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
@@ -199,6 +199,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
+import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
 import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -217,17 +218,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
-	public static final ValidationError MAY_NOT_REMOVE_PDF_FORM_IF_NO_STEPS_VALIDATION_ERROR = new ValidationError("MayNotRemovePDFFormIfNoSteps");
-	public static final ValidationError MAY_NOT_ADD_FORM_PDF_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotAddPDFFormIfOverviewSkipIsSet");
-	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FORM_PDF_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfPDFIsSet");
+	public static final ValidationError MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR = new ValidationError("MayNotRemoveFlowFormIfNoSteps");
+	public static final ValidationError MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotAddFlowFormIfOverviewSkipIsSet");
+	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 
 	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
 
 	@SuppressWarnings("rawtypes")
-	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class };
+	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class, FlowForm.class };
 
-	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
-	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
 
 	protected static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
 
@@ -261,15 +262,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@XSLVariable(prefix = "java.")
 	private String eventImportQueriesMessage = "eventImportQueriesMessage";
-
-	@XSLVariable(prefix = "java.")
-	private String eventUpdatePDFMessage = "eventUpdatePDFMessage";
-
-	@XSLVariable(prefix = "java.")
-	private String eventUpdateExternalPDFMessage = "eventUpdateExternalPDFMessage";
-
-	@XSLVariable(prefix = "java.")
-	private String eventDeletePDFMessage = "eventDeletePDFMessage";
 
 	@XSLVariable(prefix = "java.")
 	private String eventFlowFamilyUpdatedMessage = "eventFlowFamilyUpdatedMessage";
@@ -320,6 +312,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private String eventStatusDeletedMessage = "eventStatusDeletedMessage";
 	
 	@XSLVariable(prefix = "java.")
+	private String eventFlowFormAddedMessage = "eventFlowFormAddedMessage";
+
+	@XSLVariable(prefix = "java.")
+	private String eventFlowFormUpdatedMessage = "eventFlowFormUpdatedMessage";
+
+	@XSLVariable(prefix = "java.")
+	private String eventFlowFormDeletedMessage = "eventFlowFormDeletedMessage";
+	
+	@XSLVariable(prefix = "java.")
 	private String eventChangeFlowType = "eventChangeFlowType";
 	
 	@XSLVariable(prefix = "java.")
@@ -353,17 +354,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@TextFieldSettingDescriptor(name = "Editor CSS", description = "Path to the desired CSS stylesheet for CKEditor (relative from the contextpath)", required = false)
 	protected String cssPath;
 
-	@ModuleSetting
+	@ModuleSetting(id = "pdfFormFilestore")
 	@TextFieldSettingDescriptor(name = "Flow PDF form filestore", description = "Directory where attached PDF forms are stored", required = true)
-	protected String pdfFormFilestore;
+	protected String flowFormFilestore;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max PDF form file size", description = "Maxmium file size in megabytes allowed", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxPDFFormFileSize = 15;
 
-	@ModuleSetting
+	@ModuleSetting(id = "allowSkipOverviewForPDFForms")
 	@CheckboxSettingDescriptor(name = "Allow skip overview for PDF forms", description = "If false always shows the overview if a PDF form is available. Requires special button on step pages if set.")
-	protected boolean allowSkipOverviewForPDFForms = false;
+	protected boolean allowSkipOverviewForFlowForms = false;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Open external flows in new window", description = "Controls whether to open external flows in new window or not")
@@ -412,6 +413,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private StandardStatusCRUD standardStatusCRUD;
 	private FlowTypeCRUD flowTypeCRUD;
 	private CategoryCRUD categoryCRUD;
+	private FlowFormCRUD flowFormCRUD;
 
 	protected QueryParameterFactory<Flow, FlowFamily> flowFlowFamilyParamFactory;
 	protected QueryParameterFactory<Flow, Integer> flowVersionParamFactory;
@@ -546,7 +548,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		categoryDAOWrapper.addRelations(Category.FLOW_TYPE_RELATION);
 		categoryDAOWrapper.setUseRelationsOnGet(true);
 
-		this.categoryCRUD = new CategoryCRUD(categoryDAOWrapper, this);
+		categoryCRUD = new CategoryCRUD(categoryDAOWrapper, this);
+		
+		AnnotatedDAOWrapper<FlowForm, Integer> flowFormDAOWrapper = daoFactory.getFlowFormDAO().getWrapper("flowFormID", Integer.class);
+		flowFormDAOWrapper.addRelations(FlowForm.FLOW_RELATION, Flow.FLOW_TYPE_RELATION);
+		flowFormDAOWrapper.setUseRelationsOnGet(true);
+		
+		flowFormCRUD = new FlowFormCRUD(flowFormDAOWrapper, this);
+		flowFormCRUD.addRequestFilter(new MultipartRequestFilter(this));
 
 		flowVersionOrderByCriteria = daoFactory.getFlowDAO().getOrderByCriteria("version", Order.DESC);
 
@@ -563,7 +572,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		super.moduleConfigured();
 
-		if (!FileUtils.directoryExists(pdfFormFilestore)) {
+		if (!FileUtils.directoryExists(flowFormFilestore)) {
 
 			log.error("Module " + this.moduleDescriptor + " has no/invalid PDF form filestore set, check modulesettings");
 		}
@@ -604,7 +613,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			long startTime = System.currentTimeMillis();
 
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
+			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_FORMS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
 
@@ -863,15 +872,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		String validationError = req.getParameter("error");
 
-		if(!StringUtils.isEmpty(validationError)){
-
-			if(validationError.equals(MAY_NOT_REMOVE_PDF_FORM_IF_NO_STEPS_VALIDATION_ERROR.getMessageKey())){
-
-				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_REMOVE_PDF_FORM_IF_NO_STEPS_VALIDATION_ERROR));
-
-			} else if(validationError.equals(MAY_NOT_ADD_FORM_PDF_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR.getMessageKey())){
-
-				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_ADD_FORM_PDF_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR));
+		if (!StringUtils.isEmpty(validationError)) {
+			
+			if (validationError.equals(MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR.getMessageKey())) {
+				
+				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR));
+				
+			} else if (validationError.equals(MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR.getMessageKey())) {
+				
+				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR));
 			}
 		}
 
@@ -1069,6 +1078,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				}
 			}
 		}
+		
+		if (!CollectionUtils.isEmpty(flowCopy.getFlowForms())) {
+			
+			for (FlowForm flowForm : flowCopy.getFlowForms()) {
+				
+				flowForm.setFlowFormID(null);
+			}
+		}
 
 		TransactionHandler transactionHandler = null;
 
@@ -1164,27 +1181,52 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					stepIndex++;
 				}
 			}
+			
+			if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+				
+				for (int i = 0; i < flow.getFlowForms().size(); i++) {
+					
+					FlowForm flowForm = flow.getFlowForms().get(i);
+					FlowForm flowFormCopy = flowCopy.getFlowForms().get(i);
+					
+					if (StringUtils.isEmpty(flowForm.getExternalURL())) {
+						
+						File file = new File(getFlowFormFilePath(flowForm));
+						
+						if (!file.exists()) {
+							
+							log.error("Unable to find form file for flow form " + flowForm + " at " + file);
+							
+						} else {
+							
+							File fileCopy = new File(getFlowFormFilePath(flowFormCopy));
+							FileUtils.copyFile(file, fileCopy);
+						}
+					}
+				}
+			}
 
-			transactionHandler.commit();
+			try {
+				// Commit
+				transactionHandler.commit();
+				
+			} catch (SQLException e) {
+				
+				// Cleanup
+				if (!CollectionUtils.isEmpty(flowCopy.getFlowForms())) {
+					
+					for (FlowForm flowForm : flowCopy.getFlowForms()) {
+						
+						deleteFlowFormFile(flowForm);
+					}
+				}
+				
+				throw e;
+			}
 
 		} finally {
 
 			TransactionHandler.autoClose(transactionHandler);
-		}
-
-		if(flow.hasPDF() && flow.getExternalPDF() == null){
-
-			File file = new File(getPDFFormFilePath(flow.getFlowID()));
-
-			if (!file.exists()) {
-
-				log.error("Unable to find PDF form for flow " + flow + " at " + file);
-
-			} else {
-
-				File fileCopy = new File(getPDFFormFilePath(flowCopy.getFlowID()));
-				FileUtils.copyFile(file, fileCopy);
-			}
 		}
 
 		eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flowCopy), EventTarget.ALL);
@@ -1437,7 +1479,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		updateFlowIconElement.appendChild(flow.toXML(doc));
 
 		return new SimpleForegroundModuleResponse(doc);
-	}	
+	}
 	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateNotifications(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
@@ -1770,7 +1812,25 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return statusCRUD.delete(req, res, user, uriParser);
 	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
+		return flowFormCRUD.add(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return flowFormCRUD.update(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse deleteFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return flowFormCRUD.delete(req, res, user, uriParser);
+	}
+	
 	@WebPublic(alias = "standardstatuses")
 	public ForegroundModuleResponse listStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
@@ -2106,6 +2166,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					closeInstanceManagers(flow);
 				}
+				
+				if (event.getAction() == CRUDAction.DELETE) {
+					
+					for (Flow flow : (List<Flow>) event.getBeans()) {
+						
+						if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+							
+							for (FlowForm flowForm : flow.getFlowForms()) {
+								
+								deleteFlowFormFile(flowForm);
+							}
+						}
+					}
+				}
 
 			} else if (Step.class.isAssignableFrom(event.getBeanClass())) {
 
@@ -2134,6 +2208,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
 				}
+				
+			} else if (FlowForm.class.isAssignableFrom(event.getBeanClass())) {
+
+				cacheFlows();
+				
+				//TODO only re-cache affected flows
+//				for (FlowForm flowForm : (List<FlowForm>) event.getBeans()) {
+//
+//					Integer flowID = flowForm.getFlow().getFlowID();
+//
+//				}
 			}
 
 			cacheFlows();
@@ -2789,23 +2874,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		xmlGeneratorDocument.addElementableListener(QueryDescriptor.class, new QueryDescriptorElementableListener(queryHandler, validationErrors));
 		xmlGeneratorDocument.addElementableListener(EvaluatorDescriptor.class, new EvaluatorDescriptorElementableListener(evaluationHandler, validationErrors));
+		xmlGeneratorDocument.addElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
 
 		Element flowNode = flow.toXML(xmlGeneratorDocument);
 		doc.appendChild(flowNode);
-
-		if (flow.hasPDF() && flow.getExternalPDF() == null) {
-
-			File pdfFile = new File(getPDFFormFilePath(flow.getFlowID()));
-
-			if (pdfFile.exists()) {
-
-				XMLUtils.appendNewCDATAElement(doc, flowNode, "PDF", Base64.encodeFromFile(pdfFile));
-
-			} else {
-
-				log.error("Unable to find file " + pdfFile);
-			}
-		}
 
 		if (flow.getIcon() != null) {
 
@@ -3189,13 +3261,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				statusConversionMap = null;
 			}
 
-			byte[] pdfFileContents = null;
-
-			if (flow.hasPDF() && flow.getExternalPDF() == null) {
-
-				pdfFileContents = Base64.decode(xmlParser.getString("/Flow/PDF"));
-			}
-
 			//Create transaction
 			TransactionHandler transactionHandler = null;
 
@@ -3283,13 +3348,50 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						}
 					}
 				}
+				
+				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+					
+					if (flow.getFlowForms().size() == 1) {
+						
+						String oldFlowForm = xmlParser.getString("/Flow/PDF");
+						
+						// Handle old flow form format
+						if (!StringUtils.isEmpty(oldFlowForm)) {
+							
+							byte[] pdfFileContents = Base64.decode(xmlParser.getString("/Flow/PDF"));
+							
+							if (pdfFileContents != null) {
+								
+								FileUtils.writeFile(getFlowFormFilePath(flow.getFlowForms().get(0)), pdfFileContents);
+							}
+						}
+					}
+					
+					for (FlowForm flowForm : flow.getFlowForms()) {
+						
+						if (flowForm.getImportFileContents() != null) {
+							
+							FileUtils.writeFile(new File(getFlowFormFilePath(flowForm)), flowForm.getImportFileContents());
+						}
+					}
+				}
 
-				//Commit
-				transactionHandler.commit();
-
-				if (pdfFileContents != null) {
-
-					FileUtils.writeFile(getPDFFormFilePath(flow.getFlowID()), pdfFileContents);
+				try {
+					// Commit
+					transactionHandler.commit();
+					
+				} catch (SQLException e) {
+					
+					// Cleanup
+					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+						
+						for (FlowForm flowForm : flow.getFlowForms()) {
+							
+							deleteFlowFormFile(flowForm);
+						}
+					}
+					
+					throw e;
 				}
 
 				log.info("User " + user + " succefully imported flow " + flow);
@@ -3695,322 +3797,112 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse getFlowFormPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
+		Integer flowFormID;
 		Integer flowID;
 		Flow flow;
 
-		if (uriParser.size() == 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
+		if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowFormID = uriParser.getInt(3)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
 
 			flowCRUD.checkAccess(user, flow);
-
-			return sendFlowFormPDF(flow, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), req.getParameter("raw") != null);
-		}
-
-		throw new URINotFoundException(uriParser);
-	}
-
-	public ForegroundModuleResponse sendFlowFormPDF(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws Throwable {
-
-		if (flow != null) {
-
-			if(!flow.hasPDF()){
+			
+			if(CollectionUtils.isEmpty(flow.getFlowForms())){
 
 				log.info("User " + user + " requested flow " + flow.getFlowID() + " which is not availiable in the requested format.");
 
 				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
 			}
-
-			if(!StringUtils.isEmpty(flow.getExternalPDF())){
-
-				res.sendRedirect(flow.getExternalPDF());
-
-				return null;
-			}
-
-			if (pdfFormFilestore == null) {
-
-				throw new ModuleConfigurationException("PDF form filestore not set");
-			}
-
-			log.info("User " + user + " downloading PDF form for flow " + flow);
-
-			File file = new File(getPDFFormFilePath(flow.getFlowID()));
-
-			if (!file.exists()) {
-
-				log.warn("Unable to find PDF form for flow " + flow + " at " + file);
-
-				throw new URINotFoundException(uriParser);
-			}
-
-			File pdfFile = file;
-
-			if(!unmodified){
-
-				for (PDFRequestFilter filter : pdfRequestFilters) {
-
-					try {
-						pdfFile = filter.processPDFRequest(pdfFile, siteProfile);
-
-					} catch (Throwable t) {
-
-						log.error("Error running PDF request filter " + filter, t);
-					}
+			
+			for (FlowForm flowForm : flow.getFlowForms()) {
+				
+				if (flowForm.getFlowFormID().equals(flowFormID)) {
+					
+					flowForm.setFlow(flow);
+					
+					return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), req.getParameter("raw") != null);
 				}
 			}
-
-			try {
-				HTTPUtils.sendFile(pdfFile, flow.getName() + ".pdf", req, res, ContentDisposition.ATTACHMENT);
-
-			} catch (IOException e) {
-
-				log.info("Error sending file " + file + " to user " + user + ", " + e);
-			}
-
-			// Remove temporary file
-			if(file != pdfFile){
-
-				FileUtils.deleteFile(pdfFile);
-			}
-
-			return null;
 		}
 
 		throw new URINotFoundException(uriParser);
 	}
 
-	private String getPDFFormFilestore() {
+	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws Throwable {
 
-		return pdfFormFilestore;
-	}
+		if(!StringUtils.isEmpty(flowForm.getExternalURL())){
 
-	private String getPDFFormFilePath(int flowID) {
-
-		return getPDFFormFilestore() + java.io.File.separator + flowID + ".pdf";
-	}
-
-	public boolean deleteFlowPDFForm(int flowID) {
-
-		return FileUtils.deleteFile(getPDFFormFilePath(flowID));
-	}
-
-	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateFlowFormPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
-
-		if (pdfFormFilestore == null) {
-
-			throw new ModuleConfigurationException("PDF form filestore not set");
-		}
-
-		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
-
-		if (flow == null) {
-
-			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
-
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
-
-			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
-		}
-
-		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-
-		if (flow.skipOverview() && !allowSkipOverviewForPDFForms) {
-
-			redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "?error=" + MAY_NOT_ADD_FORM_PDF_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR.getMessageKey());
+			res.sendRedirect(flowForm.getExternalURL());
 			return null;
 		}
 
-		if (req.getMethod().equalsIgnoreCase("POST")) {
+		if (flowFormFilestore == null) {
 
-			log.info("User " + user + " adding PDF form for " + flow);
+			throw new ModuleConfigurationException("Form filestore not set");
+		}
 
-			MultipartRequest multipartRequest = null;
+		log.info("User " + user + " downloading form for flow form " + flowForm);
 
-			try {
-				multipartRequest = new MultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, (long) (this.maxPDFFormFileSize * BinarySizes.MegaByte), new File(tempDir), req);
+		File file = new File(getFlowFormFilePath(flowForm));
 
-				if (multipartRequest.getFileCount() > 0 && !StringUtils.isEmpty(multipartRequest.getFile(0).getName())) {
+		if (!file.exists()) {
 
-					FileItem fileItem = multipartRequest.getFile(0);
+			log.warn("Unable to find PDF file for flowForm " + flowForm + " at " + file);
 
-					String lowerCasefileName = fileItem.getName().toLowerCase();
+			throw new URINotFoundException(uriParser);
+		}
 
-					if (!(lowerCasefileName.endsWith(".pdf"))) {
+		File sentFile = file;
 
-						validationErrors.add(new ValidationError("InvalidPDFFormFileFormat"));
+		if(!unmodified){
 
-					} else {
+			for (PDFRequestFilter filter : pdfRequestFilters) {
 
-						try {
-							File fileSystemFile = new File(getPDFFormFilePath(flow.getFlowID()));
+				try {
+					sentFile = filter.processPDFRequest(sentFile, siteProfile);
 
-							fileItem.write(fileSystemFile);
+				} catch (Throwable t) {
 
-							flow.setHasPDF(true);
-							flow.setExternalPDF(null);
-
-							daoFactory.getFlowDAO().update(flow);
-
-							eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
-
-							addFlowFamilyEvent(eventUpdatePDFMessage + " \"" + fileItem.getName() + "\"", flow, user);
-
-							redirectToMethod(multipartRequest, res, "/showflow/" + flow.getFlowID() + "#pdfform");
-
-							return null;
-
-						} catch (Exception e) {
-
-							log.error("Error adding PDF form " + FilenameUtils.getName(fileItem.getName()) + " to flow " + flow + " uploaded by user " + user);
-
-							validationErrors.add(new ValidationError("UnableToStoreFile"));
-						}
-					}
-
-				} else {
-
-					String externalPDF = multipartRequest.getParameter("externalPDF");
-
-					if (!StringUtils.isEmpty(externalPDF)) {
-
-						ValidationUtils.validateParameter("externalPDF", multipartRequest, true, 1, 255, StringHTTPURLPopulator.getPopulator(), validationErrors);
-
-						if (validationErrors.isEmpty()) {
-
-							if (flow.hasPDF() && flow.getExternalPDF() == null) {
-
-								deleteFlowPDFForm(flow.getFlowID());
-							}
-
-							flow.setHasPDF(true);
-							flow.setExternalPDF(externalPDF);
-
-							daoFactory.getFlowDAO().update(flow);
-
-							eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
-
-							addFlowFamilyEvent(eventUpdateExternalPDFMessage + " " + externalPDF, flow, user);
-
-							redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#pdfform");
-
-							return null;
-						}
-
-					} else {
-
-						validationErrors.add(new ValidationError("NoAttachedFile"));
-					}
-				}
-
-			} catch (FileUploadBase.FileSizeLimitExceededException e){
-
-				validationErrors.add(new FileSizeLimitExceededValidationError(FilenameUtils.getName(e.getFileName()), e.getActualSize(), maxPDFFormFileSize  * BinarySizes.MegaByte));
-
-			} catch (FileUploadBase.SizeLimitExceededException e){
-
-				validationErrors.add(new RequestSizeLimitExceededValidationError(e.getActualSize(), maxRequestSize * BinarySizes.MegaByte));
-
-			} catch (FileUploadException e) {
-
-				validationErrors.add(new ValidationError("UnableToParseRequest"));
-
-			} finally {
-
-				if (multipartRequest != null) {
-					multipartRequest.deleteFiles();
+					log.error("Error running PDF request filter " + filter, t);
 				}
 			}
 		}
 
-		log.info("User " + user + " requesting update PDF-form form for flow " + flow);
+		try {
+			HTTPUtils.sendFile(sentFile, flowForm.getName() + ".pdf", req, res, ContentDisposition.ATTACHMENT);
 
-		Document doc = createDocument(req, uriParser, user);
+		} catch (IOException e) {
 
-		Element updateFlowPDFElement = doc.createElement("UpdateFlowPDF");
-		doc.getDocumentElement().appendChild(updateFlowPDFElement);
-
-		updateFlowPDFElement.appendChild(flow.toXML(doc));
-
-		XMLUtils.appendNewElement(doc, updateFlowPDFElement, "maxFileSize", maxPDFFormFileSize * BinarySizes.MegaByte);
-		XMLUtils.appendNewElement(doc, updateFlowPDFElement, "formattedMaxFileSize", maxPDFFormFileSize + "MB");
-
-		if (validationErrors != null) {
-
-			XMLUtils.append(doc, updateFlowPDFElement, validationErrors);
+			log.info("Error sending file " + sentFile + " to user " + user + ", " + e);
 		}
 
-		return new SimpleForegroundModuleResponse(doc);
+		// Remove temporary file
+		if(file != sentFile){
+
+			FileUtils.deleteFile(sentFile);
+		}
+
+		return null;
 	}
 
-	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteFlowFormPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+	public String getFlowFormFilestore() {
 
-		if (pdfFormFilestore == null) {
-
-			throw new ModuleConfigurationException("PDF form filestore not set");
-		}
-
-		Integer flowID;
-		Flow flow;
-
-		if (uriParser.size() == 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
-
-			flowCRUD.checkAccess(user, flow);
-
-			log.info("User " + user + " deleting PDF form for " + flow);
-
-			if (flow.isEnabled() && flow.isInternal() && flow.getSteps() == null) {
-
-				redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "?error=" + MAY_NOT_REMOVE_PDF_FORM_IF_NO_STEPS_VALIDATION_ERROR.getMessageKey());
-				return null;
-			}
-
-			boolean hadFile = flow.getExternalPDF() == null;
-
-			flow.setHasPDF(false);
-			flow.setExternalPDF(null);
-
-			daoFactory.getFlowDAO().update(flow);
-
-			if (hadFile) {
-
-				deleteFlowPDFForm(flow.getFlowID());
-			}
-
-			eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
-
-			addFlowFamilyEvent(eventDeletePDFMessage, flow, user);
-
-			redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#pdfform");
-			return null;
-		}
-
-		throw new URINotFoundException(uriParser);
+		return flowFormFilestore;
 	}
 
-	public boolean allowSkipOverviewForPDFForms() {
+	public String getFlowFormFilePath(FlowForm form) {
 
-		return allowSkipOverviewForPDFForms;
+		return getFlowFormFilestore() + java.io.File.separator + form.getFlowFormID() + ".pdf";
 	}
 
-	public String getPDFSize(int flowID) {
+	public boolean deleteFlowFormFile(FlowForm form) {
 
-		if (pdfFormFilestore == null) {
+		return FileUtils.deleteFile(getFlowFormFilePath(form));
+	}
 
-			return null;
-		}
+	public boolean allowSkipOverviewForFlowForms() {
 
-		File file = new File(getPDFFormFilePath(flowID));
-
-		if(!file.exists()){
-
-			log.warn("Unable to find PDF form for flow with ID " + flowID + " at " + file);
-			return fileMissing;
-		}
-
-		return BinarySizeFormater.getFormatedSize(file.length());
+		return allowSkipOverviewForFlowForms;
 	}
 
 	public FlowFamily getFlowFamilyByAlias(String alias) {
@@ -4462,6 +4354,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 		
 		return new SimpleForegroundModuleResponse(doc);
+	}
+
+	public String getFileMissing() {
+		
+		return fileMissing;
+	}
+
+	public String getEventFlowFormAddedMessage() {
+		
+		return eventFlowFormAddedMessage;
+	}
+	
+	public String getEventFlowFormUpdatedMessage() {
+		
+		return eventFlowFormUpdatedMessage;
+	}
+	
+	public String getEventFlowFormDeletedMessage() {
+		
+		return eventFlowFormDeletedMessage;
+	}
+
+	
+	public Integer getMaxPDFFormFileSize() {
+		return maxPDFFormFileSize;
 	}
 
 }

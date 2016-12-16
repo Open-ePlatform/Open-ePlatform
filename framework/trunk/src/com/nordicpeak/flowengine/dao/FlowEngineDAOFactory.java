@@ -31,6 +31,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
+import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
@@ -47,9 +48,9 @@ import com.nordicpeak.flowengine.beans.UserFavourite;
 import com.nordicpeak.flowengine.beans.UserOrganization;
 
 public class FlowEngineDAOFactory {
-
+	
 	protected Logger log = Logger.getLogger(this.getClass());
-
+	
 	private final AnnotatedDAO<FlowType> flowTypeDAO;
 	private final AnnotatedDAO<FlowFamily> flowFamilyDAO;
 	private final AnnotatedDAO<Flow> flowDAO;
@@ -76,19 +77,20 @@ public class FlowEngineDAOFactory {
 	private final AnnotatedDAO<OperatingMessage> operatingMessageDAO;
 	private final AnnotatedDAO<FlowFamilyEvent> flowFamilyEventDAO;
 	private final AnnotatedDAO<ExternalFlowRedirect> externalFlowRedirectDAO;
-
+	private final AnnotatedDAO<FlowForm> flowFormDAO;
+	
 	public FlowEngineDAOFactory(DataSource dataSource, UserHandler userHandler, GroupHandler groupHandler) throws TableUpgradeException, SQLException, SAXException, IOException, ParserConfigurationException {
-
+		
 		// Automatic table version handling
 		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, FlowEngineDAOFactory.class.getName(), new XMLDBScriptProvider(this.getClass().getResourceAsStream("DB script.xml")));
-
+		
 		if (upgradeResult.isUpgrade()) {
-
+			
 			log.info(upgradeResult.toString());
 		}
-
+		
 		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, userHandler, groupHandler, false, true, false);
-
+		
 		flowTypeDAO = daoFactory.getDAO(FlowType.class);
 		flowFamilyDAO = daoFactory.getDAO(FlowFamily.class);
 		flowDAO = daoFactory.getDAO(Flow.class);
@@ -115,142 +117,146 @@ public class FlowEngineDAOFactory {
 		operatingMessageDAO = daoFactory.getDAO(OperatingMessage.class);
 		flowFamilyEventDAO = daoFactory.getDAO(FlowFamilyEvent.class);
 		externalFlowRedirectDAO = daoFactory.getDAO(ExternalFlowRedirect.class);
+		flowFormDAO = daoFactory.getDAO(FlowForm.class);
 	}
-
+	
 	public TransactionHandler getTransactionHandler() throws SQLException {
-
+		
 		return flowInstanceDAO.createTransaction();
 	}
-
+	
 	public AnnotatedDAO<FlowInstance> getFlowInstanceDAO() {
-
+		
 		return flowInstanceDAO;
 	}
-
+	
 	public AnnotatedDAO<QueryInstanceDescriptor> getQueryInstanceDescriptorDAO() {
-
+		
 		return queryInstanceDescriptorDAO;
 	}
-
+	
 	public AnnotatedDAO<Flow> getFlowDAO() {
-
+		
 		return flowDAO;
 	}
-
+	
 	public AnnotatedDAO<FlowType> getFlowTypeDAO() {
-
+		
 		return flowTypeDAO;
 	}
-
+	
 	public AnnotatedDAO<QueryDescriptor> getQueryDescriptorDAO() {
-
+		
 		return queryDescriptorDAO;
 	}
-
+	
 	public AnnotatedDAO<Step> getStepDAO() {
-
+		
 		return stepDAO;
 	}
-
+	
 	public AnnotatedDAO<FlowAction> getFlowActionDAO() {
-
+		
 		return flowActionDAO;
 	}
-
+	
 	public AnnotatedDAO<Status> getStatusDAO() {
-
+		
 		return statusDAO;
 	}
-
+	
 	public AnnotatedDAO<DefaultStatusMapping> getDefaultStatusMappingDAO() {
-
+		
 		return defaultStatusMappingDAO;
 	}
-
+	
 	public AnnotatedDAO<EvaluatorDescriptor> getEvaluatorDescriptorDAO() {
-
+		
 		return evaluatorDescriptorDAO;
 	}
-
+	
 	public AnnotatedDAO<FlowFamily> getFlowFamilyDAO() {
-
+		
 		return flowFamilyDAO;
 	}
-
+	
 	public AnnotatedDAO<StandardStatus> getStandardStatusDAO() {
-
+		
 		return standardStatusDAO;
 	}
-
+	
 	public AnnotatedDAO<DefaultStandardStatusMapping> getDefaultStandardStatusMappingDAO() {
-
+		
 		return defaultStandardStatusMappingDAO;
 	}
-
+	
 	public AnnotatedDAO<Category> getCategoryDAO() {
-
+		
 		return categoryDAO;
 	}
-
+	
 	public AnnotatedDAO<ExternalMessage> getExternalMessageDAO() {
-
+		
 		return externalMessageDAO;
 	}
-
+	
 	public AnnotatedDAO<InternalMessage> getInternalMessageDAO() {
-
+		
 		return internalMessageDAO;
 	}
-
+	
 	public AnnotatedDAO<ExternalMessageAttachment> getExternalMessageAttachmentDAO() {
-
+		
 		return externalMessageAttachmentDAO;
 	}
-
+	
 	public AnnotatedDAO<InternalMessageAttachment> getInternalMessageAttachmentDAO() {
-
+		
 		return internalMessageAttachmentDAO;
 	}
-
+	
 	public AnnotatedDAO<FlowInstanceEvent> getFlowInstanceEventDAO() {
-
+		
 		return flowInstanceEventDAO;
 	}
-
+	
 	public UserFavouriteDAO getUserFavouriteDAO() {
-
+		
 		return userFavouriteDAO;
 	}
-
+	
 	public AnnotatedDAO<UserBookmark> getUserBookmarkDAO() {
-
+		
 		return userBookmarkDAO;
 	}
-
+	
 	public AnnotatedDAO<UserOrganization> getUserOrganizationDAO() {
-
+		
 		return userOrganizationDAO;
 	}
-
+	
 	public AnnotatedDAO<AbortedFlowInstance> getAbortedFlowInstanceDAO() {
-
+		
 		return abortedFlowInstanceDAO;
 	}
-
+	
 	public AnnotatedDAO<OperatingMessage> getOperatingMessageDAO() {
-
+		
 		return operatingMessageDAO;
 	}
-
+	
 	public AnnotatedDAO<FlowFamilyEvent> getFlowFamilyEventDAO() {
-
+		
 		return flowFamilyEventDAO;
 	}
-
 	
 	public AnnotatedDAO<ExternalFlowRedirect> getExternalFlowRedirectDAO() {
-	
+		
 		return externalFlowRedirectDAO;
 	}
-
+	
+	public AnnotatedDAO<FlowForm> getFlowFormDAO() {
+		return flowFormDAO;
+	}
+	
 }

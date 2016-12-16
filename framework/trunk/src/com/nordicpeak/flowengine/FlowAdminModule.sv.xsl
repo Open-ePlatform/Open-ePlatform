@@ -18,9 +18,6 @@
 	<xsl:variable name="java.eventSortFlowMessage">Sorterade frågor och steg</xsl:variable>
 	<xsl:variable name="java.eventImportFlowMessage">Importerade version</xsl:variable>
 	<xsl:variable name="java.eventImportQueriesMessage">Importerade frågor</xsl:variable>
-	<xsl:variable name="java.eventUpdatePDFMessage">Updaterade lokal blankett till</xsl:variable>
-	<xsl:variable name="java.eventUpdateExternalPDFMessage">Updaterade extern blankett till</xsl:variable>
-	<xsl:variable name="java.eventDeletePDFMessage">Tog bort blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFamilyUpdatedMessage">Uppdaterade handläggare</xsl:variable>
 	<xsl:variable name="java.eventFlowAddedMessage">Skapade version</xsl:variable>
 	<xsl:variable name="java.eventFlowUpdatedMessage">Uppdaterade grundinformation</xsl:variable>
@@ -39,6 +36,9 @@
 	<xsl:variable name="java.eventStatusDeletedMessage">Tog bort status</xsl:variable>
 	<xsl:variable name="java.eventChangeFlowType">Ändrade kategori till</xsl:variable>
 	<xsl:variable name="java.eventStatusSortMessage">Sorterade statusar</xsl:variable>
+	<xsl:variable name="java.eventFlowFormAddedMessage">Skapade blankett</xsl:variable>
+	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
+	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
 	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>
 	
@@ -104,7 +104,7 @@
 	<xsl:variable name="i18n.baseInfo">Grundinformation</xsl:variable>
 	<xsl:variable name="i18n.enabled">Aktiverad</xsl:variable>
 	<xsl:variable name="i18n.icon">Ikon</xsl:variable>
-	<xsl:variable name="i18n.PDFForm">Blankett</xsl:variable>
+	<xsl:variable name="i18n.FlowForm">Blankett</xsl:variable>
 	<xsl:variable name="i18n.stepsAndQueries">Frågor och steg</xsl:variable>
 	<xsl:variable name="i18n.statuses">Statusar</xsl:variable>
 	<xsl:variable name="i18n.flowContainsNoSteps">Inga steg hittades.</xsl:variable>
@@ -183,16 +183,19 @@
 	<xsl:variable name="i18n.UnableToParseIcon">Den gick att tolka ikonen.</xsl:variable>
 	<xsl:variable name="i18n.InvalidIconFileFormat">Felaktig filformat endast ikoner i png, jpg, gif eller bmp format är tillåtna.</xsl:variable>
 	
-	<xsl:variable name="i18n.addFlowPDF.link.title">Lägg till blankett</xsl:variable>
-	<xsl:variable name="i18n.updateFlowPDF.link.title">Uppdatera blankett</xsl:variable>
-	<xsl:variable name="i18n.deleteFlowPDF.link.title">Ta bort blankett</xsl:variable>
-	<xsl:variable name="i18n.UpdateFlowPDF.title">Uppdatera blankett för e-tjänsten:</xsl:variable>
-	<xsl:variable name="i18n.UpdateFlowPDF.description">Välj antigen en PDF fil att ladda upp eller länka till en extern PDF</xsl:variable>
-	<xsl:variable name="i18n.uploadNewPDFForm">Ladda upp ny blankett</xsl:variable>
-	<xsl:variable name="i18n.externalPDF">Extern PDF</xsl:variable>
-	<xsl:variable name="i18n.UpdateFlowPDF.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.addFlowForm.link.title">Lägg till blankett</xsl:variable>
+	<xsl:variable name="i18n.updateFlowForm.link.title">Uppdatera blankett</xsl:variable>
+	<xsl:variable name="i18n.deleteFlowForm.link.title">Ta bort blankett</xsl:variable>
+	<xsl:variable name="i18n.AddFlowForm.title">Uppdatera blankett för e-tjänsten:</xsl:variable>
+	<xsl:variable name="i18n.UpdateFlowForm.title">Uppdatera blankett för e-tjänsten:</xsl:variable>
+	<xsl:variable name="i18n.UpdateFlowForm.description">Välj antigen en PDF fil att ladda upp eller länka till en extern PDF</xsl:variable>
+	<xsl:variable name="i18n.uploadNewFlowForm">Ladda upp ny blankett</xsl:variable>
+	<xsl:variable name="i18n.FlowForm.name">Namn (kan lämnas tomt)</xsl:variable>
+	<xsl:variable name="i18n.FlowForm.externalURL">Länk till extern PDF</xsl:variable>
+	<xsl:variable name="i18n.AddFlowForm.submit">Lägg till blankett</xsl:variable>
+	<xsl:variable name="i18n.UpdateFlowForm.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UnableToStoreFile">Det gick inte att spara blanketten.</xsl:variable>
-	<xsl:variable name="i18n.InvalidPDFFormFileFormat">Felaktig filformat endast blanketter i PDF format är tillåtna.</xsl:variable>
+	<xsl:variable name="i18n.InvalidFlowFormFileFormat">Felaktig filformat endast blanketter i PDF format är tillåtna.</xsl:variable>
 	<xsl:variable name="i18n.NoAttachedFile">Du har inte bifogat någon fil.</xsl:variable>
 	
 	<xsl:variable name="i18n.defaultQueryState">Standardläge</xsl:variable>
@@ -388,11 +391,11 @@
 	
 	<xsl:variable name="i18n.MissingDefaultStatusMappingForMultiSigning">E-tjänsten går inte att publicera då den saknar statusmappning för flerpartssignering. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
-	<xsl:variable name="i18n.hasNoPDFForm">Den här e-tjänsten har ingen PDF blankett kopplad till sig.</xsl:variable>
-	<xsl:variable name="i18n.MayNotRemovePDFFormIfNoSteps">Du får inte ta bort blanketten om e-tjänsten är aktiverad och saknar steg</xsl:variable>
-	<xsl:variable name="i18n.MayNotAddPDFFormIfOverviewSkipIsSet">Du kan inte lägga till en blankett om e-tjänsten är inställd på att hoppa över översiktsidan</xsl:variable>
-	<xsl:variable name="i18n.MayNotSetOverviewIfPDFIsSet">Du kan inte hoppa över översiktsidan om det finns en blankett kopplad till e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.MayNotSetOverviewIfPDFIsSet.description">ej möjligt om det finns en blankett kopplad till e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.hasNoFlowForm">Den här e-tjänsten har ingen PDF blankett kopplad till sig.</xsl:variable>
+	<xsl:variable name="i18n.MayNotRemoveFlowFormIfNoSteps">Du får inte ta bort blanketten om e-tjänsten är aktiverad och saknar steg</xsl:variable>
+	<xsl:variable name="i18n.MayNotAddFlowFormIfOverviewSkipIsSet">Du kan inte lägga till en blankett om e-tjänsten är inställd på att hoppa över översiktsidan</xsl:variable>
+	<xsl:variable name="i18n.MayNotSetOverviewIfFlowFormIsSet">Du kan inte hoppa över översiktsidan om det finns en blankett kopplad till e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.MayNotSetOverviewIfFlowFormIsSet.description">ej möjligt om det finns en blankett kopplad till e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.FlowHasNoContent">Du kan inte aktivera e-tjänsten då den inte har några steg eller har någon blankett</xsl:variable>
 	<xsl:variable name="i18n.FlowHasNoStepsAndOverviewSkipIsSet">Du kan inte aktivera e-tjänsten med alterntivet 'hoppa över översiktsidan' satt då e-tjänsten inte innehåller några steg.</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilyAliasAlreadyInUse">Kortnamnet</xsl:variable>

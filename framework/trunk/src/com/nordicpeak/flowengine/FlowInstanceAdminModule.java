@@ -519,7 +519,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 
 			} catch (Exception e) {
-				log.error("Error appending tab from FlowInstanceOverviewExtensionProvider " + tabContentsElement, e);
+				log.error("Error appending tab from FlowInstanceOverviewExtensionProvider " + tabExtensionProvider, e);
 			}
 		}
 

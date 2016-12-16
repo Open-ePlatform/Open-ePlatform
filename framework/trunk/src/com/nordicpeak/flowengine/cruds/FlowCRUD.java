@@ -39,6 +39,7 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -54,6 +55,7 @@ import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
@@ -67,6 +69,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableStep;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
+import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
 import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
 
 public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
@@ -85,11 +88,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			}
 		}
 	}
+	
+	protected final FlowFormElementableListener flowFormElementableListener;
 
 	public FlowCRUD(CRUDDAO<Flow, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(Flow.class, crudDAO, new AnnotatedRequestPopulator<Flow>(Flow.class), "Flow", "flow", "", callback);
 
+		flowFormElementableListener = new FlowFormElementableListener(callback);
 	}
 
 	@Override
@@ -109,6 +115,15 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		flow.setIcon(icon);
 
 		return flow;
+	}
+	
+	@Override
+	protected void appendBean(Flow bean, Element targetElement, Document doc, User user) {
+		
+		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
+		
+		super.appendBean(bean, targetElement, genDoc, user);
 	}
 
 	@Override
@@ -134,9 +149,9 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		XMLUtils.appendNewElement(doc, typeElement, "ckConnectorModuleAlias", callback.getCkConnectorModuleAlias());
 		XMLUtils.appendNewElement(doc, typeElement, "cssPath", callback.getCssPath());
 
-		if (callback.allowSkipOverviewForPDFForms()) {
+		if (callback.allowSkipOverviewForFlowForms()) {
 
-			XMLUtils.appendNewElement(doc, typeElement, "AllowSkipOverviewForPDFForms", "true");
+			XMLUtils.appendNewElement(doc, typeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 
 		if (!callback.hasPublishAccess(user)) {
@@ -420,14 +435,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			errors.add(FlowAdminModule.FLOW_HAS_NO_CONTENT_VALIDATION_ERROR);
 		}
 
-		if (bean.isEnabled() && bean.isInternal() && callback.allowSkipOverviewForPDFForms() && bean.skipOverview() && bean.getSteps() == null && bean.hasPDF()) {
+		if (bean.isEnabled() && bean.isInternal() && callback.allowSkipOverviewForFlowForms() && bean.skipOverview() && bean.getSteps() == null && CollectionUtils.isEmpty(bean.getFlowForms())) {
 
 			errors.add(FlowAdminModule.FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR);
 		}
 
-		if (bean.hasPDF() && bean.skipOverview() && !callback.allowSkipOverviewForPDFForms()) {
+		if (!CollectionUtils.isEmpty(bean.getFlowForms()) && bean.skipOverview() && !callback.allowSkipOverviewForFlowForms()) {
 
-			errors.add(FlowAdminModule.MAY_NOT_SET_SKIP_OVERVIEW_IF_FORM_PDF_IS_SET_VALIDATION_ERROR);
+			errors.add(FlowAdminModule.MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR);
 		}
 
 		if (!errors.isEmpty()) {
@@ -453,7 +468,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	public boolean hasRequiredContent(Flow flow) {
 
-		if (flow.getSteps() == null && !flow.hasPDF() && flow.isInternal()) {
+		if (flow.getSteps() == null && CollectionUtils.isEmpty(flow.getFlowForms()) && flow.isInternal()) {
 
 			return false;
 		}
@@ -673,19 +688,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			XMLUtils.append(doc, showTypeElement, extensionLinks);
 		}
 
-		if (flow.isEnabled() && flow.getSteps() == null && flow.hasPDF() && flow.isInternal()) {
+		if (flow.isEnabled() && flow.getSteps() == null && !CollectionUtils.isEmpty(flow.getFlowForms()) && flow.isInternal()) {
 
-			XMLUtils.appendNewElement(doc, showTypeElement, "MayNotRemovePDFFormIfNoSteps");
+			XMLUtils.appendNewElement(doc, showTypeElement, "MayNotRemoveFlowFormIfNoSteps");
 		}
 
-		if (flow.hasPDF() && flow.getExternalPDF() == null) {
+		if (callback.allowSkipOverviewForFlowForms()) {
 
-			XMLUtils.appendNewElement(doc, showTypeElement, "PDFSize", callback.getPDFSize(flow.getFlowID()));
-		}
-
-		if (callback.allowSkipOverviewForPDFForms()) {
-
-			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForPDFForms", "true");
+			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 		
 		XMLUtils.append(doc, showTypeElement, "FlowFamilyEvents", callback.getRecentFlowFamilyEvents(flow.getFlowFamily()));
@@ -827,4 +837,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			TransactionHandler.autoClose(transactionHandler);
 		}
 	}
+	
+	
 }
