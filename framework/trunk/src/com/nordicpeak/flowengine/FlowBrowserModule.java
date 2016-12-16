@@ -186,8 +186,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected boolean registerInInstanceHandler = true;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "Save search in session", description = "Save service search in session")
+	@CheckboxSettingDescriptor(name = "Save last search", description = "Saves the last search in session")
 	private boolean saveSearchInSession = false;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable direct search", description = "Enable searching via request parameter on main page")
+	private boolean enableDirectSearch = false;
 	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -308,8 +312,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		r.lock();
 
-		String lastSearch = (String)SessionUtils.getAttribute("lastsearch", req);
-		
 		try {
 			log.info("User " + user + " listing flows");
 
@@ -319,10 +321,22 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			doc.getDocumentElement().appendChild(showFlowTypesElement);
 
-			if(lastSearch != null && saveSearchInSession){
+			String lastSearch = null;
+			
+			if(enableDirectSearch){
+				
+				lastSearch = req.getParameter("q");
+			}
+			
+			if(lastSearch == null && saveSearchInSession){
+				
+				lastSearch = (String)SessionUtils.getAttribute("lastsearch", req);
+			}
+
+			if(lastSearch != null){
 				
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "lastSearch", lastSearch);
-			}
+			}			
 			
 			if(flowTypes != null){
 
