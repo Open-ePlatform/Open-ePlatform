@@ -206,6 +206,8 @@ public class FlowIndexer {
 	
 	public void resetLastSearch(HttpServletRequest req, User user) throws IOException{
 		
+		log.info("User " + user + " resetting last search");
+		
 		SessionUtils.removeAttribute("lastsearch", req);
 	}
 
