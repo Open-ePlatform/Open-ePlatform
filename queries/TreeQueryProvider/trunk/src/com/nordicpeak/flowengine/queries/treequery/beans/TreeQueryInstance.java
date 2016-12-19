@@ -28,7 +28,7 @@ public class TreeQueryInstance extends BaseQueryInstance implements StringValueQ
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(TreeQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(TreeQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key
