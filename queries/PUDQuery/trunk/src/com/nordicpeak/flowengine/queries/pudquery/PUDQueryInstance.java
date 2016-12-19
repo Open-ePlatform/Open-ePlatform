@@ -23,7 +23,7 @@ public class PUDQueryInstance extends BaseQueryInstance {
 
 	private static final long serialVersionUID = -405719839906745735L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(PUDQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(PUDQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key
