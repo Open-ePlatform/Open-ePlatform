@@ -33,7 +33,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(ChildQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(ChildQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key
