@@ -29,9 +29,9 @@ public class GeneralMapQueryInstance extends BaseQueryInstance {
 
 	private static final long serialVersionUID = 5366400543122031446L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "query");
-	public static Field MAPPRINTS_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "mapPrints");
-	public static Field GEOMETRIES_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "geometries");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "query");
+	public static final Field MAPPRINTS_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "mapPrints");
+	public static final Field GEOMETRIES_RELATION = ReflectionUtils.getField(GeneralMapQueryInstance.class, "geometries");
 	
 	@DAOManaged
 	@Key
