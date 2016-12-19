@@ -29,8 +29,8 @@ public class CheckboxPaymentQueryInstance extends BaseQueryInstance implements F
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field ALTERNATIVES_RELATION = ReflectionUtils.getField(CheckboxPaymentQueryInstance.class, "alternatives");
-	public static Field QUERY_RELATION = ReflectionUtils.getField(CheckboxPaymentQueryInstance.class, "query");
+	public static final Field ALTERNATIVES_RELATION = ReflectionUtils.getField(CheckboxPaymentQueryInstance.class, "alternatives");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(CheckboxPaymentQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

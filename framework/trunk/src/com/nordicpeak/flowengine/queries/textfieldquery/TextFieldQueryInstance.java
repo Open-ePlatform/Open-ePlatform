@@ -30,8 +30,8 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field VALUES_RELATION = ReflectionUtils.getField(TextFieldQueryInstance.class, "values");
-	public static Field QUERY_RELATION = ReflectionUtils.getField(TextFieldQueryInstance.class, "query");
+	public static final Field VALUES_RELATION = ReflectionUtils.getField(TextFieldQueryInstance.class, "values");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(TextFieldQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

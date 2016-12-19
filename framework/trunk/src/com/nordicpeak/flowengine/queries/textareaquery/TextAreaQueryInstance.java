@@ -24,7 +24,7 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(TextAreaQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(TextAreaQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

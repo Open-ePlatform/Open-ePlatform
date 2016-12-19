@@ -32,8 +32,8 @@ public class FileUploadQueryInstance extends BaseQueryInstance implements String
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(FileUploadQueryInstance.class, "query");
-	public static Field FILES_RELATION = ReflectionUtils.getField(FileUploadQueryInstance.class, "files");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(FileUploadQueryInstance.class, "query");
+	public static final Field FILES_RELATION = ReflectionUtils.getField(FileUploadQueryInstance.class, "files");
 
 	private int temporaryFileCounter = 1;
 

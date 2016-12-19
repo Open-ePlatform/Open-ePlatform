@@ -32,7 +32,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(ContactDetailQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(ContactDetailQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

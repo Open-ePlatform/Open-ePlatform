@@ -34,7 +34,7 @@ public class FileUploadQuery extends BaseQuery {
 
 	private static final long serialVersionUID = -842191226937409416L;
 
-	public static Field ALLOWED_FILE_EXTENSIONS_RELATION = ReflectionUtils.getField(FileUploadQuery.class, "allowedFileExtensions");
+	public static final Field ALLOWED_FILE_EXTENSIONS_RELATION = ReflectionUtils.getField(FileUploadQuery.class, "allowedFileExtensions");
 
 	@DAOManaged
 	@Key

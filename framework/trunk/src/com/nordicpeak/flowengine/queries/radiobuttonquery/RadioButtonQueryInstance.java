@@ -30,8 +30,8 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field ALTERNATIVE_RELATION = ReflectionUtils.getField(RadioButtonQueryInstance.class, "alternative");
-	public static Field QUERY_RELATION = ReflectionUtils.getField(RadioButtonQueryInstance.class, "query");
+	public static final Field ALTERNATIVE_RELATION = ReflectionUtils.getField(RadioButtonQueryInstance.class, "alternative");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(RadioButtonQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

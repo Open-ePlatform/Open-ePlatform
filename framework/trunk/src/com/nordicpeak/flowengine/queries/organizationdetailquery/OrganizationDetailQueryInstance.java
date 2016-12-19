@@ -30,7 +30,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 
 	private static final long serialVersionUID = -2166602898244004279L;
 
-	public static Field QUERY_RELATION = ReflectionUtils.getField(OrganizationDetailQueryInstance.class, "query");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(OrganizationDetailQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key

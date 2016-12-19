@@ -29,7 +29,7 @@ import se.unlogic.standardutils.xml.XMLValidationUtils;
 @XMLElement
 public class TextField extends GeneratedElementable implements Serializable, XMLParserPopulateable {
 
-	public static Field TEXT_FIELD_QUERY_RELATION = ReflectionUtils.getField(TextField.class, "query");
+	public static final Field TEXT_FIELD_QUERY_RELATION = ReflectionUtils.getField(TextField.class, "query");
 	
 	private static final long serialVersionUID = 8919797448020843470L;
 

@@ -29,8 +29,8 @@ public class DropDownQueryInstance extends BaseQueryInstance implements FixedAlt
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
-	public static Field ALTERNATIVE_RELATION = ReflectionUtils.getField(DropDownQueryInstance.class, "alternative");
-	public static Field QUERY_RELATION = ReflectionUtils.getField(DropDownQueryInstance.class, "query");
+	public static final Field ALTERNATIVE_RELATION = ReflectionUtils.getField(DropDownQueryInstance.class, "alternative");
+	public static final Field QUERY_RELATION = ReflectionUtils.getField(DropDownQueryInstance.class, "query");
 
 	@DAOManaged
 	@Key
