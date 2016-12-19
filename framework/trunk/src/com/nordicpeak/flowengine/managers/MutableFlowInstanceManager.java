@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -534,7 +535,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							}
 							
 							try {
-								evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, false, queryModifications);
+								evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, false, queryModifications, false);
 								
 							} catch (UnableToResetQueryInstanceException e) {
 
@@ -551,6 +552,33 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			initQueryIndex = 0;
 		}
 		
+		// Reset hidden query instances
+		if (!CollectionUtils.isEmpty(queryModifications)) {
+			
+			HashSet<QueryInstance> hiddenQueryInstances = new HashSet<QueryInstance>();
+			
+			for (QueryModification queryModification : queryModifications) {
+				
+				if (queryModification.getAction() == ModificationAction.HIDE) {
+					
+					hiddenQueryInstances.add(queryModification.getQueryInstance());
+				}
+			}
+			
+			for (QueryInstance queryInstance : hiddenQueryInstances) {
+				
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.HIDDEN) {
+					
+					try {
+						queryInstance.reset(flowInstance.getAttributeHandler());
+						
+					} catch (RuntimeException e) {
+						
+						throw new EvaluationException("InitEvaluators post modification reset", new UnableToResetQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e), null);
+					}
+				}
+			}
+		}
 	}
 
 	private void setID(String instanceManagerID) throws DuplicateFlowInstanceManagerIDException {
@@ -807,34 +835,41 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	}
 
 	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications) throws UnableToResetQueryInstanceException, EvaluationException {
-
-		try{
+		
+		evaluate(queryInstance, evaluator, user, poster, evaluationCallback, evaluationHandler, hasValidationErrors, queryModifications, true);
+	}
+	
+	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, boolean resetHiddenInstances) throws UnableToResetQueryInstanceException, EvaluationException {
+		
+		try {
 			EvaluationResponse response = evaluator.evaluate(queryInstance, user, poster, evaluationCallback, evaluationHandler, hasValidationErrors, flowInstance.getAttributeHandler());
-
-			if(response != null){
-
-				if(!CollectionUtils.isEmpty(response.getModifications())){
-
-					for(QueryModification queryModification : response.getModifications()){
-						
-						if(queryModification.getAction() == ModificationAction.HIDE){
+			
+			if (response != null) {
+				
+				if (!CollectionUtils.isEmpty(response.getModifications())) {
+					
+					if (resetHiddenInstances) {
+						for (QueryModification queryModification : response.getModifications()) {
 							
-							try{
-								queryModification.getQueryInstance().reset(flowInstance.getAttributeHandler());
+							if (queryModification.getAction() == ModificationAction.HIDE) {
 								
-							}catch(RuntimeException e){
-								
-								throw new UnableToResetQueryInstanceException(queryModification.getQueryInstance().getQueryInstanceDescriptor(), e);
+								try {
+									queryModification.getQueryInstance().reset(flowInstance.getAttributeHandler());
+									
+								} catch (RuntimeException e) {
+									
+									throw new UnableToResetQueryInstanceException(queryModification.getQueryInstance().getQueryInstanceDescriptor(), e);
+								}
 							}
 						}
 					}
 					
-					if(queryModifications!= null){
+					if (queryModifications != null) {
 						
 						queryModifications.addAll(response.getModifications());
 					}
 					
-					for(QueryModification queryModification : response.getModifications()){
+					for (QueryModification queryModification : response.getModifications()) {
 						
 						Integer queryID = queryModification.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor().getQueryID();
 						
@@ -842,10 +877,10 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 						
 						int queryIndex = 0;
 						int stepIndex = 0;
-
-						outer: for(ManagedStep managedStep : managedSteps){
+						
+						outer: for (ManagedStep managedStep : managedSteps) {
 							
-							if(stepIndex < evaluationCallback.getMinStepIndex()){
+							if (stepIndex < evaluationCallback.getMinStepIndex()) {
 								
 								stepIndex++;
 								
@@ -853,21 +888,21 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							}
 							
 							queryIndex = 0;
+							
+							for (ManagedQueryInstance managedInstance : managedStep.getManagedQueryInstances()) {
 								
-							for(ManagedQueryInstance managedInstance : managedStep.getManagedQueryInstances()){
-
-								if(managedInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor().getQueryID().equals(queryID)){
-
-									if(stepIndex == evaluationCallback.getMinStepIndex() && queryIndex < evaluationCallback.getMinQueryIndex()){
-
-										throw new EvaluationException(evaluator.getEvaluatorDescriptor(), new IllegalQueryInstanceAccessException(managedInstance.getQueryInstance().getQueryInstanceDescriptor(),"Evaluators can only access query instances positioned after the current query in the flow"));
+								if (managedInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor().getQueryID().equals(queryID)) {
+									
+									if (stepIndex == evaluationCallback.getMinStepIndex() && queryIndex < evaluationCallback.getMinQueryIndex()) {
+										
+										throw new EvaluationException(evaluator.getEvaluatorDescriptor(), new IllegalQueryInstanceAccessException(managedInstance.getQueryInstance().getQueryInstanceDescriptor(), "Evaluators can only access query instances positioned after the current query in the flow"));
 									}
-
+									
 									managedQueryInstance = managedInstance;
 									
 									break outer;
 								}
-
+								
 								queryIndex++;
 							}
 							
@@ -876,27 +911,27 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 						
 						//TODO avoid recurssion;
 						
-						if(managedQueryInstance.getEvaluators() != null){
+						if (managedQueryInstance.getEvaluators() != null) {
 							
-							for(Evaluator triggeredEvaluator : managedQueryInstance.getEvaluators()){
-
-								if(!triggeredEvaluator.getEvaluatorDescriptor().isEnabled() || evaluator == triggeredEvaluator){
-
+							for (Evaluator triggeredEvaluator : managedQueryInstance.getEvaluators()) {
+								
+								if (!triggeredEvaluator.getEvaluatorDescriptor().isEnabled() || evaluator == triggeredEvaluator) {
+									
 									continue;
 								}
 								
 								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster);
 								
-								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications);
+								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications, resetHiddenInstances);
 							}
 						}
 					}
 				}
 			}
 			
-		}catch(RuntimeException e){
-
-			throw new EvaluationException(evaluator.getEvaluatorDescriptor(),e);
+		} catch (RuntimeException e) {
+			
+			throw new EvaluationException(evaluator.getEvaluatorDescriptor(), e);
 		}
 	}
 
