@@ -124,41 +124,50 @@ var LoadFiles = function(files, callback) {
 (function () {
 
 	if (!$("html").hasClass("map-client-riges")) {
-	
+    	
 		Ext = {
 			buildSettings:{
 				"scopeResetCSS": true
 			}
 		};
-	
+		
 		var scriptNameRaw = "map-client-riges.js";
 		var mapClientScriptName = new RegExp("(^|(.*?\\/))(" + scriptNameRaw + ")(\\?|$)");
-	
+		
 		var scripts = document.getElementsByTagName('script');
-	
+		
 		for (var i = 0; i < scripts.length; i++) {
-	        
+		    
 			var src = scripts[i].getAttribute('src');
-	
+		
 			if (src) {
-	            
+		        
 				var match = src.match(mapClientScriptName);
-	            
-	            if (match) {
-	
-	            	mapClientScriptLocation = match[1];
-	            	
-	            	break;
-	            }
-	            
-	        }
+		        
+		        if (match) {
+		
+		        	mapClientScriptLocation = match[1];
+		        	
+		        	break;
+		        }
+		        
+		    }
 			
-	    }
+		}
 		
 		if(mapClientScriptLocation == undefined && mapClientScriptLocationFallback != undefined) {
 			mapClientScriptLocation = mapClientScriptLocationFallback.match(mapClientScriptName)[1];
 		}
-	
+
+	}
+		
+})();
+
+var everythingLoaded = setInterval(function() {
+	  
+	if (/loaded|complete/.test(document.readyState)) {
+	    clearInterval(everythingLoaded);
+	    
 		var cssFiles = new Array(
 			mapClientScriptLocation + version + "/lib/ext-theme-oep/ext-theme-oep-all.css",
 			mapClientScriptLocation + version + "/resources/css/OpenEMap.css",
@@ -185,10 +194,10 @@ var LoadFiles = function(files, callback) {
 		});
 		
 		$("html").addClass("map-client-riges");
-	
+		
 	}
-
-})();
+	    
+}, 10);
 
 function loadScripts(jsFiles) {
 
