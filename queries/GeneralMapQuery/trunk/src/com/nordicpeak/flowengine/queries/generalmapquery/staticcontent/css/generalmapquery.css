@@ -57,7 +57,7 @@
     z-index: 50;
     border-radius: 4px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-    height: 500px !important;
+    max-height: 500px !important;
 }
 
 .mapquery-objectconfigwrapper span.header {
