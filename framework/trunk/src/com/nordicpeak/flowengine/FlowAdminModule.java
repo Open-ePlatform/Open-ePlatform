@@ -356,7 +356,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected String cssPath;
 
 	@ModuleSetting(id = "pdfFormFilestore")
-	@TextFieldSettingDescriptor(name = "Flow PDF form filestore", description = "Directory where attached PDF forms are stored", required = true)
+	@TextFieldSettingDescriptor(id="pdfFormFilestore", name = "Flow PDF form filestore", description = "Directory where attached PDF forms are stored", required = true)
 	protected String flowFormFilestore;
 
 	@ModuleSetting
