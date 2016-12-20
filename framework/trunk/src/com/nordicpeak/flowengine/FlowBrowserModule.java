@@ -103,6 +103,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceMana
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryInstanceHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
@@ -658,7 +659,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	
 	
 	@WebPublic(alias = "mquery")
-	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
 		return processMutableQueryRequest(req, res, user, uriParser, this, true, true, true, DEFAULT_REQUEST_METADATA);
 	}

@@ -245,7 +245,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		eventHandler = systemInterface.getEventHandler();
 	}
 
-	protected MutableFlowInstanceManager getSavedMutableFlowInstanceManager(int flowID, int flowInstanceID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean loadFromDBIfNeeded, boolean checkPublishDate, boolean checkEnabled, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException {
+	protected MutableFlowInstanceManager getSavedMutableFlowInstanceManager(int flowID, int flowInstanceID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean loadFromDBIfNeeded, boolean checkPublishDate, boolean checkEnabled, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
 
 		if (session == null) {
 
@@ -333,7 +333,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException {
+	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
 
 		if (session == null) {
 
@@ -1690,7 +1690,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return daoFactory;
 	}
 
-	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
 		Integer flowID = null;
 

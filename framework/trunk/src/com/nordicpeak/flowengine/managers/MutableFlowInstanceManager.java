@@ -328,8 +328,9 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	 * @throws EvaluationProviderErrorException
 	 * @throws EvaluationProviderNotFoundException
 	 * @throws EvaluationException
+	 * @throws UnableToResetQueryInstanceException 
 	 */
-	public MutableFlowInstanceManager(Flow flow, QueryHandler queryHandler, EvaluationHandler evaluationHandler, String instanceManagerID, HttpServletRequest req, User user, InstanceMetadata instanceMetadata, RequestMetadata requestMetadata, String absoluteFileURL) throws QueryProviderNotFoundException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException {
+	public MutableFlowInstanceManager(Flow flow, QueryHandler queryHandler, EvaluationHandler evaluationHandler, String instanceManagerID, HttpServletRequest req, User user, InstanceMetadata instanceMetadata, RequestMetadata requestMetadata, String absoluteFileURL) throws QueryProviderNotFoundException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
 
 		//Create new FlowInstance with default "new" state
 		this.flowInstance = new FlowInstance();
@@ -415,7 +416,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	 * @throws EvaluationException
 	 * @throws UnableToResetQueryInstanceException
 	 */
-	public MutableFlowInstanceManager(FlowInstance flowInstance, QueryHandler queryHandler, EvaluationHandler evaluationHandler, String instanceManagerID, HttpServletRequest req, User user, InstanceMetadata instanceMetadata, RequestMetadata requestMetadata, String absoluteFileURL) throws MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException {
+	public MutableFlowInstanceManager(FlowInstance flowInstance, QueryHandler queryHandler, EvaluationHandler evaluationHandler, String instanceManagerID, HttpServletRequest req, User user, InstanceMetadata instanceMetadata, RequestMetadata requestMetadata, String absoluteFileURL) throws MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
 
 		this.flowInstance = flowInstance;
 
@@ -505,7 +506,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		initEvaluators(evaluationHandler, user, getPoster(user, requestMetadata));
 	}
 
-	private void initEvaluators(EvaluationHandler evaluationHandler, User user, User poster) throws EvaluationException {
+	private void initEvaluators(EvaluationHandler evaluationHandler, User user, User poster) throws EvaluationException, UnableToResetQueryInstanceException {
 
 		int initStepIndex = 0;
 		int initQueryIndex = 0;
@@ -574,7 +575,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 						
 					} catch (RuntimeException e) {
 						
-						throw new EvaluationException("InitEvaluators post modification reset", new UnableToResetQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e), null);
+						throw new UnableToResetQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e);
 					}
 				}
 			}
