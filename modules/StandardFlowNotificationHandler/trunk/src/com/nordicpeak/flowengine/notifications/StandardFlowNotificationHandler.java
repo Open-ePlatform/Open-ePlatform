@@ -1757,24 +1757,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			contacts.add(contact);
 		}
-		
-		User poster = flowInstanceManager.getFlowInstance().getPoster();
-		
-		if (poster != null) {
-			
-			Contact contact = new Contact();
-			
-			contact.setFirstname(poster.getFirstname());
-			contact.setLastname(poster.getLastname());
-			contact.setEmail(poster.getEmail());
-			contact.setMobilePhone(UserUtils.getAttribute("mobilePhone", poster));
-			
-			contact.setContactBySMS(UserUtils.getBooleanAttribute("contactBySMS", poster));
-			contact.setContactByEmail(true);
-			
-			addUniqueContact(contacts, contact);
-		}
-		
+				
 		if (!CollectionUtils.isEmpty(flowInstanceManager.getFlowInstance().getOwners())) {
 			
 			for (User owner : flowInstanceManager.getFlowInstance().getOwners()) {
@@ -1804,8 +1787,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		for (Contact existingContact : contacts) {
 			
-			// If this new contact already exists, skip. If we can assuredly detect that it is not the same contact add as normal. Otherwise continue checking more attributes
-			
 			if (existingContact.getCitizenIdentifier() != null && contact.getCitizenIdentifier() != null) {
 				
 				if (existingContact.getCitizenIdentifier().equals(contact.getCitizenIdentifier())) {
@@ -1813,7 +1794,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					return;
 				}
 				
-				break;
+				continue;
 			}
 			
 			if (existingContact.getEmail() != null && contact.getEmail() != null) {
@@ -1823,7 +1804,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					return;
 				}
 				
-				break;
+				continue;
 			}
 			
 			if (existingContact.getMobilePhone() != null && contact.getMobilePhone() != null) {
@@ -1833,7 +1814,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					return;
 				}
 				
-				break;
+				continue;
 			}
 		}
 		
