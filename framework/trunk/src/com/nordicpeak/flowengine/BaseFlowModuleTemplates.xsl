@@ -1023,10 +1023,10 @@
 					</xsl:when>
 					<xsl:otherwise>
 					
-						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).find('span').toggle(); return false;">
+						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
 							<xsl:value-of select="$i18n.DownloadFlowForms" />
-							<span class="bigmarginleft" data-icon-before="^"/>
-							<span class="bigmarginleft" data-icon-before="_" style="display: none;"/>
+							<span class="bigmarginleft" data-icon-before="^" style="display: none;" />
+							<span class="bigmarginleft" data-icon-before="_" />
 						</a>
 						
 						<div id="flowforms-list" class="bigpadding border" style="display: none">

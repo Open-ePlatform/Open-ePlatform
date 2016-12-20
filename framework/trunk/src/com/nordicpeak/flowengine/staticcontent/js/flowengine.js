@@ -95,11 +95,13 @@ function checkStartFlowPanelPosition() {
 	
 	var $startPanel = $(".start-flow-panel");
 	
-	if ($(window).width() > 1004 && $(this).scrollTop() >= ($("header").height() + 40)) {
+	var headerHeight = ($("header").height() + 40);
+	
+	if (!$("#flowforms-list-button").hasClass("open") && $(window).width() > 1004 && $(this).scrollTop() >= headerHeight) {
 		var rightMargin = ($(window).width() - $startPanel.closest("section").width()) / 2;
 		$startPanel.css("right", rightMargin);
 		$startPanel.addClass("fixed");
-	} else {
+	} else if($(this).scrollTop() < headerHeight) {
 		$startPanel.removeClass("fixed");
 	}
 	 
