@@ -617,60 +617,15 @@
 								
 								</div>
 								
-								<xsl:variable name="phoneID">
-									<xsl:value-of select="$fieldID"/>
-											<xsl:value-of select="'_phone'"/>
-								</xsl:variable>
-								
-								<xsl:variable name="classPhone">
-									<xsl:if test="../../../../../ValidationErrors/validationError[fieldName = $phoneID]">
-										<xsl:text>invalid input-error</xsl:text>
-									</xsl:if>
-								</xsl:variable>
-								
-								<div class="split odd {$classPhone}">
-								
-									<label>
-										<xsl:if test="../../../../ChildQuery/requireGuardianPhone = 'true'">
-											<xsl:attribute name="class">
-												<xsl:text>required</xsl:text>
-											</xsl:attribute>
-										</xsl:if>
-										
-										<xsl:value-of select="$i18n.Column.Phone"/>
-									</label>
-							
-									<xsl:call-template name="createTextField">
-										<xsl:with-param name="name" select="$phoneID"/>
-										<xsl:with-param name="title" select="$i18n.Column.Phone"/>
-										<xsl:with-param name="value">
-											<xsl:choose>
-												<xsl:when test="../../../../Guardians/Guardian[citizenIdentifier = $citizenIdentifier]">
-													<xsl:value-of select="../../../../Guardians/Guardian[citizenIdentifier = $citizenIdentifier]/phone"/>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="phone"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</xsl:with-param>
-										<xsl:with-param name="requestparameters" select="../../../../../requestparameters"/>
-										<xsl:with-param name="class" select="$classPhone"/>
-										<xsl:with-param name="size" select="'50'"/>
-									</xsl:call-template>
-									
-									<xsl:apply-templates select="../../../../../ValidationErrors/validationError[fieldName = $phoneID]"/>
-									
-								</div>
-								
 								<xsl:if test="../../../../ChildQuery/requireGuardianContactInfoVerification = 'true'">
-									
+								
 									<xsl:variable name="emailID2">
 										<xsl:value-of select="$fieldID"/>
 										<xsl:value-of select="'_email2'"/>
 									</xsl:variable>
 									
 									<xsl:variable name="classEmail2">
-										<xsl:text>disablepaste</xsl:text>
+										<xsl:text>disablepaste odd</xsl:text>
 										<xsl:if test="../../../../../ValidationErrors/validationError[fieldName = $emailID2]">
 											<xsl:text> invalid input-error</xsl:text>
 										</xsl:if>
@@ -711,7 +666,56 @@
 										<xsl:apply-templates select="../../../../../ValidationErrors/validationError[fieldName = $emailID2]"/>
 									
 									</div>
+								
+								</xsl:if>								
+								
+								<xsl:variable name="phoneID">
+									<xsl:value-of select="$fieldID"/>
+											<xsl:value-of select="'_phone'"/>
+								</xsl:variable>
+								
+								<xsl:variable name="classPhone">
+									<xsl:if test="../../../../../ValidationErrors/validationError[fieldName = $phoneID]">
+										<xsl:text>invalid input-error</xsl:text>
+									</xsl:if>
+								</xsl:variable>
+								
+								<div class="split {$classPhone}">
+								
+									<label>
+										<xsl:if test="../../../../ChildQuery/requireGuardianPhone = 'true'">
+											<xsl:attribute name="class">
+												<xsl:text>required</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										
+										<xsl:value-of select="$i18n.Column.Phone"/>
+									</label>
+							
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="name" select="$phoneID"/>
+										<xsl:with-param name="title" select="$i18n.Column.Phone"/>
+										<xsl:with-param name="value">
+											<xsl:choose>
+												<xsl:when test="../../../../Guardians/Guardian[citizenIdentifier = $citizenIdentifier]">
+													<xsl:value-of select="../../../../Guardians/Guardian[citizenIdentifier = $citizenIdentifier]/phone"/>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="phone"/>
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:with-param>
+										<xsl:with-param name="requestparameters" select="../../../../../requestparameters"/>
+										<xsl:with-param name="class" select="$classPhone"/>
+										<xsl:with-param name="size" select="'50'"/>
+									</xsl:call-template>
 									
+									<xsl:apply-templates select="../../../../../ValidationErrors/validationError[fieldName = $phoneID]"/>
+									
+								</div>
+								
+								<xsl:if test="../../../../ChildQuery/requireGuardianContactInfoVerification = 'true'">
+																		
 									<xsl:variable name="phoneID2">
 										<xsl:value-of select="$fieldID"/>
 										<xsl:value-of select="'_phone2'"/>

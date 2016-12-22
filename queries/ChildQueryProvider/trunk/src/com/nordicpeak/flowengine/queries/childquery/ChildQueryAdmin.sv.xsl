@@ -25,7 +25,7 @@
 	<xsl:variable name="i18n.MinChildAge">Lägsta ålder på barn</xsl:variable>
 	<xsl:variable name="i18n.MaxChildAge">Högsta ålder på barn</xsl:variable>
 	<xsl:variable name="i18n.MinAgeLargerThanMaxAge">Minsta ålder kan inte vara större än högsta ålder</xsl:variable>
-	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt andra föräldern som medsökande för ärendet</xsl:variable>
+	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt andra vårdnadshavaren som medsökande för ärendet</xsl:variable>
 	
 	<xsl:variable name="i18n.ContactWays.Either">Antingen e-post eller mobiltelefon</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Email">E-post</xsl:variable>
