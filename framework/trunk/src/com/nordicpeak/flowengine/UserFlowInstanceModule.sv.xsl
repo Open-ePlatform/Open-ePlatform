@@ -114,4 +114,5 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.WaitingForPayment">Väntar på betalning</xsl:variable>
 	<xsl:variable name="i18n.PostedByManager">Handläggare</xsl:variable>
 	<xsl:variable name="i18n.Owners">Sökande</xsl:variable>
+	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>
 </xsl:stylesheet>

@@ -7,7 +7,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 
 
-public interface FlowInstanceProvider {
+public interface AdminFlowInstanceProvider {
 
 	List<FlowInstance> getActiveFlowInstances(User user);
 }

@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,7 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
@@ -73,6 +75,7 @@ import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.beans.UserFlowInstanceBrowserProcessCallback;
+import com.nordicpeak.flowengine.comparators.FlowInstanceAddedComparator;
 import com.nordicpeak.flowengine.cruds.ExternalMessageCRUD;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
@@ -108,6 +111,7 @@ import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -126,6 +130,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public static final UserFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, true);
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
+	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();	
+	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
@@ -133,6 +139,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max file size", description = "Maxmium allowed file size in megabytes", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxFileSize = 50;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
+	protected boolean enableSiteProfileSupport;	
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -157,7 +167,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
-
+	
 	private FlowProcessCallback defaultFlowProcessCallback;
 
 	private FlowProcessCallback completeFlowProcessCallback;
@@ -165,6 +175,9 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	private ExternalMessageCRUD externalMessageCRUD;
 	
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
+	
+	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
+	
 	protected Locale systemLocale;
 
 	@Override
@@ -244,6 +257,27 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		doc.getDocumentElement().appendChild(listFlowInstancesElement);
 		
 		List<FlowInstance> flowInstances = getFlowInstances(user, true, excludedFlowTypes != null);
+		
+		if(!userFlowInstanceProviders.isEmpty()){
+			
+			int flowInstanceCount = CollectionUtils.getSize(flowInstances);
+			
+			for(UserFlowInstanceProvider userFlowInstanceProvider : userFlowInstanceProviders){
+				
+				try{
+					flowInstances = CollectionUtils.addAndInstantiateIfNeeded(flowInstances, userFlowInstanceProvider.getUserFlowInstances(user));
+					
+				}catch(RuntimeException e){
+					
+					log.error("Error getting flow instances from provider " + userFlowInstanceProvider, e);
+				}
+			}
+			
+			if(flowInstances != null && CollectionUtils.getSize(flowInstances) != flowInstanceCount){
+				
+				Collections.sort(flowInstances, FLOW_INSTANCE_ADDED_COMPARATOR);
+			}
+		}
 		
 		if (!CollectionUtils.isEmpty(flowInstances)) {
 			
@@ -350,6 +384,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			XMLUtils.append(doc, listFlowInstancesElement, validationErrors);
 		}
 		
+		if(enableSiteProfileSupport && this.profileHandler != null){
+
+			XMLUtils.append(doc, listFlowInstancesElement, "SiteProfiles", this.profileHandler.getProfiles());
+		}
+		
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
 
@@ -406,6 +445,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					
 					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 				}
+			}
+			
+			if(enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null){
+
+				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
 			}
 			
 			return moduleResponse;
@@ -566,7 +610,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return new Breadcrumb(this, flowInstance.getFlow().getName(), "/flowinstance/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID());
 	}
 
-	protected List<FlowInstance> getFlowInstances(User user, boolean getEvents, boolean getFlowTypes) throws SQLException {
+	public List<FlowInstance> getFlowInstances(User user, boolean getEvents, boolean getFlowTypes) throws SQLException {
 		
 		ArrayListQuery<Integer> flowInstanceIDQuery = new ArrayListQuery<Integer>(daoFactory.getFlowInstanceDAO().getDataSource(), "SELECT flowInstanceID FROM flowengine_flow_instance_owners WHERE userID = ?", IntegerPopulator.getPopulator());
 		flowInstanceIDQuery.setInt(1, user.getUserID());
@@ -975,4 +1019,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return getFullAlias() + "/" + "overviewextensionrequest" + "/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID() + "/" + providerID;
 	}
 	
+	public boolean addFlowInstanceProvider(UserFlowInstanceProvider flowInstanceProvider) {
+
+		return userFlowInstanceProviders.add(flowInstanceProvider);
+	}
+
+	public boolean removeFlowInstanceProvider(UserFlowInstanceProvider flowInstanceProvider) {
+
+		return userFlowInstanceProviders.remove(flowInstanceProvider);
+	}
 }

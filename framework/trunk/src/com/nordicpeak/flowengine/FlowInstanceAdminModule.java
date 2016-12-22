@@ -103,9 +103,9 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.interfaces.AdminFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
-import com.nordicpeak.flowengine.interfaces.FlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
@@ -183,7 +183,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> overviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
-	protected CopyOnWriteArrayList<FlowInstanceProvider> flowInstanceProviders = new CopyOnWriteArrayList<FlowInstanceProvider>();
+	protected CopyOnWriteArrayList<AdminFlowInstanceProvider> adminFlowInstanceProviders = new CopyOnWriteArrayList<AdminFlowInstanceProvider>();
 	
 	protected ExternalMessageCRUD externalMessageCRUD;
 	protected InternalMessageCRUD internalMessageCRUD;
@@ -215,7 +215,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		overviewExtensionLinkProviders.clear();
 		tabExtensionProviders.clear();
-		flowInstanceProviders.clear();
+		adminFlowInstanceProviders.clear();
 
 		super.unload();
 	}
@@ -279,18 +279,18 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			activeFlowInstances = getActiveFlowInstances(user, flowIDs);
 		}
 		
-		if(!flowInstanceProviders.isEmpty()){
+		if(!adminFlowInstanceProviders.isEmpty()){
 			
 			int activeFlowInstanceCount = CollectionUtils.getSize(activeFlowInstances);
 			
-			for(FlowInstanceProvider flowInstanceProvider : flowInstanceProviders){
+			for(AdminFlowInstanceProvider adminFlowInstanceProvider : adminFlowInstanceProviders){
 				
 				try{
-					activeFlowInstances = CollectionUtils.addAndInstantiateIfNeeded(activeFlowInstances, flowInstanceProvider.getActiveFlowInstances(user));
+					activeFlowInstances = CollectionUtils.addAndInstantiateIfNeeded(activeFlowInstances, adminFlowInstanceProvider.getActiveFlowInstances(user));
 					
 				}catch(RuntimeException e){
 					
-					log.error("Error getting flow instances from provider " + flowInstanceProvider, e);
+					log.error("Error getting flow instances from provider " + adminFlowInstanceProvider, e);
 				}
 			}
 			
@@ -417,6 +417,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						if(externalMessage != null){
 
+							//TODO check bug with wrong poster
+							
 							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user);
 
 							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()), externalMessage, SenderType.MANAGER), EventTarget.ALL);
@@ -1346,14 +1348,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return tabExtensionProviders.remove(provider);
 	}
 
-	public boolean addRemoteFlowInstanceProvider(FlowInstanceProvider e) {
+	public boolean addFlowInstanceProvider(AdminFlowInstanceProvider flowInstanceProvider) {
 
-		return flowInstanceProviders.add(e);
+		return adminFlowInstanceProviders.add(flowInstanceProvider);
 	}
 
-	public boolean removeRemoteFlowInstanceProvider(Object o) {
+	public boolean removeFlowInstanceProvider(AdminFlowInstanceProvider flowInstanceProvider) {
 
-		return flowInstanceProviders.remove(o);
+		return adminFlowInstanceProviders.remove(flowInstanceProvider);
 	}
 
 	@Override

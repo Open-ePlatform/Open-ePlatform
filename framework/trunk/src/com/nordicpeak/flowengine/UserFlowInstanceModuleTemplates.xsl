@@ -133,6 +133,11 @@
 							<tr>
 								<th class="icon"></th>
 								<th class="service"><span><xsl:value-of select="$i18n.FlowName" /></span></th>
+								
+								<xsl:if test="SiteProfiles">
+									<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+								</xsl:if>								
+								
 								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
 								<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
 								<th class="link"></th>
@@ -180,6 +185,11 @@
 							<tr>
 								<th class="icon"></th>
 								<th class="service"><span><xsl:value-of select="$i18n.FlowName" /></span></th>
+								
+								<xsl:if test="SiteProfiles">
+									<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+								</xsl:if>
+								
 								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
 								<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
 								<th class="link"></th>
@@ -208,6 +218,11 @@
 						<tr>
 							<th class="icon no-sort"></th>
 							<th class="service"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowName" /></span></th>
+							
+							<xsl:if test="SiteProfiles">
+								<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+							</xsl:if>
+							
 							<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
 							<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.LastEvent" /></span></th>
@@ -242,6 +257,11 @@
 						<tr>
 							<th class="icon no-sort"></th>
 							<th class="service"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowName" /></span></th>
+							
+							<xsl:if test="SiteProfiles">
+								<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+							</xsl:if>
+							
 							<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
 							<th class="date default-sort"><span data-icon-after="^"><xsl:value-of select="$i18n.Date" /></span></th>
@@ -271,6 +291,9 @@
 		<tr>
 			<td class="icon"><i data-icon-before="w"></i></td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
+			
+			<xsl:call-template name="printSiteProfile"/>
+			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
 				<xsl:choose>
@@ -290,6 +313,9 @@
 		<tr>
 			<td class="icon"><i data-icon-before="w"></i></td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
+			
+			<xsl:call-template name="printSiteProfile"/>			
+			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
 				<xsl:choose>
@@ -299,20 +325,37 @@
 			</td>
 			<td class="link">
 			
+			<xsl:variable name="baseURL">
+			
 				<xsl:choose>
-					<xsl:when test="Status/contentType = 'WAITING_FOR_MULTISIGN'">
-						<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/multisign/{flowInstanceID}"><xsl:value-of select="$i18n.WaitingForOthersSignatures" /></a>
-					</xsl:when>
-					<xsl:when test="Status/contentType = 'WAITING_FOR_PAYMENT'">
-						<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pay/{flowInstanceID}"><xsl:value-of select="$i18n.WaitingForPayment" /></a>
+					<xsl:when test="Attributes/Attribute/Name = 'UserFlowInstanceModuleURL'">
+					
+						<xsl:value-of select="Attributes/Attribute[Name = 'UserFlowInstanceModuleURL']/Value"/>
+						
 					</xsl:when>
 					<xsl:otherwise>
-						<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$i18n.Continue" /></a>
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			
+			</xsl:variable>			
+			
+				<xsl:choose>
+					<xsl:when test="Status/contentType = 'WAITING_FOR_MULTISIGN'">
+						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/multisign/{flowInstanceID}"><xsl:value-of select="$i18n.WaitingForOthersSignatures" /></a>
+					</xsl:when>
+					<xsl:when test="Status/contentType = 'WAITING_FOR_PAYMENT'">
+						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/pay/{flowInstanceID}"><xsl:value-of select="$i18n.WaitingForPayment" /></a>
+					</xsl:when>
+					<xsl:otherwise>
+						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/flowinstance/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$i18n.Continue" /></a>
 					</xsl:otherwise>
 				</xsl:choose>
 			
 				<xsl:if test="Status/isUserDeletable = 'true'">
-					<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+					<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
 				</xsl:if>
 			</td>
 		</tr>
@@ -329,6 +372,9 @@
 				<xsl:call-template name="printFlowInstanceIcon" />
 			</td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
+			
+			<xsl:call-template name="printSiteProfile"/>		
+			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
@@ -341,6 +387,7 @@
 					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
 				</xsl:choose>				
 			</td>
+			
 			<td class="link">
 				<xsl:call-template name="printFlowInstanceButton" />
 			</td>
@@ -358,6 +405,9 @@
 				<xsl:call-template name="printFlowInstanceIcon" />
 			</td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
+			
+			<xsl:call-template name="printSiteProfile"/>			
+			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
@@ -375,6 +425,32 @@
 			</td>
 		</tr>
 		
+	</xsl:template>
+	
+	<xsl:template name="printSiteProfile">
+	
+		<xsl:if test="../../SiteProfiles">
+			
+			<td data-title="{$i18n.SiteProfile}" class="siteProfile">
+				
+				<xsl:choose>
+					<xsl:when test="Attributes/Attribute/Name = 'siteProfileName'">
+					
+						<xsl:value-of select="Attributes/Attribute[Name = 'siteProfileName']/Value"/>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<xsl:variable name="profileID" select="profileID"/>
+						
+						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />							
+					
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+					
+		</xsl:if>	
+	
 	</xsl:template>
 	
 	<xsl:template match="FlowInstance" mode="changed">
@@ -850,9 +926,26 @@
 		<xsl:param name="buttonText" select="$i18n.Choose" />
 		<xsl:param name="buttonClass" select="'btn-green'" />
 	
+		<xsl:variable name="baseURL">
+		
+			<xsl:choose>
+				<xsl:when test="Attributes/Attribute/Name = 'UserFlowInstanceModuleURL'">
+				
+					<xsl:value-of select="Attributes/Attribute[Name = 'UserFlowInstanceModuleURL']/Value"/>
+					
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="/Document/requestinfo/currentURI"/>
+					<xsl:text>/</xsl:text>
+					<xsl:value-of select="/Document/module/alias"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		
+		</xsl:variable>
+	
 		<xsl:choose>
 			<xsl:when test="Flow/enabled = 'false'"><xsl:value-of select="$i18n.NotEnabled" /></xsl:when>
-			<xsl:otherwise><a class="btn {$buttonClass}" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$buttonText" /></a></xsl:otherwise>
+			<xsl:otherwise><a class="btn {$buttonClass}" href="{$baseURL}/overview/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$buttonText" /></a></xsl:otherwise>
 		</xsl:choose>
 	
 	</xsl:template>
