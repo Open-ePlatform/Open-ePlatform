@@ -229,7 +229,7 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 
 				if(!flows.isEmpty()){
 
-					log.info("Cached the following " + flows.size() + " flows: " + StringUtils.toCommaSeparatedString(flows));
+					log.info("Cached " + flows.size() + " flows");
 
 					return flows;
 				}
