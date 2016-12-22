@@ -375,8 +375,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 				if(formatValidator == null){
 					
-					//TODO use a better exception here
-					throw new RuntimeException("Unable to format validator for field " + textField);
+					log.warn("Unable to get format validator " + textField.getFormatValidator() + " for field " + textField);
 					
 				}else if (!formatValidator.validateFormat(value)) {
 
