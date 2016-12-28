@@ -107,6 +107,10 @@ table.oep-table tr.disabled td, table.oep-table tr.disabled td a {
 	color: #7b7b7b;
 }
 
+table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
+	word-break: break-all;
+}
+
 #sortingForm .affectedQuery {
 	background-color: #ffdddd;
 }
