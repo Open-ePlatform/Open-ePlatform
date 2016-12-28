@@ -24,6 +24,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.crud.IntegerBeanIDParser;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.string.StringUtils;
@@ -114,7 +115,7 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 			throw new AccessDeniedException("Unable to delete flowForm " + flowForm + " since it has one or more flow instances connected to it.");
 		}
 		
-		if (flowForm.getFlow().isEnabled() && flowForm.getFlow().getSteps() == null && flowForm.getFlow().isInternal() && flowForm.getFlow().getFlowForms().size() == 1) {
+		if (flowForm.getFlow().isEnabled() && flowForm.getFlow().getSteps() == null && flowForm.getFlow().isInternal() && CollectionUtils.getSize(flowForm.getFlow().getFlowForms()) == 1) {
 			
 			throw new AccessDeniedException("Unable to delete flowForm " + flowForm + " since its flow is enabled with no steps.");
 		}
