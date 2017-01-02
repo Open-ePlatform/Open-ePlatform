@@ -552,7 +552,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		categoryCRUD = new CategoryCRUD(categoryDAOWrapper, this);
 		
 		AnnotatedDAOWrapper<FlowForm, Integer> flowFormDAOWrapper = daoFactory.getFlowFormDAO().getWrapper("flowFormID", Integer.class);
-		flowFormDAOWrapper.addRelations(FlowForm.FLOW_RELATION, Flow.FLOW_TYPE_RELATION);
+		flowFormDAOWrapper.addRelations(FlowForm.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION);
 		flowFormDAOWrapper.setUseRelationsOnGet(true);
 		
 		flowFormCRUD = new FlowFormCRUD(flowFormDAOWrapper, this);

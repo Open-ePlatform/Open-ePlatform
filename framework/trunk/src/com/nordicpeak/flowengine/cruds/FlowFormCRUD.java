@@ -110,11 +110,6 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		
 		checkFlowTypeAccess(user, flowForm.getFlow().getFlowType());
 		
-		if (callback.getFlowInstanceCount(flowForm.getFlow()) > 0) {
-			
-			throw new AccessDeniedException("Unable to delete flowForm " + flowForm + " since it has one or more flow instances connected to it.");
-		}
-		
 		if (flowForm.getFlow().isEnabled() && flowForm.getFlow().getSteps() == null && flowForm.getFlow().isInternal() && CollectionUtils.getSize(flowForm.getFlow().getFlowForms()) == 1) {
 			
 			throw new AccessDeniedException("Unable to delete flowForm " + flowForm + " since its flow is enabled with no steps.");
