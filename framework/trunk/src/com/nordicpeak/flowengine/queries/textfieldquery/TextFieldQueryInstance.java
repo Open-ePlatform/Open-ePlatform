@@ -145,7 +145,20 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 			for(TextFieldValue textFieldValue : this.values){
 
-				XMLUtils.appendNewCDATAElement(doc, element, TextFieldQuery.generateElementName(textFieldValue.getTextField().getLabel(), fieldElementNames), textFieldValue.getValue());
+				String elementName;
+				
+				if(textFieldValue.getTextField().getXSDElementName() != null){
+					
+					elementName = textFieldValue.getTextField().getXSDElementName();
+					
+					fieldElementNames.add(elementName);
+					
+				}else{
+					
+					elementName = TextFieldQuery.generateElementName(textFieldValue.getTextField().getLabel(), fieldElementNames);
+				}				
+				
+				XMLUtils.appendNewCDATAElement(doc, element, elementName, textFieldValue.getValue());
 			}
 		}
 

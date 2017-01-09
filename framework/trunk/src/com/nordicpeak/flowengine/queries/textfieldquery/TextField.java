@@ -25,6 +25,8 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLParserPopulateable;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
+import com.nordicpeak.flowengine.populators.XMLElementNamePopulator;
+
 @Table(name = "text_fields")
 @XMLElement
 public class TextField extends GeneratedElementable implements Serializable, XMLParserPopulateable {
@@ -100,6 +102,11 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@WebPopulate(maxLength=255)
 	@XMLElement
 	private String placeholderText;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255, populator=XMLElementNamePopulator.class)
+	@XMLElement
+	private String xsdElementName;	
 	
 	@DAOManaged(columnName = "queryID")
 	@ManyToOne
@@ -249,6 +256,8 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
 		
+		xsdElementName = XMLValidationUtils.validateParameter("xsdElementName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
 		if(!errors.isEmpty()){
 
 			throw new ValidationException(errors);
@@ -308,6 +317,18 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	public void setDefaultValue(String defaultValue) {
 	
 		this.defaultValue = defaultValue;
+	}
+
+	
+	public String getXSDElementName() {
+	
+		return xsdElementName;
+	}
+
+	
+	public void setXSDElementName(String xsdElementName) {
+	
+		this.xsdElementName = xsdElementName;
 	}
 	
 }

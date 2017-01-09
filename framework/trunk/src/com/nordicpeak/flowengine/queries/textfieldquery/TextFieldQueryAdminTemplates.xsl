@@ -335,6 +335,18 @@
 		    </div>
 		</div>
 		
+		<div class="floatleft full bigmarginbottom">
+			<label for="xsdElementName" class="floatleft clearboth"><xsl:value-of select="$i18n.xsdElementName" /></label>
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'xsdElementName'"/>
+					<xsl:with-param name="name" select="'xsdElementName'"/>
+					<xsl:with-param name="title" select="$i18n.xsdElementName"/>
+					<xsl:with-param name="element" select="$element" />
+				</xsl:call-template>
+		    </div>
+		</div>		
+		
 	</xsl:template>
 	
 	<xsl:template match="FormatValidator">

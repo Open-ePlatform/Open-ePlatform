@@ -120,4 +120,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_fields` ADD COLUMN `xsdElementName` VARCHAR(255) AFTER `defaultValue`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

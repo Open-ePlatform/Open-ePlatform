@@ -177,7 +177,18 @@ public class TextFieldQuery extends BaseQuery {
 
 				sequenceElement.appendChild(doc.createComment(textField.getLabel()));
 
-				String elementName = generateElementName(textField.getLabel(), fieldElementNames);
+				String elementName;
+				
+				if(textField.getXSDElementName() != null){
+					
+					elementName = textField.getXSDElementName();
+					
+					fieldElementNames.add(elementName);
+					
+				}else{
+					
+					elementName = generateElementName(textField.getLabel(), fieldElementNames);
+				}
 
 				Element fieldElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
 				fieldElement.setAttribute("name", elementName);
