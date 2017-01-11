@@ -12,6 +12,7 @@ $(document).ready(function() {
 		$menu.toggleClass("active");
 		
 		if ($menu.hasClass("active")) {
+			$(".dd.active").removeClass("active").find(".submenu").hide();
 			$(".primary").removeClass("active");
 			$submenu.show();
 		} else {
