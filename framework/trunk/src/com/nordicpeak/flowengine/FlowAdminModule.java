@@ -3799,19 +3799,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-
+		
 		Integer flowFormID;
 		Integer flowID;
 		Flow flow;
-
+		
 		if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowFormID = uriParser.getInt(3)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
-
+			
 			flowCRUD.checkAccess(user, flow);
 			
-			if(CollectionUtils.isEmpty(flow.getFlowForms())){
-
+			if (CollectionUtils.isEmpty(flow.getFlowForms())) {
+				
 				log.info("User " + user + " requested flow " + flow.getFlowID() + " which is not availiable in the requested format.");
-
+				
 				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
 			}
 			
@@ -3825,11 +3825,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				}
 			}
 		}
-
+		
 		throw new URINotFoundException(uriParser);
 	}
 
-	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws Throwable {
+	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws IOException, ModuleConfigurationException, URINotFoundException {
 
 		if(!StringUtils.isEmpty(flowForm.getExternalURL())){
 

@@ -338,7 +338,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if(lastSearch != null){
 				
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "lastSearch", lastSearch);
-			}			
+			}
 			
 			if(flowTypes != null){
 
@@ -1376,43 +1376,60 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-
+		
 		if (flowAdminModule == null) {
-
+			
 			throw new URINotFoundException(uriParser);
 		}
-
+		
 		Integer flowFormID;
 		Integer flowID;
 		Flow flow;
-
-		if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowFormID = uriParser.getInt(3)) != null && (flow = flowMap.get(flowID)) != null) {
-
+		
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowMap.get(flowID)) != null) {
+			
 			if (!flow.isPublished() || !flow.isEnabled()) {
-
+				
 				log.info("User " + user + " requested flow " + flow + " form PDF which is no longer available.");
-
+				
 				return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
-
 			}
-
-			try {
-				for (FlowForm flowForm : flow.getFlowForms()) {
+			
+			if (uriParser.size() == 3) {
+				
+				if (CollectionUtils.isEmpty(flow.getFlowForms())) {
 					
-					if (flowForm.getFlowFormID().equals(flowFormID)) {
+					log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
+					
+				} else {
+					
+					FlowForm flowForm = flow.getFlowForms().get(0);
+					flowForm.setFlow(flow);
+					
+					return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+				}
+				
+			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
+				
+				if (CollectionUtils.isEmpty(flow.getFlowForms())) {
+					
+					log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
+					
+				} else {
+					
+					for (FlowForm flowForm : flow.getFlowForms()) {
 						
-						flowForm.setFlow(flow);
-						
-						return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+						if (flowForm.getFlowFormID().equals(flowFormID)) {
+							
+							flowForm.setFlow(flow);
+							
+							return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+						}
 					}
 				}
-
-			} catch (FlowNotAvailiableInRequestedFormat e) {
-
-				log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
 			}
 		}
-
+		
 		throw new URINotFoundException(uriParser);
 	}
 
