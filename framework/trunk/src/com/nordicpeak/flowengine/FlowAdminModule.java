@@ -3804,7 +3804,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		Integer flowID;
 		Flow flow;
 		
-		if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowFormID = uriParser.getInt(3)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
 			
 			flowCRUD.checkAccess(user, flow);
 			
@@ -3815,13 +3815,25 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
 			}
 			
-			for (FlowForm flowForm : flow.getFlowForms()) {
+			boolean raw = req.getParameter("raw") != null;
+			
+			if (uriParser.size() == 3) {
 				
-				if (flowForm.getFlowFormID().equals(flowFormID)) {
+				FlowForm flowForm = flow.getFlowForms().get(0);
+				flowForm.setFlow(flow);
+				
+				return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
+				
+			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
+				
+				for (FlowForm flowForm : flow.getFlowForms()) {
 					
-					flowForm.setFlow(flow);
-					
-					return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), req.getParameter("raw") != null);
+					if (flowForm.getFlowFormID().equals(flowFormID)) {
+						
+						flowForm.setFlow(flow);
+						
+						return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
+					}
 				}
 			}
 		}
