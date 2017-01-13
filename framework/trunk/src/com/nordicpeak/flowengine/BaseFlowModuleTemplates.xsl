@@ -910,7 +910,8 @@
 	
 	<xsl:template name="PrintPostedBy">
 		<xsl:param name="poster"/>
-		<xsl:param name="flowInstanceAttributes"/>
+		<xsl:param name="flowInstanceAttributes" select="null"/>
+		<xsl:param name="fallbackAttributes" select="null"/>
 		
 		<xsl:choose>
 		
@@ -919,14 +920,14 @@
 				
 				<xsl:choose>
 					
-					<xsl:when test="$flowInstanceAttributes and $flowInstanceAttributes/Attribute[Name = 'firstname']">
+					<xsl:when test="$flowInstanceAttributes/Attribute[Name = 'firstname']">
 						<xsl:text>&#160;(</xsl:text>
 						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'firstname']/Value" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'lastname']/Value" />
 						<xsl:text>)</xsl:text>
 					</xsl:when>
-						
+					
 					<xsl:when test="$poster">
 						<xsl:text>&#160;(</xsl:text>
 						<xsl:call-template name="printUser">
@@ -943,6 +944,7 @@
 				<xsl:call-template name="PrintPostedByNoOrg">
 					<xsl:with-param name="poster" select="$poster"/>
 					<xsl:with-param name="flowInstanceAttributes" select="$flowInstanceAttributes"/>
+					<xsl:with-param name="fallbackAttributes" select="$fallbackAttributes"/>
 				</xsl:call-template>
 			</xsl:otherwise>
 			
@@ -952,7 +954,8 @@
 	
 	<xsl:template name="PrintPostedByNoOrg">
 		<xsl:param name="poster"/>
-		<xsl:param name="flowInstanceAttributes"/>
+		<xsl:param name="flowInstanceAttributes" select="null"/>
+		<xsl:param name="fallbackAttributes" select="null"/>
 		
 		<xsl:choose>
 		
@@ -966,6 +969,12 @@
 				<xsl:call-template name="printUser">
 					<xsl:with-param name="user" select="$poster" />
 				</xsl:call-template>
+			</xsl:when>
+			
+			<xsl:when test="$fallbackAttributes and $fallbackAttributes/Attribute[Name = 'firstname']">
+				<xsl:value-of select="$fallbackAttributes/Attribute[Name = 'firstname']/Value" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$fallbackAttributes/Attribute[Name = 'lastname']/Value" />
 			</xsl:when>
 			
 			<xsl:otherwise>

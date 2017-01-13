@@ -1043,7 +1043,7 @@
 			<td data-title="{$i18n.Person}" class="person">
 				<xsl:call-template name="PrintPostedByNoOrg">
 					<xsl:with-param name="poster" select="poster/user"/>
-					<xsl:with-param name="flowInstanceAttributes" select="../../Attributes"/>
+					<xsl:with-param name="fallbackAttributes" select="../../Attributes"/>
 				</xsl:call-template>
 			</td>
 		</tr>
