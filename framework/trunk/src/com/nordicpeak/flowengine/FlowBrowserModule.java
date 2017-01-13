@@ -818,9 +818,9 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		log.info("Calculating popular flows...");
 
-		w.lock();
-
 		try {
+			w.lock();
+			long start = System.currentTimeMillis();
 
 			if (this.flowTypes == null || this.latestPublishedFlowVersionsMap == null) {
 
@@ -843,6 +843,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 				flow.setPopular(popularFamilies.contains(flow.getFlowFamily()));
 			}
+			
+			log.info("Calculated popular flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - start));
 
 		} catch (SQLException e) {
 
@@ -852,7 +854,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			w.unlock();
 		}
-
 	}
 
 	private List<FlowFamily> getPopularFamilies(FlowType flowType) throws SQLException {
@@ -983,11 +984,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public void run() {
 
-		r.lock();
-
+		log.info("Refreshing list of latest published flow versions...");
+		
 		try {
-
-			log.info("Refreshing list of latest published flow versions...");
+			r.lock();
+			long start = System.currentTimeMillis();
 
 			if (flowMap != null) {
 
@@ -997,6 +998,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				
 				systemInterface.getEventHandler().sendEvent(FlowBrowserModule.class, new FlowBrowserCacheEvent(), EventTarget.LOCAL);
 			}
+			
+			log.info("Refreshed list of latest published flow versions in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - start));
 
 		} finally {
 
