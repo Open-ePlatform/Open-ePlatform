@@ -17,6 +17,7 @@ import se.unlogic.hierarchy.core.exceptions.UnableToAddUserException;
 import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.hierarchy.foregroundmodules.minimaluser.MinimalUser;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 
 import com.nordicpeak.saml.SAMLUserAdapter;
@@ -52,6 +53,11 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 		
 		for (Attribute attribute : assertion.getAttributeStatements().get(0).getAttributes()) {
 
+			if(CollectionUtils.isEmpty(attribute.getAttributeValues())){
+				
+				continue;
+			}
+			
 			Object rawAttributeValue = attribute.getAttributeValues().get(0);
 			
 			String attributeValue;
