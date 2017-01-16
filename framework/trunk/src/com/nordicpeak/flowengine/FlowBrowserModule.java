@@ -1335,6 +1335,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				}
 			}
 			
+			//TODO call setContactAttributes and add attributes relation below 
 			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION);
 			daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
 			

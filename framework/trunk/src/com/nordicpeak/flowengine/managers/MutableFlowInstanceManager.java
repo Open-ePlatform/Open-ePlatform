@@ -1220,6 +1220,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
+	//Makes this method static and move it to another class so it can be called outside of the flow instance manager
 	private void setContactAttributes() {
 		
 		MutableAttributeHandler attributeHandler = flowInstance.getAttributeHandler();
