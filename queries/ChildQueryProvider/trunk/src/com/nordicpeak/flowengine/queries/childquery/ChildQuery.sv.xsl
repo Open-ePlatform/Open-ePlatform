@@ -7,7 +7,13 @@
 	
 	<xsl:variable name="i18n.Error.Required">Den här frågan är obligatorisk!</xsl:variable>
 	<xsl:variable name="i18n.Error.NoChildren">Du är inte vårdnadshavare för något barn och kan därför inte välja ett barn.</xsl:variable>
-	<xsl:variable name="i18n.Error.UnableToGetChildren">Det går inte att komma åt personuppgiftstjänsten för att hämta barn, vänligen försök igen senare.</xsl:variable>
+	
+	<xsl:variable name="i18n.Error.Provider.CommunicationError">Det går inte att komma åt personuppgiftstjänsten för att hämta barn, vänligen försök igen senare.</xsl:variable>
+	<xsl:variable name="i18n.Error.Provider.IncompleteData">Det går inte att hämta komplett data från personuppgiftstjänsten. Vänligen kontakta kommunen för mer hjälp.</xsl:variable>
+	<xsl:variable name="i18n.Error.Provider.InvalidCitizenIdentifier">Ditt personnummer accepterades inte av personuppgiftstjänsten. Vänligen kontakta kommunen för mer hjälp.</xsl:variable>
+	<xsl:variable name="i18n.Error.Provider.Unknown">Ett okänt fel uppstod under bearbetning av information från personuppgiftstjänsten, vänligen försök igen senare.</xsl:variable>
+	
+	
 	<xsl:variable name="i18n.Error.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	<xsl:variable name="i18n.Error.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
 	<xsl:variable name="i18n.Error.InvalidFormat">Innehållet i det här fältet har ett ogiltigt format!</xsl:variable>

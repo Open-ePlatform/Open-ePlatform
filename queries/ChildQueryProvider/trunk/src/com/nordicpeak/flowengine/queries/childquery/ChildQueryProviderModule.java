@@ -56,6 +56,8 @@ import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.childrelationprovider.Child;
 import com.nordicpeak.childrelationprovider.ChildRelationProvider;
+import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
+import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
@@ -539,26 +541,34 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 //				return children;
 				
 				if (childRelationProvider == null) {
-
-					log.error("@InstanceManagerDependency childRelationProvider is null");
+					
+					String error = "@InstanceManagerDependency childRelationProvider is null";
+					log.error(error);
+					queryInstance.setFetchChildrenException(new CommunicationException(error));
 					return null;
 				}
-
+				
 				log.info("Getting children information for user " + poster);
-
-				Map<String, Child> childMap = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
-
-				if (childMap != null) {
-
-					Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
-
-					for (Entry<String, Child> entry : childMap.entrySet()) {
-
-						storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
+				
+				try {
+					Map<String, Child> childMap = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
+					
+					if (childMap != null) {
+						
+						Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
+						
+						for (Entry<String, Child> entry : childMap.entrySet()) {
+							
+							storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
+						}
+						
+						return storedChildMap;
 					}
-
-					return storedChildMap;
-				}
+					
+				} catch (ChildRelationProviderException e) {
+					
+					queryInstance.setFetchChildrenException(e);
+				} ;
 			}
 		}
 		

@@ -19,6 +19,7 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
@@ -75,6 +76,8 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	private List<StoredGuardian> storedGuardians;
 
 	private Map<String, StoredChild> children;
+	
+	private ChildRelationProviderException fetchChildrenException;
 
 	public Integer getQueryInstanceID() {
 
@@ -206,6 +209,14 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	public void defaultQueryValues() {
 
 	}
+	
+	public ChildRelationProviderException getFetchChildrenException() {
+		return fetchChildrenException;
+	}
+
+	public void setFetchChildrenException(ChildRelationProviderException fetchChildrenExceptions) {
+		this.fetchChildrenException = fetchChildrenExceptions;
+	}
 
 	@Override
 	public String toString() {
@@ -300,6 +311,12 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		} else if (children != null) {
 
 			XMLUtils.appendNewElement(doc, element, "Children");
+		}
+		
+		if (fetchChildrenException != null) {
+			
+			Element fetchChildrenExceptionElement = XMLUtils.appendNewElement(doc, element, "FetchChildrenException");
+			fetchChildrenExceptionElement.appendChild(fetchChildrenException.toXML(doc));
 		}
 
 		return element;

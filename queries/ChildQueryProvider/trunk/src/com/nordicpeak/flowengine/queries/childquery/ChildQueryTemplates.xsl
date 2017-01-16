@@ -290,9 +290,14 @@
 							</div>
 					
 						</xsl:when>
-						<xsl:otherwise>	<!-- No list from provider/ provider unreachable -->
+						<xsl:otherwise>	<!-- No list from provider -->
 						
-							<xsl:value-of select="$i18n.Error.UnableToGetChildren"/>
+							<xsl:choose>
+								<xsl:when test="ChildQueryInstance/FetchChildrenException/CommunicationException"><xsl:value-of select="$i18n.Error.Provider.CommunicationError"/></xsl:when>
+								<xsl:when test="ChildQueryInstance/FetchChildrenException/IncompleteDataException"><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></xsl:when>
+								<xsl:when test="ChildQueryInstance/FetchChildrenException/InvalidCitizenIdentifierException"><xsl:value-of select="$i18n.Error.Provider.InvalidCitizenIdentifier"/></xsl:when>
+								<xsl:otherwise><xsl:value-of select="$i18n.Error.Provider.Unknown"/></xsl:otherwise>
+							</xsl:choose>
 							
 						</xsl:otherwise>
 					</xsl:choose>
