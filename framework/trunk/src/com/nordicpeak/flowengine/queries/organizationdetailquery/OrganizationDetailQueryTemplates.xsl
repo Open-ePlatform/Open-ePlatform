@@ -333,7 +333,7 @@
 							<xsl:call-template name="createTextField">
 								<xsl:with-param name="id" select="$fieldName" />
 								<xsl:with-param name="name" select="$fieldName" />
-								<xsl:with-param name="title" select="$i18n.Name"/>
+								<xsl:with-param name="title" select="$i18n.OrganizationNumber"/>
 								<xsl:with-param name="size" select="50"/>
 								<xsl:with-param name="value" select="OrganizationDetailQueryInstance/organizationNumber" />
 								<xsl:with-param name="class" select="$class"/>
