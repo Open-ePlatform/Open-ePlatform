@@ -99,6 +99,7 @@ import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
@@ -985,6 +986,29 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			throw new URINotFoundException(uriParser);
 		}
+		
+		FlowInstanceEvent submitEvent = null;
+		
+		if (!CollectionUtils.isEmpty(flowInstance.getEvents())) {
+			for (FlowInstanceEvent event : flowInstance.getEvents()) {
+				
+				if (event.getEventID().equals(eventID)) {
+					
+					submitEvent = event;
+					break;
+				}
+			}
+		}
+		
+		if (submitEvent == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		if (submitEvent.getEventType() != EventType.SUBMITTED) {
+			
+			return new SimpleForegroundModuleResponse("Selected event is not a submit event!");
+		}
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
@@ -1023,6 +1047,133 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return new SimpleForegroundModuleResponse("Global email notifications are disabled for flow " + flowInstance.getFlow());
 	}
 
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse triggerSubmit(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+		
+		if (!AccessUtils.checkAccess(user, new SimpleAccessInterface(adminGroupIDs, null))) {
+			
+			throw new AccessDeniedException("User does not have admin access to this module");
+		}
+		
+		Integer flowInstanceID = uriParser.getInt(2);
+		Integer eventID = uriParser.getInt(3);
+		
+		if (flowInstanceID == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
+		
+		if (flowInstance == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		FlowInstanceEvent submitEvent = null;
+		
+		if (!CollectionUtils.isEmpty(flowInstance.getEvents())) {
+			
+			if (eventID != null) {
+				
+				for (FlowInstanceEvent event : flowInstance.getEvents()) {
+					
+					if (event.getEventID().equals(eventID)) {
+						
+						submitEvent = event;
+						break;
+					}
+				}
+				
+			} else {
+				
+				for (int i = flowInstance.getEvents().size() - 1; i >= 0; i--) {
+					
+					FlowInstanceEvent event = flowInstance.getEvents().get(i);
+					
+					if (event.getEventType() == EventType.SUBMITTED) {
+						
+						submitEvent = event;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (submitEvent == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		if (submitEvent.getEventType() != EventType.SUBMITTED) {
+			
+			return new SimpleForegroundModuleResponse("Selected event is not a submit event!");
+		}
+		
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+		
+		File pdfFile = null;
+		
+		if (pdfProvider != null && notificationSettings.isFlowInstanceSubmittedUserEmailAttachPDF()) {
+			
+			pdfFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), eventID);
+		}
+		
+		Collection<Contact> contacts = getContacts(flowInstance);
+		
+		if (contacts != null) {
+			
+			long sentEmails = 0;
+			long sentSMS = 0;
+			
+			if (notificationSettings.isSendFlowInstanceSubmittedUserSMS()) {
+				
+				for (Contact contact : contacts) {
+					
+					if (sendContactSMS(flowInstance, contact, getFlowInstaceSubmittedUserSMSMessage(flowInstance))) {
+						
+						sentSMS++;
+					}
+				}
+			}
+			
+			if (notificationSettings.isSendFlowInstanceSubmittedUserEmail()) {
+				
+				boolean attachPDF = false;
+				
+				String message = getFlowInstaceSubmittedUserEmailMessage(notificationSettings, flowInstance);
+				
+				if (notificationSettings.isFlowInstanceSubmittedUserEmailAttachPDF() && pdfFile != null) {
+					
+					if (isValidPDFSize(flowInstanceSubmittedUserEmailPDFSizeLimit, pdfFile)) {
+						
+						attachPDF = true;
+						
+						message = message.replaceAll("\\$flowInstance.pdfAttachedText", flowInstanceSubmittedUserEmailPDFAttachedText);
+						
+					} else {
+						
+						message = message.replaceAll("\\$flowInstance.pdfAttachedText", flowInstanceSubmittedUserEmailPDFSizeLimitExceededText);
+						
+						log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedUserEmailPDFSizeLimit + " MB set for user email submit notifications and will not be attached to the generated email.");
+					}
+				}
+				
+				for (Contact contact : contacts) {
+					
+					if (sendContactEmail(flowInstance, contact, notificationSettings.getFlowInstanceSubmittedUserEmailSubject(), message, attachPDF ? pdfFile : null)) {
+						
+						sentEmails++;
+					}
+				}
+			}
+		
+			return new SimpleForegroundModuleResponse(sentEmails + " E-mail and " + sentSMS + " SMS submit notifications sent to " + contacts.size() + " contacts for flow instance " + flowInstance);
+		}
+		
+		return new SimpleForegroundModuleResponse("No contacts to send notifications to for flow instance " + flowInstance);
+	}
+	
 	@EventListener(channel = FlowInstanceManager.class, priority = 50)
 	public void processEvent(SubmitEvent event, EventSource eventSource) throws SQLException {
 
@@ -1030,8 +1181,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstanceManager().getFlowInstance().getFlow());
 
-			Contact posterContact = getPosterContact(event.getFlowInstanceManager());
-			Collection<Contact> contacts = getContacts(event.getFlowInstanceManager());
+			Contact posterContact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
+			Collection<Contact> contacts = getContacts(event.getFlowInstanceManager().getFlowInstance());
 
 			ImmutableFlowInstance flowInstance = event.getFlowInstanceManager().getFlowInstance();
 
@@ -1265,7 +1416,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (signingParties != null) {
 
-			Contact contact = getPosterContact(event.getFlowInstanceManager());
+			Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
 
 			for (SigningParty signingParty : signingParties) {
 
@@ -1368,11 +1519,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
-	public void sendContactEmail(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, File pdfFile) {
+	public boolean sendContactEmail(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, File pdfFile) {
 
 		if (!contact.isContactByEmail() || contact.getEmail() == null || subject == null || message == null) {
 
-			return;
+			return false;
 		}
 
 		TagReplacer tagReplacer = new TagReplacer();
@@ -1406,13 +1557,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			log.info("Error generating/sending email " + email, e);
 		}
+		
+		return true;
 	}
 
-	public void sendContactSMS(ImmutableFlowInstance flowInstance, Contact contact, String message) {
+	public boolean sendContactSMS(ImmutableFlowInstance flowInstance, Contact contact, String message) {
 
 		if (!contact.isContactBySMS() || contact.getMobilePhone() == null || smsSender == null || message == null) {
 
-			return;
+			return false;
 		}
 
 		TagReplacer tagReplacer = new TagReplacer();
@@ -1436,6 +1589,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			log.info("Error generating/sending sms " + sms, e);
 		}
+		
+		return true;
 	}
 
 	public void sendManagerEmails(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, List<User> excludedManagers, boolean useFlowFamilyManagers) throws SQLException {
@@ -1629,16 +1784,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	public Contact getPosterContact(FlowInstance flowInstance, SiteProfile siteProfile) {
 
 		try {
-			flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
+			flowInstance = getFlowInstanceWithAttributesAndOwners(flowInstance.getFlowInstanceID());
 
 			if (flowInstance == null) {
 
 				return null;
 			}
 
-			ImmutableFlowInstanceManager instanceManager = getImmutableFlowInstanceManager(flowInstance, siteProfile);
-
-			return getPosterContact(instanceManager);
+			return getPosterContact(flowInstance);
 
 		} catch (Exception e) {
 
@@ -1652,16 +1805,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	public Collection<Contact> getContacts(FlowInstance flowInstance, SiteProfile siteProfile) {
 
 		try {
-			flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
+			flowInstance = getFlowInstanceWithAttributesAndOwners(flowInstance.getFlowInstanceID());
 
 			if (flowInstance == null) {
 
 				return null;
 			}
 
-			ImmutableFlowInstanceManager instanceManager = getImmutableFlowInstanceManager(flowInstance, siteProfile);
-
-			return getContacts(instanceManager);
+			return getContacts(flowInstance);
 
 		} catch (Exception e) {
 
@@ -1687,10 +1838,19 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return flowInstanceDAO.get(query);
 	}
 	
+	public FlowInstance getFlowInstanceWithAttributesAndOwners(Integer flowInstanceID) throws SQLException {
+
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.ATTRIBUTES_RELATION, FlowInstance.OWNERS_RELATION);
+
+		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
+
+		return flowInstanceDAO.get(query);
+	}
+	
 	//TODO change logic here to use editor or latest submit event
-	public Contact getPosterContact(FlowInstanceManager flowInstanceManager) {
-		
-		AttributeHandler attributeHandler = flowInstanceManager.getFlowInstance().getAttributeHandler();
+	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
+
+		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 
 		if (attributeHandler.isSet("email")) {
 
@@ -1712,7 +1872,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return contact;
 		}
 
-		User poster = flowInstanceManager.getFlowInstance().getPoster();
+		User poster = flowInstance.getPoster();
 
 		if (poster != null) {
 
@@ -1732,11 +1892,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return null;
 	}
 	
-	public List<Contact> getContacts(FlowInstanceManager flowInstanceManager) {
+	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
 		
 		List<Contact> contacts = new ArrayList<Contact>(1);
 		
-		AttributeHandler attributeHandler = flowInstanceManager.getFlowInstance().getAttributeHandler();
+		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 		
 		if (attributeHandler.isSet("email")) {
 			
@@ -1757,10 +1917,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			contacts.add(contact);
 		}
-				
-		if (!CollectionUtils.isEmpty(flowInstanceManager.getFlowInstance().getOwners())) {
+		
+		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
 			
-			for (User owner : flowInstanceManager.getFlowInstance().getOwners()) {
+			for (User owner : flowInstance.getOwners()) {
 				
 				Contact contact = new Contact();
 				
