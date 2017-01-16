@@ -86,4 +86,10 @@ public class BasePerson extends GeneratedElementable implements Serializable {
 
 		this.postalAddress = postalAddress;
 	}
+	
+	@Override
+	public String toString(){
+		
+		return firstname + " " + lastname + " (" + citizenIdentifier + ")";
+	}
 }
