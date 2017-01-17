@@ -50,7 +50,6 @@ import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.MethodComparator;
 import se.unlogic.standardutils.collections.NameComparator;
@@ -74,7 +73,6 @@ import se.unlogic.webutils.url.URLRewriter;
 
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
-import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -119,7 +117,6 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -1361,66 +1358,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 	}
 	
-	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse triggerSetContactAttributes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
-		
-		if (user == null || !user.isAdmin()) {
-			
-			throw new AccessDeniedException("User is not admin");
-		}
-		
-		List<Integer> flowInstanceIDs = new ArrayList<Integer>();
-		
-		{
-			Integer flowInstanceID = uriParser.getInt(2);
-			
-			if (flowInstanceID != null) {
-				
-				flowInstanceIDs.add(flowInstanceID);
-			}
-		}
-		
-		String[] paramFlowInstanceIDs = req.getParameterValues("id");
-		
-		if (!ArrayUtils.isEmpty(paramFlowInstanceIDs)) {
-			
-			for (String stringID : paramFlowInstanceIDs) {
-				
-				Integer flowInstanceID = NumberUtils.toInt(stringID);
-				flowInstanceIDs.add(flowInstanceID);
-			}
-		}
-		
-		long updatedFlowInstances = 0;
-		
-		for (Integer flowInstanceID : flowInstanceIDs) {
-			
-			try {
-				FlowInstance flowInstance = getFlowInstance(flowInstanceID);
-				
-				if (flowInstance == null) {
-					
-					throw new URINotFoundException(uriParser);
-				}
-				
-				ImmutableFlowInstanceManager instanceManager = new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(null), null);
-				
-				FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
-				
-				HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
-				daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
-				
-				updatedFlowInstances++;
-				
-			} catch (Exception e) {
-				
-				log.error("Error updating contact attributes for flow instance ID " + flowInstanceID, e);
-			}
-		}
-		
-		return new SimpleForegroundModuleResponse("Updated contact attributes for " + updatedFlowInstances + " flow instances.");
-	}
-
 	@Override
 	public int getPriority() {
 

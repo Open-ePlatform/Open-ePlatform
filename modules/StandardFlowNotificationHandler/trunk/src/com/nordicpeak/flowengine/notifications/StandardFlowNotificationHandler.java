@@ -60,6 +60,7 @@ import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
@@ -72,6 +73,7 @@ import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.mime.MimeUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.TagReplacer;
@@ -121,6 +123,7 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.utils.AttributeTagUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 
@@ -1172,6 +1175,66 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 		
 		return new SimpleForegroundModuleResponse("No contacts to send notifications to for flow instance " + flowInstance);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse triggerSetContactAttributes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+		
+		if (!AccessUtils.checkAccess(user, new SimpleAccessInterface(adminGroupIDs, null))) {
+			
+			throw new AccessDeniedException("User does not have admin access to this module");
+		}
+		
+		List<Integer> flowInstanceIDs = new ArrayList<Integer>();
+		
+		{
+			Integer flowInstanceID = uriParser.getInt(2);
+			
+			if (flowInstanceID != null) {
+				
+				flowInstanceIDs.add(flowInstanceID);
+			}
+		}
+		
+		String[] paramFlowInstanceIDs = req.getParameterValues("id");
+		
+		if (!ArrayUtils.isEmpty(paramFlowInstanceIDs)) {
+			
+			for (String stringID : paramFlowInstanceIDs) {
+				
+				Integer flowInstanceID = NumberUtils.toInt(stringID);
+				flowInstanceIDs.add(flowInstanceID);
+			}
+		}
+		
+		long updatedFlowInstances = 0;
+		
+		for (Integer flowInstanceID : flowInstanceIDs) {
+			
+			try {
+				FlowInstance flowInstance = getFlowInstance(flowInstanceID);
+				
+				if (flowInstance == null) {
+					
+					throw new URINotFoundException(uriParser);
+				}
+				
+				ImmutableFlowInstanceManager instanceManager = new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(null), null);
+				
+				FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
+				
+				HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
+				flowInstanceDAO.update(flowInstance, updateQuery);
+				
+				updatedFlowInstances++;
+				
+			} catch (Exception e) {
+				
+				log.error("Error updating contact attributes for flow instance ID " + flowInstanceID, e);
+			}
+		}
+		
+		return new SimpleForegroundModuleResponse("Updated contact attributes for " + updatedFlowInstances + " flow instances.");
 	}
 	
 	@EventListener(channel = FlowInstanceManager.class, priority = 50)
