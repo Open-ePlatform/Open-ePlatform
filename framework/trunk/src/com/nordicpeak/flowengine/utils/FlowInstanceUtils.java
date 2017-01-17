@@ -96,6 +96,7 @@ public class FlowInstanceUtils {
 		List<ContactQueryInstance> contactQueryInstances = flowInstanceManager.getQueries(ContactQueryInstance.class);
 		
 		if (!CollectionUtils.isEmpty(contactQueryInstances)) {
+			
 			for (ContactQueryInstance contactQueryInstance : contactQueryInstances) {
 				
 				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated()) {
@@ -123,22 +124,22 @@ public class FlowInstanceUtils {
 					}
 				}
 			}
+			
+			flowInstanceAttributeHandler.removeAttribute("firstname");
+			flowInstanceAttributeHandler.removeAttribute("lastname");
+			flowInstanceAttributeHandler.removeAttribute("address");
+			flowInstanceAttributeHandler.removeAttribute("zipCode");
+			flowInstanceAttributeHandler.removeAttribute("postalAddress");
+			flowInstanceAttributeHandler.removeAttribute("email");
+			flowInstanceAttributeHandler.removeAttribute("phone");
+			flowInstanceAttributeHandler.removeAttribute("mobilePhone");
+			flowInstanceAttributeHandler.removeAttribute("citizenIdentifier");
+			
+			flowInstanceAttributeHandler.removeAttribute("organizationName");
+			flowInstanceAttributeHandler.removeAttribute("organizationNumber");
+			
+			flowInstanceAttributeHandler.removeAttribute("contactBySMS");
 		}
-		
-		flowInstanceAttributeHandler.removeAttribute("firstname");
-		flowInstanceAttributeHandler.removeAttribute("lastname");
-		flowInstanceAttributeHandler.removeAttribute("address");
-		flowInstanceAttributeHandler.removeAttribute("zipCode");
-		flowInstanceAttributeHandler.removeAttribute("postalAddress");
-		flowInstanceAttributeHandler.removeAttribute("email");
-		flowInstanceAttributeHandler.removeAttribute("phone");
-		flowInstanceAttributeHandler.removeAttribute("mobilePhone");
-		flowInstanceAttributeHandler.removeAttribute("citizenIdentifier");
-		
-		flowInstanceAttributeHandler.removeAttribute("organizationName");
-		flowInstanceAttributeHandler.removeAttribute("organizationNumber");
-		
-		flowInstanceAttributeHandler.removeAttribute("contactBySMS");
 	}
 	
 }
