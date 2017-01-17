@@ -1061,6 +1061,34 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		Integer flowInstanceID = uriParser.getInt(2);
 		Integer eventID = uriParser.getInt(3);
 		
+		return triggerSubmit(flowInstanceID, eventID, uriParser);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse triggerSubmits(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+		
+		if (!AccessUtils.checkAccess(user, new SimpleAccessInterface(adminGroupIDs, null))) {
+			
+			throw new AccessDeniedException("User does not have admin access to this module");
+		}
+		
+		List<Integer> flowInstanceIDs = NumberUtils.toInt(req.getParameterValues("id"));
+		
+		if(flowInstanceIDs == null){
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		for(Integer flowInstanceID : flowInstanceIDs){
+			
+			triggerSubmit(flowInstanceID, null, uriParser);
+		}
+		
+		return new SimpleForegroundModuleResponse("Submit notifications triggered, check log for more information.");
+	}	
+	
+	private ForegroundModuleResponse triggerSubmit(Integer flowInstanceID, Integer eventID, URIParser uriParser) throws URINotFoundException, SQLException {
+
 		if (flowInstanceID == null) {
 			
 			throw new URINotFoundException(uriParser);
@@ -1171,14 +1199,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				}
 			}
 		
+			log.info(sentEmails + " E-mail and " + sentSMS + " SMS submit notifications sent to " + contacts.size() + " contacts for flow instance " + flowInstance);
+			
 			return new SimpleForegroundModuleResponse(sentEmails + " E-mail and " + sentSMS + " SMS submit notifications sent to " + contacts.size() + " contacts for flow instance " + flowInstance);
 		}
 		
+		log.info("No contacts to send notifications to for flow instance " + flowInstance);
+		
 		return new SimpleForegroundModuleResponse("No contacts to send notifications to for flow instance " + flowInstance);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse triggerSetContactAttributes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+	public ForegroundModuleResponse setContactAttributes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
 		
 		if (!AccessUtils.checkAccess(user, new SimpleAccessInterface(adminGroupIDs, null))) {
 			
@@ -1203,7 +1235,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			for (String stringID : paramFlowInstanceIDs) {
 				
 				Integer flowInstanceID = NumberUtils.toInt(stringID);
-				flowInstanceIDs.add(flowInstanceID);
+				
+				if(flowInstanceID != null){
+					
+					flowInstanceIDs.add(flowInstanceID);
+				}
 			}
 		}
 		
@@ -1214,19 +1250,19 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			try {
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID);
 				
-				if (flowInstance == null) {
+				if (flowInstance != null) {
 					
-					throw new URINotFoundException(uriParser);
+					ImmutableFlowInstanceManager instanceManager = new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(null), null);
+					
+					FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
+					
+					HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.ATTRIBUTES_RELATION);
+					flowInstanceDAO.update(flowInstance, updateQuery);
+					
+					log.info("Updated contact attributes for flow instance " + flowInstance);
+					
+					updatedFlowInstances++;
 				}
-				
-				ImmutableFlowInstanceManager instanceManager = new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(null), null);
-				
-				FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
-				
-				HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
-				flowInstanceDAO.update(flowInstance, updateQuery);
-				
-				updatedFlowInstances++;
 				
 			} catch (Exception e) {
 				
