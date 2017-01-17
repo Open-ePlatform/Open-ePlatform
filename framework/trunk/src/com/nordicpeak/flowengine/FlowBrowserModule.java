@@ -119,6 +119,7 @@ import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.search.FlowIndexer;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
@@ -1335,8 +1336,9 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				}
 			}
 			
-			//TODO call setContactAttributes and add attributes relation below 
-			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION);
+			FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
+			
+			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 			daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
 			
 			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvents(flowInstance);

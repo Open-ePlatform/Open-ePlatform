@@ -22,12 +22,15 @@ import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
+import se.unlogic.hierarchy.core.beans.MutableUser;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
@@ -49,6 +52,7 @@ import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -584,7 +588,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
-	public void signingComplete(ImmutableFlowInstanceManager instanceManager, FlowInstanceEvent event, SigningParty signingParty, HttpServletRequest req) throws SQLException {
+	public void signingComplete(ImmutableFlowInstanceManager instanceManager, FlowInstanceEvent event, SigningParty signingParty, User user, HttpServletRequest req) throws SQLException {
 		
 		//add signature
 		Signature signature = new Signature();
@@ -594,6 +598,44 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		signature.setEventID(event.getEventID());
 		
 		signatureDAO.add(signature);
+		
+		if (user != null && user instanceof MutableUser) {
+			
+			MutableUser mutableUser = (MutableUser) user;
+			boolean changed = false;
+			
+			if (!StringUtils.isEmpty(signingParty.getEmail()) && StringUtils.isEmpty(mutableUser.getEmail())) {
+				
+				changed = true;
+				mutableUser.setEmail(signingParty.getEmail());
+			}
+			
+			MutableAttributeHandler attributeHandler = mutableUser.getAttributeHandler();
+			
+			if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber()) && StringUtils.isEmpty(attributeHandler.getString("citizenIdentifier"))) {
+				
+				changed = true;
+				attributeHandler.setAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber());
+			}
+			
+			if (!StringUtils.isEmpty(signingParty.getMobilePhone()) && StringUtils.isEmpty(attributeHandler.getString("mobilePhone"))) {
+				
+				changed = true;
+				attributeHandler.setAttribute("mobilePhone", signingParty.getMobilePhone());
+			}
+			
+			
+			if (changed) {
+				
+				try {
+					systemInterface.getUserHandler().updateUser(mutableUser, false, false, true);
+					
+				} catch (UnableToUpdateUserException e) {
+					
+					log.error("Unable to update user " + user, e);
+				}
+			}
+		}
 		
 		if (isFullySigned(instanceManager)) {
 			

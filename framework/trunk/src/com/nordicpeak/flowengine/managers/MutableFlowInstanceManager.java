@@ -33,7 +33,6 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.EvaluationResponse;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -70,7 +69,6 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundI
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryNotFoundInQueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.Evaluator;
 import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
@@ -81,6 +79,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class MutableFlowInstanceManager implements Serializable, HttpSessionBindingListener, FlowInstanceManager {
@@ -328,7 +327,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	 * @throws EvaluationProviderErrorException
 	 * @throws EvaluationProviderNotFoundException
 	 * @throws EvaluationException
-	 * @throws UnableToResetQueryInstanceException 
+	 * @throws UnableToResetQueryInstanceException
 	 */
 	public MutableFlowInstanceManager(Flow flow, QueryHandler queryHandler, EvaluationHandler evaluationHandler, String instanceManagerID, HttpServletRequest req, User user, InstanceMetadata instanceMetadata, RequestMetadata requestMetadata, String absoluteFileURL) throws QueryProviderNotFoundException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
 
@@ -1108,7 +1107,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			
 			if (eventType == EventType.SUBMITTED) {
 				
-				setContactAttributes();
+				FlowInstanceUtils.setContactAttributes(this, flowInstance.getAttributeHandler());
 			}
 			
 			if (flowInstance.getFlowInstanceID() == null) {
@@ -1218,59 +1217,6 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
-	}
-
-	//Makes this method static and move it to another class so it can be called outside of the flow instance manager
-	private void setContactAttributes() {
-		
-		MutableAttributeHandler attributeHandler = flowInstance.getAttributeHandler();
-		
-		List<ContactQueryInstance> contactQueryInstances = getQueries(ContactQueryInstance.class);
-		
-		if (!CollectionUtils.isEmpty(contactQueryInstances)) {
-			for (ContactQueryInstance contactQueryInstance : contactQueryInstances) {
-				
-				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated()) {
-					
-					Contact contact = contactQueryInstance.getContact();
-					
-					if (contact != null) {
-						
-						attributeHandler.setAttribute("firstname", contact.getFirstname());
-						attributeHandler.setAttribute("lastname", contact.getLastname());
-						attributeHandler.setAttribute("address", contact.getAddress());
-						attributeHandler.setAttribute("zipCode", contact.getZipCode());
-						attributeHandler.setAttribute("postalAddress", contact.getPostalAddress());
-						attributeHandler.setAttribute("email", contact.getEmail());
-						attributeHandler.setAttribute("phone", contact.getPhone());
-						attributeHandler.setAttribute("mobilePhone", contact.getMobilePhone());
-						attributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
-						
-						attributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
-						
-						attributeHandler.setAttribute("organizationName", contact.getOrganizationName());
-						attributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
-						
-						return;
-					}
-				}
-			}
-		}
-		
-		attributeHandler.removeAttribute("firstname");
-		attributeHandler.removeAttribute("lastname");
-		attributeHandler.removeAttribute("address");
-		attributeHandler.removeAttribute("zipCode");
-		attributeHandler.removeAttribute("postalAddress");
-		attributeHandler.removeAttribute("email");
-		attributeHandler.removeAttribute("phone");
-		attributeHandler.removeAttribute("mobilePhone");
-		attributeHandler.removeAttribute("citizenIdentifier");
-		
-		attributeHandler.removeAttribute("organizationName");
-		attributeHandler.removeAttribute("organizationNumber");
-		
-		attributeHandler.removeAttribute("contactBySMS");
 	}
 
 	public synchronized void close(QueryHandler queryHandler) {
