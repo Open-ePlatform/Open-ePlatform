@@ -612,12 +612,6 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			
 			MutableAttributeHandler attributeHandler = mutableUser.getAttributeHandler();
 			
-			if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber()) && StringUtils.isEmpty(attributeHandler.getString("citizenIdentifier"))) {
-				
-				changed = true;
-				attributeHandler.setAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber());
-			}
-			
 			if (!StringUtils.isEmpty(signingParty.getMobilePhone()) && StringUtils.isEmpty(attributeHandler.getString("mobilePhone"))) {
 				
 				changed = true;
