@@ -55,11 +55,6 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Summ
 	private String freeTextAlternative;
 	
 	@DAOManaged
-	@OneToMany
-	@XMLElement
-	private List<RadioButtonQueryInstance> instances;
-	
-	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean setAsAttribute;
@@ -69,6 +64,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Summ
 	@RequiredIfSet(paramName = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement
+	private List<RadioButtonQueryInstance> instances;
 	
 	@DAOManaged
 	@WebPopulate(maxLength = 10, required = true)
