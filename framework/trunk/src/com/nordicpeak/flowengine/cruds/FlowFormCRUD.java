@@ -313,6 +313,8 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		
 		callback.getEventHandler().sendEvent(FlowForm.class, new CRUDEvent<FlowForm>(action, flowForm), EventTarget.ALL);
 		
+		callback.getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flowForm.getFlow()), EventTarget.ALL);
+		
 		callback.redirectToMethod(req, res, "/showflow/" + flowForm.getFlow().getFlowID() + "#pdfform");
 		
 		return null;
