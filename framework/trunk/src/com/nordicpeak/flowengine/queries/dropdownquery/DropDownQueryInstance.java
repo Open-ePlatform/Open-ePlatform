@@ -13,6 +13,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
@@ -78,7 +79,31 @@ public class DropDownQueryInstance extends BaseQueryInstance implements FixedAlt
 	public void reset(MutableAttributeHandler attributeHandler) {
 
 		this.alternative = null;
+		freeTextAlternativeValue = null;
+		
+		if(query.isSetAsAttribute()){
+
+			resetAttribute(attributeHandler);
+		}
+		
 		super.reset(attributeHandler);
+	}
+	
+	public void setAttribute(MutableAttributeHandler attributeHandler){
+		
+		if(!StringUtils.isEmpty(freeTextAlternativeValue)){
+			
+			attributeHandler.setAttribute(query.getAttributeName(), freeTextAlternativeValue);
+			
+		} else if(alternative != null){
+			
+			attributeHandler.setAttribute(query.getAttributeName(), alternative.getName());
+		}
+	}
+	
+	public void resetAttribute(MutableAttributeHandler attributeHandler){
+		
+		attributeHandler.removeAttribute(query.getAttributeName());
 	}
 
 	public void copyQueryValues() {}

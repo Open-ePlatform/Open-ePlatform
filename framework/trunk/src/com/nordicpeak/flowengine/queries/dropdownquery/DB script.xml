@@ -98,4 +98,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `drop_down_queries`
+	    		ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `helpText`,
+	    		ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

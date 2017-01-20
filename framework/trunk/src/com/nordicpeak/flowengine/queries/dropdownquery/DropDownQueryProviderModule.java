@@ -309,6 +309,13 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 			queryInstance.setAlternative(selectedAlternative);
 			queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 			queryInstance.getQueryInstanceDescriptor().setPopulated(selectedAlternative != null);
+			
+			if(queryInstance.getQuery().isSetAsAttribute()){
+				
+				queryInstance.resetAttribute(attributeHandler);
+				queryInstance.setAttribute(attributeHandler);
+			}
+			
 			return;
 		}
 
@@ -325,6 +332,12 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 		queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 		queryInstance.setAlternative(selectedAlternative);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(alternativeSelected);
+		
+		if(queryInstance.getQuery().isSetAsAttribute()){
+			
+			queryInstance.resetAttribute(attributeHandler);
+			queryInstance.setAttribute(attributeHandler);
+		}
 	}
 
 	@WebPublic(alias = "config")

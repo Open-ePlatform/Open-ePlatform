@@ -15,4 +15,8 @@
 	<xsl:variable name="i18n.shortDescription">kort beskrivning</xsl:variable>
 	<xsl:variable name="i18n.DropDownQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>
+	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>	
+	
 </xsl:stylesheet>

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -57,6 +58,17 @@ public class DropDownQuery extends FixedAlternativesBaseQuery implements Summary
 	@XMLElement
 	private String freeTextAlternative;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramName = "setAsAttribute")
+	@XMLElement
+	private String attributeName;	
+	
 	@DAOManaged
 	@OneToMany
 	@XMLElement
@@ -157,6 +169,13 @@ public class DropDownQuery extends FixedAlternativesBaseQuery implements Summary
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if (attributeName != null) {
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
+		
 		alternatives = DropDownQueryCRUD.ALTERNATIVES_POPLATOR.populate(xmlParser, errors);
 		
 		if(!errors.isEmpty()){
@@ -164,5 +183,29 @@ public class DropDownQuery extends FixedAlternativesBaseQuery implements Summary
 			throw new ValidationException(errors);
 		}
 		
+	}
+
+	
+	public boolean isSetAsAttribute() {
+	
+		return setAsAttribute;
+	}
+
+	
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+
+	
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
 	}
 }
