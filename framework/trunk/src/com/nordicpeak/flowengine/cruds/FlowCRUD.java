@@ -641,15 +641,13 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(extensionProviders.size());
 
-			//TODO check if provider supports internal/external flows
-			
 			for (FlowAdminExtensionViewProvider extensionProvider : extensionProviders) {
-
-				Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 
 				ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
 
 				if (viewFragment != null) {
+
+					Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 					XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 					XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
 					viewFragments.add(viewFragment);
@@ -657,7 +655,10 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			
 			}
 
-			req.setAttribute("ExtensionProviderFragments", viewFragments);
+			if(!viewFragments.isEmpty()){
+				
+				req.setAttribute("ExtensionProviderFragments", viewFragments);
+			}
 		}
 		
 		List<FlowAdminShowFlowExtensionLinkProvider> showExtensionLinkProviders = callback.getFlowShowExtensionLinkProviders();

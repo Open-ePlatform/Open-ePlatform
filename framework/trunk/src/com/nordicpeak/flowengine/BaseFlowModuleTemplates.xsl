@@ -70,8 +70,14 @@
 						<xsl:if test="not($concurrentModificationLock)">
 						
 							<xsl:choose>
+								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and FlowInstance/Flow/paymentSupportEnabled = 'true'">
+									<xsl:call-template name="createFlowInstanceManagerPreviewSigningPaymentButton" />
+								</xsl:when>							
 								<xsl:when test="FlowInstance/Flow/requireSigning = 'true'">
 									<xsl:call-template name="createFlowInstanceManagerPreviewSigningButton" />
+								</xsl:when>
+								<xsl:when test="FlowInstance/Flow/paymentSupportEnabled = 'true'">
+									<xsl:call-template name="createFlowInstanceManagerPaymentButton" />
 								</xsl:when>
 								<xsl:otherwise>
 									<xsl:call-template name="createFlowInstanceManagerPreviewSubmitButton" />
@@ -95,6 +101,18 @@
 		</section>
 		
 	</xsl:template>			
+	
+	<xsl:template name="createFlowInstanceManagerPaymentButton">
+	
+		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.Payment" /></a>
+	
+	</xsl:template>	
+	
+	<xsl:template name="createFlowInstanceManagerPreviewSigningPaymentButton">
+	
+		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.Sign" /></a>
+	
+	</xsl:template>		
 	
 	<xsl:template match="SigningForm">
 		
@@ -225,9 +243,8 @@
 				<input id="submitmode" type="hidden" value="true" />
 				
 				<xsl:call-template name="createFlowInstanceManagerPreviewHeader">
-				
 					<xsl:with-param name="showSaveButton" select="'false'"/>
-				
+					<xsl:with-param name="showFlowInstanceID" select="'false'"/>
 				</xsl:call-template>
 			
 				<div class="service-navigator-wrap">
@@ -250,27 +267,24 @@
 					
 					<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
 					
-					<xsl:choose>
-						<xsl:when test="FlowInstance/Flow/usePreview = 'true'">
-							
-							<div class="navigator-buttons clearboth">
+					<div class="navigator-buttons clearboth">
+					
+						<xsl:choose>
+							<xsl:when test="FlowInstance/Flow/usePreview = 'true'">
+								
 								<a href="#" class="btn btn-light xl prev arrow-mobile" onclick="redirectFromPreview(event,'preview=1')" data-icon-before="&#60;"><span class="only-mobile"><xsl:value-of select="$i18n.previousStep" /></span><span class="hide-mobile"><xsl:value-of select="$i18n.preview" /></span></a>
-								<a href="#" class="btn btn-light xl next" onclick="submitStep('save-submit', event)" data-icon-after=">"><span><xsl:value-of select="$i18n.payAndSubmit" /></span></a>
-							</div>								
-							
-						</xsl:when>
-						<xsl:otherwise>
-							
-							<div class="navigator-buttons clearboth">
+								
+							</xsl:when>
+							<xsl:otherwise>
+								
 								<a href="#" class="btn btn-light xl prev arrow-mobile" onclick="redirectFromPreview(event)" data-icon-before="&#60;"><span class="only-mobile"><xsl:value-of select="$i18n.previousStep" /></span><span class="hide-mobile"><xsl:value-of select="FlowInstance/Flow/Steps/Step[position() = last()]/name" /></span></a>
-								<a href="#" class="btn btn-light xl next" onclick="submitStep('save-submit', event)" data-icon-after=">"><span><xsl:value-of select="$i18n.payAndSubmit" /></span></a>
-							</div>							
-							
-						</xsl:otherwise>
-					</xsl:choose>					
+								
+							</xsl:otherwise>
+						</xsl:choose>					
+						
+						<a href="#" class="btn btn-green xl next" onclick="submitStep('save-submit', event)" data-icon-after=">"><span><xsl:value-of select="$i18n.payAndSubmit" /></span></a>					
 					
-					
-							
+					</div>	
 				</div>
 			
 				<ul id="futureNavigator" class="service-navigator hide-desktop clearfix">
@@ -295,7 +309,7 @@
 	 				</figure>
 	 				<div class="heading">
 						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name"/></h1>
-						<xsl:if test="$showFlowInstanceID = 'true' and FlowInstance/flowInstanceID">
+						<xsl:if test="$showFlowInstanceID = 'true' and FlowInstance/flowInstanceID and FlowInstance/firstSubmitted">
 							<span class="errandno"><xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" /></span>
 						</xsl:if>
 					</div>
@@ -662,56 +676,81 @@
 	<xsl:template match="Steps">
 	
 		<xsl:variable name="stepCount" select="count(Step)" />
-		<xsl:variable name="submitText">
-			<xsl:choose>
-				<xsl:when test="../requireSigning = 'true'"><xsl:value-of select="$i18n.signAndSubmit" /></xsl:when>
-				<xsl:otherwise><xsl:value-of select="$i18n.submit" /></xsl:otherwise>
-			</xsl:choose>			
-		</xsl:variable>
 	
 		<xsl:apply-templates select="Step" />
 		
-		<!-- 		
+		<xsl:variable name="previewOffset">
+			<xsl:choose>
+				<xsl:when test="../usePreview = 'true'">
+					<xsl:value-of select="1"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>			
+			</xsl:choose>
+		</xsl:variable>
+		
 		<xsl:if test="../usePreview = 'true'">
 			<li>
 				<xsl:if test="/Document/FlowInstanceManagerPreview">
 					<xsl:attribute name="class">active</xsl:attribute>
 				</xsl:if>
 				
-				<span data-step="{$stepCount+1}">
+				<span data-step="{$stepCount + 1}">
 					<xsl:value-of select="$i18n.preview"/>
 				</span>
-			</li>
+			</li>		
 		</xsl:if>
-		 -->
-		
+
 		<xsl:choose>
-			<xsl:when test="../usePreview = 'true'">
+			<xsl:when test="../paymentSupportEnabled = 'true' and ../requireSigning = 'true'">
+			
+				<xsl:call-template name="createSubmitStep">
+					<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
+					<xsl:with-param name="submitText" select="$i18n.Sign" />
+				</xsl:call-template>
+			
 				<li>
-					<xsl:if test="/Document/FlowInstanceManagerPreview">
+					<xsl:if test="/Document/InlinePaymentForm or StandalonePaymentForm">
 						<xsl:attribute name="class">active</xsl:attribute>
 					</xsl:if>
 					
-					<span data-step="{$stepCount+1}">
-						<xsl:value-of select="$i18n.preview"/>
+					<span data-step="{$stepCount + 2 + $previewOffset}">
+						<xsl:value-of select="$i18n.payAndSubmit"/>
 					</span>
-				</li>
-				
-				<xsl:if test="../hideSubmitStepText != 'true'">				
-					<xsl:call-template name="createSubmitStep">
-						<xsl:with-param name="step" select="$stepCount+2" />
-						<xsl:with-param name="submitText" select="$submitText" />
-					</xsl:call-template>					
-				</xsl:if>
-				
+				</li>			
+			
 			</xsl:when>
-			<xsl:otherwise>			
+			<xsl:when test="../paymentSupportEnabled = 'true'">
+						
+				<li>
+					<xsl:if test="/Document/InlinePaymentForm or StandalonePaymentForm">
+						<xsl:attribute name="class">active</xsl:attribute>
+					</xsl:if>
+					
+					<span data-step="{$stepCount +  1 + $previewOffset}">
+						<xsl:value-of select="$i18n.payAndSubmit"/>
+					</span>
+				</li>			
+			
+			</xsl:when>
+			<xsl:when test="../requireSigning = 'true'">
+						  						
+				<xsl:call-template name="createSubmitStep">
+					<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
+					<xsl:with-param name="submitText" select="$i18n.signAndSubmit" />
+				</xsl:call-template>		  						
+			
+			</xsl:when>
+			<xsl:otherwise>	
+			
 				<xsl:if test="../hideSubmitStepText != 'true'">
 					<xsl:call-template name="createSubmitStep">
-						<xsl:with-param name="step" select="$stepCount+1" />
-						<xsl:with-param name="submitText" select="$submitText" />
+						<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
+						<xsl:with-param name="submitText" select="$i18n.submit" />
 					</xsl:call-template>
-				</xsl:if>
+				</xsl:if>			  						
+			
 			</xsl:otherwise>
 		</xsl:choose>
 		
@@ -1009,66 +1048,6 @@
 		
 		<xsl:value-of select="$user/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$user/lastname" />
 		
-	</xsl:template>
-	
-	<xsl:template name="FlowFormButton">
-		<xsl:param name="flow" select="."/>
-		<xsl:param name="isDisabled"/>
-		<xsl:param name="operatingMessage"/>
-	
-		<div class="section no-border">
-			<div class="btn-wrapper no-border">
-				<xsl:if test="not($flow/Checks/check)"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
-				<xsl:choose>
-					<xsl:when test="$isDisabled">
-					
-						<a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
-					
-					</xsl:when>
-					<xsl:when test="count($flow/FlowForms/FlowForm) = 1">
-					
-						<a class="btn btn-blue xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{$flow/flowID}/{$flow/FlowForms/FlowForm[1]/flowFormID}" target="_blank"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
-						
-					</xsl:when>
-					<xsl:otherwise>
-					
-						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-							<xsl:value-of select="$i18n.DownloadFlowForms" />
-							<span class="bigmarginleft" data-icon-before="^" style="display: none;" />
-							<span class="bigmarginleft" data-icon-before="_" />
-						</a>
-						
-						<div id="flowforms-list" class="bigpadding border" style="display: none">
-							<xsl:apply-templates select="$flow/FlowForms/FlowForm" mode="link"/>
-						</div>
-						
-					</xsl:otherwise>
-				</xsl:choose>
-				
-			</div>
-		</div>
-	
-	</xsl:template>
-	
-	<xsl:template match="FlowForm" mode="link">
-	
-		<a class="display-block text-align-left padding" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
-		
-			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
-		
-			<xsl:choose>
-				<xsl:when test="name">
-					<xsl:value-of select="name"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$i18n.DownloadFlowForm" />
-					<xsl:text>:&#160;</xsl:text>
-					<xsl:value-of select="position()"/>
-				</xsl:otherwise>
-			</xsl:choose>
-			
-		</a>
-	
 	</xsl:template>
 	
 </xsl:stylesheet>

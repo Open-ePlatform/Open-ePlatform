@@ -162,6 +162,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean paymentSupportEnabled;		
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean requireAuthentication;
 	
 	@DAOManaged
@@ -815,6 +820,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		//this.unPublishDate = XMLValidationUtils.validateParameter("unPublishDate", xmlParser, false, datePopulator, errors);
 		
 		this.usePreview = xmlParser.getPrimitiveBoolean("usePreview");
+		this.paymentSupportEnabled = xmlParser.getPrimitiveBoolean("paymentSupportEnabled");
 		this.requireAuthentication = xmlParser.getPrimitiveBoolean("requireAuthentication");
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		
@@ -930,6 +936,18 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	public void setHideInternalMessages(boolean hideInternalMessages) {
 		this.hideInternalMessages = hideInternalMessages;
+	}
+
+	
+	public boolean isPaymentSupportEnabled() {
+	
+		return paymentSupportEnabled;
+	}
+
+	
+	public void setPaymentSupportEnabled(boolean paymentSupportEnabled) {
+	
+		this.paymentSupportEnabled = paymentSupportEnabled;
 	}
 	
 }

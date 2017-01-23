@@ -49,5 +49,7 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	
 	public boolean skipOverview();
 	
+	public boolean isPaymentSupportEnabled();
+	
 	public List<? extends ImmutableStatus> getStatuses();
 }

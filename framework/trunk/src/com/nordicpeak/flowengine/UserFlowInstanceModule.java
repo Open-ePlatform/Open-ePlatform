@@ -855,17 +855,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return null;
 	}
-
-	@Override
-	public boolean requiresPayment(FlowInstanceManager instanceManager) {
-
-		if(instanceManager.getFlowState().getContentType() == ContentType.WAITING_FOR_COMPLETION) {
-
-			return false;
-		}
-
-		return super.requiresPayment(instanceManager);
-	}
 	
 	@Override
 	public String getAbsoluteFileURL(URIParser uriParser, Object bean) {

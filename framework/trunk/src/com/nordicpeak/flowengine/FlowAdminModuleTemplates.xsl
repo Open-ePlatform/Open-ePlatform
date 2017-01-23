@@ -512,10 +512,26 @@
 						</xsl:call-template>
 						
 						<label for="usePreview">
-							<xsl:value-of select="$i18n.preview" />
+							<xsl:value-of select="$i18n.PreviewEnabled" />
 						</label>
 					</div>
 				</div>
+				
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop internal">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'paymentSupportEnabled'" />
+							<xsl:with-param name="id" select="'paymentSupportEnabled'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="paymentSupportEnabled">
+							<xsl:value-of select="$i18n.PaymentEnabled" />
+						</label>
+					</div>
+				</div>				
 				
 			</xsl:if>
 			
@@ -1974,6 +1990,21 @@
 					</label>
 				</div>
 			</div>
+		
+			<div class="floatleft full bigmarginbottom margintop internal">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'paymentSupportEnabled'" />
+						<xsl:with-param name="id" select="'paymentSupportEnabled'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="paymentSupportEnabled">
+						<xsl:value-of select="$i18n.PaymentSupportEnabled" />
+					</label>
+				</div>
+			</div>		
 		
 		</xsl:if>
 			

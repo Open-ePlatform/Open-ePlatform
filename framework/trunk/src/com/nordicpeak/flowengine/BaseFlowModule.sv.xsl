@@ -25,7 +25,7 @@
 	<xsl:variable name="i18n.submit">Skicka in</xsl:variable>
 	<xsl:variable name="i18n.signAndSubmit">Signera och skicka in</xsl:variable>
 	<xsl:variable name="i18n.payHeader">Betala</xsl:variable>
-	<xsl:variable name="i18n.payAndSubmit">Betala</xsl:variable>
+	<xsl:variable name="i18n.payAndSubmit">Betala och skicka in</xsl:variable>
 	
 	<xsl:variable name="i18n.noAnsweredQueriesInThisStep">Det finns inga besvarade frågor i detta steg.</xsl:variable>
 	
@@ -60,7 +60,7 @@
 	<xsl:variable name="i18n.Previous">Föregående</xsl:variable>
 	<xsl:variable name="i18n.Next">Nästa</xsl:variable>
 	
-	<xsl:variable name="i18n.saveBtnSuffix"></xsl:variable>
+	<xsl:variable name="i18n.saveBtnSuffix"/>
 	
 	<xsl:variable name="i18n.FlowInstanceConcurrentlyModified">Detta ärende har ändrats sedan du öppnade den och kan därför inte sparas. Klicka här för att öppna den senaste versionen, observera att dina eventuella ändringar kommer att gå förlorade.</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceConcurrentlyModifiedConfirm">Är du säker på att du vill öppna senaste versionen och därmed förlora eventuella ändringar?</xsl:variable>
@@ -80,5 +80,6 @@
 	
 	<xsl:variable name="i18n.AnonymousUser">anonym användare</xsl:variable>
 	<xsl:variable name="i18n.RemovedUser">Borttagen användare</xsl:variable>
-	
+	<xsl:variable name="i18n.Payment">Betala</xsl:variable>
+	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
 </xsl:stylesheet>

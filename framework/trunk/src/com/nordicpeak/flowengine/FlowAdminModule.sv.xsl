@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	
-	<xsl:import href="FlowTestCommon.sv.xsl"/>
+	<xsl:include href="FlowTestCommon.sv.xsl"/>
 	
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/usergrouplist/UserGroupList.sv.xsl"/>
 	
@@ -478,4 +478,8 @@
 	<xsl:variable name="i18n.sortStatuses">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
+	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>
+	
+	<xsl:variable name="i18n.PreviewEnabled">Förhandsgranskning</xsl:variable>
+	<xsl:variable name="i18n.PaymentEnabled">Betalstöd</xsl:variable>
 </xsl:stylesheet>

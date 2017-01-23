@@ -2403,7 +2403,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	public boolean requiresPayment(FlowInstanceManager instanceManager) {
 
-		if(instanceManager.getFlowInstance().getFirstSubmitted() != null){
+		if(!instanceManager.getFlowInstance().getFlow().isPaymentSupportEnabled() || instanceManager.getFlowInstance().getFirstSubmitted() != null){
 
 			return false;
 		}
