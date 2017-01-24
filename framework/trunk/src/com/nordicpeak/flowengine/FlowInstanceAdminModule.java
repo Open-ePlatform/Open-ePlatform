@@ -117,7 +117,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
-public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback{
+public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable{
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
 
@@ -1112,9 +1112,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void systemStarted() {
 
-		this.flowInstanceIndexer.cacheFlowInstances();
+		Thread indexThreading = new Thread(this, "Flow instance indexer for " + moduleDescriptor);
+		
+		indexThreading.start();
 	}
 
+	public void run(){
+		
+		this.flowInstanceIndexer.cacheFlowInstances();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void processEvent(CRUDEvent<?> event, EventSource source) {
