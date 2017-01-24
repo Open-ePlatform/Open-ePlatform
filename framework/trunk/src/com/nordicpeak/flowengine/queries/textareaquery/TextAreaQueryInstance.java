@@ -113,4 +113,9 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 
 		return value;
 	}
+
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName(), value);		
+	}
 }

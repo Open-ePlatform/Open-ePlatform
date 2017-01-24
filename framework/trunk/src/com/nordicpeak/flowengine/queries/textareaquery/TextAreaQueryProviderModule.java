@@ -261,7 +261,7 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 		
 		if(queryInstance.getQuery().isSetAsAttribute()){
 			
-			attributeHandler.setAttribute(queryInstance.getQuery().getAttributeName(), value);
+			queryInstance.setAttribute(attributeHandler);
 		}
 	}
 
