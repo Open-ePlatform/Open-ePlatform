@@ -301,27 +301,29 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 			}
 		}
 		
-		for (TextField textField : getQuery().getFields()) {
+		if(getQuery().getFields() != null){
 			
-			if(textField.getTextFieldID().equals(textFieldID)){
+			for (TextField textField : getQuery().getFields()) {
 				
-				if(values == null){
+				if(textField.getTextFieldID().equals(textFieldID)){
 					
-					values = new ArrayList<TextFieldValue>(1);
+					if(values == null){
+						
+						values = new ArrayList<TextFieldValue>(1);
+					}
+					
+					values.add(new TextFieldValue(textField, value));
+					
+					if (textField.isSetAsAttribute()) {
+						
+						attributeHandler.setAttribute(textField.getAttributeName(), value);
+					}
+					
+					return;
 				}
-				
-				values.add(new TextFieldValue(textField, value));
-				
-				if (textField.isSetAsAttribute()) {
-
-					attributeHandler.setAttribute(textField.getAttributeName(), value);
-				}
-				
-				return;
 			}
 		}
 	}
-
 
 	public void setDefaultValues() {
 
