@@ -100,7 +100,7 @@
 	  							</xsl:when>
 	  							<xsl:otherwise>
 	  							
-	  								<a class="btn btn-green xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/{externalFlowMethodAlias}/{flowID}">
+	  								<a class="btn btn-green xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/{$externalFlowMethodAlias}/{flowID}">
 	  									
 	  									<xsl:if test="externalFlowMethodAlias = ''">
 	  										<xsl:attribute name="href"><xsl:value-of select="externalLink"/></xsl:attribute>
