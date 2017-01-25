@@ -227,6 +227,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected QueryParameterFactory<Flow, Integer> flowIDParamFactory;
 	protected QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
+	protected QueryParameterFactory<FlowInstanceEvent, Integer> eventIDParamFactory;
 	protected QueryParameterFactory<FlowInstanceEvent, FlowInstance> eventFlowInstanceParamFactory;
 	protected QueryParameterFactory<QueryInstanceDescriptor, Integer> queryInstanceDescriptorFlowInstanceIDParamFactory;
 
@@ -239,6 +240,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		flowIDParamFactory = daoFactory.getFlowDAO().getParamFactory("flowID", Integer.class);
 		flowTypeIDParamFactory = daoFactory.getFlowTypeDAO().getParamFactory("flowTypeID", Integer.class);
 		flowInstanceIDParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flowInstanceID", Integer.class);
+		eventIDParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("eventID", Integer.class);
 		eventFlowInstanceParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("flowInstance", FlowInstance.class);
 		queryInstanceDescriptorFlowInstanceIDParamFactory = daoFactory.getQueryInstanceDescriptorDAO().getParamFactory("flowInstanceID", Integer.class);
 
@@ -2451,4 +2453,17 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
 	}
 	
+	public FlowInstanceEvent getFlowInstanceEvent(int eventID, Field... relations) throws SQLException {
+		
+		HighLevelQuery<FlowInstanceEvent> query = new HighLevelQuery<FlowInstanceEvent>();
+		
+		if(relations != null){
+			
+			query.addRelations(relations);
+		}
+		
+		query.addParameter(eventIDParamFactory.getParameter(eventID));
+		
+		return daoFactory.getFlowInstanceEventDAO().get(query);
+	}	
 }
