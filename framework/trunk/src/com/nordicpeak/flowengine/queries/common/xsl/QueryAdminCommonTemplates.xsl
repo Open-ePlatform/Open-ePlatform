@@ -49,6 +49,8 @@
 		    </div>
 		</div>
 		
+		<xsl:call-template name="appendCreateCommonFieldsFormConterAfterDescription"/>
+		
 		<div class="floatleft full bigmarginbottom">
 			<label for="helpText" class="floatleft clearboth"><xsl:value-of select="$i18n.HelpText" /></label>
 			<div class="floatleft full">
@@ -153,6 +155,8 @@
 	</xsl:template>
 
 	<xsl:template name="appendCreateCommonFieldsFormConterAfterName"/>
+	
+	<xsl:template name="appendCreateCommonFieldsFormConterAfterDescription"/>
 
 	<xsl:template name="createCommonShowFields">
 	
