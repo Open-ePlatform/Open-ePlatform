@@ -26,6 +26,9 @@ import se.unlogic.hierarchy.core.interfaces.SettingHandler;
 import se.unlogic.hierarchy.core.settings.Setting;
 import se.unlogic.hierarchy.core.settings.TextFieldSetting;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.FallbackSettingHandler;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.beans.TempProfileSettingHandler;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.ProfileSettingHandler;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileSettingProvider;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -94,11 +97,11 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 	@TextFieldSettingDescriptor(name = "Search result limit", description = "Specifies maximum number of hits returned", required = true, formatValidator = IntegerPopulator.class)
 	protected Integer searchResultLimit = 25;
 
-	@ModuleSetting
+	@ModuleSetting(id = "BaseMapQuery-lmUser")
 	@TextFieldSettingDescriptor(id = "BaseMapQuery-lmUser", name = "Default LM Search user", description = "Specifies default user to use for LM Search", required = true)
 	protected String defaultLMUser;
 
-	@ModuleSetting
+	@ModuleSetting(id = "BaseMapQuery-searchPrefix")
 	@TextFieldSettingDescriptor(id = "BaseMapQuery-searchPrefix", name = "Default search prefix", description = "Specifies default search prefix when searching for pud or address using LM Search", required = false)
 	protected String defaultSearchPrefix = "";
 
@@ -115,6 +118,8 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 
 	private QueryParameterFactory<PUDQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<PUDQueryInstance, Integer> queryInstanceIDParamFactory;
+	
+	private TempProfileSettingHandler defaultSettingHandler;
 
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -124,6 +129,9 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 		lmUserSetting = new TextFieldSetting("BaseMapQuery-lmUser", lmUserSettingName, lmUserSettingDescription, defaultLMUser, true);
 		searchPrefixSetting = new TextFieldSetting("BaseMapQuery-searchPrefix", searchPrefixSettingName, searchPrefixSettingDescription, defaultSearchPrefix, false);
 
+		defaultSettingHandler = new TempProfileSettingHandler();
+		defaultSettingHandler.setSetting("BaseMapQuery-lmUser", defaultLMUser);
+		defaultSettingHandler.setSetting("BaseMapQuery-searchPrefix", defaultSearchPrefix);
 	}
 
 	@Override
@@ -530,8 +538,20 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 	}
 
 	protected SettingHandler getCurrentSiteProfileSettingHandler(HttpServletRequest req, User user) {
-
-		return siteProfileHandler != null ? siteProfileHandler.getCurrentSettingHandler(user, req, null) : this.moduleDescriptor.getMutableSettingHandler();
+		
+		if (siteProfileHandler != null) {
+			
+			ProfileSettingHandler settingHandler = siteProfileHandler.getCurrentSettingHandler(user, req, null);
+			
+			if (!settingHandler.isSet("BaseMapQuery-searchPrefix") || !settingHandler.isSet("BaseMapQuery-lmUser")) {
+				
+				settingHandler = new FallbackSettingHandler(settingHandler, defaultSettingHandler);
+			}
+			
+			return settingHandler;
+		}
+		
+		return moduleDescriptor.getMutableSettingHandler();
 	}
 
 	@Override
