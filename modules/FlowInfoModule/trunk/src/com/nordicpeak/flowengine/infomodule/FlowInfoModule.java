@@ -139,7 +139,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 	@RESTMethod(alias = "getcategories/{responseType}", method = "get")
 	public void getCategories(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
-		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 
 		Set<FlowType> flowTypes = null;
 
@@ -234,7 +234,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		log.info("User " + user + " requested flowID " + flowID + " as " + StringUtils.toLogFormat(responseType, 30));
 
-		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 
 		Flow requestedFlow = getFlow(flowID, flows);
 
@@ -250,6 +250,10 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 	private Flow getFlow(Integer flowID, Collection<Flow> flows) {
 
+		if(flows == null) {
+			return null;
+		}
+		
 		for (Flow flow : flows) {
 
 			if (flow.getFlowID().equals(flowID)) {
@@ -266,7 +270,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		log.info("User " + user + " requested flows as " + StringUtils.toLogFormat(responseType, 30));
 
-		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 
 		getResponse(req, res, responseType, flows, uriParser);
 	}
@@ -298,7 +302,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 				if (hits != null) {
 
-					Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+					Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 
 					flowHits = new ArrayList<Flow>(hits.size());
 
@@ -311,6 +315,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 							flowHits.add(flow);
 						}
 					}
+					
 				}
 
 			}
@@ -348,7 +353,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 	@RESTMethod(alias = "getflowsincategory/{categoryID}/{responseType}", method = "get")
 	public void getFlowsInCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType, @URIParam(name = "categoryID") Integer categoryID) throws Throwable {
 
-		Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 		List<Flow> flowsInCategory = null;
 
 		log.info("User " + user + " requested flows in categoryID " + categoryID + " as " + StringUtils.toLogFormat(responseType, 30));
