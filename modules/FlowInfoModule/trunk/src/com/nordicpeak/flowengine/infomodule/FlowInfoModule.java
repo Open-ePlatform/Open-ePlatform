@@ -3,6 +3,8 @@ package com.nordicpeak.flowengine.infomodule;
 import it.sauronsoftware.cron4j.Scheduler;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,15 +68,11 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 	private AnnotatedDAO<Flow> flowDAO;
 
-	private boolean needsEncodingFix;
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(ForegroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
 		super.init(descriptor, sectionInterface, dataSource);
-
-		needsEncodingFix = !systemInterface.getEncoding().equalsIgnoreCase("UTF-8");
 
 		cacheFlows();
 
@@ -284,9 +282,14 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		if (query != null) {
 
-			if (needsEncodingFix) {
+			if (req.getCharacterEncoding() != null) {
 
-				query = StringUtils.parseUTF8(query);
+				try {
+					query = URLDecoder.decode(query, req.getCharacterEncoding());
+				} catch (UnsupportedEncodingException e) {
+					log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
+				}
+
 			}
 
 			if (flowBrowserModule.getFlowIndexer() != null) {
