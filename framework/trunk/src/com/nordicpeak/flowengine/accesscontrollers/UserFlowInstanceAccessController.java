@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.accesscontrollers;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
@@ -21,7 +22,7 @@ public class UserFlowInstanceAccessController implements FlowInstanceAccessContr
 	}
 
 	@Override
-	public void checkNewFlowInstanceAccess(Flow flow, User user) throws AccessDeniedException {}
+	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {}
 
 	@Override
 	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {

@@ -381,7 +381,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			checkFlowLimit(user, flow);
 
-			callback.checkNewFlowInstanceAccess(flow, user);
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			callback.checkNewFlowInstanceAccess(flow, user, profile);
 
 			if (checkEnabled && (!flow.isEnabled() || isOperatingStatusDisabled(flow, requestMetadata.isManager()))) {
 
@@ -399,8 +401,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			}
 
 			log.info("Creating new instance of flow " + flow + " for user " + user);
-
-			InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
+			
+			InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
 
 			instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, instanceMetadata, requestMetadata, getAbsoluteFileURL(uriParser, flow));
 

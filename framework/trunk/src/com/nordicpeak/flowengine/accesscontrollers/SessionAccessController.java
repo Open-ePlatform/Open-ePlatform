@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.webutils.http.SessionUtils;
 
 import com.nordicpeak.flowengine.beans.Flow;
@@ -23,7 +24,7 @@ public class SessionAccessController implements FlowInstanceAccessController {
 	}
 
 	@Override
-	public void checkNewFlowInstanceAccess(Flow flow, User user) throws AccessDeniedException {
+	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {
 
 		throw new AccessDeniedException("Operation not supported");
 	}

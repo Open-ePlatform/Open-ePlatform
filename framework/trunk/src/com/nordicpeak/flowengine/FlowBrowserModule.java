@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -106,6 +107,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstan
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -191,11 +193,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Save last search", description = "Saves the last search in session")
 	private boolean saveSearchInSession = false;
-
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable direct search", description = "Enable searching via request parameter on main page")
 	private boolean enableDirectSearch = false;
-
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -211,6 +213,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@InstanceManagerDependency
 	protected FlowAdminModule flowAdminModule;
 
+	protected CopyOnWriteArrayList<FlowBrowserFilter> flowFilters = new CopyOnWriteArrayList<FlowBrowserFilter>();
+	
 	private QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
 
 	private List<FlowType> flowTypes;
@@ -319,33 +323,33 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			log.info("User " + user + " listing flows");
 
 			Document doc = this.createDocument(req, uriParser, user);
-
+			
 			Element showFlowTypesElement = doc.createElement("ShowFlowTypes");
 
 			doc.getDocumentElement().appendChild(showFlowTypesElement);
 
 			String lastSearch = null;
-
-			if (enableDirectSearch) {
-
+			
+			if(enableDirectSearch){
+				
 				lastSearch = req.getParameter("q");
 			}
-
-			if (lastSearch == null && saveSearchInSession) {
-
-				lastSearch = (String) SessionUtils.getAttribute("lastsearch", req);
+			
+			if(lastSearch == null && saveSearchInSession){
+				
+				lastSearch = (String)SessionUtils.getAttribute("lastsearch", req);
 			}
 
-			if (lastSearch != null) {
-
+			if(lastSearch != null){
+				
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "lastSearch", lastSearch);
 			}
+			
+			if(flowTypes != null){
 
-			if (flowTypes != null) {
+				for(FlowType flowType : flowTypes){
 
-				for (FlowType flowType : flowTypes) {
-
-					if (AccessUtils.checkAccess(user, flowType.getUserAccessInterface())) {
+					if(AccessUtils.checkAccess(user, flowType.getUserAccessInterface())){
 
 						showFlowTypesElement.appendChild(flowType.toXML(doc));
 					}
@@ -356,11 +360,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			if (latestPublishedFlowVersionsMap != null) {
 
-				if (siteProfile != null) {
+				if(siteProfile != null){
 
 					for (Flow flow : latestPublishedFlowVersionsMap.values()) {
 
-						if (!flow.isHideFromOverview() && AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface())) {
+						if(!flow.isHideFromOverview() && AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface()) && isFilterPublished(flow, siteProfile)) {
 
 							showFlowTypesElement.appendChild(flow.toXML(doc, siteProfile, getAbsoluteFileURL(uriParser, flow), req));
 						}
@@ -370,7 +374,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 					for (Flow flow : latestPublishedFlowVersionsMap.values()) {
 
-						if (!flow.isHideFromOverview() && AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface())) {
+						if(!flow.isHideFromOverview() && AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface()) && isFilterPublished(flow, siteProfile)) {
 
 							showFlowTypesElement.appendChild(flow.toXML(doc));
 						}
@@ -408,6 +412,19 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 	}
 
+	private boolean isFilterPublished(Flow flow, SiteProfile profile) {
+
+		for(FlowBrowserFilter filter : flowFilters) {
+			
+			if(!filter.isPublished(flow, profile)) {
+				
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	@WebPublic(alias = "flowoverview")
 	public ForegroundModuleResponse showFlowOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException {
 
@@ -415,14 +432,16 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flow = flowMap.get(Integer.valueOf(uriParser.get(2)))) != null) {
 
-			checkFlowAccess(user, flow);
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			checkFlowAccess(user, flow, profile);
 
 			if (skipOverview(flow, req, res, "flow")) {
 
 				return null;
 			}
 
-			return showFlowOverview(flow, req, res, user, uriParser);
+			return showFlowOverview(flow, profile, req, res, user, uriParser);
 		}
 
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
@@ -436,22 +455,24 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flow = getLatestPublishedFlowVersion(Integer.valueOf(uriParser.get(2)))) != null) {
 
-			checkFlowAccess(user, flow);
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			checkFlowAccess(user, flow, profile);
 
 			if (skipOverview(flow, req, res, "flow")) {
 
 				return null;
 			}
 
-			return showFlowOverview(flow, req, res, user, uriParser);
+			return showFlowOverview(flow, profile, req, res, user, uriParser);
 		}
 
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
 	}
 
-	protected void checkFlowAccess(User user, Flow flow) throws AccessDeniedException {
-
-		if (!AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface())) {
+	protected void checkFlowAccess(User user, Flow flow, SiteProfile profile) throws AccessDeniedException {
+		
+		if(!AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface()) || !isFilterPublished(flow, profile) ){
 
 			throw new AccessDeniedException("Access to flow " + flow + " denied");
 		}
@@ -478,7 +499,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
 	}
 
-	private ForegroundModuleResponse showFlowOverview(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException {
+	private ForegroundModuleResponse showFlowOverview(Flow flow, SiteProfile profile, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException {
 
 		if (!flow.isPublished() || !flow.isEnabled()) {
 
@@ -494,7 +515,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		doc.getDocumentElement().appendChild(showFlowOverviewElement);
 
-		showFlowOverviewElement.appendChild(flow.toXML(doc, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), getAbsoluteFileURL(uriParser, flow), req));
+		showFlowOverviewElement.appendChild(flow.toXML(doc, profile, getAbsoluteFileURL(uriParser, flow), req));
 
 		XMLUtils.append(doc, showFlowOverviewElement, "FlowTypeFlows", getLatestPublishedFlowVersions());
 
@@ -651,12 +672,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			this.flowIndexer.resetLastSearch(req, user);
 
 		}
-
+		
 		HTTPUtils.sendReponse("", "text/plain", res);
-
+		
 		return null;
 	}
-
+	
+	
+	
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
@@ -670,12 +693,16 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	public void checkNewFlowInstanceAccess(Flow flow, User user) throws AccessDeniedException {
+	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {
 
 		if (!listAllFlowTypes && !this.flowTypeIDs.contains(flow.getFlowType().getFlowTypeID())) {
 
 			throw new AccessDeniedException("Access denied to flow " + flow + " belonging to flow type " + flow.getFlowType());
 
+		} else if(!isFilterPublished(flow, profile)) {
+			
+			throw new AccessDeniedException("Flow " + flow + " is not published for current profile");
+			
 		} else if (flow.requiresAuthentication() && user == null) {
 
 			throw new AccessDeniedException("Flow " + flow + " requires autentication");
@@ -842,7 +869,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 				flow.setPopular(popularFamilies.contains(flow.getFlowFamily()));
 			}
-
+			
 			log.info("Calculated popular flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - start));
 
 		} catch (SQLException e) {
@@ -1004,7 +1031,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public void run() {
 
 		log.info("Refreshing list of latest published flow versions...");
-
+		
 		try {
 			r.lock();
 			long start = System.currentTimeMillis();
@@ -1014,10 +1041,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				this.latestPublishedFlowVersionsMap = getLatestPublishedFlowVersionsMap(flowMap.values());
 
 				createFlowIndexer();
-
+				
 				systemInterface.getEventHandler().sendEvent(FlowBrowserModule.class, new FlowBrowserCacheEvent(), EventTarget.LOCAL);
 			}
-
+			
 			log.info("Refreshed list of latest published flow versions in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - start));
 
 		} finally {
@@ -1209,12 +1236,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public String getSaveAndSubmitURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		if (instanceManager.getFlowInstanceID() != null) {
-
+		if(instanceManager.getFlowInstanceID() != null){
+			
 			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?save-submit=1&nopost=1";
-
+			
 		} else {
-
+			
 			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "?save-submit=1&nopost=1";
 		}
 	}
@@ -1249,7 +1276,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, User user, URIParser uriParser) {
 
-		if (flowInstanceID != null) {
+		if(flowInstanceID != null){
 
 			try {
 				getSavedMutableFlowInstanceManager(flowID, flowInstanceID, this, req.getSession(true), user, uriParser, req, true, true, true, DEFAULT_REQUEST_METADATA);
@@ -1273,22 +1300,22 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		EventType eventType;
 		String actionID;
-
-		Map<String, String> eventAttributes = new HashMap<String, String>();
+		
+		Map<String,String> eventAttributes = new HashMap<String, String>();
 		eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingChainID);
-
+		
 		if (requiresPayment) {
-
+			
 			actionID = FlowBrowserModule.PAYMENT_ACTION_ID;
 			eventType = EventType.STATUS_UPDATED;
-
+			
 		} else if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
-
+			
 			actionID = UserFlowInstanceModule.SUBMIT_COMPLETION_ACTION_ID;
 			eventType = EventType.SUBMITTED;
-
+			
 		} else {
-
+			
 			actionID = FlowBrowserModule.SUBMIT_ACTION_ID;
 			eventType = EventType.SUBMITTED;
 		}
@@ -1313,7 +1340,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 				flowInstance.setFirstSubmitted(currentTimestamp);
 			}
-
+			
 			List<MultiSigningQuery> multiSigningQueries = instanceManager.getQueries(MultiSigningQuery.class);
 
 			if (multiSigningQueries != null) {
@@ -1323,29 +1350,29 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 					if (multiSigningQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSigningQuery.getSigningParties())) {
 
 						for (SigningParty signingParty : multiSigningQuery.getSigningParties()) {
-
+							
 							if (signingParty.isAddAsOwner()) {
-
+							
 								User signer = null;
-
+								
 								if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
-
+								
 									signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
 								}
-
+																
 								if (signer != null) {
-
+									
 									if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
-
+										
 										if (flowInstance.getOwners() == null) {
 											flowInstance.setOwners(new ArrayList<User>());
 										}
-
+										
 										flowInstance.getOwners().add(signer);
 									}
-
+									
 								} else {
-
+									
 									log.error("User for signing party " + signingParty + " not found");
 								}
 							}
@@ -1353,12 +1380,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 					}
 				}
 			}
-
+			
 			FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
-
+			
 			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 			daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
-
+			
 			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvents(flowInstance);
 
 			FlowInstanceEvent event = addFlowInstanceEvent(flowInstance, eventType, null, posterSignEvent.getPoster(), currentTimestamp, eventAttributes);
@@ -1375,7 +1402,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			log.error("Error changing status and adding event for flow instance " + instanceManager + ", flow instance will be left with wrong status.", e);
 		}
 	}
-
+	
 	@Override
 	public int getPriority() {
 
@@ -1395,60 +1422,60 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-
+		
 		if (flowAdminModule == null) {
-
+			
 			throw new URINotFoundException(uriParser);
 		}
-
+		
 		Integer flowFormID;
 		Integer flowID;
 		Flow flow;
-
+		
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowMap.get(flowID)) != null) {
-
+			
 			if (!flow.isPublished() || !flow.isEnabled()) {
-
+				
 				log.info("User " + user + " requested flow " + flow + " form PDF which is no longer available.");
-
+				
 				return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
 			}
-
+			
 			if (uriParser.size() == 3) {
-
+				
 				if (CollectionUtils.isEmpty(flow.getFlowForms())) {
-
+					
 					log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
-
+					
 				} else {
-
+					
 					FlowForm flowForm = flow.getFlowForms().get(0);
 					flowForm.setFlow(flow);
-
+					
 					return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
 				}
-
+				
 			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
-
+				
 				if (CollectionUtils.isEmpty(flow.getFlowForms())) {
-
+					
 					log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
-
+					
 				} else {
-
+					
 					for (FlowForm flowForm : flow.getFlowForms()) {
-
+						
 						if (flowForm.getFlowFormID().equals(flowFormID)) {
-
+							
 							flowForm.setFlow(flow);
-
+							
 							return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
 						}
 					}
 				}
 			}
 		}
-
+		
 		throw new URINotFoundException(uriParser);
 	}
 
@@ -1461,6 +1488,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	}
 
+
 	public FlowIndexer getFlowIndexer() {
 
 		return flowIndexer;
@@ -1471,4 +1499,24 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return searchHints;
 	}
 
+	public synchronized void addFlowBrowserFilter(FlowBrowserFilter flowBrowserFilter) {
+
+		if (!flowFilters.contains(flowBrowserFilter)) {
+
+			flowFilters.add(flowBrowserFilter);
+
+			log.info("Flow filter " + flowBrowserFilter + " added");
+		}
+
+	}
+
+	public synchronized void removeFlowBrowserFilter(FlowBrowserFilter flowBrowserFilter) {
+
+		if(flowFilters.remove(flowBrowserFilter)) {
+
+			log.info("Flow filter " + flowBrowserFilter + " removed");
+		}
+	}
+
+	
 }
