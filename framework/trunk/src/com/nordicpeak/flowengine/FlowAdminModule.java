@@ -237,8 +237,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private static final QueryDescriptorSortIndexComparator QUERY_DESCRIPTOR_COMPARATOR = new QueryDescriptorSortIndexComparator();
 	private static final FlowVersionComparator FLOW_VERSION_COMPARATOR = new FlowVersionComparator();
 
-	private static final AdminUserFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new AdminUserFlowInstanceAccessController(true);
-	private static final AdminUserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new AdminUserFlowInstanceAccessController(false);
+	private final AdminUserFlowInstanceAccessController updateAccessController = new AdminUserFlowInstanceAccessController(this, true);
+	private final AdminUserFlowInstanceAccessController previewAccessController = new AdminUserFlowInstanceAccessController(this, false);
 
 	@XSLVariable(prefix = "java.")
 	private String flowNameCopySuffix = " (copy)";
@@ -1939,7 +1939,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCacheMap.get(flowID) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -1970,7 +1970,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		try {
-			return processFlowRequest(instanceManager, this, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, false, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, this, updateAccessController, req, res, user, uriParser, false, DEFAULT_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -2051,7 +2051,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, uriParser, UPDATE_ACCESS_CONTROLLER, false, false, false, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2326,7 +2326,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			throw new AccessDeniedException("Requested flow is external and cannot be structure manipulated");
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!AccessUtils.checkAccess(user, this) && !AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -2625,7 +2625,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flowInstance.getEvents().add(submittedEvent);
 
 				try {
-					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, uriParser, instanceManager, PREVIEW_ACCESS_CONTROLLER, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
+					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, uriParser, instanceManager, previewAccessController, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
 
 					instanceManager.close(queryHandler);
 

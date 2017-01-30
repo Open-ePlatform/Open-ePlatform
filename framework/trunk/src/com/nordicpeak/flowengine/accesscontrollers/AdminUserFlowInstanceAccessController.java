@@ -4,6 +4,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -11,18 +12,20 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 public class AdminUserFlowInstanceAccessController implements FlowInstanceAccessController {
 
+	private final FlowAdminModule flowAdminModule;
 	private final boolean mutable;
 	
-	public AdminUserFlowInstanceAccessController(boolean mutable) {
+	public AdminUserFlowInstanceAccessController(FlowAdminModule flowAdminModule, boolean mutable) {
 
 		super();
+		this.flowAdminModule = flowAdminModule;
 		this.mutable = mutable;
 	}
 
 	@Override
 	public void checkNewFlowInstanceAccess(Flow flow, User user) throws AccessDeniedException {
 
-		if(!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())){
+		if(!AccessUtils.checkAccess(user, flowAdminModule) && !AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())){
 
 			throw new AccessDeniedException("User does not have access to flows belonging to flow type " + flow.getFlowType());
 		}
