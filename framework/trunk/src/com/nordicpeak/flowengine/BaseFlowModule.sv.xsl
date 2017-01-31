@@ -29,7 +29,7 @@
 	
 	<xsl:variable name="i18n.noAnsweredQueriesInThisStep">Det finns inga besvarade frågor i detta steg.</xsl:variable>
 	
-	<xsl:variable name="i18n.FlowInstanceSaved">Ditt ärende sparades! Om du vill fortsätta senare hittar du ärendet under Mina ärenden.</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceSaved">Ditt ärende sparades! Om du vill fortsätta senare hittar du ärendet under Mina sidor.</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceManagerSubmitted">Ditt ärende är nu inskickat.</xsl:variable>
 	<xsl:variable name="i18n.Receipt">Kvittens</xsl:variable>
 	<xsl:variable name="i18n.PostedBy">Inskickat av</xsl:variable>
