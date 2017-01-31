@@ -274,7 +274,7 @@
 						<xsl:call-template name="createTextArea">
 							<xsl:with-param name="id" select="'comment'"/>
 							<xsl:with-param name="name" select="'comment'"/>
-							<xsl:with-param name="maxlength" select="'255'"/>
+							<xsl:with-param name="maxlength" select="'65535'"/>
 							<xsl:with-param name="rows" select="'4'"/>
 						</xsl:call-template>
 					</div>

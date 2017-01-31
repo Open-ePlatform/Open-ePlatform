@@ -647,7 +647,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					RepositoryConfiguration repo = repositories.get(repositoryIndex);
 					fetchRepositoryInfo(repo);
 
-					String comment = ValidationUtils.validateParameter("comment", req, false, 0, 255, validationErrors);
+					String comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, validationErrors);
 
 					if (validationErrors.isEmpty()) {
 
