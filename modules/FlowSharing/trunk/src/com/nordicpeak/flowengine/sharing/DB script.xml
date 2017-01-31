@@ -62,4 +62,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowsharing_flows` MODIFY COLUMN `comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

@@ -54,7 +54,7 @@ public class SharedFlow extends GeneratedElementable {
 	private String name;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String comment;
 
