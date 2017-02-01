@@ -29,7 +29,7 @@
 	
 	
 	<xsl:variable name="i18n.ChooseOrganization">Välj organisation</xsl:variable>
-	<xsl:variable name="i18n.OrganizationDescription">Välj ett av dina befintliga organisationer eller registrera ett nytt</xsl:variable>
+	<xsl:variable name="i18n.OrganizationDescription">Välj en av dina befintliga organisationer eller registrera en ny</xsl:variable>
 	<xsl:variable name="i18n.NewOrganization">Ny organisation</xsl:variable>
 	
 	<xsl:variable name="i18n.AddToMyOrganizations">Lägg till den här organisationens uppgifter under mina engagemang</xsl:variable>
