@@ -42,7 +42,7 @@
 
 	<xsl:template match="Document">
 		
-		<div class="contentitem errands-wrapper">
+		<div class="contentitem errands-wrapper flowadmin">
 			
 			<xsl:if test="FlowInstanceManagerForm or FlowInstanceManagerPreview or FlowInstanceManagerSubmitted or ShowFlowOverview">
 				<xsl:attribute name="class">contentitem</xsl:attribute>
@@ -318,7 +318,7 @@
 		<fieldset>
 			<legend><xsl:value-of select="$i18n.baseInfo"/></legend>
 	
-			<div class="floatleft full bigmarginbottom">
+			<div class="floatleft full bigmarginbottom adminicons">
 
 					<div class="floatright">
 					
