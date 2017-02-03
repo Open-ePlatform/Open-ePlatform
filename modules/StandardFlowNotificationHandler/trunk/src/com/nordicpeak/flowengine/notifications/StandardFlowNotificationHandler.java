@@ -70,6 +70,7 @@ import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.mime.MimeUtils;
@@ -1017,30 +1018,23 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (notificationSettings.isSendFlowInstanceSubmittedGlobalEmail() && notificationSettings.getFlowInstanceSubmittedGlobalEmailAddresses() != null) {
 
-			boolean attachPDF = false;
-
 			File pdfFile = null;
-
-			if (notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachPDF() && pdfProvider != null) {
-
-				pdfFile = pdfProvider.getPDF(flowInstanceID, eventID);
-
-				if (pdfFile != null) {
-
-					if (isValidPDFSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, pdfFile)) {
-
-						attachPDF = true;
-
-					} else {
-
-						log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
-					}
+			
+			if(notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachPDF()) {
+				
+				try {
+					
+					pdfFile = getEventPDF(flowInstance.getFlowInstanceID(), eventID, flowInstanceSubmittedGlobalEmailPDFSizeLimit);
+					
+				} catch (PDFSizeExeededException e) {
+					
+					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
 			}
 
 			for(String email : notificationSettings.getFlowInstanceSubmittedGlobalEmailAddresses()){
 				
-				sendGlobalEmail(null, flowInstance, getPosterContact(flowInstance, null), email, flowInstanceSubmittedGlobalEmailSubject, flowInstanceSubmittedGlobalEmailMessage, attachPDF ? pdfFile : null, notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately());
+				sendGlobalEmail(null, flowInstance, getPosterContact(flowInstance, null), email, flowInstanceSubmittedGlobalEmailSubject, flowInstanceSubmittedGlobalEmailMessage, pdfFile, notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately());
 			}
 			
 
@@ -1048,6 +1042,43 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 
 		return new SimpleForegroundModuleResponse("Global email notifications are disabled for flow " + flowInstance.getFlow());
+	}
+
+	
+	public File getEventPDF(Integer flowInstanceID, Integer eventID, Integer pdfSizeLimit) throws PDFSizeExeededException {
+		
+		File pdfFile = null;
+		
+		if (pdfProvider != null) {
+
+			pdfFile = pdfProvider.getPDF(flowInstanceID, eventID);
+
+			if (pdfFile != null) {
+
+				if (isValidPDFSize(pdfSizeLimit, pdfFile)) {
+
+					return pdfFile;
+
+				} else {
+
+					throw new PDFSizeExeededException(pdfFile.length());
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	public Integer getFlowInstanceSubmittedUserEmailPDFSizeLimit() {
+	
+		return flowInstanceSubmittedUserEmailPDFSizeLimit;
+	}
+
+	
+	public Integer getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() {
+	
+		return flowInstanceSubmittedGlobalEmailPDFSizeLimit;
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -1198,7 +1229,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					}
 				}
 			}
-		
+			
 			log.info(sentEmails + " E-mail and " + sentSMS + " SMS submit notifications sent to " + contacts.size() + " contacts for flow instance " + flowInstance);
 			
 			return new SimpleForegroundModuleResponse(sentEmails + " E-mail and " + sentSMS + " SMS submit notifications sent to " + contacts.size() + " contacts for flow instance " + flowInstance);
