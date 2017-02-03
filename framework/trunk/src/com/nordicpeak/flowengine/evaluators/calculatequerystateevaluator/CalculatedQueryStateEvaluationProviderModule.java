@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.evaluators.calculatequerystateevaluator;
 
+import java.math.BigDecimal;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -35,7 +37,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 			return restoreDefaultQueryStates(queryInstance, evaluator, callback, attributeHandler);
 		}
 		
-		Double calculatedValue = null;
+		BigDecimal calculatedValue = null;
 		
 		try {
 			
@@ -46,7 +48,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 			return restoreDefaultQueryStates(queryInstance, evaluator, callback, attributeHandler);
 		}
 		
-		if (calculatedValue != null && calculatedValue >= evaluator.getFromValue() && (evaluator.getToValue() == null || calculatedValue <= evaluator.getToValue())) {
+		if (calculatedValue != null && calculatedValue.compareTo(BigDecimal.valueOf(evaluator.getFromValue())) >= 0 && (evaluator.getToValue() == null || calculatedValue.compareTo(BigDecimal.valueOf(evaluator.getToValue())) <= 0)) {
 			
 			return applyEvaluatorQueryStates(queryInstance, evaluator, callback, attributeHandler);
 		}
@@ -69,7 +71,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 		return evaluator;
 	}
 	
-	protected abstract Double getCalculatedValue(QueryInstance queryInstance, T evaluator) throws ValidationException;
+	protected abstract BigDecimal getCalculatedValue(QueryInstance queryInstance, T evaluator) throws ValidationException;
 	
 	protected abstract boolean supportsQueryInstance(QueryInstance queryInstance);
 	
