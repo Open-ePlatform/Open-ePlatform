@@ -43,28 +43,28 @@ Hjälptext här...
 	<xsl:variable name="i18n.UserAssignedInstancesDescription.Part2">tilldelade ärenden, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.UserAssignedInstancesHelp">
 <h2 class="h1 full" data-icon-before="?">Tilldelade ärenden</h2>
-Hjälptext här...
+<p>Här hittar du dina pågående ärenden.</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.BookmarkedInstancesDescription.Part1">Det finns</xsl:variable>
 	<xsl:variable name="i18n.BookmarkedInstancesDescription.Part2">ärenden som du behöver agera på, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.BookmarkedInstancesHelp">
 <h2 class="h1 full" data-icon-before="?">Flaggade ärenden</h2>
-Hjälptext här...
+<p>Här hittar du de ärenden som du valt att flagga</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.ActiveInstancesDescription.Part1">Du har</xsl:variable>
 	<xsl:variable name="i18n.ActiveInstancesDescription.Part2">aktiva ärenden, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.ActiveInstancesHelp">
 <h2 class="h1 full" data-icon-before="?">Aktiva ärenden</h2>
-Hjälptext här...
+<p>Här hittar du ärenden som du har behörighets att se men som handläggs av andra personer.</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.UnassignedInstancesDescription.Part1">Du har</xsl:variable>
 	<xsl:variable name="i18n.UnassignedInstancesDescription.Part2">obehandlade ärenden, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.UnassignedInstancesHelp">
 <h2 class="h1 full" data-icon-before="?">Obehandlade ärenden</h2>
-Hjälptext här...
+<p>Här hittar du ärenden som inte tilldelats någon handläggare.</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.NoFlowInstances">Inga ärenden</xsl:variable>
@@ -75,7 +75,7 @@ Hjälptext här...
 	
 	<xsl:variable name="i18n.SearchFlowInstance">Sök ärende</xsl:variable>
 	<xsl:variable name="i18n.SearchFlowInstanceDescription">Sök bland ärenden i systemet. Endast ärenden du har behörighet till visas.</xsl:variable>
-	<xsl:variable name="i18n.SearchFormTitle">Sök på ärendenummer, fastighetsnamn, personnummer</xsl:variable>
+	<xsl:variable name="i18n.SearchFormTitle">Sök på ärendenummer, personnummer, organisationsnummer</xsl:variable>
 		
 	
 	<xsl:variable name="i18n.FirstSubmitted">Inskickat</xsl:variable>
