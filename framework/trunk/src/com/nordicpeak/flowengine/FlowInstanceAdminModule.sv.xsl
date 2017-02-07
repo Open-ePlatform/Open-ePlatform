@@ -36,7 +36,7 @@
 	<xsl:variable name="i18n.PrioritizedInstancesDescription.Part2">ärenden som du behöver agera på, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.PrioritizedInstancesHelp">
 <h2 class="h1 full" data-icon-before="?">Ärenden du behöver agera på</h2>
-Hjälptext här...
+<p>Här hittar du ärenden som legat för länge i sin aktuella status.</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.UserAssignedInstancesDescription.Part1">Du har</xsl:variable>
