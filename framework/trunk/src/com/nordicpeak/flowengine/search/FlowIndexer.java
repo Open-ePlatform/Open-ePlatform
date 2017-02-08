@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.search;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,8 +159,20 @@ public class FlowIndexer {
 			return;
 		}
 		
-		queryString = URLDecoder.decode(queryString, "UTF-8");
-		//queryString = queryString.replace(":", " ");
+		if (req.getCharacterEncoding() != null) {
+
+			try {
+				queryString = URLDecoder.decode(queryString, req.getCharacterEncoding());
+				
+			} catch (UnsupportedEncodingException e) {
+				log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
+			}
+			
+		}else{
+			
+			queryString = StringUtils.parseUTF8(queryString);
+		}
+		
 		queryString = queryString.trim();
 		
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_44, SEARCH_FIELDS, analyzer);

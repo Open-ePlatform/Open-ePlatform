@@ -3,6 +3,8 @@ package com.nordicpeak.flowengine;
 import it.sauronsoftware.cron4j.Scheduler;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -333,6 +335,25 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if(enableDirectSearch){
 				
 				lastSearch = req.getParameter("q");
+				
+				if(lastSearch != null){
+					
+					if (req.getCharacterEncoding() != null) {
+
+						try {
+							lastSearch = URLDecoder.decode(lastSearch, req.getCharacterEncoding());
+							
+							System.out.println("decoded lastSearch: " + lastSearch);
+							
+						} catch (UnsupportedEncodingException e) {
+							log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
+						}
+						
+					}else{
+
+						lastSearch = StringUtils.parseUTF8(lastSearch);
+					}
+				}
 			}
 			
 			if(lastSearch == null && saveSearchInSession){
