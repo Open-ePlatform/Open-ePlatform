@@ -92,7 +92,6 @@ import com.nordicpeak.flowengine.utils.SigningUtils;
 
 public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback {
 	
-	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
 	@ModuleSetting
@@ -719,5 +718,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		}
 		
 		return null;
+	}
+
+	@Override
+	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty) throws SQLException {
+		
+		return getSignature(flowInstanceID, signingParty.getSocialSecurityNumber()) != null;
 	}
 }

@@ -16,4 +16,6 @@ public interface MultiSigningHandler {
 	
 	public String getSigningURL(ImmutableFlowInstance flowInstance, SigningParty signingParty);
 	
+	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty) throws Exception;
+	
 }
