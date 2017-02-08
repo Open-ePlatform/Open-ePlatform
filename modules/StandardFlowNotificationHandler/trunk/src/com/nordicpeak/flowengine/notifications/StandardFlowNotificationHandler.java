@@ -1116,7 +1116,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 		
 		return new SimpleForegroundModuleResponse("Submit notifications triggered, check log for more information.");
-	}	
+	}
 	
 	private ForegroundModuleResponse triggerSubmit(Integer flowInstanceID, Integer eventID, URIParser uriParser) throws URINotFoundException, SQLException {
 
@@ -1932,7 +1932,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 	
 	
-	public Collection<Contact> getContacts(FlowInstance flowInstance, SiteProfile siteProfile) {
+	public List<Contact> getContacts(FlowInstance flowInstance, SiteProfile siteProfile) {
 
 		try {
 			flowInstance = getFlowInstanceWithAttributesAndOwners(flowInstance.getFlowInstanceID());
@@ -2028,7 +2028,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 		
-		if (attributeHandler.isSet("email")) {
+		if (attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
 			
 			Contact contact = new Contact();
 			
@@ -2042,6 +2042,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
 			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
 			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
+			
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
 			contact.setContactByEmail(true);
 			
@@ -2057,7 +2058,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				contact.setFirstname(owner.getFirstname());
 				contact.setLastname(owner.getLastname());
 				contact.setEmail(owner.getEmail());
-				contact.setMobilePhone(UserUtils.getAttribute("mobilePhone", owner));
+				
+				AttributeHandler ownerAttributeHandler = owner.getAttributeHandler();
+
+				if (ownerAttributeHandler != null) {
+					
+					contact.setPhone(ownerAttributeHandler.getString("phone"));
+					contact.setMobilePhone(ownerAttributeHandler.getString("mobilePhone"));
+					contact.setAddress(ownerAttributeHandler.getString("address"));
+					contact.setZipCode(ownerAttributeHandler.getString("zipCode"));
+					contact.setPostalAddress(ownerAttributeHandler.getString("postalAddress"));
+					contact.setCitizenIdentifier(ownerAttributeHandler.getString("citizenIdentifier"));
+				}
 				
 				contact.setContactBySMS(UserUtils.getBooleanAttribute("contactBySMS", owner));
 				contact.setContactByEmail(true);
@@ -2073,7 +2085,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return contacts;
 	}
 	
-	private void addUniqueContact(List<Contact> contacts, Contact contact) {
+	public static void addUniqueContact(List<Contact> contacts, Contact contact) {
 		
 		for (Contact existingContact : contacts) {
 			
