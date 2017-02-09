@@ -142,10 +142,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show all flowtypes", description = "List all flowtypes in this module")
-	protected boolean listAllFlowTypes = false;
+	private boolean listAllFlowTypes = false;
 
 	@ModuleSetting
-	protected List<Integer> flowTypeIDs;
+	private List<Integer> flowTypeIDs;
 
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Recommended tags (one search tag per line)", description = "Recommended tag listed between flow search form (one search tag per line)", required = false)
@@ -292,7 +292,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public ForegroundModuleResponse processRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
-		if (!listAllFlowTypes && flowTypeIDs == null) {
+		if (!isListAllFlowTypes() && getFlowTypeIDs() == null) {
 
 			throw new ModuleConfigurationException("No flowTypeIDs set in module settings for this module ");
 		}
@@ -716,7 +716,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {
 
-		if (!listAllFlowTypes && !this.flowTypeIDs.contains(flow.getFlowType().getFlowTypeID())) {
+		if (!isListAllFlowTypes() && !this.getFlowTypeIDs().contains(flow.getFlowType().getFlowTypeID())) {
 
 			throw new AccessDeniedException("Access denied to flow " + flow + " belonging to flow type " + flow.getFlowType());
 
@@ -733,7 +733,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
 
-		if (!listAllFlowTypes && !this.flowTypeIDs.contains(flowInstance.getFlow().getFlowType().getFlowTypeID())) {
+		if (!isListAllFlowTypes() && !this.getFlowTypeIDs().contains(flowInstance.getFlow().getFlowType().getFlowTypeID())) {
 
 			throw new AccessDeniedException("Access to flow instance " + flowInstance + " belonging to flow type " + flowInstance.getFlow().getFlowType() + " is not allowed via this module");
 
@@ -754,7 +754,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		try {
 
-			if (!listAllFlowTypes && CollectionUtils.isEmpty(flowTypeIDs)) {
+			if (!isListAllFlowTypes() && CollectionUtils.isEmpty(getFlowTypeIDs())) {
 
 				log.warn("No flowTypeIDs set, unable to cache flows.");
 
@@ -768,15 +768,15 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
 
-			if (listAllFlowTypes) {
+			if (isListAllFlowTypes()) {
 
 				log.info("Caching flows for all flowTypes");
 
 			} else {
 
-				log.info("Caching flows for flowTypeIDs " + StringUtils.toCommaSeparatedString(flowTypeIDs));
+				log.info("Caching flows for flowTypeIDs " + StringUtils.toCommaSeparatedString(getFlowTypeIDs()));
 
-				query.addParameter(flowTypeIDParamFactory.getWhereInParameter(flowTypeIDs));
+				query.addParameter(flowTypeIDParamFactory.getWhereInParameter(getFlowTypeIDs()));
 
 			}
 
@@ -1295,18 +1295,20 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, User user, URIParser uriParser) {
-
-		if(flowInstanceID != null){
-
+	protected boolean reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
+		
+		if (flowInstanceID != null) {
+			
 			try {
 				getSavedMutableFlowInstanceManager(flowID, flowInstanceID, this, req.getSession(true), user, uriParser, req, true, true, true, DEFAULT_REQUEST_METADATA);
-
+				
 			} catch (Exception e) {
-
+				
 				log.error("Error reopening flow instance with ID " + flowInstanceID + " for user " + user, e);
 			}
 		}
+		
+		return super.reOpenFlowInstance(flowID, flowInstanceID, req, res, user, uriParser);
 	}
 
 	@Override
@@ -1539,5 +1541,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 	}
 
+	public boolean isListAllFlowTypes() {
+		return listAllFlowTypes;
+	}
+
+	public List<Integer> getFlowTypeIDs() {
+		return flowTypeIDs;
+	}
 	
 }

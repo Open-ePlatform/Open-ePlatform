@@ -164,6 +164,7 @@ import com.nordicpeak.flowengine.validationerrors.FileUploadValidationError;
 
 public abstract class BaseFlowModule extends AnnotatedForegroundModule implements FlowEngineInterface {
 
+	public static final Field[] FLOW_RELATIONS = { Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION };
 	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.ATTRIBUTES_RELATION };
 
 	public static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
@@ -258,8 +259,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			//TODO check if the status has changed since this instance was opened!
 
-			// Check if the user already has an instance of this flow open in
-			// his session
+			// Check if the user already has an instance of this flow open in his session
 			MutableFlowInstanceManager instanceManager = getMutableFlowInstanceManagerFromSession(flowID, flowInstanceID, session);
 
 			if (instanceManager != null) {
@@ -269,7 +269,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				FlowInstance dbFlowInstance;
 
 				// Check if the flow instance still exists in DB
-				if ((dbFlowInstance = this.getFlowInstance(instanceManager.getFlowInstanceID(), null, FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION)) == null) {
+				if ((dbFlowInstance = this.getFlowInstance(instanceManager.getFlowInstanceID(), null, FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.ATTRIBUTES_RELATION)) == null) {
 
 					this.removeMutableFlowInstanceManagerFromSession(instanceManager, session);
 
@@ -517,7 +517,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		MultipartRequest multipartRequest = null;
 
 		try {
-			if (MultipartRequest.isMultipartRequest(req)) {
+			if (!(req instanceof MultipartRequest) && MultipartRequest.isMultipartRequest(req)) {
 
 				log.debug("Parsing multipart request from user " + user + " for flow instance " + instanceManager.getFlowInstance());
 				multipartRequest = new MultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
@@ -620,10 +620,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
 
-					reOpenFlowInstance(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req, user, uriParser);
-
-					res.sendRedirect(uriParser.getRequestURL());
-
+					if (!reOpenFlowInstance(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req, res, user, uriParser)) {
+						
+						res.sendRedirect(uriParser.getRequestURL());
+					}
+					
 					return null;
 
 				} else if (flowAction == FlowAction.SAVE) {
@@ -918,8 +919,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, User user, URIParser uriParser) {
+	// Return true to avoid normal redirect
+	protected boolean reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
+		return false;
 	}
 
 	protected void closeSubmittedFlowInstanceManager(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
@@ -1624,7 +1627,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected Flow getFlow(Integer flowID) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_RELATIONS);
 
 		query.addParameter(flowIDParamFactory.getParameter(flowID));
 
@@ -2467,5 +2470,5 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		query.addParameter(eventIDParamFactory.getParameter(eventID));
 		
 		return daoFactory.getFlowInstanceEventDAO().get(query);
-	}	
+	}
 }
