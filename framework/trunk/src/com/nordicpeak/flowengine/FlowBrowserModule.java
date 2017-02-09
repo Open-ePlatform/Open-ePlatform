@@ -1295,7 +1295,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	protected boolean reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
+	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
 		
 		if (flowInstanceID != null) {
 			
@@ -1308,7 +1308,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			}
 		}
 		
-		return super.reOpenFlowInstance(flowID, flowInstanceID, req, res, user, uriParser);
+		super.reOpenFlowInstance(flowID, flowInstanceID, req, res, user, uriParser);
 	}
 
 	@Override

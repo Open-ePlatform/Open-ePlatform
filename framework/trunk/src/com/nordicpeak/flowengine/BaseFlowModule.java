@@ -620,11 +620,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
 
-					if (!reOpenFlowInstance(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req, res, user, uriParser)) {
-						
-						res.sendRedirect(uriParser.getRequestURL());
-					}
-					
+					reOpenFlowInstance(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req, res, user, uriParser);
 					return null;
 
 				} else if (flowAction == FlowAction.SAVE) {
@@ -919,10 +915,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	// Return true to avoid normal redirect
-	protected boolean reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
+	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
 
-		return false;
+		res.sendRedirect(uriParser.getRequestURL());
 	}
 
 	protected void closeSubmittedFlowInstanceManager(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
