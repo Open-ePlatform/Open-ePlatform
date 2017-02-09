@@ -166,6 +166,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	public static final Field[] FLOW_RELATIONS = { Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION };
 	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.ATTRIBUTES_RELATION };
+	public static final Field[] FLOW_INSTANCE_SAVED_MUTABLE_ACCESS_CHECK_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION };
 
 	public static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 
@@ -247,7 +248,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		eventHandler = systemInterface.getEventHandler();
 	}
-
+	
 	protected MutableFlowInstanceManager getSavedMutableFlowInstanceManager(int flowID, int flowInstanceID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean loadFromDBIfNeeded, boolean checkPublishDate, boolean checkEnabled, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
 
 		if (session == null) {
@@ -269,7 +270,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				FlowInstance dbFlowInstance;
 
 				// Check if the flow instance still exists in DB
-				if ((dbFlowInstance = this.getFlowInstance(instanceManager.getFlowInstanceID(), null, FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.ATTRIBUTES_RELATION)) == null) {
+				if ((dbFlowInstance = getFlowInstanceForSavedMutableAccessCheck(instanceManager.getFlowInstanceID())) == null) {
 
 					this.removeMutableFlowInstanceManagerFromSession(instanceManager, session);
 
@@ -1658,6 +1659,15 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		if (excludedFields != null) {
 			query.addExcludedFields(excludedFields);
 		}
+
+		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
+
+		return daoFactory.getFlowInstanceDAO().get(query);
+	}
+	
+	protected FlowInstance getFlowInstanceForSavedMutableAccessCheck(int flowInstanceID) throws SQLException {
+
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FLOW_INSTANCE_SAVED_MUTABLE_ACCESS_CHECK_RELATIONS);
 
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 
