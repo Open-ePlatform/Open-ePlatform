@@ -143,6 +143,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
 	protected boolean enableSiteProfileSupport;	
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name="Enable site profile redirect support", description="Controls if site profile redirect support is enabled")
+	protected boolean enableSiteProfileRedirectSupport;	
+	
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -400,6 +405,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
 
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
+			
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily());
+			
+			if(enableSiteProfileRedirectSupport && profileRedirect(profile, flowInstance, req, res, uriParser)){
+				
+				return null;
+			}
 
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 
@@ -424,7 +436,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user);
 
-					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()), externalMessage, SenderType.USER), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, profile, externalMessage, SenderType.USER), EventTarget.ALL);
 
 					res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 
@@ -458,6 +470,25 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
+	protected boolean profileRedirect(SiteProfile profile, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws IOException {
+
+		if(flowInstance.getProfileID() != null && this.profileHandler != null) {
+			
+			if(profile == null || !profile.getProfileID().equals(flowInstance.getProfileID())) {
+				
+				SiteProfile targetProfile = this.profileHandler.getProfile(flowInstance.getProfileID());
+				
+				if(targetProfile != null && targetProfile.getDomains() != null) {
+					
+					res.sendRedirect(req.getScheme() + "://" + targetProfile.getDomains().get(0) + req.getContextPath() + uriParser.getFormattedURI());
+					
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	protected List<ViewFragment> appendOverviewData(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, User user, URIParser uriParser) throws SQLException {
 
 		Element tabHeadersElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "TabHeaders");
@@ -501,6 +532,25 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		try{
 			if(uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null &&  (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null){
 
+				if(enableSiteProfileRedirectSupport) {
+					
+					if(flowInstanceID != null) {
+					
+						FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field)null);
+						
+						if(flowInstance != null && profileHandler != null) {
+							
+							SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
+							
+							if(profileRedirect(profile, flowInstance, req, res, uriParser)) {
+								
+								return null;
+							}
+						}
+					}
+				}
+				
+				
 				//Get saved instance from DB or session
 				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, DEFAULT_REQUEST_METADATA);
 
@@ -721,8 +771,28 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@WebPublic(alias = "preview")
-	public ForegroundModuleResponse showPreview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException{
+	public ForegroundModuleResponse showPreview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException{
 
+		if(enableSiteProfileRedirectSupport) {
+			
+			Integer flowInstanceID = NumberUtils.toInt(uriParser.get(2));
+			
+			if(flowInstanceID != null) {
+			
+				FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field)null);
+				
+				if(flowInstance != null && profileHandler != null) {
+					
+					SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
+					
+					if(profileRedirect(profile, flowInstance, req, res, uriParser)) {
+						
+						return null;
+					}
+				}
+			}
+		}
+		
 		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, DEFAULT_REQUEST_METADATA);
 	}
 

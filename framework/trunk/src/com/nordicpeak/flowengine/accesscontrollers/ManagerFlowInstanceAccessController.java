@@ -12,8 +12,8 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 public class ManagerFlowInstanceAccessController implements FlowInstanceAccessController {
 
-	private boolean requireMutableState;
-	private boolean requireDeletableState;
+	protected final boolean requireMutableState;
+	protected final boolean requireDeletableState;
 
 	public ManagerFlowInstanceAccessController(boolean requireMutableState, boolean requireDeletableState) {
 
@@ -33,11 +33,11 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 			
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance has not been submitted.");
 		
-		}else if(!AccessUtils.checkAccess(user, flowInstance.getFlow().getFlowFamily())){
-
-			throw new AccessDeniedException("User is not manager for flow family " + flowInstance.getFlow().getFlowFamily());
-
-		}else if(requireMutableState && !flowInstance.getStatus().isAdminMutable()){
+		}
+		
+		checkManagerAccess(flowInstance, user);
+		
+		if(requireMutableState && !flowInstance.getStatus().isAdminMutable()){
 
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance is not in a manager mutable state.");
 
@@ -52,4 +52,14 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 
 		return flowInstance.getStatus().isAdminMutable();
 	}
+	
+	public void checkManagerAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
+		
+		if(!AccessUtils.checkAccess(user, flowInstance.getFlow().getFlowFamily())){
+
+			throw new AccessDeniedException("User is not manager for flow family " + flowInstance.getFlow().getFlowFamily());
+
+		}		
+	}
 }
+

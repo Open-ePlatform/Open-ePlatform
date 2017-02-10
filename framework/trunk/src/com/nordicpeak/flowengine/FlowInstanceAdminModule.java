@@ -41,6 +41,7 @@ import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
@@ -268,15 +269,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		log.info("User " + user + " listing flow instances");
 
-		List<Integer> flowIDs = getUserFlowIDs(user);
+		SiteProfile profile = null;
+		
+		if(profileHandler != null) {
+			
+			profile = profileHandler.getCurrentProfile(user, req, uriParser);
+		}		
+		
+		List<Integer> flowIDs = getUserFlowIDs(user, profile);
 
 		List<FlowInstance> bookmarkedFlows = null;
 		List<FlowInstance> activeFlowInstances = null;
 		
 		if(flowIDs != null){
 			
-			bookmarkedFlows = getFlowInstanceBookmarks(user, flowIDs);
-			activeFlowInstances = getActiveFlowInstances(user, flowIDs);
+			bookmarkedFlows = getFlowInstanceBookmarks(user, profile, flowIDs);
+			activeFlowInstances = getActiveFlowInstances(user, profile, flowIDs);
 		}
 		
 		if(!adminFlowInstanceProviders.isEmpty()){
@@ -1000,7 +1008,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return internalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getGeneralAccessController());
 	}
 
-	public List<Integer> getUserFlowIDs(User user) throws SQLException {
+	public List<Integer> getUserFlowIDs(User user, SiteProfile profile) throws SQLException {
 
 		String sql;
 
@@ -1030,7 +1038,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return query.executeQuery();
 	}
 
-	protected List<FlowInstance> getFlowInstanceBookmarks(User user, List<Integer> flowIDs) throws SQLException {
+	protected List<FlowInstance> getFlowInstanceBookmarks(User user, SiteProfile profile, List<Integer> flowIDs) throws SQLException {
 
 		String sql = FLOW_INSTANCE_BOOKMARKS_SQL + StringUtils.toCommaSeparatedString(flowIDs) + ") ORDER BY lastStatusChange DESC";
 
@@ -1043,9 +1051,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
-	public List<FlowInstance> getActiveFlowInstances(User user, List<Integer> flowIDs) throws SQLException {
+	public List<FlowInstance> getActiveFlowInstances(User user, SiteProfile profile, List<Integer> flowIDs) throws SQLException {
 
-		String sql = getActiveFlowInstancesSQL(user, flowIDs);
+		String sql = getActiveFlowInstancesSQL(user, profile, flowIDs, ACTIVE_FLOWS);
 
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 
@@ -1054,9 +1062,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
-	public String getActiveFlowInstancesSQL(User user, List<Integer> flowIDs) {
+	public String getActiveFlowInstancesSQL(User user, SiteProfile profile, List<Integer> flowIDs, String template) {
 
-		return ACTIVE_FLOWS.replace("$flowIDs", StringUtils.toCommaSeparatedString(flowIDs));
+		return template.replace("$flowIDs", StringUtils.toCommaSeparatedString(flowIDs));
 	}
 
 	@Override
