@@ -29,7 +29,7 @@
 						<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 					</xsl:call-template>
 					
-					<xsl:if test="Signed = 'true'">
+					<xsl:if test="SignEvents">
 						<xsl:text> (signerad)</xsl:text>
 					</xsl:if>
 					
