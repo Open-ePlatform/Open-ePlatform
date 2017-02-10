@@ -52,44 +52,50 @@ function initCheckBoxQuery(queryID) {
 		
 	}
 	
-	if($query.data("maxchecked") != "") {
+	var maxChecked = $query.data("maxchecked");
+	
+	if(maxChecked != "") {
 		
-		bindCheckBoxMaxAlternatives($query.find("input[type='checkbox']"), $query.data("maxchecked"));
+		var checkboxes = $query.find("input[type='checkbox']");
+		
+		
+		runCheckBoxMaxAlternatives(checkboxes, maxChecked);
+		
+		checkboxes.change(function() {
+			runCheckBoxMaxAlternatives(checkboxes, maxChecked);
+		});
 	}
 	
 }
 
-function bindCheckBoxMaxAlternatives($checkboxes, maxChecked) {
+function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
 	
-	$checkboxes.change(function() {
+	var checked = 0;
+	
+	$checkboxes.each(function(index){
 		
-		var checked = 0;
+		if($(this).prop("checked")){
+			checked += 1;
+		}
+	});
+	
+	if(checked >= maxChecked){
 		
 		$checkboxes.each(function(index){
 			
-			if($(this).prop("checked")){
-				checked += 1;
+			var checkbox = $(this); 
+			
+			if(!checkbox.prop("checked")){
+				checkbox.prop("disabled", true);
+				checkbox.siblings("label").addClass("disabled");
 			}
 		});
 		
-		if(checked >= maxChecked){
-			
-			$checkboxes.each(function(index){
-				
-				var checkbox = $(this); 
-				
-				if(!checkbox.prop("checked")){
-					checkbox.prop("disabled", true);
-					checkbox.siblings("label").addClass("disabled");
-				}
-			});
-			
-		} else {
-			
-			$checkboxes.prop("disabled", false);
-			$checkboxes.siblings("label").removeClass("disabled");
-		}
-	});
+	} else {
+		
+		$checkboxes.prop("disabled", false);
+		$checkboxes.siblings("label").removeClass("disabled");
+	}
 }
 
 function bindCheckBoxChangeEvent($checkboxes, queryID) {
@@ -97,9 +103,7 @@ function bindCheckBoxChangeEvent($checkboxes, queryID) {
 	$checkboxes.change(function() {
 		
 		runCheckBoxEvaluators($(this), queryID);
-		
 	});
-	
 }
 
 function runCheckBoxEvaluators($this, queryID) {
