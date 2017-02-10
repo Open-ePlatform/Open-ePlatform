@@ -506,7 +506,24 @@
 		  				</figure>
 		  				<div class="heading">
 	  						<h1 class="xl"><xsl:value-of select="Flow/name" /><b><xsl:text>&#160;</xsl:text>(<xsl:value-of select="Status/name" />)</b></h1>
-							<span class="errandno hide-mobile"><xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="flowInstanceID" /></span>
+							
+							<span class="errandno hide-mobile">
+								<xsl:value-of select="$i18n.FlowInstanceID" />
+							</span>
+							
+							<span class="hide-mobile">
+								<xsl:text>:&#160;</xsl:text><xsl:value-of select="flowInstanceID" />
+							</span>
+							
+							<br/>
+							
+							<span class="errandno hide-mobile">
+								<xsl:value-of select="$i18n.CurrentStatus" />
+							</span>
+							
+							<span class="hide-mobile">
+								<xsl:text>:&#160;</xsl:text><xsl:value-of select="Status/name" />
+							</span>
 						</div>
 					</div>
   				</div>
