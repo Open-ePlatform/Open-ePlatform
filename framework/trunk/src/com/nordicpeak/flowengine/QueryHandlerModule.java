@@ -114,9 +114,9 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 	}
 
 	@Override
-	public boolean removeQueryProvider(QueryTypeDescriptor queryType) {
+	public boolean removeQueryProvider(QueryTypeDescriptor queryType, QueryProvider instance) {
 
-		boolean result = queryProviderMap.remove(queryType.getQueryTypeID()) != null;
+		boolean result = queryProviderMap.remove(queryType.getQueryTypeID(), instance);
 
 		if(result){
 			log.info("Query provider for query type " + queryType + " removed");

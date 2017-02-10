@@ -131,7 +131,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 			if(queryHandler != null){
 
-				queryHandler.removeQueryProvider(queryTypeDescriptor);
+				queryHandler.removeQueryProvider(queryTypeDescriptor, this);
 			}
 			
 			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, getQueryInstanceClass());
@@ -151,10 +151,19 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		if(flowAdminModule != null && oldQueryTypeID != null && flowAdminModule.getQueryCount(oldQueryTypeID) > 0){
 			
-			flowAdminModule.changeQueryTypeID(oldQueryTypeID, queryTypeDescriptor.getQueryTypeID());
+			QueryHandler queryHandler = systemInterface.getInstanceHandler().getInstance(QueryHandler.class);
+
+			if (queryHandler == null || (queryHandler != null && queryHandler.getQueryProvider(oldQueryTypeID) == null)) {
+
+				flowAdminModule.changeQueryTypeID(oldQueryTypeID, queryTypeDescriptor.getQueryTypeID());
+
+			} else {
+
+				log.info("Another query provider is still registered for '" + oldQueryTypeID + "', avoiding query type rename.");
+			}
 			
 			this.oldQueryTypeID = null;
-		}		
+		}
 	}
 
 	@Override
@@ -166,7 +175,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		if(queryHandler != null){
 
-			queryHandler.removeQueryProvider(queryTypeDescriptor);
+			queryHandler.removeQueryProvider(queryTypeDescriptor, this);
 		}
 
 		this.flowAdminModule = null;
@@ -348,7 +357,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 			
 			targetElement.appendChild(queryInstance.toXML(doc));
 		}
-	}	
+	}
 	
 	protected List<PDFAttachment> getPDFAttachments(QI queryInstance) {
 
@@ -453,7 +462,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	@Override
 	public synchronized <InstanceType extends QueryHandler> void instanceRemoved(Class<QueryHandler> key, InstanceType instance) {
 
-		instance.removeQueryProvider(queryTypeDescriptor);
+		instance.removeQueryProvider(queryTypeDescriptor, this);
 	}
 	
 	protected void addQueryProvider(QueryHandler queryHandler){

@@ -22,7 +22,7 @@ public interface QueryHandler {
 
 	public boolean addQueryProvider(QueryProvider queryProvider);
 
-	public boolean removeQueryProvider(QueryTypeDescriptor queryType);
+	public boolean removeQueryProvider(QueryTypeDescriptor queryType, QueryProvider instance);
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryProviderErrorException;
 	
