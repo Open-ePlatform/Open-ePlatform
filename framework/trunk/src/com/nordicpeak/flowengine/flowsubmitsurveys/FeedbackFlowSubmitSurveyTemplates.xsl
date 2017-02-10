@@ -46,7 +46,7 @@
 		
 	<xsl:template match="FeedbackSurveyForm">
 	
-		<h1 class="title-border"><xsl:value-of select="$i18n.FeedbackSurveyTitle" /><xsl:text>&#160;</xsl:text><xsl:value-of select="flowName" />?</h1>
+		<h1 class="title-border"><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></h1>
 		
 		<form id="feedbackForm" name="feedbackForm" method="post" action="{ModuleURI}">
 			
