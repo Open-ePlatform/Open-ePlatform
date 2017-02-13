@@ -1415,7 +1415,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			if (notificationSettings.isSendExternalMessageReceivedUserEmail() || notificationSettings.isSendExternalMessageReceivedUserSMS()) {
 				
-				Collection<Contact> contacts = getContacts(event.getFlowInstance(), event.getSiteProfile());
+				Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
 				
 				if (contacts != null) {
 					
@@ -1474,7 +1474,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				if (notificationSettings.isSendFlowInstanceArchivedUserEmail() || notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 					
-					Collection<Contact> contacts = getContacts(event.getFlowInstance(), event.getSiteProfile());
+					Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
 					
 					if (contacts != null) {
 						
@@ -1932,7 +1932,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 	
 	
-	public List<Contact> getContacts(FlowInstance flowInstance, SiteProfile siteProfile) {
+	public List<Contact> getContactsFromDB(FlowInstance flowInstance) {
 
 		try {
 			flowInstance = getFlowInstanceWithAttributesAndOwners(flowInstance.getFlowInstanceID());
