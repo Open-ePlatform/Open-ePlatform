@@ -496,7 +496,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 					
 					if (notificationSettings.isSendExternalMessageReceivedUserEmail() || notificationSettings.isSendExternalMessageReceivedUserSMS()) {
 						
-						Collection<Contact> contacts = flowNotificationHandler.getContacts(flowInstance, flowInstanceAdminModule.getCurrentSiteProfile(multipartRequest, user, uriParser, flowInstance.getFlow().getFlowFamily()));
+						Collection<Contact> contacts = flowNotificationHandler.getContactsFromDB(flowInstance);
 						
 						if (contacts != null) {
 							
