@@ -169,4 +169,16 @@ public class Contact {
 		this.contactByEmail = contactByEmail;
 	}
 	
+	@Override
+	public String toString(){
+		
+		if(citizenIdentifier != null){
+			
+			return firstname + " " + lastname + " (" + citizenIdentifier + ")";
+		
+		}else{
+		
+			return firstname + " " + lastname;
+		}
+	}
 }

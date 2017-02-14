@@ -71,4 +71,16 @@ public final class SigningParty extends GeneratedElementable {
 		return addAsOwner;
 	}
 
+	@Override
+	public String toString(){
+		
+		if(socialSecurityNumber != null){
+			
+			return firstname + " " + lastname + " (" + socialSecurityNumber + ")";
+		
+		}else{
+		
+			return firstname + " " + lastname;
+		}
+	}
 }
