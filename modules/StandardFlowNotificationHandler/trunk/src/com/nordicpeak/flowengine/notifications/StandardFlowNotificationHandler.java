@@ -542,7 +542,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		initialTableVersion = TableVersionHandler.getTableGroupVersion(dataSource, StandardFlowNotificationHandler.class.getName());
 
 		//Automatic table version handling
-		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, StandardFlowNotificationHandler.class.getName(), new XMLDBScriptProvider(this.getClass().getResourceAsStream("DB script.xml")));
+		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, StandardFlowNotificationHandler.class.getName(), new XMLDBScriptProvider(StandardFlowNotificationHandler.class.getResourceAsStream("DB script.xml")));
 
 		if (upgradeResult.isUpgrade()) {
 
@@ -1600,8 +1600,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		try {
 			email.addRecipient(signingParty.getEmail());
 			email.setMessageContentType(SimpleEmail.HTML);
-			email.setSenderName(emailSenderName);
-			email.setSenderAddress(emailSenderAddress);
+			email.setSenderName(this.getEmailSenderName(flowInstance));
+			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
 			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
 
@@ -1637,7 +1637,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			sms.setSenderName(smsSenderName);
+			sms.setSenderName(this.getSmsSenderName(flowInstance));
 			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
 			sms.addRecipient(signingParty.getMobilePhone());
 
@@ -1662,15 +1662,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", userFlowInstanceModuleAlias + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
 		try {
 			email.addRecipient(contact.getEmail());
 			email.setMessageContentType(SimpleEmail.HTML);
-			email.setSenderName(emailSenderName);
-			email.setSenderAddress(emailSenderAddress);
+			email.setSenderName(this.getEmailSenderName(flowInstance));
+			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
 			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
 
@@ -1704,12 +1704,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", userFlowInstanceModuleAlias + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			sms.setSenderName(smsSenderName);
+			sms.setSenderName(this.getSmsSenderName(flowInstance));
 			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
 			sms.addRecipient(contact.getMobilePhone());
 
@@ -1775,8 +1775,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			try {
 				email.addRecipient(manager.getEmail());
 				email.setMessageContentType(SimpleEmail.HTML);
-				email.setSenderName(emailSenderName);
-				email.setSenderAddress(emailSenderAddress);
+				email.setSenderName(this.getEmailSenderName(flowInstance));
+				email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 				email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
 				email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
 
@@ -1813,8 +1813,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		try {
 			email.addRecipient(address);
 			email.setMessageContentType(SimpleEmail.HTML);
-			email.setSenderName(emailSenderName);
-			email.setSenderAddress(emailSenderAddress);
+			email.setSenderName(this.getEmailSenderName(flowInstance));
+			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
 			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
 
@@ -2173,17 +2173,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
-	public String getEmailSenderName() {
+	public String getEmailSenderName(ImmutableFlowInstance flowInstance) {
 
 		return emailSenderName;
 	}
 
-	public String getEmailSenderAddress() {
+	public String getEmailSenderAddress(ImmutableFlowInstance flowInstance) {
 
 		return emailSenderAddress;
 	}
 
-	public String getSmsSenderName() {
+	public String getSmsSenderName(ImmutableFlowInstance flowInstance) {
 
 		return smsSenderName;
 	}
@@ -2193,7 +2193,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return statusChangedUserEmailSubject;
 	}
 
-	public String getUserFlowInstanceModuleAlias() {
+	public String getUserFlowInstanceModuleAlias(ImmutableFlowInstance flowInstance) {
 
 		return userFlowInstanceModuleAlias;
 	}
@@ -2209,7 +2209,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	
-	public String getFlowInstanceAdminModuleAlias() {
+	public String getFlowInstanceAdminModuleAlias(ImmutableFlowInstance flowInstance) {
 	
 		return flowInstanceAdminModuleAlias;
 	}
