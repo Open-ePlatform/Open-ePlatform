@@ -1548,5 +1548,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public List<Integer> getFlowTypeIDs() {
 		return flowTypeIDs;
 	}
+
+	
+	public boolean isSaveSearchInSession() {
+	
+		return saveSearchInSession;
+	}
 	
 }
