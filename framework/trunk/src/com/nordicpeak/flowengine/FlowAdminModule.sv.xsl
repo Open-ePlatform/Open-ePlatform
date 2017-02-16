@@ -180,7 +180,7 @@
 	<xsl:variable name="i18n.uploadNewIcon">Ladda upp ny ikon (png, jpg, gif eller bmp format)</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowIcon.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UnableToParseRequest">Det gick inte att tolka informationen från din webbläsare.</xsl:variable>
-	<xsl:variable name="i18n.UnableToParseIcon">Den gick att tolka ikonen.</xsl:variable>
+	<xsl:variable name="i18n.UnableToParseIcon">Den gick inte att tolka ikonen.</xsl:variable>
 	<xsl:variable name="i18n.InvalidIconFileFormat">Felaktig filformat endast ikoner i png, jpg, gif eller bmp format är tillåtna.</xsl:variable>
 	
 	<xsl:variable name="i18n.addFlowForm.link.title">Lägg till blankett</xsl:variable>

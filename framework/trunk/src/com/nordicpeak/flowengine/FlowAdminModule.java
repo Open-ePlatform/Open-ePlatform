@@ -1292,36 +1292,46 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						try {
 							BufferedImage image = ImageUtils.getImage(file.get());
 
-							image = ImageUtils.cropAsSquare(image);
+							if(image == null){
+								
+								validationError = new ValidationError("UnableToParseIcon");
+								
+							}else{
+								
+								image = ImageUtils.cropAsSquare(image);
+								
+								String filename = FilenameUtils.getName(file.getName());
+								
+								if (image.getWidth() > maxFlowIconWidth || image.getHeight() > maxFlowIconHeight) {
 
-							if (image.getWidth() > maxFlowIconWidth || image.getHeight() > maxFlowIconHeight) {
+									image = ImageUtils.scaleImage(image, maxFlowIconHeight, maxFlowIconWidth, Image.SCALE_SMOOTH, BufferedImage.TYPE_INT_ARGB);
 
-								image = ImageUtils.scaleImage(image, maxFlowIconHeight, maxFlowIconWidth, Image.SCALE_SMOOTH, BufferedImage.TYPE_INT_ARGB);
+									ByteArrayOutputStream iconStream = new ByteArrayOutputStream();
 
-								ByteArrayOutputStream iconStream = new ByteArrayOutputStream();
+									ImageIO.write(image, "png", iconStream);
 
-								ImageIO.write(image, "png", iconStream);
+									flow.setIcon(new SerialBlob(iconStream.toByteArray()));
+									flow.setIconFileName(FileUtils.replaceFileExtension(FilenameUtils.getName(filename), "png"));
 
-								flow.setIcon(new SerialBlob(iconStream.toByteArray()));
-								flow.setIconFileName(FileUtils.replaceFileExtension(FilenameUtils.getName(file.getName()), "png"));
+								} else {
 
-							} else {
+									flow.setIcon(new SerialBlob(file.get()));
+									flow.setIconFileName(FilenameUtils.getName(filename));
+								}
 
-								flow.setIcon(new SerialBlob(file.get()));
-								flow.setIconFileName(FilenameUtils.getName(file.getName()));
+								log.info("User " + user + " updating icon for flow " + flow);
+
+								this.daoFactory.getFlowDAO().update(flow);
+
+								eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
+
+								addFlowFamilyEvent(eventUpdateIconMessage + " \"" + filename + "\"", flow, user);
+
+								redirectToMethod(multipartRequest, res, "/showflow/" + flow.getFlowID());
+
+								return null;								
 							}
-
-							log.info("User " + user + " updating icon for flow " + flow);
-
-							this.daoFactory.getFlowDAO().update(flow);
-
-							eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
-
-							addFlowFamilyEvent(eventUpdateIconMessage + " \"" + file.getName() + "\"", flow, user);
-
-							redirectToMethod(multipartRequest, res, "/showflow/" + flow.getFlowID());
-
-							return null;
+							
 
 						} catch (IOException e) {
 
