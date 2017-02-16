@@ -18,11 +18,11 @@
 	<xsl:variable name="i18n.ValidationError.FlowNotFound">Den angivna e-tjänsten hittades inte</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnknownRemoteError">Ett okänt fel har uppstått</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.AccessDenied">Åtkomst nekad</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.RepositoryCommunicationFailed">Ett fel uppstod i kommunikationen med källan</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.RepositoryCommunicationFailed">Ett fel uppstod i kommunikationen med katalogen</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.ErrorExportingFlow">Ett okänt fel har uppstått vid exportering av e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.FlowAlreadyExists">Den här versionen av e-tjänsten finns redan i den valda källan</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.FileSizeLimitExceeded">E-tjänsten är för stor för att tas emot av den valda källan</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.FileUploadException">Ett fel uppstod när e-tjänsten skulle skickas till källan</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.FlowAlreadyExists">Den här versionen av e-tjänsten finns redan i den valda katalogen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.FileSizeLimitExceeded">E-tjänsten är för stor för att tas emot av den valda katalogen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.FileUploadException">Ett fel uppstod när e-tjänsten skulle skickas till katalogen</xsl:variable>
 	
 	<xsl:variable name="i18n.ErrorConnectingToRepository.1">Det gick inte att ansluta till</xsl:variable>
 	<xsl:variable name="i18n.ErrorConnectingToRepository.2">, försök igen senare.</xsl:variable>
@@ -35,21 +35,21 @@
 	<xsl:variable name="i18n.Column.Comment">Kommentar</xsl:variable>
 
 	<xsl:variable name="i18n.ListRepositories.Title">E-tjänstkatalog</xsl:variable>
-	<xsl:variable name="i18n.ListRepositories.Description">Här listas alla källor. Klicka på en rad för att visa mer information om e-tjänsten.</xsl:variable>
-	<xsl:variable name="i18n.ListRepositories.NoRepositoriesFound">Hittade inga källor</xsl:variable>
-	<xsl:variable name="i18n.ListRepositories.NoFlowsFound">Inga e-tjänster funna</xsl:variable>
+	<xsl:variable name="i18n.ListRepositories.Description">Här listas alla kataloger. Klicka på en rad för att visa mer information om e-tjänsten.</xsl:variable>
+	<xsl:variable name="i18n.ListRepositories.NoRepositoriesFound">Inga kataloger hittades.</xsl:variable>
+	<xsl:variable name="i18n.ListRepositories.NoFlowsFound">Inga e-tjänster funna.</xsl:variable>
 	
 	<xsl:variable name="i18n.ListFlowVersions.Title">E-tjänst</xsl:variable>
-	<xsl:variable name="i18n.ListFlowVersions.Description">Här listas alla versioner av e-tjänsten som finns i källan</xsl:variable>
+	<xsl:variable name="i18n.ListFlowVersions.Description">Här listas alla versioner av e-tjänsten som finns i katalogen</xsl:variable>
 	
 	<xsl:variable name="i18n.ShareFlow.Title">Dela e-tjänst</xsl:variable>
-	<xsl:variable name="i18n.ShareFlow.Description">Välj vilken källa du vill ladda upp e-tjänsten till.</xsl:variable>
-	<xsl:variable name="i18n.ShareFlow.SelectRepository">Källa</xsl:variable>
+	<xsl:variable name="i18n.ShareFlow.Description">Välj vilken katalog du vill ladda upp e-tjänsten till.</xsl:variable>
+	<xsl:variable name="i18n.ShareFlow.SelectRepository">Katalog</xsl:variable>
 	<xsl:variable name="i18n.ShareFlow.Comment">Kommentar</xsl:variable>
-	<xsl:variable name="i18n.ShareFlow.NoRepositoriesWithAccessFound">Hittade inga källor med uppladdningsrättigheter.</xsl:variable>
+	<xsl:variable name="i18n.ShareFlow.NoRepositoriesWithAccessFound">Inga kataloger med uppladdningsrättigheter hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.Download.Title">Ladda ner version</xsl:variable>
-	<xsl:variable name="i18n.DownloadError.Title">Fel uppstod vid nedladdning</xsl:variable>
+	<xsl:variable name="i18n.DownloadError.Title">Ett fel uppstod vid nedladdning</xsl:variable>
 	
 	<xsl:variable name="i18n.Back">Bakåt</xsl:variable>
 	<xsl:variable name="i18n.Submit">Skicka in</xsl:variable>
