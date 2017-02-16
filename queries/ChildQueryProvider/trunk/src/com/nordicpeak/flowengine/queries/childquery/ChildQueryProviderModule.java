@@ -81,6 +81,11 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider {
 
+	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" + 
+			"INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" + 
+			"INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" + 
+			"WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
+	
 	@XSLVariable(prefix = "java.")
 	protected String alternativeName = "This variable should be set by your stylesheet";
 
@@ -102,7 +107,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private QueryParameterFactory<ChildQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<ChildQueryInstance, Integer> queryInstanceIDParamFactory;
-	private QueryParameterFactory<ChildQueryInstance, String> queryInstanceCitizenIdentifierParamFactory;
 
 	private ChildAlternative alternative;
 	
@@ -136,7 +140,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
-		queryInstanceCitizenIdentifierParamFactory = queryInstanceDAO.getParamFactory("citizenIdentifier", String.class);
 	}
 
 	@Override
@@ -598,11 +601,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	@Override
 	public List<Integer> getQueryInstanceIDs(String citizenIdentifier) throws SQLException {
 		
-		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(queryInstanceDAO.getDataSource(), "SELECT i.queryInstanceID FROM " + queryInstanceDAO.getTableName() + " i "
-				+ "INNER JOIN ("
-				+ "SELECT queryID FROM " + queryDAO.getTableName() + " WHERE useMultipartSigning = true"
-				+ ") q ON q.queryID = i.queryID "
-				+ "WHERE i." + queryInstanceCitizenIdentifierParamFactory.getColumnName() + " = ?", IntegerPopulator.getPopulator());
+		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(queryInstanceDAO.getDataSource(), GET_OTHER_PARTIES_SQL, IntegerPopulator.getPopulator());
+		
 		query.setString(1, citizenIdentifier);
 		
 		return query.executeQuery();
