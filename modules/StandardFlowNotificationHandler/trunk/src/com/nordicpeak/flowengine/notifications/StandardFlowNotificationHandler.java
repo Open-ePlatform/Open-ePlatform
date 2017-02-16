@@ -1602,8 +1602,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
-			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
+			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			systemInterface.getEmailHandler().send(email);
 
@@ -1638,7 +1638,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		try {
 			sms.setSenderName(this.getSmsSenderName(flowInstance));
-			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
+			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 			sms.addRecipient(signingParty.getMobilePhone());
 
 			smsSender.send(sms);
@@ -1671,8 +1671,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
-			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
+			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));			
 
 			if (pdfFile != null && pdfFilename != null) {
 
@@ -1710,7 +1710,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		try {
 			sms.setSenderName(this.getSmsSenderName(flowInstance));
-			sms.setMessage(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler()));
+			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 			sms.addRecipient(contact.getMobilePhone());
 
 			smsSender.send(sms);
@@ -1777,8 +1777,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				email.setMessageContentType(SimpleEmail.HTML);
 				email.setSenderName(this.getEmailSenderName(flowInstance));
 				email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-				email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
-				email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
+				email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+				email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 				systemInterface.getEmailHandler().send(email);
 
@@ -1815,8 +1815,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(AttributeTagUtils.replaceTags(tagReplacer.replace(subject), flowInstance.getAttributeHandler()));
-			email.setMessage(EmailUtils.addMessageBody(AttributeTagUtils.replaceTags(tagReplacer.replace(message), flowInstance.getAttributeHandler())));
+			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			String generatedFilename = null;
 
@@ -1866,6 +1866,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	}
 
+	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
+		
+		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
+	}	
+	
 	private List<User> getFlowFamilyManagers(Integer flowFamilyID) throws SQLException {
 
 		FlowFamily flowFamily = flowFamilyDAO.get(flowFamilyID);
