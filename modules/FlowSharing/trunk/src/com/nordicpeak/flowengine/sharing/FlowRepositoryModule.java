@@ -2,8 +2,8 @@ package com.nordicpeak.flowengine.sharing;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -426,7 +426,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		}
 		
 		if (validationErrors.isEmpty()) {
-
+			
 			try {
 				SharedFlow sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
 				
@@ -462,7 +462,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 				} else {
 					
 					sharedFlow.setSource(source);
-					sharedFlow.setAdded(new Date(System.currentTimeMillis()));
+					sharedFlow.setAdded(new Timestamp(System.currentTimeMillis()));
 					sharedFlow.setFlowXML(new SerialBlob(flowXML.getBytes()));
 					
 					SharedFlow existingFlow = getSharedFlow(sharedFlow.getSource(), sharedFlow.getFlowFamilyID(), sharedFlow.getFlowID());

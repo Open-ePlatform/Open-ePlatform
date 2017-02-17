@@ -2,7 +2,7 @@ package com.nordicpeak.flowengine.sharing.beans;
 
 import java.lang.reflect.Field;
 import java.sql.Blob;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -60,7 +60,7 @@ public class SharedFlow extends GeneratedElementable {
 
 	@DAOManaged
 	@XMLElement(valueFormatter = DateStringyfier.class)
-	private Date added;
+	private Timestamp added;
 
 	@DAOManaged
 	private transient Blob flowXML;
@@ -138,12 +138,12 @@ public class SharedFlow extends GeneratedElementable {
 		this.comment = comment;
 	}
 
-	public Date getAdded() {
+	public Timestamp getAdded() {
 
 		return added;
 	}
 
-	public void setAdded(Date added) {
+	public void setAdded(Timestamp added) {
 
 		this.added = added;
 	}
