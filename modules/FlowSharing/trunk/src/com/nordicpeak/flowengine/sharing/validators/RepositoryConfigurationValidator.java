@@ -7,7 +7,7 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class RepositoryConfigurationValidator implements StringFormatValidator {
 
-	private static final Pattern pattern = Pattern.compile("^https?://[^:]+:[^:]+:[^:]+$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern PATTERN = Pattern.compile("^https?://[^:]+:[^:]+:[^:]+$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
 	@Override
 	public boolean validateFormat(String value) {
@@ -16,7 +16,7 @@ public class RepositoryConfigurationValidator implements StringFormatValidator {
 			return false;
 		}
 
-		return pattern.matcher(value).matches();
+		return PATTERN.matcher(value).matches();
 	}
 
 }

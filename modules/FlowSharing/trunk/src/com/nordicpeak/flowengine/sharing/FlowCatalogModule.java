@@ -9,10 +9,10 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -148,7 +148,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 						String username = splits[1];
 						String password = splits[2];
 						
-						repositories.add(new RepositoryConfiguration(url, username, password));
+						repositories.add(new RepositoryConfiguration(url.replace("|", ":"), username, password));
 						
 					} else {
 						
@@ -663,10 +663,10 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 							requestParameters.add(new SimpleEntry<String, String>("flowFamilyID", flow.getFlowFamily().getFlowFamilyID().toString()));
 							requestParameters.add(new SimpleEntry<String, String>("flowID", flow.getFlowID().toString()));
 							requestParameters.add(new SimpleEntry<String, String>("version", flow.getVersion().toString()));
-							requestParameters.add(new SimpleEntry<String, String>("name", flow.getName()));
+							requestParameters.add(new SimpleEntry<String, String>("name", URLEncoder.encode(flow.getName(), systemInterface.getEncoding())));
 							
 							if (!StringUtils.isEmpty(comment)) {
-								requestParameters.add(new SimpleEntry<String, String>("comment", comment));
+								requestParameters.add(new SimpleEntry<String, String>("comment", URLEncoder.encode(comment, systemInterface.getEncoding())));
 							}
 							
 							ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -748,7 +748,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		}
 	}
 	
-	private Document sendPostRequest(RepositoryConfiguration repository, String method, List<? extends Entry<String, String>> requestParameters, InputStream outputData) {
+	private Document sendPostRequest(RepositoryConfiguration repository, String method, List<? extends Entry<String, String>> requestParameters, ByteArrayInputStream outputData) {
 		
 		try {
 			SimpleRequest request = new SimpleRequest(repository.getUrl() + "/" + method);
@@ -756,7 +756,12 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			request.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
 			request.setRequestParameters(requestParameters);
 			
-			request.setHeaders(Collections.singletonList(new SimpleEntry<String, String>("Content-Type", "text/xml; charset=" + systemInterface.getEncoding())));
+			List<SimpleEntry<String, String>> headerEntries = new ArrayList<SimpleEntry<String, String>>(2);
+			
+			headerEntries.add(new SimpleEntry<String, String>("Content-Type", "text/xml; charset=" + systemInterface.getEncoding()));
+			headerEntries.add(new SimpleEntry<String, String>("Content-Length", Long.toString(outputData.available())));
+			
+			request.setHeaders(headerEntries);
 			
 			if (repository.getUsername() != null && repository.getPassword() != null) {
 				

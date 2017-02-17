@@ -435,7 +435,16 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 				if (flowXML == null) {
 					
 					try {
-						flowXML = StringUtils.readStreamAsString(req.getInputStream());
+						if(req.getCharacterEncoding() != null){
+							
+							flowXML = StringUtils.readStreamAsString(req.getInputStream(), req.getCharacterEncoding());
+							
+						}else{
+							
+							flowXML = StringUtils.readStreamAsString(req.getInputStream());
+						}
+						
+						
 					} catch (IOException e) {
 						log.warn("Error reading from request input stream from source " + source + " from address " + req.getRemoteAddr(), e);
 					};
