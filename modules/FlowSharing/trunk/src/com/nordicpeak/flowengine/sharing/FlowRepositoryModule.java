@@ -445,13 +445,19 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 					
 					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.RequiredField));
 					
+					log.warn("Request without flow XML from source " + source + " from address " + req.getRemoteAddr());
+					
 				} else if (flowXML.length() > 16 * BinarySizes.MegaByte) {
 					
 					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.TooLong));
 					
+					log.warn("Request bigger than 16 MB received from source " + source + " from address " + req.getRemoteAddr());
+					
 				} else if (!XMLUtils.isValidXML(flowXML)) {
 					
 					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.InvalidFormat));
+					
+					log.warn("Request with invalid XML received from source " + source + " from address " + req.getRemoteAddr());
 					
 				} else {
 					
@@ -475,6 +481,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 				}
 				
 			} catch (ValidationException e) {
+				
 				validationErrors.addAll(e.getErrors());
 			}
 		}
