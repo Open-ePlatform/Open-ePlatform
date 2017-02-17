@@ -17,12 +17,6 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.sharing.beans.Repository;
-import com.nordicpeak.flowengine.sharing.beans.SharedFlow;
-import com.nordicpeak.flowengine.sharing.beans.Source;
-import com.nordicpeak.flowengine.sharing.beans.SourceUser;
-import com.nordicpeak.flowengine.sharing.cruds.SourceCRUD;
-
 import se.unlogic.hierarchy.core.annotations.DropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
@@ -63,6 +57,12 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
+
+import com.nordicpeak.flowengine.sharing.beans.Repository;
+import com.nordicpeak.flowengine.sharing.beans.SharedFlow;
+import com.nordicpeak.flowengine.sharing.beans.Source;
+import com.nordicpeak.flowengine.sharing.beans.SourceUser;
+import com.nordicpeak.flowengine.sharing.cruds.SourceCRUD;
 
 public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCallback<User>, AccessInterface {
 
@@ -417,37 +417,43 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 			validationErrors.add(new ValidationError("MethodNotAllowed"));
 		}
 
+		SharedFlow sharedFlow = null;
+		
 		if (validationErrors.isEmpty()) {
-
-			SharedFlow sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
-
-			String flowXML = req.getParameter("flowXML");
-
-			if (flowXML == null || flowXML.length() == 0) {
-				validationErrors.add(new ValidationError("flowXML", ValidationErrorType.RequiredField));
-			}
-
+			
+			sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
+			
 			if (validationErrors.isEmpty()) {
 
-				sharedFlow.setSource(source);
-				sharedFlow.setAdded(new Date(System.currentTimeMillis()));
-				sharedFlow.setFlowXML(new SerialBlob(flowXML.getBytes()));
+				String flowXML = req.getParameter("flowXML");
 
-				SharedFlow existingFlow = getSharedFlow(sharedFlow.getSource(), sharedFlow.getFlowFamilyID(), sharedFlow.getFlowID());
-				
-				if (existingFlow != null) {
-
-					sharedFlowDAO.delete(existingFlow);
+				if (flowXML == null || flowXML.length() == 0) {
+					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.RequiredField));
 				}
-				
-				log.info("User " + user + " adding shared flow " + sharedFlow + " from " + source);
 
-				sharedFlowDAO.add(sharedFlow);
+				if (validationErrors.isEmpty()) {
 
-				XMLUtils.append(doc, (Element) doc.getFirstChild(), sharedFlow);
-				return doc;
-			}
+					sharedFlow.setSource(source);
+					sharedFlow.setAdded(new Date(System.currentTimeMillis()));
+					sharedFlow.setFlowXML(new SerialBlob(flowXML.getBytes()));
+
+					SharedFlow existingFlow = getSharedFlow(sharedFlow.getSource(), sharedFlow.getFlowFamilyID(), sharedFlow.getFlowID());
+					
+					if (existingFlow != null) {
+
+						sharedFlowDAO.delete(existingFlow);
+					}
+					
+					log.info("User " + user + " adding shared flow " + sharedFlow + " from " + source);
+
+					sharedFlowDAO.add(sharedFlow);
+
+					XMLUtils.append(doc, (Element) doc.getFirstChild(), sharedFlow);
+					return doc;
+				}
+			}			
 		}
+	
 
 		XMLUtils.append(doc, (Element) doc.getFirstChild(), "ValidationErrors", validationErrors);
 		return doc;
