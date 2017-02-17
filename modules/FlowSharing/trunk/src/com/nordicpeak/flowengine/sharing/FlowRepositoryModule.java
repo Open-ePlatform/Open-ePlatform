@@ -50,6 +50,7 @@ import se.unlogic.standardutils.hash.HashAlgorithms;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.HTTPUtils;
@@ -410,18 +411,28 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		if (source == null || !source.hasUploadAccess()) {
 
 			validationErrors.add(new ValidationError("AccessDenied"));
+			
+			log.warn("Access denied for request from " + req.getRemoteAddr());
 		}
 
 		if (!req.getMethod().equalsIgnoreCase("POST")) {
 
 			validationErrors.add(new ValidationError("MethodNotAllowed"));
+			
+			log.warn("Invalid method used in request from " + req.getRemoteAddr());
 		}
 
 		SharedFlow sharedFlow = null;
 		
 		if (validationErrors.isEmpty()) {
 			
-			sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
+			try {
+				sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
+				
+			} catch (ValidationException e) {
+				
+				validationErrors.addAll(e.getErrors());
+			}
 			
 			if (validationErrors.isEmpty()) {
 
