@@ -274,7 +274,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		if(profileHandler != null) {
 			
 			profile = profileHandler.getCurrentProfile(user, req, uriParser);
-		}		
+		}
 		
 		List<Integer> flowIDs = getUserFlowIDs(user, profile);
 
@@ -569,7 +569,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					updateInstanceStatusElement.appendChild(STATUS_NOT_FOUND_VALIDATION_ERROR.toXML(doc));
 
-				}else if(status.getContentType() == ContentType.NEW){
+				}else if(status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT){
 
 					updateInstanceStatusElement.appendChild(INVALID_STATUS_VALIDATION_ERROR.toXML(doc));
 
@@ -1125,6 +1125,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		indexThreading.start();
 	}
 
+	@Override
 	public void run(){
 		
 		this.flowInstanceIndexer.cacheFlowInstances();

@@ -1255,7 +1255,7 @@
 	 						</div>
 	 						<div class="clearfix"></div>
 	 						
-	 						<xsl:apply-templates select="FlowInstance/Flow/Statuses/Status[contentType != 'NEW']" mode="radiobutton">
+	 						<xsl:apply-templates select="FlowInstance/Flow/Statuses/Status[contentType != 'NEW' and contentType != 'WAITING_FOR_MULTISIGN' and contentType != 'WAITING_FOR_PAYMENT']" mode="radiobutton">
 	 							<xsl:with-param name="selectedID">
 	 								<xsl:value-of select="FlowInstance/Status/statusID"/>
 	 							</xsl:with-param>
