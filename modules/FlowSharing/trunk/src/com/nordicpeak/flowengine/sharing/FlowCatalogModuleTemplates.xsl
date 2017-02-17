@@ -359,9 +359,21 @@
 		</p>
 	</xsl:template>
 
-	<xsl:template match="validationError[messageKey='FlowAlreadyExists']">
+	<xsl:template match="validationError[messageKey='SharedFlowAlreadyExists']">
 		<p class="error">
 			<xsl:value-of select="$i18n.ValidationError.FlowAlreadyExists"/>
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[fieldName='flowXML' and validationErrorType='TooLong']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.FileSizeLimitExceeded"/>
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[fieldName='flowXML' and validationErrorType='RequiredField']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.FileUploadException"/>
 		</p>
 	</xsl:template>
 	

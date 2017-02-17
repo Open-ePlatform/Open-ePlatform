@@ -48,6 +48,8 @@ import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.hash.HashAlgorithms;
 import se.unlogic.standardutils.hash.HashUtils;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -424,15 +426,32 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		}
 		
 		if (validationErrors.isEmpty()) {
-			
+
 			try {
 				SharedFlow sharedFlow = SHARED_FLOW_POPULATOR.populate(req);
 				
 				String flowXML = req.getParameter("flowXML");
 				
-				if (flowXML == null || flowXML.length() == 0) {
+				if (flowXML == null) {
+					
+					try {
+						flowXML = StringUtils.readStreamAsString(req.getInputStream());
+					} catch (IOException e) {
+						log.warn("Error reading from request input stream from source " + source + " from address " + req.getRemoteAddr(), e);
+					};
+				}
+				
+				if (StringUtils.isEmpty(flowXML)) {
 					
 					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.RequiredField));
+					
+				} else if (flowXML.length() > 16 * BinarySizes.MegaByte) {
+					
+					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.TooLong));
+					
+				} else if (!XMLUtils.isValidXML(flowXML)) {
+					
+					validationErrors.add(new ValidationError("flowXML", ValidationErrorType.InvalidFormat));
 					
 				} else {
 					
