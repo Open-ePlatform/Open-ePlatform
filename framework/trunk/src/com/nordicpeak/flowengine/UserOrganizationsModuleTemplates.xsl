@@ -239,7 +239,7 @@
 				<h3><xsl:value-of select="$i18n.ContactPerson" /></h3>
 			
 				<div class="split">
-					<label for="firstname">
+					<label for="firstname" class="required">
 						<xsl:value-of select="$i18n.Firstname" />
 					</label>
 
@@ -251,7 +251,7 @@
 					</xsl:call-template>
 				</div>
 				<div class="split odd">
-					<label for="lastname">
+					<label for="lastname" class="required">
 						<xsl:value-of select="$i18n.Lastname" />
 					</label>
 					<xsl:call-template name="createTextField">
