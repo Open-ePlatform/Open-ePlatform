@@ -343,9 +343,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 						try {
 							lastSearch = URLDecoder.decode(lastSearch, req.getCharacterEncoding());
 							
-							System.out.println("decoded lastSearch: " + lastSearch);
-							
 						} catch (UnsupportedEncodingException e) {
+							
 							log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
 						}
 						
