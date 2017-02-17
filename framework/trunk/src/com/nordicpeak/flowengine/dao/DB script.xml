@@ -1564,6 +1564,14 @@
 				ALTER TABLE `flowengine_flows` ADD COLUMN `paymentSupportEnabled` BOOLEAN NOT NULL AFTER `hideSubmitStepText`;	
 	 		]]>
 		</Query>
+	</Script>
+	
+	<Script version="78">
+		<Query>
+	  		<![CDATA[
+				ALTER TABLE `flowengine_flows` MODIFY COLUMN `icon` MEDIUMBLOB DEFAULT NULL;	
+	 		]]>
+		</Query>
 	</Script>	
 	
 </DBScripts>
