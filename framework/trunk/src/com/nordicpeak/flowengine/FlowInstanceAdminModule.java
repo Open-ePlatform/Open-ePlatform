@@ -461,7 +461,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 			}
 
-			appendShowFlowInstanceOverviewFlowInstanceElement(doc, showFlowInstanceOverviewElement, flowInstance);
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
 
 			if(user != null){
 				showFlowInstanceOverviewElement.appendChild(user.toXML(doc));
@@ -491,7 +491,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
-	protected Element appendShowFlowInstanceOverviewFlowInstanceElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
+	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
 
 		Element showFlowInstanceElement = flowInstance.toXML(doc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
