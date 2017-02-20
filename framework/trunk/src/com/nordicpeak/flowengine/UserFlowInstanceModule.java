@@ -680,7 +680,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
 		
-		addRelations(query);
+		addOverviewRelations(query);
 		
 		query.addExcludedFields(LIST_EXCLUDED_FIELDS);
 		
@@ -699,7 +699,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 	
-	protected void addRelations(HighLevelQuery<FlowInstance> query) {
+	protected void addOverviewRelations(HighLevelQuery<FlowInstance> query) {
 
 		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION);
 		
