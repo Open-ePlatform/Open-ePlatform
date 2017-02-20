@@ -446,7 +446,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			}
 
-			showFlowInstanceOverviewElement.appendChild(flowInstance.toXML(doc));
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
 
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
 
@@ -470,6 +470,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
+	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
+
+		showFlowInstanceOverviewElement.appendChild(flowInstance.toXML(doc));
+		
+	}
+
 	protected boolean profileRedirect(SiteProfile profile, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws IOException {
 
 		if(flowInstance.getProfileID() != null && this.profileHandler != null) {
@@ -674,7 +680,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION);
+		addRelations(query);
 		
 		query.addExcludedFields(LIST_EXCLUDED_FIELDS);
 		
@@ -693,6 +699,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 	
+	protected void addRelations(HighLevelQuery<FlowInstance> query) {
+
+		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION);
+		
+	}
+
 	protected List<FlowInstance> getMultiSignFlowInstances(List<Integer> flowInstanceIDs) throws SQLException {
 		
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>("SELECT i.* FROM " + daoFactory.getFlowInstanceDAO().getTableName()
