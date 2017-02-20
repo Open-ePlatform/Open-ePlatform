@@ -50,6 +50,7 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 		this.queryInstanceID = queryInstanceID;
 	}
 
+	@Override
 	public TextAreaQuery getQuery() {
 
 		return query;
@@ -65,8 +66,8 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 
 		this.value = null;
 		
-		if(query.isSetAsAttribute()){
-
+		if (query.isSetAsAttribute()) {
+			
 			resetAttribute(attributeHandler);
 		}
 		
@@ -76,6 +77,11 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 	public void resetAttribute(MutableAttributeHandler attributeHandler){
 		
 		attributeHandler.removeAttribute(query.getAttributeName());
+	}
+	
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName(), value);
 	}
 	
 	public void copyQueryValues() {
@@ -112,10 +118,5 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 	public String getStringValue() {
 
 		return value;
-	}
-
-	public void setAttribute(MutableAttributeHandler attributeHandler) {
-
-		attributeHandler.setAttribute(query.getAttributeName(), value);		
 	}
 }

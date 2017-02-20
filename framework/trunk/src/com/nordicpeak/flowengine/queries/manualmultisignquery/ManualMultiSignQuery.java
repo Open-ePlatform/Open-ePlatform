@@ -6,6 +6,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -40,6 +41,17 @@ public class ManualMultiSignQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean setMultipartsAsOwners;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength=255)
+	@RequiredIfSet(paramName="setAsAttribute")
+	@XMLElement
+	private String attributeName;
 
 	@DAOManaged
 	@OneToMany
@@ -90,6 +102,13 @@ public class ManualMultiSignQuery extends BaseQuery {
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
+		
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if(attributeName != null){
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
 
 		if(!errors.isEmpty()) {
 
@@ -139,6 +158,29 @@ public class ManualMultiSignQuery extends BaseQuery {
 		fieldElement.setAttribute("maxOccurs", "1");
 
 		sequenceElement.appendChild(fieldElement);
+	}
+	
+	public boolean isSetAsAttribute() {
+		
+		return setAsAttribute;
+	}
+
+	
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+
+	
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
 	}
 
 	public List<ManualMultiSignQueryInstance> getInstances() {

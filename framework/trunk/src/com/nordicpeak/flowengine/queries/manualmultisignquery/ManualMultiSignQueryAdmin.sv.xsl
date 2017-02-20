@@ -17,4 +17,17 @@
 	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt part som sökande för ärendet</xsl:variable>
 	
 	<xsl:variable name="i18n.ManualMultiSignQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
+	
+	<xsl:variable name="i18n.setAsAttribute">Spara fältens värde som attribut</xsl:variable>
+	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas med det ovan valda prefixet:</xsl:variable>
+	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
+	
+	<xsl:variable name="i18n.Firstname">Förnamn</xsl:variable>
+	<xsl:variable name="i18n.Lastname">Efternamn</xsl:variable>
+	<xsl:variable name="i18n.Email">E-postadress</xsl:variable>
+	<xsl:variable name="i18n.MobilePhone">Mobiltelefon</xsl:variable>
+	<xsl:variable name="i18n.SocialSecurityNumber">Personnummer (ÅÅÅÅMMDDXXXX)</xsl:variable>
+	
 </xsl:stylesheet>

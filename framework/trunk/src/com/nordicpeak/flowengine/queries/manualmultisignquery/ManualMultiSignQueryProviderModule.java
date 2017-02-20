@@ -134,8 +134,6 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 	@Override
 	public Query getQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable {
 
-		System.out.println(descriptor);
-		
 		ManualMultiSignQuery query = this.getQuery(descriptor.getQueryID(), transactionHandler);
 
 		if (query == null) {
@@ -283,27 +281,27 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 
 	@Override
 	public void populate(ManualMultiSignQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
-
+		
 		Integer queryID = queryInstance.getQuery().getQueryID();
-
-		if(queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED || !StringUtils.isEmpty(req.getParameter("q" + queryID +"_socialSecurityNumber")) || !StringUtils.isEmpty(req.getParameter("q" + queryID +"_firstname")) || !StringUtils.isEmpty(req.getParameter("q" + queryID +"_lastname")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_email")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_mobilePhone"))){
-
+		
+		if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_socialSecurityNumber")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_firstname")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_lastname")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_email")) || !StringUtils.isEmpty(req.getParameter("q" + queryID + "_mobilePhone"))) {
+			
 			List<ValidationError> errors = new ArrayList<ValidationError>();
-
-			String socialSecurityNumber = ValidationUtils.validateParameter("q" + queryID +"_socialSecurityNumber", req, !allowPartialPopulation, SwedishSocialSecurity12DigitsWithoutMinusPopulator.getPopulator(), errors);
-			String firstname = ValidationUtils.validateParameter("q" + queryID +"_firstname", req, !allowPartialPopulation, 1, 255, errors);
-			String lastname = ValidationUtils.validateParameter("q" + queryID +"_lastname", req, !allowPartialPopulation, 1, 255, errors);
+			
+			String socialSecurityNumber = ValidationUtils.validateParameter("q" + queryID + "_socialSecurityNumber", req, !allowPartialPopulation, SwedishSocialSecurity12DigitsWithoutMinusPopulator.getPopulator(), errors);
+			String firstname = ValidationUtils.validateParameter("q" + queryID + "_firstname", req, !allowPartialPopulation, 1, 255, errors);
+			String lastname = ValidationUtils.validateParameter("q" + queryID + "_lastname", req, !allowPartialPopulation, 1, 255, errors);
 			String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, false, 1, 255, EMAIL_POPULATOR, errors);
 			String mobilePhone = ValidationUtils.validateParameter("q" + queryID + "_mobilePhone", req, false, StringSwedishPhoneNumberPopulator.getPopulator(), errors);
 			
-			if(!allowPartialPopulation && errors.isEmpty() && email == null && mobilePhone == null){
+			if (!allowPartialPopulation && errors.isEmpty() && email == null && mobilePhone == null) {
 				
-				errors.add(new ValidationError("NoContactChannelSpecified", (String)null, "q" + queryID + "_mobilePhone"));
-				errors.add(new ValidationError("NoContactChannelSpecified", (String)null, "q" + queryID + "_email"));
+				errors.add(new ValidationError("NoContactChannelSpecified", (String) null, "q" + queryID + "_mobilePhone"));
+				errors.add(new ValidationError("NoContactChannelSpecified", (String) null, "q" + queryID + "_email"));
 			}
 			
-			if(!errors.isEmpty()){
-
+			if (!errors.isEmpty()) {
+				
 				throw new ValidationException(errors);
 			}
 			
@@ -314,9 +312,14 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 			queryInstance.setMobilePhone(mobilePhone);
 			
 			queryInstance.getQueryInstanceDescriptor().setPopulated(true);
-
-		}else{
-
+			
+			if (queryInstance.getQuery().isSetAsAttribute()) {
+				
+				queryInstance.setAttribute(attributeHandler);
+			}
+			
+		} else {
+			
 			queryInstance.getQueryInstanceDescriptor().setPopulated(false);
 			queryInstance.reset(attributeHandler);
 		}

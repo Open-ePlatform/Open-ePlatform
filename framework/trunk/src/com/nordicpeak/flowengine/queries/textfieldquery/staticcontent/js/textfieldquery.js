@@ -109,6 +109,8 @@ function setTextFieldValidationError(queryID, validationErrors) {
 		
 		var message;
 		
+		//TODO handle normal error types
+		
 		if(error.displayName) {
 		
 			message = error.displayName;

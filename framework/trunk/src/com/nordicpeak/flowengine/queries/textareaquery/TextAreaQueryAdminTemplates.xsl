@@ -91,7 +91,7 @@
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
 			    </div>
-			</div>			
+			</div>
 			
 			<div class="floatleft full bigmarginbottom">
 				<div class="floatleft full">
@@ -114,8 +114,6 @@
 		</form>
 		
 	</xsl:template>
-
-
 
 	<xsl:template match="validationError[messageKey = 'MaxLengthToBig']">
 		
