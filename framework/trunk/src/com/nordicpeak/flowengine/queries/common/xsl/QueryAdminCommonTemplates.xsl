@@ -224,7 +224,7 @@
 		
 		<div class="alternatives-container full floatleft bigmarginbottom">
 		
-			<div class="floatright bigmargintop" style="margin-right: 21px">
+			<div class="floatright bigmargintop" style="margin-right: 42px">
 			
 				<xsl:variable name="options">
 					<option>
