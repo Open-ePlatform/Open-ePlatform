@@ -134,15 +134,7 @@
 						<xsl:value-of select="'_alternative'"/>
 					</xsl:variable>
 				
-					<div class="alternative">
-					
-						<xsl:attribute name="class">
-							<xsl:text>alternative</xsl:text>
-							<xsl:choose>
-								<xsl:when test="RadioButtonQueryInstance/RadioButtonQuery/columns = 'TWO'"> floatleft fifty</xsl:when>
-								<xsl:when test="RadioButtonQueryInstance/RadioButtonQuery/columns = 'THREE'"> floatleft thirty</xsl:when>
-							</xsl:choose>
-						</xsl:attribute>
+					<div class="alternative floatleft clearboth">
 				
 						<xsl:call-template name="createRadio">
 							<xsl:with-param name="id" select="concat($freeTextAlternativeName, '_freeTextAlternative')" />

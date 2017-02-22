@@ -187,15 +187,7 @@
 						<xsl:value-of select="'_freeTextAlternative'"/>
 					</xsl:variable>
 				
-					<div class="alternative">
-					
-						<xsl:attribute name="class">
-							<xsl:text>alternative</xsl:text>
-							<xsl:choose>
-								<xsl:when test="CheckboxQueryInstance/CheckboxQuery/columns = 'TWO'"> floatleft fifty</xsl:when>
-								<xsl:when test="CheckboxQueryInstance/CheckboxQuery/columns = 'THREE'"> floatleft thirty</xsl:when>
-							</xsl:choose>
-						</xsl:attribute>
+					<div class="alternative floatleft clearboth">
 					
 						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="id" select="$freeTextAlternativeName" />
