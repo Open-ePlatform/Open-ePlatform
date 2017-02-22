@@ -3,11 +3,15 @@
 	version="1.0">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1" />
 
+	<xsl:variable name="scripts">
+		/js/userflowinstancemenumodule.js
+	</xsl:variable>
+
 	<xsl:template match="Document">
 
-		<div data-menu="errand" class="errand-menu buttons-in-desktop errand-page">
+		<div id="MyPagesMenu" class="errand-menu buttons-in-desktop errand-page">
 
-		  	<a href="{contextpath}{section/fullAlias}" data-toggle-menu="errand" class="btn btn-dark">
+		  	<a href="{contextpath}{section/fullAlias}" class="btn btn-dark">
 		  		<span data-icon-after="_" data-icon-before="L"><xsl:value-of select="section/name" /></span>
 		  	</a>
 	
