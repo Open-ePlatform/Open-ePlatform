@@ -4,32 +4,20 @@ var Alternativesi18n = {
 
 $(document).ready(function() {
 	
-	$(".sortable").sortable({ cursor: 'move', update: function(event, ui) {
+	var alternativesContainers = $(".sortable").sortable({ cursor: 'move', update: function(event, ui) {
 		
 		updateSortOrder($(this));
 		
-	}}).children().each(function(i) {
+	}}).each(function(){
 		
-		var item = $(this);
-		var itemSortOrder = item.find('input[type="hidden"].sortorder').val();
+		var container = $(this);
 		
-		if (i != itemSortOrder) {
-			
-			item.parent().children().each(function(j) {
-				
-				if (itemSortOrder == j) {
-					
-					var otherItem = $(this);
-					
-					if (item[0] !== otherItem[0]) {
-						
-						otherItem.before(item.detach());
-					}
-					
-					return;
-				}
-			});
-		}
+		sortAlternativesAfterSortOrder(container);
+		
+		container.each(function(){
+			var row = $(this);
+			attachRowChangeSortingListener(row);
+		});
 	});
 	
 	$("#useFreeTextAlternative").change(function() {
@@ -46,13 +34,89 @@ $(document).ready(function() {
 	
 	$("#useFreeTextAlternative").trigger("change");
 	
+	$(".alternatives-container .sorting").change(function() {
+		
+		sortAlternativesAfterSortingSelect($(this));
+		
+	}).each(function(){
+		
+		sortAlternativesAfterSortingSelect($(this));
+	});
 });
 
-function updateSortOrder(alternatives) {
+function updateSortOrder(alternativesContainer) {
 	
-	alternatives.children().each(function(i) {
+	alternativesContainer.children().each(function(i) {
 		var alternative = $(this);
 		alternative.find("input.sortorder").val(i);
+	});
+}
+
+function sortAlternativesAfterSortOrder(alternativesContainer){
+	
+	alternativesContainer.children().sort(function(a, b){
+		
+		return parseInt($(a).find('input[type="hidden"].sortorder').val()) > parseInt($(b).find('input[type="hidden"].sortorder').val());
+		
+	}).appendTo(alternativesContainer);
+}
+
+function sortAlternativesAfterSortingSelect(select){
+	
+	var sortOrder = select.val();
+	
+	if (sortOrder != "") {
+	
+		var alternativesContainer = select.closest(".alternatives-container").find(".alternatives");
+		var alternatives = alternativesContainer.children();
+		
+		if(sortOrder == "d"){ // A-Z
+		
+			alternativesContainer.children().sort(function(a, b){
+				
+				var valA = $(a).find('input[type="text"]').val().toLowerCase();
+				var valB = $(b).find('input[type="text"]').val().toLowerCase();
+				
+				// Always place empty string at the bottom
+				if (valA == "" && valB == "") {
+				
+					return 0;
+					
+				} else if (valA == "") {
+					
+					return 1;
+					
+				} else if (valB == "") {
+					
+					return -1;
+				}
+				
+				return valA.localeCompare(valB);
+				
+			}).appendTo(alternativesContainer);
+			
+		} else { // Z-A
+			
+			alternativesContainer.children().sort(function(a, b){
+				
+				var valA = $(a).find('input[type="text"]').val().toLowerCase();
+				var valB = $(b).find('input[type="text"]').val().toLowerCase();
+				
+				return -valA.localeCompare(valB);
+				
+			}).appendTo(alternativesContainer);
+		}
+		
+
+		updateSortOrder(alternativesContainer);
+	}
+}
+
+function attachRowChangeSortingListener(row){
+	
+	row.find("input[type='text']").on("blur", function(){
+		
+		sortAlternativesAfterSortingSelect(row.closest(".alternatives-container").find(".sorting"));
 	});
 }
 
@@ -84,6 +148,8 @@ function addAlternative(button, event) {
 	template.find("input.sortorder").val(alternatives.children().length);
 	
 	alternatives.append(template);
+	
+	attachRowChangeSortingListener(template);
 }
 
 function deleteAlternative(button, event) {
@@ -145,4 +211,3 @@ function openAlternativeModal(button, event) {
 	
 	$.featherlight(modal, config);
 }
-

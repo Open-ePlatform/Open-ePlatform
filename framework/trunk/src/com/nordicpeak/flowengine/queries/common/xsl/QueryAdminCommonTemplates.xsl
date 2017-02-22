@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
 	<xsl:variable name="commonImagePath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/common/pics</xsl:variable>
@@ -223,7 +223,35 @@
 		</script>
 		
 		<div class="alternatives-container full floatleft bigmarginbottom">
-			<label class="floatleft clearboth"><xsl:value-of select="$i18n.Alternative" /></label>
+		
+			<div class="floatright bigmargintop" style="margin-right: 21px">
+			
+				<xsl:variable name="options">
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Select"/></name>
+						<value></value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Descending"/></name>
+						<value>d</value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Ascending"/></name>
+						<value>a</value>
+					</option>
+				</xsl:variable>
+			
+				<xsl:call-template name="createDropdown">
+					<xsl:with-param name="class" select="'sorting'"/>
+					<xsl:with-param name="name" select="'sorting'"/>
+					<xsl:with-param name="labelElementName" select="'name'" />
+					<xsl:with-param name="valueElementName" select="'value'" />
+					<xsl:with-param name="element" select="exsl:node-set($options)/option" />
+				</xsl:call-template>
+
+			</div>
+		
+			<label class="floatleft"><xsl:value-of select="$i18n.Alternative" /></label>
 			
 			<div class="alternatives full floatleft marginleft sortable">
 				
@@ -291,7 +319,7 @@
 			
 			</div>
 			
-			<div class="floatright marginright margintop">
+			<div class="floatright margintop" style="margin-right: 21px">
 				<a href="#" onclick="addAlternative(this, event)" title="{$i18n.AddAlternative}">
 					<xsl:value-of select="$i18n.AddAlternative"/>
 				</a>
@@ -369,7 +397,7 @@
 				<xsl:with-param name="name" select="concat('alternative_', $alternativeID)"/>
 				<xsl:with-param name="title" select="name"/>
 				<xsl:with-param name="value" select="$value"/>
-				<xsl:with-param name="width" select="'89%'"/>
+				<xsl:with-param name="width" select="'calc(100% - 68px)'"/>
 				<xsl:with-param name="class" select="'name'" />
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>

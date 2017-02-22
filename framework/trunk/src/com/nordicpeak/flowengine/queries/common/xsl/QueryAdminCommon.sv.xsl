@@ -48,7 +48,9 @@
 	<xsl:variable name="i18n.CloseAlternativeExtra">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.AlternativeValue">Värde i XML</xsl:variable>
 	<xsl:variable name="i18n.AlternativeValueDescription">Lämna tomt för att använda alternativets namn som värde.</xsl:variable>
-	
+	<xsl:variable name="i18n.AutoSortAlternatives.Select">Sortera..</xsl:variable>
+	<xsl:variable name="i18n.AutoSortAlternatives.Descending">Sortera A-Ö</xsl:variable>
+	<xsl:variable name="i18n.AutoSortAlternatives.Ascending">Sortera Ö-A</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.alternative">alternativ</xsl:variable>
 	
