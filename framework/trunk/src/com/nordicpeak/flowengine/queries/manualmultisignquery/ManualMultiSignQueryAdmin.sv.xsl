@@ -20,7 +20,7 @@
 	
 	<xsl:variable name="i18n.setAsAttribute">Spara fältens värde som attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>
-	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas med det ovan valda prefixet:</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas med det ovan valda prefixet. Användings exempel om du valt prefixet 'test': $attribute{test.firstname}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	

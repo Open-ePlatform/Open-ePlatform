@@ -91,20 +91,20 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 
 	public void resetAttribute(MutableAttributeHandler attributeHandler) {
 		
-		attributeHandler.removeAttribute(query.getAttributeName() + "-firstname");
-		attributeHandler.removeAttribute(query.getAttributeName() + "-lastname");
-		attributeHandler.removeAttribute(query.getAttributeName() + "-email");
-		attributeHandler.removeAttribute(query.getAttributeName() + "-mobilePhone");
-		attributeHandler.removeAttribute(query.getAttributeName() + "-citizenIdentifier");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".firstname");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".lastname");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".email");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".mobilePhone");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".citizenIdentifier");
 	}
 	
 	public void setAttribute(MutableAttributeHandler attributeHandler) {
 		
-		attributeHandler.setAttribute(query.getAttributeName() + "-firstname", firstname);
-		attributeHandler.setAttribute(query.getAttributeName() + "-lastname", lastname);
-		attributeHandler.setAttribute(query.getAttributeName() + "-email", email);
-		attributeHandler.setAttribute(query.getAttributeName() + "-mobilePhone", mobilePhone);
-		attributeHandler.setAttribute(query.getAttributeName() + "-citizenIdentifier", socialSecurityNumber);
+		attributeHandler.setAttribute(query.getAttributeName() + ".firstname", firstname);
+		attributeHandler.setAttribute(query.getAttributeName() + ".lastname", lastname);
+		attributeHandler.setAttribute(query.getAttributeName() + ".email", email);
+		attributeHandler.setAttribute(query.getAttributeName() + ".mobilePhone", mobilePhone);
+		attributeHandler.setAttribute(query.getAttributeName() + ".citizenIdentifier", socialSecurityNumber);
 	}
 
 	public void copyQueryValues() {

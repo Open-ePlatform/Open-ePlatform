@@ -105,23 +105,23 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>{prefix}-firstname</td>
+							<td>prefix.firstname</td>
 							<td><xsl:value-of select="$i18n.Firstname" /></td>
 						</tr>
 						<tr>
-							<td>{prefix}-lastname</td>
+							<td>prefix.lastname</td>
 							<td><xsl:value-of select="$i18n.Lastname" /></td>
 						</tr>
 						<tr>
-							<td>{prefix}-email</td>
+							<td>prefix.email</td>
 							<td><xsl:value-of select="$i18n.Email" /></td>
 						</tr>
 						<tr>
-							<td>{prefix}-mobilePhone</td>
+							<td>prefix.mobilePhone</td>
 							<td><xsl:value-of select="$i18n.MobilePhone" /></td>
 						</tr>
 						<tr>
-							<td>{prefix}-citizenIdentifier</td>
+							<td>prefix.citizenIdentifier</td>
 							<td><xsl:value-of select="$i18n.SocialSecurityNumber" /></td>
 						</tr>
 					</tbody>
