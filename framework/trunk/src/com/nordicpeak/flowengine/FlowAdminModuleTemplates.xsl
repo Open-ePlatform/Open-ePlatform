@@ -4247,8 +4247,8 @@
 				<label for="useAccessFilter">
 					<xsl:value-of select="$i18n.enableAccessFiltering" />
 				</label>
-			</div>			
-		
+			</div>
+			
 			<label class="floatleft full">
 				<xsl:value-of select="$i18n.allowedGroups" />
 			</label>
@@ -4279,7 +4279,19 @@
 				<xsl:with-param name="users" select="AllowedUsers" />
 			</xsl:call-template>		
 		
-		</fieldset>		
+			<div class="floatleft full margintop">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'allowAnonymousAccess'" />
+					<xsl:with-param name="id" select="'allowAnonymousAccess'" />
+					<xsl:with-param name="element" select="FlowType" />
+				</xsl:call-template>
+				
+				<label for="useAccessFilter">
+					<xsl:value-of select="$i18n.FlowType.allowAnonymousAccess" />
+				</label>
+			</div>
+		
+		</fieldset>	
 		
 		<div class="floatleft full bigmarginbottom">
 

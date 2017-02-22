@@ -25,7 +25,7 @@ public class FlowTypeUserAccessInterface extends FlowTypeAccessInterface{
 	@Override
 	public boolean allowsAnonymousAccess() {
 
-		return !flowType.isUseAccessFilter();
+		return !flowType.isUseAccessFilter() || flowType.allowsAnonymousAccess();
 	}
 
 	@Override

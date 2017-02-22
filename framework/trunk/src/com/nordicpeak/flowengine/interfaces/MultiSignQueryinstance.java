@@ -5,7 +5,7 @@ import java.util.List;
 import com.nordicpeak.flowengine.beans.SigningParty;
 
 
-public interface MultiSigningQuery extends QueryInstance {
+public interface MultiSignQueryinstance extends QueryInstance {
 
 	List<? extends SigningParty> getSigningParties();
 	

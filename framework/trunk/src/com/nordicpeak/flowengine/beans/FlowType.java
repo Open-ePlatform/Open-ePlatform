@@ -59,6 +59,11 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	@WebPopulate
 	@XMLElement
 	private boolean useAccessFilter;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean allowAnonymousAccess;	
 
 	@DAOManaged
 	@XMLElement
@@ -321,6 +326,18 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		}
 
 		return element;
+	}
+
+	
+	public boolean allowsAnonymousAccess() {
+	
+		return allowAnonymousAccess;
+	}
+
+	
+	public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
+	
+		this.allowAnonymousAccess = allowAnonymousAccess;
 	}
 
 	

@@ -68,7 +68,9 @@ import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableStep;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
+import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
 import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
 
@@ -506,9 +508,20 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 						QueryTypeDescriptor queryTypeDescriptor = callback.getQueryHandler().getQueryType(queryDescriptor.getQueryTypeID());
 
-						if (queryTypeDescriptor != null && MultiSigningQuery.class.isAssignableFrom(queryTypeDescriptor.getQueryInstanceClass())) {
+						if (queryTypeDescriptor != null && MultiSignQueryinstance.class.isAssignableFrom(queryTypeDescriptor.getQueryInstanceClass())) {
 
-							return true;
+							try {
+								Query query = callback.getQueryHandler().getQuery((QueryDescriptor)queryDescriptor);
+								
+								if(query != null && query instanceof MultiSignQuery && ((MultiSignQuery)query).requiresMultipartSigning()){
+									
+									return true;
+								}
+								
+							} catch (Exception e) {
+								
+								log.error("Unable to get query " + queryDescriptor + " from query handler to check if multipart signing is required",e);
+							}
 						}
 					}
 				}

@@ -482,4 +482,6 @@
 	
 	<xsl:variable name="i18n.PreviewEnabled">Förhandsgranskning</xsl:variable>
 	<xsl:variable name="i18n.PaymentEnabled">Betalstöd</xsl:variable>
+	
+	<xsl:variable name="i18n.FlowType.allowAnonymousAccess">Visa för ej inloggade användare</xsl:variable>
 </xsl:stylesheet>

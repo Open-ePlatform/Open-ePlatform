@@ -115,7 +115,7 @@ import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentProvider;
@@ -1363,15 +1363,15 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				flowInstance.setFirstSubmitted(currentTimestamp);
 			}
 			
-			List<MultiSigningQuery> multiSigningQueries = instanceManager.getQueries(MultiSigningQuery.class);
+			List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
 
-			if (multiSigningQueries != null) {
+			if (multiSignQueryinstances != null) {
 
-				for (MultiSigningQuery multiSigningQuery : multiSigningQueries) {
+				for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 
-					if (multiSigningQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSigningQuery.getSigningParties())) {
+					if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
 
-						for (SigningParty signingParty : multiSigningQuery.getSigningParties()) {
+						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
 							
 							if (signingParty.isAddAsOwner()) {
 							

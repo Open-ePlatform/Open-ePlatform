@@ -1574,4 +1574,12 @@
 		</Query>
 	</Script>	
 	
+	<Script version="79">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `allowAnonymousAccess` BOOLEAN NOT NULL AFTER `iconFileName`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

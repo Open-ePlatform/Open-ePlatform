@@ -19,14 +19,14 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.interfaces.ExportableQueryInstance;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 import com.nordicpeak.flowengine.queries.checkboxquery.CheckboxQueryInstance;
 
 @Table(name = "manual_multi_sign_query_instances")
 @XMLElement
-public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSigningQuery, ExportableQueryInstance {
+public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSignQueryinstance, ExportableQueryInstance {
 
 	private static final long serialVersionUID = 2847121037559137804L;
 
