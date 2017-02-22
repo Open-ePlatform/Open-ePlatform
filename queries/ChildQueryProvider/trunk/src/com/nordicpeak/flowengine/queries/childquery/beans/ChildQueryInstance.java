@@ -22,7 +22,7 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -30,7 +30,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "child_query_instances")
 @XMLElement
-public class ChildQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, MultiSigningQuery, FixedAlternativesQueryInstance {
+public class ChildQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, MultiSignQueryinstance, FixedAlternativesQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 

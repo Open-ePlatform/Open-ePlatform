@@ -27,6 +27,7 @@ import se.unlogic.webutils.annotations.URLRewrite;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
@@ -34,7 +35,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "child_queries")
 @XMLElement
-public class ChildQuery extends BaseQuery implements FixedAlternativesQuery {
+public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, MultiSignQuery {
 
 	private static final Map<Integer, Integer> ALTERNATIVE_CONVERSION_MAP = Collections.singletonMap(1, 1);
 
@@ -442,6 +443,12 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery {
 	public void setAlternative(ChildAlternative alternative) {
 
 		this.alternative = alternative;
+	}
+
+	@Override
+	public boolean requiresMultipartSigning() {
+
+		return this.useMultipartSigning;
 	}
 
 }
