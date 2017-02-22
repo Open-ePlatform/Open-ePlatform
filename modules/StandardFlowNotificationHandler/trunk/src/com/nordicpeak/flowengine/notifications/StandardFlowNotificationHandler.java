@@ -1756,7 +1756,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		sharedTagSources.add(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		sharedTagSources.add(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-		sharedTagSources.add(new SingleTagSource("$flowInstance.url", flowInstanceAdminModuleAlias + "/overview/" + flowInstance.getFlowInstanceID()));
+		sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
@@ -1801,7 +1801,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
 		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", flowInstanceAdminModuleAlias + "/overview/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
