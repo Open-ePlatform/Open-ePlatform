@@ -1007,6 +1007,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			FlowFamily flowFamily = new FlowFamily();
 			flowFamily.setVersionCount(1);
+			flowFamily.setStatisticsMode(flow.getFlowFamily().getStatisticsMode());
 			flowCopy.setFlowFamily(flowFamily);
 			flowCopy.setVersion(1);
 			flowCopy.setName(flow.getName() + flowNameCopySuffix);
