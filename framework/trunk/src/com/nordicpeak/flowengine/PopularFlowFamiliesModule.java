@@ -139,12 +139,14 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 		popularFlows = cacheFlows(dataSource, flowDAO, log, interval, flowCount);
 	}
 
-	public static void getFlowFamilyPopularity(DataSource dataSource, List<Integer> familyIDs, List<FlowFamily> flowFamilies, int interval) throws SQLException{
+	public static List<FlowFamily> getFlowFamilyPopularity(DataSource dataSource, List<Integer> familyIDs, int interval) throws SQLException{
 
+		List<FlowFamily> flowFamilies = new ArrayList<FlowFamily>(familyIDs.size());
+		
 		for(Integer flowFamilyID : familyIDs){
 
 			//Get all flow IDs for this family
-			List<Integer> flowIDs = new ArrayListQuery<Integer>(dataSource, "SELECT flowID FROM flowengine_flows WHERE flowFamilyID = " + flowFamilyID, IntegerPopulator.getPopulator()).executeQuery();
+			List<Integer> flowIDs = new ArrayListQuery<Integer>(dataSource, "SELECT flowID FROM flowengine_flows WHERE flowFamilyID = " + flowFamilyID + " AND hideFromOverview = false", IntegerPopulator.getPopulator()).executeQuery();
 
 			if(flowIDs != null){
 
@@ -186,6 +188,8 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 				flowFamilies.add(flowFamily);
 			}
 		}
+		
+		return flowFamilies;
 	}
 
 	public static List<Flow> cacheFlows(DataSource dataSource, AnnotatedDAO<Flow> flowDAO, Logger log, int interval, int flowCount){
@@ -198,9 +202,7 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 
 			if(familyIDs != null){
 
-				ArrayList<FlowFamily> flowFamilies = new ArrayList<FlowFamily>(familyIDs.size());
-
-				getFlowFamilyPopularity(dataSource, familyIDs, flowFamilies, interval);
+				List<FlowFamily> flowFamilies = getFlowFamilyPopularity(dataSource, familyIDs, interval);
 
 				Collections.sort(flowFamilies, FAMILY_COMPARATOR);
 

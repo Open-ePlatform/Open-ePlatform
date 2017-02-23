@@ -114,8 +114,8 @@ import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentProvider;
@@ -243,7 +243,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		scheduler = new Scheduler();
 		scheduler.schedule("0 0 * * *", this);
-		scheduler.schedule("0 * * * *", new ReflectedRunnable(this, "calculatePopularFlows"));
+		scheduler.schedule("0 1-23 * * *", new ReflectedRunnable(this, "calculatePopularFlows"));
 		scheduler.start();
 
 		if (registerInInstanceHandler) {
@@ -879,7 +879,27 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 				List<FlowFamily> flowTypePopularFamilies = getPopularFamilies(flowType);
 
-				if (popularFamilies != null && flowTypePopularFamilies != null) {
+				int familyPopularCount = CollectionUtils.getSize(flowTypePopularFamilies);
+				
+				if(familyPopularCount < this.popularFlowCount){
+					
+					for(Flow flow : this.latestPublishedFlowVersionsMap.values()){
+						
+						if(flow.getFlowType().equals(flowType) && !CollectionUtils.contains(flowTypePopularFamilies, flow.getFlowFamily())){
+							
+							flowTypePopularFamilies = CollectionUtils.addAndInstantiateIfNeeded(flowTypePopularFamilies, flow.getFlowFamily());
+							
+							familyPopularCount++;
+							
+							if(familyPopularCount == this.popularFlowCount){
+								
+								break;
+							}
+						}
+					}
+				}
+				
+				if (flowTypePopularFamilies != null) {
 
 					popularFamilies.addAll(flowTypePopularFamilies);
 				}
@@ -905,13 +925,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	private List<FlowFamily> getPopularFamilies(FlowType flowType) throws SQLException {
 
 		//Get ID of all families for this flow type with at least one published flow
-		List<Integer> familyIDs = new ArrayListQuery<Integer>(dataSource, "SELECT DISTINCT flowFamilyID FROM flowengine_flows WHERE flowTypeID = " + flowType.getFlowTypeID() + " AND publishDate <= CURDATE() AND (unPublishDate IS NULL OR unPublishDate > CURDATE());", IntegerPopulator.getPopulator()).executeQuery();
+		List<Integer> familyIDs = new ArrayListQuery<Integer>(dataSource, "SELECT DISTINCT flowFamilyID FROM flowengine_flows WHERE flowTypeID = " + flowType.getFlowTypeID() + " AND hideFromOverview = false AND publishDate <= CURDATE() AND (unPublishDate IS NULL OR unPublishDate > CURDATE());", IntegerPopulator.getPopulator()).executeQuery();
 
 		if (familyIDs != null) {
 
-			ArrayList<FlowFamily> flowFamilies = new ArrayList<FlowFamily>(familyIDs.size());
-
-			PopularFlowFamiliesModule.getFlowFamilyPopularity(dataSource, familyIDs, flowFamilies, popularInterval);
+			List<FlowFamily> flowFamilies = PopularFlowFamiliesModule.getFlowFamilyPopularity(dataSource, familyIDs, popularInterval);
 
 			if (flowFamilies.size() > this.popularFlowCount) {
 
@@ -1061,6 +1079,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				this.latestPublishedFlowVersionsMap = getLatestPublishedFlowVersionsMap(flowMap.values());
 
 				createFlowIndexer();
+
+				calculatePopularFlows();
 				
 				systemInterface.getEventHandler().sendEvent(FlowBrowserModule.class, new FlowBrowserCacheEvent(), EventTarget.LOCAL);
 			}
