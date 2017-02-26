@@ -52,6 +52,7 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.log4jutils.thread.LoggingReflectedRunnable;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.MethodComparator;
@@ -63,7 +64,6 @@ import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.threads.ReflectedRunnable;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -243,7 +243,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		scheduler = new Scheduler();
 		scheduler.schedule("0 0 * * *", this);
-		scheduler.schedule("0 1-23 * * *", new ReflectedRunnable(this, "calculatePopularFlows"));
+		scheduler.schedule("0 1-23 * * *", new LoggingReflectedRunnable(this, "calculatePopularFlows"));
 		scheduler.start();
 
 		if (registerInInstanceHandler) {
