@@ -220,12 +220,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	private QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
 
 	private List<FlowType> flowTypes;
-	private HashMap<Integer, Flow> flowMap;
+	private Map<Integer, Flow> flowMap;
 	protected LinkedHashMap<Integer, Flow> latestPublishedFlowVersionsMap;
 
-	protected final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-	protected final Lock r = rwl.readLock();
-	protected final Lock w = rwl.writeLock();
+	protected final ReentrantReadWriteLock flowCacheLock = new ReentrantReadWriteLock();
+	protected final Lock flowCacheReadLock = flowCacheLock.readLock();
+	protected final Lock flowCacheWriteLock = flowCacheLock.writeLock();
 
 	private Scheduler scheduler;
 
@@ -319,7 +319,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws ModuleConfigurationException, SQLException {
 
-		r.lock();
+		flowCacheReadLock.lock();
 
 		try {
 			log.info("User " + user + " listing flows");
@@ -428,7 +428,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} finally {
 
-			r.unlock();
+			flowCacheReadLock.unlock();
 		}
 	}
 
@@ -749,7 +749,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	public void cacheFlows() throws SQLException {
 
-		w.lock();
+		flowCacheWriteLock.lock();
 
 		try {
 
@@ -758,7 +758,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				log.warn("No flowTypeIDs set, unable to cache flows.");
 
 				this.flowTypes = null;
-				this.flowMap = null;
+				this.flowMap = Collections.<Integer,Flow>emptyMap();
 				this.latestPublishedFlowVersionsMap = null;
 				this.flowIndexer = null;
 
@@ -786,7 +786,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				log.warn("The configured flowTypeIDs were not found in the database.");
 
 				this.flowTypes = null;
-				this.flowMap = null;
+				this.flowMap = Collections.<Integer,Flow>emptyMap();
 				this.latestPublishedFlowVersionsMap = null;
 				this.flowIndexer = null;
 
@@ -824,7 +824,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 				} else {
 
-					this.flowMap = null;
+					this.flowMap = Collections.<Integer,Flow>emptyMap();
 					this.latestPublishedFlowVersionsMap = null;
 					this.flowIndexer = null;
 					this.flowIndexer = null;
@@ -836,7 +836,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} finally {
 
-			w.unlock();
+			flowCacheWriteLock.unlock();
 		}
 	}
 
@@ -865,7 +865,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		log.info("Calculating popular flows...");
 
 		try {
-			w.lock();
+			flowCacheWriteLock.lock();
 			long start = System.currentTimeMillis();
 
 			if (this.flowTypes == null || this.latestPublishedFlowVersionsMap == null) {
@@ -918,7 +918,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} finally {
 
-			w.unlock();
+			flowCacheWriteLock.unlock();
 		}
 	}
 
@@ -1048,21 +1048,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	protected Flow getBareFlow(Integer flowID) throws SQLException {
 
-		r.lock();
-
-		try {
-
-			if (flowMap != null) {
-
-				return flowMap.get(flowID);
-			}
-
-			return null;
-
-		} finally {
-
-			r.unlock();
-		}
+		return flowMap.get(flowID);
 	}
 
 	@Override
@@ -1071,17 +1057,15 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		log.info("Refreshing list of latest published flow versions...");
 		
 		try {
-			r.lock();
+			flowCacheReadLock.lock();
 			long start = System.currentTimeMillis();
 
-			if (flowMap != null) {
+			if (flowMap.isEmpty()) {
 
 				this.latestPublishedFlowVersionsMap = getLatestPublishedFlowVersionsMap(flowMap.values());
 
 				createFlowIndexer();
 
-				calculatePopularFlows();
-				
 				systemInterface.getEventHandler().sendEvent(FlowBrowserModule.class, new FlowBrowserCacheEvent(), EventTarget.LOCAL);
 			}
 			
@@ -1089,8 +1073,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} finally {
 
-			r.unlock();
+			flowCacheReadLock.unlock();
 		}
+		
+		calculatePopularFlows();
 	}
 
 	@Override
