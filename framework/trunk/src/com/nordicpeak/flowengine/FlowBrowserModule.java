@@ -118,7 +118,7 @@ import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.PaymentProvider;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -210,7 +210,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected MultiSigningHandler multiSigningHandler;
 
 	@InstanceManagerDependency
-	protected PaymentProvider paymentProvider;
+	protected FlowPaymentProvider paymentProvider;
 
 	@InstanceManagerDependency
 	protected FlowAdminModule flowAdminModule;
@@ -1242,7 +1242,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	protected PaymentProvider getPaymentProvider() {
+	protected FlowPaymentProvider getFlowPaymentProvider() {
 
 		return paymentProvider;
 	}

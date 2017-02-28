@@ -109,7 +109,7 @@ import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.PaymentProvider;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
@@ -168,7 +168,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected MultiSigningHandler multiSigningHandler;
 
 	@InstanceManagerDependency
-	protected PaymentProvider paymentProvider;
+	protected FlowPaymentProvider paymentProvider;
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
@@ -888,7 +888,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@Override
-	protected PaymentProvider getPaymentProvider() {
+	protected FlowPaymentProvider getFlowPaymentProvider() {
 
 		return paymentProvider;
 	}

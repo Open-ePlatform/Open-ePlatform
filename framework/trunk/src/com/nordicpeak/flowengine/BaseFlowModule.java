@@ -133,6 +133,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
@@ -143,11 +144,10 @@ import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.PaymentProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
@@ -782,7 +782,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					} else if (enableSaving && requiresPayment(instanceManager)) {
 
-						PaymentProvider paymentProvider = getPaymentProvider();
+						FlowPaymentProvider paymentProvider = getFlowPaymentProvider();
 
 						if (paymentProvider == null) {
 
@@ -837,7 +837,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						} catch (Exception e) {
 
-							log.error("Error ivoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
+							log.error("Error invoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
 							redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
 
@@ -960,7 +960,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected PaymentProvider getPaymentProvider() {
+	protected FlowPaymentProvider getFlowPaymentProvider() {
 
 		return null;
 	}
@@ -2049,7 +2049,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new URINotFoundException(uriParser);
 		}
 
-		PaymentProvider paymentProvider = getPaymentProvider();
+		FlowPaymentProvider paymentProvider = getFlowPaymentProvider();
 
 		if (paymentProvider == null) {
 
