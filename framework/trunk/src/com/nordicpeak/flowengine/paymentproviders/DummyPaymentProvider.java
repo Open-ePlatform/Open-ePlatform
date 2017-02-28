@@ -1,7 +1,9 @@
 package com.nordicpeak.flowengine.paymentproviders;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,9 +24,10 @@ import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.Constants;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.InlinePaymentCallback;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
-import com.nordicpeak.flowengine.interfaces.PaymentProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.StandalonePaymentCallback;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
@@ -32,7 +35,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 
-public class DummyPaymentProvider extends AnnotatedForegroundModule implements PaymentProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
+public class DummyPaymentProvider extends AnnotatedForegroundModule implements FlowPaymentProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> fragmentTransformer;
 
@@ -41,16 +44,16 @@ public class DummyPaymentProvider extends AnnotatedForegroundModule implements P
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
-		if(!systemInterface.getInstanceHandler().addInstance(PaymentProvider.class, this)){
+		if(!systemInterface.getInstanceHandler().addInstance(FlowPaymentProvider.class, this)){
 
-			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + PaymentProvider.class.getSimpleName() + ", another instance is already registered using this key.");
+			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + FlowPaymentProvider.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 	}
 
 	@Override
 	public void unload() throws Exception {
 
-		systemInterface.getInstanceHandler().removeInstance(PaymentProvider.class, this);		
+		systemInterface.getInstanceHandler().removeInstance(FlowPaymentProvider.class, this);
 		
 		super.unload();
 	}
@@ -65,11 +68,17 @@ public class DummyPaymentProvider extends AnnotatedForegroundModule implements P
 	@Override
 	public ViewFragment pay(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, MutableFlowInstanceManager instanceManager, InlinePaymentCallback callback) throws Exception {
 
-		if(req.getParameter("type") != null) {
+		String paymentType = req.getParameter("type");
+		
+		if (paymentType != null) {
 			
 			log.info("User " + user + " payed flow instance " + instanceManager.getFlowInstance());
 			
-			callback.paymentComplete(instanceManager, user, req, true, null, null);
+			Map<String, String> eventAttributes = new LinkedHashMap<String, String>(2);
+			
+			eventAttributes.put(Constants.FLOW_INSTANCE_EVENT_DIRECT_PAYMENT_ATTRIBUTE, Boolean.toString(!paymentType.equals("INVOICE")));
+			
+			callback.paymentComplete(instanceManager, user, req, true, null, eventAttributes);
 			
 			res.sendRedirect(callback.getPaymentSuccessURL(instanceManager, req));
 			
