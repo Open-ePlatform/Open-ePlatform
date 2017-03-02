@@ -86,7 +86,7 @@
 							<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 						</xsl:call-template>
 						<b class="pipe"><xsl:text>&#160;|&#160;</xsl:text></b>
-						<xsl:value-of select="FlowInstance/added" />
+						<xsl:value-of select="FlowInstance/firstSubmitted" />
 					</span>
 				</div>
 			</div>
@@ -137,7 +137,7 @@
 							<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 						</xsl:call-template>
 						<b class="pipe"><xsl:text>&#160;|&#160;</xsl:text></b>
-						<xsl:value-of select="FlowInstance/added" />
+						<xsl:value-of select="FlowInstance/firstSubmitted" />
 					</span>
 				</div>
 			</div>
@@ -682,7 +682,7 @@
   					
 						<p>
 							<strong class="overview"><xsl:value-of select="$i18n.FirstSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-							<xsl:value-of select="$submittedEvents[position() = 1]/added" /><xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="firstSubmitted" /><xsl:text>&#160;</xsl:text>
 							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 							
 							<xsl:call-template name="PrintPostedBy">

@@ -75,7 +75,7 @@ public class FlowInstanceIndexer {
 	private static final String FLOW_ID_FIELD = "flowID";
 	private static final String FLOW_NAME_FIELD = "name";
 	private static final String FLOW_FAMILY_ID_FIELD = "familyID";
-	private static final String ADDED_FIELD = "added";
+	private static final String FIRST_SUBMITTED_FIELD = "firstSubmitted";
 	private static final String STATUS_NAME_FIELD = "status";
 	private static final String POSTER_FIELD = "poster";
 	private static final String OWNERS_FIELD = "owners";
@@ -87,7 +87,7 @@ public class FlowInstanceIndexer {
 	private static final String ALLOWED_USER_FIELD = "allowedUser";
 	private static final String ALLOWED_GROUP_FIELD = "allowedGroup";
 	
-	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, ADDED_FIELD, CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
+	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -254,7 +254,7 @@ public class FlowInstanceIndexer {
 			instance.putField(ID_FIELD, doc.get(ID_FIELD));
 			instance.putField(FLOW_NAME_FIELD, doc.get(FLOW_NAME_FIELD));
 			instance.putField(STATUS_NAME_FIELD, doc.get(STATUS_NAME_FIELD));
-			instance.putField(ADDED_FIELD, doc.get(ADDED_FIELD));
+			instance.putField(FIRST_SUBMITTED_FIELD, doc.get(FIRST_SUBMITTED_FIELD));
 
 			jsonArray.addNode(instance);
 		}
@@ -430,7 +430,7 @@ public class FlowInstanceIndexer {
 			doc.add(new StringField(FLOW_ID_FIELD, flow.getFlowID().toString(), Field.Store.YES));
 			doc.add(new StringField(FLOW_FAMILY_ID_FIELD, flowFamily.getFlowFamilyID().toString(), Field.Store.YES));
 			doc.add(new TextField(FLOW_NAME_FIELD, flow.getName(), Field.Store.YES));
-			doc.add(new TextField(ADDED_FIELD, DateUtils.DATE_TIME_FORMATTER.format(flowInstance.getAdded()), Field.Store.YES));
+			doc.add(new TextField(FIRST_SUBMITTED_FIELD, DateUtils.DATE_TIME_FORMATTER.format(flowInstance.getFirstSubmitted()), Field.Store.YES));
 			doc.add(new TextField(STATUS_NAME_FIELD, flowInstance.getStatus().getName(), Field.Store.YES));
 
 			AttributeHandler attributeHandler = flowInstance.getAttributeHandler();

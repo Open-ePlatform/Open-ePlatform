@@ -378,14 +378,7 @@
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
-				<xsl:variable name="lastEvent" select="events/FlowInstanceEvent[position() = last()]" />
-				<xsl:choose>
-					<xsl:when test="$lastEvent">
-						<xsl:value-of select="$lastEvent/added" />
-					</xsl:when>
-					<xsl:when test="updated"><xsl:value-of select="updated" /></xsl:when>
-					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
-				</xsl:choose>				
+				<xsl:value-of select="firstSubmitted" />			
 			</td>
 			
 			<td class="link">
@@ -411,14 +404,7 @@
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
-				<xsl:variable name="lastEvent" select="events/FlowInstanceEvent[position() = last()]" />
-				<xsl:choose>
-					<xsl:when test="$lastEvent">
-						<xsl:value-of select="$lastEvent/added" />
-					</xsl:when>
-					<xsl:when test="updated"><xsl:value-of select="updated" /></xsl:when>
-					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
-				</xsl:choose>				
+				<xsl:value-of select="firstSubmitted" />				
 			</td>
 			<td class="link">
 				<xsl:call-template name="printFlowInstanceButton" />
