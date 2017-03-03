@@ -19,17 +19,19 @@
 			
 			<xsl:if test="Description">
 				
-				<xsl:choose>
-					<xsl:when test="isHTMLDescription = 'true'">
-						<xsl:value-of select="Description" disable-output-escaping="yes"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<p>
+				<div class="query-description">
+					<xsl:choose>
+						<xsl:when test="isHTMLDescription = 'true'">
 							<xsl:value-of select="Description" disable-output-escaping="yes"/>
-						</p>
-					</xsl:otherwise>
-				</xsl:choose>
-				
+						</xsl:when>
+						<xsl:otherwise>
+							<p>
+								<xsl:value-of select="Description" disable-output-escaping="yes"/>
+							</p>
+						</xsl:otherwise>
+					</xsl:choose>
+				</div>
+								
 			</xsl:if>
 			
 			<p>
