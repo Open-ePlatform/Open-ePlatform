@@ -417,8 +417,10 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		}
 		
 		log.info("Sending PDF for flow instance " + instanceManager + ", event " + eventEntry.getKey() + " to user " + user);
+		
 		try {
 			HTTPUtils.sendFile(eventEntry.getValue(), instanceManager.getFlowInstance().getFlow().getName() + " - " + instanceManager.getFlowInstance().getFlowInstanceID() + ".pdf", req, res, ContentDisposition.ATTACHMENT);
+			
 		} catch (IOException e) {
 			log.info("Error sending PDF for flow instance " + instanceManager + ", event " + eventEntry.getKey() + " to user " + user + ", " + e);
 		}
@@ -615,8 +617,8 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				
 				changed = true;
 				attributeHandler.setAttribute("mobilePhone", signingParty.getMobilePhone());
+				attributeHandler.setAttribute("contactBySMS", true);
 			}
-			
 			
 			if (changed) {
 				
