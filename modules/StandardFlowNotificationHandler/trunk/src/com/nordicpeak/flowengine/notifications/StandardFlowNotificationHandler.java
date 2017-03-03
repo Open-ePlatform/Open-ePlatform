@@ -1465,54 +1465,52 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
-		Contact contact = getPosterContact(event.getFlowInstance(), event.getSiteProfile());
-		
 		if (!event.isSuppressUserNotifications()) {
-
-			//Check which type of notification the contact should get
-			if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
-
-				if (notificationSettings.isSendFlowInstanceArchivedUserEmail() || notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
+			
+			Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
+			
+			if (contacts != null) {
+				
+				//Check which type of notification the contact should get
+				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
 					
-					Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
-					
-					if (contacts != null) {
+					if (notificationSettings.isSendFlowInstanceArchivedUserEmail() || notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 						
-						for (Contact contact2 : contacts) {
+						for (Contact contact : contacts) {
 							
 							if (notificationSettings.isSendFlowInstanceArchivedUserEmail()) {
 								
-								sendContactEmail(event.getFlowInstance(), contact2, notificationSettings.getFlowInstanceArchivedUserEmailSubject(), getFlowInstaceArchivedUserEmailMessage(notificationSettings, event.getFlowInstance()), null);
+								sendContactEmail(event.getFlowInstance(), contact, notificationSettings.getFlowInstanceArchivedUserEmailSubject(), getFlowInstaceArchivedUserEmailMessage(notificationSettings, event.getFlowInstance()), null);
 							}
 							
 							if (notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 								
-								sendContactSMS(event.getFlowInstance(), contact2, getFlowInstaceArchivedUserSMSMessage(event.getFlowInstance()));
+								sendContactSMS(event.getFlowInstance(), contact, getFlowInstaceArchivedUserSMSMessage(event.getFlowInstance()));
 							}
 						}
 					}
-				}
-
-			} else {
-				
-				if (contact != null) {
-
-					if (notificationSettings.isSendStatusChangedUserEmail()) {
-
-						sendContactEmail(event.getFlowInstance(), contact, statusChangedUserEmailSubject, statusChangedUserEmailMessage, null);
-					}
-
-					if (notificationSettings.isSendStatusChangedUserSMS()) {
-
-						sendContactSMS(event.getFlowInstance(), contact, statusChangedUserSMS);
+					
+				} else {
+					
+					for (Contact contact : contacts) {
+						
+						if (notificationSettings.isSendStatusChangedUserEmail()) {
+							
+							sendContactEmail(event.getFlowInstance(), contact, statusChangedUserEmailSubject, statusChangedUserEmailMessage, null);
+						}
+						
+						if (notificationSettings.isSendStatusChangedUserSMS()) {
+							
+							sendContactSMS(event.getFlowInstance(), contact, statusChangedUserSMS);
+						}
 					}
 				}
 			}
 		}
-
+		
 		if (notificationSettings.isSendStatusChangedManagerEmail()) {
 
-			sendManagerEmails(event.getFlowInstance(), contact, statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
+			sendManagerEmails(event.getFlowInstance(), getPosterContact(event.getFlowInstance(), event.getSiteProfile()), statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
 		}
 	}
 
@@ -1672,7 +1670,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
-			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));			
+			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			if (pdfFile != null && pdfFilename != null) {
 
@@ -1686,6 +1684,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		} catch (Exception e) {
 
 			log.info("Error generating/sending email " + email, e);
+			return false;
 		}
 		
 		return true;
@@ -1718,6 +1717,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		} catch (Exception e) {
 
 			log.info("Error generating/sending sms " + sms, e);
+			return false;
 		}
 		
 		return true;
@@ -1869,7 +1869,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
 		
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
-	}	
+	}
 	
 	private List<User> getFlowFamilyManagers(Integer flowFamilyID) throws SQLException {
 
@@ -2278,20 +2278,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return flowInstanceSubmittedManagerEmailSubject;
 	}
 
-	
-	public void setFlowInstanceSubmittedManagerEmailSubject(String flowInstanceSubmittedManagerEmailSubject) {
-	
-		this.flowInstanceSubmittedManagerEmailSubject = flowInstanceSubmittedManagerEmailSubject;
-	}
-	
 	public String getFlowInstanceSubmittedManagerEmailMessage() {
 		
 		return flowInstanceSubmittedManagerEmailMessage;
 	}
 
-	
-	public void setFlowInstanceSubmittedManagerEmailMessage(String flowInstanceSubmittedManagerEmailMessage) {
-	
-		this.flowInstanceSubmittedManagerEmailMessage = flowInstanceSubmittedManagerEmailMessage;
+	public String getStatusChangedUserEmailMessage() {
+		return statusChangedUserEmailMessage;
 	}
+
+	public String getStatusChangedUserSMS() {
+		return statusChangedUserSMS;
+	}
+
 }
