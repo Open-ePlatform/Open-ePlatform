@@ -88,7 +88,7 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 			return null;
 		}
 		
-		User user = systemInterface.getUserHandler().getUserByAttribute(userIdentifierAttribute, userIdentifier, true, true);
+		User user = null;
 		
 		if(userIdentifierAttribute.equals("email")){
 			
