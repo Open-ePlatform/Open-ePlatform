@@ -295,7 +295,7 @@ function searchFlowInstance() {
 							'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
 							'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
 							'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
-							'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.added + '</td>' +
+							'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
 							'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
 							'</tr>'
 						);

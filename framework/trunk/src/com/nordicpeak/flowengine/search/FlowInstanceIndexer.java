@@ -75,7 +75,7 @@ public class FlowInstanceIndexer {
 	private static final String FLOW_ID_FIELD = "flowID";
 	private static final String FLOW_NAME_FIELD = "name";
 	private static final String FLOW_FAMILY_ID_FIELD = "familyID";
-	private static final String FIRST_SUBMITTED_FIELD = "added";
+	private static final String FIRST_SUBMITTED_FIELD = "firstSubmitted";
 	private static final String STATUS_NAME_FIELD = "status";
 	private static final String POSTER_FIELD = "poster";
 	private static final String OWNERS_FIELD = "owners";
