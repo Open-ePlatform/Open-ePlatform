@@ -841,7 +841,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 			this.flowForms = XMLPopulationUtils.populateBeans(xmlParser, "FlowForms/FlowForm", FlowForm.class, errors);
 		}
 		
-		this.externalLink = XMLValidationUtils.validateParameter("externalLink", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.externalLink = XMLValidationUtils.validateParameter("externalLink", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
 		
 		//Only populated if no externalLink is set
 		if (externalLink == null) {
