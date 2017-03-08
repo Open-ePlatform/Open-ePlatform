@@ -411,6 +411,8 @@
   							<a href="#" class="btn btn-right btn-light xl hide-mobile" onclick="event.preventDefault(); window.print();"><xsl:value-of select="$i18n.Print" /></a>
   						</xsl:otherwise>
   					</xsl:choose>
+  					
+  					<xsl:variable name="submittedEvents" select="FlowInstance/events/FlowInstanceEvent[eventType='SUBMITTED']" />
   				
   					<figure>
 	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
@@ -422,11 +424,11 @@
 							<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
 							<xsl:value-of select="$i18n.PostedBy" /><xsl:text>:&#160;</xsl:text>
 							<xsl:call-template name="PrintPostedBy">
-								<xsl:with-param name="poster" select="FlowInstance/events/FlowInstanceEvent[eventType='SUBMITTED'][position() = last()]/poster/user"/>
+								<xsl:with-param name="poster" select="$submittedEvents[position() = last()]/poster/user"/>
 								<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 							</xsl:call-template>
 						 	<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
-							<xsl:value-of select="FlowInstance/added" />
+							<xsl:value-of select="$submittedEvents[position() = last()]/added" />
 						</span>
 					</div>
   				</div>

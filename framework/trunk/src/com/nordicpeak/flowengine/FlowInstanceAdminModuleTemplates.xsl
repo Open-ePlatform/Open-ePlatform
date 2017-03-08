@@ -674,7 +674,7 @@
   					<xsl:if test="../Profile">
   					
 	  					<p>
-	  						<strong><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
+	  						<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
 	  						<xsl:value-of select="../Profile/name" />
 	  					</p>
   					
@@ -1188,16 +1188,21 @@
 						<span class="errandno">
 							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" />
 							<b class="pipe"><xsl:text>&#160;|&#160;</xsl:text></b>
+							
 							<xsl:value-of select="$i18n.PostedBy" /><xsl:text>:&#160;</xsl:text>
 							<xsl:call-template name="PrintPostedBy">
 								<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
 								<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 							</xsl:call-template>
 							<xsl:text>&#160;</xsl:text>
-							<xsl:value-of select="$submittedEvents[position() = 1]/added" />
+							<xsl:value-of select="FlowInstance/firstSubmitted" />
+							
 							<xsl:if test="count($submittedEvents) > 1">
 								<b class="pipe"><xsl:text>&#160;|&#160;</xsl:text></b>
-								<xsl:value-of select="$i18n.LastSubmittedBy" /><xsl:text>:&#160;</xsl:text><xsl:call-template name="printUser"><xsl:with-param name="user" select="$submittedEvents[position() = last()]/poster/user" /></xsl:call-template>
+								<xsl:value-of select="$i18n.LastSubmittedBy" /><xsl:text>:&#160;</xsl:text>
+								<xsl:call-template name="printUser">
+									<xsl:with-param name="user" select="$submittedEvents[position() = last()]/poster/user" />
+								</xsl:call-template>
 								<xsl:text>&#160;</xsl:text>
 								<xsl:value-of select="$submittedEvents[position() = last()]/added" />
 							</xsl:if>

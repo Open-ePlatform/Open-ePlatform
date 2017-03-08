@@ -483,7 +483,7 @@
 			<xsl:with-param name="view" select="'OVERVIEW'" />
 		</xsl:call-template>
 		
-		<section class="child">
+		<section id="UserFlowInstanceModule" class="child">
 			<div class="section-inside step full">
   				<div class="heading-wrapper">
   					<div class="inner inner-less-padding">
@@ -491,24 +491,30 @@
 		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" alt="" />
 		  				</figure>
 		  				<div class="heading">
-	  						<h1 class="xl"><xsl:value-of select="Flow/name" /><b><xsl:text>&#160;</xsl:text>(<xsl:value-of select="Status/name" />)</b></h1>
+	  						<h1 class="xl">
+	  							<xsl:value-of select="Flow/name" />
+	  							<b>
+	  								<xsl:text>&#160;(</xsl:text>
+	  								<xsl:value-of select="Status/name" />
+	  								<xsl:text>)</xsl:text>
+	  							</b>
+	  						</h1>
 							
 							<span class="errandno hide-mobile">
 								<xsl:value-of select="$i18n.FlowInstanceID" />
-							</span>
-							
-							<span class="hide-mobile">
-								<xsl:text>:&#160;</xsl:text><xsl:value-of select="flowInstanceID" />
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="flowInstanceID" />
 							</span>
 							
 							<br/>
 							
 							<span class="errandno hide-mobile">
 								<xsl:value-of select="$i18n.CurrentStatus" />
+								<xsl:text>:&#160;</xsl:text>
 							</span>
 							
 							<span class="hide-mobile">
-								<xsl:text>:&#160;</xsl:text><xsl:value-of select="Status/name" />
+								<xsl:value-of select="Status/name" />
 							</span>
 						</div>
 					</div>
@@ -523,7 +529,7 @@
   					</p>
   					
 					<p>
-						<strong>
+						<strong class="overview">
 							<xsl:value-of select="$i18n.FirstSubmitted" />
 							<xsl:text>:&#160;</xsl:text>
 						</strong>
@@ -541,7 +547,7 @@
 					
 					<xsl:if test="count(owners/user) > 1">
 	  					<p>
-	  						<strong><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
+	  						<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
 		  					<xsl:apply-templates select="owners/user" mode="owner" />
 		  				</p>
   					</xsl:if>
@@ -550,7 +556,7 @@
   						<p>
   							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
   							
-  							<strong><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
+  							<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
   							<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
 	  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 	  						<xsl:call-template name="printUser">
@@ -562,7 +568,7 @@
   					
   					<xsl:if test="updated">
   						  <p>
-		  						<strong><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
+		  						<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
 		  						<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
 		  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 		  						<xsl:call-template name="printUser">
@@ -573,7 +579,7 @@
   					
   					<xsl:if test="Flow/hideManagerDetails = 'false'">
 	  					<p>
-	  						<strong><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
+	  						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
 	  						<xsl:choose>
 	  							<xsl:when test="managers/user">
 	  								<xsl:apply-templates select="managers/user" mode="manager" />
@@ -978,7 +984,7 @@
 								<b class="pipe">|</b>
 	 							<xsl:value-of select="$i18n.FirstSubmitted" />
 	 							<xsl:text>:&#160;</xsl:text>
-	 							<xsl:value-of select="$submittedEvents[position() = 1]/added" />
+	 							<xsl:value-of select="FlowInstance/firstSubmitted" />
 	 							
 	 							<xsl:if test="$submittedEvents[position() = 1]/poster/user/userID != /Document/user/userID">
 	 							
