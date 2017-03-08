@@ -158,15 +158,15 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
   height: 15px; 
 }
 
-#FlowInstanceAdminModule .description strong.overview {
+#FlowInstanceAdminModule .description strong.overview, #UserFlowInstanceModule .description strong.overview {
 	
-	width: 120px;
+	width: 160px;
 	display: inline-block;
 }
 
 #FlowInstanceAdminModule .description span.overview {
 	
-	padding-left: 110px;
+	padding-left: 160px;
 	display: inline-block;
 }
 
