@@ -1311,7 +1311,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstanceManager().getFlowInstance().getFlow());
 
-			Contact posterContact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
 			Collection<Contact> contacts = getContacts(event.getFlowInstanceManager().getFlowInstance());
 
 			ImmutableFlowInstance flowInstance = event.getFlowInstanceManager().getFlowInstance();
@@ -1361,6 +1360,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					}
 				}
 			}
+			
+			Contact posterContact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
 
 			if (notificationSettings.isSendFlowInstanceSubmittedManagerEmail()) {
 
@@ -2029,7 +2030,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	
 	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
 		
-		List<Contact> contacts = new ArrayList<Contact>(1);
+		List<Contact> contacts = new ArrayList<Contact>(2);
 		
 		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 		
@@ -2106,7 +2107,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			if (existingContact.getEmail() != null && contact.getEmail() != null) {
 				
-				if (existingContact.getEmail().equals(contact.getEmail())) {
+				if (existingContact.getEmail().equalsIgnoreCase(contact.getEmail())) {
 					
 					return;
 				}
@@ -2116,7 +2117,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			if (existingContact.getMobilePhone() != null && contact.getMobilePhone() != null) {
 				
-				if (existingContact.getMobilePhone().equals(contact.getMobilePhone())) {
+				String phone1 = existingContact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
+				String phone2 = contact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
+				
+				if (phone1.equals(phone2)) {
 					
 					return;
 				}
