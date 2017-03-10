@@ -296,7 +296,8 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (signerSSN == null) {
 			
-			throw new RuntimeException("Unable to find " + CITIZEN_IDENTIFIER + " identifier attribute for user " + user + " requesting flow instance " + instanceManager);
+			log.warn("Unable to find " + CITIZEN_IDENTIFIER + " identifier attribute for user " + user + " requesting flow instance " + instanceManager);
+			return null;
 		}
 		
 		return getValidSignatureForCurrentSigningChain(instanceManager, signerSSN);
