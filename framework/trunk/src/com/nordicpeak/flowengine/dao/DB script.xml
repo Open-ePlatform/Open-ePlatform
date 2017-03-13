@@ -1580,6 +1580,42 @@
 				ALTER TABLE `flowengine_flow_types` ADD COLUMN `allowAnonymousAccess` BOOLEAN NOT NULL AFTER `iconFileName`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="80">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_notifications` (
+					`notificationID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`sourceModuleID` INT(10) UNSIGNED NOT NULL,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`seen` DATETIME NULL DEFAULT NULL,
+					`title` VARCHAR(255) NULL DEFAULT NULL,
+					`notificationType` VARCHAR(255) NULL DEFAULT NULL,
+					`externalNotificationID` INT(10) UNSIGNED NULL DEFAULT NULL,
+					PRIMARY KEY (`notificationID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_notification_attributes` (
+					`notificationID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`value` VARCHAR(1024) NOT NULL,
+					PRIMARY KEY (`notificationID`, `name`),
+					CONSTRAINT `FK_flowengine_notification_attributes_1` FOREIGN KEY (`notificationID`) REFERENCES `flowengine_notifications` (`notificationID`)
+						ON UPDATE CASCADE
+						ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

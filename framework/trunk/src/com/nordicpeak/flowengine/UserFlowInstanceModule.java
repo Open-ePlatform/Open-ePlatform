@@ -25,10 +25,12 @@ import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
@@ -36,10 +38,12 @@ import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.ModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -82,6 +86,7 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
@@ -102,6 +107,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInsta
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
@@ -109,15 +115,18 @@ import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.notifications.beans.NotificationExtra;
+import com.nordicpeak.flowengine.notifications.interfaces.Notification;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 
-public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback{
+public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationCreator {
 
 	protected static final Field [] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION};
 	protected static final Field [] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD , Flow.HIDE_MANAGER_DETAILS_FIELD , Flow.FLOW_FORMS_FIELD , Flow.HIDE_SUBMIT_STEP_TEXT_FIELD , Flow.SHOW_SUBMIT_SURVEY_FIELD , Flow.REQUIRES_SIGNING_FIELD , Flow.REQUIRE_AUTHENTICATION_FIELD , Flow.USE_PREVIEW_FIELD , Flow.PUBLISH_DATE_FIELD , FlowInstanceEvent.POSTER_FIELD};
@@ -130,7 +139,16 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public static final UserFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, true);
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
-	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();	
+	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();
+	
+	@XSLVariable(prefix = "java.")
+	private String notificationExternalMessage = "Message";
+	
+	@XSLVariable(prefix = "i18n.", name = "PostedByManager")
+	private String notificationPostedByManager = "Manager";
+	
+	@XSLVariable(prefix = "i18n.", name = "StatusUpdatedEvent")
+	private String eventStatusUpdated = "Status updated";
 	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
@@ -142,12 +160,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
-	protected boolean enableSiteProfileSupport;	
+	protected boolean enableSiteProfileSupport;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name="Enable site profile redirect support", description="Controls if site profile redirect support is enabled")
-	protected boolean enableSiteProfileRedirectSupport;	
-	
+	protected boolean enableSiteProfileRedirectSupport;
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -172,6 +189,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
+	
+	protected NotificationHandler notificationHandler;
 	
 	private FlowProcessCallback defaultFlowProcessCallback;
 
@@ -230,6 +249,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public void unload() throws Exception {
 
 		systemInterface.getInstanceHandler().removeInstance(UserFlowInstanceModule.class, this);
+		
+		if (notificationHandler != null) {
+			
+			notificationHandler.removeNotificationCreator(this);
+		}
 		
 		tabExtensionProviders.clear();
 		
@@ -720,20 +744,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
-	protected List<FlowInstanceEvent> getNewFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
-
+	public List<FlowInstanceEvent> getNewFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
+		
 		HighLevelQuery<FlowInstanceEvent> query = new HighLevelQuery<FlowInstanceEvent>();
-
+		
 		query.addParameter(flowInstanceEventFlowInstanceParamFactory.getParameter(flowInstance));
 		query.addParameter(flowInstanceEventPosterParamFactory.getParameter(user, QueryOperators.NOT_EQUALS));
-
-		if(user.getLastLogin() != null){
+		
+		if (user.getLastLogin() != null) {
 			query.addParameter(flowInstanceEventAddedParamFactory.getParameter(user.getLastLogin(), QueryOperators.BIGGER_THAN));
 		}
-
-
+		
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
-
 	}
 
 	@WebPublic(alias = "submitted")
@@ -1098,5 +1120,91 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public boolean removeFlowInstanceProvider(UserFlowInstanceProvider flowInstanceProvider) {
 
 		return userFlowInstanceProviders.remove(flowInstanceProvider);
+	}
+	
+	@InstanceManagerDependency
+	public void setNotificationHandlerModule(NotificationHandler notificationHandler) {
+		
+		if (notificationHandler != null) {
+			
+			notificationHandler.addNotificationCreator(this);
+			
+		} else {
+			
+			this.notificationHandler.removeNotificationCreator(this);
+		}
+		
+		this.notificationHandler = notificationHandler;
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(ExternalMessageAddedEvent event, EventSource source) {
+		
+		log.debug("Received external message event regarding " + event.getFlowInstance());
+		
+		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.MANAGER) && notificationHandler != null) {
+			
+			try {
+				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), notificationExternalMessage, event.getEvent().getPoster(), "message", null);
+				
+			} catch (SQLException e) {
+				
+				log.error("Error sending notifications for " + event.getExternalMessage() + " to owners of " + event.getFlowInstance(), e);
+			}
+		}
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(StatusChangedByManagerEvent event, EventSource source) {
+		
+		log.debug("Received status changed by manager event regarding " + event.getFlowInstance());
+		
+		if (source == EventSource.LOCAL && notificationHandler != null) {
+			
+			try {
+				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), eventStatusUpdated + ": " + event.getFlowInstance().getStatus().getName(), event.getUser(), "changedStatus", null);
+				
+			} catch (SQLException e) {
+				
+				log.error("Error sending notifications for " + event.getEvent() + " to owners of " + event.getFlowInstance(), e);
+			}
+		}
+	}
+
+	@Override
+	public NotificationExtra getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	
+		NotificationExtra extra = new NotificationExtra();
+		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
+		
+		String type = notification.getNotificationType();
+		
+		if ("message".equals(type)) {
+			
+			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID() + "#messages");
+			
+		} else {
+			
+			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
+		}
+		
+		if (!flowInstance.getFlow().hidesManagerDetails()) {
+			
+			extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+			
+		} else {
+			
+			SimpleUser hiddenManager = new SimpleUser();
+			hiddenManager.setFirstname(notificationPostedByManager);
+			
+			extra.setPoster(hiddenManager);
+		}
+		
+		return extra;
+	}
+	
+	@Override
+	public ModuleDescriptor getModuleDescriptor() {
+		return moduleDescriptor;
 	}
 }

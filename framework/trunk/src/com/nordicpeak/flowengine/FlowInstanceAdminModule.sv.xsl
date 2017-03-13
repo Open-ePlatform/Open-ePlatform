@@ -5,7 +5,9 @@
 	
 	<xsl:include href="FlowInstanceAdminModuleTemplates.xsl"/>
 
-<xsl:variable name="java.noManagersSelected">Ingen handläggare vald.</xsl:variable>
+	<xsl:variable name="java.noManagersSelected">Ingen handläggare vald.</xsl:variable>
+	<xsl:variable name="java.notificationNewManager">Tilldelad ärende</xsl:variable>
+	<xsl:variable name="java.notificationExternalMessage">Meddelande från medborgare</xsl:variable>
 
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	

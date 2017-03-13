@@ -34,6 +34,7 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.EventListener;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.ModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
@@ -115,10 +116,14 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.notifications.beans.NotificationExtra;
+import com.nordicpeak.flowengine.notifications.interfaces.Notification;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
-public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable{
+public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationCreator {
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
 
@@ -147,7 +152,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	@XSLVariable(prefix = "java.")
 	private String noManagersSelected = "No managers selected";
-
+	
+	@XSLVariable(prefix = "java.")
+	private String notificationNewManager = "Assigned as manager";
+	
+	@XSLVariable(prefix = "java.")
+	private String notificationExternalMessage = "Message";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "High priority lapsed managing time", description = "The precent of the managing time of the current status that has to have elapsed for an instance to be classified as high priority", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected int highPriorityThreshold = 90;
@@ -181,7 +192,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
-
+	
+	protected NotificationHandler notificationHandler;
+	
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> overviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
 	protected CopyOnWriteArrayList<AdminFlowInstanceProvider> adminFlowInstanceProviders = new CopyOnWriteArrayList<AdminFlowInstanceProvider>();
@@ -212,6 +225,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		eventHandler.removeEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 
+		if (notificationHandler != null) {
+			
+			notificationHandler.removeNotificationCreator(this);
+		}
+		
 		flowInstanceIndexer.close();
 		
 		overviewExtensionLinkProviders.clear();
@@ -1447,5 +1465,86 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}
 		
 		return null;
+	}
+	
+	@InstanceManagerDependency
+	public void setNotificationHandlerModule(NotificationHandler notificationHandler) {
+		
+		if (notificationHandler != null) {
+			
+			notificationHandler.addNotificationCreator(this);
+			
+		} else {
+			
+			this.notificationHandler.removeNotificationCreator(this);
+		}
+		
+		this.notificationHandler = notificationHandler;
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(ExternalMessageAddedEvent event, EventSource source) {
+		
+		log.debug("Received external message event regarding " + event.getFlowInstance());
+		
+		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.USER) && notificationHandler != null) {
+			
+			try {
+				notificationHandler.sendNotificationToFlowInstanceManagers(this, event.getFlowInstance().getFlowInstanceID(), notificationExternalMessage, event.getEvent().getPoster(), "message", null);
+				
+			} catch (SQLException e) {
+				
+				log.error("Error sending notifications for " + event.getExternalMessage() + " to managers of " + event.getFlowInstance(), e);
+			}
+		}
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(ManagersChangedEvent event, EventSource source) {
+		
+		log.debug("Received managers changed event regarding " + event.getFlowInstance());
+		
+		if (source == EventSource.LOCAL && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && notificationHandler != null) {
+			
+			for (User manager : event.getFlowInstance().getManagers()) {
+				
+				if (!manager.equals(event.getUser()) && (event.getPreviousManagers() == null || !event.getPreviousManagers().contains(manager))) {
+					
+					try {
+						notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", event.getUser().getUserID(), notificationNewManager, null);
+						
+					} catch (SQLException e) {
+						
+						log.error("Error sending notification to new manager " + manager + " of " + event.getFlowInstance(), e);
+					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	public NotificationExtra getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	
+		String type = notification.getNotificationType();
+		NotificationExtra extra = new NotificationExtra();
+		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
+		
+		extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+		
+		if (type.equals("message")) {
+			
+			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID() + "#messages");
+			
+		} else {
+			
+			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
+		}
+		
+		return extra;
+	}
+
+	@Override
+	public ModuleDescriptor getModuleDescriptor() {
+		return moduleDescriptor;
 	}
 }
