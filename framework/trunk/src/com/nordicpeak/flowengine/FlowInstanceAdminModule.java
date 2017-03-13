@@ -88,6 +88,7 @@ import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
+import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
@@ -155,6 +156,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	@XSLVariable(prefix = "java.")
 	private String notificationNewManager = "Assigned as manager";
+	
+	@XSLVariable(prefix = "java.")
+	private String notificationCompletion = "Completion";
 	
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
@@ -1518,6 +1522,51 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						log.error("Error sending notification to new manager " + manager + " of " + event.getFlowInstance(), e);
 					}
 				}
+			}
+		}
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstanceManager.class)
+	public void processEvent(SubmitEvent event, EventSource source) {
+		
+		log.debug("Received submit event regarding " + event.getFlowInstanceManager());
+		
+		if (source == EventSource.LOCAL && notificationHandler != null) {
+			
+			try {
+				FlowInstance flowInstance = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.POSTER_FIELD);
+				
+				if (!CollectionUtils.isEmpty(flowInstance.getEvents()) && !CollectionUtils.isEmpty(flowInstance.getManagers())) {
+					
+					boolean isPreviouslySubmitted = false;
+					
+					for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstance.getEvents()) {
+						
+						if (flowInstanceEvent.getEventType().equals(EventType.SUBMITTED) && !flowInstanceEvent.equals(event.getEvent())) {
+							
+							isPreviouslySubmitted = true;
+							break;
+						}
+					}
+					
+					if (isPreviouslySubmitted) {
+						
+						for (User manager : flowInstance.getManagers()) {
+							
+							try {
+								notificationHandler.addNotification(flowInstance.getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "completion", event.getEvent().getPoster().getUserID(), notificationCompletion, null);
+								
+							} catch (SQLException e) {
+								
+								log.error("Error sending completion notification to manager " + manager + " for " + flowInstance, e);
+							}
+						}
+					}
+				}
+				
+			} catch (SQLException e) {
+				
+				log.error("Error getting flow instance with managers and events for " + event.getFlowInstanceManager(), e);
 			}
 		}
 	}
