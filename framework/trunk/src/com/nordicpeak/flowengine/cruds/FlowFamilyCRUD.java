@@ -25,6 +25,7 @@ import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -89,9 +90,11 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 	protected void validateUpdatePopulation(FlowFamily bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
 		List<Integer> flowInstanceManagerUserIDs = getCurrentFlowInstanceManagerUserIDs(bean);
-
+		
 		if (flowInstanceManagerUserIDs != null) {
 
+			FlowFamily unchangedFlowFamily = getBean(bean.getFlowFamilyID());
+			
 			List<User> managers = callback.getUserHandler().getUsers(flowInstanceManagerUserIDs, true, false);
 
 			if(managers != null) {
@@ -103,8 +106,17 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 				for(User manager : managers) {
 
-					boolean hasAccess = false;
+					//User did not have access before, skip check
+					if(!AccessUtils.checkAccess(manager, unchangedFlowFamily)){
+						
+						continue;
+					}
+					
+					if(allowedUserIDs != null && allowedUserIDs.contains(manager.getUserID())) {
 
+						continue;
+					}					
+					
 					Collection<Group> managerGroups = manager.getGroups();
 
 					if(allowedGroupIDs != null && managerGroups != null) {
@@ -112,28 +124,13 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 						for(Group group : managerGroups) {
 
 							if(allowedGroupIDs.contains(group.getGroupID())) {
-								hasAccess = true;
-								break;
+								
+								continue;
 							}
-
 						}
-
 					}
 
-					if(!hasAccess && allowedUserIDs != null) {
-
-						if(allowedUserIDs.contains(manager.getUserID())) {
-							hasAccess = true;
-						}
-
-					}
-
-					if(!hasAccess) {
-
-						errors.add(new UnauthorizedManagerUserValidationError(manager));
-
-					}
-
+					errors.add(new UnauthorizedManagerUserValidationError(manager));
 				}
 
 				if(!errors.isEmpty()) {
@@ -149,7 +146,14 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 	@Override
 	public FlowFamily getBean(Integer beanID) throws SQLException, AccessDeniedException {
 
-		return callback.getFlowFamily(beanID);
+		FlowFamily flowFamily = callback.getFlowFamily(beanID);
+		
+		if(flowFamily !=  null){
+			
+			flowFamily = SerializationUtils.cloneSerializable(flowFamily);
+		}
+			
+		return flowFamily;
 	}
 
 	@Override
