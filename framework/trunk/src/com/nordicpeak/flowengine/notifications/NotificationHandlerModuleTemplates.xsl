@@ -81,7 +81,7 @@
 	
 	<xsl:template match="FlowInstance">
 		
-		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID]/NotificationMetadata/showURL" />
+		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID]/NotificationExtra/showURL" />
 		
 		<article data-url="{$url}">
 			<div class="inner">
@@ -106,7 +106,7 @@
 	<xsl:template match="Notification">
 		<xsl:param name="flowInstance"/>
 		
-		<a class="notification" href="{NotificationMetadata/url}">
+		<a class="notification" href="{NotificationExtra/url}">
 			
 			<xsl:if test="not(seen)">
 				<xsl:attribute name="class">notification unread</xsl:attribute>
@@ -118,9 +118,9 @@
 			
 			<span class="author">
 
-				<xsl:value-of select="NotificationMetadata/poster/user/firstname" />
+				<xsl:value-of select="NotificationExtra/poster/user/firstname" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="NotificationMetadata/poster/user/lastname" />
+				<xsl:value-of select="NotificationExtra/poster/user/lastname" />
 					
 				<xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="added" />
 			</span>
