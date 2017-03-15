@@ -17,30 +17,28 @@
 	
 	<xsl:template match="ListNotifications">
 	
-		<section id="NotificationHandlerModule">
-
-			<div class="heading-wrapper">
+		<div id="NotificationHandlerModule" class="contentitem">
+	
 				<h1>
 					<xsl:value-of select="$i18n.AllNotifications" />
 				</h1>
-			</div>
-
-			<xsl:choose>
-				<xsl:when test="FlowInstances/FlowInstance">
-				
-					<xsl:apply-templates select="FlowInstances/FlowInstance" />
+	
+				<xsl:choose>
+					<xsl:when test="FlowInstances/FlowInstance">
 					
-				</xsl:when>
-				<xsl:otherwise>
-				
-					<article class="no-events">
-						<xsl:value-of select="$i18n.NoNotifications"/>
-					</article>
-					
-				</xsl:otherwise>
-			</xsl:choose>
+						<xsl:apply-templates select="FlowInstances/FlowInstance" />
 						
-		</section>
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<article class="no-events">
+							<xsl:value-of select="$i18n.NoNotifications"/>
+						</article>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+							
+		</div>
 	
 	</xsl:template>
 	
@@ -59,7 +57,7 @@
 			<xsl:otherwise>
 			
 				<article class="no-events">
-					<xsl:value-of select="$i18n.NoNotifications"/>
+					<xsl:value-of select="$i18n.NoNewNotifications"/>
 				</article>
 				
 			</xsl:otherwise>
@@ -83,7 +81,7 @@
 	
 	<xsl:template match="FlowInstance">
 		
-		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID]/NotificationExtra/showURL" />
+		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID]/NotificationMetadata/showURL" />
 		
 		<article data-url="{$url}">
 			<div class="inner">
@@ -108,7 +106,7 @@
 	<xsl:template match="Notification">
 		<xsl:param name="flowInstance"/>
 		
-		<a class="notification" href="{NotificationExtra/url}">
+		<a class="notification" href="{NotificationMetadata/url}">
 			
 			<xsl:if test="not(seen)">
 				<xsl:attribute name="class">notification unread</xsl:attribute>
@@ -120,9 +118,9 @@
 			
 			<span class="author">
 
-				<xsl:value-of select="NotificationExtra/poster/user/firstname" />
+				<xsl:value-of select="NotificationMetadata/poster/user/firstname" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="NotificationExtra/poster/user/lastname" />
+				<xsl:value-of select="NotificationMetadata/poster/user/lastname" />
 					
 				<xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="added" />
 			</span>

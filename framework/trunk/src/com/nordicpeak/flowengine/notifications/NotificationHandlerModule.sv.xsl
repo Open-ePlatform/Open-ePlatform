@@ -5,6 +5,7 @@
 	<xsl:include href="NotificationHandlerModuleTemplates.xsl"/>
 
 	<xsl:variable name="i18n.AllNotifications">Alla aviseringar</xsl:variable>
+	<xsl:variable name="i18n.NoNewNotifications">Inga nya aviseringar</xsl:variable>
 	<xsl:variable name="i18n.NoNotifications">Du har inga aviseringar</xsl:variable>
 	
 	<xsl:variable name="i18n.Events">Aviseringar</xsl:variable>

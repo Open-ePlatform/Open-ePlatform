@@ -1,10 +1,5 @@
 @CHARSET "ISO-8859-1";
 
-#NotificationHandlerModule .heading-wrapper {
-  font-size: 12px;
-  padding: 6px 11px;
-  border-bottom: 1px solid #e7e7e7;
-}
 #NotificationHandlerModule article:after {
   content: "";
   display: table;
@@ -13,8 +8,12 @@
 #NotificationHandlerModule article a {
   padding: 0;
 }
+#NotificationHandlerModule article.no-events {
+    font-weight: 600;
+    padding: 12px 0 16px;
+}
 #NotificationHandlerModule article .inner {
-  padding: 16px 21px;
+  padding: 16px 0;
 }
 #NotificationHandlerModule article .inner h3 {
   padding-bottom: 2px;
