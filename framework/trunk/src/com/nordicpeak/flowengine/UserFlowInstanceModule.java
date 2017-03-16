@@ -121,7 +121,7 @@ import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
-import com.nordicpeak.flowengine.notifications.beans.NotificationExtra;
+import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
@@ -1172,9 +1172,9 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@Override
-	public NotificationExtra getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	
-		NotificationExtra extra = new NotificationExtra();
+		NotificationMetadata extra = new NotificationMetadata();
 		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
 		
 		String type = notification.getNotificationType();
