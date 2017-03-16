@@ -117,7 +117,7 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
-import com.nordicpeak.flowengine.notifications.beans.NotificationExtra;
+import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
@@ -1508,18 +1508,36 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		log.debug("Received managers changed event regarding " + event.getFlowInstance());
 		
-		if (source == EventSource.LOCAL && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && notificationHandler != null) {
+		if (source == EventSource.LOCAL && notificationHandler != null) {
 			
-			for (User manager : event.getFlowInstance().getManagers()) {
-				
-				if (!manager.equals(event.getUser()) && (event.getPreviousManagers() == null || !event.getPreviousManagers().contains(manager))) {
+			if (!CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
+				for (User manager : event.getFlowInstance().getManagers()) {
 					
-					try {
-						notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", event.getUser().getUserID(), notificationNewManager, null);
+					if (!manager.equals(event.getUser()) && (event.getPreviousManagers() == null || !event.getPreviousManagers().contains(manager))) {
 						
-					} catch (SQLException e) {
+						try {
+							notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", event.getUser().getUserID(), notificationNewManager, null);
+							
+						} catch (SQLException e) {
+							
+							log.error("Error sending notification to new manager " + manager + " of " + event.getFlowInstance(), e);
+						}
+					}
+				}
+			}
+			
+			if (!CollectionUtils.isEmpty(event.getPreviousManagers())) {
+				for (User manager : event.getPreviousManagers()) {
+					
+					if (event.getFlowInstance().getManagers() == null || !event.getFlowInstance().getManagers().contains(manager)) {
 						
-						log.error("Error sending notification to new manager " + manager + " of " + event.getFlowInstance(), e);
+						try {
+							notificationHandler.deleteNotifications(moduleDescriptor.getModuleID(), event.getFlowInstance().getFlowInstanceID(), manager, "newManager");
+							
+						} catch (SQLException e) {
+							
+							log.error("Error deleting notificatios for old manager " + manager + " of " + event.getFlowInstance(), e);
+						}
 					}
 				}
 			}
@@ -1572,10 +1590,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@Override
-	public NotificationExtra getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	
 		String type = notification.getNotificationType();
-		NotificationExtra extra = new NotificationExtra();
+		NotificationMetadata extra = new NotificationMetadata();
 		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
 		
 		extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));

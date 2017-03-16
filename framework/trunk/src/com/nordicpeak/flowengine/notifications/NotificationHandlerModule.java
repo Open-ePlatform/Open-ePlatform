@@ -33,6 +33,9 @@ import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
@@ -94,13 +97,14 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	protected FlowEngineDAOFactory daoFactory;
 	
 	private AnnotatedDAO<StoredNotification> notificationDAO;
-	private QueryParameterFactory<StoredNotification, Timestamp> addedQueryParamFactory;
-	private QueryParameterFactory<StoredNotification, Timestamp> seenQueryParamFactory;
+	private QueryParameterFactory<StoredNotification, Timestamp> addedParamFactory;
+	private QueryParameterFactory<StoredNotification, Timestamp> seenParamFactory;
 	private QueryParameterFactory<StoredNotification, Integer> externaIDParamFactory;
-	private QueryParameterFactory<StoredNotification, Integer> userQueryParamFactory;
-	private QueryParameterFactory<StoredNotification, Integer> sourceModuleQueryParamFactory;
-	private QueryParameterFactory<StoredNotification, String> typeQueryParamFactory;
-	private QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
+	private QueryParameterFactory<StoredNotification, Integer> userIDParamFactory;
+	private QueryParameterFactory<StoredNotification, Integer> sourceModuleParamFactory;
+	private QueryParameterFactory<StoredNotification, String> typeParamFactory;
+	private QueryParameterFactory<StoredNotification, Integer> flowInstanceIDParamFactory;
+	private QueryParameterFactory<FlowInstance, Integer> flowInstanceID2ParamFactory;
 	
 	private ConcurrentHashMap<Integer, NotificationCreator> notificationCreatorMap = new ConcurrentHashMap<Integer, NotificationCreator>();
 	
@@ -118,6 +122,8 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		initScheduler();
 	}
+	
+	//TODO listen on crudevent remove flow instance
 	
 	@Override
 	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
@@ -141,18 +147,19 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 		
-		this.daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
 		
 		notificationDAO = new SimpleAnnotatedDAOFactory(dataSource).getDAO(StoredNotification.class);
 		
-		this.addedQueryParamFactory = notificationDAO.getParamFactory("added", Timestamp.class);
-		this.seenQueryParamFactory = notificationDAO.getParamFactory("seen", Timestamp.class);
-		this.externaIDParamFactory = notificationDAO.getParamFactory("externalNotificationID", Integer.class);
-		this.userQueryParamFactory = notificationDAO.getParamFactory("userID", Integer.class);
-		this.sourceModuleQueryParamFactory = notificationDAO.getParamFactory("sourceModuleID", Integer.class);
-		this.typeQueryParamFactory = notificationDAO.getParamFactory("notificationType", String.class);
+		addedParamFactory = notificationDAO.getParamFactory("added", Timestamp.class);
+		seenParamFactory = notificationDAO.getParamFactory("seen", Timestamp.class);
+		externaIDParamFactory = notificationDAO.getParamFactory("externalNotificationID", Integer.class);
+		userIDParamFactory = notificationDAO.getParamFactory("userID", Integer.class);
+		sourceModuleParamFactory = notificationDAO.getParamFactory("sourceModuleID", Integer.class);
+		typeParamFactory = notificationDAO.getParamFactory("notificationType", String.class);
+		flowInstanceIDParamFactory = notificationDAO.getParamFactory("flowInstanceID", Integer.class);
 		
-		flowInstanceIDParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flowInstanceID", Integer.class);
+		flowInstanceID2ParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flowInstanceID", Integer.class);
 	}
 	
 	@Override
@@ -188,27 +195,50 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	@Override
 	public void deleteNotifications(int userID) throws SQLException {
 		
+		log.info("Deleting notifications for userID " + userID);
+		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(userQueryParamFactory.getParameter(userID));
+		query.addParameter(userIDParamFactory.getParameter(userID));
 		
-		this.notificationDAO.delete(query);
+		notificationDAO.delete(query);
 	}
 	
 	@Override
 	public void deleteNotifications(int sourceModuleID, int externalNotificationID, String notificationType) throws SQLException {
 		
+		log.info("Deleting notifications for sourceModuleID " + sourceModuleID + ", externalNotificationID " + externalNotificationID + ", notificationType " + notificationType);
+		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(sourceModuleQueryParamFactory.getParameter(sourceModuleID));
+		query.addParameter(sourceModuleParamFactory.getParameter(sourceModuleID));
 		query.addParameter(externaIDParamFactory.getParameter(externalNotificationID));
 		
 		if (notificationType != null) {
 			
-			query.addParameter(typeQueryParamFactory.getParameter(notificationType));
+			query.addParameter(typeParamFactory.getParameter(notificationType));
 		}
 		
-		this.notificationDAO.delete(query);
+		notificationDAO.delete(query);
+	}
+	
+	@Override
+	public void deleteNotifications(int sourceModuleID, int flowInstanceID, User user, String notificationType) throws SQLException {
+		
+		log.info("Deleting notifications for sourceModuleID " + sourceModuleID + ", flowInstanceID " + flowInstanceID + ", user " + user + ", notificationType " + notificationType);
+		
+		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
+		
+		query.addParameter(sourceModuleParamFactory.getParameter(sourceModuleID));
+		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
+		query.addParameter(userIDParamFactory.getParameter(user.getUserID()));
+		
+		if (notificationType != null) {
+			
+			query.addParameter(typeParamFactory.getParameter(notificationType));
+		}
+		
+		notificationDAO.delete(query);
 	}
 	
 	@Override
@@ -216,8 +246,8 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(userQueryParamFactory.getParameter(userID));
-		query.addParameter(seenQueryParamFactory.getIsNullParameter());
+		query.addParameter(userIDParamFactory.getParameter(userID));
+		query.addParameter(seenParamFactory.getIsNullParameter());
 		
 		Integer count = notificationDAO.getCount(query);
 		
@@ -233,9 +263,9 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(userQueryParamFactory.getParameter(userID));
+		query.addParameter(userIDParamFactory.getParameter(userID));
 		
-		query.addParameter(sourceModuleQueryParamFactory.getParameter(sourceModuleID));
+		query.addParameter(sourceModuleParamFactory.getParameter(sourceModuleID));
 		
 		if (externalNotificationID != null) {
 			
@@ -244,7 +274,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (notificationType != null) {
 			
-			query.addParameter(typeQueryParamFactory.getParameter(notificationType));
+			query.addParameter(typeParamFactory.getParameter(notificationType));
 		}
 		
 		return notificationDAO.get(query);
@@ -255,7 +285,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(sourceModuleQueryParamFactory.getParameter(sourceModuleID));
+		query.addParameter(sourceModuleParamFactory.getParameter(sourceModuleID));
 		
 		if (externalNotificationID != null) {
 			
@@ -264,18 +294,18 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (notificationType != null) {
 			
-			query.addParameter(typeQueryParamFactory.getParameter(notificationType));
+			query.addParameter(typeParamFactory.getParameter(notificationType));
 		}
 		
 		if (seenStatus != null) {
 			
 			if (seenStatus) {
 				
-				query.addParameter(seenQueryParamFactory.getIsNotNullParameter());
+				query.addParameter(seenParamFactory.getIsNotNullParameter());
 				
 			} else {
 				
-				query.addParameter(seenQueryParamFactory.getIsNullParameter());
+				query.addParameter(seenParamFactory.getIsNullParameter());
 			}
 		}
 		
@@ -289,15 +319,15 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (!showAll) {
 			
-			sql.append(" AND (" + seenQueryParamFactory.getColumnName() + " IS NULL OR " + seenQueryParamFactory.getColumnName() + " >= ? )");
+			sql.append(" AND (" + seenParamFactory.getColumnName() + " IS NULL OR " + seenParamFactory.getColumnName() + " >= ? )");
 		}
 		
 		if (breakpoint != null) {
 			
-			sql.append(" AND " + addedQueryParamFactory.getColumnName() + " >= ?");
+			sql.append(" AND " + addedParamFactory.getColumnName() + " >= ?");
 		}
 		
-		sql.append(" ORDER BY " + addedQueryParamFactory.getColumnName() + " DESC");
+		sql.append(" ORDER BY " + addedParamFactory.getColumnName() + " DESC");
 		
 		if (count != null) {
 			
@@ -429,7 +459,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
 		
-		query.addParameter(addedQueryParamFactory.getParameter(new Timestamp(calendar.getTimeInMillis()), QueryOperators.SMALLER_THAN));
+		query.addParameter(addedParamFactory.getParameter(new Timestamp(calendar.getTimeInMillis()), QueryOperators.SMALLER_THAN));
 		
 		try {
 			Integer deleteCount = notificationDAO.delete(query);
@@ -631,7 +661,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			query.addExcludedFields(excludedFields);
 		}
 		
-		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
+		query.addParameter(flowInstanceID2ParamFactory.getParameter(flowInstanceID));
 		
 		return daoFactory.getFlowInstanceDAO().get(query);
 	}
@@ -663,4 +693,31 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			}
 		}
 	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(CRUDEvent<FlowInstance> event, EventSource source) {
+		
+		log.debug("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
+		
+		if (event.getAction() == CRUDAction.DELETE) {
+			
+			for (FlowInstance flowInstance : event.getBeans()) {
+				
+				try {
+					log.info("Deleting notifications for deleted flowInstance " + flowInstance);
+					
+					HighLevelQuery<StoredNotification> query = new HighLevelQuery<StoredNotification>();
+					
+					query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+					
+					notificationDAO.delete(query);
+					
+				} catch (SQLException e) {
+					
+					log.error("Error removing notifications for flowInstanceID " + flowInstance.getFlowInstanceID(), e);
+				}
+			}
+		}
+	}
+	
 }

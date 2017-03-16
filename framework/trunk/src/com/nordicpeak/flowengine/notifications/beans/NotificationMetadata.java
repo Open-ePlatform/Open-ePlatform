@@ -10,7 +10,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 @XMLElement
-public class NotificationExtra extends GeneratedElementable {
+public class NotificationMetadata extends GeneratedElementable {
 	
 	
 	@XMLElement

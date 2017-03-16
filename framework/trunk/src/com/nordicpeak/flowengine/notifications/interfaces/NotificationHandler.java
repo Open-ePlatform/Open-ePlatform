@@ -20,6 +20,8 @@ public interface NotificationHandler {
 	public void deleteNotifications(int userID) throws SQLException;
 
 	public void deleteNotifications(int sourceModuleID, int externalNotificationID, String notificationType) throws SQLException;
+	
+	public void deleteNotifications(int sourceModuleID, int flowInstanceID, User user, String notificationType) throws SQLException;
 
 	public int getUnreadCount(int userID) throws SQLException;
 	

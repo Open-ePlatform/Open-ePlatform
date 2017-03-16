@@ -76,7 +76,7 @@ public class StoredNotification extends GeneratedElementable implements Attribut
 	private List<StoredNotificationAttribute> attributes;
 	
 	@XMLElement
-	private NotificationExtra notificationExtra;
+	private NotificationMetadata notificationMetadata;
 	
 	@Override
 	public Integer getNotificationID() {
@@ -205,12 +205,12 @@ public class StoredNotification extends GeneratedElementable implements Attribut
 		return flowInstanceID;
 	}
 	
-	public NotificationExtra getNotificationExtra() {
-		return notificationExtra;
+	public NotificationMetadata getNotificationExtra() {
+		return notificationMetadata;
 	}
 	
-	public void setNotificationExtra(NotificationExtra notificationExtra) {
-		this.notificationExtra = notificationExtra;
+	public void setNotificationExtra(NotificationMetadata notificationMetadata) {
+		this.notificationMetadata = notificationMetadata;
 	}
 	
 	@Override
