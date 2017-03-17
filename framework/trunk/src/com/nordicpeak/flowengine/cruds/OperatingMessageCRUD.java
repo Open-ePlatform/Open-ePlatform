@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.IntegerBasedCRUD;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -126,18 +127,21 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		appendFlowFamilies(doc, addTypeElement);
+		appendProfiles(doc, addTypeElement, user, req, uriParser);
 	}
 
 	@Override
 	protected void appendUpdateFormData(OperatingMessage bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		appendFlowFamilies(doc, updateTypeElement);
+		appendProfiles(doc, updateTypeElement, user, req, uriParser);
 	}
 
 	@Override
 	protected void appendListFormData(Document doc, Element listTypeElement, User user, HttpServletRequest req, URIParser uriParser, List<ValidationError> validationError) throws SQLException {
 
 		appendFlowFamilies(doc, listTypeElement);
+		appendProfiles(doc, listTypeElement, user, req, uriParser);
 	}
 
 	private void appendFlowFamilies(Document doc, Element element) {
@@ -163,6 +167,21 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 			
 		}
 		
+	}
+
+	private void appendProfiles(Document doc, Element element, User user, HttpServletRequest req, URIParser uriParser) {
+		
+		Collection<? extends SiteProfile> profiles = callback.getFlowAdminModule().getSiteProfileHandler().getProfiles();
+		
+		if(profiles != null) {
+			
+			for(SiteProfile profile : profiles) {
+				
+				Element profileElement = profile.toXML(doc);
+				
+				element.appendChild(profileElement);
+			}
+		}
 	}
 	
 	@Override
