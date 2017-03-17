@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	
-	$("input[type='radio']").change(function() {
+	$("input[name='global']").change(function() {
 		
 		var $flowFamilies = $("#chooseFlowFamilies");
 		
@@ -18,6 +18,24 @@ $(document).ready(function() {
 		
 	});
 
+	$("input[name='profileFilter']").change(function() {
+		
+		var $profiles = $("#chooseProfiles");
+		
+		if(this.value == "true") {
+
+			$profiles.find("input[name='profileID']").removeAttr("disabled");
+			$profiles.show();
+			
+		} else if(this.value == "false") {
+			
+			$profiles.find("input[name='profileID']").attr("disabled", "disabled");
+			$profiles.hide();
+		}
+		
+	});
+	
+	
 	$("#disableFlows").change(function() {
 		
 		$("#allowManagingOfInstancesWrapper").toggle($(this).is(":checked"));
@@ -31,7 +49,9 @@ $(document).ready(function() {
 	
 	$("#chooseFlowFamilies").html($flowFamilies);
 	
-	$("input[type='radio']:checked").trigger("change");
+	$("input[name='global']:checked").trigger("change");
+	
+	$("input[name='profileFilter']:checked").trigger("change");
 	
 	$("#disableFlows").trigger("change");
 	
