@@ -610,6 +610,10 @@
   					<li>
   						<a data-icon-before="m" href="#messages">
   							<xsl:value-of select="$i18n.ExternalMessages" />
+  							<xsl:text>&#160;(</xsl:text>
+  							<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
+  							<xsl:text>)</xsl:text>
+  							
   							<!-- TODO count how many unread messages since last login -->
   							<xsl:if test="false()">
   								<span class="count">0</span>
