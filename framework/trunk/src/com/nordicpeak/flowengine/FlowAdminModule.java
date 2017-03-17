@@ -4277,6 +4277,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return maxFlowTypeIconHeight;
 	}
 	
+	public SiteProfileHandler getSiteProfileHandler() {
+		
+		return siteProfileHandler;
+	}	
+	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse changeFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 		
