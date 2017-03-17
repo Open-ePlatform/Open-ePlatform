@@ -162,7 +162,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	protected void createDAOs(DataSource dataSource) throws Exception {
 		
 		//Automatic table version handling
-		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, MultiSigningHandlerModule.class.getName(), new XMLDBScriptProvider(this.getClass().getResourceAsStream("DB script.xml")));
+		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, MultiSigningHandlerModule.class.getName(), new XMLDBScriptProvider(MultiSigningHandlerModule.class.getResourceAsStream("DB script.xml")));
 		
 		if (upgradeResult.isUpgrade()) {
 			
