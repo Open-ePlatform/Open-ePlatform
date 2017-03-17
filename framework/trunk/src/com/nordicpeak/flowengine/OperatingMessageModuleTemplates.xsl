@@ -50,6 +50,9 @@
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
 					<th width="120" class="default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Publish" /></span></th>
 					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.UnPublish" /></span></th>
+					<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
+						<th width="110"><span data-icon-after="_"><xsl:value-of select="$i18n.Profiles" /></span></th>
+					</xsl:if>
 					<th width="110"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowFamilies" /></span></th>
 					<th width="130"><span data-icon-after="_"><xsl:value-of select="$i18n.DisableFlows" /></span></th>
 					<th width="32" class="no-sort" />
@@ -99,6 +102,33 @@
 			<td data-title="{$i18n.UnPublish}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
 			</td>
+			<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
+			
+				<td data-title="{$i18n.Profiles}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+						<xsl:choose>
+							<xsl:when test="profileIDs/profileID">
+								<xsl:value-of select="count(profileIDs/profileID)" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.All" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</a>
+					<xsl:if test="profileIDs/profileID">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/info.png" class="marginleft vertical-align-middle pointer">
+							<xsl:attribute name="title">
+								<xsl:for-each select="profileIDs/profileID">
+									<xsl:variable name="profileID" select="." />
+									<xsl:value-of select="../../../../Profile[profileID = $profileID]/name" />
+									<xsl:if test="position() != last()"><xsl:text>,&#160;</xsl:text></xsl:if>
+								</xsl:for-each>
+							</xsl:attribute>
+						</img>
+					</xsl:if>
+				</td>			
+			
+			</xsl:if>
 			<td data-title="{$i18n.FlowFamilies}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
 					<xsl:choose>
@@ -335,7 +365,54 @@
 										
 			</div>
 		</div>		
-		
+
+		<xsl:if test="../enableSiteProfileSupport = 'true'">
+
+			<div class="floatleft full">
+					
+				<div class="floatleft">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'profile1'" />
+						<xsl:with-param name="name" select="'profileFilter'" />
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="value" select="'false'" />
+					</xsl:call-template>
+					
+					<label for="profile1">
+						<xsl:value-of select="$i18n.AllProfiles" />
+					</label>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<div class="floatleft full bigmarginbottom">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'profile2'" />
+						<xsl:with-param name="name" select="'profileFilter'" />
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="value" select="'true'" />
+					</xsl:call-template>
+					
+					<label for="profile2">
+						<xsl:value-of select="$i18n.ChooseProfiles" />
+					</label>
+				</div>
+				
+				<div class="floatleft full">
+	
+					<div id="chooseProfiles" class="hidden">
+						<xsl:apply-templates select="Profile">
+							<xsl:with-param name="operatingMessage" select="$operatingMessage" />
+						</xsl:apply-templates>
+					</div>								
+											
+				</div>
+			</div>
+
+		</xsl:if>
+
 		<div class="floatleft full">
 				
 			<div class="floatleft">
@@ -401,6 +478,28 @@
 		</div>
 		
 	</xsl:template>
+
+	<xsl:template match="Profile">
+		
+		<xsl:param name="operatingMessage" />
+		
+		<div class="floatleft full border marginbottom padding border-box profile" data-name="{name}">
+			<div class="floatleft title">
+				<xsl:value-of select="name"/>
+			</div>
+			<div class="floatright">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="concat('profileID_', profileID)" />
+					<xsl:with-param name="name" select="'profileID'" />
+					<xsl:with-param name="element" select="$operatingMessage/profileIDs" />
+					<xsl:with-param name="value" select="profileID" />
+					<xsl:with-param name="requestparameters" select="../requestparameters" />
+				</xsl:call-template>
+			</div>				
+		</div>
+		
+	</xsl:template>
+
 	
 	<xsl:template match="validationError">
 		

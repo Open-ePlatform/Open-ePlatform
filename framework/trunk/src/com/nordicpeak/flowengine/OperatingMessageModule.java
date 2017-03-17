@@ -12,7 +12,9 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
@@ -20,6 +22,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileFilterModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -45,6 +48,10 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 	private QueryParameterFactory<OperatingMessage, Timestamp> endTimeParameterFactory;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
+	protected boolean enableSiteProfileSupport;
+	
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
 	
@@ -139,6 +146,10 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		documentElement.appendChild(RequestUtils.getRequestInfoAsXML(doc, req, uriParser));
 		documentElement.appendChild(this.moduleDescriptor.toXML(doc));
 
+		if(enableSiteProfileSupport) {
+			XMLUtils.appendNewElement(doc, documentElement, "enableSiteProfileSupport", "true");
+		}
+		
 		doc.appendChild(documentElement);
 		return doc;
 
@@ -164,6 +175,15 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		OperatingStatus operatingStatus = null;
 		
 		for(OperatingMessage operatingMessage : operatingMessageCache){
+			
+			if(enableSiteProfileSupport) {
+				
+				if(operatingMessage.getProfileIDs() != null && SiteProfileFilterModule.getCurrentProfile() != null && !operatingMessage.getProfileIDs().contains(SiteProfileFilterModule.getCurrentProfile().getProfileID())) {
+					
+					//Message is set for specific profiles, but current profile is not one of them. Message should not be shown.
+					continue;
+				}
+			}
 			
 			if (operatingMessage.getStartTime().before(currentTime) && operatingMessage.getEndTime().after(currentTime)) {
 				

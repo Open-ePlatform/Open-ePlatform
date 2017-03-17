@@ -14,6 +14,7 @@
 	<xsl:variable name="i18n.StartTime">Tid från</xsl:variable>
 	<xsl:variable name="i18n.EndTime">Tid till</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilies">Antal e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.Profiles">Antal profiler</xsl:variable>
 	<xsl:variable name="i18n.DisableFlows">Inaktivera e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.NoOperatingMessagesFound">Inga driftmeddelanden hittades</xsl:variable>
 	<xsl:variable name="i18n.All">Alla</xsl:variable>
@@ -51,4 +52,7 @@
 	<xsl:variable name="i18n.Validation.TooLong.Part3"> tecken, vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.Validation.TooLong.Part4"> tecken</xsl:variable>
 	<xsl:variable name="i18n.AllowManagingOfInstancesLabel">Tillåt handläggning av ärenden under driftstoppet</xsl:variable>
+	<xsl:variable name="i18n.AllProfiles">Visa driftmeddelandet för alla profiler</xsl:variable>
+	<xsl:variable name="i18n.ChooseProfiles">Visa driftmeddelandet för specifika profiler</xsl:variable>
+	
 </xsl:stylesheet>
