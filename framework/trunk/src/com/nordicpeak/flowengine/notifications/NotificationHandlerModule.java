@@ -532,6 +532,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		List<StoredNotification> notifications = getNotificationsForUser(user.getUserID(), notificationCount, null, false);
 		
 		res.setContentType("text/html");
+		res.addHeader("notifications", "true");
 		Writer writer = res.getWriter();
 		
 		Document doc = createDocument(req, uriParser, user);

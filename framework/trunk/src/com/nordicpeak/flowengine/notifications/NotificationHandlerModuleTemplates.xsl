@@ -91,6 +91,8 @@
 						<xsl:value-of select="$i18n.FlowInstance" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="flowInstanceID" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="Flow/name" />
 					</h3>
 				</a>
 				

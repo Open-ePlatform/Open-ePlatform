@@ -26,28 +26,36 @@ $(document).ready(function() {
 				url: notificationHandlerUrl + "/latest",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded;charset=UTF-8",
-				success: function(response) {
+				success: function(response, textStatus, jqXHR) {
 					
-					submenu.html(response);
+					if (jqXHR.getResponseHeader('notifications') == "true") {
 					
-					submenu.find("article[data-url]").click(function(e) { // Only used if you click on the edges
+						submenu.html(response);
 						
-						if (e.target == this) { // Ignore bubbled events
+						submenu.find("article[data-url]").click(function(e) { // Only used if you click on the edges
+							
+							if (e.target == this) { // Ignore bubbled events
+							
+								e.stopPropagation();
+								e.preventDefault();
+								
+								var article = $(this);
+								
+								window.location = article.data("url");
+							}
+						});
 						
-							e.stopPropagation();
-							e.preventDefault();
-							
-							var article = $(this);
-							
-							window.location = article.data("url");
-						}
-					});
-					
-					var counter = menu.find(".count");
-					var unreadCount = submenu.find(".unread-count").text();
-					
-					counter.text(unreadCount);
-					counter.toggleClass("hidden", !(unreadCount > 0));
+						var counter = menu.find(".count");
+						var unreadCount = submenu.find(".unread-count").text();
+						
+						counter.text(unreadCount);
+						counter.toggleClass("hidden", !(unreadCount > 0));
+						
+					} else {
+						
+						submenu.empty();
+						submenu.append($("#notifications-login-error").clone().children());
+					}
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
 					

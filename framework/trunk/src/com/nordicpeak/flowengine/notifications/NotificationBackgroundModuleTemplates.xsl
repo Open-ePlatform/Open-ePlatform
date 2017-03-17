@@ -57,6 +57,18 @@
 					</article>
 				</div>
 				
+				<div id="notifications-login-error" style="display: none;">
+					<div class="heading-wrapper">
+						<h3><xsl:value-of select="$i18n.Events" /></h3>
+					</div>
+					
+					<article>
+						<div class="inner">
+							<xsl:value-of select="$i18n.LoadingNotifications.LoginError"/>
+						</div>
+					</article>
+				</div>
+				
 			</li>
 		</ul>
 		

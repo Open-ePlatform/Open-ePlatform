@@ -7,5 +7,6 @@
 	<xsl:variable name="i18n.Events">Aviseringar</xsl:variable>
 	<xsl:variable name="i18n.LoadingNotifications">Hämtar aviseringar...</xsl:variable>
 	<xsl:variable name="i18n.LoadingNotifications.Error">Ett fel uppstod vid hämtning av aviseringar, vänligen försök igen senare.</xsl:variable>
+	<xsl:variable name="i18n.LoadingNotifications.LoginError">Du har loggats ut, vänligen förnya sidan och logga in.</xsl:variable>
 	
 </xsl:stylesheet>
