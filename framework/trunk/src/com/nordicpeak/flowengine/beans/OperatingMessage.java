@@ -80,6 +80,18 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@XMLElement(childName="editor")
 	private User editor; 
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean profileFilter;	
+	
+	@DAOManaged
+	@WebPopulate(paramName = "profileID")
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowengine_operating_message_profiles", remoteValueColumnName = "profileID")
+	@XMLElement(childName = "profileID")
+	private List<Integer> profileIDs;	
+
 	public Integer getMessageID() {
 
 		return messageID;
@@ -198,6 +210,16 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 		this.editor = editor;
 	}
 
+	public List<Integer> getProfileIDs() {
+		
+		return profileIDs;
+	}
+	
+	public void setProfileIDs(List<Integer> profileIDs) {
+	
+		this.profileIDs = profileIDs;
+	}
+	
 	@Override
 	public int hashCode() {
 
