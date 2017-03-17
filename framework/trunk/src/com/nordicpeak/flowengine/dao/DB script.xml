@@ -1617,5 +1617,34 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="81">
+	    <Query>
+	        <![CDATA[
+				CREATE TABLE `flowengine_operating_message_profiles` (
+				  `messageID` INTEGER UNSIGNED NOT NULL,
+				  `profileID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`messageID`, `profileID`),
+				  CONSTRAINT `FK_flowengine_operating_message_profiles_1` FOREIGN KEY `FK_flowengine_operating_message_profiles_1` (`messageID`)
+				    REFERENCES `flowengine_operating_messages` (`messageID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE,
+				  CONSTRAINT `FK_flowengine_operating_message_profiles_2` FOREIGN KEY `FK_flowengine_operating_message_profiles_2` (`profileID`)
+				    REFERENCES `site_profiles` (`profileID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+	        ]]>
+	    </Query>
+	</Script>
+
+	<Script version="82">
+	    <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_operating_messages` ADD COLUMN `profileFilter` TINYINT(1) UNSIGNED NOT NULL AFTER `editor`;
+	        ]]>
+	    </Query>
+	</Script>
 	
 </DBScripts>
