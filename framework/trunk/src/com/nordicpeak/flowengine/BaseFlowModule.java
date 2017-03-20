@@ -965,7 +965,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected MultiSigningHandler getMultiSigningProvider() {
+	protected MultiSigningHandler getMultiSigningHandler() {
 
 		return null;
 	}
@@ -1963,7 +1963,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new URINotFoundException(uriParser);
 		}
 
-		MultiSigningHandler multiSigningHandler = getMultiSigningProvider();
+		MultiSigningHandler multiSigningHandler = getMultiSigningHandler();
 
 		if (multiSigningHandler == null) {
 

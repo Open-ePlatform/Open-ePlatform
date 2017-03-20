@@ -1317,7 +1317,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	protected MultiSigningHandler getMultiSigningProvider() {
+	protected MultiSigningHandler getMultiSigningHandler() {
 
 		return multiSigningHandler;
 	}

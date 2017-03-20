@@ -904,7 +904,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@Override
-	protected MultiSigningHandler getMultiSigningProvider() {
+	protected MultiSigningHandler getMultiSigningHandler() {
 
 		return multiSigningHandler;
 	}
