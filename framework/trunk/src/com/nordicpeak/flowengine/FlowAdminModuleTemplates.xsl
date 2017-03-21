@@ -235,7 +235,7 @@
 				
 			</td>
 			<td data-title="{$i18n.flowType}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="FlowType/name" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtype/{FlowType/flowTypeID}"><xsl:value-of select="FlowType/name" /></a>
 			</td>
 			
 			<xsl:if test="/Document/UseCategories">
