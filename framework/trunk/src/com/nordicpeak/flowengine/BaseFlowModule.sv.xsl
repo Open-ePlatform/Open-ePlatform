@@ -73,6 +73,7 @@
 	<xsl:variable name="i18n.UpdatedEvent">Ändrad</xsl:variable>
 	<xsl:variable name="i18n.StatusUpdatedEvent">Status ändrad</xsl:variable>
 	<xsl:variable name="i18n.ManagersUpdatedEvent">Handläggare ändrad</xsl:variable>
+	<xsl:variable name="i18n.OwnersUpdatedEvent">Ägare ändrad</xsl:variable>
 	<xsl:variable name="i18n.CustomerNotificationEvent">Notifiering skickad</xsl:variable>
 	<xsl:variable name="i18n.CustomerMessageSentEvent">Meddelande skickat till handläggare</xsl:variable>
 	<xsl:variable name="i18n.ManagerMessageSentEvent">Meddelande skickat till kund</xsl:variable>

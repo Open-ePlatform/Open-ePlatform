@@ -26,7 +26,7 @@
 
 	<xsl:template match="Document">	
 		
-		<div id="FlowBrowser" class="contentitem">
+		<div id="FlowBrowser" class="contentitem userflowinstances">
 			
 			<xsl:apply-templates select="ListFlowInstances" />
 			<xsl:apply-templates select="ImmutableFlowInstanceManagerPreview"/>
@@ -68,7 +68,7 @@
 		<xsl:apply-imports/>
 	
 	</xsl:template>
-		
+	
 	<xsl:template match="ListFlowInstances">
 	
 		<xsl:apply-templates select="validationError"/>
@@ -101,57 +101,9 @@
 		
 		<section class="my-errands">
 		
-			<xsl:if test="WaitingMultiSignFlowInstances/FlowInstance">
-
-				<xsl:variable name="flowInstanceCount" select="count(WaitingMultiSignFlowInstances/FlowInstance)" />
-
-				<div class="errands-wrapper draft">
-					<div class="heading-wrapper">
-						<h2><xsl:value-of select="$i18n.WaitingMultiSignFlowInstancesTitle" /></h2>
-						<h3 class="clearboth"><xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part1" />
-						<xsl:text>&#160;</xsl:text>
-						<strong>
-							<xsl:value-of select="$flowInstanceCount" />
-							<xsl:text>&#160;</xsl:text>
-							<xsl:choose>
-								<xsl:when test="$flowInstanceCount > 1">
-									<xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part2.Plural" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part2" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</strong>
-						<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part3" /></h3>
-						<xsl:call-template name="createHelpDialog">
-							<xsl:with-param name="id" select="'waiting-multisign'" />
-							<xsl:with-param name="text" select="$i18n.WaitingMultiSignFlowInstancesHelp" />
-						</xsl:call-template>
-					</div>
-					<table class="oep-table errand-table">
-						<thead>
-							<tr>
-								<th class="icon"></th>
-								<th class="service"><span><xsl:value-of select="$i18n.FlowName" /></span></th>
-								
-								<xsl:if test="SiteProfiles">
-									<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
-								</xsl:if>								
-								
-								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
-								<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
-								<th class="link"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<xsl:apply-templates select="WaitingMultiSignFlowInstances/FlowInstance" mode="waiting-multisign" />
-						</tbody>
-					</table>
-				</div>
-			
-				<div class="divider errands"></div>
-			
-			</xsl:if>
+			<xsl:for-each select="ViewFragment">
+ 				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+ 			</xsl:for-each>
 			
 			<xsl:if test="SavedFlowInstances/FlowInstance">
 
@@ -286,28 +238,6 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="FlowInstance" mode="waiting-multisign">
-	
-		<tr>
-			<td class="icon"><i data-icon-before="w"></i></td>
-			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
-			
-			<xsl:call-template name="printSiteProfile"/>
-			
-			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
-			<td data-title="{$i18n.Date}" class="date">
-				<xsl:choose>
-					<xsl:when test="updated"><xsl:value-of select="updated" /></xsl:when>
-					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="link">
-				<a class="btn btn-green vertical-align-middle" href="{MultiSignURL}"><xsl:value-of select="$i18n.WaitingForYourSignature" /></a>
-			</td>
-		</tr>
-		
-	</xsl:template>
-	
 	<xsl:template match="FlowInstance" mode="saved">
 	
 		<tr>
@@ -317,7 +247,7 @@
 			<xsl:call-template name="printSiteProfile"/>			
 			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
-			<td data-title="{$i18n.Date}" class="date">
+			<td data-title="{$i18n.Updated}" class="date">
 				<xsl:choose>
 					<xsl:when test="updated"><xsl:value-of select="updated" /></xsl:when>
 					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
@@ -340,7 +270,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			
-			</xsl:variable>			
+			</xsl:variable>
 			
 				<xsl:choose>
 					<xsl:when test="Status/contentType = 'WAITING_FOR_MULTISIGN'">
@@ -353,9 +283,11 @@
 						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/flowinstance/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$i18n.Continue" /></a>
 					</xsl:otherwise>
 				</xsl:choose>
+				
+				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
 			
 				<xsl:if test="Status/isUserDeletable = 'true'">
-					<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
 				</xsl:if>
 			</td>
 		</tr>
@@ -377,11 +309,12 @@
 			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
-			<td data-title="{$i18n.Date}" class="date">
+			<td data-title="{$i18n.LastEvent}" class="date">
 				<xsl:value-of select="firstSubmitted" />			
 			</td>
 			
 			<td class="link">
+				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
 				<xsl:call-template name="printFlowInstanceButton" />
 			</td>
 		</tr>
@@ -407,6 +340,7 @@
 				<xsl:value-of select="firstSubmitted" />				
 			</td>
 			<td class="link">
+				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
 				<xsl:call-template name="printFlowInstanceButton" />
 			</td>
 		</tr>
@@ -937,7 +871,7 @@
 	<xsl:template name="printFlowInstanceButton">
 	
 		<xsl:param name="buttonText" select="$i18n.Choose" />
-		<xsl:param name="buttonClass" select="'btn-green'" />
+		<xsl:param name="buttonClass" select="'btn-green vertical-align-middle'" />
 	
 		<xsl:variable name="baseURL">
 		
@@ -1046,7 +980,66 @@
 			
 		</section>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template name="createHelpDialog">
+		
+		<xsl:param name="id" />
+		<xsl:param name="text" />
+		<xsl:param name="class" select="''" />
+		
+		<div class="help {$class}">
+			<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog_{$id}"><span><xsl:value-of select="$i18n.Help" /></span></a>
+			<div class="help-box" data-help-box="helpdialog_{$id}">
+				<div>
+		  			<div> 
+		  				<a class="close" href="#" data-icon-after="x"></a>
+		  				<xsl:copy-of select="$text" />
+		  			</div> 
+				</div>
+			</div>
+		</div>
+		
+		<div class="help-backdrop" data-help-box="helpdialog_{$id}" />
+		
+	</xsl:template>
+	
+	<xsl:template match="ExtensionLink" mode="tab-header">
+		
+		<li>
+			<a href="{url}">
+
+				<xsl:if test="icon">
+					<xsl:text> </xsl:text>
+					<img src="{icon}"/>
+				</xsl:if>
+				
+				<xsl:value-of select="name"/>
+			
+			</a>
+		</li>
+	
+	</xsl:template>
+	
+	<xsl:template match="ExtensionLink" mode="flow-list">
+		
+		<a href="{url}">
+			<xsl:attribute name="class">
+				<xsl:text>btn vertical-align-middle </xsl:text>
+				<xsl:choose>
+					<xsl:when test="icon = 'green'">btn-green</xsl:when>
+					<xsl:when test="icon = 'red'">btn-red</xsl:when>
+					<xsl:when test="icon = 'yellow'">btn-yellow</xsl:when>
+					<xsl:when test="icon = 'light'">btn-light</xsl:when>
+					<xsl:when test="icon = 'dark'">btn-dark</xsl:when>
+					<xsl:otherwise>btn-green</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
+		
+			<xsl:value-of select="name" />
+		</a>
+		
+	</xsl:template>
 			
 	<xsl:template match="validationError[messageKey='FlowInstancePreviewError']">
 	
@@ -1106,45 +1099,6 @@
 			</span>
 		</div>
 		
-	</xsl:template>
-	
-	<xsl:template name="createHelpDialog">
-		
-		<xsl:param name="id" />
-		<xsl:param name="text" />
-		<xsl:param name="class" select="''" />
-		
-		<div class="help {$class}">
-			<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog_{$id}"><span><xsl:value-of select="$i18n.Help" /></span></a>
-			<div class="help-box" data-help-box="helpdialog_{$id}">
-				<div>
-		  			<div> 
-		  				<a class="close" href="#" data-icon-after="x"></a>
-		  				<xsl:copy-of select="$text" />
-		  			</div> 
-				</div>
-			</div>
-		</div>
-		
-		<div class="help-backdrop" data-help-box="helpdialog_{$id}" />
-		
-	</xsl:template>
-	
-	<xsl:template match="ExtensionLink" mode="tab-header">
-		
-		<li>
-			<a href="{url}">
-
-				<xsl:if test="icon">
-					<xsl:text> </xsl:text>
-					<img src="{icon}"/>
-				</xsl:if>
-				
-				<xsl:value-of select="name"/>
-			
-			</a>
-		</li>
-	
 	</xsl:template>
 	
 </xsl:stylesheet>

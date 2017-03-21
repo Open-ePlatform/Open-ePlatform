@@ -170,6 +170,10 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	display: inline-block;
 }
 
+.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
+	margin-right: 3px;
+}
+
 .upload.active .uploaded-flowtype-icon, .upload:hover .uploaded-flowtype-icon {
   	background: #E5DEE8;
   	border-color: #611C7B;

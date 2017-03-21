@@ -30,4 +30,21 @@
 	
 	<xsl:variable name="i18n.WrongStatusContentType.title">Signering ej möjlig</xsl:variable>
 	<xsl:variable name="i18n.WrongStatusContentType.message">Detta ärende går inte längre att signera. Detta kan bero på att ärendet bytt status eller ändrats. Kontakta den som bett dig signera ärendet för mer information.</xsl:variable>
+	
+	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
+	<xsl:variable name="i18n.FlowName">E-tjänst</xsl:variable>
+	<xsl:variable name="i18n.Status">Status</xsl:variable>
+	<xsl:variable name="i18n.Updated">Senast sparat</xsl:variable>
+	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>
+	
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstancesTitle">Ärenden som väntar på din signatur</xsl:variable>
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part1">Du har</xsl:variable>
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part2">ärende</xsl:variable>
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part2.Plural">ärenden</xsl:variable>
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part3">som väntar på din signatur</xsl:variable>
+	<xsl:variable name="i18n.WaitingForYourSignature">Väntar på din signatur</xsl:variable>
+	<xsl:variable name="i18n.WaitingMultiSignFlowInstancesHelp">
+<h2 class="h1 full" data-icon-before="?">Ärenden som väntar på din signatur</h2>
+De ärenden som någon annan har påbörjat med dig som signerings part. Signera genom att klicka på "Väntar på signering". 
+	</xsl:variable>
 </xsl:stylesheet>

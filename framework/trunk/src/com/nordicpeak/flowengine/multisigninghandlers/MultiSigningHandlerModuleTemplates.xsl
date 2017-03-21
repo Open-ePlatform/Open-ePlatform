@@ -8,6 +8,7 @@
 		<xsl:apply-templates select="SignFragment"/>
 		<xsl:apply-templates select="SignFlowInstance"/>
 		<xsl:apply-templates select="Message"/>
+		<xsl:apply-templates select="ListFlowInstancesExtension"/>
 		
 	</xsl:template>
 		
@@ -135,6 +136,128 @@
 			</xsl:if>
 			
 		</div>
+	
+	</xsl:template>
+	
+	<xsl:template match="ListFlowInstancesExtension">
+	
+		<xsl:variable name="flowInstanceCount" select="count(WaitingMultiSignFlowInstances/FlowInstance)" />
+
+		<div class="errands-wrapper draft">
+			<div class="heading-wrapper">
+				<h2><xsl:value-of select="$i18n.WaitingMultiSignFlowInstancesTitle" /></h2>
+				<h3 class="clearboth"><xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part1" />
+				<xsl:text>&#160;</xsl:text>
+				<strong>
+					<xsl:value-of select="$flowInstanceCount" />
+					<xsl:text>&#160;</xsl:text>
+					<xsl:choose>
+						<xsl:when test="$flowInstanceCount > 1">
+							<xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part2.Plural" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part2" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</strong>
+				<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.WaitingMultiSignFlowInstances.Part3" /></h3>
+				<xsl:call-template name="createHelpDialog">
+					<xsl:with-param name="id" select="'waiting-multisign'" />
+					<xsl:with-param name="text" select="$i18n.WaitingMultiSignFlowInstancesHelp" />
+				</xsl:call-template>
+			</div>
+			<table class="oep-table errand-table">
+				<thead>
+					<tr>
+						<th class="icon"></th>
+						<th class="service"><span><xsl:value-of select="$i18n.FlowName" /></span></th>
+						
+						<xsl:if test="SiteProfiles">
+							<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+						</xsl:if>								
+						
+						<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
+						<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
+						<th class="link"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<xsl:apply-templates select="WaitingMultiSignFlowInstances/FlowInstance" mode="waiting-multisign" />
+				</tbody>
+			</table>
+		</div>
+	
+		<div class="divider errands"></div>
+	
+	</xsl:template>
+	
+	<xsl:template match="FlowInstance" mode="waiting-multisign">
+	
+		<tr>
+			<td class="icon"><i data-icon-before="w"></i></td>
+			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
+			
+			<xsl:call-template name="printSiteProfile"/>
+			
+			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
+			<td data-title="{$i18n.Updated}" class="date">
+				<xsl:choose>
+					<xsl:when test="updated"><xsl:value-of select="updated" /></xsl:when>
+					<xsl:otherwise><xsl:value-of select="added" /></xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td class="link">
+				<a class="btn btn-green vertical-align-middle" href="{MultiSignURL}"><xsl:value-of select="$i18n.WaitingForYourSignature" /></a>
+			</td>
+		</tr>
+		
+	</xsl:template>
+	
+	<xsl:template name="createHelpDialog">
+		
+		<xsl:param name="id" />
+		<xsl:param name="text" />
+		<xsl:param name="class" select="''" />
+		
+		<div class="help {$class}">
+			<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog_{$id}"><span><xsl:value-of select="$i18n.Help" /></span></a>
+			<div class="help-box" data-help-box="helpdialog_{$id}">
+				<div>
+		  			<div> 
+		  				<a class="close" href="#" data-icon-after="x"></a>
+		  				<xsl:copy-of select="$text" />
+		  			</div> 
+				</div>
+			</div>
+		</div>
+		
+		<div class="help-backdrop" data-help-box="helpdialog_{$id}" />
+		
+	</xsl:template>
+	
+	<xsl:template name="printSiteProfile">
+	
+		<xsl:if test="../../SiteProfiles">
+			
+			<td data-title="{$i18n.SiteProfile}" class="siteProfile">
+				
+				<xsl:choose>
+					<xsl:when test="Attributes/Attribute/Name = 'siteProfileName'">
+					
+						<xsl:value-of select="Attributes/Attribute[Name = 'siteProfileName']/Value"/>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<xsl:variable name="profileID" select="profileID"/>
+						
+						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />							
+					
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+					
+		</xsl:if>	
 	
 	</xsl:template>
 	

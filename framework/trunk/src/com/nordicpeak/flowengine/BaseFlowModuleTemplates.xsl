@@ -933,6 +933,9 @@
 			<xsl:when test="eventType = 'MANAGERS_UPDATED'">
 				<xsl:value-of select="$i18n.ManagersUpdatedEvent" />
 			</xsl:when>
+			<xsl:when test="eventType = 'OWNERS_UPDATED'">
+				<xsl:value-of select="$i18n.OwnersUpdatedEvent" />
+			</xsl:when>
 			<xsl:when test="eventType = 'CUSTOMER_NOTIFICATION_SENT'">
 				<xsl:value-of select="$i18n.CustomerNotificationEvent" />
 			</xsl:when>

@@ -81,7 +81,7 @@
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
 			    </div>
-			</div>				
+			</div>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />

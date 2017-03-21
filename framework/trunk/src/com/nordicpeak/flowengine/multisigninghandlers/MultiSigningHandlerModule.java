@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.multisigninghandlers;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +38,7 @@ import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
@@ -45,16 +47,20 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
@@ -65,7 +71,9 @@ import se.unlogic.webutils.http.enums.ContentDisposition;
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.OperatingMessageModule;
+import com.nordicpeak.flowengine.UserFlowInstanceModule;
 import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.SigningParty;
@@ -80,8 +88,10 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -90,7 +100,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 
-public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback {
+public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
@@ -137,6 +147,8 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	@InstanceManagerDependency
 	protected OperatingMessageModule operatingMessageModule;
 	
+	protected UserFlowInstanceModule userFlowInstanceModule;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
@@ -154,6 +166,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	public void unload() throws Exception {
 		
 		systemInterface.getInstanceHandler().removeInstance(MultiSigningHandler.class, this);
+		
+		if (userFlowInstanceModule != null) {
+			
+			userFlowInstanceModule.removeListFlowInstancesExtensionProvider(this);
+		}
 		
 		super.unload();
 	}
@@ -404,11 +421,12 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				return showMessage(createDocument(req, uriParser), "WrongStatusContentType");
 			}
 			
-			eventEntry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), null);
+			eventEntry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), null, true);
 			
 		} else {
 			
-			eventEntry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), signature.getEventID());
+			//TODO Change to false to allow all signing parties to view completed PDF
+			eventEntry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), signature.getEventID(), true);
 		}
 		
 		if (eventEntry == null) {
@@ -465,9 +483,9 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return null;
 	}
 	
-	public Entry<ImmutableFlowInstanceEvent, File> getLastestSignPDFEventWithFile(ImmutableFlowInstance flowInstance, Integer eventID) {
+	public Entry<ImmutableFlowInstanceEvent, File> getLastestSignPDFEventWithFile(ImmutableFlowInstance flowInstance, Integer eventID, boolean skipImmediateSubmitEvent) {
 		
-		ImmutableFlowInstanceEvent event = getLastestSignPDFEvent(flowInstance, eventID, true);
+		ImmutableFlowInstanceEvent event = getLastestSignPDFEvent(flowInstance, eventID, skipImmediateSubmitEvent);
 		
 		if (event != null) {
 			
@@ -575,7 +593,6 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	public List<ScriptTag> getScriptTags() {
 		
 		return scripts;
-		
 	}
 	
 	public Document createDocument(HttpServletRequest req, URIParser uriParser) {
@@ -669,7 +686,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	@Override
 	public File getSigningPDF(ImmutableFlowInstanceManager instanceManager) {
 		
-		Entry<ImmutableFlowInstanceEvent, File> entry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), null);
+		Entry<ImmutableFlowInstanceEvent, File> entry = getLastestSignPDFEventWithFile(instanceManager.getFlowInstance(), null, true);
 		
 		if (entry != null) {
 			
@@ -727,5 +744,117 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty) throws SQLException {
 		
 		return getSignature(flowInstanceID, signingParty.getSocialSecurityNumber()) != null;
+	}
+	
+	@InstanceManagerDependency(required = true)
+	public void setFlowInstanceAdminModule(UserFlowInstanceModule userFlowInstanceModule) {
+		
+		if (userFlowInstanceModule != null) {
+			
+			userFlowInstanceModule.addListFlowInstancesExtensionProvider(this);
+			
+		} else {
+			
+			this.userFlowInstanceModule.removeListFlowInstancesExtensionProvider(this);
+		}
+		
+		this.userFlowInstanceModule = userFlowInstanceModule;
+	}
+
+	@Override
+	public ExtensionLink getListFlowInstancesExtensionLink(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
+		return null;
+	}
+
+	@Override
+	public ViewFragment getListFlowInstancesViewFragment(List<FlowInstance> flowInstances, SiteProfileHandler profileHandler, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
+		
+		String citizenIdentifier = user.getAttributeHandler().getString("citizenIdentifier");
+		
+		if (!StringUtils.isEmpty(citizenIdentifier)) {
+			
+			List<MultiSigningQueryProvider> multiSingningQueryProviders = queryHandler.getAssignableQueryProviders(MultiSigningQueryProvider.class);
+			
+			if (!CollectionUtils.isEmpty(multiSingningQueryProviders)) {
+				
+				List<Integer> queryInstanceIDs = new ArrayList<Integer>();
+				
+				for (MultiSigningQueryProvider queryProvider : multiSingningQueryProviders) {
+					
+					List<Integer> queryProviderInstanceIDs = queryProvider.getQueryInstanceIDs(citizenIdentifier);
+					
+					if (queryProviderInstanceIDs != null) {
+						
+						queryInstanceIDs.addAll(queryProviderInstanceIDs);
+					}
+				}
+				
+				if (!CollectionUtils.isEmpty(queryInstanceIDs)) {
+					
+					Document doc = createDocument(req, uriParser);
+					
+					Element listFlowInstancesExtensionElement = doc.createElement("ListFlowInstancesExtension");
+					doc.getDocumentElement().appendChild(listFlowInstancesExtensionElement);
+					
+					if (profileHandler != null) {
+						
+						XMLUtils.append(doc, listFlowInstancesExtensionElement, "SiteProfiles", profileHandler.getProfiles());
+					}
+					
+					XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+					genDoc.addIgnoredFields(UserFlowInstanceModule.LIST_EXCLUDED_FIELDS);
+					
+					ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getDataSource(), "SELECT DISTINCT flowInstanceID FROM " + browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getTableName() + " WHERE queryInstanceID IN (? " + StringUtils.repeatString(",?", queryInstanceIDs.size() - 1) + ")", IntegerPopulator.getPopulator());
+					
+					for (int i = 0; i < queryInstanceIDs.size(); i++) {
+						
+						query.setInt(i + 1, queryInstanceIDs.get(i));
+					}
+					
+					ArrayList<Integer> flowInstanceIDs = query.executeQuery();
+					
+					if (flowInstanceIDs != null) {
+						
+						Element waitingMultiSignFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesExtensionElement, "WaitingMultiSignFlowInstances");
+						
+						List<FlowInstance> multiSignFlowInstances = getMultiSignFlowInstances(flowInstanceIDs);
+						
+						if (multiSignFlowInstances != null) {
+							
+							for (FlowInstance flowInstance : multiSignFlowInstances) {
+								
+								Element flowInstanceElement = (Element) waitingMultiSignFlowInstancesElement.appendChild(flowInstance.toXML(genDoc));
+								
+								XMLUtils.appendNewElement(doc, flowInstanceElement, "MultiSignURL", getSigningURL(flowInstance, null));
+							}
+						}
+					}
+					
+					return viewFragmentTransformer.createViewFragment(doc);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	protected List<FlowInstance> getMultiSignFlowInstances(List<Integer> flowInstanceIDs) throws SQLException {
+		
+		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>("SELECT i.* FROM " + browserModule.getDAOFactory().getFlowInstanceDAO().getTableName()
+				+ " i INNER JOIN (SELECT statusID FROM " + browserModule.getDAOFactory().getStatusDAO().getTableName() + " WHERE contentType = '" + ContentType.WAITING_FOR_MULTISIGN + "') s ON i.statusID = s.statusID"
+				+ " WHERE i.flowInstanceID IN (? " + StringUtils.repeatString(",?", flowInstanceIDs.size() - 1) + ")");
+		
+		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION);
+		
+		query.addExcludedFields(UserFlowInstanceModule.LIST_EXCLUDED_FIELDS);
+		
+		query.addParameters(flowInstanceIDs);
+		
+		return browserModule.getDAOFactory().getFlowInstanceDAO().getAll(query);
+	}
+
+	@Override
+	public int getModuleID() {
+		return moduleDescriptor.getModuleID();
 	}
 }

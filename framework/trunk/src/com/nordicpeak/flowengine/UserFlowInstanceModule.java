@@ -47,7 +47,6 @@ import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -57,7 +56,6 @@ import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -86,6 +84,7 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.OwnersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
@@ -111,9 +110,9 @@ import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
@@ -129,7 +128,7 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationCreator {
 
 	protected static final Field [] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION};
-	protected static final Field [] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD , Flow.HIDE_MANAGER_DETAILS_FIELD , Flow.FLOW_FORMS_FIELD , Flow.HIDE_SUBMIT_STEP_TEXT_FIELD , Flow.SHOW_SUBMIT_SURVEY_FIELD , Flow.REQUIRES_SIGNING_FIELD , Flow.REQUIRE_AUTHENTICATION_FIELD , Flow.USE_PREVIEW_FIELD , Flow.PUBLISH_DATE_FIELD , FlowInstanceEvent.POSTER_FIELD};
+	public static final Field [] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD , Flow.HIDE_MANAGER_DETAILS_FIELD , Flow.FLOW_FORMS_FIELD , Flow.HIDE_SUBMIT_STEP_TEXT_FIELD , Flow.SHOW_SUBMIT_SURVEY_FIELD , Flow.REQUIRES_SIGNING_FIELD , Flow.REQUIRE_AUTHENTICATION_FIELD , Flow.USE_PREVIEW_FIELD , Flow.PUBLISH_DATE_FIELD , FlowInstanceEvent.POSTER_FIELD};
 	
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = UserFlowInstanceModule.class.getName();
 
@@ -199,6 +198,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	private ExternalMessageCRUD externalMessageCRUD;
 	
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
+	protected CopyOnWriteArrayList<ListFlowInstancesExtensionProvider> listExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesExtensionProvider>();
 	
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
 	
@@ -256,6 +256,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 		
 		tabExtensionProviders.clear();
+		listExtensionProviders.clear();
 		
 		super.unload();
 	}
@@ -287,22 +288,22 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		List<FlowInstance> flowInstances = getFlowInstances(user, true, excludedFlowTypes != null);
 		
-		if(!userFlowInstanceProviders.isEmpty()){
+		if (!userFlowInstanceProviders.isEmpty()) {
 			
 			int flowInstanceCount = CollectionUtils.getSize(flowInstances);
 			
-			for(UserFlowInstanceProvider userFlowInstanceProvider : userFlowInstanceProviders){
+			for (UserFlowInstanceProvider userFlowInstanceProvider : userFlowInstanceProviders) {
 				
-				try{
+				try {
 					flowInstances = CollectionUtils.addAndInstantiateIfNeeded(flowInstances, userFlowInstanceProvider.getUserFlowInstances(user));
 					
-				}catch(RuntimeException e){
+				} catch (RuntimeException e) {
 					
 					log.error("Error getting flow instances from provider " + userFlowInstanceProvider, e);
 				}
 			}
 			
-			if(flowInstances != null && CollectionUtils.getSize(flowInstances) != flowInstanceCount){
+			if (flowInstances != null && CollectionUtils.getSize(flowInstances) != flowInstanceCount) {
 				
 				Collections.sort(flowInstances, FLOW_INSTANCE_ADDED_COMPARATOR);
 			}
@@ -322,13 +323,31 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				
 				Status status = flowInstance.getStatus();
 				
-				if ((status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT)) {
+				Element flowInstanceElement = flowInstance.toXML(genDoc);
+				
+				if (flowInstance.getFlow().isEnabled()) {
 					
-					savedFlowInstancesElement.appendChild(flowInstance.toXML(genDoc));
+					for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
+						
+						try {
+							ExtensionLink flowInstanceExtensionLink = listExtensionProvider.getListFlowInstancesExtensionLink(flowInstance, req, uriParser, user);
+							
+							if (flowInstanceExtensionLink != null) {
+								
+								flowInstanceElement.appendChild(flowInstanceExtensionLink.toXML(doc));
+							}
+							
+						} catch (Exception e) {
+							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionProvider, e);
+						}
+					}
+				}
+				
+				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT) {
+					
+					savedFlowInstancesElement.appendChild(flowInstanceElement);
 					
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
-					
-					Element flowInstanceElement = flowInstance.toXML(genDoc);
 					
 					List<FlowInstanceEvent> events = getNewFlowInstanceEvents(flowInstance, user);
 					
@@ -345,67 +364,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					
 				} else if (status.getContentType() == ContentType.ARCHIVED) {
 					
-					archivedFlowInstancesElement.appendChild(flowInstance.toXML(genDoc));
+					archivedFlowInstancesElement.appendChild(flowInstanceElement);
 					
 				} else {
 					
 					log.warn("The status of flow instance " + flowInstance + " has an unknown content type of " + status.getContentType());
 				}
-				
 			}
 			
 			req.getSession().removeAttribute("LastFlowInstanceEventUpdate");
-		}
-		
-		List<MultiSigningQueryProvider> multiSingningQueryProviders = queryHandler.getAssignableQueryProviders(MultiSigningQueryProvider.class);
-		
-		if (!CollectionUtils.isEmpty(multiSingningQueryProviders)) {
-			
-			String citizenIdentifier = user.getAttributeHandler().getString("citizenIdentifier");
-			
-			if (!StringUtils.isEmpty(citizenIdentifier)) {
-				
-				List<Integer> queryInstanceIDs = new ArrayList<Integer>();
-				
-				for (MultiSigningQueryProvider queryProvider : multiSingningQueryProviders) {
-					
-					List<Integer> queryProviderInstanceIDs = queryProvider.getQueryInstanceIDs(citizenIdentifier);
-					
-					if (queryProviderInstanceIDs != null) {
-						
-						queryInstanceIDs.addAll(queryProviderInstanceIDs);
-					}
-				}
-				
-				if (!CollectionUtils.isEmpty(queryInstanceIDs)) {
-					
-					ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(daoFactory.getQueryInstanceDescriptorDAO().getDataSource(), "SELECT DISTINCT flowInstanceID FROM " + daoFactory.getQueryInstanceDescriptorDAO().getTableName() + " WHERE queryInstanceID IN (? " + StringUtils.repeatString(",?", queryInstanceIDs.size() - 1) + ")", IntegerPopulator.getPopulator());
-					
-					for (int i = 0; i < queryInstanceIDs.size(); i++) {
-						
-						query.setInt(i + 1, queryInstanceIDs.get(i));
-					}
-					
-					ArrayList<Integer> flowInstanceIDs = query.executeQuery();
-					
-					if (flowInstanceIDs != null) {
-						
-						Element waitingMultiSignFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesElement, "WaitingMultiSignFlowInstances");
-						
-						List<FlowInstance> multiSignFlowInstances = getMultiSignFlowInstances(flowInstanceIDs);
-						
-						if (multiSignFlowInstances != null) {
-							
-							for (FlowInstance flowInstance : multiSignFlowInstances) {
-								
-								Element flowInstanceElement = (Element) waitingMultiSignFlowInstancesElement.appendChild(flowInstance.toXML(genDoc));
-								
-								XMLUtils.appendNewElement(doc, flowInstanceElement, "MultiSignURL", multiSigningHandler.getSigningURL(flowInstance, null));
-							}
-						}
-					}
-				}
-			}
 		}
 		
 		if (validationErrors != null) {
@@ -413,84 +380,114 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			XMLUtils.append(doc, listFlowInstancesElement, validationErrors);
 		}
 		
-		if(enableSiteProfileSupport && this.profileHandler != null){
-
+		if (enableSiteProfileSupport && this.profileHandler != null) {
+			
 			XMLUtils.append(doc, listFlowInstancesElement, "SiteProfiles", this.profileHandler.getProfiles());
 		}
 		
-		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
+		List<ViewFragment> viewFragments = null;
+		
+		if (!listExtensionProviders.isEmpty()) {
+			
+			viewFragments = new ArrayList<ViewFragment>(listExtensionProviders.size());
+			
+			for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
+				
+				try {
+					ViewFragment viewFragment = listExtensionProvider.getListFlowInstancesViewFragment(flowInstances, enableSiteProfileSupport ? profileHandler : null, req, uriParser, user);
+					
+					if (viewFragment != null) {
+						
+						listFlowInstancesElement.appendChild(viewFragment.toXML(doc));
+						viewFragments.add(viewFragment);
+					}
+					
+				} catch (Exception e) {
+					log.error("Error appending view fragment from FlowInstanceListExtensionProvider " + listExtensionProvider, e);
+				}
+			}
+		}
+		
+		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
+		
+		if (!CollectionUtils.isEmpty(viewFragments)) {
+			for (ViewFragment viewFragment : viewFragments) {
+				
+				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
+			}
+		}
+		
+		return moduleResponse;
 	}
 
 	@WebPublic(alias = "overview")
-	public ForegroundModuleResponse showFlowInstanceOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException  {
-
+	public ForegroundModuleResponse showFlowInstanceOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+		
 		FlowInstance flowInstance;
-
+		
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
-
+			
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
 			
 			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily());
 			
-			if(enableSiteProfileRedirectSupport && profileRedirect(profile, flowInstance, req, res, uriParser)){
+			if (enableSiteProfileRedirectSupport && profileRedirect(profile, flowInstance, req, res, uriParser)) {
 				
 				return null;
 			}
-
+			
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
-
+				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
 			
 			log.info("User " + user + " viewing overview of flow instance " + flowInstance);
 			
 			Document doc = this.createDocument(req, uriParser, user);
-
+			
 			Element showFlowInstanceOverviewElement = doc.createElement("ShowFlowInstanceOverview");
 			doc.getDocumentElement().appendChild(showFlowInstanceOverviewElement);
-
+			
 			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormatedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 			
-			if(req.getMethod().equalsIgnoreCase("POST")) {
-
+			if (req.getMethod().equalsIgnoreCase("POST")) {
+				
 				//TODO append message or request parameters
 				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
-
-				if(externalMessage != null) {
-
+				
+				if (externalMessage != null) {
+					
 					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user);
-
+					
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, profile, externalMessage, SenderType.USER), EventTarget.ALL);
-
+					
 					res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
-
+					
 					return null;
-
 				}
-
 			}
-
+			
 			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
-
+			
+			if (enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null) {
+				
+				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
+			}
+			
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
-
+			
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
 			
-			if(!CollectionUtils.isEmpty(viewFragments)){
-				for(ViewFragment viewFragment : viewFragments){
+			if (!CollectionUtils.isEmpty(viewFragments)) {
+				for (ViewFragment viewFragment : viewFragments) {
 					
 					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 				}
 			}
 			
-			if(enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null){
-
-				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
-			}
-			
 			return moduleResponse;
 		}
-
+		
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
@@ -521,6 +518,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	protected List<ViewFragment> appendOverviewData(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, User user, URIParser uriParser) throws SQLException {
 
+		if (tabExtensionProviders.isEmpty()) {
+			return null;
+		}
+		
 		Element tabHeadersElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "TabHeaders");
 		Element tabContentsElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "TabContents");
 
@@ -545,7 +546,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 
 			} catch (Exception e) {
-				log.error("Error appending tab from FlowInstanceOverviewExtensionProvider " + tabContentsElement, e);
+				log.error("Error appending tab from FlowInstanceOverviewExtensionProvider " + tabExtensionProvider, e);
 			}
 		}
 
@@ -726,22 +727,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected void addOverviewRelations(HighLevelQuery<FlowInstance> query) {
 
 		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION);
-		
-	}
-
-	protected List<FlowInstance> getMultiSignFlowInstances(List<Integer> flowInstanceIDs) throws SQLException {
-		
-		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>("SELECT i.* FROM " + daoFactory.getFlowInstanceDAO().getTableName()
-				+ " i INNER JOIN (SELECT statusID FROM " + daoFactory.getStatusDAO().getTableName() + " WHERE contentType = '" + ContentType.WAITING_FOR_MULTISIGN + "') s ON i.statusID = s.statusID"
-				+ " WHERE i.flowInstanceID IN (? " + StringUtils.repeatString(",?", flowInstanceIDs.size() - 1) + ")");
-		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION);
-		
-		query.addExcludedFields(LIST_EXCLUDED_FIELDS);
-		
-		query.addParameters(flowInstanceIDs);
-		
-		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
 	public List<FlowInstanceEvent> getNewFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
@@ -981,6 +966,16 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return tabExtensionProviders.remove(provider);
 	}
 	
+	public boolean addListFlowInstancesExtensionProvider(ListFlowInstancesExtensionProvider provider) {
+
+		return listExtensionProviders.add(provider);
+	}
+
+	public boolean removeListFlowInstancesExtensionProvider(ListFlowInstancesExtensionProvider provider) {
+
+		return listExtensionProviders.remove(provider);
+	}
+	
 	/**
 	 * @param flowInstanceID
 	 * @param accessController
@@ -1085,26 +1080,26 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	
 	@WebPublic(alias = "overviewextensionrequest")
 	public ForegroundModuleResponse processOverviewExtensionRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-
+		
 		FlowInstance flowInstance;
-
+		
 		if (uriParser.size() == 5 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
-
+			
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
-
+			
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
-
+				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-
+			
 			FlowInstanceOverviewExtensionProvider extensionProvider = getOverviewExtensionProvider(uriParser.get(4));
 			
-			if(extensionProvider != null){
+			if (extensionProvider != null) {
 				
 				return extensionProvider.processOverviewExtensionRequest(flowInstance, req, res, uriParser, user);
 			}
 		}
-
+		
 		throw new URINotFoundException(uriParser);
 	}
 	
@@ -1170,7 +1165,34 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			}
 		}
 	}
-
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(OwnersChangedEvent event, EventSource source) {
+		
+		log.debug("Received owners changed event regarding " + event.getFlowInstance());
+		
+		if (source == EventSource.LOCAL && notificationHandler != null) {
+			
+			if (!CollectionUtils.isEmpty(event.getPreviousOwners())) {
+				for (User owner : event.getPreviousOwners()) {
+					
+					if (event.getFlowInstance().getOwners() == null || !event.getFlowInstance().getOwners().contains(owner)) {
+						
+						try {
+							notificationHandler.deleteNotifications(moduleDescriptor.getModuleID(), event.getFlowInstance().getFlowInstanceID(), owner, null);
+							
+						} catch (SQLException e) {
+							
+							log.error("Error deleting notificatios for old owner " + owner + " of " + event.getFlowInstance(), e);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
+	
 	@Override
 	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	

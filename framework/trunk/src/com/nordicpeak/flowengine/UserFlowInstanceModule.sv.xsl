@@ -69,16 +69,6 @@
 De ärenden som du har påbörjat kan du fortsätta arbeta med genom att klicka på "Fortsätt". Om du vill avbryta ärendet klicka på den röda knappen i anslutning till ärendet.
 	</xsl:variable>
 	
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstancesTitle">Ärenden som väntar på din signatur</xsl:variable>
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part1">Du har</xsl:variable>
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part2">ärende</xsl:variable>
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part2.Plural">ärenden</xsl:variable>
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstances.Part3">som väntar på din signatur</xsl:variable>
-	<xsl:variable name="i18n.WaitingMultiSignFlowInstancesHelp">
-<h2 class="h1 full" data-icon-before="?">Ärenden som väntar på din signatur</h2>
-De ärenden som någon annan har påbörjat med dig som signerings part. Signera genom att klicka på "Väntar på signering". 
-	</xsl:variable>
-	
 	<xsl:variable name="i18n.SubmittedFlowInstances">Pågående ärenden</xsl:variable>
 	<xsl:variable name="i18n.NoSubmittedFlowInstances">Du har inga pågående ärenden</xsl:variable>
 	<xsl:variable name="i18n.SubmittedFlowInstancesHelp">
@@ -111,7 +101,6 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.DownloadFlowInstanceXML">Hämta ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadFlowInstanceSignPDF">Hämta signerings underlag i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadSignature">Hämta signatur</xsl:variable>
-	<xsl:variable name="i18n.WaitingForYourSignature">Väntar på din signatur</xsl:variable>
 	<xsl:variable name="i18n.WaitingForOthersSignatures">Väntar på signatur från annan part</xsl:variable>
 	<xsl:variable name="i18n.WaitingForPayment">Väntar på betalning</xsl:variable>
 	<xsl:variable name="i18n.PostedByManager">Handläggare</xsl:variable>
