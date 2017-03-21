@@ -72,6 +72,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.Evaluator;
 import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStep;
@@ -661,7 +662,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	}
 
 	@Override
-	public synchronized List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, FlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
+	public synchronized List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
 
 		checkState();
 
@@ -675,7 +676,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return managerResponses;
 	}
 
-	private synchronized ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, FlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
+	private synchronized ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
 
 		ManagedStep managedStep = managedSteps.get(stepIndex);
 
@@ -1444,7 +1445,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	}
 
 	@Override
-	public List<PDFManagerResponse> getPDFContent(FlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException {
+	public List<PDFManagerResponse> getPDFContent(ImmutableFlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException {
 
 		List<PDFManagerResponse> managerResponses = new ArrayList<PDFManagerResponse>(this.managedSteps.size());
 

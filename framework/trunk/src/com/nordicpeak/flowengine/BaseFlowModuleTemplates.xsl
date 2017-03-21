@@ -376,7 +376,7 @@
 			<div class="divider preview" />
 		</xsl:if>
 	
-	</xsl:template>			
+	</xsl:template>
 			
 	<xsl:template match="FlowInstanceManagerSubmitted">
 	
@@ -806,7 +806,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='PreviewNotEnabledForCurrentFlow']">
 	

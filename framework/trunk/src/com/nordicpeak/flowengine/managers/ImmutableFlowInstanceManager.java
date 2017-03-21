@@ -36,7 +36,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundI
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryNotFoundInQueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
@@ -44,7 +44,7 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 
-public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceManager{
+public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceManager {
 
 	private static final long serialVersionUID = -12255806392014427L;
 
@@ -117,7 +117,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	}
 
 	@Override
-	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, FlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
+	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
 
 		List<ManagerResponse> managerResponses = new ArrayList<ManagerResponse>(this.managedSteps.size());
 
@@ -129,7 +129,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		return managerResponses;
 	}
 
-	public ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, FlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL) throws UnableToGetQueryInstanceShowHTMLException {
+	public ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL) throws UnableToGetQueryInstanceShowHTMLException {
 
 		ImmutableManagedStep managedStep = managedSteps.get(stepIndex);
 
@@ -271,7 +271,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	}
 
 	@Override
-	public List<PDFManagerResponse> getPDFContent(FlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException {
+	public List<PDFManagerResponse> getPDFContent(ImmutableFlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException {
 
 		List<PDFManagerResponse> managerResponses = new ArrayList<PDFManagerResponse>(this.managedSteps.size());
 
