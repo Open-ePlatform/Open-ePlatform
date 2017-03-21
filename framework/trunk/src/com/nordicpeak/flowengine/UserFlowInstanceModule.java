@@ -1191,38 +1191,36 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 	}
 	
-	
-	
 	@Override
 	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	
-		NotificationMetadata extra = new NotificationMetadata();
-		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
+		NotificationMetadata metadata = new NotificationMetadata();
+		metadata.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
 		
 		String type = notification.getNotificationType();
 		
 		if ("message".equals(type)) {
 			
-			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID() + "#messages");
+			metadata.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID() + "#messages");
 			
 		} else {
 			
-			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
+			metadata.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
 		}
 		
 		if (!flowInstance.getFlow().hidesManagerDetails()) {
 			
-			extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+			metadata.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
 			
 		} else {
 			
 			SimpleUser hiddenManager = new SimpleUser();
 			hiddenManager.setFirstname(notificationPostedByManager);
 			
-			extra.setPoster(hiddenManager);
+			metadata.setPoster(hiddenManager);
 		}
 		
-		return extra;
+		return metadata;
 	}
 	
 	@Override

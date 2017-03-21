@@ -81,7 +81,7 @@
 	
 	<xsl:template match="FlowInstance">
 		
-		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID]/NotificationMetadata/showURL" />
+		<xsl:variable name="url" select="../../Notifications/Notification[flowInstanceID = current()/flowInstanceID and NotificationMetadata/showURL != '']/NotificationMetadata/showURL" />
 		
 		<article data-url="{$url}">
 			<div class="inner">
@@ -89,8 +89,10 @@
 				<a href="{$url}">
 					<h3>
 						<xsl:value-of select="$i18n.FlowInstance" />
-						<xsl:text>&#160;</xsl:text>
-						<xsl:value-of select="flowInstanceID" />
+						<xsl:if test="firstSubmitted">
+							<xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="flowInstanceID" />
+						</xsl:if>
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="Flow/name" />
 					</h3>

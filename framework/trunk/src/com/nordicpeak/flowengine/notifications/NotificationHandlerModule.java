@@ -231,7 +231,11 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		query.addParameter(sourceModuleParamFactory.getParameter(sourceModuleID));
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
-		query.addParameter(userIDParamFactory.getParameter(user.getUserID()));
+		
+		if (user != null) {
+			
+			query.addParameter(userIDParamFactory.getParameter(user.getUserID()));
+		}
 		
 		if (notificationType != null) {
 			
