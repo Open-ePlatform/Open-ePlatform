@@ -2,16 +2,12 @@ package com.nordicpeak.flowengine.notifications.interfaces;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
-
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.notifications.beans.StoredNotification;
 
 public interface NotificationHandler {
 
@@ -27,8 +23,6 @@ public interface NotificationHandler {
 	
 	public Notification getNotification(int userID, int sourceModuleID, Integer externalNotificationID, String notificationType) throws SQLException;
 	
-	public LinkedHashMap<Integer, FlowInstance> setNotificationExtras(List<StoredNotification> notifications, String fullContextPath) throws SQLException;
-	
 	public List<? extends Notification> getNotificationsForUser(int userID, Integer count, Timestamp breakpoint, boolean showAll) throws SQLException;
 	
 	public List<? extends Notification> getNotificationsForModule(int sourceModuleID, Integer externalNotificationID, String notificationType, Boolean readStatus) throws SQLException;
@@ -37,12 +31,12 @@ public interface NotificationHandler {
 	
 	public String getModuleURL(HttpServletRequest req);
 	
-	public void addNotificationCreator(NotificationCreator notificationCreator);
+	public void addNotificationSource(NotificationSource notificationSource);
 	
-	public boolean removeNotificationCreator(NotificationCreator notificationCreator);
+	public boolean removeNotificationSource(NotificationSource notificationSource);
 	
-	public void sendNotificationToFlowInstanceOwners(NotificationCreator notificationCreator, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException;
+	public void sendNotificationToFlowInstanceOwners(NotificationSource notificationSource, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException;
 	
-	public void sendNotificationToFlowInstanceManagers(NotificationCreator notificationCreator, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException;
+	public void sendNotificationToFlowInstanceManagers(NotificationSource notificationSource, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException;
 
 }

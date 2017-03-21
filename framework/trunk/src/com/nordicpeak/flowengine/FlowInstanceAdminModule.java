@@ -119,12 +119,12 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
-public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationCreator {
+public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
 
@@ -231,7 +231,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (notificationHandler != null) {
 			
-			notificationHandler.removeNotificationCreator(this);
+			notificationHandler.removeNotificationSource(this);
 		}
 		
 		flowInstanceIndexer.close();
@@ -1476,11 +1476,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		if (notificationHandler != null) {
 			
-			notificationHandler.addNotificationCreator(this);
+			notificationHandler.addNotificationSource(this);
 			
 		} else {
 			
-			this.notificationHandler.removeNotificationCreator(this);
+			this.notificationHandler.removeNotificationSource(this);
 		}
 		
 		this.notificationHandler = notificationHandler;
@@ -1590,7 +1590,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@Override
-	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	public NotificationMetadata getNotificationMetadata(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	
 		String type = notification.getNotificationType();
 		NotificationMetadata extra = new NotificationMetadata();

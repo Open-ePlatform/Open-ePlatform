@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.notifications;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -63,8 +61,10 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.notifications.beans.StoredNotification;
 import com.nordicpeak.flowengine.notifications.beans.StoredNotificationAttribute;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class NotificationHandlerModule extends AnnotatedForegroundModule implements NotificationHandler, Runnable, ViewFragmentModule<ForegroundModuleDescriptor> {
 	
@@ -106,7 +106,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	private QueryParameterFactory<StoredNotification, Integer> flowInstanceIDParamFactory;
 	private QueryParameterFactory<FlowInstance, Integer> flowInstanceID2ParamFactory;
 	
-	private ConcurrentHashMap<Integer, NotificationCreator> notificationCreatorMap = new ConcurrentHashMap<Integer, NotificationCreator>();
+	private ConcurrentHashMap<Integer, NotificationSource> notificationCreatorMap = new ConcurrentHashMap<Integer, NotificationSource>();
 	
 	@Override
 	public void init(ForegroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -372,8 +372,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		return storedNotifications;
 	}
 	
-	@Override
-	public LinkedHashMap<Integer, FlowInstance> setNotificationExtras(List<StoredNotification> notifications, String fullContextPath) throws SQLException {
+	public LinkedHashMap<Integer, FlowInstance> setNotificationMetadata(List<StoredNotification> notifications, String fullContextPath) throws SQLException {
 		
 		if (notifications != null) {
 			
@@ -397,9 +396,9 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 				
 				StoredNotification notification = it.next();
 				
-				NotificationCreator notificationCreator = notificationCreatorMap.get(notification.getSourceModuleID());
+				NotificationSource notificationSource = notificationCreatorMap.get(notification.getSourceModuleID());
 				
-				if (notificationCreator == null) {
+				if (notificationSource == null) {
 					
 					log.warn("Unable to get notification extras for notification " + notification + ", module not found.");
 					it.remove();
@@ -407,11 +406,11 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 				} else {
 					
 					try {
-						notification.setNotificationExtra(notificationCreator.getNotificationExtra(notification, flowInstanceMap.get(notification.getFlowInstanceID()), fullContextPath));
+						notification.setNotificationExtra(notificationSource.getNotificationMetadata(notification, flowInstanceMap.get(notification.getFlowInstanceID()), fullContextPath));
 						
 					} catch (Exception e) {
 						
-						log.error("Error getting notification extras for notification " + notification + " from module " + notificationCreator, e);
+						log.error("Error getting notification extras for notification " + notification + " from module " + notificationSource, e);
 						it.remove();
 					}
 				}
@@ -518,7 +517,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (notifications != null) {
 			
-			LinkedHashMap<Integer, FlowInstance> flowInstances = setNotificationExtras(notifications, RequestUtils.getFullContextPathURL(req));
+			LinkedHashMap<Integer, FlowInstance> flowInstances = setNotificationMetadata(notifications, RequestUtils.getFullContextPathURL(req));
 			
 			appendNotifications(notifications, flowInstances.values(), doc, listNotificationsElement);
 		}
@@ -550,7 +549,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (notifications != null) {
 			
-			LinkedHashMap<Integer, FlowInstance> flowInstances = setNotificationExtras(notifications, RequestUtils.getFullContextPathURL(req));
+			LinkedHashMap<Integer, FlowInstance> flowInstances = setNotificationMetadata(notifications, RequestUtils.getFullContextPathURL(req));
 			
 			appendNotifications(notifications, flowInstances.values(), doc, inlineNotificationsElement);
 			
@@ -632,27 +631,27 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
-	public void addNotificationCreator(NotificationCreator notificationCreator) {
+	public void addNotificationSource(NotificationSource notificationSource) {
 		
-		if (notificationCreatorMap.containsKey(notificationCreator.getModuleDescriptor().getModuleID())) {
+		if (notificationCreatorMap.containsKey(notificationSource.getModuleDescriptor().getModuleID())) {
 			
-			log.error("NotificationCreator " + notificationCreator + " is already registered");
+			log.error("NotificationCreator " + notificationSource + " is already registered");
 			return;
 		}
 		
-		notificationCreatorMap.put(notificationCreator.getModuleDescriptor().getModuleID(), notificationCreator);
+		notificationCreatorMap.put(notificationSource.getModuleDescriptor().getModuleID(), notificationSource);
 		
-		log.info("NotificationCreator " + notificationCreator + " registered");
+		log.info("NotificationCreator " + notificationSource + " registered");
 	}
 	
 	@Override
-	public boolean removeNotificationCreator(NotificationCreator notificationCreator) {
+	public boolean removeNotificationSource(NotificationSource notificationSource) {
 		
-		boolean removed = notificationCreatorMap.remove(notificationCreator.getModuleDescriptor().getModuleID()) != null;
+		boolean removed = notificationCreatorMap.remove(notificationSource.getModuleDescriptor().getModuleID()) != null;
 		
 		if (removed) {
 			
-			log.info("NotificationCreator " + notificationCreator + " unregistered");
+			log.info("NotificationCreator " + notificationSource + " unregistered");
 		}
 		
 		return removed;
@@ -672,7 +671,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
-	public void sendNotificationToFlowInstanceOwners(NotificationCreator notificationCreator, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException {
+	public void sendNotificationToFlowInstanceOwners(NotificationSource notificationSource, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException {
 		
 		FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.OWNERS_RELATION);
 		
@@ -680,13 +679,13 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			
 			for (User owner : flowInstance.getOwners()) {
 				
-				addNotification(flowInstanceID, owner.getUserID(), notificationCreator.getModuleDescriptor().getModuleID(), type, sendingUser.getUserID(), title, attributes);
+				addNotification(flowInstanceID, owner.getUserID(), notificationSource.getModuleDescriptor().getModuleID(), type, sendingUser.getUserID(), title, attributes);
 			}
 		}
 	}
 	
 	@Override
-	public void sendNotificationToFlowInstanceManagers(NotificationCreator notificationCreator, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException {
+	public void sendNotificationToFlowInstanceManagers(NotificationSource notificationSource, Integer flowInstanceID, String title, User sendingUser, String type, Map<String, String> attributes) throws SQLException {
 		
 		FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.MANAGERS_RELATION);
 		
@@ -694,7 +693,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			
 			for (User manager : flowInstance.getManagers()) {
 				
-				addNotification(flowInstanceID, manager.getUserID(), notificationCreator.getModuleDescriptor().getModuleID(), type, sendingUser.getUserID(), title, attributes);
+				addNotification(flowInstanceID, manager.getUserID(), notificationSource.getModuleDescriptor().getModuleID(), type, sendingUser.getUserID(), title, attributes);
 			}
 		}
 	}

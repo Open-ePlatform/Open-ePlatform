@@ -122,10 +122,10 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationCreator;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 
-public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationCreator {
+public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource {
 
 	protected static final Field [] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION};
 	public static final Field [] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD , Flow.HIDE_MANAGER_DETAILS_FIELD , Flow.FLOW_FORMS_FIELD , Flow.HIDE_SUBMIT_STEP_TEXT_FIELD , Flow.SHOW_SUBMIT_SURVEY_FIELD , Flow.REQUIRES_SIGNING_FIELD , Flow.REQUIRE_AUTHENTICATION_FIELD , Flow.USE_PREVIEW_FIELD , Flow.PUBLISH_DATE_FIELD , FlowInstanceEvent.POSTER_FIELD};
@@ -252,7 +252,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		if (notificationHandler != null) {
 			
-			notificationHandler.removeNotificationCreator(this);
+			notificationHandler.removeNotificationSource(this);
 		}
 		
 		tabExtensionProviders.clear();
@@ -1131,11 +1131,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		if (notificationHandler != null) {
 			
-			notificationHandler.addNotificationCreator(this);
+			notificationHandler.addNotificationSource(this);
 			
 		} else {
 			
-			this.notificationHandler.removeNotificationCreator(this);
+			this.notificationHandler.removeNotificationSource(this);
 		}
 		
 		this.notificationHandler = notificationHandler;
@@ -1201,7 +1201,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 	
 	@Override
-	public NotificationMetadata getNotificationExtra(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
+	public NotificationMetadata getNotificationMetadata(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
 	
 		NotificationMetadata metadata = new NotificationMetadata();
 		metadata.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
