@@ -133,7 +133,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
-			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getCurrentSiteProfile(callback.getRequest(), callback.getUser(), callback.getURIParser(), flowInstance.getFlow().getFlowFamily()), previousStatus, principalUser), EventTarget.ALL);
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousStatus, principalUser), EventTarget.ALL);
 			
 			return flowInstanceEvent.getEventID();
 		}
@@ -187,7 +187,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		
 		FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded());
 
-		callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getCurrentSiteProfile(callback.getRequest(), callback.getUser(), callback.getURIParser(), flowInstance.getFlow().getFlowFamily()), externalMessage, SenderType.MANAGER), EventTarget.ALL);		
+		callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);		
 	
 		return externalMessage.getMessageID();
 	}
@@ -392,7 +392,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 			
-			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getCurrentSiteProfile(callback.getRequest(), callback.getUser(), callback.getURIParser(), flowInstance.getFlow().getFlowFamily()), previousManagers, null), EventTarget.ALL);			
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, null), EventTarget.ALL);			
 			
 		}else{
 			
@@ -428,7 +428,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		if(flowInstanceID != null){
 			
 			try {
-				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION);
+				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION);
 				
 			} catch (SQLException e) {
 
