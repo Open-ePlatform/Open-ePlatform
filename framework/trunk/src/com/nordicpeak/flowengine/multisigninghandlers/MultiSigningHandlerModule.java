@@ -844,7 +844,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				+ " i INNER JOIN (SELECT statusID FROM " + browserModule.getDAOFactory().getStatusDAO().getTableName() + " WHERE contentType = '" + ContentType.WAITING_FOR_MULTISIGN + "') s ON i.statusID = s.statusID"
 				+ " WHERE i.flowInstanceID IN (? " + StringUtils.repeatString(",?", flowInstanceIDs.size() - 1) + ")");
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION);
+		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.FLOW_TYPE_RELATION);
 		
 		query.addExcludedFields(UserFlowInstanceModule.LIST_EXCLUDED_FIELDS);
 		

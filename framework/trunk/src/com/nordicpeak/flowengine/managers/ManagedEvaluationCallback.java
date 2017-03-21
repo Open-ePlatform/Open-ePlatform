@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.managers;
 import java.util.List;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 
 import com.nordicpeak.flowengine.beans.QueryModification;
@@ -21,8 +22,9 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	private final EvaluationHandler evaluationHandler;
 	private final User user;
 	private final User poster;
-
-	public ManagedEvaluationCallback(List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster) {
+	private final SiteProfile siteProfile;
+	
+	public ManagedEvaluationCallback(List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster, SiteProfile siteProfile) {
 
 		super();
 		this.managedSteps = managedSteps;
@@ -31,6 +33,7 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 		this.evaluationHandler = evaluationHandler;
 		this.user = user;
 		this.poster = poster;
+		this.siteProfile = siteProfile;
 	}
 
 	@Override
@@ -108,7 +111,7 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 						
 						if(evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof EvaluationEventListener && ((EvaluationEventListener) evaluator).supportsEvent(event)){
 							
-							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster), evaluationHandler));
+							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile), evaluationHandler));
 						}
 					}
 				}
@@ -123,5 +126,10 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	public QueryInstance getQueryInstance(){
 		
 		return managedSteps.get(minStepIndex).getManagedQueryInstances().get(minQueryIndex).getQueryInstance();
+	}
+
+	public SiteProfile getSiteProfile() {
+	
+		return siteProfile;
 	}
 }

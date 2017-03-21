@@ -42,7 +42,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	private static final long serialVersionUID = -4068908917476759312L;
 
 	public static final Field FLOW_RELATION = ReflectionUtils.getField(FlowInstance.class, "flow");
-	public static final Field FLOW_STATE_RELATION = ReflectionUtils.getField(FlowInstance.class, "status");
+	public static final Field FLOW_STATUS_RELATION = ReflectionUtils.getField(FlowInstance.class, "status");
 	public static final Field INTERNAL_MESSAGES_RELATION = ReflectionUtils.getField(FlowInstance.class, "internalMessages");
 	public static final Field EXTERNAL_MESSAGES_RELATION = ReflectionUtils.getField(FlowInstance.class, "externalMessages");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowInstance.class, "events");

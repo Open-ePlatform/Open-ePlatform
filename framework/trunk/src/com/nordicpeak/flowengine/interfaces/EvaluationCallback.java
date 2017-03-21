@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.interfaces;
 
 import java.util.List;
 
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+
 import com.nordicpeak.flowengine.beans.QueryModification;
 import com.nordicpeak.flowengine.exceptions.queryinstance.IllegalQueryInstanceAccessException;
 
@@ -17,4 +19,6 @@ public interface EvaluationCallback {
 	public List<QueryModification> sendEvent(Object event, boolean skipCurrentQuery);	
 	
 	public QueryInstance getQueryInstance();
+	
+	public SiteProfile getSiteProfile();
 }

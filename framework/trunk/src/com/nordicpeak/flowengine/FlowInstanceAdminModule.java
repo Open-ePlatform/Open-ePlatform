@@ -126,10 +126,10 @@ import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidat
 
 public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationCreator {
 
-	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
 
-	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.STATUSES_RELATION };
-	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.MANAGERS_RELATION };
+	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.STATUSES_RELATION };
+	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.MANAGERS_RELATION };
 
 	@SuppressWarnings("rawtypes")
 	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class};
@@ -451,7 +451,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user);
 
-							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()), externalMessage, SenderType.MANAGER), EventTarget.ALL);
+							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
 							systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 							
@@ -611,7 +611,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
-						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()), previousStatus, user), EventTarget.ALL);
+						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousStatus, user), EventTarget.ALL);
 					}
 
 					redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
@@ -731,7 +731,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
-						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()), previousManagers, user), EventTarget.ALL);
+						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, user), EventTarget.ALL);
 					}
 
 					redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
@@ -827,7 +827,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "bookmark")
 	public ForegroundModuleResponse toggleBookmark(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
-		Field[] relations = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATE_RELATION};
+		Field[] relations = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.FLOW_STATUS_RELATION};
 
 		FlowInstance flowInstance;
 
@@ -1068,7 +1068,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		query.addParameter(user.getUserID());
 
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
 
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}
@@ -1079,7 +1079,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
 
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}

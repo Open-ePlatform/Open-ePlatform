@@ -165,8 +165,8 @@ import com.nordicpeak.flowengine.validationerrors.FileUploadValidationError;
 public abstract class BaseFlowModule extends AnnotatedForegroundModule implements FlowEngineInterface {
 
 	public static final Field[] FLOW_RELATIONS = { Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION };
-	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.ATTRIBUTES_RELATION };
-	public static final Field[] FLOW_INSTANCE_SAVED_MUTABLE_ACCESS_CHECK_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATE_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION };
+	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.ATTRIBUTES_RELATION };
+	public static final Field[] FLOW_INSTANCE_SAVED_MUTABLE_ACCESS_CHECK_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION };
 
 	public static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 
@@ -326,7 +326,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			log.info("Opening copy of flow instance " + flowInstance + " for user " + user);
 
-			InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily()));
+			InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(getSiteProfile(flowInstance));
 
 			instanceManager = new MutableFlowInstanceManager(flowInstance, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, instanceMetadata, requestMetadata, getAbsoluteFileURL(uriParser, flowInstance.getFlow()));
 
@@ -480,7 +480,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
 
-		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, req, new DefaultInstanceMetadata(getCurrentSiteProfile(req, user, null, flowInstance.getFlow().getFlowFamily())), getAbsoluteFileURL(uriParser, flowInstance.getFlow()));
+		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, req, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), getAbsoluteFileURL(uriParser, flowInstance.getFlow()));
 	}
 
 	public static void addMutableFlowInstanceManagerToSession(int flowID, Integer flowInstanceID, MutableFlowInstanceManager instanceManager, HttpSession session) {
@@ -743,15 +743,15 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							if (requiresMultiSigning(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getMultiSigningActionID(), getCurrentSiteProfile(req, user, uriParser, instanceManager.getFlowInstance().getFlow().getFlowFamily()), false);
+								signingCallback = getSigningCallback(instanceManager, null, callback.getMultiSigningActionID(), instanceManager.getSiteProfile(), false);
 
 							} else if (requiresPayment(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getPaymentActionID(), getCurrentSiteProfile(req, user, uriParser, instanceManager.getFlowInstance().getFlow().getFlowFamily()), false);
+								signingCallback = getSigningCallback(instanceManager, null, callback.getPaymentActionID(), instanceManager.getSiteProfile(), false);
 
 							} else {
 
-								signingCallback = getSigningCallback(instanceManager, EventType.SUBMITTED, callback.getSubmitActionID(), getCurrentSiteProfile(req, user, uriParser, instanceManager.getFlowInstance().getFlow().getFlowFamily()), true);
+								signingCallback = getSigningCallback(instanceManager, EventType.SUBMITTED, callback.getSubmitActionID(), instanceManager.getSiteProfile(), true);
 							}
 
 							ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
@@ -851,7 +851,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					if (enableSaving) {
 
-						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getCurrentSiteProfile(req, user, uriParser, instanceManager.getFlowInstance().getFlow().getFlowFamily()), false);
+						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), instanceManager.getSiteProfile(), false);
 					}
 
 					removeFlowInstanceManagerFromSession(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req.getSession(false));
@@ -994,6 +994,28 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 
 		return null;
+	}	
+	
+	public SiteProfile getSiteProfile(ImmutableFlowInstance flowInstance) {
+
+		if (profileHandler != null) {
+
+			SiteProfile profile = profileHandler.getProfile(flowInstance.getProfileID());
+
+			if (profile != null && flowInstance.getFlow().getFlowFamily() != null) {
+
+				SiteProfile subProfile = profileHandler.getMatchingSubProfile(profile.getProfileID(), "flowfamily-" + flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+
+				if (subProfile != null) {
+
+					return subProfile;
+				}
+			}
+
+			return profile;
+		}
+
+		return null;
 	}
 
 	protected void processQueryRequest(FlowInstanceManager instanceManager, int queryID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws QueryInstanceNotFoundInFlowInstanceManagerException, QueryRequestsNotSupported, QueryRequestException {
@@ -1099,20 +1121,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		log.info("User " + user + " saving flow instance " + instanceManager.getFlowInstance());
 
 		setFlowStatus(instanceManager, actionID);
-
-		if (!wasPreviouslySaved) {
-
-			SiteProfile siteProfile = getCurrentSiteProfile(req, user, null, instanceManager.getFlowInstance().getFlow().getFlowFamily());
-
-			if (siteProfile != null) {
-
-				FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
-
-				flowInstance.setProfileID(siteProfile.getProfileID());
-
-			}
-
-		}
 
 		Timestamp savedTimestamp = instanceManager.saveInstance(this, poster, eventType);
 

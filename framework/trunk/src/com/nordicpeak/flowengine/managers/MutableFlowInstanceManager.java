@@ -22,6 +22,7 @@ import se.unlogic.hierarchy.core.handlers.SimpleMutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -313,6 +314,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	
 	private MutableAttributeHandler sessionAttributeHandler;
 	
+	private final SiteProfile siteProfile;
+	
 	/**
 	 * Creates a new flow instance for the given flow and user
 	 *
@@ -335,9 +338,16 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		//Create new FlowInstance with default "new" state
 		this.flowInstance = new FlowInstance();
 
+		this.siteProfile = instanceMetadata.getSiteProfile();
+
+		if(this.siteProfile != null){
+			
+			flowInstance.setProfileID(this.siteProfile.getProfileID());
+		}
+		
 		setID(instanceManagerID);
 
-		TextTagReplacer.replaceTextTags(flow, instanceMetadata.getSiteProfile());
+		TextTagReplacer.replaceTextTags(flow, siteProfile);
 		
 		if(absoluteFileURL != null){
 			
@@ -420,6 +430,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		this.flowInstance = flowInstance;
 
+		this.siteProfile = instanceMetadata.getSiteProfile();
+		
 		setID(instanceManagerID);
 
 		TextTagReplacer.replaceTextTags(flowInstance.getFlow(), instanceMetadata.getSiteProfile());
@@ -532,7 +544,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							
 							if(evaluationCallback == null){
 								
-								evaluationCallback = new ManagedEvaluationCallback(managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster);
+								evaluationCallback = new ManagedEvaluationCallback(managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster, siteProfile);
 							}
 							
 							try {
@@ -771,7 +783,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			User poster = getPoster(user, requestMetadata);
 			
-			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster);
+			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster, siteProfile);
 
 			for(Evaluator evaluator : managedQueryInstance.getEvaluators()){
 
@@ -921,7 +933,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 									continue;
 								}
 								
-								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster);
+								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile);
 								
 								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications, resetHiddenInstances);
 							}
@@ -969,7 +981,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		User poster = getPoster(user, requestMetadata);
 		
-		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, 0, evaluationHandler, user, poster);
+		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, 0, evaluationHandler, user, poster, siteProfile);
 
 		//Iterate over all questions in the current step and populate them
 		for(ManagedQueryInstance managedQueryInstance : managedSteps.get(currentStepIndex).getManagedQueryInstances()){
@@ -1547,5 +1559,11 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 		
 		return sessionAttributeHandler;
+	}
+
+	
+	public SiteProfile getSiteProfile() {
+	
+		return siteProfile;
 	}
 }

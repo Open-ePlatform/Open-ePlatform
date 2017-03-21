@@ -18,10 +18,4 @@ public class DefaultInstanceMetadata implements InstanceMetadata {
 
 		return siteProfile;
 	}
-
-	public void setSiteProfile(SiteProfile siteProfile) {
-
-		this.siteProfile = siteProfile;
-	}
-
 }
