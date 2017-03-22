@@ -1735,7 +1735,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (useFlowFamilyManagers) {
 
-			managers = getFlowFamilyManagers(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+			managers = getFlowFamilyManagers(flowInstance);
 
 		} else {
 
@@ -1872,9 +1872,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 	
-	protected List<User> getFlowFamilyManagers(Integer flowFamilyID) throws SQLException {
+	protected List<User> getFlowFamilyManagers(ImmutableFlowInstance flowInstance) throws SQLException {
 
-		FlowFamily flowFamily = flowFamilyDAO.get(flowFamilyID);
+		FlowFamily flowFamily = flowFamilyDAO.get(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
 
 		if (flowFamily != null) {
 
