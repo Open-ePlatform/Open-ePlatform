@@ -92,7 +92,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	// Nested class to keep track of active flow instance managers in a protected fashion
 	public final static class FlowInstanceManagerRegistery implements Serializable {
 
-		private static final long serialVersionUID = -2452906097547060782L;
+		private static final long serialVersionUID = -2452906097547060783L;
 
 		private static FlowInstanceManagerRegistery REGISTERY;
 
@@ -296,7 +296,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
-	private static final long serialVersionUID = 7224301693975233582L;
+	private static final long serialVersionUID = 7224301693975233583L;
 
 	private final FlowInstanceManagerRegistery registery = FlowInstanceManagerRegistery.getInstance();
 
