@@ -544,7 +544,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							String response = null;
 
 							try {
-								response = instanceManager.populateQueryInCurrentStep(req, user, queryID, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
+								response = instanceManager.populateQueryInCurrentStep(req, user, queryID, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
 							} catch (QueryModificationException e) {
 								log.error("Error populating queryID " + queryID + " in flow instance " + instanceManager, e);
 							}
@@ -567,7 +567,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					FlowDirection flowDirection = parseFlowDirection(req, flowAction);
 
-					managerResponse = instanceManager.populateCurrentStep(req, user, flowDirection, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
+					managerResponse = instanceManager.populateCurrentStep(req, user, flowDirection, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
 
 					if (managerResponse.hasValidationErrors()) {
 
@@ -741,17 +741,19 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							SigningCallback signingCallback;
 
+							SiteProfile instanceProfile = getSiteProfile(instanceManager);
+							
 							if (requiresMultiSigning(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getMultiSigningActionID(), instanceManager.getSiteProfile(), false);
+								signingCallback = getSigningCallback(instanceManager, null, callback.getMultiSigningActionID(), instanceProfile, false);
 
 							} else if (requiresPayment(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getPaymentActionID(), instanceManager.getSiteProfile(), false);
+								signingCallback = getSigningCallback(instanceManager, null, callback.getPaymentActionID(), instanceProfile, false);
 
 							} else {
 
-								signingCallback = getSigningCallback(instanceManager, EventType.SUBMITTED, callback.getSubmitActionID(), instanceManager.getSiteProfile(), true);
+								signingCallback = getSigningCallback(instanceManager, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, true);
 							}
 
 							ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
@@ -851,7 +853,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					if (enableSaving) {
 
-						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), instanceManager.getSiteProfile(), false);
+						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager), false);
 					}
 
 					removeFlowInstanceManagerFromSession(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req.getSession(false));
@@ -995,6 +997,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		return null;
 	}	
+	
+	public SiteProfile getSiteProfile(FlowInstanceManager instanceManager) {
+		
+		return getSiteProfile(instanceManager.getFlowInstance());
+	}
 	
 	public SiteProfile getSiteProfile(ImmutableFlowInstance flowInstance) {
 
