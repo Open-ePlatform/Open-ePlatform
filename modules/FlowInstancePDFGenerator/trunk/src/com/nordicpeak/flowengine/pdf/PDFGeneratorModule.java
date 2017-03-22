@@ -283,7 +283,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 				} else {
 					
-					File logotypeFile = siteProfile.getSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+					File logotypeFile = siteProfile.getSettingHandler().getFile(LOGOTYPE_SETTING_ID, siteProfileHandler);
 					
 					if (logotypeFile != null) {
 						
@@ -303,7 +303,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 				} else {
 					
-					File logotypeFile = siteProfileHandler.getGlobalSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+					File logotypeFile = siteProfileHandler.getGlobalSettingHandler().getFile(LOGOTYPE_SETTING_ID, siteProfileHandler);
 					
 					if (logotypeFile != null) {
 						
