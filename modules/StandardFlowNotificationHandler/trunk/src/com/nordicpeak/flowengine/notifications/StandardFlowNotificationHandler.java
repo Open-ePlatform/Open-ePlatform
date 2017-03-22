@@ -1872,7 +1872,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 	
-	private List<User> getFlowFamilyManagers(Integer flowFamilyID) throws SQLException {
+	protected List<User> getFlowFamilyManagers(Integer flowFamilyID) throws SQLException {
 
 		FlowFamily flowFamily = flowFamilyDAO.get(flowFamilyID);
 
