@@ -122,8 +122,8 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource {
 
@@ -338,7 +338,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 							}
 							
 						} catch (Exception e) {
-							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionProvider, e);
+							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionProvider + " for user " + user, e);
 						}
 					}
 				}
