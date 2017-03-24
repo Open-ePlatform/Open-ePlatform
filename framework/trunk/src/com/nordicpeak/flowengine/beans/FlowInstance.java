@@ -149,6 +149,9 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	@OneToMany
 	@XMLElement(fixCase=true)
 	private List<FlowInstanceAttribute> attributes;
+	
+	@XMLElement
+	private boolean remote;
 
 	private SourceAttributeHandler attributeHandler;
 
@@ -460,5 +463,17 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		}
 		
 		return flowInstanceElement;
+	}
+
+	
+	public boolean isRemote() {
+	
+		return remote;
+	}
+
+	
+	public void setRemote(boolean remote) {
+	
+		this.remote = remote;
 	}
 }
