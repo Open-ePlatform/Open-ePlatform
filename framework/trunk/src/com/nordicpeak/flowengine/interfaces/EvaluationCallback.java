@@ -5,6 +5,7 @@ import java.util.List;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 import com.nordicpeak.flowengine.beans.QueryModification;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.exceptions.queryinstance.IllegalQueryInstanceAccessException;
 
 
@@ -21,4 +22,6 @@ public interface EvaluationCallback {
 	public QueryInstance getQueryInstance();
 	
 	public SiteProfile getSiteProfile();
+	
+	public RequestMetadata getRequestMetadata();
 }

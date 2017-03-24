@@ -403,7 +403,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		flowInstance.setStepID(managedSteps.get(currentStepIndex).getStep().getStepID());
 		
-		initEvaluators(evaluationHandler, user, getPoster(user, requestMetadata), instanceMetadata);
+		initEvaluators(evaluationHandler, user, getPoster(user, requestMetadata), instanceMetadata, requestMetadata);
 	}
 
 	/**
@@ -511,10 +511,10 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			}
 		}
 		
-		initEvaluators(evaluationHandler, user, getPoster(user, requestMetadata), instanceMetadata);
+		initEvaluators(evaluationHandler, user, getPoster(user, requestMetadata), instanceMetadata, requestMetadata);
 	}
 
-	private void initEvaluators(EvaluationHandler evaluationHandler, User user, User poster, InstanceMetadata metadata) throws EvaluationException, UnableToResetQueryInstanceException {
+	private void initEvaluators(EvaluationHandler evaluationHandler, User user, User poster, InstanceMetadata metadata, RequestMetadata requestMetadata) throws EvaluationException, UnableToResetQueryInstanceException {
 
 		int initStepIndex = 0;
 		int initQueryIndex = 0;
@@ -540,11 +540,11 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							
 							if(evaluationCallback == null){
 								
-								evaluationCallback = new ManagedEvaluationCallback(managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster, metadata.getSiteProfile());
+								evaluationCallback = new ManagedEvaluationCallback(managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster, metadata.getSiteProfile(), requestMetadata);
 							}
 							
 							try {
-								evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, false, queryModifications, false, metadata.getSiteProfile());
+								evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, false, queryModifications, false, metadata.getSiteProfile(), requestMetadata);
 								
 							} catch (UnableToResetQueryInstanceException e) {
 
@@ -779,7 +779,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			User poster = getPoster(user, requestMetadata);
 			
-			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster, siteProfile);
+			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata);
 
 			for(Evaluator evaluator : managedQueryInstance.getEvaluators()){
 
@@ -793,7 +793,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					queryModifications = new ArrayList<QueryModification>();
 				}
 
-				evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, validationErrors != null, queryModifications, siteProfile);
+				evaluate(managedQueryInstance.getQueryInstance(), evaluator, user, poster, evaluationCallback, evaluationHandler, validationErrors != null, queryModifications, siteProfile, requestMetadata);
 			}
 		}
 
@@ -843,12 +843,12 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return response.toJson();
 	}
 
-	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, SiteProfile siteProfile) throws UnableToResetQueryInstanceException, EvaluationException {
+	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, SiteProfile siteProfile, RequestMetadata requestMetadata) throws UnableToResetQueryInstanceException, EvaluationException {
 		
-		evaluate(queryInstance, evaluator, user, poster, evaluationCallback, evaluationHandler, hasValidationErrors, queryModifications, true, siteProfile);
+		evaluate(queryInstance, evaluator, user, poster, evaluationCallback, evaluationHandler, hasValidationErrors, queryModifications, true, siteProfile, requestMetadata);
 	}
 	
-	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, boolean resetHiddenInstances, SiteProfile siteProfile) throws UnableToResetQueryInstanceException, EvaluationException {
+	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User poster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, boolean resetHiddenInstances, SiteProfile siteProfile, RequestMetadata requestMetadata) throws UnableToResetQueryInstanceException, EvaluationException {
 		
 		try {
 			EvaluationResponse response = evaluator.evaluate(queryInstance, user, poster, evaluationCallback, evaluationHandler, hasValidationErrors, flowInstance.getAttributeHandler());
@@ -929,9 +929,9 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 									continue;
 								}
 								
-								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile);
+								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata);
 								
-								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications, resetHiddenInstances, siteProfile);
+								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications, resetHiddenInstances, siteProfile, requestMetadata);
 							}
 						}
 					}
@@ -977,7 +977,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		User poster = getPoster(user, requestMetadata);
 		
-		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, 0, evaluationHandler, user, poster, siteProfile);
+		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, 0, evaluationHandler, user, poster, siteProfile, requestMetadata);
 
 		//Iterate over all questions in the current step and populate them
 		for(ManagedQueryInstance managedQueryInstance : managedSteps.get(currentStepIndex).getManagedQueryInstances()){
@@ -1019,7 +1019,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					}
 
 					try{
-						evaluate(queryInstance, evaluator, user, poster, evaluationCallback, evaluationHandler, validationErrorMap.get(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID()) != null, null, siteProfile);
+						evaluate(queryInstance, evaluator, user, poster, evaluationCallback, evaluationHandler, validationErrorMap.get(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID()) != null, null, siteProfile, requestMetadata);
 						
 					}catch(RuntimeException e){
 
