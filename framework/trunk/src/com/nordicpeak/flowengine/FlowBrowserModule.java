@@ -1211,7 +1211,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@Override
-	protected void onFlowInstanceClosedRedirect(FlowInstanceManager flowInstanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	protected void flowInstanceSavedAndClosed(FlowInstanceManager flowInstanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
 		redirectToDefaultMethod(req, res);
 

@@ -868,11 +868,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					log.info("User " + user + " saving and closing flow instance " + instanceManager.getFlowInstance());
 
-					save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+					FlowInstanceEvent event = save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
 
-					onFlowInstanceClosedRedirect(instanceManager, req, res);
+					flowInstanceSavedAndClosed(instanceManager, req, res, user, event);
 
 					return null;
 
@@ -974,7 +974,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected abstract void redirectToSubmitMethod(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException;
 
-	protected abstract void onFlowInstanceClosedRedirect(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException;
+	protected abstract void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException;
 
 	public SiteProfile getCurrentSiteProfile(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowFamily flowFamily) {
 

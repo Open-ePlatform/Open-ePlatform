@@ -67,10 +67,10 @@
 	<xsl:variable name="i18n.FlowInstanceConcurrentlyModifiedLinkTitle">Öppna den senaste versionen</xsl:variable>
 	<xsl:variable name="i18n.MultiSignStatus">Flerpartssignering</xsl:variable>
 	
-	<xsl:variable name="i18n.SubmittedEvent">Inskickad</xsl:variable>
-	<xsl:variable name="i18n.SignedEvent">Signerad</xsl:variable>
-	<xsl:variable name="i18n.PayedEvent">Betald</xsl:variable>
-	<xsl:variable name="i18n.UpdatedEvent">Ändrad</xsl:variable>
+	<xsl:variable name="i18n.SubmittedEvent">Inskickat</xsl:variable>
+	<xsl:variable name="i18n.SignedEvent">Signerat</xsl:variable>
+	<xsl:variable name="i18n.PayedEvent">Betalat</xsl:variable>
+	<xsl:variable name="i18n.UpdatedEvent">Ändrat</xsl:variable>
 	<xsl:variable name="i18n.StatusUpdatedEvent">Status ändrad</xsl:variable>
 	<xsl:variable name="i18n.ManagersUpdatedEvent">Handläggare ändrad</xsl:variable>
 	<xsl:variable name="i18n.OwnersUpdatedEvent">Ägare ändrad</xsl:variable>

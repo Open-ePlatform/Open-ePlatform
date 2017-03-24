@@ -119,8 +119,8 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
@@ -1270,8 +1270,21 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 
 	@Override
-	protected void onFlowInstanceClosedRedirect(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	protected void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
+		if(this.pdfProvider != null){
+			
+			try {
+				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user);
+				
+				pdfProvider.saveTemporaryPDF(instanceManager, event);
+				
+			} catch (Exception e) {
+				
+				log.error("Error creating PDF for event " + event + " belonging to flow instance " + instanceManager.getFlowInstance() + " saved and close by " + user, e);
+			}
+		}
+		
 		redirectToMethod(req, res, "/overview/" + instanceManager.getFlowInstanceID());
 	}
 

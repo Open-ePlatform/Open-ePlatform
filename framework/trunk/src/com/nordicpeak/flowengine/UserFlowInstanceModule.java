@@ -792,7 +792,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@Override
-	protected void onFlowInstanceClosedRedirect(FlowInstanceManager flowInstanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	protected void flowInstanceSavedAndClosed(FlowInstanceManager flowInstanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
 		redirectToMethod(req, res, "/overview/" + flowInstanceManager.getFlowID() + "/" + flowInstanceManager.getFlowInstanceID());
 
