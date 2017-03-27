@@ -658,7 +658,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 							
 							log.info("User " + user + " sharing flow " + flow + " to repository " + repo);
 							
-							List<SimpleEntry<String, String>> requestParameters = new ArrayList<SimpleEntry<String, String>>();
+							List<Entry<String, String>> requestParameters = new ArrayList<Entry<String, String>>();
 							
 							requestParameters.add(new SimpleEntry<String, String>("flowFamilyID", flow.getFlowFamily().getFlowFamilyID().toString()));
 							requestParameters.add(new SimpleEntry<String, String>("flowID", flow.getFlowID().toString()));
@@ -748,7 +748,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		}
 	}
 	
-	private Document sendPostRequest(RepositoryConfiguration repository, String method, List<? extends Entry<String, String>> requestParameters, ByteArrayInputStream outputData) {
+	private Document sendPostRequest(RepositoryConfiguration repository, String method, List<Entry<String, String>> requestParameters, ByteArrayInputStream outputData) {
 		
 		try {
 			SimpleRequest request = new SimpleRequest(repository.getUrl() + "/" + method);
@@ -756,7 +756,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			request.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
 			request.setRequestParameters(requestParameters);
 			
-			List<SimpleEntry<String, String>> headerEntries = new ArrayList<SimpleEntry<String, String>>(2);
+			List<Entry<String, String>> headerEntries = new ArrayList<Entry<String, String>>(2);
 			
 			headerEntries.add(new SimpleEntry<String, String>("Content-Type", "text/xml; charset=" + systemInterface.getEncoding()));
 			headerEntries.add(new SimpleEntry<String, String>("Content-Length", Long.toString(outputData.available())));
