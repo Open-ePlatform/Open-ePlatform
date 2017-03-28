@@ -891,7 +891,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return daoFactory.getUserBookmarkDAO().get(query);
 	}
 
-	private List<User> getAvailableManagers(FlowInstance flowInstance) {
+	protected List<User> getAvailableManagers(FlowInstance flowInstance) {
 
 		List<User> availableManagers = null;
 
