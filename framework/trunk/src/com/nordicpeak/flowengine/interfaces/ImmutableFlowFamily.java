@@ -13,7 +13,4 @@ public interface ImmutableFlowFamily extends AccessInterface{
 	public Integer getVersionCount();
 
 	public List<Flow> getFlows();
-	
-	public List<? extends ImmutableUserFavourite> getUserFavourites();
-	
 }

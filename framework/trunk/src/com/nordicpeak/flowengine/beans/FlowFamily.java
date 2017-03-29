@@ -22,7 +22,6 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.interfaces.ImmutableUserFavourite;
 
 @Table(name = "flowengine_flow_families")
 @XMLElement
@@ -98,11 +97,6 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@OneToMany
 	@XMLElement
 	private List<Flow> flows;
-
-	@DAOManaged
-	@OneToMany
-	@XMLElement(fixCase = true)
-	private List<UserFavourite> userFavourites;
 
 	private Integer flowInstanceCount;
 
@@ -304,17 +298,6 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public List<Integer> getAllowedUserIDs() {
 
 		return managerUserIDs;
-	}
-
-	@Override
-	public List<? extends ImmutableUserFavourite> getUserFavourites() {
-
-		return userFavourites;
-	}
-
-	public void setUserFavourites(List<UserFavourite> userFavourites) {
-
-		this.userFavourites = userFavourites;
 	}
 
 	@Override

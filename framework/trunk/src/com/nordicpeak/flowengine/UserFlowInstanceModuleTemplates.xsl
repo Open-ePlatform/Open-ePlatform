@@ -671,8 +671,8 @@
 	  			</div>
 	  			
 	  			<xsl:for-each select="../TabContents/ViewFragment">
- 						<xsl:value-of select="HTML" disable-output-escaping="yes"/>
- 					</xsl:for-each>
+ 					<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+ 				</xsl:for-each>
 	  			
   			</div>
 			

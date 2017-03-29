@@ -1647,4 +1647,12 @@
 	    </Query>
 	</Script>
 	
+	<Script version="83">
+	    <Query>
+	        <![CDATA[
+				DROP TABLE `flowengine_flow_family_favourites`;
+	        ]]>
+	    </Query>
+	</Script>	
+	
 </DBScripts>

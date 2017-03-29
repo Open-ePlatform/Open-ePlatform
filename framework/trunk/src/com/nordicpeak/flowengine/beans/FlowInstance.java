@@ -42,7 +42,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	private static final long serialVersionUID = -4068908917476759312L;
 
 	public static final Field FLOW_RELATION = ReflectionUtils.getField(FlowInstance.class, "flow");
-	public static final Field FLOW_STATUS_RELATION = ReflectionUtils.getField(FlowInstance.class, "status");
+	public static final Field STATUS_RELATION = ReflectionUtils.getField(FlowInstance.class, "status");
 	public static final Field INTERNAL_MESSAGES_RELATION = ReflectionUtils.getField(FlowInstance.class, "internalMessages");
 	public static final Field EXTERNAL_MESSAGES_RELATION = ReflectionUtils.getField(FlowInstance.class, "externalMessages");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowInstance.class, "events");
@@ -50,8 +50,6 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public static final Field MANAGERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managers");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstance.class,"attributes");
 	
-	public static final Field DESCRIPTION_SHORT_FIELD = ReflectionUtils.getField(FlowInstance.class,"attributes");
-	public static final Field DESCRIPTION_LONG_FIELD = ReflectionUtils.getField(FlowInstance.class,"attributes");
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstance.class,"poster");
 	public static final Field EDITOR_FIELD = ReflectionUtils.getField(FlowInstance.class,"editor");
 

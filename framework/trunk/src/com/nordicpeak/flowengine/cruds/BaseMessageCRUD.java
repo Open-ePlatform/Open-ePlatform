@@ -257,7 +257,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 		HighLevelQuery<MessageType> query = new HighLevelQuery<MessageType>();
 
-		query.addRelations(getFlowInstanceRelation(), FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION);
+		query.addRelations(getFlowInstanceRelation(), FlowInstance.OWNERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION);
 		
 		query.addParameter(messageIDParamFactory.getParameter(messageID));
 		

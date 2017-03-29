@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -111,6 +109,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInsta
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
@@ -118,7 +117,6 @@ import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -126,6 +124,8 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -404,7 +404,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			if (user != null) {
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "loggedIn");
-				XMLUtils.append(doc, showFlowTypesElement, daoFactory.getUserFavouriteDAO().getAll(user, req.getSession(), latestPublishedFlowVersionsMap));
 			}
 
 			XMLUtils.append(doc, showFlowTypesElement, "recommendedTags", "Tag", recommendedTags);
@@ -541,7 +540,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		if (user != null) {
 			XMLUtils.appendNewElement(doc, showFlowOverviewElement, "loggedIn");
-			XMLUtils.append(doc, showFlowOverviewElement, daoFactory.getUserFavouriteDAO().getAll(user, req.getSession(), latestPublishedFlowVersionsMap));
 		}
 
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
