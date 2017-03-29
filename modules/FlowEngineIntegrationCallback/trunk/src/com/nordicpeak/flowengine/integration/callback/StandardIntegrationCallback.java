@@ -428,7 +428,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		if(flowInstanceID != null){
 			
 			try {
-				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.FLOW_STATUS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION);
+				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION);
 				
 			} catch (SQLException e) {
 
