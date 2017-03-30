@@ -644,22 +644,31 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		return query.executeQuery();
 	}
 
-	public List<String> getExportLabels() {
+	public List<String> getExportLabels(ChildQuery query) {
 		
 		List<String> labels = new ArrayList<String>();
 		
 		labels.add(exportChildCitizenName);
 		labels.add(exportChildCitizenIdentifier);
-		labels.add(exportChildAdress);
-		labels.add(exportChildPostalAdress);
-		labels.add(exportChildZipCode);
+		
+		if (query.isShowAddress()) {
+			
+			labels.add(exportChildAdress);
+			labels.add(exportChildPostalAdress);
+			labels.add(exportChildZipCode);
+		}
+		
 		labels.add(exportOtherGuardianName);
 		labels.add(exportOtherGuardianCitizenIdentifier);
 		labels.add(exportOtherGuardianEmail);
 		labels.add(exportOtherGuardianPhone);
-		labels.add(exportOtherGuardianAdress);
-		labels.add(exportOtherGuardianPostalAdress);
-		labels.add(exportOtherGuardianZipCode);
+		
+		if (query.isShowGuardianAddress()) {
+			
+			labels.add(exportOtherGuardianAdress);
+			labels.add(exportOtherGuardianPostalAdress);
+			labels.add(exportOtherGuardianZipCode);
+		}
 		
 		return labels;
 	}
