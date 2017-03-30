@@ -81,14 +81,50 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider {
 
-	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" + 
-			"INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" + 
-			"INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" + 
+	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" +
+			"INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" +
+			"INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" +
 			"WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
 	
 	@XSLVariable(prefix = "java.")
 	protected String alternativeName = "This variable should be set by your stylesheet";
-
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildCitizenName= "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildCitizenIdentifier = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildAdress = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildPostalAdress = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildZipCode = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianName = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianEmail = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianPhone = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianCitizenIdentifier = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianAdress = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianPostalAdress = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportOtherGuardianZipCode = "This variable should be set by your stylesheet";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User citizen identifier attribute", description = "Attribute to get citizen identifier from", required = true)
 	private String citizenIdentifierAttribute = "citizenIdentifier";
@@ -606,5 +642,25 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		query.setString(1, citizenIdentifier);
 		
 		return query.executeQuery();
+	}
+
+	public List<String> getExportLabels() {
+		
+		List<String> labels = new ArrayList<String>();
+		
+		labels.add(exportChildCitizenName);
+		labels.add(exportChildCitizenIdentifier);
+		labels.add(exportChildAdress);
+		labels.add(exportChildPostalAdress);
+		labels.add(exportChildZipCode);
+		labels.add(exportOtherGuardianName);
+		labels.add(exportOtherGuardianCitizenIdentifier);
+		labels.add(exportOtherGuardianEmail);
+		labels.add(exportOtherGuardianPhone);
+		labels.add(exportOtherGuardianAdress);
+		labels.add(exportOtherGuardianPostalAdress);
+		labels.add(exportOtherGuardianZipCode);
+		
+		return labels;
 	}
 }

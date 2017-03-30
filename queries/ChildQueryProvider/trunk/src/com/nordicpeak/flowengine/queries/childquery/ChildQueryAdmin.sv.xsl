@@ -8,8 +8,20 @@
 	<xsl:include href="ChildQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Val av barn</xsl:variable>
-	
 	<xsl:variable name="java.alternativeName">Barn valt</xsl:variable>
+	
+	<xsl:variable name="java.exportChildCitizenName">Barnets namn</xsl:variable>
+	<xsl:variable name="java.exportChildCitizenIdentifier">Barnets personnummer</xsl:variable>
+	<xsl:variable name="java.exportChildAdress">Barnets address</xsl:variable>
+	<xsl:variable name="java.exportChildPostalAdress">Barnets postort</xsl:variable>
+	<xsl:variable name="java.exportChildZipCode">Barnets postnummer</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianName">Andra vårdnadshavarens namn</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianEmail">Andra vårdnadshavarens e-post</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianPhone">Andra vårdnadshavarens telefon</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianCitizenIdentifier">Andra vårdnadshavarens personnummer</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianAdress">Andra vårdnadshavarens address</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianPostalAdress">Andra vårdnadshavarens postort</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianZipCode">Andra vårdnadshavarens postnummer</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateQuery">Ändra fråga</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
