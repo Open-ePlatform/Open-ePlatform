@@ -27,7 +27,7 @@
 	<xsl:variable name="i18n.NotEnabled">Ej tillgänglig</xsl:variable>
 	
 	<xsl:variable name="i18n.Continue">Fortsätt</xsl:variable>
-	<xsl:variable name="i18n.Continue.Disabled">Fortsätt: E-tjänst avstängd</xsl:variable>
+	<xsl:variable name="i18n.Continue.Disabled">E-tjänst avstängd</xsl:variable>
 	<xsl:variable name="i18n.Continue.DisabledMessage">Den version av e-tjänsten du påbörjat ärendet i är avstängd. Vänligen försök igen senare eller skapa ett nytt ärende.</xsl:variable>
 	<xsl:variable name="i18n.Delete">Ta bort</xsl:variable>
 	
