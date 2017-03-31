@@ -416,6 +416,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private CategoryCRUD categoryCRUD;
 	private FlowFormCRUD flowFormCRUD;
 
+	protected QueryParameterFactory<FlowFamily, Integer> flowFamiliyIDParamFactory;
+	
 	protected QueryParameterFactory<Flow, FlowFamily> flowFlowFamilyParamFactory;
 	protected QueryParameterFactory<Flow, Integer> flowVersionParamFactory;
 
@@ -481,6 +483,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		super.createDAOs(dataSource);
 
+		flowFamiliyIDParamFactory = daoFactory.getFlowFamilyDAO().getParamFactory("flowFamilyID", Integer.class);
+		
 		flowFlowFamilyParamFactory = daoFactory.getFlowDAO().getParamFactory("flowFamily", FlowFamily.class);
 		flowVersionParamFactory = daoFactory.getFlowDAO().getParamFactory("version", Integer.class);
 
@@ -1015,11 +1019,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		} else {
 
 			log.info("User " + user + " creating new flow version based on flow " + flow);
-
-			Integer version = flowCopy.getFlowFamily().getVersionCount() + 1;
-
-			flowCopy.getFlowFamily().setVersionCount(version);
-			flowCopy.setVersion(version);
 		}
 
 		if (flowCopy.getDefaultFlowStateMappings() != null) {
@@ -1100,6 +1099,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			} else {
 
+				Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
+				
+				if(version == null){
+					
+					throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
+				}
+				
+				flowCopy.getFlowFamily().setVersionCount(version);
+				flowCopy.setVersion(version);
+				
 				daoFactory.getFlowFamilyDAO().update(flowCopy.getFlowFamily(), transactionHandler, null);
 				daoFactory.getFlowDAO().add(flowCopy, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
 			}
@@ -3110,13 +3119,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			} else {
 
-				Integer version = relatedFlow.getFlowFamily().getVersionCount() + 1;
-
 				FlowFamily flowFamily = SerializationUtils.cloneSerializable(relatedFlow.getFlowFamily());
-
-				flow.setVersion(version);
 				flow.setFlowFamily(flowFamily);
-				flowFamily.setVersionCount(version);
 			}
 
 			Integer categoryID = NumberUtils.toInt(req.getParameter("categoryID"));
@@ -3286,6 +3290,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				} else {
 
+					Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
+					
+					if(version == null){
+						
+						throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
+					}
+					
+					flow.setVersion(version);
+					flow.getFlowFamily().setVersionCount(version);
+					
 					daoFactory.getFlowFamilyDAO().update(flow.getFlowFamily(), transactionHandler, null);
 					daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
 				}
@@ -3432,6 +3446,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		return validationException;
+	}
+
+	private Integer getNextVersion(Integer flowFamilyID, TransactionHandler transactionHandler) throws SQLException {
+
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>();
+		
+		query.addParameter(flowFamiliyIDParamFactory.getParameter(flowFamilyID));
+		
+		FlowFamily flowFamily = daoFactory.getFlowFamilyDAO().get(query, transactionHandler);
+		
+		if(flowFamily != null){
+			
+			return flowFamily.getVersionCount() + 1;
+		}
+		
+		return null;
 	}
 
 	@WebPublic(toLowerCase = true, alias="importqueries")

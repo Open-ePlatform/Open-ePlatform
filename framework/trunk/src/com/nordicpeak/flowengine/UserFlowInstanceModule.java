@@ -499,6 +499,19 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
+	@WebPublic(alias = "messages")
+	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException  {
+
+		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && NumberUtils.isInt(uriParser.get(3))) {
+			
+			redirectToMethod(req, res, "/overview/" + uriParser.get(2) + "/" + uriParser.get(3) + "#messages");
+			
+			return null;
+		}
+		
+		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
+	}
+	
 	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
 
 		showFlowInstanceOverviewElement.appendChild(flowInstance.toXML(doc));
