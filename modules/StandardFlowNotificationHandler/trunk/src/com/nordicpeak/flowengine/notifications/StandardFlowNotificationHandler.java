@@ -1888,15 +1888,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (flowFamily.getManagerGroupIDs() != null) {
 
 				List<User> groupUsers = systemInterface.getUserHandler().getUsersByGroups(flowFamily.getManagerGroupIDs(), true);
-
-				if (managers != null) {
-
-					CollectionUtils.addNewEntries(managers, groupUsers);
-
-					return managers;
-				}
-
-				return groupUsers;
+				
+				managers = CollectionUtils.addAndInstantiateIfNeeded(managers, groupUsers);
 			}
 
 			return managers;
