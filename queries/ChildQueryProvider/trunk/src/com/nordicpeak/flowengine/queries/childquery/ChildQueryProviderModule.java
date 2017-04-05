@@ -571,19 +571,10 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					return null;
 				}
 				
-//				Map<String, StoredChild> children = new HashMap<String, StoredChild>();
-//
-//				StoredChild child1 = new StoredChild("kalle", "kula", "200123456789");
-//				child1.setGuardians(Arrays.asList(new StoredGuardian[]{new StoredGuardian("förälder", "1", poster.getAttributeHandler().getString("citizenIdentifier")), new StoredGuardian("förälder", "2", "191234567890")}));
-//				children.put(child1.getCitizenIdentifier(), child1);
-//
-//				return children;
-				
 				if (childRelationProvider == null) {
 					
-					String error = "@InstanceManagerDependency childRelationProvider is null";
-					log.error(error);
-					queryInstance.setFetchChildrenException(new CommunicationException(error));
+					log.error("Missing required instance manager dependency: childRelationProvider");
+					queryInstance.setFetchChildrenException(new CommunicationException("Missing required instance manager dependency: childRelationProvider"));
 					return null;
 				}
 				
@@ -607,7 +598,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				} catch (ChildRelationProviderException e) {
 					
 					queryInstance.setFetchChildrenException(e);
-				} ;
+				}
 			}
 		}
 		
