@@ -93,7 +93,7 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 					errors.add(new ValidationError("EndTimeBeforeStartTime"));
 				}
 
-				if (DateUtils.daysBetween(startTime, endTime) < 0) {
+				if (DateUtils.getDaysBetween(startTime, endTime) < 0) {
 					errors.add(new ValidationError("DaysBetweenToSmall"));
 				}
 
