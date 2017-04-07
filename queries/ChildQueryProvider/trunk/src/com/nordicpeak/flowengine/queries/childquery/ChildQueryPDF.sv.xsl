@@ -12,7 +12,7 @@
 	<xsl:variable name="i18n.Column.Firstname">Förnamn</xsl:variable>
 	<xsl:variable name="i18n.Column.Lastname">Efternamn</xsl:variable>
 	<xsl:variable name="i18n.Column.SocialSecurityNumber">Personnummer</xsl:variable>
-	<xsl:variable name="i18n.Column.Address">Address</xsl:variable>
+	<xsl:variable name="i18n.Column.Address">Adress</xsl:variable>
 	<xsl:variable name="i18n.Column.Zipcode">Postnummer</xsl:variable>
 	<xsl:variable name="i18n.Column.PostalAddress">Postort</xsl:variable>
 </xsl:stylesheet>
