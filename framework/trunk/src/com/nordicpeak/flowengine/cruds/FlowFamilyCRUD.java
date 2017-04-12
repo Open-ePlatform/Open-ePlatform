@@ -104,7 +104,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 				List<Integer> allowedUserIDs = bean.getAllowedUserIDs();
 				List<Integer> allowedGroupIDs = bean.getAllowedGroupIDs();
 
-				for(User manager : managers) {
+				outer: for(User manager : managers) {
 
 					//User did not have access before, skip check
 					if(!AccessUtils.checkAccess(manager, unchangedFlowFamily)){
@@ -125,7 +125,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 							if(allowedGroupIDs.contains(group.getGroupID())) {
 								
-								continue;
+								continue outer;
 							}
 						}
 					}
