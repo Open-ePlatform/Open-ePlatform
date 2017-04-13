@@ -1653,6 +1653,29 @@
 				DROP TABLE `flowengine_flow_family_favourites`;
 	        ]]>
 	    </Query>
+	</Script>
+	
+	<Script version="84">
+	    <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `iconLastModified` DATETIME AFTER `icon`;				
+	        ]]>
+	    </Query>
+	    <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `iconLastModified` DATETIME AFTER `icon`;
+	        ]]>
+	    </Query>
+	    <Query>
+	        <![CDATA[
+				UPDATE flowengine_flows SET iconLastModified = CURRENT_TIMESTAMP();		
+	        ]]>
+	    </Query>
+	    <Query>
+	        <![CDATA[
+				UPDATE flowengine_flow_types SET iconLastModified = CURRENT_TIMESTAMP();
+	        ]]>
+	    </Query>	    
 	</Script>	
 	
 </DBScripts>

@@ -36,6 +36,7 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -352,6 +353,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				bean.setStatuses(statuses);
 			}
 		}
+		
+		bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 	}
 
 	@Override

@@ -425,7 +425,7 @@
   				<div class="heading-wrapper">
   					<div class="inner inner-less-padding">
 	  					<figure>
-		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" alt="" />
+		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
 		  				</figure>
 		  				<div class="heading">
 	  						<h1 class="xl">
@@ -913,7 +913,7 @@
 				<div class="heading-wrapper">
 					<div class="inner inner-less-padding">
 						<figure>
-							<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+							<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 						</figure>
 						<div class="heading">
 							<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name" /></h1>

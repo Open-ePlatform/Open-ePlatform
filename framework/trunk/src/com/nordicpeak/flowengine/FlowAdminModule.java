@@ -194,6 +194,7 @@ import com.nordicpeak.flowengine.interfaces.FlowFamilyEventHandler;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
@@ -1278,6 +1279,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					flow.setIcon(null);
 					flow.setIconFileName(null);
+					flow.setIconLastModified(TimeUtils.getCurrentTimestamp());
 
 					this.daoFactory.getFlowDAO().update(flow);
 
@@ -1328,6 +1330,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 									flow.setIcon(new SerialBlob(file.get()));
 									flow.setIconFileName(FilenameUtils.getName(filename));
 								}
+								
+								flow.setIconLastModified(TimeUtils.getCurrentTimestamp());
 
 								log.info("User " + user + " updating icon for flow " + flow);
 
@@ -1430,14 +1434,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Document doc = createDocument(req, uriParser, user);
 
-		Element updateFlowIconElement = doc.createElement("SortFlow");
-		doc.getDocumentElement().appendChild(updateFlowIconElement);
+		Element sortFlowElement = doc.createElement("SortFlow");
+		doc.getDocumentElement().appendChild(sortFlowElement);
 
-		updateFlowIconElement.appendChild(flow.toXML(doc));
+		sortFlowElement.appendChild(flow.toXML(doc));
 
 		if (validationError != null) {
 
-			updateFlowIconElement.appendChild(validationError.toXML(doc));
+			sortFlowElement.appendChild(validationError.toXML(doc));
 		}
 
 		return new SimpleForegroundModuleResponse(doc);
@@ -1494,10 +1498,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Document doc = createDocument(req, uriParser, user);
 
-		Element updateFlowIconElement = doc.createElement("SortStatuses");
-		doc.getDocumentElement().appendChild(updateFlowIconElement);
+		Element sortStatusesElement = doc.createElement("SortStatuses");
+		doc.getDocumentElement().appendChild(sortStatusesElement);
 
-		updateFlowIconElement.appendChild(flow.toXML(doc));
+		sortStatusesElement.appendChild(flow.toXML(doc));
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
@@ -4438,6 +4442,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	public Integer getMaxPDFFormFileSize() {
 		return maxPDFFormFileSize;
+	}
+
+	@Override
+	public Icon getFlowTypeIcon(Integer flowTypeID) {
+
+		return flowTypeCacheMap.get(flowTypeID);
+	}
+
+	@Override
+	public Icon getFlowIcon(Integer flowID) {
+
+		return flowCacheMap.get(flowID);
 	}
 
 }

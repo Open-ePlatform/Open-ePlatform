@@ -38,6 +38,7 @@ import se.unlogic.standardutils.image.ImageUtils;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -296,6 +297,8 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 			
 			setIcon(req, bean, user);
 		}
+		
+		bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 	}
 
 	@Override
@@ -315,6 +318,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 			bean.setIcon(null);
 			bean.setIconFileName(null);
+			bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 		}
 		
 		if (!(req instanceof MultipartRequest)) {
@@ -360,7 +364,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 				
 				bean.setIcon(new SerialBlob(byteArrayOutputStream.toByteArray()));
 				bean.setIconFileName(FileUtils.replaceFileExtension(FilenameUtils.getName(file.getName()), "png"));
-
+				bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 			}
 			
 		}

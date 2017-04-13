@@ -111,6 +111,7 @@ import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
@@ -1556,6 +1557,18 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public boolean isSaveSearchInSession() {
 	
 		return saveSearchInSession;
+	}
+
+	@Override
+	protected Icon getFlowTypeIcon(Integer flowTypeID) {
+
+		return flowAdminModule.getFlowTypeIcon(flowTypeID);
+	}
+
+	@Override
+	protected Icon getFlowIcon(Integer flowID) {
+
+		return flowAdminModule.getFlowIcon(flowID);
 	}
 	
 }

@@ -70,7 +70,7 @@
 		<div class="section-full padtop">
 			<div class="heading-wrapper">
 				<figure>
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 				</figure>
 				<div class="heading">
 					<xsl:if test="loggedIn">
@@ -121,7 +121,7 @@
 		<div class="section-full padtop">
 			<div class="heading-wrapper">
 				<figure>
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 				</figure>
 				<div class="heading">
 					<xsl:if test="loggedIn">
@@ -653,7 +653,7 @@
   				<div class="heading-wrapper">
   					<div class="inner inner-less-padding">
 	  					<figure>
-		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" alt="" />
+		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
 		  				</figure>
 		  				<div class="heading">
 	  						<h1 class="xl"><xsl:value-of select="Flow/name" /><b><xsl:text>&#160;</xsl:text>(<xsl:value-of select="Status/name" />)</b></h1>
@@ -1181,7 +1181,7 @@
 			<div class="section-full padtop">
   				<div class="heading-wrapper">
   					<figure>
-	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	  				</figure>
 	  				<div class="heading">
   						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name" /></h1>
@@ -1241,7 +1241,7 @@
 			<div class="section-full header-full">
   				<div class="heading-wrapper full">
   					<figure>
-	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	  				</figure>
 	  				<div class="heading">
   						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name" /><xsl:text>&#160;</xsl:text><b>(<xsl:value-of select="FlowInstance/Status/name" />)</b></h1>
@@ -1317,7 +1317,7 @@
 			<div class="section-full header-full">
   				<div class="heading-wrapper full">
   					<figure>
-	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	  				</figure>
 	  				<div class="heading">
   						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name" /><xsl:text>&#160;</xsl:text><b>(<xsl:value-of select="FlowInstance/Status/name" />)</b></h1>

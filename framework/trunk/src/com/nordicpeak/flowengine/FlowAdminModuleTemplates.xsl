@@ -221,7 +221,7 @@
 				<xsl:if test="HasPublishedVersion">published</xsl:if>
 			</xsl:attribute>
 			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}" width="25" alt="" />
+				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="25" alt="" />
 			</td>
 			<td data-title="{$i18n.flowName}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}">
@@ -411,7 +411,7 @@
 				</label>
 				
 				<div class="floatleft clearboth">
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" alt="" />							
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />							
 				</div>
 			</div>			
 			
@@ -1382,7 +1382,7 @@
 				<input type="radio" name="flowID" value="{flowID}" onclick="$('#add_new_version').show();$('#create_copy').show();"/>
 			</td>			
 			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}" width="25" alt="" />
+				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="25" alt="" />
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="name" /></a>
@@ -3043,7 +3043,7 @@
 				</label>
 				
 				<div class="floatleft clearboth">
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" id="icon" alt="" />							
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" id="icon" alt="" />							
 				</div>
 			</div>			
 			

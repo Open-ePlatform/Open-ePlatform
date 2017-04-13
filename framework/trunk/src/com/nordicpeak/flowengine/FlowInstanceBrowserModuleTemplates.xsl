@@ -218,7 +218,7 @@
 						</xsl:if>
 					
 						<div class="inner">
-							<figure><img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}" alt="" /></figure>
+							<figure><img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" alt="" /></figure>
 							<div>
 								<h2>
 									<xsl:value-of select="name" />
@@ -244,7 +244,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<div class="inner">
-						<figure><img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}" width="65" alt="" /></figure>
+						<figure><img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="65" alt="" /></figure>
 						<div>
 							<h2><xsl:value-of select="name" /><b class="hidden">(<xsl:value-of select="$i18n.FlowDisabled" />)</b></h2>
 							<span class="description">

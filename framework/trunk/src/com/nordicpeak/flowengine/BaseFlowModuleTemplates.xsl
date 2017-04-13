@@ -305,7 +305,7 @@
 			<div class="heading-wrapper">
 				<div class="inner">
 					<figure>
- 						<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+ 						<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	 				</figure>
 	 				<div class="heading">
 						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name"/></h1>
@@ -415,7 +415,7 @@
   					<xsl:variable name="submittedEvents" select="FlowInstance/events/FlowInstanceEvent[eventType='SUBMITTED']" />
   				
   					<figure>
-	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	  				</figure>
 	  				<div class="heading">
   						<h1 class="xl"><xsl:value-of select="$i18n.Receipt" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/Flow/name" /></h1>
@@ -626,7 +626,7 @@
 			<div class="heading-wrapper">
 				<div class="inner">
 					<figure>
- 						<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}" alt="" />
+ 						<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
 	 				</figure>
 	 				<div class="heading">
 						<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name"/></h1>

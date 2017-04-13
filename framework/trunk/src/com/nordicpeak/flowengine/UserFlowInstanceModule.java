@@ -108,6 +108,7 @@ import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
@@ -1248,5 +1249,17 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@Override
 	public ModuleDescriptor getModuleDescriptor() {
 		return moduleDescriptor;
+	}
+
+	@Override
+	protected Icon getFlowTypeIcon(Integer flowTypeID) throws SQLException {
+
+		return getBareFlowType(flowTypeID);
+	}
+
+	@Override
+	protected Icon getFlowIcon(Integer flowID) throws SQLException {
+
+		return getBareFlow(flowID);
 	}
 }

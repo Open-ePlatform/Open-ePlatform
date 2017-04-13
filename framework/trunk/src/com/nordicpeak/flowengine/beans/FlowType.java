@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Blob;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -23,11 +24,12 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
 
 @Table(name = "flowengine_flow_types")
 @XMLElement
-public class FlowType extends GeneratedElementable implements Serializable, ImmutableFlowType {
+public class FlowType extends GeneratedElementable implements Serializable, ImmutableFlowType, Icon {
 
 	private static final long serialVersionUID = 7195827633619267170L;
 
@@ -69,6 +71,10 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	@XMLElement
 	private String iconFileName;
 
+	@DAOManaged
+	@XMLElement
+	private Timestamp iconLastModified;	
+	
 	@DAOManaged
 	private transient Blob icon;
 
@@ -340,6 +346,27 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		this.allowAnonymousAccess = allowAnonymousAccess;
 	}
 
-	
+	@Override
+	public String getIconFilename() {
 
+		return iconFileName;
+	}
+
+	@Override
+	public Blob getIconBlob() {
+
+		return icon;
+	}
+
+	@Override
+	public Timestamp getIconLastModified() {
+
+		return iconLastModified;
+	}
+
+	
+	public void setIconLastModified(Timestamp iconLastModified) {
+	
+		this.iconLastModified = iconLastModified;
+	}
 }

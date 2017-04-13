@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.beans;
 import java.lang.reflect.Field;
 import java.sql.Blob;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.GeneratedElementable;
@@ -50,12 +52,13 @@ import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 @Table(name = "flowengine_flows")
 @XMLElement
-public class Flow extends GeneratedElementable implements ImmutableFlow, XMLParserPopulateable, Named {
+public class Flow extends GeneratedElementable implements ImmutableFlow, XMLParserPopulateable, Named, Icon{
 	
 	
 	private static final long serialVersionUID = -1533312692687401406L;
@@ -132,6 +135,9 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@XMLElement
 	private String iconFileName;
+	
+	@DAOManaged
+	private Timestamp iconLastModified;
 	
 	@DAOManaged
 	private transient Blob icon;
@@ -548,6 +554,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		XMLUtils.appendNewElement(doc, flowElement, "submittedMessage", submittedMessage);
 		XMLUtils.appendNewElement(doc, flowElement, "published", isPublished());
 		
+		if(iconLastModified != null){
+			
+			XMLUtils.appendNewElement(doc, flowElement, "IconLastModified", iconLastModified.getTime());
+		}
+		
 		return flowElement;
 	}
 	
@@ -800,6 +811,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.longDescription = XMLValidationUtils.validateParameter("longDescription", xmlParser, !skipOverview, 1, 16777215, StringPopulator.getPopulator(), errors);
 		
 		this.iconFileName = XMLValidationUtils.validateParameter("iconFileName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.iconLastModified = TimeUtils.getCurrentTimestamp();
 		
 		String icon = xmlParser.getString("icon");
 		
@@ -948,6 +960,29 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setPaymentSupportEnabled(boolean paymentSupportEnabled) {
 	
 		this.paymentSupportEnabled = paymentSupportEnabled;
+	}
+
+	@Override
+	public String getIconFilename() {
+
+		return this.iconFileName;
+	}
+
+	@Override
+	public Blob getIconBlob() {
+
+		return this.icon;
+	}
+	
+	public Timestamp getIconLastModified() {
+	
+		return iconLastModified;
+	}
+
+	
+	public void setIconLastModified(Timestamp iconLastModified) {
+	
+		this.iconLastModified = iconLastModified;
 	}
 	
 }

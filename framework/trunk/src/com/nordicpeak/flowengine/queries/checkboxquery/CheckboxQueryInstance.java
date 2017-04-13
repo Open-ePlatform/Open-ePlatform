@@ -18,7 +18,7 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
-import com.nordicpeak.flowengine.interfaces.ExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -27,7 +27,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "checkbox_query_instances")
 @XMLElement
-public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ExportableQueryInstance {
+public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ColumnExportableQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -203,7 +203,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 
 	@Override
-	public List<String> getExportValueLabels(QueryHandler queryHandler) {
+	public List<String> getColumnLabels(QueryHandler queryHandler) {
 
 		List<String> labels = new ArrayList<String>();
 
@@ -224,7 +224,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 	}
 
 	@Override
-	public List<String> getExportValues() {
+	public List<String> getColumnValues() {
 
 		List<String> values = new ArrayList<String>();
 

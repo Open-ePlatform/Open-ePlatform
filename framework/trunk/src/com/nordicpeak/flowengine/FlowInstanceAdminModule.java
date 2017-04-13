@@ -110,6 +110,7 @@ import com.nordicpeak.flowengine.interfaces.AdminFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
@@ -1626,5 +1627,17 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public ModuleDescriptor getModuleDescriptor() {
 		return moduleDescriptor;
+	}
+
+	@Override
+	protected Icon getFlowTypeIcon(Integer flowTypeID) throws SQLException {
+
+		return this.getBareFlowType(flowTypeID);
+	}
+
+	@Override
+	protected Icon getFlowIcon(Integer flowID) throws SQLException {
+
+		return this.getBareFlow(flowID);
 	}
 }

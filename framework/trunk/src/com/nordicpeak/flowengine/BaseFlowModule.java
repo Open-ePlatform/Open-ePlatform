@@ -2,9 +2,8 @@ package com.nordicpeak.flowengine;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -61,12 +60,10 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonObject;
-import se.unlogic.standardutils.mime.MimeUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.streams.StreamUtils;
+import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -136,6 +133,7 @@ import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -194,6 +192,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	private static final String PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.payment.modificationcount";
 	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
 
+	protected static final URL DEFAULT_FLOW_ICON = BaseFlowModule.class.getResource("staticcontent/pics/flow_default.png");
+	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Temp dir", description = "Directory for temporary files. Should be on the same filesystem as the file store for best performance. If not set system default temp directory will be used")
 	protected String tempDir;
@@ -1835,38 +1835,22 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (uriParser.size() == 3 && (flowTypeID = NumberUtils.toInt(uriParser.get(2))) != null) {
 
-			FlowType flowType = getBareFlowType(flowTypeID);
+			Icon icon = getFlowTypeIcon(flowTypeID);
 
-			if (flowType != null && flowType.getIcon() != null) {
-
-				InputStream in = null;
-				OutputStream out = null;
+			if (icon != null && icon.getIconBlob() != null) {
 
 				try {
 
-					HTTPUtils.setContentLength(flowType.getIcon().length(), res);
-
-					res.setContentType(MimeUtils.getMimeType(flowType.getIconFileName()));
-					res.setHeader("Content-Disposition", "inline; filename=\"" + FileUtils.toValidHttpFilename(flowType.getIconFileName()) + "\"");
-
-					in = flowType.getIcon().getBinaryStream();
-
-					out = res.getOutputStream();
-
-					StreamUtils.transfer(in, out);
+					HTTPUtils.sendBlob(icon.getIconBlob(), icon.getIconFilename(), icon.getIconLastModified(), req, res, ContentDisposition.INLINE);
 
 				} catch (RuntimeException e) {
 
-					log.debug("Caught exception " + e + " while sending image " + flowType.getIconFileName() + " to " + user);
+					log.debug("Caught exception " + e + " while sending image " + icon.getIconFilename() + " to " + user);
 
 				} catch (IOException e) {
 
-					log.debug("Caught exception " + e + " while sending image " + flowType.getIconFileName() + " to " + user);
+					log.debug("Caught exception " + e + " while sending image " + icon.getIconFilename() + " to " + user);
 
-				} finally {
-
-					CloseUtils.close(in);
-					CloseUtils.close(out);
 				}
 
 				return null;
@@ -1877,63 +1861,57 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
+	protected abstract Icon getFlowTypeIcon(Integer flowTypeID) throws SQLException;
+
 	@WebPublic(alias = "icon")
-	public ForegroundModuleResponse getFlowIcon(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException {
+	public ForegroundModuleResponse getFlowIcon(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, URINotFoundException {
 
 		Integer flowID = null;
 
 		if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null) {
 
-			Flow flow = getBareFlow(flowID);
+			Icon icon = getFlowIcon(flowID);
 
-			if (flow != null) {
-
-				InputStream in = null;
-				OutputStream out = null;
+			if (icon != null && icon.getIconBlob() != null) {
 
 				try {
-					if (flow.getIcon() != null) {
-
-						//TODO user HTTPUtils send file instead for 302 support
-						
-						HTTPUtils.setContentLength(flow.getIcon().length(), res);
-
-						res.setContentType(MimeUtils.getMimeType(flow.getIconFileName()));
-						res.setHeader("Content-Disposition", "inline; filename=\"" + FileUtils.toValidHttpFilename(flow.getIconFileName()) + "\"");
-
-						in = flow.getIcon().getBinaryStream();
-
-					} else {
-
-						in = BaseFlowModule.class.getResourceAsStream("staticcontent/pics/flow_default.png");
-						res.setContentType(MimeUtils.getMimeType("flow_default.png"));
-						res.setHeader("Content-Disposition", "inline; filename=\"flow_default.png\"");
-					}
-
-					out = res.getOutputStream();
-
-					StreamUtils.transfer(in, out);
+					res.setDateHeader("Expires", System.currentTimeMillis() + MillisecondTimeUnits.HOUR);
+					
+					HTTPUtils.sendBlob(icon.getIconBlob(), icon.getIconFilename(), icon.getIconLastModified(), req, res, ContentDisposition.INLINE);
 
 				} catch (RuntimeException e) {
 
-					log.debug("Caught exception " + e + " while sending image " + flow.getIconFileName() + " to " + user);
+					log.debug("Caught exception " + e + " while sending image " + icon.getIconFilename() + " to " + user);
 
 				} catch (IOException e) {
 
-					log.debug("Caught exception " + e + " while sending image " + flow.getIconFileName() + " to " + user);
-
-				} finally {
-
-					CloseUtils.close(in);
-					CloseUtils.close(out);
+					log.debug("Caught exception " + e + " while sending image " + icon.getIconFilename() + " to " + user);
 				}
+			
+			}else{
+			
+				try {
+					res.setDateHeader("Expires", System.currentTimeMillis() + MillisecondTimeUnits.HOUR);
+					
+					HTTPUtils.sendFile(DEFAULT_FLOW_ICON, DEFAULT_FLOW_ICON.openStream(), DEFAULT_FLOW_ICON.getFile(), req, res, ContentDisposition.INLINE);
 
-				return null;
+				} catch (RuntimeException e) {
+
+					log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+
+				} catch (IOException e) {
+
+					log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+				}
 			}
+		
+			return null;
 		}
 
 		throw new URINotFoundException(uriParser);
 	}
+
+	protected abstract Icon getFlowIcon(Integer flowID) throws SQLException;
 
 	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean mananger) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 

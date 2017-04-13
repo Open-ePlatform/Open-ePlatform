@@ -18,7 +18,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.interfaces.ExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -26,7 +26,7 @@ import com.nordicpeak.flowengine.queries.checkboxquery.CheckboxQueryInstance;
 
 @Table(name = "manual_multi_sign_query_instances")
 @XMLElement
-public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSignQueryinstance, ExportableQueryInstance {
+public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSignQueryinstance, ColumnExportableQueryInstance {
 
 	private static final long serialVersionUID = 2847121037559137804L;
 
@@ -201,7 +201,7 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 	}
 
 	@Override
-	public List<String> getExportValueLabels(QueryHandler queryHandler) {
+	public List<String> getColumnLabels(QueryHandler queryHandler) {
 
 		ManualMultiSignQueryProviderModule queryProvider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), ManualMultiSignQueryProviderModule.class);
 
@@ -217,7 +217,7 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 	}
 
 	@Override
-	public List<String> getExportValues() {
+	public List<String> getColumnValues() {
 
 		List<String> values = new ArrayList<String>();
 		

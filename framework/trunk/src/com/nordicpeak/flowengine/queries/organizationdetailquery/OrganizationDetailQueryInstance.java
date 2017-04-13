@@ -19,14 +19,14 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
-import com.nordicpeak.flowengine.interfaces.ExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 
 @Table(name = "organization_detail_query_instances")
 @XMLElement
-public class OrganizationDetailQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ExportableQueryInstance, ContactQueryInstance {
+public class OrganizationDetailQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, ContactQueryInstance {
 
 	private static final long serialVersionUID = -2166602898244004279L;
 
@@ -325,7 +325,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 	
 	@Override
-	public List<String> getExportValueLabels(QueryHandler queryHandler) {
+	public List<String> getColumnLabels(QueryHandler queryHandler) {
 
 		OrganizationDetailQueryProviderModule queryProvider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), OrganizationDetailQueryProviderModule.class);
 
@@ -346,7 +346,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 
 	@Override
-	public List<String> getExportValues() {
+	public List<String> getColumnValues() {
 
 		List<String> values = new ArrayList<String>();
 
