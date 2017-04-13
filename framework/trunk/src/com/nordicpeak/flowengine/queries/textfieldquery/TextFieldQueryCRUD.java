@@ -115,6 +115,8 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 
 		XMLUtils.appendNewElement(doc, showTypeElement, "showFlowURL", callback.getFlowAdminModule().getFlowQueryRedirectURL(req, bean.getQueryDescriptor().getStep().getFlow().getFlowID()));
 		
+		XMLUtils.append(doc, showTypeElement, callback.getFormatValidators());
+		
 		this.appendFieldLayouts(doc, showTypeElement);
 
 	}

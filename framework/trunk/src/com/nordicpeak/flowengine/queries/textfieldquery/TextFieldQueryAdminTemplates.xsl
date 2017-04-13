@@ -116,8 +116,21 @@
 				
 		<div class="floatleft hover border full marginbottom border-radius lightbackground">
 			
-			<div class="padding floatleft">
+			<div class="padding floatleft thirty">
 				<div class="marginleft"><b><xsl:value-of select="label" /></b></div>
+			</div>
+			<div class="padding floatleft twenty">
+				<xsl:if test="required">
+					<b><xsl:value-of select="$i18n.Required" /></b>
+				</xsl:if>
+			</div>
+			<div class="padding floatleft twenty">
+				<xsl:if test="formatValidator">
+				
+					<xsl:variable name="formatValidator" select="formatValidator"/>
+					
+					<b><xsl:value-of select="../../../FormatValidator[className = $formatValidator]/name" /></b>
+				</xsl:if>
 			</div>
 			<div class="padding floatright">
 				<div class="floatright marginright">

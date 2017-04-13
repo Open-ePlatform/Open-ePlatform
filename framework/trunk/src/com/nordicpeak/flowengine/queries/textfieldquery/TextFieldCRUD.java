@@ -108,7 +108,6 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 	protected void appendFormatValidators(Document doc, Element element) {
 
 		XMLUtils.append(doc, element, callback.getFormatValidators());
-
 	}
 
 	@Override
@@ -152,5 +151,4 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 
 		return sortIndex;
 	}
-
 }
