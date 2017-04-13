@@ -21,7 +21,7 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.interfaces.ExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -32,7 +32,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "child_query_instances")
 @XMLElement
-public class ChildQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, MultiSignQueryinstance, FixedAlternativesQueryInstance, ExportableQueryInstance {
+public class ChildQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, MultiSignQueryinstance, FixedAlternativesQueryInstance, ColumnExportableQueryInstance {
 	
 	
 	private static final long serialVersionUID = -7761759005604863873L;
@@ -343,7 +343,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	}
 	
 	@Override
-	public List<String> getExportValueLabels(QueryHandler queryHandler) {
+	public List<String> getColumnLabels(QueryHandler queryHandler) {
 		
 		ChildQueryProviderModule provider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), ChildQueryProviderModule.class);
 		
@@ -351,7 +351,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	}
 	
 	@Override
-	public List<String> getExportValues() {
+	public List<String> getColumnValues() {
 		
 		List<String> values = new ArrayList<String>();
 		
