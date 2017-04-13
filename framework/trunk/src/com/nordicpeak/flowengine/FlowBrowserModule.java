@@ -1461,7 +1461,9 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowMap.get(flowID)) != null) {
 			
-			if (!flow.isPublished() || !flow.isEnabled()) {
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			if (!flow.isPublished() || !flow.isEnabled() || !isFilterPublished(flow, profile)) {
 				
 				log.info("User " + user + " requested flow " + flow + " form PDF which is no longer available.");
 				
@@ -1479,7 +1481,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 					FlowForm flowForm = flow.getFlowForms().get(0);
 					flowForm.setFlow(flow);
 					
-					return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+					return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, profile, false);
 				}
 				
 			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
@@ -1496,7 +1498,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 							
 							flowForm.setFlow(flow);
 							
-							return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), false);
+							return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, profile, false);
 						}
 					}
 				}
