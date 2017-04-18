@@ -433,6 +433,10 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				errors.add(new ValidationError("MissingDefaultStatusMappingForMultiSigning"));
 			}
 
+			if(callback.isRequireManagers() && !bean.getFlowFamily().hasManagers()){
+				
+				errors.add(FlowAdminModule.NO_MANAGERS_VALIDATION_ERROR);
+			}
 		}
 
 		if (bean.isEnabled() && !hasRequiredContent(bean)) {

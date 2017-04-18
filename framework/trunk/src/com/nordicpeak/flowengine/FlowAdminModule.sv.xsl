@@ -484,4 +484,6 @@
 	<xsl:variable name="i18n.PaymentEnabled">Betalstöd</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowType.allowAnonymousAccess">Visa för ej inloggade användare</xsl:variable>
+	
+	<xsl:variable name="i18n.NoManagersSet">E-tjänsten går inte att publicera då den saknar handläggare.</xsl:variable>
 </xsl:stylesheet>

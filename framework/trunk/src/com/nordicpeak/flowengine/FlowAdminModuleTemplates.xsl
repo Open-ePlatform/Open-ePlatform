@@ -4795,6 +4795,13 @@
 	
 	</xsl:template>
 
+	<xsl:template match="validationError[messageKey='NoManagersSet']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.NoManagersSet" />
+		</p>	
+	</xsl:template>
+
 	<xsl:template match="validationError[messageKey='EvaluatorImportException']">
 	
 		<p class="error">

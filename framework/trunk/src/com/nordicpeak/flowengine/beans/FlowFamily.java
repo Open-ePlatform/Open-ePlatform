@@ -357,5 +357,10 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	
 		this.startButtonText = startButtonText;
 	}
+
+	public boolean hasManagers() {
+
+		return managerUserIDs != null || managerGroupIDs != null;
+	}
 	
 }

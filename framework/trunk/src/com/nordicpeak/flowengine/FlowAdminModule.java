@@ -223,7 +223,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public static final ValidationError MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR = new ValidationError("MayNotRemoveFlowFormIfNoSteps");
 	public static final ValidationError MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotAddFlowFormIfOverviewSkipIsSet");
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
-
+	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
+	
 	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
 
 	@SuppressWarnings("rawtypes")
@@ -339,6 +340,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
+	protected boolean requireManagers = false;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max flow icon width", description = "Max allowed flow icon width.")
@@ -4454,6 +4459,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public Icon getFlowIcon(Integer flowID) {
 
 		return flowCacheMap.get(flowID);
+	}
+
+	
+	public boolean isRequireManagers() {
+	
+		return requireManagers;
 	}
 
 }
