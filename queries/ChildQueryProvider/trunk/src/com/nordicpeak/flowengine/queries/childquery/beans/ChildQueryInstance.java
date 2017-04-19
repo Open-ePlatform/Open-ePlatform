@@ -367,10 +367,13 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		
 		StoredGuardian otherGuardian = null;
 		
-		for (StoredGuardian storedGuardian : storedGuardians) {
-			
-			if (!storedGuardian.isPoster()) {
-				otherGuardian = storedGuardian;
+		if(storedGuardians != null){
+		
+			for (StoredGuardian storedGuardian : storedGuardians) {
+				
+				if (!storedGuardian.isPoster()) {
+					otherGuardian = storedGuardian;
+				}
 			}
 		}
 		
