@@ -2891,7 +2891,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
 		res.setContentType("text/xml");
 
-		XMLUtils.writeXML(doc, res.getOutputStream(), true, systemInterface.getEncoding());
+		try {
+			XMLUtils.writeXML(doc, res.getOutputStream(), true, systemInterface.getEncoding());
+		} catch (TransformerException e) {
+			
+			log.info("Error sending exported flow " + flow + " to user " + user + ", " + e);
+		}
 
 		return null;
 	}
