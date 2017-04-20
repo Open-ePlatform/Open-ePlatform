@@ -170,8 +170,20 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	display: inline-block;
 }
 
-.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
-	margin-right: 3px;
+@media screen and (min-width: 766.99px) {
+	.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
+		margin-right: 3px;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.userflowinstances .errands-wrapper td.link a.btn:not(:last-child):nth-child(2n+1) {
+		margin-right: 2% !important;
+	}
+	
+	.userflowinstances .errands-wrapper td.link a.btn:nth-child(n+3) {
+		margin-top: 8px !important;
+	}
 }
 
 .upload.active .uploaded-flowtype-icon, .upload:hover .uploaded-flowtype-icon {
