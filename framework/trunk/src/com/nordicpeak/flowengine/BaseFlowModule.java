@@ -996,7 +996,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 
 		return null;
-	}	
+	}
 	
 	public SiteProfile getSiteProfile(FlowInstanceManager instanceManager) {
 		
@@ -1689,7 +1689,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return daoFactory.getFlowInstanceDAO().get(query);
 	}
 
-	private static String getNewInstanceManagerID(User user) {
+	protected static String getNewInstanceManagerID(User user) {
 
 		if (user != null && user.getUserID() != null) {
 
