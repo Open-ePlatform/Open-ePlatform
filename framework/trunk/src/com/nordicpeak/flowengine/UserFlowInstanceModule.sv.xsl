@@ -8,6 +8,7 @@
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 	
 	<xsl:variable name="java.notificationExternalMessage">Meddelande från handläggare</xsl:variable>
+	<xsl:variable name="java.userMenuTabTitle">Mina ärenden</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowName">E-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceID">Ärendenummer</xsl:variable>

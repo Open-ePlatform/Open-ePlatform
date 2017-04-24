@@ -1,96 +1,203 @@
 package com.nordicpeak.flowengine;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.backgroundmodules.AnnotatedBackgroundModule;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.beans.MenuItem;
-import se.unlogic.hierarchy.core.beans.SectionMenu;
-import se.unlogic.hierarchy.core.beans.SettingDescriptor;
+import se.unlogic.hierarchy.core.beans.SimpleBackgroundModuleDescriptor;
 import se.unlogic.hierarchy.core.beans.SimpleBackgroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.beans.ValueDescriptor;
+import se.unlogic.hierarchy.core.enums.SystemStatus;
+import se.unlogic.hierarchy.core.interfaces.BackgroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.BackgroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionDescriptor;
-import se.unlogic.hierarchy.core.sections.Section;
-import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
+import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 
-public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule {
-
-	@ModuleSetting
-	protected Integer sectionID;
+public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implements SystemStartupListener, Runnable {
+	
+	
+	public static final String REQUEST_DISABLE_MENU = UserFlowInstanceMenuModule.class.getSimpleName() + "_disable";
+	
+	protected CopyOnWriteArrayList<UserMenuProvider> extensionLinkProviders = new CopyOnWriteArrayList<UserMenuProvider>();
+	
+	@Override
+	public void init(BackgroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+		super.init(descriptor, sectionInterface, dataSource);
+		
+		if (!systemInterface.getInstanceHandler().addInstance(UserFlowInstanceMenuModule.class, this)) {
+			
+			throw new RuntimeException("Unable to register module in global instance handler using key " + UserFlowInstanceMenuModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+		
+		systemInterface.addStartupListener(this);
+	}
+	
+	@Override
+	public void unload() throws Exception {
+		
+		systemInterface.getInstanceHandler().removeInstance(UserFlowInstanceMenuModule.class, this);
+		
+		extensionLinkProviders.clear();
+		
+		super.unload();
+	}
+	
+	@Override
+	public void systemStarted() throws Exception {
+		
+		if (sectionInterface.getBackgroundModuleCache().isBeingCached(moduleDescriptor)) {
+			
+			log.info("Delaying alias generation until module is done caching");
+			new Thread(this).start();
+			
+		} else {
+			
+			generateAliases();
+		}
+	}
+	
+	private void generateAliases() {
+		
+		if (!sectionInterface.getBackgroundModuleCache().isCached(moduleDescriptor)) {
+			
+			log.error("Invalid state, module must be cached to allow generation of aliases!");
+			return;
+		}
+		
+		List<String> aliases = new ArrayList<String>();
+		
+		for (UserMenuProvider extensionLinkProvider : extensionLinkProviders) {
+			
+			String alias = extensionLinkProvider.getUserMenuAlias();
+			
+			if (!StringUtils.isEmpty(alias)) {
+				
+				if (alias.startsWith("/")) {
+					alias = alias.substring(1);
+				}
+				
+				aliases.add(alias + "*");
+			}
+		}
+		
+		SimpleBackgroundModuleDescriptor backgroundModuleDescriptor = (SimpleBackgroundModuleDescriptor) moduleDescriptor;
+		backgroundModuleDescriptor.setAliases(aliases);
+		
+		try {
+			sectionInterface.getBackgroundModuleCache().update(backgroundModuleDescriptor);
+			
+		} catch (Exception e) {
+			log.error("Error updating aliases", e);
+		}
+		
+		log.info("Generated " + aliases.size() + " aliases. " + StringUtils.toCommaSeparatedString(aliases));
+	}
+	
+	@Override
+	public void run() {
+		
+		try {
+			while (sectionInterface.getBackgroundModuleCache().isBeingCached(moduleDescriptor)) {
+				Thread.sleep(100);
+			}
+			
+			generateAliases();
+			
+		} catch (Throwable t) {
+			log.error("Error while generating aliases", t);
+		}
+	}
 	
 	@Override
 	protected BackgroundModuleResponse processBackgroundRequest(HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 		
-		if(sectionID != null) {
+		Boolean override = (Boolean) req.getAttribute(REQUEST_DISABLE_MENU);
 		
-			Entry<SectionDescriptor, Section> section = systemInterface.getRootSection().getSectionCache().getEntry(sectionID);
+		if (override != null && override) {
+			return null;
+		}
+		
+		Document doc = this.createDocument(req, uriParser, user);
+		
+		Element document = doc.getDocumentElement();
+		
+		String formattedURI = uriParser.getFormattedURI();
+		
+		for (UserMenuProvider linkProvider : extensionLinkProviders) {
 			
-			if(section != null){
-
-				SectionMenu sectionMenu = section.getValue().getMenuCache().getUserMenu(user, null, uriParser);
+			if (linkProvider.getAccessInterface() == null || AccessUtils.checkAccess(user, linkProvider.getAccessInterface())) {
 				
-				Document doc = this.createDocument(req, uriParser, user);
-				
-				Element document = doc.getDocumentElement();
-				
-				document.appendChild(section.getKey().toXML(doc));
-				
-				for(MenuItem menuItem : sectionMenu.getMenuItems()) {
-					document.appendChild(menuItem.toXML(doc));
+				try {
+					ExtensionLink link = linkProvider.getUserMenuExtensionLink(user);
+					
+					if (link != null) {
+						
+						Element linkElement = (Element) document.appendChild(link.toXML(doc));
+						
+						if (formattedURI.startsWith(linkProvider.getUserMenuAlias())) {
+							
+							XMLUtils.appendNewElement(doc, linkElement, "Active");
+						}
+					}
+					
+				} catch (Exception e) {
+					
+					log.error("Error getting extension link from provider " + linkProvider, e);
 				}
-				
-				return new SimpleBackgroundModuleResponse(doc);				
 			}
 		}
 		
-		return null;
+		return new SimpleBackgroundModuleResponse(doc);
 	}
 	
 	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
-
+		
 		Document doc = XMLUtils.createDomDocument();
 		Element document = doc.createElement("Document");
 		document.appendChild(XMLUtils.createElement("contextpath", req.getContextPath(), doc));
 		doc.appendChild(document);
 		return doc;
 	}
-
-	@Override
-	public List<SettingDescriptor> getSettings() {
-
-		ArrayList<SettingDescriptor> settingDescriptors = new ArrayList<SettingDescriptor>();
-
-		List<SectionDescriptor> sections = systemInterface.getRootSection().getSectionCache().getCachedSections();
-
-		List<ValueDescriptor> valueDescriptors = new ArrayList<ValueDescriptor>();
-
-		if(sections != null) {
-
-			for(SectionDescriptor section : sections) {
-
-				valueDescriptors.add(new ValueDescriptor(section.getName(), section.getSectionID()));
-
+	
+	public void addUserMenuProvider(UserMenuProvider e) {
+		
+		if (!extensionLinkProviders.contains(e)) {
+			
+			extensionLinkProviders.add(e);
+			
+			log.info("User menu provider " + e + " added");
+			
+			if (systemInterface.getSystemStatus() == SystemStatus.STARTED && sectionInterface.getBackgroundModuleCache().isCached(moduleDescriptor)) {
+				
+				generateAliases();
 			}
-
 		}
-
-		settingDescriptors.add(SettingDescriptor.createDropDownSetting("sectionID", "Section", "Choose which sectionmenu to show in this module", true, "", valueDescriptors));
-
-		ModuleUtils.addSettings(settingDescriptors, super.getSettings());
-
-		return settingDescriptors;
-
+	}
+	
+	public void removeUserMenuProvider(UserMenuProvider e) {
+		
+		extensionLinkProviders.remove(e);
+		
+		log.info("User menu provider " + e + " removed");
+		
+		if (systemInterface.getSystemStatus() == SystemStatus.STARTED && sectionInterface.getBackgroundModuleCache().isCached(moduleDescriptor)) {
+			
+			generateAliases();
+		}
 	}
 	
 }

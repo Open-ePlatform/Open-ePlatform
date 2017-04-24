@@ -11,12 +11,14 @@
 
 		<div id="MyPagesMenu" class="errand-menu buttons-in-desktop errand-page">
 
-		  	<a href="{contextpath}{section/fullAlias}" class="btn btn-dark">
-		  		<span data-icon-after="_" data-icon-before="L"><xsl:value-of select="section/name" /></span>
+		  	<a href="#" class="btn btn-dark">
+		  		<span data-icon-after="_" data-icon-before="L">Mina sidor</span>
 		  	</a>
 	
 		  	<ul>
-		  		<xsl:apply-templates select="menuitem" />
+		  		<xsl:apply-templates select="ExtensionLink" >
+		  			<xsl:sort select="slot"/>
+		  		</xsl:apply-templates>
 		  	</ul>
 	  	</div>
 
@@ -41,12 +43,44 @@
 								</xsl:when>
 							</xsl:choose>
 						</xsl:attribute>
+						<span class="text" title="{description}" data-icon-before=">">
+							<xsl:value-of select="name" />
+						</span>
+					</a>
+					
+				</xsl:when>
+				<xsl:otherwise>
+					
+					<xsl:attribute name="class">no-url</xsl:attribute>
+						
+					<xsl:value-of select="name"/>
+					
+					<xsl:if test="itemType='BLANK'">
+						<xsl:text>&#160;</xsl:text>
+					</xsl:if>
+								
+				</xsl:otherwise>
+			</xsl:choose>
+		</li>
+
+	</xsl:template>
+	
+	<xsl:template match="ExtensionLink">
+
+		<li>
+			<xsl:choose>
+				<xsl:when test="url">
+					
+					<a href="{/Document/contextpath}{url}">
+						<xsl:attribute name="class">
+							<xsl:text>btn btn-light</xsl:text>
+							<xsl:if test="Active"> active</xsl:if>
+						</xsl:attribute>
+					
 						<span class="text" title="{description}">
 							<xsl:attribute name="data-icon-before">
 								<xsl:choose>
-									<xsl:when test="name = 'Mina ärenden'">&#58894;</xsl:when>
-									<xsl:when test="name = 'Mina uppgifter'">u</xsl:when>
-									<xsl:when test="name = 'Mina engagemang' or name = 'Mina företag'">b</xsl:when>
+									<xsl:when test="icon"><xsl:value-of select="icon"/> </xsl:when>
 									<xsl:otherwise>&gt;</xsl:otherwise>
 								</xsl:choose>
 							</xsl:attribute>
@@ -70,5 +104,5 @@
 		</li>
 
 	</xsl:template>
-
+	
 </xsl:stylesheet>

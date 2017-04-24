@@ -10,14 +10,17 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -28,10 +31,13 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.beans.UserOrganization;
 import com.nordicpeak.flowengine.cruds.UserOrganizationCRUD;
+import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 
-public class UserOrganizationsModule extends AnnotatedForegroundModule implements CRUDCallback<User> {
+public class UserOrganizationsModule extends AnnotatedForegroundModule implements CRUDCallback<User>, UserMenuProvider {
 
 	protected UserOrganizationCRUD userOrganizationCRUD;
+	
+	protected UserFlowInstanceMenuModule userFlowInstanceMenuModule;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -42,7 +48,35 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + UserOrganizationsModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+	}
+	
+	@Override
+	public void unload() throws Exception {
+
+		systemInterface.getInstanceHandler().removeInstance(UserOrganizationsModule.class, this);
 		
+		if(userFlowInstanceMenuModule != null){
+			
+			setUserFlowInstanceMenuModule(null);
+		}
+		
+		super.unload();
+	}
+	
+	@InstanceManagerDependency
+	public void setUserFlowInstanceMenuModule(UserFlowInstanceMenuModule userFlowInstanceMenuModule) {
+
+		if(userFlowInstanceMenuModule == null && this.userFlowInstanceMenuModule != null){
+			
+			this.userFlowInstanceMenuModule.removeUserMenuProvider(this);
+		}
+		
+		this.userFlowInstanceMenuModule = userFlowInstanceMenuModule;
+
+		if (this.userFlowInstanceMenuModule != null) {
+
+			this.userFlowInstanceMenuModule.addUserMenuProvider(this);
+		}
 	}
 	
 	@Override
@@ -94,7 +128,7 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 	
 	public UserOrganization addOrganization(User user, UserOrganization organization) throws SQLException, ValidationException  {
 		
-		return userOrganizationCRUD.add(user, organization);		
+		return userOrganizationCRUD.add(user, organization);
 	}
 	
 	public UserOrganization updateOrganization(User user, UserOrganization organization) throws SQLException, ValidationException {
@@ -121,11 +155,18 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 	}
 	
 	@Override
-	public void unload() throws Exception {
+	public AccessInterface getAccessInterface() {
+		return moduleDescriptor;
+	}
+	
+	@Override
+	public String getUserMenuAlias() {
+		return getFullAlias();
+	}
 
-		super.unload();
-
-		systemInterface.getInstanceHandler().removeInstance(UserOrganizationsModule.class, this);
+	@Override
+	public ExtensionLink getUserMenuExtensionLink(User user) {
+		return new ExtensionLink(moduleDescriptor.getName(), getFullAlias(), "b", "3");
 	}
 	
 }
