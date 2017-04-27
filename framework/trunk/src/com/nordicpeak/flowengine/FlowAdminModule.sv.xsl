@@ -241,6 +241,7 @@
 	
 	<xsl:variable name="i18n.versions.description">Tabellen nedan visar samtliga versioner av denna e-tjänst. Markera en e-tjänst i listan för att skapa en ny version eller en helt ny e-tjänst baserat på den valda versionen.</xsl:variable>
 	<xsl:variable name="i18n.FlowNotFound">Den begärda e-tjänsten hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.FlowFormNotFound">Den begärda blanketten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.unknownQueryType">Okänd frågetyp</xsl:variable>
 	<xsl:variable name="i18n.unknownEvaluatorType">Okänd regeltyp</xsl:variable>
 	<xsl:variable name="i18n.administrateStandardStatuses">Adm. standardstatusar</xsl:variable>

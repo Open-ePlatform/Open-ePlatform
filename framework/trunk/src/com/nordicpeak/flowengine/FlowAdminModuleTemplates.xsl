@@ -5042,6 +5042,13 @@
 		</p>	
 	</xsl:template>	
 	
+	<xsl:template match="validationError[messageKey='DeleteFailedFlowFormNotFound' or messageKey='UpdateFailedFlowFormNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.FlowFormNotFound" />
+		</p>	
+	</xsl:template>
+	
 	<xsl:template match="validationError[messageKey='InvalidQuerySortIndex']">
 	
 		<p class="error">
