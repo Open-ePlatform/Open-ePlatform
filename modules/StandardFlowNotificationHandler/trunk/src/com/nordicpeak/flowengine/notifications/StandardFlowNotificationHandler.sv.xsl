@@ -198,6 +198,21 @@
 	
 	</xsl:variable>	
 	
+	<xsl:variable name="java.managerMentionedEmailSubject">$poster.firstname $poster.lastname har nämnt dig i en kommentar</xsl:variable>
+	<xsl:variable name="java.managerMentionedEmailMessage">
+	
+		&lt;p&gt;Hej $manager.firstname,&lt;/p&gt;
+
+		&lt;p&gt;$poster.firstname $poster.lastname har nämnt dig i en kommentar i interna meddelanden på ärendet $flow.name med ärendenummer $flowInstance.flowInstanceID.&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="i18n.UserNotifications">Notifikationer till medborgare</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserSMS">SMS vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.SendExternalMessageReceivedUserSMS">SMS vid nytt meddelande från handläggare</xsl:variable>
