@@ -663,19 +663,24 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 			for (FlowAdminExtensionViewProvider extensionProvider : extensionProviders) {
 
-				ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
+				try {
+					ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
 
-				if (viewFragment != null) {
+					if (viewFragment != null) {
 
-					Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
-					XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
-					XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
-					viewFragments.add(viewFragment);
+						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
+						viewFragments.add(viewFragment);
+					}
+
+				} catch (Exception e) {
+
+					log.error("Error while getting show view fragment for extension provider " + extensionProvider, e);
 				}
-			
 			}
 
-			if(!viewFragments.isEmpty()){
+			if (!viewFragments.isEmpty()) {
 				
 				req.setAttribute("ExtensionProviderFragments", viewFragments);
 			}
