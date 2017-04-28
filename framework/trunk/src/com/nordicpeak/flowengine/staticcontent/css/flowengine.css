@@ -170,6 +170,11 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	display: inline-block;
 }
 
+#FlowInstanceAdminModule .errands-wrapper .oep-table.flowinstance-table tbody tr:hover td {
+	background: #dddddd !important;
+	cursor: pointer;
+}
+
 @media screen and (min-width: 766.99px) {
 	.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
 		margin-right: 3px;

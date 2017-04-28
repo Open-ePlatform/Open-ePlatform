@@ -314,8 +314,8 @@ function searchFlowInstance() {
 				
 					$.each(result.hits, function( key, flowInstance) {
 
-						var $flowInstanceRow = $(
-							'<tr>' + 
+						var $flowInstanceRow = 
+							'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
 							'<td class"icon" />' +
 							'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
 							'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
@@ -323,7 +323,7 @@ function searchFlowInstance() {
 							'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
 							'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
 							'</tr>'
-						);
+						;
 			        	
 						$searchResultTable.append($flowInstanceRow);
 			        	

@@ -267,7 +267,7 @@
   				
   				<h2 class="h1 search-results-title"><span class="title" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.Hits.Part1" /><xsl:text>&#160;</xsl:text><span class="hits" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.Hits.Part2" /></h2>
   				<div class="errands-wrapper" style="display: none">
-  					<table class="oep-table">
+  					<table class="oep-table flowinstance-table">
   						<thead>
   							<tr>
   								<th class="icon no-sort"></th>
@@ -346,7 +346,7 @@
 						</xsl:call-template>
 					</div>
 					
-					<table class="oep-table">
+					<table class="oep-table flowinstance-table">
 						<thead class="sortable">
 							<tr>
 								<th class="icon no-sort"></th>
@@ -529,7 +529,7 @@
 	
 	<xsl:template match="FlowInstance" mode="prioritized">
 	
-		<tr class="emergency">
+		<tr class="emergency" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{flowInstanceID}'">
 			<td class="icon"><i data-icon-before="!"></i></td>
 			<td data-title="{$i18n.Flow}" class="service"><xsl:value-of select="Flow/name" /></td>
 			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno"><xsl:value-of select="flowInstanceID" /></td>
@@ -565,7 +565,7 @@
 	
 	<xsl:template match="FlowInstance" mode="list">
 	
-		<tr>
+		<tr onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{flowInstanceID}'">
 			<td class="icon"><i data-icon-before="!"></i></td>
 			<td data-title="{$i18n.Flow}" class="service"><xsl:value-of select="Flow/name" /></td>
 			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno"><xsl:value-of select="flowInstanceID" /></td>
@@ -597,7 +597,7 @@
 		
 		<xsl:param name="flowInstances" />
 		
-		<table class="oep-table">
+		<table class="oep-table flowinstance-table">
 			<thead class="sortable">
 				<tr>
 					<th class="icon no-sort"></th>
