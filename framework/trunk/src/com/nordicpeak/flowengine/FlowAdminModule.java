@@ -59,12 +59,17 @@ import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
 import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.SimpleBundleDescriptor;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleMenuItemDescriptor;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.comparators.PriorityComparator;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.enums.MenuItemType;
+import se.unlogic.hierarchy.core.enums.SystemStatus;
+import se.unlogic.hierarchy.core.enums.URLType;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
@@ -72,12 +77,15 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
 import se.unlogic.hierarchy.core.handlers.UserHandler;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.interfaces.BundleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.EventHandler;
 import se.unlogic.hierarchy.core.interfaces.EventListener;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.MenuItemDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.SettingHandler;
+import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
@@ -87,6 +95,7 @@ import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
 import se.unlogic.hierarchy.core.utils.crud.MultipartRequestFilter;
 import se.unlogic.hierarchy.core.utils.crud.TransactionRequestFilter;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
@@ -216,7 +225,7 @@ import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider {
+public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
 
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
@@ -224,7 +233,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public static final ValidationError MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotAddFlowFormIfOverviewSkipIsSet");
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
-	
+
 	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
 
 	@SuppressWarnings("rawtypes")
@@ -313,7 +322,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@XSLVariable(prefix = "java.")
 	private String eventStatusDeletedMessage = "eventStatusDeletedMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventFlowFormAddedMessage = "eventFlowFormAddedMessage";
 
@@ -322,13 +331,28 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@XSLVariable(prefix = "java.")
 	private String eventFlowFormDeletedMessage = "eventFlowFormDeletedMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventChangeFlowType = "eventChangeFlowType";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventStatusSortMessage = "eventStatusSortMessage";
+
+	@XSLVariable(prefix = "java.")
+	private String bundleListFlows= "List flows";
 	
+	@XSLVariable(prefix = "java.")
+	private String bundleAddFlow = "Add flow";
+
+	@XSLVariable(prefix = "java.")
+	private String bundleImportFlow = "Import flow";
+
+	@XSLVariable(prefix = "java.")
+	private String bundleStandardStatuses = "Administrate standard statuses";
+
+	@XSLVariable(prefix = "java.")
+	private String bundleFlowtypes = "Administrate flow types";
+
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin groups", description = "Groups allowed to administrate global parts of this module such as standard statuses")
 	protected List<Integer> adminGroupIDs;
@@ -340,7 +364,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
 	protected boolean requireManagers = false;
@@ -354,7 +378,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private int maxFlowIconHeight = 100;
 
 	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
+	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
 
 	@ModuleSetting(allowsNull = true)
@@ -362,7 +386,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected String cssPath;
 
 	@ModuleSetting(id = "pdfFormFilestore")
-	@TextFieldSettingDescriptor(id="pdfFormFilestore", name = "Flow PDF form filestore", description = "Directory where attached PDF forms are stored", required = true)
+	@TextFieldSettingDescriptor(id = "pdfFormFilestore", name = "Flow PDF form filestore", description = "Directory where attached PDF forms are stored", required = true)
 	protected String flowFormFilestore;
 
 	@ModuleSetting
@@ -386,16 +410,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected Integer recentFlowFamilyEventCount = 5;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Require tags", description="Controls if tags should be required when adding and updating flows")
+	@CheckboxSettingDescriptor(name = "Require tags", description = "Controls if tags should be required when adding and updating flows")
 	private boolean requireTags;
 
 	@ModuleSetting
-	@EnumDropDownSettingDescriptor(name="Default statistics mode", description="Controls the default statistics mode when adding new tags.")
+	@EnumDropDownSettingDescriptor(name = "Default statistics mode", description = "Controls the default statistics mode when adding new tags.")
 	private StatisticsMode defaultStatisticsMode = StatisticsMode.INTERNAL;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Use flowtype icon upload", description = "Controls whether flowtype icon upload should be used for flowtypes")
 	protected boolean useFlowTypeIconUpload = false;
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Use bundle instead of menuitem", description = "Controls whether bundle should be generated instead of menuitem")
+	protected boolean useBundle = false;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max flowtype icon width", description = "Max allowed flowtype icon width.")
@@ -405,7 +433,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@TextFieldSettingDescriptor(name = "Max flowtype icon height", description = "Max allowed flowtype icon height.")
 	private int maxFlowTypeIconHeight = 100;
 
-	@InstanceManagerDependency(required=true)
+	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
 
 	@InstanceManagerDependency
@@ -423,7 +451,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private FlowFormCRUD flowFormCRUD;
 
 	protected QueryParameterFactory<FlowFamily, Integer> flowFamiliyIDParamFactory;
-	
+
 	protected QueryParameterFactory<Flow, FlowFamily> flowFlowFamilyParamFactory;
 	protected QueryParameterFactory<Flow, Integer> flowVersionParamFactory;
 
@@ -466,6 +494,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+		
+		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
+			systemStarted();
+		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
+			systemInterface.addStartupListener(this);
+		}
 	}
 
 	@Override
@@ -490,7 +524,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		super.createDAOs(dataSource);
 
 		flowFamiliyIDParamFactory = daoFactory.getFlowFamilyDAO().getParamFactory("flowFamilyID", Integer.class);
-		
+
 		flowFlowFamilyParamFactory = daoFactory.getFlowDAO().getParamFactory("flowFamily", FlowFamily.class);
 		flowVersionParamFactory = daoFactory.getFlowDAO().getParamFactory("version", Integer.class);
 
@@ -560,11 +594,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		categoryDAOWrapper.setUseRelationsOnGet(true);
 
 		categoryCRUD = new CategoryCRUD(categoryDAOWrapper, this);
-		
+
 		AnnotatedDAOWrapper<FlowForm, Integer> flowFormDAOWrapper = daoFactory.getFlowFormDAO().getWrapper("flowFormID", Integer.class);
 		flowFormDAOWrapper.addRelations(FlowForm.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION);
 		flowFormDAOWrapper.setUseRelationsOnGet(true);
-		
+
 		flowFormCRUD = new FlowFormCRUD(flowFormDAOWrapper, this);
 		flowFormCRUD.addRequestFilter(new MultipartRequestFilter(this));
 
@@ -587,6 +621,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			log.error("Module " + this.moduleDescriptor + " has no/invalid PDF form filestore set, check modulesettings");
 		}
+
 	}
 
 	protected synchronized void cacheFlowTypes() throws SQLException {
@@ -743,7 +778,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return list(req, res, user, uriParser, (List<ValidationError>)null);
+		return list(req, res, user, uriParser, (List<ValidationError>) null);
 	}
 
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ValidationError validationError) throws ModuleConfigurationException, SQLException {
@@ -825,20 +860,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		FlowFamily flowFamily = lastestFlow.getFlowFamily();
 
-		for(Flow flow : flows){
+		for (Flow flow : flows) {
 
-			if(flow.getFlowFamily().equals(flowFamily)){
+			if (flow.getFlowFamily().equals(flowFamily)) {
 
 				versions++;
 				instances += flow.getFlowInstanceCount();
 				submittedInstances += flow.getFlowSubmittedInstanceCount();
 
-				if(!published && flow.isEnabled() && flow.isPublished()){
+				if (!published && flow.isEnabled() && flow.isPublished()) {
 
 					published = true;
 				}
 
-				if(!flow.isInternal()){
+				if (!flow.isInternal()) {
 
 					external = true;
 				}
@@ -849,11 +884,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		XMLUtils.appendNewElement(doc, flowElement, "InstanceCount", instances);
 		XMLUtils.appendNewElement(doc, flowElement, "SubmittedInstanceCount", submittedInstances);
 
-		if(external){
+		if (external) {
 			XMLUtils.appendNewElement(doc, flowElement, "HasExternalVersions");
 		}
 
-		if(published){
+		if (published) {
 
 			XMLUtils.appendNewElement(doc, flowElement, "HasPublishedVersion");
 		}
@@ -861,7 +896,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public boolean hasFlowTypeAccess(User user) {
 
-		if(AccessUtils.checkAccess(user, this) && !this.flowTypeCacheMap.isEmpty()){
+		if (AccessUtils.checkAccess(user, this) && !this.flowTypeCacheMap.isEmpty()) {
 
 			return true;
 		}
@@ -884,13 +919,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		String validationError = req.getParameter("error");
 
 		if (!StringUtils.isEmpty(validationError)) {
-			
+
 			if (validationError.equals(MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR.getMessageKey())) {
-				
+
 				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR));
-				
+
 			} else if (validationError.equals(MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR.getMessageKey())) {
-				
+
 				return flowCRUD.show(req, res, user, uriParser, Collections.singletonList(MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR));
 			}
 		}
@@ -940,10 +975,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		TransactionHandler transactionHandler = null;
 
-		try{
+		try {
 			transactionHandler = daoFactory.getTransactionHandler();
 
-			for(Flow flow : flows){
+			for (Flow flow : flows) {
 
 				if (flow.getSteps() != null) {
 
@@ -972,7 +1007,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			transactionHandler.commit();
 
-		}finally{
+		} finally {
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
@@ -1057,7 +1092,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				status.setStatusID(null);
 			}
 
-		}else{
+		} else {
 
 			statusConversionMap = null;
 		}
@@ -1085,11 +1120,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				}
 			}
 		}
-		
+
 		if (!CollectionUtils.isEmpty(flowCopy.getFlowForms())) {
-			
+
 			for (FlowForm flowForm : flowCopy.getFlowForms()) {
-				
+
 				flowForm.setFlowFormID(null);
 			}
 		}
@@ -1106,15 +1141,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			} else {
 
 				Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
-				
-				if(version == null){
-					
+
+				if (version == null) {
+
 					throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
 				}
-				
+
 				flowCopy.getFlowFamily().setVersionCount(version);
 				flowCopy.setVersion(version);
-				
+
 				daoFactory.getFlowFamilyDAO().update(flowCopy.getFlowFamily(), transactionHandler, null);
 				daoFactory.getFlowDAO().add(flowCopy, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
 			}
@@ -1198,24 +1233,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					stepIndex++;
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-				
+
 				for (int i = 0; i < flow.getFlowForms().size(); i++) {
-					
+
 					FlowForm flowForm = flow.getFlowForms().get(i);
 					FlowForm flowFormCopy = flowCopy.getFlowForms().get(i);
-					
+
 					if (StringUtils.isEmpty(flowForm.getExternalURL())) {
-						
+
 						File file = new File(getFlowFormFilePath(flowForm));
-						
+
 						if (!file.exists()) {
-							
+
 							log.error("Unable to find form file for flow form " + flowForm + " at " + file);
-							
+
 						} else {
-							
+
 							File fileCopy = new File(getFlowFormFilePath(flowFormCopy));
 							FileUtils.copyFile(file, fileCopy);
 						}
@@ -1226,18 +1261,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			try {
 				// Commit
 				transactionHandler.commit();
-				
+
 			} catch (SQLException e) {
-				
+
 				// Cleanup
 				if (!CollectionUtils.isEmpty(flowCopy.getFlowForms())) {
-					
+
 					for (FlowForm flowForm : flowCopy.getFlowForms()) {
-						
+
 						deleteFlowFormFile(flowForm);
 					}
 				}
-				
+
 				throw e;
 			}
 
@@ -1309,16 +1344,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						try {
 							BufferedImage image = ImageUtils.getImage(file.get());
 
-							if(image == null){
-								
+							if (image == null) {
+
 								validationError = new ValidationError("UnableToParseIcon");
-								
-							}else{
-								
+
+							} else {
+
 								image = ImageUtils.cropAsSquare(image);
-								
+
 								String filename = FilenameUtils.getName(file.getName());
-								
+
 								if (image.getWidth() > maxFlowIconWidth || image.getHeight() > maxFlowIconHeight) {
 
 									image = ImageUtils.scaleImage(image, maxFlowIconHeight, maxFlowIconWidth, Image.SCALE_SMOOTH, BufferedImage.TYPE_INT_ARGB);
@@ -1335,7 +1370,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 									flow.setIcon(new SerialBlob(file.get()));
 									flow.setIconFileName(FilenameUtils.getName(filename));
 								}
-								
+
 								flow.setIconLastModified(TimeUtils.getCurrentTimestamp());
 
 								log.info("User " + user + " updating icon for flow " + flow);
@@ -1348,9 +1383,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 								redirectToMethod(multipartRequest, res, "/showflow/" + flow.getFlowID());
 
-								return null;								
+								return null;
 							}
-							
 
 						} catch (IOException e) {
 
@@ -1367,10 +1401,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					return null;
 				}
 
-			} catch (FileUploadBase.SizeLimitExceededException e){
+			} catch (FileUploadBase.SizeLimitExceededException e) {
 
 				validationError = new RequestSizeLimitExceededValidationError(e.getActualSize(), maxRequestSize * BinarySizes.MegaByte);
-
 
 			} catch (FileUploadException e) {
 
@@ -1476,26 +1509,26 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
-			for(Status status : flow.getStatuses()) {
+			for (Status status : flow.getStatuses()) {
 
 				String sortIndex = req.getParameter("sortorder_" + status.getStatusID());
 
-				if(NumberUtils.isInt(sortIndex)) {
+				if (NumberUtils.isInt(sortIndex)) {
 
 					status.setSortIndex(NumberUtils.toInt(sortIndex));
 				}
-				
+
 				status.setFlow(flow);
 			}
 
 			daoFactory.getStatusDAO().update(flow.getStatuses(), null);
-			
+
 			addFlowFamilyEvent(eventStatusSortMessage, flow, user);
-			
+
 			getEventHandler().sendEvent(Status.class, new CRUDEvent<Status>(Status.class, CRUDAction.UPDATE, flow.getStatuses()), EventTarget.ALL);
 
 			redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#statuses");
-			
+
 			return null;
 		}
 
@@ -1510,7 +1543,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateNotifications(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
@@ -1537,7 +1570,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
-			try{
+			try {
 				notificationHandler.updateSettings(flow, req, user, uriParser);
 
 				log.info("User " + user + " updated notification settings for flow " + flow);
@@ -1548,7 +1581,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				return null;
 
-			}catch(ValidationException e){
+			} catch (ValidationException e) {
 
 				validationException = e;
 			}
@@ -1597,7 +1630,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		setFixedXSDAttribute("element[@name='FlowID']", flow.getFlowID(), flowSequenceElement, xPath);
 		setFixedXSDAttribute("element[@name='Version']", flow.getVersion(), flowSequenceElement, xPath);
 
-		if(flow.getStatuses() != null){
+		if (flow.getStatuses() != null) {
 
 			Element statusIDElement = (Element) xPath.evaluate("complexType[@name='Status']/sequence/element[@name='ID']", doc.getDocumentElement(), XPathConstants.NODE);
 
@@ -1609,7 +1642,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			restrictionElement.setAttribute("base", "xs:positiveInteger");
 
-			for(Status status : flow.getStatuses()){
+			for (Status status : flow.getStatuses()) {
 
 				Comment comment = doc.createComment("ID for status: " + status.getName());
 				restrictionElement.appendChild(comment);
@@ -1795,7 +1828,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		eventHandler.sendEvent(Step.class, new CRUDEvent<Step>(Step.class, CRUDAction.UPDATE, flow.getSteps()), EventTarget.ALL);
 
-		if(!queryDescriptorsCopy.isEmpty()){
+		if (!queryDescriptorsCopy.isEmpty()) {
 
 			eventHandler.sendEvent(QueryDescriptor.class, new CRUDEvent<QueryDescriptor>(QueryDescriptor.class, CRUDAction.UPDATE, queryDescriptorsCopy), EventTarget.ALL);
 		}
@@ -1842,7 +1875,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return statusCRUD.delete(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
@@ -1860,7 +1893,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return flowFormCRUD.delete(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic(alias = "standardstatuses")
 	public ForegroundModuleResponse listStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
@@ -1931,7 +1964,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			flowCRUD.checkAccess(user, flow);
 
-			if(skipOverview(flow, req, res, "testflow")){
+			if (skipOverview(flow, req, res, "testflow")) {
 
 				return null;
 			}
@@ -1987,7 +2020,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer available.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
 
-		}  catch (FlowNotAvailiableInRequestedFormat e) {
+		} catch (FlowNotAvailiableInRequestedFormat e) {
 
 			log.info("User " + user + " requested flow " + flowID + " which is not availiable in the requested format.");
 			return list(req, res, user, uriParser, FLOW_NOT_AVAILIABLE_IN_REQUESTED_FORMAT_VALIDATION_ERROR);
@@ -2196,15 +2229,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					closeInstanceManagers(flow);
 				}
-				
+
 				if (event.getAction() == CRUDAction.DELETE) {
-					
+
 					for (Flow flow : (List<Flow>) event.getBeans()) {
-						
+
 						if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-							
+
 							for (FlowForm flowForm : flow.getFlowForms()) {
-								
+
 								deleteFlowFormFile(flowForm);
 							}
 						}
@@ -2222,7 +2255,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				for (QueryDescriptor queryDescriptor : (List<QueryDescriptor>) event.getBeans()) {
 
-					if(queryDescriptor.getStep() == null || queryDescriptor.getStep().getFlow() == null){
+					if (queryDescriptor.getStep() == null || queryDescriptor.getStep().getFlow() == null) {
 
 						log.error("Received CRUD event regarding query descriptor " + queryDescriptor + " without a flow set.");
 
@@ -2238,17 +2271,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
 				}
-				
+
 			} else if (FlowForm.class.isAssignableFrom(event.getBeanClass())) {
 
 				cacheFlows();
-				
+
 				//TODO only re-cache affected flows
-//				for (FlowForm flowForm : (List<FlowForm>) event.getBeans()) {
-//
-//					Integer flowID = flowForm.getFlow().getFlowID();
-//
-//				}
+				//				for (FlowForm flowForm : (List<FlowForm>) event.getBeans()) {
+				//
+				//					Integer flowID = flowForm.getFlow().getFlowID();
+				//
+				//				}
 			}
 
 			cacheFlows();
@@ -2351,7 +2384,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public void checkFlowStructureManipulationAccess(User user, Flow flow) throws AccessDeniedException, SQLException {
 
-		if(!flow.isInternal()) {
+		if (!flow.isInternal()) {
 
 			throw new AccessDeniedException("Requested flow is external and cannot be structure manipulated");
 
@@ -2377,7 +2410,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@Override
 	public String getAbsoluteFileURL(URIParser uriParser, Object bean) {
 
-		if(ckConnectorModuleAlias != null){
+		if (ckConnectorModuleAlias != null) {
 
 			return uriParser.getContextPath() + ckConnectorModuleAlias;
 		}
@@ -2640,7 +2673,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flowInstance.setOwners(Collections.singletonList(user));
 				flowInstance.setAdded(now);
 
-				if(flowInstance.getEvents() == null){
+				if (flowInstance.getEvents() == null) {
 
 					flowInstance.setEvents(new ArrayList<FlowInstanceEvent>(1));
 				}
@@ -2709,7 +2742,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public SettingHandler getSiteProfileSettingHandler(User user, HttpServletRequest req, URIParser uriParser) {
 
-		if(siteProfileHandler != null) {
+		if (siteProfileHandler != null) {
 
 			return siteProfileHandler.getCurrentSettingHandler(user, req, uriParser);
 		}
@@ -2718,11 +2751,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	}
 
-	public boolean changeQueryTypeID(String oldQueryTypeID, String newQueryTypeID) throws SQLException{
+	public boolean changeQueryTypeID(String oldQueryTypeID, String newQueryTypeID) throws SQLException {
 
 		TransactionHandler transactionHandler = null;
 
-		try{
+		try {
 			transactionHandler = daoFactory.getTransactionHandler();
 
 			AnnotatedDAO<QueryDescriptor> queryDescriptorDAO = daoFactory.getQueryDescriptorDAO();
@@ -2734,7 +2767,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			Integer newMatchCount = queryDescriptorDAO.getCount(newIdCheckQuery, transactionHandler);
 
-			if(newMatchCount != null && newMatchCount > 0){
+			if (newMatchCount != null && newMatchCount > 0) {
 
 				log.error("Refusing to change queryTypeID from " + oldQueryTypeID + " to " + newQueryTypeID + " since there already exists " + newMatchCount + " query descriptors of this type in DB");
 
@@ -2748,7 +2781,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			Integer oldMatchCount = queryDescriptorDAO.getCount(oldIdCheckQuery, transactionHandler);
 
-			if(oldMatchCount == null || oldMatchCount == 0){
+			if (oldMatchCount == null || oldMatchCount == 0) {
 
 				return true;
 			}
@@ -2776,13 +2809,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return true;
 
-		}finally{
+		} finally {
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
 	}
 
-	public int getQueryCount(String queryTypeID) throws SQLException{
+	public int getQueryCount(String queryTypeID) throws SQLException {
 
 		AnnotatedDAO<QueryDescriptor> queryDescriptorDAO = daoFactory.getQueryDescriptorDAO();
 
@@ -2797,7 +2830,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		TransactionHandler transactionHandler = null;
 
-		try{
+		try {
 			transactionHandler = daoFactory.getTransactionHandler();
 
 			AnnotatedDAO<EvaluatorDescriptor> evaluatorDescriptorDAO = daoFactory.getEvaluatorDescriptorDAO();
@@ -2809,7 +2842,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			Integer newMatchCount = evaluatorDescriptorDAO.getCount(newIdCheckQuery, transactionHandler);
 
-			if(newMatchCount != null && newMatchCount > 0){
+			if (newMatchCount != null && newMatchCount > 0) {
 
 				log.error("Refusing to change evaluatorTypeID from " + oldEvaluatorTypeID + " to " + newEvaluatorTypeID + " since there already exists " + newMatchCount + " evaluator descriptors of this type in DB");
 
@@ -2823,7 +2856,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			Integer oldMatchCount = evaluatorDescriptorDAO.getCount(oldIdCheckQuery, transactionHandler);
 
-			if(oldMatchCount == null || oldMatchCount == 0){
+			if (oldMatchCount == null || oldMatchCount == 0) {
 
 				return true;
 			}
@@ -2844,7 +2877,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return true;
 
-		}finally{
+		} finally {
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
@@ -2882,7 +2915,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Document doc = getExportFlowDocument(flow, validationErrors);
 
-		if(!validationErrors.isEmpty()){
+		if (!validationErrors.isEmpty()) {
 
 			return flowCRUD.showBean(flow, req, res, user, uriParser, validationErrors);
 		}
@@ -2922,7 +2955,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return doc;
 	}
 
-	@WebPublic(toLowerCase = true, alias="importversion")
+	@WebPublic(toLowerCase = true, alias = "importversion")
 	public ForegroundModuleResponse importFlowIntoExistingFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
 
 		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.SHOW);
@@ -2939,7 +2972,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return importFlow(flow.getFlowType(), flow, req, res, user, uriParser);
 	}
 
-	@WebPublic(toLowerCase = true, alias="importflow")
+	@WebPublic(toLowerCase = true, alias = "importflow")
 	public ForegroundModuleResponse importFlowIntoNewFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
 
 		FlowType flowType = this.flowTypeCRUD.getRequestedBean(req, res, user, uriParser, FlowCRUD.SHOW);
@@ -2956,7 +2989,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return new SimpleForegroundModuleResponse(doc);
 
-		}else if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
+		} else if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flowType);
 		}
@@ -2964,7 +2997,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return importFlow(flowType, null, req, res, user, uriParser);
 	}
 
-	public synchronized ForegroundModuleResponse importFlow(FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws InstantiationException, IllegalAccessException, SQLException, IOException{
+	public synchronized ForegroundModuleResponse importFlow(FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws InstantiationException, IllegalAccessException, SQLException, IOException {
 
 		ValidationException validationException = null;
 
@@ -2999,75 +3032,75 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			}
 		}
 
-		if(req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)){
+		if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
 
 			log.info("User " + user + " importing flow...");
 
 			MultipartRequest multipartRequest = null;
 
-			try{
+			try {
 				multipartRequest = new MultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, req);
 				req = multipartRequest;
 
-				if(multipartRequest.getFileCount() == 0  || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))){
+				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
 
 					throw new ValidationException(new ValidationError("NoAttachedFile"));
 				}
 
 				FileItem fileItem = multipartRequest.getFile(0);
 
-				if(!fileItem.getName().endsWith(".oeflow")){
+				if (!fileItem.getName().endsWith(".oeflow")) {
 
 					throw new ValidationException(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oeflow"));
 				}
 
 				InputStream inputStream = null;
 
-				try{
+				try {
 					inputStream = fileItem.getInputStream();
 
 					validationException = importFlow(inputStream, FilenameUtils.getName(fileItem.getName()), flowType, relatedFlow, multipartRequest, res, user, uriParser);
 
-				}finally{
+				} finally {
 
 					CloseUtils.close(inputStream);
 				}
 
-			}catch(ValidationException e){
+			} catch (ValidationException e) {
 
 				validationException = e;
 
-			}catch(SizeLimitExceededException e){
+			} catch (SizeLimitExceededException e) {
 
 				validationException = new ValidationException(new RequestSizeLimitExceededValidationError(e.getActualSize(), e.getPermittedSize()));
 
-			}catch(FileSizeLimitExceededException e){
+			} catch (FileSizeLimitExceededException e) {
 
 				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
 
-			}catch(FileUploadException e){
+			} catch (FileUploadException e) {
 
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
-			}finally{
+			} finally {
 
-				if(validationException != null){
+				if (validationException != null) {
 
 					log.info("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
 				}
 
-				if(multipartRequest != null){
+				if (multipartRequest != null) {
 
 					multipartRequest.deleteFiles();
 				}
 			}
 		}
 
-		if(relatedFlow != null){
+		if (relatedFlow != null) {
 
 			log.info("User " + user + " requested flow version import form for flow familiy " + relatedFlow.getFlowFamily());
 
-		}else{
+		} else {
 
 			log.info("User " + user + " listing flow import form");
 		}
@@ -3079,8 +3112,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		importFlowElement.appendChild(flowType.toXML(doc));
 		XMLUtils.append(doc, importFlowElement, relatedFlow);
 
-
-		if(validationException != null){
+		if (validationException != null) {
 			importFlowElement.appendChild(validationException.toXML(doc));
 			importFlowElement.appendChild(RequestUtils.getRequestParameters(req, doc, "categoryID"));
 		}
@@ -3286,7 +3318,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					status.setStatusID(null);
 				}
 
-			}else{
+			} else {
 
 				statusConversionMap = null;
 			}
@@ -3305,15 +3337,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				} else {
 
 					Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
-					
-					if(version == null){
-						
+
+					if (version == null) {
+
 						throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
 					}
-					
+
 					flow.setVersion(version);
 					flow.getFlowFamily().setVersionCount(version);
-					
+
 					daoFactory.getFlowFamilyDAO().update(flow.getFlowFamily(), transactionHandler, null);
 					daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
 				}
@@ -3388,29 +3420,29 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						}
 					}
 				}
-				
+
 				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-					
+
 					if (flow.getFlowForms().size() == 1) {
-						
+
 						String oldFlowForm = xmlParser.getString("/Flow/PDF");
-						
+
 						// Handle old flow form format
 						if (!StringUtils.isEmpty(oldFlowForm)) {
-							
+
 							byte[] pdfFileContents = Base64.decode(xmlParser.getString("/Flow/PDF"));
-							
+
 							if (pdfFileContents != null) {
-								
+
 								FileUtils.writeFile(getFlowFormFilePath(flow.getFlowForms().get(0)), pdfFileContents);
 							}
 						}
 					}
-					
+
 					for (FlowForm flowForm : flow.getFlowForms()) {
-						
+
 						if (flowForm.getImportFileContents() != null) {
-							
+
 							FileUtils.writeFile(new File(getFlowFormFilePath(flowForm)), flowForm.getImportFileContents());
 						}
 					}
@@ -3419,18 +3451,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				try {
 					// Commit
 					transactionHandler.commit();
-					
+
 				} catch (SQLException e) {
-					
+
 					// Cleanup
 					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-						
+
 						for (FlowForm flowForm : flow.getFlowForms()) {
-							
+
 							deleteFlowFormFile(flowForm);
 						}
 					}
-					
+
 					throw e;
 				}
 
@@ -3465,20 +3497,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private Integer getNextVersion(Integer flowFamilyID, TransactionHandler transactionHandler) throws SQLException {
 
 		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>();
-		
+
 		query.addParameter(flowFamiliyIDParamFactory.getParameter(flowFamilyID));
-		
+
 		FlowFamily flowFamily = daoFactory.getFlowFamilyDAO().get(query, transactionHandler);
-		
-		if(flowFamily != null){
-			
+
+		if (flowFamily != null) {
+
 			return flowFamily.getVersionCount() + 1;
 		}
-		
+
 		return null;
 	}
 
-	@WebPublic(toLowerCase = true, alias="importqueries")
+	@WebPublic(toLowerCase = true, alias = "importqueries")
 	public ForegroundModuleResponse importQueries(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
 
 		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.SHOW);
@@ -3494,31 +3526,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		ValidationException validationException = null;
 
-		if(req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)){
+		if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
 
 			log.info("User " + user + " importing queries into flow " + flow);
 
 			MultipartRequest multipartRequest = null;
 
-			try{
+			try {
 				multipartRequest = new MultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, req);
 				req = multipartRequest;
 
 				Integer stepID = NumberUtils.toInt(req.getParameter("stepID"));
 
-				if(stepID == null){
+				if (stepID == null) {
 
 					throw new ValidationException(new ValidationError("stepID", ValidationErrorType.RequiredField));
 				}
 
 				Step step = flow.getStep(stepID);
 
-				if(step == null){
+				if (step == null) {
 
 					throw new ValidationException(new ValidationError("SelectedStepNotFound"));
 				}
 
-				if(multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))){
+				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
 
 					throw new ValidationException(new ValidationError("NoAttachedFile"));
 				}
@@ -3528,14 +3560,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				List<ValidationError> validationErrors = new ArrayList<ValidationError>(multipartRequest.getFileCount());
 				List<QueryDescriptor> queryDescriptors = new ArrayList<QueryDescriptor>(multipartRequest.getFileCount());
 
-				for(FileItem fileItem : multipartRequest.getFiles()){
+				for (FileItem fileItem : multipartRequest.getFiles()) {
 
-					if(fileItem.getName().equals("")){
+					if (fileItem.getName().equals("")) {
 
 						continue;
 					}
 
-					if(!fileItem.getName().endsWith(".oequery")){
+					if (!fileItem.getName().endsWith(".oequery")) {
 
 						validationErrors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oequery"));
 						continue;
@@ -3545,26 +3577,26 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					Document doc = null;
 
-					try{
+					try {
 						inputStream = fileItem.getInputStream();
 
 						doc = XMLUtils.parseXML(inputStream, false, false);
 
-					}catch(Exception e){
+					} catch (Exception e) {
 
 						log.info("Unable to parse file " + FilenameUtils.getName(fileItem.getName()), e);
 
 						validationErrors.add(new UnableToParseFileValidationError(FilenameUtils.getName(fileItem.getName())));
 						continue;
 
-					}finally{
+					} finally {
 
 						CloseUtils.close(inputStream);
 					}
 
 					Element docElement = doc.getDocumentElement();
 
-					if(!docElement.getTagName().equals("QueryDescriptor")){
+					if (!docElement.getTagName().equals("QueryDescriptor")) {
 
 						log.info("Error parsing file " + fileItem.getName() + ", unable to find flow element");
 
@@ -3588,17 +3620,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					}
 
 					//Check if a query provider for this query type is available
-					if(queryHandler.getQueryProvider(queryDescriptor.getQueryTypeID()) == null){
+					if (queryHandler.getQueryProvider(queryDescriptor.getQueryTypeID()) == null) {
 
 						log.info("Unable to find query provider for query type " + queryDescriptor.getQueryTypeID() + " used by query " + queryDescriptor);
 
 						validationErrors.add(new QueryTypeNotFoundValidationError(queryDescriptor));
 						continue;
 
-					}else{
+					} else {
 
 						//Check if this query type is allowed for the select flowtype
-						if(flow.getFlowType().getAllowedQueryTypes() == null || !flow.getFlowType().getAllowedQueryTypes().contains(queryDescriptor.getQueryTypeID())){
+						if (flow.getFlowType().getAllowedQueryTypes() == null || !flow.getFlowType().getAllowedQueryTypes().contains(queryDescriptor.getQueryTypeID())) {
 
 							validationErrors.add(new QueryTypeNotAllowedInFlowTypeValidationError(queryDescriptor, flow.getFlowType()));
 							continue;
@@ -3609,12 +3641,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					queryDescriptors.add(queryDescriptor);
 				}
 
-
-				if(!validationErrors.isEmpty()){
+				if (!validationErrors.isEmpty()) {
 
 					throw new ValidationException(validationErrors);
 
-				}else if(queryDescriptors.isEmpty()){
+				} else if (queryDescriptors.isEmpty()) {
 
 					throw new ValidationException(new ValidationError("NoAttachedFile"));
 				}
@@ -3622,12 +3653,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				//Create transaction
 				TransactionHandler transactionHandler = null;
 
-				try{
+				try {
 					transactionHandler = daoFactory.getTransactionHandler();
 
 					this.daoFactory.getQueryDescriptorDAO().addAll(queryDescriptors, transactionHandler, null);
 
-					for(QueryDescriptor queryDescriptor : queryDescriptors){
+					for (QueryDescriptor queryDescriptor : queryDescriptors) {
 
 						try {
 							queryDescriptor.setStep(null);
@@ -3635,7 +3666,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 						} catch (Exception e) {
 
-							log.error("Error importing query " + queryDescriptor + " of type " + queryDescriptor.getQueryTypeID() + " into flow " + flow + " uploaded by user " + user ,e);
+							log.error("Error importing query " + queryDescriptor + " of type " + queryDescriptor.getQueryTypeID() + " into flow " + flow + " uploaded by user " + user, e);
 
 							throw new ValidationException(new QueryImportValidationError(queryDescriptor));
 						}
@@ -3652,35 +3683,35 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#steps");
 
-				}finally{
+				} finally {
 
 					TransactionHandler.autoClose(transactionHandler);
 				}
 
-			}catch(ValidationException e){
+			} catch (ValidationException e) {
 
 				validationException = e;
 
-			}catch(SizeLimitExceededException e){
+			} catch (SizeLimitExceededException e) {
 
 				validationException = new ValidationException(new RequestSizeLimitExceededValidationError(e.getActualSize(), e.getPermittedSize()));
 
-			}catch(FileSizeLimitExceededException e){
+			} catch (FileSizeLimitExceededException e) {
 
 				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
 
-			}catch(FileUploadException e){
+			} catch (FileUploadException e) {
 
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
-			}finally{
+			} finally {
 
-				if(validationException != null){
+				if (validationException != null) {
 
 					log.info("Import of queries by user " + user + " into flow " + flow + " failed due to validation error(s) " + validationException);
 				}
 
-				if(multipartRequest != null){
+				if (multipartRequest != null) {
 
 					multipartRequest.deleteFiles();
 				}
@@ -3695,7 +3726,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		importQueriesElement.appendChild(flow.toXML(doc));
 
-		if(validationException != null){
+		if (validationException != null) {
 			importQueriesElement.appendChild(validationException.toXML(doc));
 		}
 
@@ -3710,7 +3741,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Integer sortIndex = query.executeQuery();
 
-		if(sortIndex == null){
+		if (sortIndex == null) {
 
 			return 0;
 		}
@@ -3741,11 +3772,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		queryDescriptor.setStep(null);
 
-		if(queryDescriptor.getEvaluatorDescriptors() != null){
+		if (queryDescriptor.getEvaluatorDescriptors() != null) {
 
 			queryDescriptor.setEvaluatorDescriptors(null);
 		}
-
 
 		Document doc = XMLUtils.createDomDocument();
 
@@ -3787,13 +3817,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		List<QueryDescriptor> targetQueries = null;
 
-		for(Step step : steps){
+		for (Step step : steps) {
 
-			if(step.getQueryDescriptors() != null){
+			if (step.getQueryDescriptors() != null) {
 
-				for(QueryDescriptor queryDescriptor : step.getQueryDescriptors()){
+				for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
 
-					if(targetQueryIDs.contains(queryDescriptor.getQueryID())){
+					if (targetQueryIDs.contains(queryDescriptor.getQueryID())) {
 
 						targetQueries = CollectionUtils.addAndInstantiateIfNeeded(targetQueries, queryDescriptor);
 					}
@@ -3830,7 +3860,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return userGroupListConnector.getGroups(req, res, user, uriParser);
 	}
 
-
 	public FlowNotificationHandler getNotificationHandler() {
 
 		return notificationHandler;
@@ -3854,51 +3883,51 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse getFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		Integer flowFormID;
 		Integer flowID;
 		Flow flow;
-		
+
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
-			
+
 			flowCRUD.checkAccess(user, flow);
-			
+
 			if (CollectionUtils.isEmpty(flow.getFlowForms())) {
-				
+
 				log.info("User " + user + " requested flow " + flow.getFlowID() + " which is not availiable in the requested format.");
-				
+
 				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
 			}
-			
+
 			boolean raw = req.getParameter("raw") != null;
-			
+
 			if (uriParser.size() == 3) {
-				
+
 				FlowForm flowForm = flow.getFlowForms().get(0);
 				flowForm.setFlow(flow);
-				
+
 				return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
-				
+
 			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
-				
+
 				for (FlowForm flowForm : flow.getFlowForms()) {
-					
+
 					if (flowForm.getFlowFormID().equals(flowFormID)) {
-						
+
 						flowForm.setFlow(flow);
-						
+
 						return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
 					}
 				}
 			}
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
 
 	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws IOException, ModuleConfigurationException, URINotFoundException {
 
-		if(!StringUtils.isEmpty(flowForm.getExternalURL())){
+		if (!StringUtils.isEmpty(flowForm.getExternalURL())) {
 
 			res.sendRedirect(flowForm.getExternalURL());
 			return null;
@@ -3922,7 +3951,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		File sentFile = file;
 
-		if(!unmodified){
+		if (!unmodified) {
 
 			for (PDFRequestFilter filter : pdfRequestFilters) {
 
@@ -3945,7 +3974,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		// Remove temporary file
-		if(file != sentFile){
+		if (file != sentFile) {
 
 			FileUtils.deleteFile(sentFile);
 		}
@@ -3991,7 +4020,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) != null || systemInterface.getRootSection().getSectionCache().getEntry(alias) != null;
 	}
 
-	public boolean hasPublishAccess(User user){
+	public boolean hasPublishAccess(User user) {
 
 		if (CollectionUtils.isEmpty(publisherGroupIDs)) {
 
@@ -4061,6 +4090,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			flowListExtensionLinkProviders.add(e);
 
 			log.info("List flow extension link provider " + e + " added");
+
+			if(systemInterface.getSystemStatus() == SystemStatus.STARTED) {
+				
+				sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+			}
+		
 		}
 	}
 
@@ -4069,6 +4104,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		flowListExtensionLinkProviders.remove(e);
 
 		log.info("List flow extension link provider " + e + " removed");
+	
+		if(systemInterface.getSystemStatus() == SystemStatus.STARTED) {
+			
+			sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+		}
 	}
 
 	public void addFlowShowExtensionLinkProvider(FlowAdminShowFlowExtensionLinkProvider e) {
@@ -4293,12 +4333,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return doc;
 	}
 
-
 	public boolean requiresTags() {
 
 		return requireTags;
 	}
-
 
 	public StatisticsMode getDefaultStatisticsMode() {
 
@@ -4315,142 +4353,141 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return maxFlowTypeIconWidth;
 	}
 
-
 	public int getMaxFlowTypeIconHeight() {
 
 		return maxFlowTypeIconHeight;
 	}
-	
+
 	public SiteProfileHandler getSiteProfileHandler() {
-		
+
 		return siteProfileHandler;
-	}	
-	
+	}
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse changeFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
-		
+
 		Flow requestedFlow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
-		
+
 		if (requestedFlow == null) {
-			
+
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
-			
+
 		} else if (!AccessUtils.checkAccess(user, requestedFlow.getFlowType().getAdminAccessInterface())) {
-			
+
 			throw new AccessDeniedException("User does not have access to flow type " + requestedFlow.getFlowType());
 		}
-		
+
 		List<ValidationError> validationErrors = null;
-		
+
 		if (req.getMethod().equalsIgnoreCase("POST")) {
-			
+
 			validationErrors = new ArrayList<ValidationError>();
-			
+
 			Integer flowTypeID = ValidationUtils.validateParameter("flowTypeID", req, true, IntegerPopulator.getPopulator(), validationErrors);
 			FlowType flowType = null;
-			
+
 			if (flowTypeID != null) {
-				
+
 				flowType = flowTypeCRUD.getBean(flowTypeID, "UPDATE", null);
-				
+
 				if (flowType == null || !AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
-					
+
 					validationErrors.add(new ValidationError("flowTypeID", ValidationErrorType.InvalidFormat));
 				}
 			}
-			
+
 			if (validationErrors.isEmpty()) {
-				
+
 				log.info("User " + user + " changing flow type for " + requestedFlow + " from " + requestedFlow.getFlowType() + " to " + flowType);
-				
+
 				TransactionHandler transactionHandler = null;
-				
+
 				try {
 					transactionHandler = daoFactory.getFlowDAO().createTransaction();
-					
+
 					HighLevelQuery<Flow> getQuery = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION);
 					getQuery.addParameter(flowFlowFamilyParamFactory.getParameter(requestedFlow.getFlowFamily()));
-					
+
 					List<Flow> flows = daoFactory.getFlowDAO().getAll(getQuery);
-					
+
 					for (Flow flow : flows) {
-						
+
 						flow.setFlowType(flowType);
 					}
-					
+
 					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION);
 					updateQuery.addExcludedFields(Flow.FLOW_FAMILY_RELATION, Flow.CATEGORY_RELATION);
 					updateQuery.disableAutoRelations(true);
-					
+
 					daoFactory.getFlowDAO().update(flows, transactionHandler, updateQuery);
-					
+
 					transactionHandler.commit();
-					
+
 					eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(Flow.class, CRUDAction.UPDATE, flows), EventTarget.ALL);
-					
+
 					addFlowFamilyEvent(eventChangeFlowType + " " + flowType.getName(), requestedFlow, user);
-					
+
 					redirectToMethod(req, res, "/showflow/" + requestedFlow.getFlowID());
-					
+
 					return null;
-					
+
 				} finally {
 					TransactionHandler.autoClose(transactionHandler);
 				}
 			}
 		}
-		
+
 		log.info("User " + user + " requesting change flow type form for flow " + requestedFlow);
-		
+
 		Document doc = createDocument(req, uriParser, user);
-		
+
 		Element changeFlowTypeElement = doc.createElement("ChangeFlowType");
 		doc.getDocumentElement().appendChild(changeFlowTypeElement);
-		
+
 		changeFlowTypeElement.appendChild(requestedFlow.toXML(doc));
-		
+
 		List<FlowType> allowedFlowTypes = new ArrayList<FlowType>();
-		
+
 		for (FlowType flowType : getCachedFlowTypes()) {
-			
+
 			if (AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
-				
+
 				allowedFlowTypes.add(flowType);
 			}
 		}
-		
+
 		XMLUtils.append(doc, changeFlowTypeElement, "AllowedFlowTypes", allowedFlowTypes);
-		
+
 		if (validationErrors != null) {
-			
+
 			XMLUtils.append(doc, changeFlowTypeElement, validationErrors);
 		}
-		
+
 		return new SimpleForegroundModuleResponse(doc);
 	}
 
 	public String getFileMissing() {
-		
+
 		return fileMissing;
 	}
 
 	public String getEventFlowFormAddedMessage() {
-		
+
 		return eventFlowFormAddedMessage;
 	}
-	
+
 	public String getEventFlowFormUpdatedMessage() {
-		
+
 		return eventFlowFormUpdatedMessage;
 	}
-	
+
 	public String getEventFlowFormDeletedMessage() {
-		
+
 		return eventFlowFormDeletedMessage;
 	}
 
-	
 	public Integer getMaxPDFFormFileSize() {
+
 		return maxPDFFormFileSize;
 	}
 
@@ -4466,10 +4503,108 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return flowCacheMap.get(flowID);
 	}
 
-	
 	public boolean isRequireManagers() {
-	
+
 		return requireManagers;
+	}
+
+	@Override
+	public List<? extends MenuItemDescriptor> getVisibleMenuItems() {
+
+		if (useBundle) {
+			return null;
+		}
+
+		return super.getVisibleMenuItems();
+	}
+
+	@Override
+	public List<? extends BundleDescriptor> getVisibleBundles() {
+
+		if (useBundle) {
+			
+			SimpleBundleDescriptor bundle = new SimpleBundleDescriptor();
+			bundle.setName(moduleDescriptor.getName());
+			bundle.setUniqueID(moduleDescriptor.getModuleID().toString());
+			bundle.setDescription(moduleDescriptor.getDescription());
+			bundle.setItemType(MenuItemType.SECTION);
+			bundle.setUrl(getFullAlias());
+			bundle.setUrlType(URLType.RELATIVE_FROM_CONTEXTPATH);
+			bundle.setAccess(moduleDescriptor);
+
+			ArrayList<MenuItemDescriptor> menuItemDescriptors = new ArrayList<MenuItemDescriptor>();
+
+			menuItemDescriptors.add(getMenuItemDescriptor(bundleListFlows, "", moduleDescriptor));
+			menuItemDescriptors.add(getMenuItemDescriptor(bundleAddFlow, "/addflow", moduleDescriptor));
+			menuItemDescriptors.add(getMenuItemDescriptor(bundleImportFlow, "/importflow", moduleDescriptor));
+			menuItemDescriptors.add(getMenuItemDescriptor(bundleStandardStatuses, "/standardstatuses", this));
+			menuItemDescriptors.add(getMenuItemDescriptor(bundleFlowtypes, "/flowtypes", this));
+
+			if (!CollectionUtils.isEmpty(flowListExtensionLinkProviders)) {
+
+				for (ExtensionLinkProvider linkProvider : flowListExtensionLinkProviders) {
+
+					ExtensionLink link;
+
+					try {
+
+						link = linkProvider.getExtensionLink(null);
+
+					} catch (Exception e) {
+
+						log.error("Error getting extension link from provider " + linkProvider, e);
+
+						continue;
+					}
+
+					if (link != null) {
+
+						menuItemDescriptors.add(getMenuItemDescriptor(link, (linkProvider.getAccessInterface() != null ? linkProvider.getAccessInterface() : moduleDescriptor)));
+					}
+				}
+			}
+
+			bundle.setMenuItemDescriptors(menuItemDescriptors);
+
+			return Arrays.asList(bundle);
+		}
+
+		return super.getVisibleBundles();
+	}
+	
+	private MenuItemDescriptor getMenuItemDescriptor(String name, String alias, AccessInterface accessInterface) {
+
+		SimpleMenuItemDescriptor menuItemDescriptor = new SimpleMenuItemDescriptor();
+		menuItemDescriptor.setName(name);
+		menuItemDescriptor.setDescription(name);
+		menuItemDescriptor.setItemType(MenuItemType.MENUITEM);
+		menuItemDescriptor.setUrl(getFullAlias() + alias);
+		menuItemDescriptor.setUrlType(URLType.RELATIVE_FROM_CONTEXTPATH);
+		menuItemDescriptor.setAccess(accessInterface);
+		menuItemDescriptor.setUniqueID(moduleDescriptor.getModuleID().toString());
+
+		return menuItemDescriptor;
+	}
+
+	private MenuItemDescriptor getMenuItemDescriptor(ExtensionLink extensionLink, AccessInterface accessInterface) {
+
+		SimpleMenuItemDescriptor menuItemDescriptor = new SimpleMenuItemDescriptor();
+		menuItemDescriptor.setName(extensionLink.getName());
+		menuItemDescriptor.setDescription(extensionLink.getName());
+		menuItemDescriptor.setItemType(MenuItemType.MENUITEM);
+		menuItemDescriptor.setUrl(extensionLink.getUrl());
+		menuItemDescriptor.setUrlType(URLType.FULL);
+		menuItemDescriptor.setAccess(accessInterface);
+		menuItemDescriptor.setUniqueID(moduleDescriptor.getModuleID().toString());
+
+		return menuItemDescriptor;
+
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		
+		sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
 	}
 
 }

@@ -120,7 +120,7 @@
 				<div class="marginleft"><b><xsl:value-of select="label" /></b></div>
 			</div>
 			<div class="padding floatleft twenty">
-				<xsl:if test="required">
+				<xsl:if test="required = 'true'">
 					<b><xsl:value-of select="$i18n.Required" /></b>
 				</xsl:if>
 			</div>

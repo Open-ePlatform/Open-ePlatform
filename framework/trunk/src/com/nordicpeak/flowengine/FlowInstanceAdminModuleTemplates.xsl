@@ -11,6 +11,8 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
+		/js/mentionable/bootstrap-typeahead.js
+		/js/mentionable/mentionable.js
 		/js/jquery.ui.touch.min.js
 		/js/jquery.blockui.js
 		/js/flowengine.helpdialog.js
@@ -24,6 +26,7 @@
 
 	<xsl:variable name="links">
 		/css/flowengine.css
+		/js/mentionable/mentionable.css
 	</xsl:variable>
 
 	<xsl:template match="Document">		
@@ -804,7 +807,7 @@
 	  						
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-		  						<textarea id="message" name="externalmessage" class="full"></textarea>
+		  						<textarea id="message" name="externalmessage" class="full" data-requiredmessage="{$i18n.ValidationError.ExternalMessageRequired}"></textarea>
 		  						<div class="heading-wrapper">
 		  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
 		  						</div>
@@ -909,7 +912,9 @@
 	  						
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.InternalMessage" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'internalmessage']" />
-		  						<textarea id="message" name="internalmessage" class="full"></textarea>
+		  						
+		  						<textarea id="message" name="internalmessage" class="full mentionable" data-mentionableendpoint="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getmentionusers/{flowInstanceID}" data-requiredmessage="{$i18n.ValidationError.InternalMessageRequired}"></textarea>
+		  						
 		  						<div class="heading-wrapper">
 		  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
 		  						</div>
@@ -951,7 +956,7 @@
 		  					
 		  					<xsl:choose>
 		  						<xsl:when test="internalMessages/InternalMessage">
-		  							<ul class="messages">
+		  							<ul class="messages show-mentions">
 		  								<xsl:apply-templates select="internalMessages/InternalMessage" />
 		  							</ul>
 		  						</xsl:when>

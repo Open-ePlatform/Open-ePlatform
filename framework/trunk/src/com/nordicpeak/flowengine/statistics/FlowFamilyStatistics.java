@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.statistics;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.string.StringUtils;
@@ -20,6 +21,10 @@ public class FlowFamilyStatistics extends GeneratedElementable implements Compar
 	@XMLElement
 	private String name;
 
+	@StringTag
+	@XMLElement
+	private String flowTypeName;
+
 	private StatisticsMode statisticsMode;
 
 	private List<IntegerEntry> flowInstanceCount;
@@ -29,6 +34,14 @@ public class FlowFamilyStatistics extends GeneratedElementable implements Compar
 	private List<FloatEntry> surveyRating;
 
 	private LinkedHashMap<Integer, FlowStatistics> flowStatistics;
+
+	private List<Entry<String, Integer>> totalFlowInstancesCountByWeek;
+
+	private List<Entry<String, Integer>> femaleFlowInstancesCountByWeek;
+
+	private List<Entry<String, Integer>> maleFlowInstancesCountByWeek;
+
+	private List<Entry<String, Integer>> unkownFlowInstancesCountByWeek;
 
 	public List<IntegerEntry> getFlowInstanceCount() {
 
@@ -80,6 +93,16 @@ public class FlowFamilyStatistics extends GeneratedElementable implements Compar
 		this.name = name;
 	}
 
+	public String getFlowTypeName() {
+
+		return flowTypeName;
+	}
+
+	public void setFlowTypeName(String flowTypeName) {
+
+		this.flowTypeName = flowTypeName;
+	}
+
 	public StatisticsMode getStatisticsMode() {
 
 		return statisticsMode;
@@ -88,6 +111,46 @@ public class FlowFamilyStatistics extends GeneratedElementable implements Compar
 	public void setStatisticsMode(StatisticsMode statisticsMode) {
 
 		this.statisticsMode = statisticsMode;
+	}
+
+	public List<Entry<String, Integer>> getTotalFlowInstancesCountByWeek() {
+
+		return totalFlowInstancesCountByWeek;
+	}
+
+	public void setTotalFlowInstancesCountByWeek(List<Entry<String, Integer>> totalFlowInstancesCountByWeek) {
+
+		this.totalFlowInstancesCountByWeek = totalFlowInstancesCountByWeek;
+	}
+
+	public List<Entry<String, Integer>> getFemaleFlowInstancesCountByWeek() {
+
+		return femaleFlowInstancesCountByWeek;
+	}
+
+	public void setFemaleFlowInstancesCountByWeek(List<Entry<String, Integer>> femaleFlowInstancesCountByWeek) {
+
+		this.femaleFlowInstancesCountByWeek = femaleFlowInstancesCountByWeek;
+	}
+
+	public List<Entry<String, Integer>> getMaleFlowInstancesCountByWeek() {
+
+		return maleFlowInstancesCountByWeek;
+	}
+
+	public void setMaleFlowInstancesCountByWeek(List<Entry<String, Integer>> maleFlowInstancesCountByWeek) {
+
+		this.maleFlowInstancesCountByWeek = maleFlowInstancesCountByWeek;
+	}
+
+	public List<Entry<String, Integer>> getUnkownFlowInstancesCountByWeek() {
+
+		return unkownFlowInstancesCountByWeek;
+	}
+
+	public void setUnkownFlowInstancesCountByWeek(List<Entry<String, Integer>> unkownFlowInstancesCountByWeek) {
+
+		this.unkownFlowInstancesCountByWeek = unkownFlowInstancesCountByWeek;
 	}
 
 	@Override

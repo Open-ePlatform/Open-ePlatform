@@ -31,6 +31,22 @@ $(document).ready(function() {
 	
 	initMessageTab("#notes", "#new-note");
 	
+	$("#new-message, #notes").find("form").on("submit", function(e) {
+		
+		var $this = $(this);
+		
+		var $message = $this.find("textarea");
+		
+		if($message.val() == "") {
+			e.preventDefault();
+			$this.find(".info-box.error").remove();
+			$message.before($("<div class='info-box error'><span><strong data-icon-before='!'>" + $message.data("requiredmessage") + "</strong></span></div>"));
+			return false;
+		}
+		
+		return true;
+	});
+	
 	/* Change managers scripts */
 	
 	var $managerList = $("ul.manager-list");
@@ -165,6 +181,15 @@ $(document).ready(function() {
 	
 	$("div.search-results").find(".info .close").click(function(e) {
 		$(this).parent().parent().slideUp("fast");
+	});
+	
+	$("textarea.mentionable").each(function() {
+		var $textarea = $(this);
+		$.get($textarea.data("mentionableendpoint"), function (data) {
+			$textarea.mentionable({
+				users: data
+			});
+	    });
 	});
 	
 });

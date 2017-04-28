@@ -59,6 +59,10 @@
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/instancecount" title="{$i18n.DownloadChartDataInCSVFormat}">
 							<xsl:value-of select="$i18n.DownloadChartData"/>
 					</a>
+						<xsl:text> | </xsl:text>
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/detailedinstancecount" title="{$i18n.DownloadDetailedChartDataInCSVFormat}">
+						<xsl:value-of select="$i18n.DownloadDetailedChartData"/>
+					</a>
 						<xsl:text>)</xsl:text>
 				</div>
 			</xsl:if>
@@ -87,6 +91,10 @@
 						<xsl:text>(</xsl:text>
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowcount" title="{$i18n.DownloadChartDataInCSVFormat}">
 							<xsl:value-of select="$i18n.DownloadChartData"/>
+					</a>
+						<xsl:text> | </xsl:text>
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/detailedflowcount" title="{$i18n.DownloadDetailedChartDataInCSVFormat}">
+						<xsl:value-of select="$i18n.DownloadDetailedChartData"/>
 					</a>
 						<xsl:text>)</xsl:text>
 				</div>
