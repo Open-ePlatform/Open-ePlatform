@@ -58,6 +58,7 @@
     border-radius: 4px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
     height: 500px !important;
+    visibility: hidden;
 }
 
 .mapquery-objectconfigwrapper span.header {
