@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -672,6 +673,17 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
 						viewFragments.add(viewFragment);
+						
+						if (viewFragment instanceof SimpleViewFragment) {
+							
+							SimpleViewFragment simpleViewFragment = (SimpleViewFragment) viewFragment;
+							
+							if (simpleViewFragment.getDebugXML() != null) {
+								
+								Element debugXMLElement = XMLUtils.appendNewElement(doc, extensionProviderElement, "DebugXML");
+								debugXMLElement.appendChild(doc.adoptNode(simpleViewFragment.getDebugXML().getDocumentElement()));
+							}
+						}
 					}
 
 				} catch (Exception e) {
