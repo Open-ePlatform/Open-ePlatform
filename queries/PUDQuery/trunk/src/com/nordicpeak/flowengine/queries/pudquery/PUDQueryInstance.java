@@ -82,9 +82,24 @@ public class PUDQueryInstance extends BaseQueryInstance {
 		this.propertyUnitDesignation = null;
 		this.setPropertyUnitNumber(null);
 
+		if (query.isSetAsAttribute()) {
+			
+			resetAttribute(attributeHandler);
+		}		
+		
 		super.reset(attributeHandler);
 	}
 
+	public void resetAttribute(MutableAttributeHandler attributeHandler){
+		
+		attributeHandler.removeAttribute(query.getAttributeName());
+	}
+	
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName(), propertyUnitDesignation);
+	}	
+	
 	@Override
 	public String toString() {
 

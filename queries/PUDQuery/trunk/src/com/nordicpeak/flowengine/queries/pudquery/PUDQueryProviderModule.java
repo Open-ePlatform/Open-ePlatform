@@ -449,6 +449,10 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 		queryInstance.setPropertyUnitDesignation(pud);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(true);
 
+		if(queryInstance.getQuery().isSetAsAttribute()){
+			
+			queryInstance.setAttribute(attributeHandler);
+		}
 	}
 
 	private String getUnescapedText(String text) {

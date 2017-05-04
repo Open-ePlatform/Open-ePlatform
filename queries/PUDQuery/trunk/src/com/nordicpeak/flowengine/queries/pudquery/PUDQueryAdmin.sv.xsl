@@ -19,4 +19,8 @@
 	<xsl:variable name="i18n.PUD">Sök via fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="i18n.Address">Sök via adress</xsl:variable>
 	
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>
+	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>
+	
 </xsl:stylesheet>

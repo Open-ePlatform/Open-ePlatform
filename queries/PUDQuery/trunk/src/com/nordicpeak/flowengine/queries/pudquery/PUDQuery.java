@@ -6,6 +6,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -39,6 +40,17 @@ public class PUDQuery extends BaseQuery {
 	@XMLElement(fixCase=true,childName="allowedSearchService")
 	private List<SearchService> allowedSearchServices;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength=255)
+	@RequiredIfSet(paramName="setAsAttribute")
+	@XMLElement
+	private String attributeName;
+	
 	@DAOManaged
 	@OneToMany
 	@XMLElement
@@ -140,14 +152,44 @@ public class PUDQuery extends BaseQuery {
 		if(serviceParser != null) {
 
 			allowedSearchServices = XMLValidationUtils.validateParameters("allowedSearchService", serviceParser, false, PUDQueryCRUD.SEARCH_SERVICE_POPULATOR, errors);
-
 		}
 
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if(attributeName != null){
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}		
+		
 		if(!errors.isEmpty()){
 
 			throw new ValidationException(errors);
 		}
 
+	}
+
+	
+	public boolean isSetAsAttribute() {
+	
+		return setAsAttribute;
+	}
+
+	
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+
+	
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
 	}
 
 }

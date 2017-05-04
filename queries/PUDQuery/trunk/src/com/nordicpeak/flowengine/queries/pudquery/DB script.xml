@@ -34,4 +34,11 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `helpText`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
+			]]>
+		</Query>	
+	</Script>	
 </DBScripts>
