@@ -464,8 +464,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(int flowInstanceID, FlowInstanceAccessController accessController, User user, boolean checkEnabled, HttpServletRequest req, URIParser uriParser, boolean manager) throws AccessDeniedException, SQLException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
-		// User does not have the requested flow instance open, get flow
-		// instance from DB and create a new instance manager
 		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
 
 		if (flowInstance == null) {
@@ -473,7 +471,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			return null;
 		}
 
-		accessController.checkFlowInstanceAccess(flowInstance, user);
+		if(accessController != null){
+			
+			accessController.checkFlowInstanceAccess(flowInstance, user);
+		}
 
 		if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), manager))) {
 
@@ -483,6 +484,18 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, req, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), getAbsoluteFileURL(uriParser, flowInstance.getFlow()));
 	}
 
+	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(int flowInstanceID) throws SQLException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
+
+		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
+
+		if (flowInstance == null) {
+
+			return null;
+		}
+
+		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), null);
+	}	
+	
 	public static void addMutableFlowInstanceManagerToSession(int flowID, Integer flowInstanceID, MutableFlowInstanceManager instanceManager, HttpSession session) {
 
 		session.setAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID, instanceManager);
