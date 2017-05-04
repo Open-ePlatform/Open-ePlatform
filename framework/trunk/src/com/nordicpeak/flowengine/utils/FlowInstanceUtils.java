@@ -10,8 +10,10 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
 public class FlowInstanceUtils {
@@ -89,6 +91,26 @@ public class FlowInstanceUtils {
 		
 		return null;
 	}
+	
+	public static ImmutableFlowInstanceEvent getLatestSubmitEvent(ImmutableFlowInstance flowInstance){
+		
+		if (CollectionUtils.isEmpty(flowInstance.getEvents())) {
+			
+			return null;
+		}
+		
+		for (int i = flowInstance.getEvents().size() - 1; i > -1; i--) {
+			
+			ImmutableFlowInstanceEvent event = flowInstance.getEvents().get(i);
+			
+			if (event.getEventType() == EventType.SUBMITTED) {
+				
+				return event;
+			}
+		}
+		
+		return null;
+	}	
 	
 	// Used when saving flow instance on submit and multipart signing complete
 	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler flowInstanceAttributeHandler) {
