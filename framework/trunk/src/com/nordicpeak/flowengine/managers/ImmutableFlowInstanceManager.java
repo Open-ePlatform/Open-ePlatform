@@ -66,7 +66,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	 * @throws DuplicateFlowInstanceManagerIDException
 	 * @throws QueryInstanceNotFoundInQueryProviderException
 	 */
-	public ImmutableFlowInstanceManager(FlowInstance flowInstance, QueryHandler queryHandler, HttpServletRequest req, InstanceMetadata instanceMetadata, String absoluteFileURL) throws MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, DuplicateFlowInstanceManagerIDException, QueryInstanceNotFoundInQueryProviderException {
+	public ImmutableFlowInstanceManager(FlowInstance flowInstance, QueryHandler queryHandler, HttpServletRequest req, InstanceMetadata instanceMetadata, String absoluteFileURL) throws MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
 		this.flowInstance = flowInstance;
 
