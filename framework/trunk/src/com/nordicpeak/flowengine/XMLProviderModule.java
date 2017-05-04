@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -111,65 +112,81 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 		log.info("Generating export XML for flow instance " + flowInstance);
 
 		try{
-			Document doc = XMLUtils.createDomDocument();
+			generateXML(flowInstance, event.getFlowInstanceManager(), event.getEvent(), event.getEvent().getAdded(), getFile(flowInstance.getFlowInstanceID(), event.getEvent().getEventID()));
 
-			Element flowInstanceElement = doc.createElement("FlowInstance");
-			doc.appendChild(flowInstanceElement);
+			event.getEvent().getAttributeHandler().setAttribute("xml", "true");
+			daoFactory.getFlowInstanceEventDAO().update(event.getEvent(), EVENT_ATTRIBUTE_RELATION_QUERY);
 
-			flowInstanceElement.setAttribute("xmlns", "http://www.oeplatform.org/version/2.0/schemas/flowinstance");
-			flowInstanceElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			flowInstanceElement.setAttribute("xsi:schemaLocation", "http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-" + event.getFlowInstanceManager().getFlowID() + ".xsd");
+		}catch(Exception e){
 
-			Element headerElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Header");
+			log.error("Error generating export XML for flow instance " + flowInstance + " submitted by user " + event.getEvent().getPoster(), e);
+		}
+	}
 
-			Element flowElement = XMLUtils.appendNewElement(doc, headerElement, "Flow");
-			XMLUtils.appendNewElement(doc, flowElement, "FamilyID", flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
-			XMLUtils.appendNewElement(doc, flowElement, "Version", flowInstance.getFlow().getVersion());
-			XMLUtils.appendNewElement(doc, flowElement, "FlowID", flowInstance.getFlow().getFlowID());
-			XMLUtils.appendNewCDATAElement(doc, flowElement, "Name", flowInstance.getFlow().getName());
+	@Override
+	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted, File outputFile) throws Exception {
 
-			XMLUtils.appendNewElement(doc, headerElement, "FlowInstanceID", flowInstance.getFlowInstanceID());
+		Document doc = XMLUtils.createDomDocument();
 
-			Element statusElement = XMLUtils.appendNewElement(doc, headerElement, "Status");
-			XMLUtils.appendNewElement(doc, statusElement, "ID", flowInstance.getStatus().getStatusID());
-			XMLUtils.appendNewCDATAElement(doc, statusElement, "Name", flowInstance.getStatus().getName());
+		Element flowInstanceElement = doc.createElement("FlowInstance");
+		doc.appendChild(flowInstanceElement);
 
-			appendUser(flowInstance.getPoster(), "Poster", doc, headerElement);
+		flowInstanceElement.setAttribute("xmlns", "http://www.oeplatform.org/version/2.0/schemas/flowinstance");
+		flowInstanceElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		flowInstanceElement.setAttribute("xsi:schemaLocation", "http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-" + flowInstanceManager.getFlowID() + ".xsd");
+
+		Element headerElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Header");
+
+		Element flowElement = XMLUtils.appendNewElement(doc, headerElement, "Flow");
+		XMLUtils.appendNewElement(doc, flowElement, "FamilyID", flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+		XMLUtils.appendNewElement(doc, flowElement, "Version", flowInstance.getFlow().getVersion());
+		XMLUtils.appendNewElement(doc, flowElement, "FlowID", flowInstance.getFlow().getFlowID());
+		XMLUtils.appendNewCDATAElement(doc, flowElement, "Name", flowInstance.getFlow().getName());
+
+		XMLUtils.appendNewElement(doc, headerElement, "FlowInstanceID", flowInstance.getFlowInstanceID());
+
+		Element statusElement = XMLUtils.appendNewElement(doc, headerElement, "Status");
+		XMLUtils.appendNewElement(doc, statusElement, "ID", flowInstance.getStatus().getStatusID());
+		XMLUtils.appendNewCDATAElement(doc, statusElement, "Name", flowInstance.getStatus().getName());
+
+		appendUser(flowInstance.getPoster(), "Poster", doc, headerElement);
+		
+		if (flowInstance.getOwners() != null) {
 			
-			if (flowInstance.getOwners() != null) {
+			for (User owner : flowInstance.getOwners()) {
 				
-				for (User owner : flowInstance.getOwners()) {
-					
-					appendUser(owner, "Owner", doc, headerElement);
-				}
+				appendUser(owner, "Owner", doc, headerElement);
 			}
+		}
 
-			XMLUtils.appendNewElement(doc, headerElement, "Posted", DATE_TIME_FORMATTER.format(flowInstance.getAdded()));
+		XMLUtils.appendNewElement(doc, headerElement, "Posted", DATE_TIME_FORMATTER.format(flowInstance.getAdded()));
 
-			if(flowInstance.getUpdated() != null){
+		if(flowInstance.getUpdated() != null){
 
-				appendUser(flowInstance.getEditor(), "Editor", doc, headerElement);
+			appendUser(flowInstance.getEditor(), "Editor", doc, headerElement);
 
-				XMLUtils.appendNewElement(doc, headerElement, "Updated", DATE_TIME_FORMATTER.format(flowInstance.getUpdated()));
+			XMLUtils.appendNewElement(doc, headerElement, "Updated", DATE_TIME_FORMATTER.format(flowInstance.getUpdated()));
+		}
+
+		XMLUtils.appendNewElement(doc, headerElement, "FirstSubmitted", DATE_TIME_FORMATTER.format(flowInstance.getFirstSubmitted()));
+		
+		XMLUtils.appendNewElement(doc, headerElement, "LastSubmitted", DATE_TIME_FORMATTER.format(lastSubmitted));
+		
+		Element valuesElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Values");
+
+		List<Element> queryElements = flowInstanceManager.getExportXMLElements(doc, queryHandler);
+
+		if(queryElements != null){
+
+			for(Element queryElement : queryElements){
+
+				valuesElement.appendChild(queryElement);
 			}
-
-			XMLUtils.appendNewElement(doc, headerElement, "FirstSubmitted", DATE_TIME_FORMATTER.format(flowInstance.getFirstSubmitted()));
-			
-			XMLUtils.appendNewElement(doc, headerElement, "LastSubmitted", DATE_TIME_FORMATTER.format(event.getEvent().getAdded()));
-			
-			Element valuesElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Values");
-
-			List<Element> queryElements = event.getFlowInstanceManager().getExportXMLElements(doc, queryHandler);
-
-			if(queryElements != null){
-
-				for(Element queryElement : queryElements){
-
-					valuesElement.appendChild(queryElement);
-				}
-			}
-			
-			String signChainID = event.getEvent().getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+		}
+		
+		if(event != null){
+		
+			String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
 			
 			if (!StringUtils.isEmpty(signChainID)) {
 				
@@ -213,28 +230,19 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 						
 					}
 				}
-			}
-
-			File xmlFile = getFile(flowInstance.getFlowInstanceID(), event.getEvent().getEventID());
-
-			xmlFile.getParentFile().mkdirs();
-
-			if(forceUTF){
-				
-				XMLUtils.writeXMLFile(doc, xmlFile, true, "UTF-8", "1.1");
-				
-			}else{
-				
-				XMLUtils.writeXMLFile(doc, xmlFile, true, systemInterface.getEncoding());
-			}
-
-			event.getEvent().getAttributeHandler().setAttribute("xml", "true");
-			daoFactory.getFlowInstanceEventDAO().update(event.getEvent(), EVENT_ATTRIBUTE_RELATION_QUERY);
-
-		}catch(Exception e){
-
-			log.error("Error generating export XML for flow instance " + flowInstance + " submitted by user " + event.getEvent().getPoster(), e);
+			}			
 		}
+
+		outputFile.getParentFile().mkdirs();
+
+		if(forceUTF){
+			
+			XMLUtils.writeXMLFile(doc, outputFile, true, "UTF-8", "1.1");
+			
+		}else{
+			
+			XMLUtils.writeXMLFile(doc, outputFile, true, systemInterface.getEncoding());
+		}		
 	}
 
 	@EventListener(channel=FlowInstance.class)
