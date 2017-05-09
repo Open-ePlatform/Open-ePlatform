@@ -52,4 +52,13 @@
 			]]>
 		</Query>	
 	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `hideDescriptionInPDF`;
+			]]>
+		</Query>	
+	</Script>
+	
 </DBScripts>

@@ -129,6 +129,7 @@
 					<xsl:with-param name="title" select="TextAreaQueryInstance/TextAreaQuery/name"/>
 					<xsl:with-param name="value" select="TextAreaQueryInstance/value"/>
 					<xsl:with-param name="width" select="'98%'"/>
+					<xsl:with-param name="disabled" select="Locked"/>
 				</xsl:call-template>
 				
 			</article>			

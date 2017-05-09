@@ -230,36 +230,51 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
+	
+	@Override
+	protected void appendQueryInstance(TextAreaQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			
+			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
+		}
+	}
 
 	@Override
 	public void populate(TextAreaQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
-
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			return;
+		}
+		
 		String value = req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_value");
-
-		if(StringUtils.isEmpty(value)){
-
-			if(!allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED){
-
+		
+		if (StringUtils.isEmpty(value)) {
+			
+			if (!allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED) {
+				
 				throw new ValidationException(new ValidationError("RequiredField"));
 			}
-
+			
 			queryInstance.reset(attributeHandler);
 			queryInstance.getQueryInstanceDescriptor().setPopulated(false);
 			return;
 		}
-
+		
 		value = value.trim();
-
-		if((queryInstance.getQuery().getMaxLength() == null && value.length() > DEFAULT_MAX_LENGTH) || (queryInstance.getQuery().getMaxLength() != null && value.length() > queryInstance.getQuery().getMaxLength())){
-
-			throw new ValidationException(new TooLongContentValidationError(value.length(),queryInstance.getQuery().getMaxLength() != null ? queryInstance.getQuery().getMaxLength() : DEFAULT_MAX_LENGTH));
-
+		
+		if ((queryInstance.getQuery().getMaxLength() == null && value.length() > DEFAULT_MAX_LENGTH) || (queryInstance.getQuery().getMaxLength() != null && value.length() > queryInstance.getQuery().getMaxLength())) {
+			
+			throw new ValidationException(new TooLongContentValidationError(value.length(), queryInstance.getQuery().getMaxLength() != null ? queryInstance.getQuery().getMaxLength() : DEFAULT_MAX_LENGTH));
+			
 		}
-
+		
 		queryInstance.setValue(value);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(true);
 		
-		if(queryInstance.getQuery().isSetAsAttribute()){
+		if (queryInstance.getQuery().isSetAsAttribute()) {
 			
 			queryInstance.setAttribute(attributeHandler);
 		}

@@ -22,5 +22,6 @@
 	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>
 	
 	<xsl:variable name="i18n.hideDescriptionInPDF">Dölj beskrivning i PDF</xsl:variable>
+	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 	
 </xsl:stylesheet>
