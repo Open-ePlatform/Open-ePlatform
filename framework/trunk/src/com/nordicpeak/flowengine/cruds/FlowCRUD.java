@@ -433,6 +433,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 				errors.add(new ValidationError("MissingDefaultStatusMappingForMultiSigning"));
 			}
+			
+			if (bean.requiresSigning() && bean.isPaymentSupportEnabled() && !hasPaymentStatus(bean)) {
+
+				errors.add(new ValidationError("MissingDefaultStatusMappingForPayment"));
+			}
 
 			if(callback.isRequireManagers() && !bean.getFlowFamily().hasManagers()){
 				
@@ -493,6 +498,22 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			for (DefaultStatusMapping statusMapping : bean.getDefaultFlowStateMappings()) {
 
 				if (statusMapping.getActionID().equalsIgnoreCase(FlowBrowserModule.MULTI_SIGNING_ACTION_ID)) {
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	
+	protected boolean hasPaymentStatus(Flow bean) {
+
+		if (bean.getDefaultFlowStateMappings() != null) {
+
+			for (DefaultStatusMapping statusMapping : bean.getDefaultFlowStateMappings()) {
+
+				if (statusMapping.getActionID().equalsIgnoreCase(FlowBrowserModule.PAYMENT_ACTION_ID)) {
 
 					return true;
 				}

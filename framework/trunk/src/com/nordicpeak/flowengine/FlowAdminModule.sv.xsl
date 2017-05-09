@@ -397,6 +397,7 @@
 	<xsl:variable name="i18n.skipOverview">Hoppa över översiktsidan</xsl:variable>
 	
 	<xsl:variable name="i18n.MissingDefaultStatusMappingForMultiSigning">E-tjänsten går inte att publicera då den saknar statusmappning för flerpartssignering. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
+	<xsl:variable name="i18n.MissingDefaultStatusMappingForPayment">E-tjänsten går inte att publicera då den saknar statusmappning för betalning. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
 	<xsl:variable name="i18n.hasNoFlowForm">Den här e-tjänsten har ingen PDF blankett kopplad till sig.</xsl:variable>
 	<xsl:variable name="i18n.MayNotRemoveFlowFormIfNoSteps">Du får inte ta bort blanketten om e-tjänsten är aktiverad och saknar steg</xsl:variable>

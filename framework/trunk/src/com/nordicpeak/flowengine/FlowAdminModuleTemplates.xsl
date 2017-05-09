@@ -4897,6 +4897,13 @@
 		</p>	
 	</xsl:template>
 
+	<xsl:template match="validationError[messageKey='MissingDefaultStatusMappingForPayment']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.MissingDefaultStatusMappingForPayment"/>
+		</p>	
+	</xsl:template>	
+
 	<xsl:template match="validationError[messageKey='SelectedFlowTypeNotFound']">
 	
 		<p class="error">
