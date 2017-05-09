@@ -4598,13 +4598,76 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		menuItemDescriptor.setUniqueID(moduleDescriptor.getModuleID().toString());
 
 		return menuItemDescriptor;
-
 	}
 
 	@Override
 	public void systemStarted() throws Exception {
 		
 		sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse unPublishFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+
+		if (!hasPublishAccess(user)) {
+			throw new AccessDeniedException("User does not have publish access");
+		}
+		
+		FlowFamily flowFamily = flowFamilyCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
+
+		if (flowFamily == null) {
+
+			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowFamilyNotFound"));
+		}
+		
+		List<Flow> flows = getFlowVersions(flowFamily);
+
+		if (!AccessUtils.checkAccess(user, flows.get(0).getFlowType().getAdminAccessInterface())) {
+			
+			throw new AccessDeniedException("User does not have access to flow type " + flows.get(0).getFlowType());
+		}
+		
+		TransactionHandler transactionHandler = null;
+		
+		try {
+			transactionHandler = daoFactory.getFlowDAO().createTransaction();
+			
+			List<Flow> unpublishedFlows = new ArrayList<Flow>(flows.size());
+			
+			for (Flow flow : flows) {
+				
+				if (flow.isPublished()) {
+					
+					log.info("User " + user + " unpublishing " + flow);
+					
+					flow.setPublishDate(null);
+					
+					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<Flow>();
+					updateQuery.disableAutoRelations(true);
+					
+					daoFactory.getFlowDAO().update(flows, transactionHandler, updateQuery);
+					
+					unpublishedFlows.add(flow);
+				}
+			}
+			
+			if (!CollectionUtils.isEmpty(unpublishedFlows)) {
+				
+				transactionHandler.commit();
+				
+				for (Flow flow : unpublishedFlows) {
+					addFlowFamilyEvent(getEventFlowUpdatedMessage(), flow, user);
+				}
+				
+				eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(Flow.class, CRUDAction.UPDATE, unpublishedFlows), EventTarget.ALL);
+			}
+			
+		} finally {
+			TransactionHandler.autoClose(transactionHandler);
+		}
+		
+		redirectToMethod(req, res, "/showflow/" + uriParser.get(3) + "#versions");
+		return null;
 	}
 
 }

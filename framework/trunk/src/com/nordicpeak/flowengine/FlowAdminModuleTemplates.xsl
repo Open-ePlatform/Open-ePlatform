@@ -1187,7 +1187,14 @@
 									</xsl:if>
 									
 									<th width="75"><xsl:value-of select="$i18n.status" /></th>
-									<th width="32" />
+									<th width="32" >
+										<xsl:if test="PublishAccess">
+											<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
+												<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/disabled.png" alt="" />
+											</a>
+										</xsl:if>
+									
+									</th>
 								</tr>
 							</thead>
 							<tbody>

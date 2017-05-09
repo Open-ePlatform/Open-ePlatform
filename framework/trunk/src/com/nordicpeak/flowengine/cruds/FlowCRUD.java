@@ -757,6 +757,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 		
+		if (callback.hasPublishAccess(user)) {
+
+			XMLUtils.appendNewElement(doc, showTypeElement, "PublishAccess", "true");
+		}
+		
 		XMLUtils.append(doc, showTypeElement, "FlowFamilyEvents", callback.getRecentFlowFamilyEvents(flow.getFlowFamily()));
 	}
 
