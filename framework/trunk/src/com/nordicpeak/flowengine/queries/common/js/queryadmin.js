@@ -195,7 +195,15 @@ function openAlternativeModal(button, event) {
 			
 			beforeOpen: function(){
 				modal.find(".modal-header").find("h1, h2").text(Alternativesi18n.title + " " + alternative.find("input.name").val());
-				modal.find("input[name = 'alternative-value']").val(alternative.find("input.hiddenValue").val());
+				modal.find("input, select").each(function(){
+					
+					var input = $(this);
+					var savedInput = alternative.find("input[name^='" + input.prop("name") + "_']");
+					
+					if (savedInput.length > 0) {
+						input.val(savedInput.val());
+					}
+				});
 			},
 
 			afterContent: function(){
@@ -205,7 +213,12 @@ function openAlternativeModal(button, event) {
 			
 			beforeClose: function(){
 				var feather = this;
-				alternative.find("input.hiddenValue").val(feather.$content.find("input[name = 'alternative-value']").val());
+				
+				feather.$content.find("input, select").each(function(){
+					
+					var input = $(this);
+					alternative.find("input[name^='" + input.prop("name") + "_']").val(input.val());
+				});
 			},
 	};
 	

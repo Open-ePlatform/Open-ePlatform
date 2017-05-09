@@ -294,7 +294,7 @@
 						
 							<div class="floatleft full bigmarginbottom">
 							
-								<label for="alternative-value" class="floatleft clearboth">
+								<label for="alternativevalue" class="floatleft clearboth">
 									<xsl:value-of select="$i18n.AlternativeValue" />
 								</label>
 								
@@ -304,11 +304,14 @@
 								
 								<div class="floatleft full">
 									<xsl:call-template name="createTextField">
-										<xsl:with-param name="id" select="'alternative-value'"/>
-										<xsl:with-param name="name" select="'alternative-value'"/>
+										<xsl:with-param name="id" select="'alternativevalue'"/>
+										<xsl:with-param name="name" select="'alternativevalue'"/>
 									</xsl:call-template>
 							  </div>
 							</div>
+							
+							<xsl:variable name="helper"><AlternativeModalExtra/></xsl:variable>
+							<xsl:apply-templates select="exsl:node-set($helper)/AlternativeModalExtra"/>
 							
 							<input class="close bigmargintop floatright" type="button" value="{$i18n.CloseAlternativeExtra}" />
 							
@@ -358,6 +361,10 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="AlternativeModalExtra">
+	
+	</xsl:template>
+	
 	<xsl:template name="createAlternative">
 		
 		<xsl:param name="alternativeID" />
@@ -388,7 +395,6 @@
 				<xsl:with-param name="id" select="concat('alternativevalue_', $alternativeID)" />
 				<xsl:with-param name="name" select="concat('alternativevalue_', $alternativeID)" />
 				<xsl:with-param name="value" select="$hiddenValue" />
-				<xsl:with-param name="class" select="'hiddenValue'" />
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>
@@ -402,6 +408,13 @@
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>
+			
+			<xsl:variable name="helper"><AlternativeExtraValues/></xsl:variable>
+			<xsl:apply-templates select="exsl:node-set($helper)/AlternativeExtraValues">
+				<xsl:with-param name="alternativeID" select="$alternativeID"/>
+				<xsl:with-param name="disabled" select="$disabled"/>
+				<xsl:with-param name="context" select="."/>
+			</xsl:apply-templates>
 			
 			<xsl:if test="$editHiddenValue = 'true'">
 			
@@ -417,6 +430,13 @@
 			
 		</div>
 		
+	</xsl:template>
+	
+	<xsl:template match="AlternativeExtraValues">
+		<xsl:param name="alternativeID" />
+		<xsl:param name="disabled" />
+		<xsl:param name="context" />
+	
 	</xsl:template>
 
 	<xsl:template match="parameter" mode="alternative">
