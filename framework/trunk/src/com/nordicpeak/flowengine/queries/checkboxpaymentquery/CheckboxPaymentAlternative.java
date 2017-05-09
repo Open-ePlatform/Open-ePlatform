@@ -212,5 +212,14 @@ public class CheckboxPaymentAlternative extends GeneratedElementable implements 
 	@Override
 	public void setValue(String value) {}
 
+	@Override
+	public Integer getPrice() {
+		return null;
+	}
+
+	@Override
+	public void setPrice(Integer value) {
+	}
+
 	//TODO XSD support
 }
