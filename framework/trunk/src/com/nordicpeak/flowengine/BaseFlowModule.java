@@ -494,7 +494,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 
 		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), null);
-	}	
+	}
 	
 	public static void addMutableFlowInstanceManagerToSession(int flowID, Integer flowInstanceID, MutableFlowInstanceManager instanceManager, HttpSession session) {
 
@@ -2319,13 +2319,16 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return submitEventAttributes;
 	}
 
-	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, String actionID) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
 		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
 
-		addFlowInstanceEvent(flowInstance, EventType.PAYED, null, user);
+		if (addPaymentEvent) {
+		
+			addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
+		}
 
 		Status nextStatus = flowInstance.getFlow().getDefaultState(actionID);
 

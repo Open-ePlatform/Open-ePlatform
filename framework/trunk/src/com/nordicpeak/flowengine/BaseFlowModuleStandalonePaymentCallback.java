@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,9 +27,9 @@ public class BaseFlowModuleStandalonePaymentCallback implements StandalonePaymen
 	}
 	
 	@Override
-	public void paymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void paymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
-		baseFlowModule.standalonePaymentComplete(instanceManager, req, user, actionID);
+		baseFlowModule.standalonePaymentComplete(instanceManager, req, user, actionID, addPaymentEvent, details, eventAttributes);
 	}
 
 	@Override

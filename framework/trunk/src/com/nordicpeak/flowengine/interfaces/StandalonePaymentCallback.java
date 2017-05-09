@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine.interfaces;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +15,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 
 public interface StandalonePaymentCallback {
 
-	void paymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException;
+	void paymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException;
 	
 	String getPaymentFailURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req);
 
@@ -22,6 +23,6 @@ public interface StandalonePaymentCallback {
 
 	String getPaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req);
 
-	String getActionID(); 
+	String getActionID();
 	
 }

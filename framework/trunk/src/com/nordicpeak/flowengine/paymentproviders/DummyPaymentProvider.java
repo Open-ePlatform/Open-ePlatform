@@ -113,11 +113,17 @@ public class DummyPaymentProvider extends AnnotatedForegroundModule implements F
 	@Override
 	public ViewFragment pay(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager, StandalonePaymentCallback callback) throws Exception {
 
-		if(req.getMethod().equalsIgnoreCase("POST") && req.getParameter("type") != null) {
+		String paymentType = req.getParameter("type");
+		
+		if (req.getMethod().equalsIgnoreCase("POST") && paymentType != null) {
 			
 			log.info("User " + user + " payed flow instance " + instanceManager.getFlowInstance());
 			
-			callback.paymentComplete(instanceManager, req, user);
+			Map<String, String> eventAttributes = new LinkedHashMap<String, String>(2);
+			
+			eventAttributes.put(Constants.FLOW_INSTANCE_EVENT_DIRECT_PAYMENT_ATTRIBUTE, Boolean.toString(!paymentType.equals("INVOICE")));
+			
+			callback.paymentComplete(instanceManager, req, user, true, null, eventAttributes);
 			
 			res.sendRedirect(callback.getPaymentSuccessURL(instanceManager, req));
 			
