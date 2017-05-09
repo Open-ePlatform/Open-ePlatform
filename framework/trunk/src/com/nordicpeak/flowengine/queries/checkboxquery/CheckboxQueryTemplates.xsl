@@ -251,7 +251,20 @@
 				<xsl:with-param name="element" select="../../../Alternatives/CheckboxAlternative[alternativeID = $alternativeID]" />
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 			</xsl:call-template>
-			<label for="{$checkboxID}" class="checkbox"><xsl:value-of select="name" /></label>
+			
+			<label for="{$checkboxID}" class="checkbox">
+			
+				<xsl:value-of select="name" />
+				
+				<xsl:if test="price > 0">
+					<xsl:text>&#160;(</xsl:text>
+					<xsl:value-of select="price"/>
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="$i18n.Currency"/>
+					<xsl:text>)</xsl:text>
+				</xsl:if>
+				
+			</label>
 	
 		</div>
 	
@@ -261,7 +274,15 @@
 
 		<div class="alternative">
 	
-			<xsl:value-of select="name" />		
+			<xsl:value-of select="name" />
+			
+			<xsl:if test="price > 0">
+				<xsl:text>&#160;(</xsl:text>
+				<xsl:value-of select="price"/>
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$i18n.Currency"/>
+				<xsl:text>)</xsl:text>
+			</xsl:if>
 	
 		</div>
 	

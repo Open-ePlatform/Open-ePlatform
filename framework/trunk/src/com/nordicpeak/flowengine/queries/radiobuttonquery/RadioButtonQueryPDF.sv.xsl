@@ -4,4 +4,6 @@
 
 	<xsl:include href="RadioButtonQueryPDFTemplates.xsl"/>
 	
+	<xsl:variable name="i18n.Currency">SEK</xsl:variable>
+	
 </xsl:stylesheet>

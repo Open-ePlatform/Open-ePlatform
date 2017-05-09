@@ -57,6 +57,15 @@
 				<xsl:choose>
 					<xsl:when test="RadioButtonQueryInstance/RadioButtonAlternative">
 						<xsl:value-of select="RadioButtonQueryInstance/RadioButtonAlternative/name"/>
+						
+						<xsl:if test="RadioButtonQueryInstance/RadioButtonAlternative/price > 0">
+							<xsl:text>&#160;(</xsl:text>
+							<xsl:value-of select="RadioButtonQueryInstance/RadioButtonAlternative/price"/>
+							<xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="$i18n.Currency"/>
+							<xsl:text>)</xsl:text>
+						</xsl:if>
+						
 					</xsl:when>
 					<xsl:when test="RadioButtonQueryInstance/freeTextAlternativeValue">
 						<xsl:value-of select="RadioButtonQueryInstance/freeTextAlternativeValue"/>
@@ -201,7 +210,20 @@
 				<xsl:with-param name="element" select="../../../RadioButtonAlternative[alternativeID = $alternativeID]" />
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 			</xsl:call-template>
-			<label for="{$radioID}" class="radio"><xsl:value-of select="name" /></label>
+			
+			<label for="{$radioID}" class="radio">
+			
+				<xsl:value-of select="name" />
+				
+				<xsl:if test="price > 0">
+					<xsl:text>&#160;(</xsl:text>
+					<xsl:value-of select="price"/>
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="$i18n.Currency"/>
+					<xsl:text>)</xsl:text>
+				</xsl:if>
+			
+			</label>
 				
 		</div>
 	

@@ -106,6 +106,14 @@
 	    		ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `drop_down_query_alternatives` ADD COLUMN `price` INT UNSIGNED NULL DEFAULT NULL AFTER `sortIndex`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

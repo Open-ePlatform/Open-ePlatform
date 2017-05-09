@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine.queries.radiobuttonquery;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +17,9 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
+import com.nordicpeak.flowengine.beans.BaseInvoiceLine;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -26,7 +29,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "radio_button_query_instances")
 @XMLElement
-public class RadioButtonQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance{
+public class RadioButtonQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, PaymentQuery {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -64,6 +67,7 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 	}
 
 
+	@Override
 	public RadioButtonQuery getQuery() {
 
 		return query;
@@ -169,6 +173,20 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 			return freeTextAlternativeValue;
 		}
 
+		return null;
+	}
+	
+	@Override
+	public List<BaseInvoiceLine> getInvoiceLines() {
+		
+		if (alternative != null && alternative.getPrice() != null && alternative.getPrice() > 0) {
+			
+			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(1);
+			invoiceLines.add(new BaseInvoiceLine(1, alternative.getPrice(), alternative.getName(), ""));
+			
+			return invoiceLines;
+		}
+		
 		return null;
 	}
 }

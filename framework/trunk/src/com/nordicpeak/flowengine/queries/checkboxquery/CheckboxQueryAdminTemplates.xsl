@@ -130,6 +130,43 @@
 		</form>
 		
 	</xsl:template>
+	
+	<xsl:template match="AlternativeModalExtra">
+	
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="alternativeprice" class="floatleft clearboth">
+				<xsl:value-of select="$i18n.AlternativePrice" />
+			</label>
+			
+			<p class="tiny floatleft full">
+		  	<xsl:value-of select="$i18n.AlternativePriceDescription" />
+		  </p>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'alternativeprice'"/>
+					<xsl:with-param name="name" select="'alternativeprice'"/>
+				</xsl:call-template>
+		  </div>
+		</div>
+	
+	</xsl:template>
+	
+	<xsl:template match="AlternativeExtraValues">
+		<xsl:param name="alternativeID" />
+		<xsl:param name="disabled" />
+		<xsl:param name="context" />
+	
+		<xsl:call-template name="createHiddenField">
+			<xsl:with-param name="id" select="concat('alternativeprice_', $alternativeID)" />
+			<xsl:with-param name="name" select="concat('alternativeprice_', $alternativeID)" />
+			<xsl:with-param name="value" select="$context/price" />
+			<xsl:with-param name="requestparameters" select="//requestparameters" />
+			<xsl:with-param name="disabled" select="$disabled"/>
+		</xsl:call-template>
+	
+	</xsl:template>
 
 	<xsl:template match="CheckboxAlternative">
 		
@@ -196,6 +233,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'columns'">
 				<xsl:value-of select="$i18n.Columns" />
+			</xsl:when>
+			<xsl:when test="starts-with($fieldName, 'alternativeprice_')">
+				<xsl:value-of select="$i18n.AlternativePrice" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

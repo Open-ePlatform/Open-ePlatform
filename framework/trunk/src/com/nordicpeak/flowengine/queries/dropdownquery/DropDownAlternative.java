@@ -12,6 +12,7 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -48,6 +49,11 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 	@OrderBy
 	@XMLElement
 	private Integer sortIndex;
+	
+	@DAOManaged
+	@WebPopulate(populator = NonNegativeStringIntegerPopulator.class)
+	@XMLElement
+	private Integer price;
 
 	@DAOManaged(columnName="queryID")
 	@ManyToOne
@@ -127,8 +133,17 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 		return value;
 	}
 	
+	@Override
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	public Integer getPrice() {
+		return price;
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
 	}
 
 	@Override
@@ -178,6 +193,7 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, 1, 255, IntegerPopulator.getPopulator(), errors);
 		value = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		price = XMLValidationUtils.validateParameter("price", xmlParser, false, 1, 255, IntegerPopulator.getPopulator(), errors);
 		
 		if(!errors.isEmpty()){
 

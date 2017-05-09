@@ -46,11 +46,13 @@
 	<xsl:variable name="i18n.EditAlternativeExtra">Avancerade inställningar för alternativet</xsl:variable>
 	<xsl:variable name="i18n.AlternativeExtraTitle">Avancerade inställningar för alternativet:</xsl:variable>
 	<xsl:variable name="i18n.CloseAlternativeExtra">Spara ändringar</xsl:variable>
-	<xsl:variable name="i18n.AlternativeValue">Värde i XML</xsl:variable>
-	<xsl:variable name="i18n.AlternativeValueDescription">Lämna tomt för att använda alternativets namn som värde.</xsl:variable>
 	<xsl:variable name="i18n.AutoSortAlternatives.Select">Sortera..</xsl:variable>
 	<xsl:variable name="i18n.AutoSortAlternatives.Descending">Sortera A-Ö</xsl:variable>
 	<xsl:variable name="i18n.AutoSortAlternatives.Ascending">Sortera Ö-A</xsl:variable>
+	<xsl:variable name="i18n.AlternativeValue">Värde i XML</xsl:variable>
+	<xsl:variable name="i18n.AlternativeValueDescription">Lämna tomt för att använda alternativets namn som värde.</xsl:variable>
+	<xsl:variable name="i18n.AlternativePrice">Kostnad</xsl:variable>
+	<xsl:variable name="i18n.AlternativePriceDescription">Alternativets kostnad om betalning är aktiverat för e-tjänsten</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.alternative">alternativ</xsl:variable>
 	

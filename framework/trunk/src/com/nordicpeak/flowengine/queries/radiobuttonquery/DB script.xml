@@ -115,4 +115,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_query_alternatives` ADD COLUMN `price` INT UNSIGNED NULL DEFAULT NULL AFTER `sortIndex`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

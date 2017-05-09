@@ -50,7 +50,15 @@
 
 	<xsl:template match="CheckboxAlternative" mode="show">
 
-		<xsl:value-of select="name" />		
+		<xsl:value-of select="name" />
+		
+		<xsl:if test="price > 0">
+			<xsl:text>&#160;(</xsl:text>
+			<xsl:value-of select="price"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.Currency"/>
+			<xsl:text>)</xsl:text>
+		</xsl:if>
 
 		<xsl:if test="position() != last()"><br/></xsl:if>
 	

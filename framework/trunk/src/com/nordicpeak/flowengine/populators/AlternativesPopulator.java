@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -16,7 +17,7 @@ import se.unlogic.webutils.validation.ValidationUtils;
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
 
 public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
-
+	
 	private Class<AlternativeType> alternativeClass;
 	
 	private final String xmlParentNodeName;
@@ -56,6 +57,7 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 				
 				String sortOrder = req.getParameter("sortorder_" + alternativeID);
 				String value = req.getParameter("alternativevalue_" + alternativeID);
+				Integer price = ValidationUtils.validateParameter("alternativeprice_" + alternativeID, req, false, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
 				
 				if (NumberUtils.isInt(sortOrder)) {
 					
@@ -63,13 +65,13 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 					alternative.setName(name);
 					alternative.setSortIndex(NumberUtils.toInt(sortOrder));
+					alternative.setPrice(price);
 					
 					extraPopulation(alternative, req, alternativeID);
 					
 					if (NumberUtils.isInt(alternativeID)) {
 						
 						this.checkForExistingAlternatives(currentAlternatives, alternative, NumberUtils.toInt(alternativeID));
-						
 					}
 					
 					if (!StringUtils.isEmpty(value)) {
@@ -81,23 +83,22 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 				}
 			}
-			
 		}
 		
 		return alternatives;
 	}
 	
-	protected void extraPopulation(AlternativeType alternative, HttpServletRequest req, String alternativeID){}
+	protected void extraPopulation(AlternativeType alternative, HttpServletRequest req, String alternativeID) {}
 	
 	public List<AlternativeType> populate(XMLParser xmlParser, List<ValidationError> errors) throws ValidationException {
 		
 		List<XMLParser> xmlParsers = xmlParser.getNodes(xmlParentNodeName + "/" + alternativeClass.getSimpleName());
 		
-		if(!CollectionUtils.isEmpty(xmlParsers)) {
+		if (!CollectionUtils.isEmpty(xmlParsers)) {
 			
 			List<AlternativeType> alternatives = new ArrayList<AlternativeType>();
 			
-			for(XMLParser parser : xmlParsers) {
+			for (XMLParser parser : xmlParsers) {
 				
 				AlternativeType alternative = this.getNewAlternativeInstance();
 				alternative.populate(parser);
@@ -121,30 +122,25 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 					alternative.setAlternativeID(alternativeID);
 					break;
-			
+					
 				}
-				
 			}
-			
 		}
-
 	}
 	
 	protected AlternativeType getNewAlternativeInstance() {
 		
 		try {
-			
 			return alternativeClass.newInstance();
-
+			
 		} catch (InstantiationException e) {
-
+			
 			throw new RuntimeException(e);
-
+			
 		} catch (IllegalAccessException e) {
-
+			
 			throw new RuntimeException(e);
 		}
-		
 	}
 	
 }

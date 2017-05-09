@@ -54,6 +54,15 @@
 				<xsl:choose>
 						<xsl:when test="DropDownQueryInstance/DropDownAlternative">
 							<xsl:value-of select="DropDownQueryInstance/DropDownAlternative/name"/>
+							
+							<xsl:if test="DropDownQueryInstance/DropDownAlternative/price > 0">
+								<xsl:text>&#160;(</xsl:text>
+								<xsl:value-of select="DropDownQueryInstance/DropDownAlternative/price"/>
+								<xsl:text>&#160;</xsl:text>
+								<xsl:value-of select="$i18n.Currency"/>
+								<xsl:text>)</xsl:text>
+							</xsl:if>
+							
 						</xsl:when>
 						<xsl:when test="DropDownQueryInstance/freeTextAlternativeValue">
 							<xsl:value-of select="DropDownQueryInstance/freeTextAlternativeValue"/>
@@ -153,6 +162,14 @@
 									</xsl:choose>
 									
 									<xsl:value-of select="name" />
+									
+									<xsl:if test="price > 0">
+										<xsl:text>&#160;(</xsl:text>
+										<xsl:value-of select="price"/>
+										<xsl:text>&#160;</xsl:text>
+										<xsl:value-of select="$i18n.Currency"/>
+										<xsl:text>)</xsl:text>
+									</xsl:if>
 									
 								</option>
 							</xsl:for-each>

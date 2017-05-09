@@ -18,7 +18,9 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
+import com.nordicpeak.flowengine.beans.BaseInvoiceLine;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -27,7 +29,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "checkbox_query_instances")
 @XMLElement
-public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ColumnExportableQueryInstance {
+public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQuery {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -272,5 +274,28 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		}
 
 		return values;
+	}
+	
+	@Override
+	public List<BaseInvoiceLine> getInvoiceLines() {
+		
+		if (alternatives != null) {
+			
+			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>();
+			
+			for (CheckboxAlternative alternative : alternatives) {
+				
+				if (alternative.getPrice() != null && alternative.getPrice() > 0) {
+					invoiceLines.add(new BaseInvoiceLine(1, alternative.getPrice(), alternative.getName(), ""));
+				}
+			}
+			
+			if (!CollectionUtils.isEmpty(invoiceLines)) {
+				
+				return invoiceLines;
+			}
+		}
+		
+		return null;
 	}
 }

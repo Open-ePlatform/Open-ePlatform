@@ -149,4 +149,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_query_alternatives` ADD COLUMN `price` INT UNSIGNED NULL DEFAULT NULL AFTER `sortIndex`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

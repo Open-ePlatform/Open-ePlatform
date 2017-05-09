@@ -38,6 +38,15 @@
 				<xsl:choose>
 					<xsl:when test="RadioButtonQueryInstance/RadioButtonAlternative">
 						<xsl:value-of select="RadioButtonQueryInstance/RadioButtonAlternative/name"/>
+						
+						<xsl:if test="RadioButtonQueryInstance/RadioButtonAlternative/price > 0">
+							<xsl:text>&#160;(</xsl:text>
+							<xsl:value-of select="RadioButtonQueryInstance/RadioButtonAlternative/price"/>
+							<xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="$i18n.Currency"/>
+							<xsl:text>)</xsl:text>
+						</xsl:if>
+						
 					</xsl:when>
 					<xsl:when test="RadioButtonQueryInstance/freeTextAlternativeValue">
 						<xsl:value-of select="RadioButtonQueryInstance/freeTextAlternativeValue"/>
