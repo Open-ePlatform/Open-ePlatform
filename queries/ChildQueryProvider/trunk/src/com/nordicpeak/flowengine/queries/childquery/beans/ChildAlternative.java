@@ -59,9 +59,4 @@ public class ChildAlternative extends GeneratedElementable implements ImmutableA
 	public String getValue() {
 		return null;
 	}
-
-	@Override
-	public Integer getPrice() {
-		return null;
-	}
 }
