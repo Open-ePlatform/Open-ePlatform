@@ -951,6 +951,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	}
 
 	
+	@Override
 	public boolean isPaymentSupportEnabled() {
 	
 		return paymentSupportEnabled;
@@ -974,6 +975,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		return this.icon;
 	}
 	
+	@Override
 	public Timestamp getIconLastModified() {
 	
 		return iconLastModified;

@@ -12,7 +12,4 @@ public interface ImmutableAlternative extends Elementable{
 	public Integer getSortIndex();
 	
 	public String getValue();
-	
-	public Integer getPrice();
-	
 }

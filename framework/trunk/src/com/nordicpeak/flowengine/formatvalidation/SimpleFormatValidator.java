@@ -79,6 +79,7 @@ public class SimpleFormatValidator extends FormatValidator {
 		return instance.getClass();
 	}
 
+	@Override
 	public String getPlaceholder() {
 	
 		return placeholder;

@@ -15,6 +15,7 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 
 public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 	
@@ -65,7 +66,11 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 					alternative.setName(name);
 					alternative.setSortIndex(NumberUtils.toInt(sortOrder));
-					alternative.setPrice(price);
+					
+					if(alternative instanceof PricedAlternative){
+						
+						((PricedAlternative) alternative).setPrice(price);
+					}
 					
 					extraPopulation(alternative, req, alternativeID);
 					

@@ -10,6 +10,7 @@ public class IntegerEntry implements NumberEntry{
 	@DAOManaged
 	private Integer value;
 
+	@Override
 	public Integer getValue() {
 
 		return value;
@@ -20,6 +21,7 @@ public class IntegerEntry implements NumberEntry{
 		this.value = value;
 	}
 
+	@Override
 	public Integer getId() {
 
 		return id;

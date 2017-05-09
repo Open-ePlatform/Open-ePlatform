@@ -301,11 +301,13 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		this.allowedAdminUserIDs = allowedAdminUserIDs;
 	}
 
+	@Override
 	public FlowTypeAdminAccessInterface getAdminAccessInterface() {
 
 		return adminAccessInterface;
 	}
 
+	@Override
 	public FlowTypeUserAccessInterface getUserAccessInterface() {
 
 		return userAccessInterface;

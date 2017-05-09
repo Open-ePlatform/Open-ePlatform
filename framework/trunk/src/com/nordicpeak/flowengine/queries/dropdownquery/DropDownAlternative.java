@@ -23,10 +23,11 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 
 @Table(name = "drop_down_query_alternatives")
 @XMLElement
-public class DropDownAlternative extends GeneratedElementable implements MutableAlternative, Serializable {
+public class DropDownAlternative extends GeneratedElementable implements MutableAlternative, Serializable, PricedAlternative {
 
 	private static final long serialVersionUID = 5698552791580194144L;
 
@@ -138,10 +139,12 @@ public class DropDownAlternative extends GeneratedElementable implements Mutable
 		this.value = value;
 	}
 	
+	@Override
 	public Integer getPrice() {
 		return price;
 	}
 
+	@Override
 	public void setPrice(Integer price) {
 		this.price = price;
 	}

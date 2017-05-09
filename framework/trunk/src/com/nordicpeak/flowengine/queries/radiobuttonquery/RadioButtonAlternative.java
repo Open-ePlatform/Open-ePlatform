@@ -23,10 +23,11 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 
 @Table(name = "radio_button_query_alternatives")
 @XMLElement
-public class RadioButtonAlternative extends GeneratedElementable implements MutableAlternative, Serializable {
+public class RadioButtonAlternative extends GeneratedElementable implements MutableAlternative, Serializable, PricedAlternative {
 
 	private static final long serialVersionUID = 5698552791580194144L;
 
@@ -137,10 +138,12 @@ public class RadioButtonAlternative extends GeneratedElementable implements Muta
 		this.instances = instances;
 	}
 	
+	@Override
 	public Integer getPrice() {
 		return price;
 	}
 
+	@Override
 	public void setPrice(Integer price) {
 		this.price = price;
 	}

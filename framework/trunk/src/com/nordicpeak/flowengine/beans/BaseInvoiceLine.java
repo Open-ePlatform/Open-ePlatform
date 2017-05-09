@@ -68,6 +68,7 @@ public class BaseInvoiceLine extends GeneratedElementable implements InvoiceLine
 	}
 
 	
+	@Override
 	public String getUnitMeasure() {
 	
 		return unitMeasure;

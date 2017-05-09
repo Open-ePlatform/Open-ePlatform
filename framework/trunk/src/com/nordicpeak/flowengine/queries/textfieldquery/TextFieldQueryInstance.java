@@ -60,6 +60,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 	}
 
 
+	@Override
 	public TextFieldQuery getQuery() {
 
 		return query;

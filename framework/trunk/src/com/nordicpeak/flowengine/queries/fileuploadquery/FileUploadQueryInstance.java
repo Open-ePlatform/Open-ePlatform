@@ -64,6 +64,7 @@ public class FileUploadQueryInstance extends BaseQueryInstance implements String
 		this.queryInstanceID = queryInstanceID;
 	}
 
+	@Override
 	public FileUploadQuery getQuery() {
 
 		return query;

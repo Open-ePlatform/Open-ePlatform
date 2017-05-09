@@ -10,6 +10,7 @@ public class FloatEntry implements NumberEntry{
 	@DAOManaged
 	private Float value;
 
+	@Override
 	public Float getValue() {
 
 		return value;
@@ -20,6 +21,7 @@ public class FloatEntry implements NumberEntry{
 		this.value = value;
 	}
 
+	@Override
 	public Integer getId() {
 
 		return id;

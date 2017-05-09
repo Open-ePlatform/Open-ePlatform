@@ -38,6 +38,7 @@ public final class QueryTypeDescriptor extends GeneratedElementable implements N
 		return queryTypeID;
 	}
 
+	@Override
 	public String getName() {
 
 		return name;

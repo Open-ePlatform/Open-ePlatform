@@ -10,6 +10,7 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 public abstract class FormatValidator implements Elementable, StringFormatValidator, Named {
 
+	@Override
 	public abstract String getName();
 
 	public abstract String getClassName();

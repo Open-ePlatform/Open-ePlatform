@@ -75,12 +75,14 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	}
 
 	
+	@Override
 	public int getMinStepIndex() {
 	
 		return minStepIndex;
 	}
 
 	
+	@Override
 	public int getMinQueryIndex() {
 	
 		return minQueryIndex;
@@ -126,17 +128,20 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 		return queryModifications;
 	}
 	
+	@Override
 	public QueryInstance getQueryInstance(){
 		
 		return managedSteps.get(minStepIndex).getManagedQueryInstances().get(minQueryIndex).getQueryInstance();
 	}
 
+	@Override
 	public SiteProfile getSiteProfile() {
 	
 		return siteProfile;
 	}
 
 	
+	@Override
 	public RequestMetadata getRequestMetadata() {
 	
 		return requestMetadata;

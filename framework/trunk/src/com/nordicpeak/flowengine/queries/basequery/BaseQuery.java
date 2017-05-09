@@ -78,6 +78,7 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 		return queryDescriptor;
 	}
 
+	@Override
 	public String getDescription() {
 
 		return description;

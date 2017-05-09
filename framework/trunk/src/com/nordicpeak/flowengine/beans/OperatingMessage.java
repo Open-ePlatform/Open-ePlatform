@@ -102,6 +102,7 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 		this.messageID = messageID;
 	}
 
+	@Override
 	public String getMessage() {
 
 		return message;
