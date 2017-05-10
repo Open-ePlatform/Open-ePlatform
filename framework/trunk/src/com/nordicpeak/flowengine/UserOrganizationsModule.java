@@ -82,6 +82,11 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 		super.moduleConfigured();
 		
 		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "b", userMenuExtensionLinkSlot);
+		
+		if(userFlowInstanceMenuModule != null) {
+			
+			userFlowInstanceMenuModule.sortProviders();
+		}
 	}
 
 	@InstanceManagerDependency

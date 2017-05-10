@@ -48,7 +48,12 @@ public class UserProfileModule extends se.unlogic.hierarchy.foregroundmodules.us
 
 		super.moduleConfigured();
 		
-		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "u", userMenuExtensionLinkSlot);		
+		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "u", userMenuExtensionLinkSlot);
+		
+		if(userFlowInstanceMenuModule != null) {
+			
+			userFlowInstanceMenuModule.sortProviders();
+		}
 	}
 
 	@InstanceManagerDependency

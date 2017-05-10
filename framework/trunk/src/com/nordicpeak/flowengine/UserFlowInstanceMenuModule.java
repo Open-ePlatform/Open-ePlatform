@@ -181,7 +181,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			
 			extensionLinkProviders.add(e);
 			
-			Collections.sort(extensionLinkProviders, COMPARATOR);
+			sortProviders();
 			
 			log.info("User menu provider " + e + " added");
 			
@@ -194,14 +194,20 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 	
 	public synchronized void removeUserMenuProvider(UserMenuProvider e) {
 		
-		extensionLinkProviders.remove(e);
+		if(extensionLinkProviders.remove(e)) {
 		
-		log.info("User menu provider " + e + " removed");
+			log.info("User menu provider " + e + " removed");
 		
-		if (systemInterface.getSystemStatus() == SystemStatus.STARTED && sectionInterface.getBackgroundModuleCache().isCached(moduleDescriptor)) {
+			if (systemInterface.getSystemStatus() == SystemStatus.STARTED && sectionInterface.getBackgroundModuleCache().isCached(moduleDescriptor)) {
 			
-			generateAliases();
+				generateAliases();
+			}
 		}
+	}
+	
+	public synchronized void sortProviders() {
+		
+		Collections.sort(extensionLinkProviders, COMPARATOR);
 	}
 	
 }
