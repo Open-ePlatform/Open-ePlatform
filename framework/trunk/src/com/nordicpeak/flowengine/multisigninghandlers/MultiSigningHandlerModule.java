@@ -27,6 +27,9 @@ import se.unlogic.hierarchy.core.beans.MutableUser;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
@@ -77,7 +80,9 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
@@ -149,6 +154,8 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	
 	protected UserFlowInstanceModule userFlowInstanceModule;
 	
+	protected AnnotatedDAO<FlowInstance> flowInstanceDAO;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
@@ -190,6 +197,9 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		flowInstanceIDParamFactory = signatureDAO.getParamFactory("flowInstanceID", Integer.class);
 		socialSecurityNumberParamFactory = signatureDAO.getParamFactory("socialSecurityNumber", String.class);
+		
+		FlowEngineDAOFactory daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		flowInstanceDAO = daoFactory.getFlowInstanceDAO();
 	}
 	
 	@Override
@@ -210,6 +220,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		doc.getDocumentElement().appendChild(signingStatusElement);
 		
 		XMLUtils.appendNewElement(doc, signingStatusElement, "SigningLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/sign/" + instanceManager.getFlowInstanceID());
+		XMLUtils.appendNewElement(doc, signingStatusElement, "CancelLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/cancel/" + instanceManager.getFlowInstanceID());
 		
 		for (SigningParty signingParty : signingParties) {
 			
@@ -857,4 +868,48 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	public int getModuleID() {
 		return moduleDescriptor.getModuleID();
 	}
+	
+	@WebPublic(alias = "cancel", requireLogin = true)
+	public ForegroundModuleResponse cancelSigning(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+		
+		Integer flowInstanceID = uriParser.getInt(2);
+		ImmutableFlowInstanceManager instanceManager;
+		Document doc = createDocument(req, uriParser);
+		
+		try {
+			if (flowInstanceID == null || (instanceManager = getFlowInstanceManager(flowInstanceID, req, user, uriParser)) == null) {
+				
+				//Flow instance not found
+				throw new URINotFoundException(uriParser);
+			}
+			
+		} catch (FlowDisabledException e) {
+			
+			return showMessage(doc, "FlowDisabled");
+		}
+		
+		if (CollectionUtils.isEmpty(instanceManager.getFlowInstance().getOwners()) || !instanceManager.getFlowInstance().getOwners().contains(user)) {
+			
+			log.info("User " + user + " not have access to flow instance " + instanceManager);
+			return showMessage(doc, "SigningPartyNotFound");
+		}
+		
+		if (instanceManager.getFlowState().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
+			
+			log.info("User does not have access to flow instance " + instanceManager + ", wrong status content type: " + instanceManager.getFlowState().getContentType());
+			return showMessage(doc, "WrongStatusContentType");
+		}
+		
+		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
+		
+		flowInstance.setStatus(flowInstance.getFlow().getDefaultState(FlowBrowserModule.SAVE_ACTION_ID));
+		flowInstanceDAO.update(flowInstance);
+		
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager), EventTarget.ALL);
+		
+		res.sendRedirect(uriParser.getContextPath() + "/" + userFlowInstanceModule.getFullAlias());
+		return null;
+	}
+	
 }

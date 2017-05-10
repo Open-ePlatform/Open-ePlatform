@@ -54,6 +54,12 @@
 			</a>
 		</p>
 		
+		<div class="text-align-center">
+			<a class="btn btn-red btn-inline" href="{CancelLink}" onclick="return confirm('{$i18n.CancelSigning.Confirm}')">
+				<xsl:value-of select="$i18n.CancelSigning"/>
+			</a>
+		</div>
+		
 	</xsl:template>	
 	
 	<xsl:template match="SignFragment">
