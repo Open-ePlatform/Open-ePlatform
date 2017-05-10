@@ -18,8 +18,8 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.Contact;
-import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -49,6 +49,9 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	@DAOManaged
 	@XMLElement
 	private String organizationNumber;
+
+	@DAOManaged
+	private String citizenIdentifier;
 
 	@DAOManaged
 	@XMLElement
@@ -93,68 +96,74 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	@DAOManaged
 	@XMLElement
 	private boolean persistOrganization;
-	
+
 	@XMLElement
 	private boolean isUserOrganizationsMutableWithAccess;
 
 	public String getName() {
+
 		return name;
 	}
 
 	public void setName(String name) {
+
 		this.name = name;
 	}
 
 	public String getOrganizationNumber() {
+
 		return organizationNumber;
 	}
 
 	public void setOrganizationNumber(String organizationNumber) {
+
 		this.organizationNumber = organizationNumber;
 	}
 
 	public String getAddress() {
+
 		return address;
 	}
 
 	public void setAddress(String address) {
+
 		this.address = address;
 	}
 
 	public String getZipCode() {
+
 		return zipCode;
 	}
 
 	public void setZipCode(String zipCode) {
+
 		this.zipCode = zipCode;
 	}
 
 	public String getPostalAddress() {
+
 		return postalAddress;
 	}
 
 	public void setPostalAddress(String postalAddress) {
+
 		this.postalAddress = postalAddress;
 	}
-
 
 	public String getFirstname() {
 
 		return firstname;
 	}
 
-
 	public void setFirstname(String firstname) {
 
 		this.firstname = firstname;
 	}
 
-
 	public String getLastname() {
 
 		return lastname;
 	}
-
 
 	public void setLastname(String lastname) {
 
@@ -162,34 +171,42 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 
 	public String getPhone() {
+
 		return phone;
 	}
 
 	public void setPhone(String phone) {
+
 		this.phone = phone;
 	}
 
 	public String getEmail() {
+
 		return email;
 	}
 
 	public void setEmail(String email) {
+
 		this.email = email;
 	}
 
 	public String getMobilePhone() {
+
 		return mobilePhone;
 	}
 
 	public void setMobilePhone(String mobilePhone) {
+
 		this.mobilePhone = mobilePhone;
 	}
 
 	public boolean isContactBySMS() {
+
 		return contactBySMS;
 	}
 
 	public void setContactBySMS(boolean contactBySMS) {
+
 		this.contactBySMS = contactBySMS;
 	}
 
@@ -215,24 +232,28 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 
 	public Integer getOrganizationID() {
+
 		return organizationID;
 	}
 
 	public void setOrganizationID(Integer organizationID) {
+
 		this.organizationID = organizationID;
 	}
 
 	public boolean isPersistOrganization() {
+
 		return persistOrganization;
 	}
 
 	public void setPersistOrganization(boolean persistOrganization) {
+
 		this.persistOrganization = persistOrganization;
 	}
 
 	public boolean isPopulated() {
 
-		if(StringUtils.isEmpty(name) && StringUtils.isEmpty(organizationNumber) && StringUtils.isEmpty(address) && StringUtils.isEmpty(zipCode) && StringUtils.isEmpty(postalAddress) &&StringUtils.isEmpty(phone) && StringUtils.isEmpty(email) && StringUtils.isEmpty(mobilePhone)) {
+		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(organizationNumber) && StringUtils.isEmpty(address) && StringUtils.isEmpty(zipCode) && StringUtils.isEmpty(postalAddress) && StringUtils.isEmpty(phone) && StringUtils.isEmpty(email) && StringUtils.isEmpty(mobilePhone)) {
 
 			return false;
 		}
@@ -244,10 +265,10 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	public void reset(MutableAttributeHandler attributeHandler) {
 
 		//Preserve fields in case they have been prepopulated
-		
+
 		super.reset(attributeHandler);
 	}
-	
+
 	public void fullReset(MutableAttributeHandler attributeHandler) {
 
 		this.name = null;
@@ -260,10 +281,10 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 		this.mobilePhone = null;
 		this.contactBySMS = false;
 		this.organizationID = null;
-		
+
 		reset(attributeHandler);
 	}
-	
+
 	@Override
 	public String toString() {
 
@@ -294,43 +315,43 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	public String getStringValue() {
 
 		StringBuilder builder = new StringBuilder();
-		
+
 		builder.append(name);
-		
+
 		builder.append("\n" + organizationNumber);
-		
+
 		builder.append("\n" + firstname + " " + lastname);
-		
-		if(address != null){
-			
+
+		if (address != null) {
+
 			builder.append("\n" + address);
 		}
-		
-		if(zipCode != null && postalAddress != null){
-			
+
+		if (zipCode != null && postalAddress != null) {
+
 			builder.append("\n" + zipCode + " " + postalAddress);
 		}
-		
-		if(phone != null){
-			
+
+		if (phone != null) {
+
 			builder.append("\n" + phone);
 		}
-		
-		if(email != null){
-			
+
+		if (email != null) {
+
 			builder.append("\n" + email);
 		}
-		
+
 		return builder.toString();
 	}
-	
+
 	@Override
 	public List<String> getColumnLabels(QueryHandler queryHandler) {
 
 		OrganizationDetailQueryProviderModule queryProvider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), OrganizationDetailQueryProviderModule.class);
 
 		List<String> labels = new ArrayList<String>();
-		
+
 		labels.add(getQueryInstanceDescriptor().getQueryDescriptor().getName() + ": " + queryProvider.getExportOrganizationName());
 		labels.add(getQueryInstanceDescriptor().getQueryDescriptor().getName() + ": " + queryProvider.getExportOrganizationNumber());
 		labels.add(getQueryInstanceDescriptor().getQueryDescriptor().getName() + ": " + queryProvider.getExportContactFirstName());
@@ -365,22 +386,22 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 
 	public boolean isUserOrganizationsMutableWithAccess() {
-	
+
 		return isUserOrganizationsMutableWithAccess;
 	}
-	
+
 	public void setUserOrganizationsMutableWithAccess(boolean isUserOrganizationsMutableWithAccess) {
-	
+
 		this.isUserOrganizationsMutableWithAccess = isUserOrganizationsMutableWithAccess;
 	}
 
 	@Override
 	public Contact getContact() {
-		
+
 		if (isPopulated()) {
-			
+
 			Contact contact = new Contact();
-			
+
 			contact.setFirstname(getFirstname());
 			contact.setLastname(getLastname());
 			contact.setEmail(getEmail());
@@ -391,14 +412,25 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 			contact.setZipCode(getZipCode());
 			contact.setOrganizationName(getName());
 			contact.setOrganizationNumber(getOrganizationNumber());
-			
+
 			contact.setContactBySMS(isContactBySMS());
 			contact.setContactByEmail(true);
-			
+			contact.setCitizenIdentifier(citizenIdentifier);
+
 			return contact;
 		}
-		
+
 		return null;
 	}
-	
+
+	public String getCitizenIdentifier() {
+
+		return citizenIdentifier;
+	}
+
+	public void setCitizenIdentifier(String citizenIdentifier) {
+
+		this.citizenIdentifier = citizenIdentifier;
+	}
+
 }

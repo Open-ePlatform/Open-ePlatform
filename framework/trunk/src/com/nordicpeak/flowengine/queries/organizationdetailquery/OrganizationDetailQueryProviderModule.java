@@ -25,6 +25,7 @@ import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -50,6 +51,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.UserOrganizationsModule;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
@@ -398,36 +400,39 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 		queryInstance.getQueryInstanceDescriptor().setPopulated(queryInstance.isPopulated());
 		
-		if (poster != null && poster.equals(user) && persistOrganization) {
+		if (poster != null && poster.equals(user)) {
 
-			try {
+			queryInstance.setCitizenIdentifier(UserUtils.getAttribute(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE, poster));
+			
+			if(persistOrganization){
+			
+				try {
 
-				UserOrganization organization = populateOrganization(poster, queryInstance);
+					UserOrganization organization = populateOrganization(poster, queryInstance);
 
-				if (organization.getOrganizationID() == null) {
+					if (organization.getOrganizationID() == null) {
 
-					organization = userOrganizationsModule.addOrganization(poster, organization);
+						organization = userOrganizationsModule.addOrganization(poster, organization);
 
-					queryInstance.setOrganizationID(organization.getOrganizationID());
+						queryInstance.setOrganizationID(organization.getOrganizationID());
 
-				} else {
+					} else {
 
-					userOrganizationsModule.updateOrganization(poster, organization);
+						userOrganizationsModule.updateOrganization(poster, organization);
 
-				}
+					}
 
-			} catch (SQLException e) {
+				} catch (SQLException e) {
 
-				throw new ValidationException(new ValidationError("UnableToPersistOrganization"));
+					throw new ValidationException(new ValidationError("UnableToPersistOrganization"));
 
-			} catch (AccessDeniedException e) {
+				} catch (AccessDeniedException e) {
 
-				throw new ValidationException(new ValidationError("UnableToPersistOrganization"));
+					throw new ValidationException(new ValidationError("UnableToPersistOrganization"));
 
+				}				
 			}
-
 		}
-
 	}
 
 	private UserOrganization populateOrganization(User user, OrganizationDetailQueryInstance queryInstance) throws AccessDeniedException, SQLException {

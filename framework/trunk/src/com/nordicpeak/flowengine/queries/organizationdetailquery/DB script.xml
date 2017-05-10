@@ -100,4 +100,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_query_instances` ADD COLUMN `citizenIdentifier` VARCHAR(255) AFTER `organizationNumber`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>
