@@ -174,11 +174,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
 	protected List<Integer> excludedFlowTypes;
-
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "10";
-	
+
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -193,7 +193,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
-
+	
 	protected HashSet<Integer> excludedFlowTypesHashSet = null;
 	
 	private QueryParameterFactory<FlowInstanceEvent, FlowInstance> flowInstanceEventFlowInstanceParamFactory;
@@ -216,7 +216,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
 	
 	protected Locale systemLocale;
-	
+
 	protected ExtensionLink userMenuLink;
 
 	@Override
@@ -967,14 +967,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@Override
 	public String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
-
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&signprovidererror=1";
+		
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+		
+		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
 	}
 
 	@Override
 	public String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&paymentprovidererror=1";
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+			
+		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
 	}
 	
 	@Override

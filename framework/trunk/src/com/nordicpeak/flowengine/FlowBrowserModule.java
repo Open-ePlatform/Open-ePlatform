@@ -1249,13 +1249,17 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&paymentprovidererror=1";
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+		
+		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
 	}
 
 	@Override
 	public String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&signprovidererror=1";
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+		
+		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
 	}
 
 	@Override

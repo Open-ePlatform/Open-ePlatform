@@ -948,25 +948,29 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected void redirectToSignError(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, MutableFlowInstanceManager instanceManager) throws IOException {
 
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+		
 		if (instanceManager.getFlowInstanceID() != null) {
 
-			res.sendRedirect(uriParser.getRequestURL() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&signprovidererror=1");
+			res.sendRedirect(uriParser.getRequestURL() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview);
 
 		} else {
 
-			res.sendRedirect(uriParser.getRequestURL() + "?preview=1&signprovidererror=1");
+			res.sendRedirect(uriParser.getRequestURL() + "?signprovidererror=1" + preview);
 		}
 	}
 
 	protected void redirectToPaymentError(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, MutableFlowInstanceManager instanceManager) throws IOException {
 
+		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
+		
 		if (instanceManager.getFlowInstanceID() != null) {
 
-			res.sendRedirect(uriParser.getRequestURL() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&paymentprovidererror=1");
+			res.sendRedirect(uriParser.getRequestURL() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview);
 
 		} else {
 
-			res.sendRedirect(uriParser.getRequestURL() + "?preview=1&paymentprovidererror=1");
+			res.sendRedirect(uriParser.getRequestURL() + "?paymentprovidererror=1" + preview);
 		}
 	}
 
