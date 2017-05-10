@@ -107,6 +107,7 @@ import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
 import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
@@ -217,6 +218,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@TextAreaSettingDescriptor(name = "Flow instance multi sign SMS message (users)", description = "The SMS sent to the users when they have to sign a multi sign flow instance", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignInitiatedUserSMS;
+	
+	@ModuleSetting
+	@TextAreaSettingDescriptor(name = "Flow instance multi sign cancel SMS message (users)", description = "The SMS sent to the users when a flow instance they had to sign is canceled", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceMultiSignCanceledUserSMS;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to users on status change", description = "Controls if email messages are the sent to the users when the status of their flow instances changes.")
@@ -311,6 +317,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance multi sign email message (users)", description = "The message of emails sent to the users when they have to sign a multi sign flow instance", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignInitiatedUserEmailMessage;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow instance multi sign cancel email subject (users)", description = "The subject of emails sent to the users when a flow instance they had to sign is canceled", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceMultiSignCanceledUserEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow instance multi sign cancel email message (users)", description = "The message of emails sent to the users when a flow instance they had to sign is canceled", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceMultiSignCanceledUserEmailMessage;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when new messages are received from users", description = "Controls if email messages are sent to the managers when they receive new messages from users.")
@@ -1564,7 +1580,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
+	
+	@EventListener(channel = FlowInstance.class)
+	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException {
 
+		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
+
+		if (signingParties != null) {
+
+			Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
+
+			for (SigningParty signingParty : signingParties) {
+
+				sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignCanceledUserEmailSubject, this.flowInstanceMultiSignCanceledUserEmailMessage);
+				sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignCanceledUserSMS);
+			}
+		}
+	}
+	
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagerMentionedEvent event, EventSource eventSource) throws SQLException {
 
@@ -1572,8 +1605,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			List<TagSource> sharedTagSources = new ArrayList<TagSource>(4);
 
-			sharedTagSources.add(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) event.getFlowInstance()));
-			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) event.getFlowInstance().getFlow()));
+			sharedTagSources.add(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource(event.getFlowInstance()));
+			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource(event.getFlowInstance().getFlow()));
 			sharedTagSources.add(POSTER_TAG_SOURCE_FACTORY.getTagSource(event.getUser()));
 			sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/overview/" + event.getFlowInstance().getFlowInstanceID() + "#notes"));
 
