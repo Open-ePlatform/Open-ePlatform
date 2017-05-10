@@ -16,9 +16,7 @@
 		  	</a>
 	
 		  	<ul>
-		  		<xsl:apply-templates select="ExtensionLink" >
-		  			<xsl:sort select="slot"/>
-		  		</xsl:apply-templates>
+		  		<xsl:apply-templates select="ExtensionLink" />
 		  	</ul>
 	  	</div>
 

@@ -4,6 +4,8 @@
 
 	<xsl:include href="UserProfileModuleTemplates.xsl"/>
 	
+	<xsl:variable name="java.userMenuTabTitle">Mina uppgifter</xsl:variable>
+	
 	<xsl:variable name="i18n.username" select="'Användarnamn'"/>
 	<xsl:variable name="i18n.password" select="'Lösenord'"/>
 	<xsl:variable name="i18n.firstname" select="'Förnamn'"/>

@@ -4,6 +4,8 @@
 
 	<xsl:include href="UserOrganizationsModuleTemplates.xsl"/>
 	
+	<xsl:variable name="java.userMenuTabTitle">Mina organisationer</xsl:variable>
+	
 	<xsl:variable name="i18n.validation.requiredField" select="'Du behöver fylla i fältet'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet'"/>
 	<xsl:variable name="i18n.validation.tooShort" select="'För kort innehåll i fältet'"/>

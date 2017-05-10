@@ -1,8 +1,8 @@
 package com.nordicpeak.flowengine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
@@ -25,14 +25,16 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.comparators.UserMenuProviderComparator;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 
 public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implements SystemStartupListener, Runnable {
 	
+	private static final UserMenuProviderComparator COMPARATOR = new UserMenuProviderComparator();
 	
 	public static final String REQUEST_DISABLE_MENU = UserFlowInstanceMenuModule.class.getSimpleName() + "_disable";
 	
-	protected CopyOnWriteArrayList<UserMenuProvider> extensionLinkProviders = new CopyOnWriteArrayList<UserMenuProvider>();
+	protected ArrayList<UserMenuProvider> extensionLinkProviders = new ArrayList<UserMenuProvider>();
 	
 	@Override
 	public void init(BackgroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -142,7 +144,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			if (linkProvider.getAccessInterface() == null || AccessUtils.checkAccess(user, linkProvider.getAccessInterface())) {
 				
 				try {
-					ExtensionLink link = linkProvider.getUserMenuExtensionLink(user);
+					ExtensionLink link = linkProvider.getUserMenuExtensionLink();
 					
 					if (link != null) {
 						
@@ -173,11 +175,13 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 		return doc;
 	}
 	
-	public void addUserMenuProvider(UserMenuProvider e) {
+	public synchronized void addUserMenuProvider(UserMenuProvider e) {
 		
 		if (!extensionLinkProviders.contains(e)) {
 			
 			extensionLinkProviders.add(e);
+			
+			Collections.sort(extensionLinkProviders, COMPARATOR);
 			
 			log.info("User menu provider " + e + " added");
 			
@@ -188,7 +192,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 		}
 	}
 	
-	public void removeUserMenuProvider(UserMenuProvider e) {
+	public synchronized void removeUserMenuProvider(UserMenuProvider e) {
 		
 		extensionLinkProviders.remove(e);
 		

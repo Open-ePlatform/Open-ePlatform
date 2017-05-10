@@ -11,7 +11,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
@@ -33,11 +36,21 @@ import com.nordicpeak.flowengine.beans.UserOrganization;
 import com.nordicpeak.flowengine.cruds.UserOrganizationCRUD;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 
+
 public class UserOrganizationsModule extends AnnotatedForegroundModule implements CRUDCallback<User>, UserMenuProvider {
 
+	@XSLVariable(prefix = "java.")
+	private String userMenuTabTitle = "My organizations";
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
+	protected String userMenuExtensionLinkSlot = "30";
+	
 	protected UserOrganizationCRUD userOrganizationCRUD;
 	
 	protected UserFlowInstanceMenuModule userFlowInstanceMenuModule;
+	
+	protected ExtensionLink userMenuLink;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -62,7 +75,15 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 		
 		super.unload();
 	}
-	
+
+	@Override
+	protected void moduleConfigured() throws Exception {
+		
+		super.moduleConfigured();
+		
+		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "b", userMenuExtensionLinkSlot);
+	}
+
 	@InstanceManagerDependency
 	public void setUserFlowInstanceMenuModule(UserFlowInstanceMenuModule userFlowInstanceMenuModule) {
 
@@ -165,8 +186,7 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink(User user) {
-		return new ExtensionLink(moduleDescriptor.getName(), getFullAlias(), "b", "3");
+	public ExtensionLink getUserMenuExtensionLink() {
+		return userMenuLink;
 	}
-	
 }

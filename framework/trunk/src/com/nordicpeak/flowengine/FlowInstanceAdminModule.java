@@ -134,13 +134,13 @@ import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidat
 
 public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 
-	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION};
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION };
 
 	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, Flow.STATUSES_RELATION };
 	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION };
 
 	@SuppressWarnings("rawtypes")
-	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class};
+	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class };
 
 	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ?";
 	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID WHERE ffib.userID = ? AND ffi.flowID IN (";
@@ -158,19 +158,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerUsersNotFoundError");
 
 	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
-	
+
 	@XSLVariable(prefix = "java.")
 	private String noManagersSelected = "No managers selected";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String notificationNewManager = "Assigned as manager";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String notificationCompletion = "Completion";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String mentionedInFlowInstance = "Mentioned in message";
 
@@ -187,33 +187,33 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected int maxHitCount = 20;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
+	@CheckboxSettingDescriptor(name = "Enable site profile support", description = "Controls if site profile support is enabled")
 	protected boolean enableSiteProfileSupport;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Enable logging of flow instance indexing", description="Enables logging of indexing of flow instances")
+	@CheckboxSettingDescriptor(name = "Enable logging of flow instance indexing", description = "Enables logging of indexing of flow instances")
 	protected boolean logFlowInstanceIndexing;
-	
+
 	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
+	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max file size", description = "Maxmium allowed file size in megabytes", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxFileSize = 50;
-	
+
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
-	
+
 	protected NotificationHandler notificationHandler;
-	
+
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> overviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
 	protected CopyOnWriteArrayList<AdminFlowInstanceProvider> adminFlowInstanceProviders = new CopyOnWriteArrayList<AdminFlowInstanceProvider>();
-	
+
 	protected ExternalMessageCRUD externalMessageCRUD;
 	protected InternalMessageCRUD internalMessageCRUD;
 
@@ -228,25 +228,25 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
-		
+
 		systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this);
-		
+
 	}
 
 	@Override
 	public void unload() throws Exception {
 
 		systemInterface.getInstanceHandler().removeInstance(FlowInstanceAdminModule.class, this);
-		
+
 		eventHandler.removeEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 
 		if (notificationHandler != null) {
-			
+
 			notificationHandler.removeNotificationSource(this);
 		}
-		
+
 		flowInstanceIndexer.close();
-		
+
 		overviewExtensionLinkProviders.clear();
 		tabExtensionProviders.clear();
 		adminFlowInstanceProviders.clear();
@@ -277,19 +277,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		this.flowInstanceIndexer = new FlowInstanceIndexer(daoFactory, maxHitCount, systemInterface);
 		this.flowInstanceIndexer.setLogIndexing(this.logFlowInstanceIndexing);
-		
+
 		systemInterface.addStartupListener(this);
-		
-		if(oldIndexer != null){
+
+		if (oldIndexer != null) {
 
 			oldIndexer.close();
 		}
 	}
-	
+
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		return this.list(req, res, user, uriParser, (List<ValidationError>)null);
+		return this.list(req, res, user, uriParser, (List<ValidationError>) null);
 	}
 
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ValidationError validationError) throws SQLException {
@@ -303,58 +303,58 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		log.info("User " + user + " listing flow instances");
 
 		SiteProfile profile = null;
-		
-		if(profileHandler != null) {
-			
+
+		if (profileHandler != null) {
+
 			profile = profileHandler.getCurrentProfile(user, req, uriParser);
 		}
-		
+
 		List<Integer> flowIDs = getUserFlowIDs(user, profile);
 
 		List<FlowInstance> bookmarkedFlows = null;
 		List<FlowInstance> activeFlowInstances = null;
-		
-		if(flowIDs != null){
-			
+
+		if (flowIDs != null) {
+
 			bookmarkedFlows = getFlowInstanceBookmarks(user, profile, flowIDs);
 			activeFlowInstances = getActiveFlowInstances(user, profile, flowIDs);
 		}
-		
-		if(!adminFlowInstanceProviders.isEmpty()){
-			
+
+		if (!adminFlowInstanceProviders.isEmpty()) {
+
 			int activeFlowInstanceCount = CollectionUtils.getSize(activeFlowInstances);
-			
-			for(AdminFlowInstanceProvider adminFlowInstanceProvider : adminFlowInstanceProviders){
-				
-				try{
+
+			for (AdminFlowInstanceProvider adminFlowInstanceProvider : adminFlowInstanceProviders) {
+
+				try {
 					activeFlowInstances = CollectionUtils.addAndInstantiateIfNeeded(activeFlowInstances, adminFlowInstanceProvider.getActiveFlowInstances(user));
-					
-				}catch(RuntimeException e){
-					
+
+				} catch (RuntimeException e) {
+
 					log.error("Error getting flow instances from provider " + adminFlowInstanceProvider, e);
 				}
 			}
-			
-			if(activeFlowInstances != null && CollectionUtils.getSize(activeFlowInstances) != activeFlowInstanceCount){
-				
+
+			if (activeFlowInstances != null && CollectionUtils.getSize(activeFlowInstances) != activeFlowInstanceCount) {
+
 				//TODO sort
 			}
 		}
-		
-		if(CollectionUtils.isEmpty(activeFlowInstances) && bookmarkedFlows == null){
-			
+
+		if (CollectionUtils.isEmpty(activeFlowInstances) && bookmarkedFlows == null) {
+
 			Document doc = createDocument(req, uriParser, user);
 
 			Element overviewElement = doc.createElement("OverviewElement");
 			doc.getDocumentElement().appendChild(overviewElement);
 
 			XMLUtils.append(doc, overviewElement, validationErrors);
-			
+
 			ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
-			
+
 			return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 		}
-		
+
 		Document doc = createDocument(req, uriParser, user);
 
 		Element overviewElement = doc.createElement("OverviewElement");
@@ -363,7 +363,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		XMLUtils.append(doc, overviewElement, validationErrors);
 		XMLUtils.append(doc, overviewElement, "BookmarkedInstances", bookmarkedFlows);
 
-		if(activeFlowInstances != null){
+		if (activeFlowInstances != null) {
 
 			Element prioritizedInstances = doc.createElement("PrioritizedInstances");
 			overviewElement.appendChild(prioritizedInstances);
@@ -377,33 +377,33 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			Element unassignedInstances = doc.createElement("UnassignedInstances");
 			overviewElement.appendChild(unassignedInstances);
 
-			for(FlowInstance instance : activeFlowInstances){
+			for (FlowInstance instance : activeFlowInstances) {
 
-				if(instance.getManagers() == null){
+				if (instance.getManagers() == null) {
 
 					unassignedInstances.appendChild(instance.toXML(doc));
 
-				}else if(instance.getManagers().contains(user)){
+				} else if (instance.getManagers().contains(user)) {
 
 					userAssignedInstances.appendChild(instance.toXML(doc));
 
-				}else{
+				} else {
 
 					activeInstances.appendChild(instance.toXML(doc));
 				}
 
-				if(instance.getStatus().getManagingTime() != null){
+				if (instance.getStatus().getManagingTime() != null) {
 
 					int daysLapsed = DateUtils.getWorkingDays(instance.getLastStatusChange(), new Date());
 
 					float percent = (daysLapsed / instance.getStatus().getManagingTime()) * 100;
 
-					if(percent >= highPriorityThreshold){
+					if (percent >= highPriorityThreshold) {
 
 						instance.setPriority(Priority.HIGH);
 						prioritizedInstances.appendChild(instance.toXML(doc));
 
-					}else if(percent >= mediumPriorityThreshold){
+					} else if (percent >= mediumPriorityThreshold) {
 
 						instance.setPriority(Priority.MEDIUM);
 						prioritizedInstances.appendChild(instance.toXML(doc));
@@ -414,75 +414,75 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 
-		if(enableSiteProfileSupport && this.profileHandler != null){
+		if (enableSiteProfileSupport && this.profileHandler != null) {
 
 			XMLUtils.append(doc, overviewElement, "SiteProfiles", this.profileHandler.getProfiles());
 		}
-		
+
 		ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
-	
+
 	@WebPublic(alias = "overview")
 	public ForegroundModuleResponse showFlowInstanceOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
 
 		FlowInstance flowInstance;
-		
-		if(uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD, InternalMessageAttachment.DATA_FIELD), getFlowInstanceOverviewRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)){
+
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD, InternalMessageAttachment.DATA_FIELD), getFlowInstanceOverviewRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
-			
+
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
 
 			log.info("User " + user + " viewing overview of flow instance " + flowInstance);
-			
+
 			Document doc = this.createDocument(req, uriParser, user);
 
 			Element showFlowInstanceOverviewElement = doc.createElement("ShowFlowInstanceOverview");
 			doc.getDocumentElement().appendChild(showFlowInstanceOverviewElement);
-			
+
 			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormatedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 
-			if(req.getMethod().equalsIgnoreCase("POST")){
+			if (req.getMethod().equalsIgnoreCase("POST")) {
 
-				if(req.getParameter("externalmessage") != null){
+				if (req.getParameter("externalmessage") != null) {
 
-					if(flowInstance.getOwners() != null){
-						
+					if (flowInstance.getOwners() != null) {
+
 						//TODO append message or request parameters
 						ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
 
-						if(externalMessage != null){
+						if (externalMessage != null) {
 
 							//TODO check bug with wrong poster
-							
+
 							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user);
 
 							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
 							systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
-							
+
 							res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 
 							return null;
 
 						}
-						
-					}else{
-						
+
+					} else {
+
 						log.warn("User " + user + " tried to add external message for flow instance " + flowInstance + " which has no poster set.");
 					}
 
-				}else if(req.getParameter("internalmessage") != null){
+				} else if (req.getParameter("internalmessage") != null) {
 
 					//TODO append message or request parameters
 					InternalMessage internalMessage = internalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance);
 
-					if(internalMessage != null){
+					if (internalMessage != null) {
 
 						Set<Integer> mentionedUserIDs = MentionedUserTagUtils.getMentionedUserIDs(internalMessage.getMessage());
 
@@ -518,46 +518,48 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						}
 
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#notes");
-						
+
 						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
 
 						return null;
 
 					}
+
 				}
+
 			}
 
-			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser);
 
-			if(user != null){
+			if (user != null) {
 				showFlowInstanceOverviewElement.appendChild(user.toXML(doc));
 			}
 
-			if(enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null){
+			if (enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null) {
 
 				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
 			}
 
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
-			
+
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
 
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
-			
-			if(!CollectionUtils.isEmpty(viewFragments)){
-				for(ViewFragment viewFragment : viewFragments){
-					
+
+			if (!CollectionUtils.isEmpty(viewFragments)) {
+				for (ViewFragment viewFragment : viewFragments) {
+
 					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 				}
 			}
-			
+
 			return moduleResponse;
 		}
 
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
-	
-	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
+
+	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
 		Element showFlowInstanceElement = flowInstance.toXML(doc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
@@ -608,7 +610,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if(uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateStatusRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)){
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateStatusRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 
@@ -616,34 +618,34 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-			
+
 			log.info("User " + user + " requesting update status form for instance " + flowInstance);
-			
+
 			Document doc = this.createDocument(req, uriParser, user);
 
 			Element updateInstanceStatusElement = doc.createElement("UpdateInstanceStatus");
 
 			doc.getDocumentElement().appendChild(updateInstanceStatusElement);
 
-			if(req.getMethod().equalsIgnoreCase("POST")){
+			if (req.getMethod().equalsIgnoreCase("POST")) {
 
 				Integer statusID = NumberUtils.toInt(req.getParameter("statusID"));
 
 				Status status;
 
-				if(statusID == null || (status = getStatus(flowInstance.getFlow(), statusID)) == null){
+				if (statusID == null || (status = getStatus(flowInstance.getFlow(), statusID)) == null) {
 
 					updateInstanceStatusElement.appendChild(STATUS_NOT_FOUND_VALIDATION_ERROR.toXML(doc));
 
-				}else if(status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT){
+				} else if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT) {
 
 					updateInstanceStatusElement.appendChild(INVALID_STATUS_VALIDATION_ERROR.toXML(doc));
 
-				}else{
+				} else {
 
 					Status previousStatus = flowInstance.getStatus();
 
-					if(!previousStatus.equals(status)){
+					if (!previousStatus.equals(status)) {
 
 						log.info("User " + user + " changing status of instance " + flowInstance + " from " + previousStatus + " to " + status);
 
@@ -696,15 +698,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if(uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)){
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
-			
+
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-			
+
 			log.info("User " + user + " requesting update managers form for instance " + flowInstance);
 
 			Document doc = this.createDocument(req, uriParser, user);
@@ -715,35 +717,35 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			List<User> availableManagers = getAvailableManagers(flowInstance);
 
-			if(req.getMethod().equalsIgnoreCase("POST")){
+			if (req.getMethod().equalsIgnoreCase("POST")) {
 
 				List<Integer> userIDs = NumberUtils.toInt(req.getParameterValues("userID"));
 
 				String detailString;
 
-				try{
+				try {
 
 					List<User> previousManagers = flowInstance.getManagers();
 
-					if(userIDs != null){
+					if (userIDs != null) {
 
 						List<User> users = systemInterface.getUserHandler().getUsers(userIDs, false, false);
 
-						if(CollectionUtils.getSize(users) < userIDs.size()){
+						if (CollectionUtils.getSize(users) < userIDs.size()) {
 
 							throw new ValidationException(ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
 						}
 
 						StringBuilder stringBuilder = new StringBuilder();
 
-						for(User selectedManager : users){
+						for (User selectedManager : users) {
 
-							if(!availableManagers.contains(selectedManager)){
+							if (!availableManagers.contains(selectedManager)) {
 
 								throw new ValidationException(new UnauthorizedManagerUserValidationError(selectedManager));
 							}
 
-							if(stringBuilder.length() > 0){
+							if (stringBuilder.length() > 0) {
 
 								stringBuilder.append(", ");
 							}
@@ -757,13 +759,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						detailString = stringBuilder.toString();
 						flowInstance.setManagers(users);
 
-					}else{
+					} else {
 
 						detailString = noManagersSelected;
 						flowInstance.setManagers(null);
 					}
 
-					if(!CollectionUtils.equals(previousManagers, flowInstance.getManagers())){
+					if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers())) {
 
 						log.info("User " + user + " setting managers of instance " + flowInstance + " to " + flowInstance.getManagers());
 
@@ -782,7 +784,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					return null;
 
-				}catch(ValidationException e){
+				} catch (ValidationException e) {
 
 					XMLUtils.append(doc, updateInstanceManagersElement, e.getErrors());
 				}
@@ -812,7 +814,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if(uriParser.size() == 3 && uriParser.getInt(2) != null && (flowInstance = getFlowInstance(uriParser.getInt(2))) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)){
+		if (uriParser.size() == 3 && uriParser.getInt(2) != null && (flowInstance = getFlowInstance(uriParser.getInt(2))) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			checkDeleteAccess(flowInstance, user);
 
@@ -820,16 +822,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			TransactionHandler transactionHandler = null;
 
-			try{
+			try {
 				transactionHandler = new TransactionHandler(dataSource);
 
-				for(Step step : flowInstance.getFlow().getSteps()){
+				for (Step step : flowInstance.getFlow().getSteps()) {
 
-					if(step.getQueryDescriptors() != null){
+					if (step.getQueryDescriptors() != null) {
 
-						for(QueryDescriptor queryDescriptor : step.getQueryDescriptors()){
+						for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
 
-							if(queryDescriptor.getQueryInstanceDescriptors() != null){
+							if (queryDescriptor.getQueryInstanceDescriptors() != null) {
 
 								try {
 									queryDescriptor.getQueryInstanceDescriptors().get(0).setQueryDescriptor(queryDescriptor);
@@ -848,7 +850,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 				transactionHandler.commit();
 
-			}finally{
+			} finally {
 
 				TransactionHandler.autoClose(transactionHandler);
 			}
@@ -871,11 +873,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "bookmark")
 	public ForegroundModuleResponse toggleBookmark(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
-		Field[] relations = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION};
+		Field[] relations = { FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION };
 
 		FlowInstance flowInstance;
 
-		if(uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, relations)) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)){
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, relations)) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 
@@ -883,10 +885,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-			
+
 			UserBookmark bookmark = getBookmark(user, flowInstance);
 
-			if(bookmark == null){
+			if (bookmark == null) {
 
 				log.info("User " + user + " adding bookmark for instance " + flowInstance);
 
@@ -895,7 +897,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				bookmark.setUser(user);
 				daoFactory.getUserBookmarkDAO().add(bookmark);
 
-			}else{
+			} else {
 
 				log.info("User " + user + " removing bookmark for instance " + flowInstance);
 				daoFactory.getUserBookmarkDAO().delete(bookmark);
@@ -939,26 +941,26 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		List<User> availableManagers = null;
 
-		if(flowInstance.getFlow().getFlowFamily().getAllowedUserIDs() != null){
+		if (flowInstance.getFlow().getFlowFamily().getAllowedUserIDs() != null) {
 
 			availableManagers = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getAllowedUserIDs(), false, false);
 		}
 
-		if(flowInstance.getFlow().getFlowFamily().getAllowedGroupIDs() != null){
+		if (flowInstance.getFlow().getFlowFamily().getAllowedGroupIDs() != null) {
 
 			List<User> groupUsers = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getAllowedGroupIDs(), false);
 
-			if(groupUsers != null){
+			if (groupUsers != null) {
 
-				if(availableManagers == null){
+				if (availableManagers == null) {
 
 					availableManagers = new ArrayList<User>(groupUsers.size());
 
 				}
 
-				for(User groupUser : groupUsers){
+				for (User groupUser : groupUsers) {
 
-					if(!availableManagers.contains(groupUser)){
+					if (!availableManagers.contains(groupUser)) {
 						availableManagers.add(groupUser);
 					}
 
@@ -1017,7 +1019,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	@WebPublic(alias = "preview")
 	public ForegroundModuleResponse processPreviewRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
-		
+
 		return this.showImmutableFlowInstance(req, res, user, uriParser, getGeneralAccessController(), this, ShowMode.PREVIEW, MANAGER_REQUEST_METADATA);
 	}
 
@@ -1028,55 +1030,55 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		Integer flowInstanceID = null;
 		MutableFlowInstanceManager instanceManager;
 
-		try{
-			if(uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null){
+		try {
+			if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
 
 				// Get saved instance from DB or session
 				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
 
-				if(instanceManager == null){
+				if (instanceManager == null) {
 
 					log.info("User " + user + " requested non-existing flow instance with ID " + flowInstanceID + " and flow ID " + flowID + ", listing flows");
 					return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 				}
 
-			}else{
+			} else {
 
 				log.info("User " + user + " requested invalid URL, listing flows");
 				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
 			}
 
-		}catch(FlowNoLongerAvailableException e){
+		} catch (FlowNoLongerAvailableException e) {
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer available.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
 
-		}catch(FlowNotPublishedException e){
+		} catch (FlowNotPublishedException e) {
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer published.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_PUBLISHED_VALIDATION_ERROR);
 
-		}catch(FlowDisabledException e){
+		} catch (FlowDisabledException e) {
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is not enabled.");
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 
-		}catch(FlowInstanceNoLongerAvailableException e){
+		} catch (FlowInstanceNoLongerAvailableException e) {
 
 			log.info("User " + user + " requested flow instance " + e.getFlowInstance() + " which is no longer available.");
 			return list(req, res, user, uriParser, FLOW_INSTANCE_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
 
-		}catch(FlowEngineException e){
+		} catch (FlowEngineException e) {
 
 			log.error("Unable to get flow instance manager for flowID " + flowID + " and flowInstanceID " + flowInstanceID + " requested by user " + user, e);
 			return list(req, res, user, uriParser, ERROR_GETTING_FLOW_INSTANCE_MANAGER_VALIDATION_ERROR);
 		}
 
-		try{
+		try {
 
 			return processFlowRequest(instanceManager, this, getUpdateAccessController(), req, res, user, uriParser, true, MANAGER_REQUEST_METADATA);
 
-		}catch(FlowInstanceManagerClosedException e){
+		} catch (FlowInstanceManagerClosedException e) {
 
 			log.info("User " + user + " requested flow instance manager for flow instance " + e.getFlowInstance() + " which has already been closed. Removing flow instance manager from session.");
 
@@ -1084,11 +1086,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			return list(req, res, user, uriParser, FLOW_INSTANCE_MANAGER_CLOSED_VALIDATION_ERROR);
 
-		}catch(QueryInstanceHTMLException e){
+		} catch (QueryInstanceHTMLException e) {
 
 			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
 
-		}catch(RuntimeException e){
+		} catch (RuntimeException e) {
 
 			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
 		}
@@ -1106,7 +1108,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		flowInstanceIndexer.search(req, res, user, checkAccess);
 	}
-	
+
 	@WebPublic(alias = "externalattachment")
 	public ForegroundModuleResponse getExternalMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException {
 
@@ -1123,11 +1125,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		String sql;
 
-		if(!CollectionUtils.isEmpty(user.getGroups())){
+		if (!CollectionUtils.isEmpty(user.getGroups())) {
 
 			sql = FLOW_MANAGER_SQL + " OR ffg.groupID IN (?" + StringUtils.repeatString(", ?", user.getGroups().size() - 1) + "))";
 
-		}else{
+		} else {
 
 			sql = FLOW_MANAGER_SQL + ")";
 		}
@@ -1136,11 +1138,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		query.setInt(1, user.getUserID());
 
-		if(!CollectionUtils.isEmpty(user.getGroups())){
+		if (!CollectionUtils.isEmpty(user.getGroups())) {
 
 			int paramPosition = 2;
 
-			for(Group group : user.getGroups()){
+			for (Group group : user.getGroups()) {
 
 				query.setInt(paramPosition++, group.getGroupID());
 			}
@@ -1205,24 +1207,24 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void appendFormData(Document doc, Element baseElement, MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user) {
 
-		appendBookmark(doc, baseElement, (FlowInstance)instanceManager.getFlowInstance(), req, user);
+		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
 	}
 
 	@Override
-	public void appendShowFlowInstanceData(Document doc, Element baseElement, FlowInstanceManager instanceManager, HttpServletRequest req, User user){
+	public void appendShowFlowInstanceData(Document doc, Element baseElement, FlowInstanceManager instanceManager, HttpServletRequest req, User user) {
 
-		appendBookmark(doc, baseElement, (FlowInstance)instanceManager.getFlowInstance(), req, user);
+		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
 	}
 
 	public void appendBookmark(Document doc, Element baseElement, FlowInstance flowInstance, HttpServletRequest req, User user) {
 
-		try{
-			if(getBookmark(user, flowInstance) != null){
+		try {
+			if (getBookmark(user, flowInstance) != null) {
 
 				XMLUtils.appendNewElement(doc, baseElement, "Bookmarked");
 			}
 
-		}catch(SQLException e){
+		} catch (SQLException e) {
 
 			log.error("Error getting ookmark for user " + user + " and flow instance " + flowInstance, e);
 		}
@@ -1232,121 +1234,120 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public void systemStarted() {
 
 		Thread indexThreading = new Thread(this, "Flow instance indexer for " + moduleDescriptor);
-		
+
 		indexThreading.start();
 	}
 
 	@Override
-	public void run(){
-		
+	public void run() {
+
 		this.flowInstanceIndexer.cacheFlowInstances();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void processEvent(CRUDEvent<?> event, EventSource source) {
 
 		log.debug("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
 
-		if(FlowFamily.class.isAssignableFrom(event.getBeanClass())){
+		if (FlowFamily.class.isAssignableFrom(event.getBeanClass())) {
 
-			switch(event.getAction()){
+			switch (event.getAction()) {
 
 				case ADD:
-					flowInstanceIndexer.addFlowFamilies((List<FlowFamily>)event.getBeans());
+					flowInstanceIndexer.addFlowFamilies((List<FlowFamily>) event.getBeans());
 					break;
 
 				case UPDATE:
-					flowInstanceIndexer.updateFlowFamilies((List<FlowFamily>)event.getBeans());
+					flowInstanceIndexer.updateFlowFamilies((List<FlowFamily>) event.getBeans());
 					break;
 
 				case DELETE:
-					flowInstanceIndexer.deleteFlowFamilies((List<FlowFamily>)event.getBeans());
+					flowInstanceIndexer.deleteFlowFamilies((List<FlowFamily>) event.getBeans());
 					break;
 			}
 
-		}else if(Flow.class.isAssignableFrom(event.getBeanClass())){
+		} else if (Flow.class.isAssignableFrom(event.getBeanClass())) {
 
-			switch(event.getAction()){
+			switch (event.getAction()) {
 
 				case ADD:
-					flowInstanceIndexer.addFlows((List<Flow>)event.getBeans());
+					flowInstanceIndexer.addFlows((List<Flow>) event.getBeans());
 					break;
 
 				case UPDATE:
-					flowInstanceIndexer.updateFlows((List<Flow>)event.getBeans());
+					flowInstanceIndexer.updateFlows((List<Flow>) event.getBeans());
 					break;
 
 				case DELETE:
-					flowInstanceIndexer.deleteFlows((List<Flow>)event.getBeans());
+					flowInstanceIndexer.deleteFlows((List<Flow>) event.getBeans());
 					break;
 			}
 
-		}else if(FlowInstance.class.isAssignableFrom(event.getBeanClass())){
+		} else if (FlowInstance.class.isAssignableFrom(event.getBeanClass())) {
 
-			switch(event.getAction()){
+			switch (event.getAction()) {
 
 				case ADD:
-					flowInstanceIndexer.addFlowInstances((List<FlowInstance>)event.getBeans());
+					flowInstanceIndexer.addFlowInstances((List<FlowInstance>) event.getBeans());
 					break;
 
 				case UPDATE:
-					flowInstanceIndexer.updateFlowInstances((List<FlowInstance>)event.getBeans());
+					flowInstanceIndexer.updateFlowInstances((List<FlowInstance>) event.getBeans());
 					break;
 
 				case DELETE:
-					flowInstanceIndexer.deleteFlowInstances((List<FlowInstance>)event.getBeans());
+					flowInstanceIndexer.deleteFlowInstances((List<FlowInstance>) event.getBeans());
 					break;
 			}
 
-			
-		}else if(InternalMessage.class.isAssignableFrom(event.getBeanClass())){
+		} else if (InternalMessage.class.isAssignableFrom(event.getBeanClass())) {
 
 			List<FlowInstance> flowInstances = new ArrayList<FlowInstance>(event.getBeans().size());
-			
-			for(Object object : event.getBeans()){
-				
-				InternalMessage internalMessage = (InternalMessage)object;
-				
-				if(internalMessage.getFlowInstance() != null){
-					
+
+			for (Object object : event.getBeans()) {
+
+				InternalMessage internalMessage = (InternalMessage) object;
+
+				if (internalMessage.getFlowInstance() != null) {
+
 					flowInstances.add(internalMessage.getFlowInstance());
-					
-				}else{
-					
+
+				} else {
+
 					log.warn("Internal message " + internalMessage + " has no flow instance set, unable to update search index");
 				}
 			}
-		
-			if(!flowInstances.isEmpty()){
-				
+
+			if (!flowInstances.isEmpty()) {
+
 				flowInstanceIndexer.updateFlowInstances(flowInstances);
 			}
-			
-		}else if(ExternalMessage.class.isAssignableFrom(event.getBeanClass())){
+
+		} else if (ExternalMessage.class.isAssignableFrom(event.getBeanClass())) {
 
 			List<FlowInstance> flowInstances = new ArrayList<FlowInstance>(event.getBeans().size());
-			
-			for(Object object : event.getBeans()){
-				
-				ExternalMessage externalMessage = (ExternalMessage)object;
-				
-				if(externalMessage.getFlowInstance() != null){
-					
+
+			for (Object object : event.getBeans()) {
+
+				ExternalMessage externalMessage = (ExternalMessage) object;
+
+				if (externalMessage.getFlowInstance() != null) {
+
 					flowInstances.add(externalMessage.getFlowInstance());
-					
-				}else{
-					
+
+				} else {
+
 					log.warn("External message " + externalMessage + " has no flow instance set, unable to update search index");
 				}
 			}
-		
-			if(!flowInstances.isEmpty()){
-				
+
+			if (!flowInstances.isEmpty()) {
+
 				flowInstanceIndexer.updateFlowInstances(flowInstances);
 			}
-			
-		}else{
+
+		} else {
 
 			log.warn("Received CRUD event for unsupported class " + event.getBeanClass());
 		}
@@ -1361,24 +1362,24 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
-		if(this.pdfProvider != null){
-			
+		if (this.pdfProvider != null) {
+
 			try {
 				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user);
-				
+
 				pdfProvider.saveTemporaryPDF(instanceManager, event);
-				
+
 			} catch (Exception e) {
-				
+
 				log.error("Error creating PDF for event " + event + " belonging to flow instance " + instanceManager.getFlowInstance() + " saved and close by " + user, e);
 			}
 		}
-		
+
 		redirectToMethod(req, res, "/overview/" + instanceManager.getFlowInstanceID());
 	}
 
 	@WebPublic(alias = "submitted")
-	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException{
+	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException {
 
 		return super.showImmutableFlowInstance(req, res, user, uriParser, getGeneralAccessController(), this, ShowMode.SUBMIT, MANAGER_REQUEST_METADATA);
 	}
@@ -1388,7 +1389,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		try {
 			sendEventPDF(req, res, user, uriParser, getGeneralAccessController(), pdfProvider, true);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
@@ -1402,12 +1403,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		try {
 			sendEventXML(req, res, user, uriParser, getGeneralAccessController(), xmlProvider, true);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 		}
-		
+
 		return null;
 	}
 
@@ -1425,7 +1426,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected String getEventPDFLink(FlowInstanceManager instanceManager, ImmutableFlowInstanceEvent event, HttpServletRequest req, User user) {
 
-		if(event.getAttributeHandler().getPrimitiveBoolean("pdf")){
+		if (event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
 
 			return this.getModuleURI(req) + "/pdf/" + instanceManager.getFlowInstanceID() + "/" + event.getEventID();
 		}
@@ -1444,7 +1445,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?preview=1&paymentprovidererror=1";
 	}
-	
+
 	@Override
 	public String getSaveAndSubmitURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
@@ -1456,15 +1457,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return 0;
 	}
-	
+
 	@Override
 	public String getAbsoluteFileURL(URIParser uriParser, Object bean) {
 
-		if(ckConnectorModuleAlias != null){
-			
+		if (ckConnectorModuleAlias != null) {
+
 			return uriParser.getContextPath() + ckConnectorModuleAlias;
 		}
-		
+
 		return null;
 	}
 
@@ -1477,7 +1478,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return overviewExtensionLinkProviders.remove(e);
 	}
-	
+
 	public boolean addFlowInstanceOverviewExtensionProvider(FlowInstanceOverviewExtensionProvider provider) {
 
 		return tabExtensionProviders.add(provider);
@@ -1503,141 +1504,144 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return maxFileSize;
 	}
-	
+
 	private FlowInstanceOverviewExtensionProvider getOverviewExtensionProvider(String providerID) {
-		
+
 		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : tabExtensionProviders) {
-			
+
 			if (providerID.equals(tabExtensionProvider.getOverviewExtensionProviderID())) {
-				
+
 				return tabExtensionProvider;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@WebPublic(alias = "overviewextensionrequest")
 	public ForegroundModuleResponse processOverviewExtensionRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-		
+
 		FlowInstance flowInstance;
-		
+
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD, InternalMessageAttachment.DATA_FIELD), getFlowInstanceOverviewRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
-			
+
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
-			
+
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
-				
+
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-			
+
 			FlowInstanceOverviewExtensionProvider extensionProvider = getOverviewExtensionProvider(uriParser.get(3));
-			
+
 			if (extensionProvider != null) {
-				
+
 				return extensionProvider.processOverviewExtensionRequest(flowInstance, req, res, uriParser, user);
 			}
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	public String getOverviewExtensionRequestMethodAlias(FlowInstance flowInstance, String providerID) {
+
 		return getFullAlias() + "/" + "overviewextensionrequest" + "/" + flowInstance.getFlowInstanceID() + "/" + providerID;
 	}
-	
-	protected FlowInstanceAccessController getUpdateAccessController(){
-		
+
+	protected FlowInstanceAccessController getUpdateAccessController() {
+
 		return UPDATE_ACCESS_CONTROLLER;
 	}
-	
-	protected FlowInstanceAccessController getDeleteAccessController(){
+
+	protected FlowInstanceAccessController getDeleteAccessController() {
+
 		return DELETE_ACCESS_CONTROLLER;
 	}
-	
-	protected FlowInstanceAccessController getGeneralAccessController(){
+
+	protected FlowInstanceAccessController getGeneralAccessController() {
+
 		return GENERAL_ACCESS_CONTROLLER;
 	}
-	
+
 	@WebPublic(alias = "signature")
 	public ForegroundModuleResponse getEventSignature(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 
 		try {
 			sendEventSignature(req, res, user, uriParser, getGeneralAccessController(), true);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 		}
-		
+
 		return null;
 	}
-	
+
 	@InstanceManagerDependency
 	public void setNotificationHandlerModule(NotificationHandler notificationHandler) {
-		
+
 		if (notificationHandler != null) {
-			
+
 			notificationHandler.addNotificationSource(this);
-			
+
 		} else {
-			
+
 			this.notificationHandler.removeNotificationSource(this);
 		}
-		
+
 		this.notificationHandler = notificationHandler;
 	}
-	
+
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
 	public void processEvent(ExternalMessageAddedEvent event, EventSource source) {
-		
+
 		log.debug("Received external message event regarding " + event.getFlowInstance());
-		
+
 		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.USER) && notificationHandler != null) {
-			
+
 			try {
 				notificationHandler.sendNotificationToFlowInstanceManagers(this, event.getFlowInstance().getFlowInstanceID(), notificationExternalMessage, event.getEvent().getPoster(), "message", null);
-				
+
 			} catch (SQLException e) {
-				
+
 				log.error("Error sending notifications for " + event.getExternalMessage() + " to managers of " + event.getFlowInstance(), e);
 			}
 		}
 	}
-	
+
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagersChangedEvent event, EventSource source) {
-		
+
 		log.debug("Received managers changed event regarding " + event.getFlowInstance());
-		
+
 		if (source == EventSource.LOCAL && notificationHandler != null) {
-			
+
 			if (!CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
 				for (User manager : event.getFlowInstance().getManagers()) {
-					
+
 					if (!manager.equals(event.getUser()) && (event.getPreviousManagers() == null || !event.getPreviousManagers().contains(manager))) {
-						
+
 						try {
 							notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", event.getUser().getUserID(), notificationNewManager, null);
-							
+
 						} catch (SQLException e) {
-							
+
 							log.error("Error sending notification to new manager " + manager + " of " + event.getFlowInstance(), e);
 						}
 					}
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(event.getPreviousManagers())) {
 				for (User manager : event.getPreviousManagers()) {
-					
+
 					if (event.getFlowInstance().getManagers() == null || !event.getFlowInstance().getManagers().contains(manager)) {
-						
+
 						try {
 							notificationHandler.deleteNotifications(moduleDescriptor.getModuleID(), event.getFlowInstance().getFlowInstanceID(), manager, "newManager");
-							
+
 						} catch (SQLException e) {
-							
+
 							log.error("Error deleting notificatios for old manager " + manager + " of " + event.getFlowInstance(), e);
 						}
 					}
@@ -1645,79 +1649,80 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 	}
-	
+
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstanceManager.class)
 	public void processEvent(SubmitEvent event, EventSource source) {
-		
+
 		log.debug("Received submit event regarding " + event.getFlowInstanceManager());
-		
+
 		if (source == EventSource.LOCAL && notificationHandler != null) {
-			
+
 			try {
 				FlowInstance flowInstance = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.POSTER_FIELD);
-				
+
 				if (!CollectionUtils.isEmpty(flowInstance.getEvents()) && !CollectionUtils.isEmpty(flowInstance.getManagers())) {
-					
+
 					boolean isPreviouslySubmitted = false;
-					
+
 					for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstance.getEvents()) {
-						
+
 						if (flowInstanceEvent.getEventType().equals(EventType.SUBMITTED) && !flowInstanceEvent.equals(event.getEvent())) {
-							
+
 							isPreviouslySubmitted = true;
 							break;
 						}
 					}
-					
+
 					if (isPreviouslySubmitted) {
-						
+
 						for (User manager : flowInstance.getManagers()) {
-							
+
 							try {
 								notificationHandler.addNotification(flowInstance.getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "completion", event.getEvent().getPoster().getUserID(), notificationCompletion, null);
-								
+
 							} catch (SQLException e) {
-								
+
 								log.error("Error sending completion notification to manager " + manager + " for " + flowInstance, e);
 							}
 						}
 					}
 				}
-				
+
 			} catch (SQLException e) {
-				
+
 				log.error("Error getting flow instance with managers and events for " + event.getFlowInstanceManager(), e);
 			}
 		}
 	}
-	
+
 	@Override
 	public NotificationMetadata getNotificationMetadata(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
-	
+
 		String type = notification.getNotificationType();
 		NotificationMetadata extra = new NotificationMetadata();
 		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
-		
+
 		extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
-		
+
 		if (type.equals("message")) {
-			
+
 			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID() + "#messages");
-			
+
 		} else if (type.equals("mention")) {
 
 			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID() + "#notes");
 
 		} else {
-			
+
 			extra.setUrl(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
 		}
-		
+
 		return extra;
 	}
 
 	@Override
 	public ModuleDescriptor getModuleDescriptor() {
+
 		return moduleDescriptor;
 	}
 

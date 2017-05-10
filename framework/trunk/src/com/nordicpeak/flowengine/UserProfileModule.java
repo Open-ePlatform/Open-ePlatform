@@ -7,7 +7,7 @@ import org.w3c.dom.Document;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -17,11 +17,20 @@ import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 
 public class UserProfileModule extends se.unlogic.hierarchy.foregroundmodules.userprofile.UserProfileModule implements UserMenuProvider {
 
+	@XSLVariable(prefix = "java.")
+	private String userMenuTabTitle = "My details";
+	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Cancel redirect URI", description = "Cancel redirect URI")
 	protected String cancelRedirectURI;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
+	protected String userMenuExtensionLinkSlot = "20";
 	
 	protected UserFlowInstanceMenuModule userFlowInstanceMenuModule;
+	
+	protected ExtensionLink userMenuLink;
 
 	@Override
 	public void unload() throws Exception {
@@ -34,6 +43,14 @@ public class UserProfileModule extends se.unlogic.hierarchy.foregroundmodules.us
 		super.unload();
 	}
 	
+	@Override
+	protected void moduleConfigured() throws Exception {
+
+		super.moduleConfigured();
+		
+		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "u", userMenuExtensionLinkSlot);		
+	}
+
 	@InstanceManagerDependency
 	public void setUserFlowInstanceMenuModule(UserFlowInstanceMenuModule userFlowInstanceMenuModule) {
 
@@ -71,8 +88,8 @@ public class UserProfileModule extends se.unlogic.hierarchy.foregroundmodules.us
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink(User user) {
-		return new ExtensionLink(moduleDescriptor.getName(), getFullAlias(), "u", "2");
+	public ExtensionLink getUserMenuExtensionLink() {
+		return userMenuLink;
 	}
 
 }
