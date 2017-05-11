@@ -690,7 +690,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			
 			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 			
-			if (instanceManager.getFlowInstance().getStatus().getContentType().equals(ContentType.WAITING_FOR_COMPLETION)) {
+			if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
 				
 				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
 			}
