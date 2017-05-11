@@ -1059,7 +1059,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			flowCacheReadLock.lock();
 			long start = System.currentTimeMillis();
 
-			if (flowMap.isEmpty()) {
+			if (!flowMap.isEmpty()) {
 
 				this.latestPublishedFlowVersionsMap = getLatestPublishedFlowVersionsMap(flowMap.values());
 
