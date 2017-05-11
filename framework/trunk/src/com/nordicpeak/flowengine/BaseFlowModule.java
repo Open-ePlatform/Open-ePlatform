@@ -291,6 +291,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					instanceManager.setConcurrentModificationLock(true);
 				}
+				
+				if (dbFlowInstance.getLastStatusChange() != null && (instanceManager.getFlowInstance().getLastStatusChange() == null || instanceManager.getFlowInstance().getLastStatusChange().before(dbFlowInstance.getLastStatusChange()))) {
+
+					instanceManager.setConcurrentModificationLock(true);
+				}
 
 				if (log.isDebugEnabled()) {
 
