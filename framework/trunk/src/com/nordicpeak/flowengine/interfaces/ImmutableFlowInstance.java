@@ -23,6 +23,8 @@ public interface ImmutableFlowInstance extends Elementable, Serializable{
 	public Timestamp getUpdated();
 	
 	public Timestamp getFirstSubmitted();
+	
+	public Timestamp getLastStatusChange();
 
 	public Integer getStepID();
 
