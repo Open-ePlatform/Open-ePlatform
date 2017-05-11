@@ -222,6 +222,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		XMLUtils.appendNewElement(doc, signingStatusElement, "SigningLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/sign/" + instanceManager.getFlowInstanceID());
 		XMLUtils.appendNewElement(doc, signingStatusElement, "CancelLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/cancel/" + instanceManager.getFlowInstanceID());
 		
+		if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
+			
+			XMLUtils.appendNewElement(doc, signingStatusElement, "Submitted");
+		}
+		
 		for (SigningParty signingParty : signingParties) {
 			
 			Element signingPartyElement = XMLUtils.append(doc, signingStatusElement, signingParty);
@@ -713,6 +718,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return serverURL + systemInterface.getContextPath() + this.getFullAlias() + "/sign/" + flowInstance.getFlowInstanceID();
 	}
 	
+	public String getSigningURL(ImmutableFlowInstance flowInstance, SigningParty signingParty, URIParser uriParser) {
+		
+		return uriParser.getFullContextPath() + this.getFullAlias() + "/sign/" + flowInstance.getFlowInstanceID();
+	}
+	
 	public boolean isOperatingStatusDisabled(ImmutableFlow flow) {
 		
 		if (operatingMessageModule != null) {
@@ -836,7 +846,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 								
 								Element flowInstanceElement = (Element) waitingMultiSignFlowInstancesElement.appendChild(flowInstance.toXML(genDoc));
 								
-								XMLUtils.appendNewElement(doc, flowInstanceElement, "MultiSignURL", getSigningURL(flowInstance, null));
+								XMLUtils.appendNewElement(doc, flowInstanceElement, "MultiSignURL", getSigningURL(flowInstance, null, uriParser));
 							}
 						}
 					}
@@ -900,15 +910,23 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			return showMessage(doc, "WrongStatusContentType");
 		}
 		
-		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
+		if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
+			
+			log.info("User " + user + " attempted to cancel multipart signing of already submitted flow instance " + instanceManager);
+			return showMessage(doc, "MayNotCancelSubmittedFlowInstance");
+		}
 		
+		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
 		flowInstance.setStatus(flowInstance.getFlow().getDefaultState(FlowBrowserModule.SAVE_ACTION_ID));
+		
 		flowInstanceDAO.update(flowInstance);
 		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager), EventTarget.ALL);
 		
-		res.sendRedirect(uriParser.getContextPath() + "/" + userFlowInstanceModule.getFullAlias());
+		String preview = flowInstance.getFlow().usesPreview() ? "?preview=1" : "";
+		
+		res.sendRedirect(uriParser.getContextPath() + userFlowInstanceModule.getFullAlias() + "/flowinstance/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID() + preview);
 		return null;
 	}
 	

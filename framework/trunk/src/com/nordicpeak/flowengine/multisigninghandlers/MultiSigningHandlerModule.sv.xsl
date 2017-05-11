@@ -14,8 +14,6 @@
 	<xsl:variable name="i18n.SigningStatus.Description">Ditt ärende väntar på att en eller flera personer ska signera det. I tabellen nedan ser du aktuell status gällande signeringen av detta ärende.</xsl:variable>
 	
 	<xsl:variable name="i18n.SignFlowInstance">Signering av ärende</xsl:variable>
-	<xsl:variable name="i18n.CancelSigning">Avbryt flerpartssignering</xsl:variable>
-	<xsl:variable name="i18n.CancelSigning.Confirm">Är du säker på att du vill avbryta flerpartssigneringen?</xsl:variable>
 
 	<xsl:variable name="i18n.DownloadFlowInstancePDF">Hämta ärendet i PDF format.</xsl:variable>
 	<xsl:variable name="i18n.SigningLinkMessage">Ett SMS och/eller e-post meddelande har skickats till samtliga personer i listan ovan. Om de inte mottagit detta meddelande eller du vill påminna dem så kan du be dem besöka adressen nedan för att signera detta ärende.</xsl:variable>
@@ -32,6 +30,12 @@
 	
 	<xsl:variable name="i18n.WrongStatusContentType.title">Signering ej möjlig</xsl:variable>
 	<xsl:variable name="i18n.WrongStatusContentType.message">Detta ärende går inte längre att signera. Detta kan bero på att ärendet bytt status eller ändrats. Kontakta den som bett dig signera ärendet för mer information.</xsl:variable>
+	
+	<xsl:variable name="i18n.CancelSigning">Avbryt flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.CancelSigning.Confirm">Är du säker på att du vill avbryta flerpartssigneringen?</xsl:variable>
+	<xsl:variable name="i18n.MayNotCancelSubmittedFlowInstance.title">Du kan ej avbyta flerpartssigneringen</xsl:variable>
+	<xsl:variable name="i18n.MayNotCancelSubmittedFlowInstance.message">Detta ärende har redan skickats in och kräver därför att handläggaren är den som avbryter flerpartsigneringen. Kontakta handläggaren för att avbryta flerpartssigneringen.</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	<xsl:variable name="i18n.FlowName">E-tjänst</xsl:variable>

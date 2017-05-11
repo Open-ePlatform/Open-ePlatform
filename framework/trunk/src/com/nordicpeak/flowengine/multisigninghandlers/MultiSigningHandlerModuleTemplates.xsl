@@ -55,9 +55,19 @@
 		</p>
 		
 		<div class="text-align-center">
-			<a class="btn btn-red btn-inline" href="{CancelLink}" onclick="return confirm('{$i18n.CancelSigning.Confirm}')">
-				<xsl:value-of select="$i18n.CancelSigning"/>
-			</a>
+			<xsl:choose>
+				<xsl:when test="not(Submitted)">
+					<a class="btn btn-red btn-inline" href="{CancelLink}" onclick="return confirm('{$i18n.CancelSigning.Confirm}')">
+						<xsl:value-of select="$i18n.CancelSigning"/>
+					</a>
+				</xsl:when>
+				<xsl:otherwise>
+					<a class="btn btn-red btn-inline" href="#" onclick="alert('{$i18n.MayNotCancelSubmittedFlowInstance.message}'); return false;">
+						<xsl:value-of select="$i18n.CancelSigning"/>
+					</a>
+				</xsl:otherwise>
+			</xsl:choose>
+			
 		</div>
 		
 	</xsl:template>	
@@ -301,6 +311,18 @@
 		
 		</div>	
 	
-	</xsl:template>	
+	</xsl:template>
+	
+	<xsl:template match="Message[@messageKey='MayNotCancelSubmittedFlowInstance']">
+	
+		<div class="contentitem">
+		
+			<h1><xsl:value-of select="$i18n.MayNotCancelSubmittedFlowInstance.title"/></h1>
+			
+			<p><xsl:value-of select="$i18n.MayNotCancelSubmittedFlowInstance.message"/></p>
+		
+		</div>
+	
+	</xsl:template>
 	
 </xsl:stylesheet>
