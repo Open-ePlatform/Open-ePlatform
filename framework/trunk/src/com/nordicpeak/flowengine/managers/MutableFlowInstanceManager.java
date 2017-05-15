@@ -300,7 +300,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 	private final FlowInstanceManagerRegistery registery = FlowInstanceManagerRegistery.getInstance();
 
-	private final FlowInstance flowInstance;
+	protected final FlowInstance flowInstance;
 	private final List<ManagedStep> managedSteps;
 	private Integer currentStepIndex;
 	private boolean closed;

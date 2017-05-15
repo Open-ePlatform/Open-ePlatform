@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -125,8 +127,6 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -1251,7 +1251,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
 		
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
+		if (instanceManager.isPreviouslySaved()) {
+		
+			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
+			
+		} else {
+			
+			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "?paymentprovidererror=1" + preview;
+		}
 	}
 
 	@Override
@@ -1259,7 +1266,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
 		
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
+		if (instanceManager.isPreviouslySaved()) {
+		
+			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
+			
+		} else {
+			
+			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "?signprovidererror=1" + preview;
+		}
 	}
 
 	@Override
