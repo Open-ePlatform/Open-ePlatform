@@ -56,6 +56,7 @@
 	<xsl:variable name="i18n.SubmitLoading">Var god vänta</xsl:variable>
 	
 	<xsl:variable name="i18n.SigningProviderNotFoundError">Signeringstjänsten kunde inte hittas.</xsl:variable>
+	<xsl:variable name="i18n.PaymentProviderNotFoundError">Betalningstjänsten kunde inte hittas.</xsl:variable>
 	
 	<xsl:variable name="i18n.Previous">Föregående</xsl:variable>
 	<xsl:variable name="i18n.Next">Nästa</xsl:variable>

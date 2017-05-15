@@ -876,7 +876,17 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='PaymentProviderNotFoundError']">
+	
+		<xsl:call-template name="printValidationError">
+			<xsl:with-param name="message">
+				<xsl:value-of select="$i18n.PaymentProviderNotFoundError"/>
+			</xsl:with-param>
+		</xsl:call-template>
+		
+	</xsl:template>
 	
 	<xsl:template match="validationError">
 
