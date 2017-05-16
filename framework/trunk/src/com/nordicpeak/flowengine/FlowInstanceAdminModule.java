@@ -160,7 +160,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
 	
 	@XSLVariable(prefix = "java.")
-	private String noManagersSelected = "No managers selected";
+	protected String noManagersSelected = "No managers selected";
 	
 	@XSLVariable(prefix = "java.")
 	private String notificationNewManager = "Assigned as manager";
