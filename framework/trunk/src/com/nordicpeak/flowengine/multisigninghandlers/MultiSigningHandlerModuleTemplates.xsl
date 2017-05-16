@@ -54,17 +54,30 @@
 			</a>
 		</p>
 		
+		<p>
+			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}">
+				<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
+			</a>
+		</p>
+		
 		<div class="text-align-center">
+		
 			<xsl:choose>
-				<xsl:when test="not(Submitted)">
-					<a class="btn btn-red btn-inline" href="{CancelLink}" onclick="return confirm('{$i18n.CancelSigning.Confirm}')">
+				<xsl:when test="not(FlowInstance/firstSubmitted)">
+				
+					<a class="btn btn-inline btn-red" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/cancel/{FlowInstance/flowInstanceID}" onclick="return confirm('{$i18n.CancelSigning.Confirm}')">
 						<xsl:value-of select="$i18n.CancelSigning"/>
 					</a>
+					
 				</xsl:when>
 				<xsl:otherwise>
-					<a class="btn btn-red btn-inline" href="#" onclick="alert('{$i18n.MayNotCancelSubmittedFlowInstance.message}'); return false;">
+				
+					<a class="btn btn-inline btn-red" href="#" onclick="alert('{$i18n.MayNotCancelSubmittedFlowInstance.message}'); return false;">
 						<xsl:value-of select="$i18n.CancelSigning"/>
 					</a>
+					
 				</xsl:otherwise>
 			</xsl:choose>
 			

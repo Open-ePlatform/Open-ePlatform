@@ -30,6 +30,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
@@ -219,13 +220,9 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		Element signingStatusElement = doc.createElement("SigningStatus");
 		doc.getDocumentElement().appendChild(signingStatusElement);
 		
-		XMLUtils.appendNewElement(doc, signingStatusElement, "SigningLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/sign/" + instanceManager.getFlowInstanceID());
-		XMLUtils.appendNewElement(doc, signingStatusElement, "CancelLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/cancel/" + instanceManager.getFlowInstanceID());
+		XMLUtils.append(doc, signingStatusElement, instanceManager.getFlowInstance());
 		
-		if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
-			
-			XMLUtils.appendNewElement(doc, signingStatusElement, "Submitted");
-		}
+		XMLUtils.appendNewElement(doc, signingStatusElement, "SigningLink", RequestUtils.getFullContextPathURL(req) + getFullAlias() + "/sign/" + instanceManager.getFlowInstanceID());
 		
 		for (SigningParty signingParty : signingParties) {
 			
@@ -425,14 +422,20 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			
 			if (signingParty == null) {
 				
-				//User does not have access to sign this flow instance
-				log.info("User " + user + " not have access to flow instance " + instanceManager + ", no matching signing party found");
-				return showMessage(createDocument(req, uriParser), "SigningPartyNotFound");
+				try {
+					UserFlowInstanceModule.PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(instanceManager.getFlowInstance(), user);
+					
+				} catch (AccessDeniedException e) {
+					
+					//User does not have access to view PDF for flow instance
+					log.info("User " + user + " not have access to flow instance " + instanceManager + ", no matching signing party found");
+					return showMessage(createDocument(req, uriParser), "SigningPartyNotFound");
+				}
 			}
 			
 			if (instanceManager.getFlowState().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
 				
-				//User does not have access to sign this flow instance
+				//Flow instance not in a signable state
 				log.info("User does not have access to flow instance " + instanceManager + ", wrong status content type: " + instanceManager.getFlowState().getContentType());
 				return showMessage(createDocument(req, uriParser), "WrongStatusContentType");
 			}
