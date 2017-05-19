@@ -128,6 +128,7 @@
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.versions" /></span></th>
 					<th width="100"><span data-icon-after="_"><xsl:value-of select="$i18n.SubmittedInstances" /></span></th>
 					<th width="115"><span data-icon-after="_"><xsl:value-of select="$i18n.NotSubmittedInstances" /></span></th>
+					<xsl:call-template name="ExtraFlowListColumnsHeader"></xsl:call-template>					
 					<th width="16" class="no-sort"/>
 				</tr>
 			</thead>
@@ -256,6 +257,9 @@
 			<td data-title="{$i18n.NotSubmittedInstances}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="InstanceCount - SubmittedInstanceCount" /></a>
 			</td>
+			
+			<xsl:call-template name="ExtraFlowListColumns" />
+			
 			<td>
 				<xsl:choose>
 					<xsl:when test="InstanceCount > 0">
@@ -4761,6 +4765,10 @@
 		</form>
 	
 	</xsl:template>
+
+	<xsl:template name="ExtraFlowListColumnsHeader" />
+
+	<xsl:template name="ExtraFlowListColumns" />
 
 	<xsl:template match="validationError[messageKey='UnableToParseFile']">
 	
