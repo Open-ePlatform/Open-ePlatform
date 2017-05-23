@@ -5,7 +5,6 @@ var setQueryRequiredFunctions = {};
 var setQueryValidationErrorFunctions = {};
 var initQueryFunctions = {};
 var hideQueryFunctions = new Array();
-var loadedScriptsCounters = {};
 var flowEngineDOMListeners = new Array();
 
 $(document).ready(function() {
@@ -220,55 +219,48 @@ function parseResponse(response) {
 		
 		$.each(response.QueryModifications, function(i, queryModification) {
 			
-			loadedScriptsCounters[queryModification.queryID] = 0;
-			
 			var actionHandled = false;
 			
-			appendDependencies(queryModification);
-			
-			if(queryModification.Scripts) {
+			if (queryModification.Links) {
 				
-				$.each(queryModification.Scripts, function(i, script) {
+				var $head = $("head");
+				
+				$.each(queryModification.Links, function(i, link) {
 					
-					if(!scriptIsLoaded(script)) {
+					if (!linkIsLoaded(link)) {
 						
-						$.getScript(script.src).done(function(loadedScript, textStatus) {
-
-							loadedScriptsCounters[queryModification.queryID]++;
-							
-						}).fail(function(jqxhr, settings, exception) {
-
-							showErrorDialog(exception);
-							
-							return false;
-						
-						});
-						
-					} else {
-						
-						loadedScriptsCounters[queryModification.queryID]++;
-						
+						$("<link/>", {
+							href: link.href,
+							media: link.media,
+							rel: link.rel,
+							type: link.type
+						}).appendTo($head);
 					}
-					
 				});
+			}
+			
+			if (queryModification.Scripts) {
+
+				var loadingStatus = loadScripts(queryModification.Scripts);
 				
-				setTimeout(function() { waitUntilScriptsAreLoaded(queryModification); }, 5);
+				if (loadingStatus == "LOADED") {
+					
+					runAction(queryModification);
+					
+				} else if (loadingStatus == "ERROR") {
+					
+					showErrorDialog();
+					return false;
+					
+				} else {
+					
+					setTimeout(function() { waitUntilScriptsAreLoaded(queryModification); }, 5);
+				}
 				
 			} else {
 				
 				runAction(queryModification);
-					
 			}
-			
-			if(queryModification.Links) {
-				
-				$.each(queryModification.Links, function(i, link) {
-					
-					
-				});
-				
-			}
-			
 		});
 		
 	}
@@ -288,14 +280,19 @@ function parseResponse(response) {
 
 function waitUntilScriptsAreLoaded(queryModification) {
 	
-	if(queryModification.Scripts.length == loadedScriptsCounters[queryModification.queryID]) {
-
+	var loadingStatus = loadScripts(queryModification.Scripts);
+	
+	if (loadingStatus == "LOADED") {
+		
 		runAction(queryModification);
+		
+	} else if (loadingStatus == "ERROR") {
+		
+		showErrorDialog();
 		
 	} else {
 		
 		setTimeout(function() { waitUntilScriptsAreLoaded(queryModification); }, 5);
-	
 	}
 	
 }
@@ -341,7 +338,7 @@ function runAction(queryModification) {
 
 function showErrorDialog(error) {
 	
-	if(console != undefined && error != undefined){
+	if (console != undefined && error != undefined){
 		console.error(error);
 	}
 	
@@ -409,60 +406,6 @@ function reloadCurrentStep() {
 	
 }
 
-function appendDependencies(queryModification) {
-	
-	var initializeQuery = false;
-	
-	if(queryModification.Scripts) {
-		
-		$.each(queryModification.Scripts, function(i, script) {
-			
-			if(!scriptIsLoaded(script)) {
-				
-				$.getScript(script.src)
-				.done(function(loadedScript, textStatus) {
-
-					initializeQuery = true;
-					
-				}).fail(function(jqxhr, settings, exception) {
-
-					showErrorDialog(exception);
-					
-					return false;
-				
-				});
-				
-			}
-			
-		});
-		
-	}
-	
-	if(queryModification.Links) {
-		
-		$.each(queryModification.Links, function(i, link) {
-			
-			var $head = $("head");
-			
-			if(!linkIsLoaded(link)) {
-				
-				$("<link/>", {
-					   href: link.href,
-					   media: link.media,
-					   rel: link.rel,
-					   type: link.type
-				}).appendTo($head);
-				
-			}
-			
-		});
-		
-	}
-	
-	return initializeQuery;
-	
-}
-
 function retryAjaxPost() {
 	
 	$.blockUI({ message: $("#ajaxLoadingMessage") });
@@ -499,14 +442,165 @@ function linkIsLoaded(link) {
 	
 }
 
+var dynamicallyLoadingScripts = []
+var dynamicallyLoadingScriptsFailed = []
+var dynamicallyLoadedScripts = []
+
 function scriptIsLoaded(script) {
 	
-	if ($("script[src='" + script.src + "']").length == 0) {
-		return false;
-	} 
+	if ($("script[src='" + script.src + "']").length > 0) {
+		return true;
+	}
 	
-	return true;
+	if (dynamicallyLoadedScripts.indexOf(script.src) != -1) {
+		return true;
+	}
 	
+	return false;
+}
+
+function scriptLoaded(src) {
+	
+//	console.log("loaded " + src);
+	
+	// Add to loaded
+	dynamicallyLoadedScripts.push(src);
+	
+	// Remove from loading
+	var index = dynamicallyLoadingScripts.indexOf(src);
+	dynamicallyLoadingScripts.splice(index, 1);
+}
+
+function completeLoadingOfScript(script, parentScript, code) {
+	
+	// Check if load has been aborted
+	if (dynamicallyLoadingScripts.indexOf(script.src) == -1) {
+//		console.log("aborted " + script.src);
+		return;
+	}
+	
+	if (parentScript != null && !scriptIsLoaded(parentScript)) {
+		
+		if (dynamicallyLoadingScripts.indexOf(parentScript.src) != -1) {
+			
+//			console.log("waiting for parent " + script.src + ", parent=" + parentScript.src);
+			
+			// Wait for parent script to load
+			setTimeout(function() { completeLoadingOfScript(script, parentScript, code) }, 1);
+			
+		} else {
+		
+//			console.log("parent script load aborted " + script.src + ", parent=" + parentScript.src);
+			
+			// Remove from loading
+			var index = dynamicallyLoadingScripts.indexOf(script.src);
+			dynamicallyLoadingScripts.splice(index, 1);
+		}
+		
+	} else {
+		
+		console.log("evaluating " + script.src);
+		
+		try {
+			jQuery.globalEval(code + "; scriptLoaded('" + script.src + "');");
+			
+			if (dynamicallyLoadedScripts.indexOf(script.src) == -1) {
+				
+				if (console != undefined){
+					console.warn("eval completed but loaded not set" + script.src);
+				}
+
+				dynamicallyLoadingScriptsFailed.push(script.src);
+				
+				// Remove from loading
+				var index = dynamicallyLoadingScripts.indexOf(script.src);
+				dynamicallyLoadingScripts.splice(index, 1);
+			}
+			
+		} catch(error) {
+			
+			dynamicallyLoadingScriptsFailed.push(script.src);
+			
+			// Remove from loading
+			var index = dynamicallyLoadingScripts.indexOf(script.src);
+			dynamicallyLoadingScripts.splice(index, 1);
+			
+			if (console != undefined && error != undefined){
+				console.error(error);
+			}
+		}
+	}
+}
+
+function loadScripts(scripts) {
+
+    var loadingComplete = true
+    var loadingError = false
+    var prevScript = null
+    
+    $.each(scripts, function(i, script) {
+			
+			if (!scriptIsLoaded(script)) {
+				
+				loadingComplete = false
+				
+				if (dynamicallyLoadingScriptsFailed.indexOf(script.src) != -1) {
+					
+					if (console != undefined){
+						console.warn("loading of script failed " + script.src);
+					}
+					
+//					// Remove from failed
+					var index = dynamicallyLoadingScriptsFailed.indexOf(script.src);
+					dynamicallyLoadingScriptsFailed.splice(index, 1);
+					
+					loadingError = true
+					return false;
+					
+				} else if (dynamicallyLoadingScripts.indexOf(script.src) == -1) {
+					
+					dynamicallyLoadingScripts.push(script.src);
+					
+					var prevScriptInner = prevScript;
+					
+					jQuery.ajax({
+						url: script.src,
+						accepts: script.type,
+						async: true,
+						cache: false,
+						dataType: 'text', //Avoids automatic eval
+						
+					}).done(function(data, textStatus, jqXHR){
+						
+						completeLoadingOfScript(script, prevScriptInner, data);
+						
+					}).fail(function(jqXHR, textStatus, errorThrown){
+						
+						if (console != undefined){
+							console.error("failed to fetch script at " + script.src + ", " + textStatus + ", " + errorThrown);
+						}
+						
+						dynamicallyLoadingScriptsFailed.push(script.src);
+						
+						// Remove from loading
+						var index = dynamicallyLoadingScripts.indexOf(script.src);
+						dynamicallyLoadingScripts.splice(index, 1);
+					});
+				}
+			}
+			
+			prevScript = script;
+    });
+    
+    if (loadingError) {
+    	return "ERROR";
+    }
+    
+    if (loadingComplete) {
+    	return "LOADED";
+    }
+    
+    return false;
 }
 
 function showNotificationDialog(type, delay, msg) {
