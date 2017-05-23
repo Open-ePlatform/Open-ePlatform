@@ -61,4 +61,12 @@
 		</Query>	
 	</Script>
 	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `hideTitle` BOOLEAN NOT NULL AFTER `hideDescriptionInPDF`;
+			]]>
+		</Query>	
+	</Script>	
+	
 </DBScripts>

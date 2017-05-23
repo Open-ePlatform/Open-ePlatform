@@ -26,14 +26,17 @@
 			<article>
 				
 				<div class="heading-wrapper">
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="TextAreaQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
+					
+					<xsl:if test="TextAreaQueryInstance/TextAreaQuery/hideTitle = 'false'">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="TextAreaQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>
 					
 					<xsl:call-template name="createUpdateButton">
 						<xsl:with-param name="queryID" select="TextAreaQueryInstance/TextAreaQuery/queryID" />
@@ -88,14 +91,16 @@
 			
 				<div class="heading-wrapper">
 					
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="TextAreaQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
+					<xsl:if test="TextAreaQueryInstance/TextAreaQuery/hideTitle = 'false'">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="TextAreaQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>
 					
 					<xsl:if test="TextAreaQueryInstance/TextAreaQuery/helpText">		
 						<xsl:apply-templates select="TextAreaQueryInstance/TextAreaQuery/helpText" />

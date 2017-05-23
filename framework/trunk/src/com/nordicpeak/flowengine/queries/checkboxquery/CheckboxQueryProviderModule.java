@@ -311,6 +311,8 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 				queryInstance.setAlternatives(null);
 				queryInstance.setFreeTextAlternativeValue(null);
 				queryInstance.getQueryInstanceDescriptor().setPopulated(false);
+				
+				queryInstance.resetAttribute(attributeHandler);
 
 			} else {
 
@@ -318,6 +320,11 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 				queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 				queryInstance.getQueryInstanceDescriptor().setPopulated(true);
 
+				if(queryInstance.getQuery().isSetAsAttribute()){
+					
+					queryInstance.resetAttribute(attributeHandler);
+					queryInstance.setAttribute(attributeHandler);
+				}
 			}
 
 			return;
@@ -348,6 +355,12 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 		queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 		queryInstance.setAlternatives(selectedAlternatives);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(!selectedAlternatives.isEmpty() || freeTextAlternativeValue != null);
+		
+		if(queryInstance.getQuery().isSetAsAttribute()){
+			
+			queryInstance.resetAttribute(attributeHandler);
+			queryInstance.setAttribute(attributeHandler);
+		}
 	}
 
 	@WebPublic(alias = "config")

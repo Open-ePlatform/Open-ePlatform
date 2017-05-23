@@ -157,4 +157,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `hideTitle`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
+			]]>
+		</Query>	
+	</Script>	
+	
 </DBScripts>

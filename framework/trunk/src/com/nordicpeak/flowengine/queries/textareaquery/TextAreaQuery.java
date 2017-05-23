@@ -62,6 +62,11 @@ public class TextAreaQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean hideTitle;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean lockOnOwnershipTransfer;
 	
 	@DAOManaged
@@ -204,6 +209,8 @@ public class TextAreaQuery extends BaseQuery {
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
 		
+		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
+		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		
 		if (!errors.isEmpty()) {
@@ -239,5 +246,29 @@ public class TextAreaQuery extends BaseQuery {
 	public void setAttributeName(String attributeName) {
 		
 		this.attributeName = attributeName;
+	}
+
+	
+	public boolean isHideDescriptionInPDF() {
+	
+		return hideDescriptionInPDF;
+	}
+
+	
+	public void setHideDescriptionInPDF(boolean hideDescriptionInPDF) {
+	
+		this.hideDescriptionInPDF = hideDescriptionInPDF;
+	}
+
+	
+	public boolean isHideTitle() {
+	
+		return hideTitle;
+	}
+
+	
+	public void setHideTitle(boolean hideTitle) {
+	
+		this.hideTitle = hideTitle;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -67,6 +68,17 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 	@WebPopulate(maxLength = 10, required = true)
 	@XMLElement
 	private Columns columns = Columns.ONE;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramName = "setAsAttribute")
+	@XMLElement
+	private String attributeName;	
 	
 	@DAOManaged
 	@WebPopulate
@@ -220,6 +232,13 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 		
 		alternatives = CheckboxQueryCRUD.ALTERNATIVES_POPLATOR.populate(xmlParser, errors);
 		
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if (attributeName != null) {
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}		
+		
 		if (alternatives != null) {
 			
 			CheckboxQueryCRUD.validateMinAndMax(minChecked, maxChecked, alternatives, errors);
@@ -235,5 +254,35 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 			throw new ValidationException(errors);
 		}
 		
+	}
+
+	
+	public boolean isSetAsAttribute() {
+	
+		return setAsAttribute;
+	}
+
+	
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+
+	
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
+	}
+
+	
+	public void setQueryID(Integer queryID) {
+	
+		this.queryID = queryID;
 	}
 }

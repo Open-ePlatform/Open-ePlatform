@@ -25,6 +25,10 @@
 	<xsl:variable name="i18n.Columns.Two">Två kolumner</xsl:variable>
 	<xsl:variable name="i18n.Columns.Three">Tre kolumner</xsl:variable>
 	
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>
+	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>	
+	
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
 	
 </xsl:stylesheet>

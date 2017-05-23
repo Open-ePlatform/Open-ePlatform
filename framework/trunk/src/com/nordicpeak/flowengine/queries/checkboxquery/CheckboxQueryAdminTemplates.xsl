@@ -103,8 +103,40 @@
 						<xsl:with-param name="element" select="exsl:node-set($options)/option" />
 						<xsl:with-param name="selectedValue" select="CheckboxQuery/columns" />
 					</xsl:call-template>
-		    </div>
+			    </div>
 			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'setAsAttribute'" />
+						<xsl:with-param name="name" select="'setAsAttribute'" />
+						<xsl:with-param name="element" select="TextAreaQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="setAsAttribute">
+						<xsl:value-of select="$i18n.setAsAttribute" />
+					</label>
+			    </div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="attributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.attributeName" /></label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'attributeName'"/>
+						<xsl:with-param name="name" select="'attributeName'"/>
+						<xsl:with-param name="title" select="$i18n.attributeName"/>
+						<xsl:with-param name="element" select="TextAreaQuery" />
+						<xsl:with-param name="maxlength" select="'255'"/>
+					</xsl:call-template>
+			    </div>
+			</div>			
 			
 			<div class="floatleft full bigmarginbottom">
 
@@ -234,6 +266,9 @@
 			<xsl:when test="$fieldName = 'columns'">
 				<xsl:value-of select="$i18n.Columns" />
 			</xsl:when>
+			<xsl:when test="$fieldName = 'attributeName'">
+				<xsl:value-of select="$i18n.attributeName" />
+			</xsl:when>			
 			<xsl:when test="starts-with($fieldName, 'alternativeprice_')">
 				<xsl:value-of select="$i18n.AlternativePrice" />
 			</xsl:when>

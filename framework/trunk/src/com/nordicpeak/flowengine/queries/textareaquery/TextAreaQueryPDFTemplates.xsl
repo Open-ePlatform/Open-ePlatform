@@ -15,9 +15,11 @@
 			
 			<a name="query{TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			
-			<h2>
-				<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-			</h2>
+			<xsl:if test="TextAreaQueryInstance/TextAreaQuery/hideTitle = 'false'">
+				<h2>
+					<xsl:value-of select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+				</h2>
+			</xsl:if>
 			
 			<xsl:if test="Description and TextAreaQueryInstance/TextAreaQuery/hideDescriptionInPDF = 'false'">
 
