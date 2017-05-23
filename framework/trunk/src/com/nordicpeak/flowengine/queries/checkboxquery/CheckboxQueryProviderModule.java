@@ -25,7 +25,6 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.datatypes.Matrix;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
@@ -54,12 +53,10 @@ import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
 import com.nordicpeak.flowengine.queries.checkboxquery.validationerrors.TooFewAlternativesSelectedValidationError;
 import com.nordicpeak.flowengine.queries.checkboxquery.validationerrors.TooManyAlternativesSelectedValidationError;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativeQueryUtils;
-import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryCallback;
-import com.nordicpeak.flowengine.queries.tablequery.SummaryTableQueryCallback;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
-public class CheckboxQueryProviderModule extends BaseQueryProviderModule<CheckboxQueryInstance> implements BaseQueryCRUDCallback, FixedAlternativesQueryCallback<CheckboxQuery>, SummaryTableQueryCallback<CheckboxQuery> {
+public class CheckboxQueryProviderModule extends BaseQueryProviderModule<CheckboxQueryInstance> implements BaseQueryCRUDCallback {
 
 	private static final RelationQuery SAVE_QUERY_INSTANCE_RELATION_QUERY = new RelationQuery(CheckboxQueryInstance.ALTERNATIVES_RELATION);
 
@@ -76,7 +73,6 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 
 	private QueryParameterFactory<CheckboxQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<CheckboxQueryInstance, Integer> queryInstanceIDParamFactory;
-	private QueryParameterFactory<CheckboxQueryInstance, CheckboxQuery> queryInstanceQueryParamFactory;
 
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
@@ -98,7 +94,6 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
-		queryInstanceQueryParamFactory = queryInstanceDAO.getParamFactory("query", CheckboxQuery.class);
 	}
 
 	@Override
@@ -421,90 +416,6 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 		}
 
 		this.queryDAO.add(query, transactionHandler, new RelationQuery(CheckboxQuery.ALTERNATIVES_RELATION));
-	}
-
-	@Override
-	public List<CheckboxQueryInstance> getQueryInstances(CheckboxQuery checkboxQuery, List<Integer> queryInstanceIDs) throws SQLException {
-
-		HighLevelQuery<CheckboxQueryInstance> query = new HighLevelQuery<CheckboxQueryInstance>();
-
-		query.addRelation(CheckboxQueryInstance.ALTERNATIVES_RELATION);
-
-		query.addParameter(queryInstanceQueryParamFactory.getParameter(checkboxQuery));
-		query.addParameter(queryInstanceIDParamFactory.getWhereInParameter(queryInstanceIDs));
-
-		return this.queryInstanceDAO.getAll(query);
-	}
-
-	@Override
-	public Matrix<String> getSummaryTable(CheckboxQuery query, List<Integer> queryInstanceIDs) throws SQLException {
-
-		if(query.getAlternatives() == null){
-
-			return null;
-		}
-
-		List<CheckboxQueryInstance> instances;
-
-		if(queryInstanceIDs != null){
-
-			instances = getQueryInstances(query, queryInstanceIDs);
-
-		}else{
-
-			instances = null;
-		}
-
-		Matrix<String> table = new Matrix<String>(query.getFreeTextAlternative() != null ? query.getAlternatives().size() + 2 : query.getAlternatives().size() + 1, 2);
-
-		table.setCell(0, 0, alternativesText);
-		table.setCell(0, 1, countText);
-
-		int currentRow = 1;
-
-		for(CheckboxAlternative alternative : query.getAlternatives()){
-
-			table.setCell(currentRow, 0, alternative.getName());
-
-			int selectionCount = 0;
-
-			if(instances != null){
-
-				for(CheckboxQueryInstance instance : instances){
-
-					if(instance.getAlternatives() != null && instance.getAlternatives().contains(alternative)){
-
-						selectionCount++;
-					}
-				}
-			}
-
-			table.setCell(currentRow, 1, String.valueOf(selectionCount));
-
-			currentRow++;
-		}
-
-		if(query.getFreeTextAlternative() != null){
-
-			table.setCell(currentRow, 0, query.getFreeTextAlternative());
-
-			int selectionCount = 0;
-
-			if(instances != null){
-
-				for(CheckboxQueryInstance instance : instances){
-
-					if(instance.getFreeTextAlternativeValue() != null){
-
-						selectionCount++;
-					}
-				}
-			}
-
-			table.setCell(currentRow, 1, String.valueOf(selectionCount));
-		}
-
-		return table;
 	}
 
 	@Override

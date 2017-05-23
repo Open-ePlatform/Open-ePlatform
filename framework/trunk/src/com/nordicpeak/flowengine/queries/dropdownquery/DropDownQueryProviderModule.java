@@ -25,7 +25,6 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.datatypes.Matrix;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
@@ -53,12 +52,10 @@ import com.nordicpeak.flowengine.populators.FreeTextAlternativePopulator;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativeQueryUtils;
-import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryCallback;
-import com.nordicpeak.flowengine.queries.tablequery.SummaryTableQueryCallback;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
-public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDownQueryInstance> implements BaseQueryCRUDCallback, FixedAlternativesQueryCallback<DropDownQuery>, SummaryTableQueryCallback<DropDownQuery> {
+public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDownQueryInstance> implements BaseQueryCRUDCallback {
 
 	@XSLVariable(prefix="java.")
 	private String countText = "Count";
@@ -73,7 +70,6 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 
 	private QueryParameterFactory<DropDownQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<DropDownQueryInstance, Integer> queryInstanceIDParamFactory;
-	private QueryParameterFactory<DropDownQueryInstance, DropDownQuery> queryInstanceQueryParamFactory;
 
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
@@ -95,7 +91,6 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
-		queryInstanceQueryParamFactory = queryInstanceDAO.getParamFactory("query", DropDownQuery.class);
 	}
 
 	@Override
@@ -398,90 +393,6 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 		}
 
 		this.queryDAO.add(query, transactionHandler, new RelationQuery(DropDownQuery.ALTERNATIVES_RELATION));
-	}
-
-	@Override
-	public List<DropDownQueryInstance> getQueryInstances(DropDownQuery dropDownQuery, List<Integer> queryInstanceIDs) throws SQLException {
-
-		HighLevelQuery<DropDownQueryInstance> query = new HighLevelQuery<DropDownQueryInstance>();
-
-		query.addRelation(DropDownQueryInstance.ALTERNATIVE_RELATION);
-
-		query.addParameter(queryInstanceQueryParamFactory.getParameter(dropDownQuery));
-		query.addParameter(queryInstanceIDParamFactory.getWhereInParameter(queryInstanceIDs));
-
-		return this.queryInstanceDAO.getAll(query);
-	}
-
-	@Override
-	public Matrix<String> getSummaryTable(DropDownQuery query, List<Integer> queryInstanceIDs) throws SQLException {
-
-		if(query.getAlternatives() == null){
-
-			return null;
-		}
-
-		List<DropDownQueryInstance> instances;
-
-		if(queryInstanceIDs != null){
-
-			instances = getQueryInstances(query, queryInstanceIDs);
-
-		}else{
-
-			instances = null;
-		}
-
-		Matrix<String> table = new Matrix<String>(query.getFreeTextAlternative() != null ? query.getAlternatives().size() + 2 : query.getAlternatives().size() + 1, 2);
-
-		table.setCell(0, 0, alternativesText);
-		table.setCell(0, 1, countText);
-
-		int currentRow = 1;
-
-		for(DropDownAlternative alternative : query.getAlternatives()){
-
-			table.setCell(currentRow, 0, alternative.getName());
-
-			int selectionCount = 0;
-
-			if(instances != null){
-
-				for(DropDownQueryInstance instance : instances){
-
-					if(instance.getAlternative() != null && instance.getAlternative().equals(alternative)){
-
-						selectionCount++;
-					}
-				}
-			}
-
-			table.setCell(currentRow, 1, String.valueOf(selectionCount));
-
-			currentRow++;
-		}
-
-		if(query.getFreeTextAlternative() != null){
-
-			table.setCell(currentRow, 0, query.getFreeTextAlternative());
-
-			int selectionCount = 0;
-
-			if(instances != null){
-
-				for(DropDownQueryInstance instance : instances){
-
-					if(instance.getFreeTextAlternativeValue() != null){
-
-						selectionCount++;
-					}
-				}
-			}
-
-			table.setCell(currentRow, 1, String.valueOf(selectionCount));
-		}
-
-		return table;
 	}
 
 	@Override

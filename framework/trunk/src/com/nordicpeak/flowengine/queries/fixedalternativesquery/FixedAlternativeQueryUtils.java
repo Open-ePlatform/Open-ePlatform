@@ -13,15 +13,8 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
 
 public class FixedAlternativeQueryUtils {
-	
-	@SuppressWarnings("unchecked")
-	public static <X extends FixedAlternativesQuery> FixedAlternativesQueryCallback<X> getGenericFixedAlternativesQueryCallback(Class<? extends FixedAlternativesQuery> clazz, QueryHandler queryHandler, String queryTypeID) {
-		
-		return (FixedAlternativesQueryCallback<X>) queryHandler.getQueryProvider(queryTypeID);
-	}
 	
 	public static List<Integer> getAlternativeIDs(FixedAlternativesQuery query) {
 		

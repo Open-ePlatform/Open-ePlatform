@@ -1,7 +1,6 @@
 package com.nordicpeak.flowengine.queries.checkboxquery;
 
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
-import se.unlogic.standardutils.datatypes.Matrix;
 import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
@@ -25,14 +23,11 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesBaseQuery;
-import com.nordicpeak.flowengine.queries.tablequery.SummaryTableQuery;
-import com.nordicpeak.flowengine.queries.tablequery.SummaryTableQueryUtils;
 
 @Table(name = "checkbox_queries")
 @XMLElement
-public class CheckboxQuery extends FixedAlternativesBaseQuery implements SummaryTableQuery {
+public class CheckboxQuery extends FixedAlternativesBaseQuery {
 	
 	
 	private static final long serialVersionUID = -842191226937409416L;
@@ -209,12 +204,6 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Summary
 			
 			toXSD(doc, 1);
 		}
-	}
-	
-	@Override
-	public Matrix<String> getDataTable(List<Integer> queryInstanceIDs, QueryHandler queryHandler) throws SQLException {
-		
-		return SummaryTableQueryUtils.getGenericTableQueryCallback(this.getClass(), queryHandler, getQueryDescriptor().getQueryTypeID()).getSummaryTable(this, queryInstanceIDs);
 	}
 	
 	@Override

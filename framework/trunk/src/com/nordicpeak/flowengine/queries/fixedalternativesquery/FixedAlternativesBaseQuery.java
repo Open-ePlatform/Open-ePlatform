@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.queries.fixedalternativesquery;
 
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -10,7 +8,6 @@ import org.w3c.dom.Element;
 import se.unlogic.standardutils.string.StringUtils;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 
 
@@ -110,11 +107,5 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 
 			doc.getDocumentElement().appendChild(simpleTypeElement);
 		}
-	}
-
-	@Override
-	public List<? extends FixedAlternativesQueryInstance> getInstances(List<Integer> queryInstanceIDs, QueryHandler queryHandler) throws SQLException {
-
-		return FixedAlternativeQueryUtils.getGenericFixedAlternativesQueryCallback(this.getClass(), queryHandler, getQueryDescriptor().getQueryTypeID()).getQueryInstances(this, queryInstanceIDs);
 	}
 }
