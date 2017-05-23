@@ -1,6 +1,5 @@
 package com.nordicpeak.flowengine.queries.childquery.beans;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,10 +27,8 @@ import se.unlogic.webutils.annotations.URLRewrite;
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
-import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryInstance;
 
 @Table(name = "child_queries")
 @XMLElement
@@ -415,12 +412,6 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	public List<? extends ImmutableAlternative> getAlternatives() {
 
 		return Collections.singletonList(alternative);
-	}
-
-	@Override
-	public List<? extends FixedAlternativesQueryInstance> getInstances(List<Integer> queryInstanceIDs, QueryHandler queryHandler) throws SQLException {
-
-		return null;
 	}
 
 	@Override
