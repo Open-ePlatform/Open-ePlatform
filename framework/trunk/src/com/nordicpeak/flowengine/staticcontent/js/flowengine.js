@@ -499,7 +499,7 @@ function completeLoadingOfScript(script, parentScript, code) {
 		
 	} else {
 		
-		console.log("evaluating " + script.src);
+//		console.log("evaluating " + script.src);
 		
 		try {
 			jQuery.globalEval(code + "; scriptLoaded('" + script.src + "');");
