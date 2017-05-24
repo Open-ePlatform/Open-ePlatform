@@ -234,3 +234,16 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	}
 
 }
+
+@media screen and (min-width: 1005px) {
+
+	.start-flow-panel.absolute {
+	    position: absolute;
+	    bottom: 0;
+	    max-width: 400px;
+	    padding-bottom: 25px;
+	    margin: 0;
+	    z-index: 100;
+	}
+
+}

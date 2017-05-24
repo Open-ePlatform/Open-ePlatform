@@ -81,7 +81,7 @@ $(document).ready(function() {
     
     var $startPanel = $(".start-flow-panel");
     
-    if($startPanel.length > 0) {
+    if ($startPanel.length > 0) {
     	
 	    $(window).scroll(checkStartFlowPanelPosition);
 	    $(window).resize(checkStartFlowPanelPosition);
@@ -90,18 +90,38 @@ $(document).ready(function() {
 	
 });
 
-function checkStartFlowPanelPosition() {
+function checkStartFlowPanelPosition(event) {
 	
+	var win = $(this);
 	var $startPanel = $(".start-flow-panel");
 	
 	var headerHeight = ($("header").height() + 40);
+	var bottomSteps = $(".service-navigator-wrap");
 	
 	if (!$("#flowforms-list-button").hasClass("open") && $(window).width() > 1004 && $(this).scrollTop() >= headerHeight) {
-		var rightMargin = ($(window).width() - $startPanel.closest("section").width()) / 2;
-		$startPanel.css("right", rightMargin);
-		$startPanel.addClass("fixed");
-	} else if($(this).scrollTop() < headerHeight) {
+		
+		if (win.scrollTop() + $startPanel.height() + parseFloat($($startPanel).css('padding-top')) >= bottomSteps.offset().top) {
+			
+			$startPanel.removeClass("fixed");
+			$startPanel.addClass("absolute");
+			$startPanel.css("right", "0px");
+			$startPanel.css("padding-bottom", (25 + bottomSteps.height()) + "px");
+			
+		} else {
+			
+			var rightMargin = ($(window).width() - $startPanel.closest("section").width()) / 2;
+			$startPanel.css("padding-bottom", "");
+			$startPanel.removeClass("absolute");
+			$startPanel.addClass("fixed");
+			$startPanel.css("right", rightMargin);
+		}
+		
+	} else if (win.scrollTop() < headerHeight) {
+		
+		$startPanel.css("right", "");
+		$startPanel.css("padding-bottom", "");
 		$startPanel.removeClass("fixed");
+		$startPanel.removeClass("absolute");
 	}
 	 
 }
