@@ -1,0 +1,154 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`invoicePaymentEventDescription` VARCHAR(255) NULL DEFAULT NULL,
+					PRIMARY KEY (`flowFamilyID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings`
+					ADD COLUMN `usesPersonData` TINYINT(1) UNSIGNED NOT NULL AFTER `flowFamilyID`,
+					CHANGE COLUMN `invoicePaymentEventDescription` `accountable` VARCHAR(255) NOT NULL AFTER `usesPersonData`,
+					ADD COLUMN `yearsSaved` TINYINT UNSIGNED NOT NULL AFTER `accountable`,
+					ADD COLUMN `reason` TEXT NULL AFTER `yearsSaved`,
+					ADD COLUMN `extraInformation` TEXT NULL DEFAULT NULL AFTER `reason`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings`
+					CHANGE COLUMN `accountable` `accountable` VARCHAR(255) NULL AFTER `usesPersonData`,
+					CHANGE COLUMN `yearsSaved` `yearsSaved` TINYINT(3) UNSIGNED NULL AFTER `accountable`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_data_alternatives` (
+					`alternativeID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`alternativeID`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_reason_alternatives` (
+					`alternativeID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`alternativeID`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_data_alternatives` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`alternativeID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `alternativeID`),
+					INDEX `FK_person_data_informer_settings_data_alternatives_2` (`alternativeID`),
+					CONSTRAINT `FK_person_data_informer_settings_data_alternatives_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE,
+					CONSTRAINT `FK_person_data_informer_settings_data_alternatives_2` FOREIGN KEY (`alternativeID`) REFERENCES `person_data_informer_data_alternatives` (`alternativeID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_reason_alternatives` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`alternativeID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `alternativeID`),
+					INDEX `FK_person_data_informer_settings_reason_alternatives_2` (`alternativeID`),
+					CONSTRAINT `FK_person_data_informer_settings_reason_alternatives_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE,
+					CONSTRAINT `FK_person_data_informer_settings_reason_alternatives_2` FOREIGN KEY (`alternativeID`) REFERENCES `person_data_informer_reason_alternatives` (`alternativeID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_data_alternatives` (`alternativeID`, `name`) VALUES
+					(1, 'Namn'),
+					(2, 'Adress'),
+					(3, 'Fastighesbeteckning'),
+					(4, 'E-post'),
+					(5, 'Personnummer'),
+					(6, 'Lön på personnivå'),
+					(7, 'Telefonnummer'),
+					(8, 'Mobilnummer'),
+					(9, 'IP-nummer'),
+					(10, 'Kundnummer'),
+					(11, 'GPS-koordinat kopplat till en individ');
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_reason_alternatives` (`alternativeID`, `name`) VALUES
+					(1, '1. Den registrerade har lämnat sitt samtycke'),
+					(2, '2. Avtal ska kunna fullgöras med den registrerade'),
+					(3, '3. Den personuppgiftsansvarige ska kunna fullgöra en rättslig skyldighet'),
+					(4, '4. Vitala inträssen för den registrerade ska skyddas'),
+					(5, '5. En arbetsuppgift av allmänt intresse ska kunna utföras'),
+					(6, '6. En arbetsuppgift i samband med myndighetsutövning ska kunna utföras'),
+					(7, '7. Berättigat intresse för behandlingen väger tyngre än den registrerades intresse av skydd mot kränkning av den personliga integriteten.');
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_queries` (
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`title` VARCHAR(255) NULL DEFAULT NULL,
+					`description` TEXT NULL,
+					`helpText` TEXT NULL,
+					PRIMARY KEY (`queryID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instances` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`accepted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+					PRIMARY KEY (`queryInstanceID`),
+					INDEX `FK_person_data_informer_query_instances_1` (`queryID`),
+					CONSTRAINT `FK_person_data_informer_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `person_data_informer_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

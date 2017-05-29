@@ -1,0 +1,9 @@
+@CHARSET "ISO-8859-1";
+
+#PersonDataInformer .alternative {
+	white-space: nowrap;
+}
+
+#PersonDataInformer .alternative label{
+	white-space: normal;
+}

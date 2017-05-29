@@ -1,0 +1,5 @@
+@CHARSET "ISO-8859-1";
+
+.filter-list.persondata ul li {
+	width: 215px !important;
+}
