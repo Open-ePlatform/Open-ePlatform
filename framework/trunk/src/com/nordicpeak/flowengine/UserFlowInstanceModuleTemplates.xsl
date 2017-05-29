@@ -541,10 +541,10 @@
 			 -->
 			<div id="tabs">
   				<ul class="tabs">
-  					<li class="active">
+  					<li class="active" data-tabid="#history">
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
   					</li>  				
-  					<li>
+  					<li data-tabid="#messages">
   						<a data-icon-before="m" href="#messages">
   							<xsl:value-of select="$i18n.ExternalMessages" />
   							<xsl:text>&#160;(</xsl:text>
@@ -739,6 +739,12 @@
 			<xsl:if test="../../Flow/hideManagerDetails = 'false'">
 				<td data-title="{$i18n.Details}">
 					<xsl:choose>
+						<xsl:when test="Attributes/Attribute[Name='externalMessageID']">
+							<xsl:variable name="messageID" select="Attributes/Attribute[Name='externalMessageID']/Value"></xsl:variable>
+							<a class="messagelink" href="#messages-{$messageID}">
+								<xsl:value-of select="Attributes/Attribute[Name='externalMessageFragment']/Value"></xsl:value-of>
+							</a>
+						</xsl:when>
 						<xsl:when test="details"><xsl:value-of select="details" /></xsl:when>
 						<xsl:otherwise>-</xsl:otherwise>
 					</xsl:choose>
@@ -770,7 +776,7 @@
 	
 	<xsl:template match="ExternalMessage">
 	
-		<li>
+		<li id="messages-{messageID}">
 		
 			<xsl:attribute name="class">
 			

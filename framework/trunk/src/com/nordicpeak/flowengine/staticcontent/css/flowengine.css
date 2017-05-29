@@ -175,6 +175,15 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	cursor: pointer;
 }
 
+
+#FlowBrowser a.messagelink {
+	color: #54646c;
+}
+
+#FlowInstanceAdminModule a.messagelink {
+	color: #54646c;
+}
+
 @media screen and (min-width: 766.99px) {
 	.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
 		margin-right: 3px;

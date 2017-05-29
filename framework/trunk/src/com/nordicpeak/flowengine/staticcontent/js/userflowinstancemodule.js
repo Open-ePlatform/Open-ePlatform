@@ -28,8 +28,44 @@ $(document).ready(function() {
 	if(window.location.hash == "#new-message") {
 		scrollToMessages("#messages ul.messages li");
 	}
+
+	setActiveTab();
+	
+	$(window).bind('hashchange', function () {
+		
+		setActiveTab();
+	});
 	
 });
+
+function setActiveTab() {
+	
+	var hash = window.location.hash;
+	
+	if(hash) {
+		
+		var hashArr = hash.split("-");
+
+		if(hashArr[0] == "#messages") {
+		
+			var $tabs = $("#tabs");
+			var idx = $tabs.find("li[data-tabid = '#messages']").index();
+			$tabs.tabs("option", "active", idx);
+	
+			if(hashArr[1]) {
+	
+				scrollToMessages(hash);
+			
+			} else {
+			
+				scrollToMessages("#messages ul.messages li");
+			}
+			
+			window.location.hash = "";
+		}
+	}
+
+}
 
 function scrollToMessages(selector) {
 	

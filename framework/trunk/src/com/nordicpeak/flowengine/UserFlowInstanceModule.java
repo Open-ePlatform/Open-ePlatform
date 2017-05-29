@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +59,7 @@ import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -142,6 +145,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
 	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();
+
+	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID = "externalMessageID";
+	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE = "externalMessageFragment";
+	
 	
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
@@ -505,8 +512,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
 				
 				if (externalMessage != null) {
+
+					Map<String, String> eventAttributes = new HashMap<String, String>();
 					
-					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user);
+					eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID, externalMessage.getMessageID().toString());
+					eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
+					
+					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, eventAttributes);
 					
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, instanceProfile, externalMessage, SenderType.USER), EventTarget.ALL);
 					

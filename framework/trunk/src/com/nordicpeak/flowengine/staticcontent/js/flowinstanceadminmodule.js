@@ -240,6 +240,41 @@ function initMessageTab(tabID, messagePanelID) {
 		scrollToMessages(tabID + " ul.messages li");
 	}
 	
+	setActiveTab(tabID);
+	
+	$(window).bind('hashchange', function () {
+		
+		setActiveTab(tabID);
+	});
+}
+
+function setActiveTab(tabID) {
+	
+	var hash = window.location.hash;
+	
+	if(hash) {
+		
+		var hashArr = hash.split("-");
+
+		if(hashArr[0] == tabID) {
+		
+			var $tabs = $("#tabs");
+			var idx = $tabs.find("li[data-tabid = '" + tabID + "']").index();
+			$tabs.tabs("option", "active", idx);
+	
+			if(hashArr[1]) {
+	
+				scrollToMessages(hash);
+			
+			} else {
+			
+				scrollToMessages(tabID + " ul.messages li");
+			}
+			
+			window.location.hash = "";
+		}
+	}
+
 }
 
 function scrollToMessages(selector) {

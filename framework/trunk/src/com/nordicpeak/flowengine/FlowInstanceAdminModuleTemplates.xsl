@@ -764,12 +764,12 @@
 			<div id="tabs">
   				<ul class="tabs">
   				
-  					<li class="active">
+  					<li class="active" data-tabid="#history">
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
   					</li>  				
   				
   					<xsl:if test="poster">
-	  					<li>
+	  					<li data-tabid="#messages">
 	  						<a data-icon-before="m" href="#messages">
 	  							<xsl:value-of select="$i18n.ExternalMessages" />
 	  							<xsl:text>&#160;(</xsl:text>
@@ -785,7 +785,7 @@
   					</xsl:if>
   					
   					<xsl:if test="not(Flow/hideInternalMessages = 'true')">
-	  					<li class="notes">
+	  					<li class="notes" data-tabid="#notes">
 	  						<a data-icon-before="i" href="#notes"><xsl:value-of select="$i18n.InternalMessages" /></a>
 	  					</li>
   					</xsl:if>
@@ -1034,6 +1034,12 @@
 			</td>
 			<td data-title="{$i18n.Details}">
 				<xsl:choose>
+					<xsl:when test="Attributes/Attribute[Name='externalMessageID']">
+						<xsl:variable name="messageID" select="Attributes/Attribute[Name='externalMessageID']/Value"></xsl:variable>
+						<a class="messagelink" href="#messages-{$messageID}">
+							<xsl:value-of select="Attributes/Attribute[Name='externalMessageFragment']/Value"></xsl:value-of>
+						</a>
+					</xsl:when>
 					<xsl:when test="details"><xsl:value-of select="details" /></xsl:when>
 					<xsl:otherwise>-</xsl:otherwise>
 				</xsl:choose>
@@ -1079,6 +1085,7 @@
 		<xsl:call-template name="createMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="attachments" select="attachments/ExternalMessageAttachment" />
+			<xsl:with-param name="prefix" select="'messages'" />
 		</xsl:call-template>
 		
 	</xsl:template>	
@@ -1088,6 +1095,7 @@
 		<xsl:call-template name="createMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="attachments" select="attachments/InternalMessageAttachment" />
+			<xsl:with-param name="prefix" select="'notes'" />
 		</xsl:call-template>
 		
 	</xsl:template>
@@ -1096,8 +1104,9 @@
 		
 		<xsl:param name="message" />
 		<xsl:param name="attachments" />
+		<xsl:param name="prefix" />
 		
-		<li class="official">
+		<li id="{$prefix}-{$message/messageID}" class="official">
 			
 			<xsl:attribute name="class">
 			

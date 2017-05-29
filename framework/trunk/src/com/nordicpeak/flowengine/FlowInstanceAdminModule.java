@@ -5,7 +5,9 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -158,6 +160,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerUsersNotFoundError");
 
 	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
+	
+	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID = "externalMessageID";
+	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE = "externalMessageFragment";
 	
 	@XSLVariable(prefix = "java.")
 	protected String noManagersSelected = "No managers selected";
@@ -460,7 +465,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 							//TODO check bug with wrong poster
 							
-							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user);
+							Map<String, String> eventAttributes = new HashMap<String, String>();
+							
+							eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID, externalMessage.getMessageID().toString());
+							eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
+							
+							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, eventAttributes);
 
 							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
