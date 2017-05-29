@@ -46,9 +46,11 @@
 	  							<span data-icon-before="u" class="marginleft"><xsl:value-of select="$i18n.AuthenticationRequired" /></span>
 	  						</xsl:if>
 						</div>
+						
 						<xsl:if test="$operatingMessage/global = 'false'">
 							<section class="modal warning floatleft clearboth border-box full" style=""><i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);">!</i><xsl:value-of select="$operatingMessage/message" /></section>
 						</xsl:if>
+						
 	  				</div>
 	  				<div class="description">
 	  					<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
@@ -58,6 +60,8 @@
 	  					</xsl:choose>
 	  					
 	  					<xsl:call-template name="appendFlowContactAndOwner"/>
+	  					
+	  					<xsl:apply-templates select="../ExtensionViews/ExtensionView[slot = 'left']" mode="flowOverview-left"/>
 	  				</div>
 	  				
  				</div>
@@ -379,7 +383,11 @@
 	<xsl:template name="appendFlowContactAndOwner">
 	
 		<xsl:if test="FlowFamily/contactName or FlowFamily/ownerName">
+		
+			<xsl:variable name="ownerExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-owner']"/>
+		
 			<div class="about-flow">
+			
 				<xsl:if test="FlowFamily/contactName">
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Questions" /></h2>
@@ -392,7 +400,9 @@
 						</xsl:if>
 					</div>
 				</xsl:if>
-				<xsl:if test="FlowFamily/ownerName">
+				
+				<xsl:if test="FlowFamily/ownerName and not($ownerExtensionView)">
+				
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Responsible" /></h2>
 						<xsl:value-of select="FlowFamily/ownerName" />
@@ -400,9 +410,42 @@
 							<br /><a href="mailto:{FlowFamily/ownerEmail}" title="{$i18n.SendMailTo}: {FlowFamily/ownerEmail}"><xsl:value-of select="FlowFamily/ownerEmail" /></a>
 						</xsl:if>
 					</div>
+					
 				</xsl:if>
+				
 			</div>
-		</xsl:if>	
+			
+			<xsl:if test="FlowFamily/ownerName and $ownerExtensionView">
+			
+				<div class="about-flow-extension full border border-radius-small">
+	
+					<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+						<xsl:value-of select="$ownerExtensionView/name" />
+						<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
+						<span class="bigmarginleft floatright" data-icon-before="+" />
+					</h2>
+	
+					<div class="bigpaddingleft bigpaddingright" style="display: none">
+					
+						<p>
+							<strong><xsl:value-of select="$i18n.Responsible"/></strong>
+							<br/>
+							<xsl:value-of select="FlowFamily/ownerName" />
+								
+							<xsl:if test="FlowFamily/ownerEmail">
+								<br /><a href="mailto:{FlowFamily/ownerEmail}" title="{$i18n.SendMailTo}: {FlowFamily/ownerEmail}"><xsl:value-of select="FlowFamily/ownerEmail" /></a>
+							</xsl:if>
+						</p>
+					
+						<xsl:value-of select="$ownerExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
+						
+					</div>
+				
+				</div>
+					
+			</xsl:if>
+			
+		</xsl:if>
 	
 	</xsl:template>	
 		
@@ -464,6 +507,24 @@
 			
 		</a>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="ExtensionView" mode="flowOverview-left">
 		
+		<div class="about-flow-extension full border border-radius-small">
+	
+			<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+				<xsl:value-of select="name" />
+				<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
+				<span class="bigmarginleft floatright" data-icon-before="+" />
+			</h2>
+			
+			<div class="bigpaddingleft bigpaddingright" style="display: none">
+				<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
+			</div>
+		
+		</div>
+			
+	</xsl:template>
+	
 </xsl:stylesheet>

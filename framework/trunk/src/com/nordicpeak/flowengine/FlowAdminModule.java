@@ -150,6 +150,7 @@ import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessCo
 import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
+import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -199,6 +200,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowFamilyEventHandler;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
@@ -480,8 +482,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected CopyOnWriteArrayList<FlowAdminExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>();
 
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
-
 	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider>();
+	
+	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -510,6 +513,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		systemInterface.getInstanceHandler().removeInstance(FlowAdminModule.class, this);
 
 		extensionViewProviders.clear();
+		flowBrowserExtensionViewProviders.clear();
 
 		flowListExtensionLinkProviders.clear();
 
@@ -1984,8 +1988,50 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			if (!flow.isInternal()) {
 				XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 			}
+			
+			List<ExtensionView> extensionViews = null;
+			
+			if (!CollectionUtils.isEmpty(flowBrowserExtensionViewProviders)) {
 
-			return new SimpleForegroundModuleResponse(doc, flow.getName(), this.getDefaultBreadcrumb());
+				extensionViews = new ArrayList<ExtensionView>(flowBrowserExtensionViewProviders.size());
+
+				for (FlowBrowserExtensionViewProvider extensionProvider : flowBrowserExtensionViewProviders) {
+
+					try {
+						ExtensionView extension = extensionProvider.getFlowOverviewExtensionView(flow, req, user, uriParser);
+
+						if (extension != null) {
+
+							extensionViews.add(extension);
+						}
+
+					} catch (Exception e) {
+
+						log.error("Error getting extension view from provider " + extensionProvider, e);
+					}
+				}
+				
+				XMLUtils.append(doc, showFlowOverviewElement, "ExtensionViews", extensionViews);
+			}
+			
+			SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, flow.getName(), this.getDefaultBreadcrumb());
+			
+			if (!CollectionUtils.isEmpty(extensionViews)) {
+				
+				for (ExtensionView extensionView : extensionViews) {
+					
+					if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getLinks())) {
+						response.addLinks(extensionView.getViewFragment().getLinks());
+					}
+					
+					if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getScripts())) {
+						
+						response.addScripts(extensionView.getViewFragment().getScripts());
+					}
+				}
+			}
+			
+			return response;
 		}
 
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
@@ -4058,11 +4104,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		if (!extensionViewProviders.contains(flowAdminExtensionProvider)) {
 
-			extensionViewProviders.add(flowAdminExtensionProvider);
-
 			log.info("Extension view provider " + flowAdminExtensionProvider + " added");
-
+			
 			List<FlowAdminExtensionViewProvider> tempProviders = new ArrayList<FlowAdminExtensionViewProvider>(extensionViewProviders);
+
+			tempProviders.add(flowAdminExtensionProvider);
 
 			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
 
@@ -4668,6 +4714,30 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		redirectToMethod(req, res, "/showflow/" + uriParser.get(3) + "#versions");
 		return null;
+	}
+	
+	public synchronized void addFlowBrowserExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
+		
+		if (!flowBrowserExtensionViewProviders.contains(flowAdminExtensionProvider)) {
+			
+			log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " added");
+			
+			List<FlowBrowserExtensionViewProvider> tempProviders = new ArrayList<FlowBrowserExtensionViewProvider>(flowBrowserExtensionViewProviders);
+			
+			tempProviders.add(flowAdminExtensionProvider);
+			
+			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
+			
+			flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>(tempProviders);
+		}
+		
+	}
+	
+	public synchronized void removeFlowBrowserExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
+		
+		flowBrowserExtensionViewProviders.remove(flowAdminExtensionProvider);
+		
+		log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " removed");
 	}
 
 }

@@ -38,6 +38,7 @@ import se.unlogic.hierarchy.core.beans.SettingDescriptor;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.beans.ValueDescriptor;
+import se.unlogic.hierarchy.core.comparators.PriorityComparator;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -76,6 +77,7 @@ import se.unlogic.webutils.url.URLRewriter;
 
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -109,6 +111,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstan
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
@@ -133,6 +136,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
 	private static final Comparator<FlowFamily> FAMILY_COMPARATOR = new MethodComparator<FlowFamily>(FlowFamily.class, "getFlowInstanceCount", Order.DESC);
+	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
 
 	public static final String SAVE_ACTION_ID = FlowBrowserModule.class.getName() + ".save";
 	public static final String SUBMIT_ACTION_ID = FlowBrowserModule.class.getName() + ".submit";
@@ -140,6 +144,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final String MULTI_SIGNING_ACTION_ID = FlowBrowserModule.class.getName() + ".multisigning";
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = FlowBrowserModule.class.getName();
+	
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show all flowtypes", description = "List all flowtypes in this module")
@@ -218,6 +223,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 	protected CopyOnWriteArrayList<FlowBrowserFilter> flowFilters = new CopyOnWriteArrayList<FlowBrowserFilter>();
 	
+	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
+	
 	private QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
 
 	private List<FlowType> flowTypes;
@@ -268,6 +275,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public void unload() throws Exception {
 
+		extensionViewProviders.clear();
+		
 		super.unload();
 
 		try {
@@ -556,9 +565,50 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			}
 
 		}
+		
+		List<ExtensionView> extensionViews = null;
+		
+		if (!CollectionUtils.isEmpty(extensionViewProviders)) {
 
-		return new SimpleForegroundModuleResponse(doc, flow.getName(), this.getDefaultBreadcrumb());
+			extensionViews = new ArrayList<ExtensionView>(extensionViewProviders.size());
 
+			for (FlowBrowserExtensionViewProvider extensionProvider : extensionViewProviders) {
+
+				try {
+					ExtensionView extension = extensionProvider.getFlowOverviewExtensionView(flow, req, user, uriParser);
+
+					if (extension != null) {
+
+						extensionViews.add(extension);
+					}
+
+				} catch (Exception e) {
+
+					log.error("Error getting extension view from provider " + extensionProvider, e);
+				}
+			}
+			
+			XMLUtils.append(doc, showFlowOverviewElement, "ExtensionViews", extensionViews);
+		}
+		
+		SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, flow.getName(), this.getDefaultBreadcrumb());
+		
+		if (!CollectionUtils.isEmpty(extensionViews)) {
+			
+			for (ExtensionView extensionView : extensionViews) {
+				
+				if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getLinks())) {
+					response.addLinks(extensionView.getViewFragment().getLinks());
+				}
+				
+				if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getScripts())) {
+					
+					response.addScripts(extensionView.getViewFragment().getScripts());
+				}
+			}
+		}
+		
+		return response;
 	}
 
 	@WebPublic(alias = "flow")
@@ -1589,6 +1639,30 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected Icon getFlowIcon(Integer flowID) {
 
 		return flowAdminModule.getFlowIcon(flowID);
+	}
+	
+	public synchronized void addExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
+		
+		if (!extensionViewProviders.contains(flowAdminExtensionProvider)) {
+			
+			log.info("Extension view provider " + flowAdminExtensionProvider + " added");
+			
+			List<FlowBrowserExtensionViewProvider> tempProviders = new ArrayList<FlowBrowserExtensionViewProvider>(extensionViewProviders);
+			
+			tempProviders.add(flowAdminExtensionProvider);
+			
+			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
+			
+			extensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>(tempProviders);
+		}
+		
+	}
+	
+	public synchronized void removeExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
+		
+		extensionViewProviders.remove(flowAdminExtensionProvider);
+		
+		log.info("Extension view provider " + flowAdminExtensionProvider + " removed");
 	}
 	
 }
