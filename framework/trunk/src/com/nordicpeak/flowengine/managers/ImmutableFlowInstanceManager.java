@@ -91,6 +91,8 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 				managedSteps.add(new ImmutableManagedStep(step, new ArrayList<ImmutableQueryInstance>(0)));
 				continue;
 			}
+			
+			step.setFlow(flowInstance.getFlow());
 
 			List<ImmutableQueryInstance> queryInstances = new ArrayList<ImmutableQueryInstance>(step.getQueryDescriptors().size());
 
@@ -100,6 +102,8 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 					throw new MissingQueryInstanceDescriptor(flowInstance, queryDescriptor);
 				}
+				
+				queryDescriptor.setStep(step);
 
 				QueryInstanceDescriptor queryInstanceDescriptor = queryDescriptor.getQueryInstanceDescriptors().get(0);
 
