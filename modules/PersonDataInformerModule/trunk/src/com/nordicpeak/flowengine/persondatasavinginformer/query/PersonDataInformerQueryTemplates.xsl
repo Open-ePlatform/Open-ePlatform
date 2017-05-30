@@ -119,13 +119,15 @@
 					</span>
 				</xsl:if>
 				
-				<p>
-					<strong>
-						<xsl:value-of select="$i18n.Accountable"/>
-					</strong>
-					<br/>
-					<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
-				</p>
+				<xsl:if test="PersonDataInformerQueryInstance/FlowFamily/ownerName">
+					<p>
+						<strong>
+							<xsl:value-of select="$i18n.Accountable"/>
+						</strong>
+						<br/>
+						<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
+					</p>
+				</xsl:if>
 				
 				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
 				
