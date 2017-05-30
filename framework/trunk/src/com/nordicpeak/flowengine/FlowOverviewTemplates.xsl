@@ -381,10 +381,10 @@
 	</xsl:template>	
 	
 	<xsl:template name="appendFlowContactAndOwner">
+
+		<xsl:variable name="ownerExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-owner']"/>
 	
 		<xsl:if test="FlowFamily/contactName or FlowFamily/ownerName">
-		
-			<xsl:variable name="ownerExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-owner']"/>
 		
 			<div class="about-flow">
 			
@@ -415,18 +415,21 @@
 				
 			</div>
 			
-			<xsl:if test="FlowFamily/ownerName and $ownerExtensionView">
-			
-				<div class="about-flow-extension full border border-radius-small">
-	
-					<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-						<xsl:value-of select="$ownerExtensionView/name" />
-						<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
-						<span class="bigmarginleft floatright" data-icon-before="+" />
-					</h2>
-	
-					<div class="bigpaddingleft bigpaddingright" style="display: none">
-					
+		</xsl:if>
+		
+		<xsl:if test="$ownerExtensionView">
+		
+			<div class="about-flow-extension full border border-radius-small">
+
+				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+					<xsl:value-of select="$ownerExtensionView/name" />
+					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
+					<span class="bigmarginleft floatright" data-icon-before="+" />
+				</h2>
+
+				<div class="bigpaddingleft bigpaddingright" style="display: none">
+				
+					<xsl:if test="FlowFamily/ownerName">
 						<p>
 							<strong><xsl:value-of select="$i18n.Responsible"/></strong>
 							<br/>
@@ -436,16 +439,15 @@
 								<br /><a href="mailto:{FlowFamily/ownerEmail}" title="{$i18n.SendMailTo}: {FlowFamily/ownerEmail}"><xsl:value-of select="FlowFamily/ownerEmail" /></a>
 							</xsl:if>
 						</p>
-					
-						<xsl:value-of select="$ownerExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
-						
-					</div>
+					</xsl:if>
 				
-				</div>
+					<xsl:value-of select="$ownerExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
 					
-			</xsl:if>
+				</div>
 			
-		</xsl:if>
+			</div>
+				
+		</xsl:if>		
 	
 	</xsl:template>	
 		
