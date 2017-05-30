@@ -48,7 +48,7 @@
 	<xsl:variable name="i18n.Column.FlowType">Kategori</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowCategory">Underkategori</xsl:variable>
 	<xsl:variable name="i18n.Column.PersonData">Personuppgifter</xsl:variable>
-	<xsl:variable name="i18n.noFlowsFound">Hittade inga e-tjänster som hanterar personuppgifter</xsl:variable>
+	<xsl:variable name="i18n.noFlowsFound">Inga e-tjänster som hanterar personuppgifter hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.Export">Exportera</xsl:variable>
 	
