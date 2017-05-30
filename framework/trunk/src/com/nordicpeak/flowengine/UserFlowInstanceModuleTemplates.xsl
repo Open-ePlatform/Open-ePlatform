@@ -86,8 +86,17 @@
   						<thead>
   							<tr>
   								<th class="icon"></th>
-  								<th class="errando"><span>Ärendenummer</span></th>
-  								<th class="status"><span>Meddelande</span></th>
+  								<th class="errando">
+  									<span>
+  										<xsl:value-of select="$i18n.FlowInstanceID"/>
+  									</span>
+  								</th>
+  								
+  								<th class="status">
+  									<span>
+  										<xsl:value-of select="$i18n.Message"/>
+  									</span>
+  								</th>
   								<th class="link"></th>
   							</tr>
   						</thead>
@@ -142,6 +151,14 @@
 									<th class="status"><span><xsl:value-of select="$i18n.SiteProfile" /></span></th>
 								</xsl:if>
 								
+								<xsl:if test="ShowDescriptionColumn">
+									<th class="errando">
+										<span>
+											<xsl:value-of select="$i18n.Description"/>
+										</span>
+									</th>
+								</xsl:if>								
+								
 								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
 								<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
 								<th class="link"></th>
@@ -176,6 +193,15 @@
 							</xsl:if>
 							
 							<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
+
+							<xsl:if test="ShowDescriptionColumn">
+								<th class="errando">
+									<span>
+										<xsl:value-of select="$i18n.Description"/>
+									</span>
+								</th>
+							</xsl:if>
+
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
 							<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.LastEvent" /></span></th>
 							<th class="link no-sort"></th>
@@ -215,6 +241,15 @@
 							</xsl:if>
 							
 							<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
+
+							<xsl:if test="ShowDescriptionColumn">
+								<th class="errando">
+									<span>
+										<xsl:value-of select="$i18n.Description"/>
+									</span>
+								</th>
+							</xsl:if>	
+
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
 							<th class="date default-sort"><span data-icon-after="^"><xsl:value-of select="$i18n.Date" /></span></th>
 							<th class="link no-sort"></th>
@@ -245,6 +280,8 @@
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
 			
 			<xsl:call-template name="printSiteProfile"/>			
+			
+			<xsl:call-template name="printDescription"/>
 			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Updated}" class="date">
@@ -311,6 +348,9 @@
 			<xsl:call-template name="printSiteProfile"/>		
 			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
+
+			<xsl:call-template name="printDescription"/>
+
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.LastEvent}" class="date">
 				<xsl:value-of select="firstSubmitted" />			
@@ -335,9 +375,12 @@
 			</td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
 			
-			<xsl:call-template name="printSiteProfile"/>			
+			<xsl:call-template name="printSiteProfile"/>
 			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
+
+			<xsl:call-template name="printDescription"/>
+
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date">
 				<xsl:value-of select="firstSubmitted" />				
@@ -375,6 +418,36 @@
 		</xsl:if>	
 	
 	</xsl:template>
+	
+	<xsl:template name="printDescription">
+	
+		<xsl:if test="../../ShowDescriptionColumn">
+			
+			<td data-title="{$i18n.Description}" class="description">
+				
+				<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
+				
+				<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+				
+				<xsl:value-of select="$externalID"/>
+	
+				<xsl:if test="$description">
+				
+					<xsl:if test="$externalID">
+					
+						<xsl:text>, </xsl:text>
+					
+					</xsl:if>
+				
+					<xsl:value-of select="$description"/>			
+				
+				</xsl:if>
+				
+			</td>
+					
+		</xsl:if>	
+	
+	</xsl:template>	
 	
 	<xsl:template match="FlowInstance" mode="changed">
 		
@@ -444,6 +517,38 @@
 							</span>
 							
 							<br/>
+							
+							<xsl:if test="../ShowDescriptionColumn">
+								
+								<span class="errandno hide-mobile">
+									
+									<xsl:value-of select="$i18n.Description" />
+									
+									<xsl:text>:&#160;</xsl:text>
+									
+									<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
+									
+									<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+									
+									<xsl:value-of select="$externalID"/>
+						
+									<xsl:if test="$description">
+									
+										<xsl:if test="$externalID">
+										
+											<xsl:text>, </xsl:text>
+										
+										</xsl:if>
+									
+										<xsl:value-of select="$description"/>			
+									
+									</xsl:if>
+									
+								</span>
+										
+								<br/>		
+										
+							</xsl:if>							
 							
 							<span class="errandno hide-mobile">
 								<xsl:value-of select="$i18n.CurrentStatus" />

@@ -458,12 +458,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					if(flowInstance.getOwners() != null){
 						
-						//TODO append message or request parameters
 						ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
 
 						if(externalMessage != null){
-
-							//TODO check bug with wrong poster
 							
 							Map<String, String> eventAttributes = new HashMap<String, String>();
 							

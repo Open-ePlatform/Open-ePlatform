@@ -74,6 +74,7 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceAttribute;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
@@ -133,9 +134,12 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
-	protected static final Field [] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION};
-	public static final Field [] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD , Flow.HIDE_MANAGER_DETAILS_FIELD , Flow.FLOW_FORMS_FIELD , Flow.HIDE_SUBMIT_STEP_TEXT_FIELD , Flow.SHOW_SUBMIT_SURVEY_FIELD , Flow.REQUIRES_SIGNING_FIELD , Flow.REQUIRE_AUTHENTICATION_FIELD , Flow.USE_PREVIEW_FIELD , Flow.PUBLISH_DATE_FIELD , FlowInstanceEvent.POSTER_FIELD};
-	
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION };
+
+	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD, FlowInstanceEvent.POSTER_FIELD };
+
+	protected static final List<String> DESCRIPTION_COLUMN_ATTRIBUTES = Collections.unmodifiableList(CollectionUtils.getList(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE, Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE));
+
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = UserFlowInstanceModule.class.getName();
 
 	public static final String SUBMIT_COMPLETION_ACTION_ID = UserFlowInstanceModule.class.getName() + ".submitcompletion";
@@ -152,32 +156,36 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "PostedByManager")
 	private String notificationPostedByManager = "Manager";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "StatusUpdatedEvent")
 	private String eventStatusUpdated = "Status updated";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String userMenuTabTitle = "My errands";
-	
+
 	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
+	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max file size", description = "Maxmium allowed file size in megabytes", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxFileSize = 50;
-	
+
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Enable site profile support", description="Controls if site profile support is enabled")
+	@CheckboxSettingDescriptor(name = "Enable site profile support", description = "Controls if site profile support is enabled")
 	protected boolean enableSiteProfileSupport;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Enable site profile redirect support", description="Controls if site profile redirect support is enabled")
+	@CheckboxSettingDescriptor(name = "Enable site profile redirect support", description = "Controls if site profile redirect support is enabled")
 	protected boolean enableSiteProfileRedirectSupport;
-	
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable the description column", description = "Controls if description column is visible")
+	protected boolean enableDescriptionColumn;
+
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
 	protected List<Integer> excludedFlowTypes;
@@ -185,7 +193,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "10";
-	
+
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -202,28 +210,29 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected XMLProvider xmlProvider;
 
 	protected HashSet<Integer> excludedFlowTypesHashSet = null;
-	
+
 	private QueryParameterFactory<FlowInstanceEvent, FlowInstance> flowInstanceEventFlowInstanceParamFactory;
 	private QueryParameterFactory<FlowInstanceEvent, User> flowInstanceEventPosterParamFactory;
 	private QueryParameterFactory<FlowInstanceEvent, Timestamp> flowInstanceEventAddedParamFactory;
-	
+	private QueryParameterFactory<FlowInstanceAttribute, String> attributeNameParamFactory;
+
 	protected UserFlowInstanceMenuModule userFlowInstanceMenuModule;
-	
+
 	protected NotificationHandler notificationHandler;
-	
+
 	private FlowProcessCallback defaultFlowProcessCallback;
 
 	private FlowProcessCallback completeFlowProcessCallback;
 
 	private ExternalMessageCRUD externalMessageCRUD;
-	
+
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
 	protected CopyOnWriteArrayList<ListFlowInstancesExtensionProvider> listExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesExtensionProvider>();
-	
+
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
-	
+
 	protected Locale systemLocale;
-	
+
 	protected ExtensionLink userMenuLink;
 
 	@Override
@@ -234,6 +243,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		flowInstanceEventFlowInstanceParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("flowInstance", FlowInstance.class);
 		flowInstanceEventPosterParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("poster", User.class);
 		flowInstanceEventAddedParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("added", Timestamp.class);
+		attributeNameParamFactory = daoFactory.getFlowInstanceAttributeDAO().getParamFactory("name", String.class);
 
 		defaultFlowProcessCallback = new UserFlowInstanceBrowserProcessCallback(FlowBrowserModule.SAVE_ACTION_ID, FlowBrowserModule.SUBMIT_ACTION_ID, FlowBrowserModule.MULTI_SIGNING_ACTION_ID, FlowBrowserModule.PAYMENT_ACTION_ID, this);
 		completeFlowProcessCallback = new UserFlowInstanceBrowserProcessCallback(null, SUBMIT_COMPLETION_ACTION_ID, FlowBrowserModule.MULTI_SIGNING_ACTION_ID, null, this);
@@ -246,30 +256,30 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
-		if(!systemInterface.getInstanceHandler().addInstance(UserFlowInstanceModule.class, this)){
+		if (!systemInterface.getInstanceHandler().addInstance(UserFlowInstanceModule.class, this)) {
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + UserFlowInstanceModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
-		
+
 		systemLocale = new Locale(systemInterface.getDefaultLanguage().getLanguageCode());
 	}
-	
+
 	@Override
 	protected void moduleConfigured() throws Exception {
-		
+
 		super.moduleConfigured();
-		
+
 		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "\uE60E", userMenuExtensionLinkSlot);
-		
+
 		excludedFlowTypesHashSet = null;
-		
+
 		if (excludedFlowTypes != null) {
-			
+
 			excludedFlowTypesHashSet = new HashSet<Integer>(excludedFlowTypes);
 		}
-		
-		if(userFlowInstanceMenuModule != null) {
-			
+
+		if (userFlowInstanceMenuModule != null) {
+
 			userFlowInstanceMenuModule.sortProviders();
 		}
 	}
@@ -278,31 +288,31 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public void unload() throws Exception {
 
 		systemInterface.getInstanceHandler().removeInstance(UserFlowInstanceModule.class, this);
-		
+
 		if (notificationHandler != null) {
-			
+
 			notificationHandler.removeNotificationSource(this);
 		}
-		
-		if(userFlowInstanceMenuModule != null){
-			
+
+		if (userFlowInstanceMenuModule != null) {
+
 			setUserFlowInstanceMenuModule(null);
 		}
-		
+
 		tabExtensionProviders.clear();
 		listExtensionProviders.clear();
-		
+
 		super.unload();
 	}
-	
+
 	@InstanceManagerDependency
 	public void setUserFlowInstanceMenuModule(UserFlowInstanceMenuModule userFlowInstanceMenuModule) {
 
-		if(userFlowInstanceMenuModule == null && this.userFlowInstanceMenuModule != null){
-			
+		if (userFlowInstanceMenuModule == null && this.userFlowInstanceMenuModule != null) {
+
 			this.userFlowInstanceMenuModule.removeUserMenuProvider(this);
 		}
-		
+
 		this.userFlowInstanceMenuModule = userFlowInstanceMenuModule;
 
 		if (this.userFlowInstanceMenuModule != null) {
@@ -310,11 +320,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			this.userFlowInstanceMenuModule.addUserMenuProvider(this);
 		}
 	}
-	
+
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return this.list(req, res, user, uriParser, (List<ValidationError>)null);
+		return this.list(req, res, user, uriParser, (List<ValidationError>) null);
 	}
 
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ValidationError validationError) throws ModuleConfigurationException, SQLException {
@@ -324,193 +334,203 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@Override
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws ModuleConfigurationException, SQLException {
-		
+
 		log.info("User " + user + " listing its flow instances");
-		
+
 		Document doc = this.createDocument(req, uriParser, user);
-		
+
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addIgnoredFields(LIST_EXCLUDED_FIELDS);
-		
+
 		Element listFlowInstancesElement = doc.createElement("ListFlowInstances");
-		
+
 		doc.getDocumentElement().appendChild(listFlowInstancesElement);
+
+		if(enableDescriptionColumn){
+			
+			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowDescriptionColumn");
+		}
 		
 		List<FlowInstance> flowInstances = getFlowInstances(user, true, excludedFlowTypes != null);
-		
-		if(!userFlowInstanceProviders.isEmpty()){
-			
+
+		if (!userFlowInstanceProviders.isEmpty()) {
+
 			int flowInstanceCount = CollectionUtils.getSize(flowInstances);
-			
-			for(UserFlowInstanceProvider userFlowInstanceProvider : userFlowInstanceProviders){
-				
-				try{
+
+			for (UserFlowInstanceProvider userFlowInstanceProvider : userFlowInstanceProviders) {
+
+				try {
 					flowInstances = CollectionUtils.addAndInstantiateIfNeeded(flowInstances, userFlowInstanceProvider.getUserFlowInstances(user));
-					
-				}catch(RuntimeException e){
-					
+
+				} catch (RuntimeException e) {
+
 					log.error("Error getting flow instances from provider " + userFlowInstanceProvider, e);
 				}
 			}
-			
-			if(flowInstances != null && CollectionUtils.getSize(flowInstances) != flowInstanceCount){
-				
+
+			if (flowInstances != null && CollectionUtils.getSize(flowInstances) != flowInstanceCount) {
+
 				Collections.sort(flowInstances, FLOW_INSTANCE_ADDED_COMPARATOR);
 			}
 		}
-		
+
 		if (!CollectionUtils.isEmpty(flowInstances)) {
-			
+
 			Element savedFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesElement, "SavedFlowInstances");
 			Element submittedFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesElement, "SubmittedFlowInstances");
 			Element archivedFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ArchivedFlowInstances");
-			
+
 			for (FlowInstance flowInstance : flowInstances) {
-				
+
 				if (excludedFlowTypesHashSet != null && excludedFlowTypesHashSet.contains(flowInstance.getFlow().getFlowType().getFlowTypeID())) {
 					continue;
 				}
-				
+
 				Status status = flowInstance.getStatus();
-				
+
 				Element flowInstanceElement = flowInstance.toXML(genDoc);
-				
+
 				if (flowInstance.getFlow().isEnabled()) {
-					
+
 					for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
-						
+
 						try {
 							ExtensionLink flowInstanceExtensionLink = listExtensionProvider.getListFlowInstancesExtensionLink(flowInstance, req, uriParser, user);
-							
+
 							if (flowInstanceExtensionLink != null) {
-								
+
 								flowInstanceElement.appendChild(flowInstanceExtensionLink.toXML(doc));
 							}
-							
+
 						} catch (Exception e) {
 							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionProvider + " for user " + user, e);
 						}
 					}
 				}
-				
+
 				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT) {
-					
+
 					savedFlowInstancesElement.appendChild(flowInstanceElement);
-					
+
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
-					
+
 					List<FlowInstanceEvent> events = getNewFlowInstanceEvents(flowInstance, user);
-					
+
 					if (events != null) {
-						
+
 						for (FlowInstanceEvent event : events) {
 							event.setShortDate(DateUtils.dateAndShortMonthToString(event.getAdded(), systemLocale));
 						}
-						
+
 						XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
 					}
-					
+
 					submittedFlowInstancesElement.appendChild(flowInstanceElement);
-					
+
 				} else if (status.getContentType() == ContentType.ARCHIVED) {
-					
+
 					archivedFlowInstancesElement.appendChild(flowInstanceElement);
-					
+
 				} else {
-					
+
 					log.warn("The status of flow instance " + flowInstance + " has an unknown content type of " + status.getContentType());
 				}
-				
+
 			}
-			
+
 			req.getSession().removeAttribute("LastFlowInstanceEventUpdate");
 		}
-		
+
 		if (validationErrors != null) {
-		
+
 			XMLUtils.append(doc, listFlowInstancesElement, validationErrors);
-					}
-				
+		}
+
 		if (enableSiteProfileSupport && this.profileHandler != null) {
-					
+
 			XMLUtils.append(doc, listFlowInstancesElement, "SiteProfiles", this.profileHandler.getProfiles());
-					}
-					
+		}
+
 		List<ViewFragment> viewFragments = null;
-					
+
 		if (!listExtensionProviders.isEmpty()) {
-						
+
 			viewFragments = new ArrayList<ViewFragment>(listExtensionProviders.size());
-						
+
 			for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
-						
+
 				try {
 					ViewFragment viewFragment = listExtensionProvider.getListFlowInstancesViewFragment(flowInstances, enableSiteProfileSupport ? profileHandler : null, req, uriParser, user);
-							
+
 					if (viewFragment != null) {
-								
+
 						listFlowInstancesElement.appendChild(viewFragment.toXML(doc));
 						viewFragments.add(viewFragment);
 					}
-								
+
 				} catch (Exception e) {
 					log.error("Error appending view fragment from FlowInstanceListExtensionProvider " + listExtensionProvider, e);
-							}
-						}
-					}
-		
+				}
+			}
+		}
+
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
-		
+
 		if (!CollectionUtils.isEmpty(viewFragments)) {
 			for (ViewFragment viewFragment : viewFragments) {
-			
+
 				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
+			}
 		}
-		}
-		
+
 		return moduleResponse;
 	}
 
 	@WebPublic(alias = "overview")
-	public ForegroundModuleResponse showFlowInstanceOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException  {
+	public ForegroundModuleResponse showFlowInstanceOverview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		FlowInstance flowInstance;
 
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
 
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
-			
+
 			SiteProfile instanceProfile = getSiteProfile(flowInstance);
-			
-			if(enableSiteProfileRedirectSupport){
-				
+
+			if (enableSiteProfileRedirectSupport) {
+
 				SiteProfile currentSiteProfile = getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily());
-				
-				if(profileRedirect(currentSiteProfile, flowInstance, req, res, uriParser)){
-					
+
+				if (profileRedirect(currentSiteProfile, flowInstance, req, res, uriParser)) {
+
 					return null;
 				}
 			}
-			
+
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
-			
+
 			log.info("User " + user + " viewing overview of flow instance " + flowInstance);
-			
+
 			Document doc = this.createDocument(req, uriParser, user);
 
 			Element showFlowInstanceOverviewElement = doc.createElement("ShowFlowInstanceOverview");
 			doc.getDocumentElement().appendChild(showFlowInstanceOverviewElement);
 
 			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormatedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
+
+			if(enableDescriptionColumn){
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowDescriptionColumn");
+			}
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
-				
+
 				//TODO append message or request parameters
 				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
-				
+
 				if (externalMessage != null) {
 
 					Map<String, String> eventAttributes = new HashMap<String, String>();
@@ -519,72 +539,72 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
 					
 					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, eventAttributes);
-					
+
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, instanceProfile, externalMessage, SenderType.USER), EventTarget.ALL);
-					
+
 					res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
-					
+
 					return null;
 				}
 			}
-			
+
 			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 
 			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
 
 			if (enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null) {
-				
+
 				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
 			}
-			
+
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
 
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
-			
+
 			if (!CollectionUtils.isEmpty(viewFragments)) {
 				for (ViewFragment viewFragment : viewFragments) {
-					
+
 					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 				}
 			}
-			
+
 			return moduleResponse;
 		}
 
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
-	
+
 	@WebPublic(alias = "messages")
-	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException  {
+	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && NumberUtils.isInt(uriParser.get(3))) {
-			
+
 			redirectToMethod(req, res, "/overview/" + uriParser.get(2) + "/" + uriParser.get(3) + "#messages");
-			
+
 			return null;
 		}
-		
+
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
-	
+
 	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
 
 		showFlowInstanceOverviewElement.appendChild(flowInstance.toXML(doc));
-		
+
 	}
 
 	protected boolean profileRedirect(SiteProfile profile, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws IOException {
 
-		if(flowInstance.getProfileID() != null && this.profileHandler != null) {
-			
-			if(profile == null || !profile.getProfileID().equals(flowInstance.getProfileID())) {
-				
+		if (flowInstance.getProfileID() != null && this.profileHandler != null) {
+
+			if (profile == null || !profile.getProfileID().equals(flowInstance.getProfileID())) {
+
 				SiteProfile targetProfile = this.profileHandler.getProfile(flowInstance.getProfileID());
-				
-				if(targetProfile != null && targetProfile.getDomains() != null) {
-					
+
+				if (targetProfile != null && targetProfile.getDomains() != null) {
+
 					res.sendRedirect(req.getScheme() + "://" + targetProfile.getDomains().get(0) + req.getContextPath() + uriParser.getFormattedURI());
-					
+
 					return true;
 				}
 			}
@@ -597,7 +617,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if (tabExtensionProviders.isEmpty()) {
 			return null;
 		}
-		
+
 		Element tabHeadersElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "TabHeaders");
 		Element tabContentsElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "TabContents");
 
@@ -635,96 +655,96 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		Integer flowID = null;
 		Integer flowInstanceID = null;
 		MutableFlowInstanceManager instanceManager;
-		
+
 		try {
 			if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
-				
+
 				if (enableSiteProfileRedirectSupport) {
-					
+
 					if (flowInstanceID != null) {
-						
+
 						FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field) null);
-						
+
 						if (flowInstance != null && profileHandler != null) {
-							
+
 							SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
-							
+
 							if (profileRedirect(profile, flowInstance, req, res, uriParser)) {
-								
+
 								return null;
 							}
 						}
 					}
 				}
-				
+
 				//Get saved instance from DB or session
 				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, DEFAULT_REQUEST_METADATA);
-				
+
 				if (instanceManager == null) {
-					
+
 					log.info("User " + user + " requested non-existing flow instance with ID " + flowInstanceID + " and flow ID " + flowID + ", listing flows");
 					return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 				}
-				
+
 			} else {
-				
+
 				log.info("User " + user + " requested invalid URL, listing flows");
 				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
 			}
-			
+
 		} catch (FlowNoLongerAvailableException e) {
-			
+
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer available.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
-			
+
 		} catch (FlowNotPublishedException e) {
-			
+
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer published.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_PUBLISHED_VALIDATION_ERROR);
-			
+
 		} catch (FlowDisabledException e) {
-			
+
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is not enabled.");
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
-			
+
 		} catch (FlowInstanceNoLongerAvailableException e) {
-			
+
 			log.info("User " + user + " requested flow instance " + e.getFlowInstance() + " which is no longer available.");
 			return list(req, res, user, uriParser, FLOW_INSTANCE_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
-			
+
 		} catch (FlowEngineException e) {
-			
+
 			log.error("Unable to get flow instance manager for flowID " + flowID + " and flowInstanceID " + flowInstanceID + " requested by user " + user, e);
 			return list(req, res, user, uriParser, ERROR_GETTING_FLOW_INSTANCE_MANAGER_VALIDATION_ERROR);
 		}
-		
+
 		try {
-			
+
 			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
-			
+
 			if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
-				
+
 				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
 			}
-			
+
 			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
-			
+
 		} catch (FlowInstanceManagerClosedException e) {
-			
+
 			log.info("User " + user + " requested flow instance manager for flow instance " + e.getFlowInstance() + " which has already been closed. Removing flow instance manager from session.");
-			
+
 			removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
-			
+
 			redirectToMethod(req, res, "/flowinstance/" + flowID + "/" + flowInstanceID);
-			
+
 			return null;
-			
+
 		} catch (QueryInstanceHTMLException e) {
-			
+
 			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
-			
+
 		} catch (RuntimeException e) {
-			
+
 			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
 		}
 	}
@@ -734,7 +754,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		Integer flowInstanceID = null;
 
-		if(uriParser.size() == 3 && (flowInstanceID = NumberUtils.toInt(uriParser.get(2))) != null &&  deleteFlowInstance(flowInstanceID, DELETE_ACCESS_CONTROLLER, user) != null) {
+		if (uriParser.size() == 3 && (flowInstanceID = NumberUtils.toInt(uriParser.get(2))) != null && deleteFlowInstance(flowInstanceID, DELETE_ACCESS_CONTROLLER, user) != null) {
 
 			this.redirectToDefaultMethod(req, res);
 
@@ -769,60 +789,68 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	public List<FlowInstance> getFlowInstances(User user, boolean getEvents, boolean getFlowTypes) throws SQLException {
-		
+
 		ArrayListQuery<Integer> flowInstanceIDQuery = new ArrayListQuery<Integer>(daoFactory.getFlowInstanceDAO().getDataSource(), "SELECT flowInstanceID FROM flowengine_flow_instance_owners WHERE userID = ?", IntegerPopulator.getPopulator());
 		flowInstanceIDQuery.setInt(1, user.getUserID());
-		
+
 		List<Integer> flowInstanceIDs = flowInstanceIDQuery.executeQuery();
-		
+
 		if (flowInstanceIDs == null) {
-			
+
 			return null;
 		}
-		
+
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
-		
+
 		addOverviewRelations(query);
-		
+
 		query.addExcludedFields(LIST_EXCLUDED_FIELDS);
-		
+
 		if (getEvents) {
-			
+
 			query.addRelation(FlowInstance.EVENTS_RELATION);
 		}
-		
+
 		if (getFlowTypes) {
-			
+
 			query.addRelation(Flow.FLOW_TYPE_RELATION);
 		}
-		
+
 		query.addParameter(flowInstanceIDParamFactory.getWhereInParameter(flowInstanceIDs));
-		
+
 		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
-	
+
 	protected void addOverviewRelations(HighLevelQuery<FlowInstance> query) {
 
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION);
-		
+		if (enableDescriptionColumn) {
+
+			query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
+
+			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(DESCRIPTION_COLUMN_ATTRIBUTES));
+
+		} else {
+
+			query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION);
+		}
 	}
 
 	public List<FlowInstanceEvent> getNewFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
-		
+
 		HighLevelQuery<FlowInstanceEvent> query = new HighLevelQuery<FlowInstanceEvent>();
-		
+
 		query.addParameter(flowInstanceEventFlowInstanceParamFactory.getParameter(flowInstance));
 		query.addParameter(flowInstanceEventPosterParamFactory.getParameter(user, QueryOperators.NOT_EQUALS));
-		
+
 		if (user.getLastLogin() != null) {
 			query.addParameter(flowInstanceEventAddedParamFactory.getParameter(user.getLastLogin(), QueryOperators.BIGGER_THAN));
 		}
-		
+
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
 	}
 
 	@WebPublic(alias = "submitted")
-	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException{
+	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
 		try {
 			return super.showImmutableFlowInstance(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this.defaultFlowProcessCallback, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
@@ -850,7 +878,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		HttpSession session = req.getSession();
 
-		if(session != null){
+		if (session != null) {
 
 			try {
 				SessionAccessController.setSessionAttribute(flowInstanceManager.getFlowInstanceID(), session, SESSION_ACCESS_CONTROLLER_TAG);
@@ -868,30 +896,30 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@WebPublic(alias = "preview")
-	public ForegroundModuleResponse showPreview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException{
+	public ForegroundModuleResponse showPreview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException {
 
 		if (enableSiteProfileRedirectSupport) {
-			
+
 			Integer flowInstanceID = NumberUtils.toInt(uriParser.get(2));
-			
+
 			if (flowInstanceID != null) {
-				
+
 				FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field) null);
-				
+
 				if (flowInstance != null && profileHandler != null) {
-					
+
 					SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
-					
+
 					if (profileRedirect(profile, flowInstance, req, res, uriParser)) {
-						
+
 						return null;
 					}
 				}
 			}
 		}
-		
+
 		req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
-		
+
 		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, DEFAULT_REQUEST_METADATA);
 	}
 
@@ -911,10 +939,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@WebPublic(alias = "pdf")
 	public ForegroundModuleResponse getEventPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
-		
+
 		try {
 			sendEventPDF(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, pdfProvider, false);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
@@ -928,7 +956,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		try {
 			sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
@@ -942,15 +970,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		try {
 			sendEventSignature(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, false);
-			
+
 		} catch (FlowDisabledException e) {
 
 			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	protected String getBaseUpdateURL(HttpServletRequest req, URIParser uriParser, User user, ImmutableFlowInstance flowInstance, FlowInstanceAccessController accessController) {
 
@@ -984,7 +1012,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
-		
+
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
 	}
 
@@ -992,10 +1020,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
-			
+
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
 	}
-	
+
 	@Override
 	public String getSaveAndSubmitURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
@@ -1021,25 +1049,25 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@Override
 	protected String getEventPDFLink(FlowInstanceManager instanceManager, ImmutableFlowInstanceEvent event, HttpServletRequest req, User user) {
 
-		if(event.getAttributeHandler().getPrimitiveBoolean("pdf")){
+		if (event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
 
 			return this.getModuleURI(req) + "/pdf/" + instanceManager.getFlowInstanceID() + "/" + event.getEventID();
 		}
 
 		return null;
 	}
-	
+
 	@Override
 	public String getAbsoluteFileURL(URIParser uriParser, Object bean) {
 
-		if(ckConnectorModuleAlias != null){
-			
+		if (ckConnectorModuleAlias != null) {
+
 			return uriParser.getContextPath() + ckConnectorModuleAlias;
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean addFlowInstanceOverviewExtensionProvider(FlowInstanceOverviewExtensionProvider provider) {
 
 		return tabExtensionProviders.add(provider);
@@ -1049,7 +1077,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return tabExtensionProviders.remove(provider);
 	}
-	
+
 	public boolean addListFlowInstancesExtensionProvider(ListFlowInstancesExtensionProvider provider) {
 
 		return listExtensionProviders.add(provider);
@@ -1059,7 +1087,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return listExtensionProviders.remove(provider);
 	}
-	
+
 	/**
 	 * @param flowInstanceID
 	 * @param accessController
@@ -1150,18 +1178,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	private FlowInstanceOverviewExtensionProvider getOverviewExtensionProvider(String providerID) {
-		
+
 		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : tabExtensionProviders) {
-			
-			if(providerID.equals(tabExtensionProvider.getOverviewExtensionProviderID())){
-				
+
+			if (providerID.equals(tabExtensionProvider.getOverviewExtensionProviderID())) {
+
 				return tabExtensionProvider;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@WebPublic(alias = "overviewextensionrequest")
 	public ForegroundModuleResponse processOverviewExtensionRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
@@ -1177,20 +1205,21 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			}
 
 			FlowInstanceOverviewExtensionProvider extensionProvider = getOverviewExtensionProvider(uriParser.get(4));
-			
-			if(extensionProvider != null){
-				
+
+			if (extensionProvider != null) {
+
 				return extensionProvider.processOverviewExtensionRequest(flowInstance, req, res, uriParser, user);
 			}
 		}
 
 		throw new URINotFoundException(uriParser);
 	}
-	
-	public String getOverviewExtensionRequestMethodAlias(FlowInstance flowInstance, String providerID){
+
+	public String getOverviewExtensionRequestMethodAlias(FlowInstance flowInstance, String providerID) {
+
 		return getFullAlias() + "/" + "overviewextensionrequest" + "/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID() + "/" + providerID;
 	}
-	
+
 	public boolean addFlowInstanceProvider(UserFlowInstanceProvider flowInstanceProvider) {
 
 		return userFlowInstanceProviders.add(flowInstanceProvider);
@@ -1200,51 +1229,51 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return userFlowInstanceProviders.remove(flowInstanceProvider);
 	}
-	
+
 	@InstanceManagerDependency
 	public void setNotificationHandlerModule(NotificationHandler notificationHandler) {
-		
+
 		if (notificationHandler != null) {
-			
+
 			notificationHandler.addNotificationSource(this);
-			
+
 		} else {
-			
+
 			this.notificationHandler.removeNotificationSource(this);
 		}
-		
+
 		this.notificationHandler = notificationHandler;
 	}
-	
+
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
 	public void processEvent(ExternalMessageAddedEvent event, EventSource source) {
-		
+
 		log.debug("Received external message event regarding " + event.getFlowInstance());
-		
+
 		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.MANAGER) && notificationHandler != null) {
-			
+
 			try {
 				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), notificationExternalMessage, event.getEvent().getPoster(), "message", null);
-				
+
 			} catch (SQLException e) {
-				
+
 				log.error("Error sending notifications for " + event.getExternalMessage() + " to owners of " + event.getFlowInstance(), e);
 			}
 		}
 	}
-	
+
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
 	public void processEvent(StatusChangedByManagerEvent event, EventSource source) {
-		
+
 		log.debug("Received status changed by manager event regarding " + event.getFlowInstance());
-		
+
 		if (source == EventSource.LOCAL && notificationHandler != null) {
-			
+
 			try {
 				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), eventStatusUpdated + ": " + event.getFlowInstance().getStatus().getName(), event.getUser(), "changedStatus", null);
-				
+
 			} catch (SQLException e) {
-				
+
 				log.error("Error sending notifications for " + event.getEvent() + " to owners of " + event.getFlowInstance(), e);
 			}
 		}
@@ -1252,21 +1281,21 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
 	public void processEvent(OwnersChangedEvent event, EventSource source) {
-		
+
 		log.debug("Received owners changed event regarding " + event.getFlowInstance());
-		
+
 		if (source == EventSource.LOCAL && notificationHandler != null) {
-			
+
 			if (!CollectionUtils.isEmpty(event.getPreviousOwners())) {
 				for (User owner : event.getPreviousOwners()) {
-					
+
 					if (event.getFlowInstance().getOwners() == null || !event.getFlowInstance().getOwners().contains(owner)) {
-						
+
 						try {
 							notificationHandler.deleteNotifications(moduleDescriptor.getModuleID(), event.getFlowInstance().getFlowInstanceID(), owner, null);
-							
+
 						} catch (SQLException e) {
-							
+
 							log.error("Error deleting notificatios for old owner " + owner + " of " + event.getFlowInstance(), e);
 						}
 					}
@@ -1274,41 +1303,42 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			}
 		}
 	}
-	
+
 	@Override
 	public NotificationMetadata getNotificationMetadata(Notification notification, FlowInstance flowInstance, String fullContextPath) throws Exception {
-	
+
 		NotificationMetadata metadata = new NotificationMetadata();
 		metadata.setShowURL(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
-		
+
 		String type = notification.getNotificationType();
-		
+
 		if ("message".equals(type)) {
-			
+
 			metadata.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID() + "#messages");
-			
+
 		} else {
-			
+
 			metadata.setUrl(fullContextPath + getFullAlias() + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + notification.getFlowInstanceID());
 		}
-		
+
 		if (!flowInstance.getFlow().hidesManagerDetails()) {
-			
+
 			metadata.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
-			
+
 		} else {
-			
+
 			SimpleUser hiddenManager = new SimpleUser();
 			hiddenManager.setFirstname(notificationPostedByManager);
-			
+
 			metadata.setPoster(hiddenManager);
 		}
-		
+
 		return metadata;
 	}
-	
+
 	@Override
 	public ModuleDescriptor getModuleDescriptor() {
+
 		return moduleDescriptor;
 	}
 
@@ -1323,19 +1353,22 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return getBareFlow(flowID);
 	}
-	
+
 	@Override
 	public AccessInterface getAccessInterface() {
+
 		return moduleDescriptor;
 	}
-	
+
 	@Override
 	public String getUserMenuAlias() {
+
 		return getFullAlias();
 	}
 
 	@Override
 	public ExtensionLink getUserMenuExtensionLink() {
+
 		return userMenuLink;
 	}
 }

@@ -57,8 +57,6 @@
 	
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	
-	
-	
 	<xsl:variable name="i18n.MyMessages">Mina meddelanden</xsl:variable>
 	<xsl:variable name="i18n.ToFlowInstance">Till ärende</xsl:variable>
 	
@@ -110,4 +108,5 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.Owners">Sökande</xsl:variable>
 	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>
 	<xsl:variable name="i18n.CurrentStatus">Aktuell status</xsl:variable>
+	
 </xsl:stylesheet>
