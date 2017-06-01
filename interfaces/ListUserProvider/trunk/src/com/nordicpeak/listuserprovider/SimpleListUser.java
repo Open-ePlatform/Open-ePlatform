@@ -41,6 +41,7 @@ public class SimpleListUser implements ListUser {
 		}
 	}
 
+	@Override
 	public String getProviderUserID() {
 
 		return providerUserID;
@@ -51,6 +52,7 @@ public class SimpleListUser implements ListUser {
 		this.providerUserID = providerUserID;
 	}
 
+	@Override
 	public String getFirstname() {
 
 		return firstname;
@@ -61,6 +63,7 @@ public class SimpleListUser implements ListUser {
 		this.firstname = firstname;
 	}
 
+	@Override
 	public String getLastname() {
 
 		return lastname;
@@ -71,6 +74,7 @@ public class SimpleListUser implements ListUser {
 		this.lastname = lastname;
 	}
 
+	@Override
 	public String getUsername() {
 
 		return username;
@@ -81,6 +85,7 @@ public class SimpleListUser implements ListUser {
 		this.username = username;
 	}
 
+	@Override
 	public String getCitizenIdentifier() {
 
 		return citizenIdentifier;
@@ -91,6 +96,7 @@ public class SimpleListUser implements ListUser {
 		this.citizenIdentifier = citizenIdentifier;
 	}
 
+	@Override
 	public String getEmail() {
 
 		return email;
@@ -101,6 +107,7 @@ public class SimpleListUser implements ListUser {
 		this.email = email;
 	}
 
+	@Override
 	public String getPhone() {
 
 		return phone;
