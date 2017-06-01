@@ -75,6 +75,7 @@ public class GeneralMapQueryInstance extends BaseQueryInstance {
 		this.queryInstanceID = queryInstanceID;
 	}
 
+	@Override
 	public GeneralMapQuery getQuery() {
 
 		return query;
