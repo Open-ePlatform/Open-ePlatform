@@ -70,6 +70,7 @@ public class FileInfoQueryInstance extends BaseQueryInstance implements NonColum
 	}
 
 	
+	@Override
 	public FileInfoQuery getQuery() {
 	
 		return query;
