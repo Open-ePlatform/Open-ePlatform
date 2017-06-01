@@ -49,7 +49,6 @@ public class ChildAlternative extends GeneratedElementable implements ImmutableA
 		return name;
 	}
 
-	@Override
 	public Integer getSortIndex() {
 
 		return sortIndex;

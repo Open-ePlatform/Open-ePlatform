@@ -103,6 +103,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		this.query = query;
 	}
 	
+	@Override
 	public String getCitizenIdentifier() {
 		
 		return citizenIdentifier;
