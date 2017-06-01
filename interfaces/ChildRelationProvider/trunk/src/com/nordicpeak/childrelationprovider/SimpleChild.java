@@ -19,6 +19,7 @@ public class SimpleChild extends BasePerson implements Child {
 		this.citizenIdentifier = citizenIdentifier;
 	}
 	
+	@Override
 	public List<Guardian> getGuardians() {
 
 		return guardians;
