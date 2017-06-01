@@ -58,6 +58,7 @@ public class StopQueryInstance extends BaseQueryInstance {
 	}
 
 	
+	@Override
 	public StopQuery getQuery() {
 	
 		return query;
