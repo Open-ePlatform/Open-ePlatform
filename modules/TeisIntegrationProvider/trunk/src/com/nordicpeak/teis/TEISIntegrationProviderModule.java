@@ -120,7 +120,7 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 
 		this.configured = ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.WARN);
 		
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
 
 		this.viewFragmentTransformer.setDebugXML(debugFragmententXML);		
 	}
@@ -224,7 +224,7 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 
 	private IntegrationConfiguration getConfiguration(ImmutableFlow flow) throws SQLException {
 
-		HighLevelQuery<IntegrationConfiguration> query = new HighLevelQuery<IntegrationConfiguration>();
+		HighLevelQuery<IntegrationConfiguration> query = new HighLevelQuery<>();
 		
 		query.addParameter(flowIDParamFactory.getParameter(flow.getFlowID()));
 		

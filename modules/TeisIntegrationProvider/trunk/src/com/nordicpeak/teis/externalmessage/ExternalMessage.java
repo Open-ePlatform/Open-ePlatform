@@ -171,7 +171,7 @@ public class ExternalMessage {
      */
     public List<Attachment> getAttachments() {
         if (attachments == null) {
-            attachments = new ArrayList<Attachment>();
+            attachments = new ArrayList<>();
         }
         return this.attachments;
     }

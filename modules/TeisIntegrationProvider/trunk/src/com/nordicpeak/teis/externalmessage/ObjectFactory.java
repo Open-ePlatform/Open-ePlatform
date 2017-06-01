@@ -78,7 +78,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.oeplatform.org/version/1.0/schemas/integration/externalmessage", name = "Message")
     public JAXBElement<ExternalMessage> createMessage(ExternalMessage value) {
-        return new JAXBElement<ExternalMessage>(_Message_QNAME, ExternalMessage.class, null, value);
+        return new JAXBElement<>(_Message_QNAME, ExternalMessage.class, null, value);
     }
 
 }
