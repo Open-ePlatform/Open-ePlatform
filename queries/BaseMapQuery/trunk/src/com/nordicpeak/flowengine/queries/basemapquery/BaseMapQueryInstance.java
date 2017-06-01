@@ -195,6 +195,7 @@ public abstract class BaseMapQueryInstance<MapQueryType extends BaseMapQuery> ex
 
 	public abstract void setQuery(MapQueryType query);
 
+	@Override
 	public abstract MapQueryType getQuery();
 
 	public abstract List<Geometry> getPrintableGeometries();

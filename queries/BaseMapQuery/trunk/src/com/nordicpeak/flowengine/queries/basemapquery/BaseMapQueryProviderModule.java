@@ -1384,6 +1384,7 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 
 	}
 
+	@Override
 	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler){};
 	
 	@Override
