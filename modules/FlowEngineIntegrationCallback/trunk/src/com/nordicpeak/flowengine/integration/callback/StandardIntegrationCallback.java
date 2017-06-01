@@ -131,7 +131,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 			FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, principalUser, null);
 
-			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
 			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousStatus, principalUser), EventTarget.ALL);
 			
@@ -218,7 +218,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		
 		if(!CollectionUtils.isEmpty(message.getAttachments())){
 			
-			ArrayList<ExternalMessageAttachment> externalMessageAttachments = new ArrayList<ExternalMessageAttachment>(message.getAttachments().size());
+			ArrayList<ExternalMessageAttachment> externalMessageAttachments = new ArrayList<>(message.getAttachments().size());
 			
 			for(Attachment attachment : message.getAttachments()){
 				
@@ -340,7 +340,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		
 		if(!CollectionUtils.isEmpty(managers)){
 			
-			ArrayList<User> managerUsers = new ArrayList<User>(managers.size());
+			ArrayList<User> managerUsers = new ArrayList<>(managers.size());
 			
 			StringBuilder stringBuilder = new StringBuilder();
 			
@@ -390,7 +390,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null, null);
 			
-			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 			
 			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, null), EventTarget.ALL);			
 			
@@ -450,7 +450,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	
 	private Status getStatus(Flow flow, Integer statusID) {
 
-		HighLevelQuery<Status> query = new HighLevelQuery<Status>();
+		HighLevelQuery<Status> query = new HighLevelQuery<>();
 
 		query.addParameter(statusIDParamFactory.getParameter(statusID));
 		query.addParameter(statusFlowParamFactory.getParameter(flow));
@@ -466,7 +466,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	
 	public FlowInstance getFlowInstance(int flowInstanceID, List<Field> excludedFields, Field... relations) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(relations);
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(relations);
 
 		if (excludedFields != null) {
 			query.addExcludedFields(excludedFields);

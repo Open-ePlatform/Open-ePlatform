@@ -193,7 +193,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", name = "FlowInstanceNotFoundFault")
     public JAXBElement<FlowInstanceNotFound> createFlowInstanceNotFoundFault(FlowInstanceNotFound value) {
-        return new JAXBElement<FlowInstanceNotFound>(_FlowInstanceNotFoundFault_QNAME, FlowInstanceNotFound.class, null, value);
+        return new JAXBElement<>(_FlowInstanceNotFoundFault_QNAME, FlowInstanceNotFound.class, null, value);
     }
 
     /**
@@ -202,7 +202,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", name = "StatusNotFoundFault")
     public JAXBElement<StatusNotFound> createStatusNotFoundFault(StatusNotFound value) {
-        return new JAXBElement<StatusNotFound>(_StatusNotFoundFault_QNAME, StatusNotFound.class, null, value);
+        return new JAXBElement<>(_StatusNotFoundFault_QNAME, StatusNotFound.class, null, value);
     }
 
     /**
@@ -211,7 +211,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", name = "AccessDeniedFault")
     public JAXBElement<AccessDenied> createAccessDeniedFault(AccessDenied value) {
-        return new JAXBElement<AccessDenied>(_AccessDeniedFault_QNAME, AccessDenied.class, null, value);
+        return new JAXBElement<>(_AccessDeniedFault_QNAME, AccessDenied.class, null, value);
     }
 
 }

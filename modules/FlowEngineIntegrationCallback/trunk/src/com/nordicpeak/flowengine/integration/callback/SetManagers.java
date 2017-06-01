@@ -117,7 +117,7 @@ public class SetManagers {
      */
     public List<Principal> getManagers() {
         if (managers == null) {
-            managers = new ArrayList<Principal>();
+            managers = new ArrayList<>();
         }
         return this.managers;
     }
