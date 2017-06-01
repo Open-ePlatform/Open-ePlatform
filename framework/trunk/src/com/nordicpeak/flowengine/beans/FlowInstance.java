@@ -307,6 +307,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		return "FlowInstance (ID:" + flowInstanceID + ")";
 	}
 
+	@Override
 	public Timestamp getLastStatusChange() {
 
 		return lastStatusChange;
