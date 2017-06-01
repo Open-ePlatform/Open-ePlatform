@@ -49,7 +49,6 @@ public class PersonDataInformerQueryAlternative extends GeneratedElementable imp
 		return name;
 	}
 
-	@Override
 	public Integer getSortIndex() {
 
 		return sortIndex;
