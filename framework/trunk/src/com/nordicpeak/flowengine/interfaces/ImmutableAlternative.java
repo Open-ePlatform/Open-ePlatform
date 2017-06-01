@@ -8,9 +8,8 @@ public interface ImmutableAlternative extends Elementable, Named{
 
 	public Integer getAlternativeID();
 
+	@Override
 	public String getName();
 
-	public Integer getSortIndex();
-	
 	public String getValue();
 }

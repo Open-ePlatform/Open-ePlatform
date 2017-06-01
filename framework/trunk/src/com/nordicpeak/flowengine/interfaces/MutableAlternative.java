@@ -10,5 +10,7 @@ public interface MutableAlternative extends ImmutableAlternative, XMLParserPopul
 
 	public void setSortIndex(Integer sortIndex);
 	
+	public Integer getSortIndex();
+	
 	public void setValue(String value);
 }
