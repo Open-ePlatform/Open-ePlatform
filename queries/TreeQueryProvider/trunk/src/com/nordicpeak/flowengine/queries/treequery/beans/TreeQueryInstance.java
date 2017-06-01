@@ -61,6 +61,7 @@ public class TreeQueryInstance extends BaseQueryInstance implements StringValueQ
 		this.queryInstanceID = queryInstanceID;
 	}
 
+	@Override
 	public TreeQuery getQuery() {
 
 		return query;
