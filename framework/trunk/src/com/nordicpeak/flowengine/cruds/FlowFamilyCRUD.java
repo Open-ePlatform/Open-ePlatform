@@ -222,7 +222,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 	private void checkAccess(User user, Flow bean) throws AccessDeniedException {
 
-		if (!AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface())) {
+		if (!AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + bean.getFlowType());
 		}
