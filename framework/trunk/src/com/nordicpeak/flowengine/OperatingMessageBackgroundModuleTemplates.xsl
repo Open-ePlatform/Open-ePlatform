@@ -13,7 +13,6 @@
 		<xsl:choose>
 			<xsl:when test="messageType = 'INFO'">
 				<section id="OperatingMessageBackgroundModule" class="modal info">
-					<i style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);"></i>
 					<xsl:value-of select="message" />
 				</section>
 			</xsl:when>
