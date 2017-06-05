@@ -90,31 +90,34 @@
 	<xsl:template match="OperatingMessage" mode="list">
 		
 		<tr>
-			<td class="icon" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+			<td class="icon">
 				<i data-icon-after="!"></i>
 			</td>
-			<td data-title="{$i18n.Message}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
-				<xsl:value-of select="message" />
+			<td data-title="{$i18n.Message}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="message" /></a>
 			</td>
-			<td data-title="{$i18n.Publish}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
-				<xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" />
+			<td data-title="{$i18n.Publish}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" /></a>
 			</td>
-			<td data-title="{$i18n.UnPublish}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
-				<xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" />
+			<td data-title="{$i18n.UnPublish}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
 			</td>
-			<td data-title="{$i18n.MessageType}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
-				<xsl:choose>
-					<xsl:when test="messageType = 'WARNING'">
-						<xsl:value-of select="$i18n.MessageTypeWarning" />
-					</xsl:when>
-					<xsl:when test="messageType = 'INFO'">
-						<xsl:value-of select="$i18n.MessageTypeInfo" />
-					</xsl:when>
-				</xsl:choose>
+			<td data-title="{$i18n.MessageType}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+					<xsl:choose>
+						<xsl:when test="messageType = 'WARNING'">
+							<xsl:value-of select="$i18n.MessageTypeWarning" />
+						</xsl:when>
+						<xsl:when test="messageType = 'INFO'">
+							<xsl:value-of select="$i18n.MessageTypeInfo" />
+						</xsl:when>
+					</xsl:choose>
+				</a>
 			</td>
 			<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
 			
-				<td data-title="{$i18n.Profiles}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+				<td data-title="{$i18n.Profiles}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
 						<xsl:choose>
 							<xsl:when test="profileIDs/profileID">
 								<xsl:value-of select="count(profileIDs/profileID)" />
@@ -123,6 +126,7 @@
 								<xsl:value-of select="$i18n.All" />
 							</xsl:otherwise>
 						</xsl:choose>
+					</a>
 					<xsl:if test="profileIDs/profileID">
 						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/info.png" class="marginleft vertical-align-middle pointer">
 							<xsl:attribute name="title">
@@ -137,7 +141,8 @@
 				</td>			
 			
 			</xsl:if>
-			<td data-title="{$i18n.FlowFamilies}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+			<td data-title="{$i18n.FlowFamilies}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
 					<xsl:choose>
 						<xsl:when test="flowFamilyIDs/flowFamilyID">
 							<xsl:value-of select="count(flowFamilyIDs/flowFamilyID)" />
@@ -146,6 +151,7 @@
 							<xsl:value-of select="$i18n.All" />
 						</xsl:otherwise>
 					</xsl:choose>
+				</a>
 				<xsl:if test="flowFamilyIDs/flowFamilyID">
 					<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/info.png" class="marginleft vertical-align-middle pointer">
 						<xsl:attribute name="title">
@@ -159,11 +165,13 @@
 				</xsl:if>
 			</td>			
 			
-			<td data-title="{$i18n.DisableFlows}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+			<td data-title="{$i18n.DisableFlows}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
 					<xsl:choose>
 						<xsl:when test="disableFlows = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
 					</xsl:choose>
+				</a>
 			</td>										
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
