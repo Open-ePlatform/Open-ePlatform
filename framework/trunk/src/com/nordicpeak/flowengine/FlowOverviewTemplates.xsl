@@ -48,7 +48,15 @@
 						</div>
 						
 						<xsl:if test="$operatingMessage/global = 'false'">
-							<section class="modal warning floatleft clearboth border-box full" style=""><i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);">!</i><xsl:value-of select="$operatingMessage/message" /></section>
+						
+							<xsl:choose>
+								<xsl:when test="$operatingMessage/messageType = 'INFO'">
+									<section class="modal info floatleft clearboth border-box full" style=""><xsl:value-of select="$operatingMessage/message" /></section>
+								</xsl:when>
+								<xsl:otherwise>
+									<section class="modal warning floatleft clearboth border-box full" style=""><i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);">!</i><xsl:value-of select="$operatingMessage/message" /></section>
+								</xsl:otherwise>
+							</xsl:choose>
 						</xsl:if>
 						
 	  				</div>
