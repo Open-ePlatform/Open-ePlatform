@@ -50,6 +50,7 @@
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
 					<th width="120" class="default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Publish" /></span></th>
 					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.UnPublish" /></span></th>
+					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.MessageType" /></span></th>
 					<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
 						<th width="110"><span data-icon-after="_"><xsl:value-of select="$i18n.Profiles" /></span></th>
 					</xsl:if>
@@ -89,23 +90,31 @@
 	<xsl:template match="OperatingMessage" mode="list">
 		
 		<tr>
-			
-			<td class="icon">
+			<td class="icon" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
 				<i data-icon-after="!"></i>
 			</td>
-			<td data-title="{$i18n.Message}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="message" /></a>
+			<td data-title="{$i18n.Message}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+				<xsl:value-of select="message" />
 			</td>
-			<td data-title="{$i18n.Publish}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" /></a>
+			<td data-title="{$i18n.Publish}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+				<xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" />
 			</td>
-			<td data-title="{$i18n.UnPublish}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
+			<td data-title="{$i18n.UnPublish}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+				<xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" />
+			</td>
+			<td data-title="{$i18n.MessageType}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
+				<xsl:choose>
+					<xsl:when test="messageType = 'WARNING'">
+						<xsl:value-of select="$i18n.MessageTypeWarning" />
+					</xsl:when>
+					<xsl:when test="messageType = 'INFO'">
+						<xsl:value-of select="$i18n.MessageTypeInfo" />
+					</xsl:when>
+				</xsl:choose>
 			</td>
 			<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
 			
-				<td data-title="{$i18n.Profiles}">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+				<td data-title="{$i18n.Profiles}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
 						<xsl:choose>
 							<xsl:when test="profileIDs/profileID">
 								<xsl:value-of select="count(profileIDs/profileID)" />
@@ -114,7 +123,6 @@
 								<xsl:value-of select="$i18n.All" />
 							</xsl:otherwise>
 						</xsl:choose>
-					</a>
 					<xsl:if test="profileIDs/profileID">
 						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/info.png" class="marginleft vertical-align-middle pointer">
 							<xsl:attribute name="title">
@@ -129,8 +137,7 @@
 				</td>			
 			
 			</xsl:if>
-			<td data-title="{$i18n.FlowFamilies}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+			<td data-title="{$i18n.FlowFamilies}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
 					<xsl:choose>
 						<xsl:when test="flowFamilyIDs/flowFamilyID">
 							<xsl:value-of select="count(flowFamilyIDs/flowFamilyID)" />
@@ -139,7 +146,6 @@
 							<xsl:value-of select="$i18n.All" />
 						</xsl:otherwise>
 					</xsl:choose>
-				</a>
 				<xsl:if test="flowFamilyIDs/flowFamilyID">
 					<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/info.png" class="marginleft vertical-align-middle pointer">
 						<xsl:attribute name="title">
@@ -153,13 +159,11 @@
 				</xsl:if>
 			</td>			
 			
-			<td data-title="{$i18n.DisableFlows}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+			<td data-title="{$i18n.DisableFlows}" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}'">
 					<xsl:choose>
 						<xsl:when test="disableFlows = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
 					</xsl:choose>
-				</a>
 			</td>										
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
@@ -328,6 +332,43 @@
 										
 			</div>
 			
+		</div>
+
+		<div>
+			<div class="floatleft full">
+					
+				<div class="floatleft">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'messageTypeWarning'" />
+						<xsl:with-param name="name" select="'messageType'" />
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="value" select="'WARNING'" />
+					</xsl:call-template>
+					
+					<label for="messageTypeWarning">
+						<xsl:value-of select="$i18n.MessageTypeWarningText" />
+					</label>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<div class="floatleft full bigmarginbottom">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'messageTypeInfo'" />
+						<xsl:with-param name="name" select="'messageType'" />
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="value" select="'INFO'" />
+					</xsl:call-template>
+					
+					<label for="messageTypeInfo">
+						<xsl:value-of select="$i18n.MessageTypeInfoText" />
+					</label>
+				</div>
+				
+			</div>
+
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
@@ -571,8 +612,11 @@
 					<xsl:when test="messageKey='DaysBetweenToSmall'">
 						<xsl:value-of select="$i18n.Validation.DaysBetweenToSmall"/>
 					</xsl:when>
-					<xsl:when test="messageKey='NoFlowFamilyChoosen'">
-						<xsl:value-of select="$i18n.Validation.NoFlowFamilyChoosen"/>
+					<xsl:when test="messageKey='NoFlowFamilyChosen'">
+						<xsl:value-of select="$i18n.Validation.NoFlowFamilyChosen"/>
+					</xsl:when>
+					<xsl:when test="messageKey='NoMessageTypeChosen'">
+						<xsl:value-of select="$i18n.Validation.NoMessageTypeChosen"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.UnknownFault"/>

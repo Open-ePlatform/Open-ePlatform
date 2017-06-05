@@ -13,10 +13,16 @@
 	<xsl:variable name="i18n.EndDate">Datum till</xsl:variable>
 	<xsl:variable name="i18n.StartTime">Tid från</xsl:variable>
 	<xsl:variable name="i18n.EndTime">Tid till</xsl:variable>
+	<xsl:variable name="i18n.MessageType">Meddelandetyp</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilies">Antal e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.Profiles">Antal profiler</xsl:variable>
 	<xsl:variable name="i18n.DisableFlows">Inaktivera e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.NoOperatingMessagesFound">Inga driftmeddelanden hittades</xsl:variable>
+	<xsl:variable name="i18n.SelectMessageType">Välj meddelandetyp</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeWarning">Varning</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeInfo">Info</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeWarningText">Varningsmeddelande (framträdande varningsruta)</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeInfoText">Informationsmeddelande (mindre framträdande informationsruta)</xsl:variable>
 	<xsl:variable name="i18n.All">Alla</xsl:variable>
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	<xsl:variable name="i18n.No">Nej</xsl:variable>
@@ -45,7 +51,8 @@
 	<xsl:variable name="i18n.disabledFlows">inaktivera e-tjänsterna</xsl:variable>
 	<xsl:variable name="i18n.Validation.EndTimeBeforeStartTime">Slutdatum kan inte ligga före startdatum</xsl:variable>
 	<xsl:variable name="i18n.Validation.DaysBetweenToSmall">Sluttid kan inte ligga före starttid</xsl:variable>
-	<xsl:variable name="i18n.Validation.NoFlowFamilyChoosen">Du har inte valt några e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.Validation.NoFlowFamilyChosen">Du har inte valt några e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.Validation.NoMessageTypeChosen">Du har inte valt meddelandetyp</xsl:variable>
 	
 	<xsl:variable name="i18n.Validation.TooLong.Part1">Innehållet i fältet </xsl:variable>
 	<xsl:variable name="i18n.Validation.TooLong.Part2"> är </xsl:variable>

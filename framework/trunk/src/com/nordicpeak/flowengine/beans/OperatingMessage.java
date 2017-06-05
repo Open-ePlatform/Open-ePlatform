@@ -20,6 +20,7 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.enums.OperatingMessageType;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 
 @Table(name = "flowengine_operating_messages")
@@ -42,6 +43,11 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@DAOManaged
 	private Timestamp endTime;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private OperatingMessageType messageType;
+	
 	@DAOManaged
 	@WebPopulate(paramName = "flowFamilyID")
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -131,6 +137,16 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	public void setEndTime(Timestamp endTime) {
 
 		this.endTime = endTime;
+	}
+
+	public OperatingMessageType getMessageType() {
+		
+		return messageType;
+	}
+
+	public void setMessageType(OperatingMessageType messageType) {
+	
+		this.messageType = messageType;
 	}
 
 	public List<Integer> getFlowFamilyIDs() {

@@ -1678,4 +1678,12 @@
 	    </Query>	    
 	</Script>	
 	
+	<Script version="85">
+	    <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_operating_messages` ADD COLUMN `messageType` VARCHAR(45) NOT NULL AFTER `endTime`;	
+	        ]]>
+	    </Query>	    
+	</Script>	
+	
 </DBScripts>

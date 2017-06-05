@@ -103,7 +103,12 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		
 		if(!bean.isGlobal() && bean.getFlowFamilyIDs() == null) {
 			
-			errors.add(new ValidationError("NoFlowFamilyChoosen"));
+			errors.add(new ValidationError("NoFlowFamilyChosen"));
+		}
+		
+		if(bean.getMessageType() == null) {
+			
+			errors.add(new ValidationError("NoMessageTypeChosen"));
 		}
 
 		if (!errors.isEmpty()) {
