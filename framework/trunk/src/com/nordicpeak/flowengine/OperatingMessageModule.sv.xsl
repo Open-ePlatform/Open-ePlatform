@@ -21,8 +21,8 @@
 	<xsl:variable name="i18n.SelectMessageType">Välj meddelandetyp</xsl:variable>
 	<xsl:variable name="i18n.MessageTypeWarning">Varning</xsl:variable>
 	<xsl:variable name="i18n.MessageTypeInfo">Info</xsl:variable>
-	<xsl:variable name="i18n.MessageTypeWarningText">Varningsmeddelande (framträdande varningsruta)</xsl:variable>
-	<xsl:variable name="i18n.MessageTypeInfoText">Informationsmeddelande (mindre framträdande informationsruta)</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeWarningText">Varningsmeddelande</xsl:variable>
+	<xsl:variable name="i18n.MessageTypeInfoText">Informationsmeddelande</xsl:variable>
 	<xsl:variable name="i18n.All">Alla</xsl:variable>
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	<xsl:variable name="i18n.No">Nej</xsl:variable>
