@@ -419,7 +419,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					if (events != null) {
 
 						for (FlowInstanceEvent event : events) {
-							event.setShortDate(DateUtils.dateAndShortMonthToString(event.getAdded(), systemLocale));
+							event.setShortDate(DateUtils.getDateWithMonthString(event.getAdded(), systemLocale));
 						}
 
 						XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
