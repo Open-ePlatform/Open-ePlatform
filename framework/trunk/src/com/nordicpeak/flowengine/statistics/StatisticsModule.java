@@ -1,8 +1,5 @@
 package com.nordicpeak.flowengine.statistics;
 
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.Task;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
@@ -83,6 +80,9 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+
+import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.Task;
 
 public class StatisticsModule extends AnnotatedForegroundModule implements Runnable, SystemStartupListener {
 
@@ -769,6 +769,8 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	@WebPublic(alias = "family")
 	public ForegroundModuleResponse showFlowFamilyStatistics(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
+		//TODO handle NPE during initial caching
+		
 		FlowFamilyStatistics familyStatistics = this.flowFamilyStatisticsMap.get(uriParser.getInt(2));
 
 		if (familyStatistics == null) {
