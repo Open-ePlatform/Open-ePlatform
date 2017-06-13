@@ -391,22 +391,27 @@
 	<xsl:template name="appendFlowContactAndOwner">
 
 		<xsl:variable name="ownerExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-owner']"/>
+		<xsl:variable name="contactExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-contact']"/>
 	
-		<xsl:if test="FlowFamily/contactName or FlowFamily/ownerName">
+		<xsl:if test="(FlowFamily/contactName and not($contactExtensionView)) or (FlowFamily/ownerName and not($ownerExtensionView))">
 		
 			<div class="about-flow">
 			
-				<xsl:if test="FlowFamily/contactName">
+				<xsl:if test="FlowFamily/contactName and not($contactExtensionView)">
+				
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Questions" /></h2>
 						<xsl:value-of select="FlowFamily/contactName" />
+						
 						<xsl:if test="FlowFamily/contactEmail">
 							<br/><a href="mailto:{FlowFamily/contactEmail}" title="{$i18n.SendMailTo}: {FlowFamily/contactEmail}"><xsl:value-of select="FlowFamily/contactEmail" /></a>
 						</xsl:if>
+						
 						<xsl:if test="FlowFamily/contactPhone">
 							<br /><xsl:value-of select="FlowFamily/contactPhone" />
 						</xsl:if>
 					</div>
+					
 				</xsl:if>
 				
 				<xsl:if test="FlowFamily/ownerName and not($ownerExtensionView)">
@@ -414,6 +419,7 @@
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Responsible" /></h2>
 						<xsl:value-of select="FlowFamily/ownerName" />
+						
 						<xsl:if test="FlowFamily/ownerEmail">
 							<br /><a href="mailto:{FlowFamily/ownerEmail}" title="{$i18n.SendMailTo}: {FlowFamily/ownerEmail}"><xsl:value-of select="FlowFamily/ownerEmail" /></a>
 						</xsl:if>
@@ -430,13 +436,15 @@
 			<div class="about-flow-extension full border border-radius-small">
 
 				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-					<xsl:value-of select="$ownerExtensionView/name" />
 					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
 					<span class="bigmarginleft floatright" data-icon-before="+" />
+					<xsl:value-of select="$ownerExtensionView/name" />
 				</h2>
 
-				<div class="bigpaddingleft bigpaddingright" style="display: none">
+				<div class="bigpaddingleft bigpaddingright bigmarginleft bigmarginright" style="display: none">
 				
+					<xsl:value-of select="$ownerExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
+					
 					<xsl:if test="FlowFamily/ownerName">
 						<p>
 							<strong><xsl:value-of select="$i18n.Responsible"/></strong>
@@ -449,13 +457,47 @@
 						</p>
 					</xsl:if>
 				
-					<xsl:value-of select="$ownerExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
-					
 				</div>
 			
 			</div>
 				
-		</xsl:if>		
+		</xsl:if>
+		
+		<xsl:if test="$contactExtensionView">
+		
+			<div class="about-flow-extension full border border-radius-small">
+
+				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
+					<span class="bigmarginleft floatright" data-icon-before="+" />
+					<xsl:value-of select="$contactExtensionView/name" />
+				</h2>
+
+				<div class="bigpaddingleft bigpaddingright bigmarginleft bigmarginright" style="display: none">
+				
+					<xsl:value-of select="$contactExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
+					
+					<xsl:if test="FlowFamily/contactName">
+						<p>
+							<strong><xsl:value-of select="$i18n.QuestionsContact"/></strong>
+							<br/>
+							<xsl:value-of select="FlowFamily/contactName" />
+							
+							<xsl:if test="FlowFamily/contactEmail">
+								<br/><a href="mailto:{FlowFamily/contactEmail}" title="{$i18n.SendMailTo}: {FlowFamily/contactEmail}"><xsl:value-of select="FlowFamily/contactEmail" /></a>
+							</xsl:if>
+							
+							<xsl:if test="FlowFamily/contactPhone">
+								<br /><xsl:value-of select="FlowFamily/contactPhone" />
+							</xsl:if>
+						</p>
+					</xsl:if>
+				
+				</div>
+			
+			</div>
+				
+		</xsl:if>
 	
 	</xsl:template>	
 		

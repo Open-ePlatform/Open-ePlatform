@@ -12,6 +12,7 @@
 	<xsl:variable name="i18n.StepDescriptionTitle">Du kommer gå igenom följande steg</xsl:variable>	
 	
 	<xsl:variable name="i18n.Questions">Frågor om e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.QuestionsContact">Kontaktperson</xsl:variable>
 	<xsl:variable name="i18n.Responsible">Personuppgiftsansvarig</xsl:variable>
 	<xsl:variable name="i18n.SendMailTo">Skicka mail till</xsl:variable>
 	<xsl:variable name="i18n.MostPopular">Populärast</xsl:variable>
