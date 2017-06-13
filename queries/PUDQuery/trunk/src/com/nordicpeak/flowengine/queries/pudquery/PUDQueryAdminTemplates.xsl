@@ -118,6 +118,9 @@
 			<xsl:when test="$fieldName = 'allowedSearchService'">
 				<xsl:value-of select="$i18n.NoSearchService" />
 			</xsl:when>
+			<xsl:when test="$fieldName = 'attributeName'">
+				<xsl:value-of select="$i18n.attributeName" />
+			</xsl:when>			
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />
 			</xsl:otherwise>
