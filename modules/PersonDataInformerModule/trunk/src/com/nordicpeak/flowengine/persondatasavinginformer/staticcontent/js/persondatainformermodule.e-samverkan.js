@@ -71,7 +71,7 @@ $(document).ready(function() {
 				
 			});
 			
-			$(".views-wrapper section.flowtype li").each(function() {
+			$(".views-wrapper section.flowtype ul.flow-list > li").each(function() {
 				
 				var flow = $(this);
 				flow.removeClass("visible").hide();

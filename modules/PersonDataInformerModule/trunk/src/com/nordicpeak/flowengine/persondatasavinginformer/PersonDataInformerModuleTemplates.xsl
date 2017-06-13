@@ -31,9 +31,10 @@
 			<strong>
 				<xsl:value-of select="$i18n.SavedPersonData"/>
 			</strong>
-			<br/>
-			<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
 		</p>
+		<ul>
+			<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
+		</ul>
 		
 		<xsl:if test="FlowFamilyInformerSetting/reason">
 			<p>
@@ -51,9 +52,10 @@
 			<strong>
 				<xsl:value-of select="$i18n.Reasons"/>
 			</strong>
-			<br/>
-			<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 		</p>
+		<ul>
+			<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
+		</ul>
 		
 		<p>
 			<strong>
@@ -201,10 +203,14 @@
 			</xsl:if>
 			
 			<td class="persondata" data-title="{$i18n.Column.PersonData}">
-				<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+				<ul>
+					<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+				</ul>
 			</td>
 			<td data-title="{$i18n.Reasons}">
-				<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
+				<ul>
+					<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
+				</ul>
 			</td>
 			<td data-title="{$i18n.YearsSaved}">
 				<xsl:variable name="years" select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/yearsSaved"/>
@@ -488,16 +494,18 @@
 	</xsl:template>
 	
 	<xsl:template match="InformerDataAlternative" mode="show">
-
-		<xsl:value-of select="name" />
-		<br/>
+	
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>
 	
 	<xsl:template match="InformerReasonAlternative" mode="show">
 
-		<xsl:value-of select="name" />
-		<br/>
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>		
 	

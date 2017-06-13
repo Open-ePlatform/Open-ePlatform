@@ -3,3 +3,17 @@
 .filter-list.persondata ul li {
 	width: 215px !important;
 }
+
+#PersonDataInformer .flowtype-list .flow-list ul {
+	padding-left: 25px;
+	list-style-type: disc;
+}
+
+#PersonDataInformer .flowtype-list .flow-list ul li {
+	display: list-item;
+	margin: 0 !important;
+	padding: 0 !important;
+	min-height: unset;
+	width: auto;
+	background: unset;
+}

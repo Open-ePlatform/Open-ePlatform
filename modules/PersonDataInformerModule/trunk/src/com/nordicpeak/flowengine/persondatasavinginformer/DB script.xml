@@ -151,4 +151,28 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_reason_alternatives` (`alternativeID`, `name`) VALUES
+					(1, 'Den registrerade har lämnat sitt samtycke'),
+					(2, 'Avtal ska kunna fullgöras med den registrerade'),
+					(3, 'Den personuppgiftsansvarige ska kunna fullgöra en rättslig skyldighet'),
+					(4, 'Vitala intressen för den registrerade ska skyddas'),
+					(5, 'En arbetsuppgift av allmänt intresse ska kunna utföras'),
+					(6, 'En arbetsuppgift i samband med myndighetsutövning ska kunna utföras'),
+					(7, 'Berättigat intresse för behandlingen väger tyngre än den registrerades intresse av skydd mot kränkning av den personliga integriteten.')
+					ON DUPLICATE KEY UPDATE alternativeID = VALUES(alternativeID), name = VALUES(name);
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_data_alternatives` SET name ='Fastighetsbeteckning' WHERE alternativeID = 3;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -128,7 +128,7 @@
 		<li id="flow_{flowID}" data-flowid="{flowID}" data-flowname="{name}">
 			
 			<xsl:attribute name="class">
-				<xsl:text>show</xsl:text>
+				<xsl:text>show popular</xsl:text>
 				<xsl:if test="enabled = 'false'"> disabled</xsl:if>
 			</xsl:attribute>
 			
@@ -177,38 +177,40 @@
 							<strong>
 								<xsl:value-of select="$i18n.Column.PersonData"/>
 							</strong>
-							<br/>
-							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+							<ul>
+								<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+							</ul>
 							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="hiddenInputs"/>
 						</p>
 						
-						<p>
-							<strong>
-								<xsl:value-of select="$i18n.Reasons"/>
-							</strong>
-							<br/>
-							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
-							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="hiddenInputs"/>
-						</p>
+<!-- 						<p> -->
+<!-- 							<strong> -->
+<!-- 								<xsl:value-of select="$i18n.Reasons"/> -->
+<!-- 							</strong> -->
+<!-- 							<ul> -->
+<!-- 								<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/> -->
+<!-- 							</ul> -->
+<!-- 							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="hiddenInputs"/> -->
+<!-- 						</p> -->
 						
-						<p>
-							<strong>
-								<xsl:value-of select="$i18n.YearsSaved"/>
-							</strong>
-							<br/>
-							<xsl:variable name="years" select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/yearsSaved"/>
+<!-- 						<p> -->
+<!-- 							<strong> -->
+<!-- 								<xsl:value-of select="$i18n.YearsSaved"/> -->
+<!-- 							</strong> -->
+<!-- 							<br/> -->
+<!-- 							<xsl:variable name="years" select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/yearsSaved"/> -->
 						
-							<xsl:choose>
-								<xsl:when test="$years">
-									<xsl:value-of select="$years"/>
-									<xsl:text> </xsl:text>
-									<xsl:value-of select="$i18n.years"/>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
-								</xsl:otherwise>
-							</xsl:choose>
-						</p>
+<!-- 							<xsl:choose> -->
+<!-- 								<xsl:when test="$years"> -->
+<!-- 									<xsl:value-of select="$years"/> -->
+<!-- 									<xsl:text> </xsl:text> -->
+<!-- 									<xsl:value-of select="$i18n.years"/> -->
+<!-- 								</xsl:when> -->
+<!-- 								<xsl:otherwise> -->
+<!-- 									<xsl:value-of select="$i18n.YearsSaved.Infinite"/> -->
+<!-- 								</xsl:otherwise> -->
+<!-- 							</xsl:choose> -->
+<!-- 						</p> -->
 						
 					</div>
 					

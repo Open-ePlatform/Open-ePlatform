@@ -36,17 +36,17 @@
 								
 			</xsl:if>
 			
+			<div class="margintop">
+				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
+			</div>
+			
 			<xsl:if test="PersonDataInformerQueryInstance/FlowFamily/ownerName">
 				<p>
-					<strong>
-						<xsl:value-of select="$i18n.Accountable"/>
-					</strong>
+					<xsl:value-of select="$i18n.Accountable"/>
 					<br/>
 					<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
 				</p>
 			</xsl:if>
-			
-			<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
 			
 			<p>
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
@@ -56,7 +56,7 @@
 			
 		</div>
 		
-	</xsl:template>		
+	</xsl:template>
 
 	<xsl:template match="CheckboxAlternative" mode="show">
 
@@ -68,19 +68,15 @@
 	
 	<xsl:template match="FlowFamilyInformerSetting">
 	
-		<p>
-			<strong>
-				<xsl:value-of select="$i18n.SavedPersonData"/>
-			</strong>
-			<br/>
+		<xsl:value-of select="$i18n.SavedPersonData"/>
+		<xsl:text>:</xsl:text>
+		<ul>
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
-		</p>
+		</ul>
 		
 		<xsl:if test="reason">
 			<p>
-				<strong>
-					<xsl:value-of select="$i18n.Reason"/>
-				</strong>
+				<xsl:value-of select="$i18n.Reason"/>
 				<br/>
 				<xsl:call-template name="replaceLineBreak">
 					<xsl:with-param name="string" select="reason"/>
@@ -88,19 +84,15 @@
 			</p>
 		</xsl:if>
 		
-		<p>
-			<strong>
-				<xsl:value-of select="$i18n.Reasons"/>
-			</strong>
-			<br/>
+		<xsl:value-of select="$i18n.Reasons"/>
+		<ul>
 			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
-		</p>
+		</ul>
 		
 		<p>
-			<strong>
-				<xsl:value-of select="$i18n.YearsSaved"/>
-			</strong>
-			<br/>
+			<xsl:value-of select="$i18n.YearsSaved"/>
+			<xsl:text>:  </xsl:text>
+			
 			<xsl:variable name="years" select="yearsSaved"/>
 		
 			<xsl:choose>
@@ -117,9 +109,7 @@
 		
 		<xsl:if test="extraInformation">
 			<p>
-				<strong>
-					<xsl:value-of select="$i18n.ExtraInformation"/>
-				</strong>
+				<xsl:value-of select="$i18n.ExtraInformation"/>
 				<br/>
 				<xsl:call-template name="replaceLineBreak">
 					<xsl:with-param name="string" select="extraInformation"/>
@@ -131,15 +121,17 @@
 	
 	<xsl:template match="InformerDataAlternative" mode="show">
 
-		<xsl:value-of select="name" />
-		<br/>
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>
 	
 	<xsl:template match="InformerReasonAlternative" mode="show">
-
-		<xsl:value-of select="name" />
-		<br/>
+	
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>		
 

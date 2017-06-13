@@ -52,6 +52,16 @@
 				
 				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
 				
+				<xsl:if test="PersonDataInformerQueryInstance/FlowFamily/ownerName">
+					<p>
+						<strong>
+							<xsl:value-of select="$i18n.Accountable"/>
+						</strong>
+						<br/>
+						<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
+					</p>
+				</xsl:if>
+				
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
 				
 					<p>
@@ -119,6 +129,8 @@
 					</span>
 				</xsl:if>
 				
+				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
+				
 				<xsl:if test="PersonDataInformerQueryInstance/FlowFamily/ownerName">
 					<p>
 						<strong>
@@ -128,8 +140,6 @@
 						<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
 					</p>
 				</xsl:if>
-				
-				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
 				
 				<div class="alternative" >
 					<xsl:variable name="fieldName">
@@ -166,13 +176,12 @@
 	
 	<xsl:template match="FlowFamilyInformerSetting">
 	
-		<p>
-			<strong>
-				<xsl:value-of select="$i18n.SavedPersonData"/>
-			</strong>
-			<br/>
+		<strong>
+			<xsl:value-of select="$i18n.SavedPersonData"/>
+		</strong>
+		<ul>
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
-		</p>
+		</ul>
 		
 		<xsl:if test="reason">
 			<p>
@@ -186,13 +195,12 @@
 			</p>
 		</xsl:if>
 		
-		<p>
-			<strong>
-				<xsl:value-of select="$i18n.Reasons"/>
-			</strong>
-			<br/>
+		<strong>
+			<xsl:value-of select="$i18n.Reasons"/>
+		</strong>
+		<ul>
 			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
-		</p>
+		</ul>
 		
 		<p>
 			<strong>
@@ -229,15 +237,17 @@
 	
 	<xsl:template match="InformerDataAlternative" mode="show">
 
-		<xsl:value-of select="name" />
-		<br/>
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>
 	
 	<xsl:template match="InformerReasonAlternative" mode="show">
 
-		<xsl:value-of select="name" />
-		<br/>
+		<li>
+			<xsl:value-of select="name" />
+		</li>
 	
 	</xsl:template>		
 	
