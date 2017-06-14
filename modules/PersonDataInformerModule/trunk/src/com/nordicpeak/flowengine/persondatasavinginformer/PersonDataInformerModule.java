@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -35,6 +36,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
@@ -59,6 +61,7 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.standardutils.xsl.XSLVariableReader;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
@@ -111,6 +114,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	
 	@XSLVariable(name = "i18n.YearsSaved.Infinite")
 	private String yearsSavedInfinite = "";
+
+	@XSLVariable(prefix = "java.")
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Default complaint description", description="The descripion for how users are to complain about personal data being stored", required = true)
+	private String defaultComplaintDescription;
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
@@ -134,6 +142,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	private FlowAdminModule flowAdminModule;
 	
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
+	
+	private List<ScriptTag> updateScriptTags;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -226,7 +236,14 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	@Override
 	protected void moduleConfigured() throws Exception {
 		
-		this.viewFragmentTransformer.setDebugXML(debugFragmententXML);
+		viewFragmentTransformer.setDebugXML(debugFragmententXML);
+		
+		XSLVariableReader variableReader = ModuleUtils.getXSLVariableReader(moduleDescriptor, sectionInterface.getSystemInterface());
+
+		if (variableReader != null) {
+			
+			updateScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, "updateglobalscripts"));
+		}
 	}
 	
 	@Override
@@ -347,6 +364,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			try {
 				POPULATOR.populate(informerSettings, req);
 				
+				if (!informerSettings.isOverrideComplaintDescription()) {
+					
+					informerSettings.setComplaintDescription(null);
+				}
+				
 				List<InformerDataAlternative> selectedDataAlternatives = new ArrayList<InformerDataAlternative>(allDataAlternatives);
 				List<InformerReasonAlternative> selectedReasonAlternatives = new ArrayList<InformerReasonAlternative>(allReasonAlternatives);
 				
@@ -415,6 +437,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		XMLUtils.append(doc, settingsElement, informerSettings);
 		XMLUtils.append(doc, settingsElement, "DataAlternatives", allDataAlternatives);
 		XMLUtils.append(doc, settingsElement, "ReasonAlternatives", allReasonAlternatives);
+		XMLUtils.appendNewElement(doc, settingsElement, "DefaultComplaintDescription", defaultComplaintDescription);
 		
 		if (validationErrors != null) {
 			
@@ -422,7 +445,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
 		
-		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+		SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+		response.addScripts(updateScriptTags);
+		
+		return response;
 	}
 	
 	@WebPublic(toLowerCase = true)
@@ -602,6 +628,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			doc.getDocumentElement().appendChild(extensionElement);
 			
 			extensionElement.appendChild(setting.toXML(doc));
+			XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", defaultComplaintDescription);
 			
 			return new ExtensionView(browserExtensionViewTitle, viewFragmentTransformer.createViewFragment(doc), "left-owner");
 		}

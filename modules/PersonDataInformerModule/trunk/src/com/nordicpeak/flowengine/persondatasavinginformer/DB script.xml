@@ -175,4 +175,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `complaintDescription` TEXT NULL AFTER `extraInformation`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -6,9 +6,18 @@
 	
 	<xsl:variable name="java.adminExtensionViewTitle">Personuppgiftsinställningar</xsl:variable>
 	<xsl:variable name="java.browserExtensionViewTitle">E-tjänsten kräver behandling av dina personuppgifter</xsl:variable>
+	<xsl:variable name="java.defaultComplaintDescription">
+		&lt;p&gt;
+		&lt;strong&gt;Lämna klagomål på personuppgiftshantering&lt;/strong&gt;
+		&lt;br/&gt;
+		Klagomål rörande personuppgiftshanteringen i e-tjänsten kan lämnas till tillsynsmyndigheten, Datainspektionen.
+	 	Besök Datainspektionens hemsida (
+	 		&lt;a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/"&gt;http://www.datainspektionen.se/om-oss/arbetssatt/klagomal&lt;/a&gt;
+	 	) för mer information om hur du lämnar klagomål.
+	 	&lt;/p&gt;
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateSettingsTitle">Personuppgiftsinställningar för e-tjänsten</xsl:variable>
-	
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
 	
 	<xsl:variable name="i18n.NoSettings">Inga personuppgifter hanteras.</xsl:variable>
@@ -26,7 +35,7 @@
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite">Gallras</xsl:variable>
-	<xsl:variable name="i18n.YearsSaved.Finite.Years">Antal år de sparas</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Finite.Years">Antal år uppgifterna sparas</xsl:variable>
 	<xsl:variable name="i18n.ExtraInformation">Övriga upplysningar</xsl:variable>
 	
 	<xsl:variable name="i18n.years">år</xsl:variable>
@@ -51,5 +60,8 @@
 	<xsl:variable name="i18n.noFlowsFound">Inga e-tjänster som hanterar personuppgifter hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.Export">Exportera</xsl:variable>
+	
+	<xsl:variable name="i18n.ComplaintDescription">Beskrivning för lämna klagomål på personuppgiftshantering</xsl:variable>
+	<xsl:variable name="i18n.OverrideComplaintDescription">Ange annan beskrivning än standard</xsl:variable>
 	
 </xsl:stylesheet>

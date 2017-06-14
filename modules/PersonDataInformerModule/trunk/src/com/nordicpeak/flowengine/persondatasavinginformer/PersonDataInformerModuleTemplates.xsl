@@ -3,9 +3,17 @@
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1" />
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
+	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/CKEditor.xsl"/>
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
+	</xsl:variable>
+	
+	<!-- Programatical additional globalscripts for UpdateSettings -->
+	<xsl:variable name="updateglobalscripts">
+		/ckeditor/ckeditor.js
+		/ckeditor/adapters/jquery.js
+		/ckeditor/init.js
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
@@ -87,6 +95,15 @@
 				</xsl:call-template>
 			</p>
 		</xsl:if>
+		
+		<xsl:choose>
+			<xsl:when test="FlowFamilyInformerSetting/complaintDescription">
+				<xsl:value-of select="FlowFamilyInformerSetting/complaintDescription" disable-output-escaping="yes"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="DefaultComplaintDescription" disable-output-escaping="yes"/>
+			</xsl:otherwise>
+		</xsl:choose>
 				
 	</xsl:template>
 	
@@ -422,8 +439,100 @@
 								<xsl:with-param name="element" select="FlowFamilyInformerSetting"/>
 							</xsl:call-template>
 						</div>
-					
+						
 					</div>
+					
+					<div class="floatleft full">
+					
+						<label for="complaintDescription" class="floatleft full">
+							<xsl:value-of select="$i18n.ComplaintDescription" />
+						</label>
+						
+						<div class="floatleft full marginleft marginbottom">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="id" select="'overrideComplaintDescription'" />
+								<xsl:with-param name="name" select="'overrideComplaintDescription'" />
+								<xsl:with-param name="value" select="'true'" />
+								<xsl:with-param name="checked" select="FlowFamilyInformerSetting/complaintDescription != ''" />
+							</xsl:call-template>
+							
+							<label for="overrideComplaintDescription">
+								<xsl:value-of select="$i18n.OverrideComplaintDescription" />
+							</label>
+						</div>
+						
+						<div id="complaintDescriptionContainer" class="floatleft full">
+							<xsl:call-template name="createTextArea">
+								<xsl:with-param name="id" select="'complaintDescription'"/>
+								<xsl:with-param name="name" select="'complaintDescription'"/>
+								<xsl:with-param name="class" select="'ckeditor'" />
+								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />
+								<xsl:with-param name="value" select="DefaultComplaintDescription" />
+							</xsl:call-template>
+						</div>
+						
+						<script type="text/javascript">
+				
+							$(document).ready(function() {
+							
+								var checkbox = $("#overrideComplaintDescription");
+								var div = $("#complaintDescriptionContainer");
+								
+								div.toggle(checkbox[0].checked);
+								
+								checkbox.click(function(){
+									var checked = checkbox[0].checked;
+									div.toggle(checked).find('textarea').prop('disabled', !checked);
+								});
+							});
+						
+						</script>
+						
+					</div>
+					
+					<xsl:call-template name="initializeFCKEditor">
+						<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
+						<xsl:with-param name="customConfig">config.js</xsl:with-param>
+						<xsl:with-param name="editorContainerClass">ckeditor</xsl:with-param>
+						<xsl:with-param name="editorHeight">150</xsl:with-param>
+						
+						<xsl:with-param name="contentsCss">
+							<xsl:if test="cssPath">
+								<xsl:value-of select="cssPath"/>
+							</xsl:if>
+						</xsl:with-param>
+						
+						<xsl:with-param name="filebrowserBrowseUri">
+							
+							<xsl:choose>
+								<xsl:when test="ckConnectorModuleAlias">
+									<xsl:text>filemanager/index.html?Connector=</xsl:text>
+									<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
+									<xsl:text>/connector</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="''"/>
+								</xsl:otherwise>				
+							</xsl:choose>
+			
+						</xsl:with-param>
+						
+						<xsl:with-param name="filebrowserImageBrowseUri">
+						
+							<xsl:choose>
+								<xsl:when test="ckConnectorModuleAlias">
+									<xsl:text>filemanager/index.html?Connector=</xsl:text>
+									<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
+									<xsl:text>/connector</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="''"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						
+						</xsl:with-param>
+						
+					</xsl:call-template>
 				
 				</div>
 				
@@ -547,6 +656,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'reasonAlternatives'">
 						<xsl:value-of select="$i18n.Reasons"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'complaintDescription'">
+						<xsl:value-of select="$i18n.ComplaintDescription"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

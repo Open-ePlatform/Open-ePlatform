@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -49,6 +50,15 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String extraInformation;
+	
+	@WebPopulate
+	private boolean overrideComplaintDescription;
+	
+	@DAOManaged
+	@PopulateOnlyIfSet(paramNames = "overrideComplaintDescription", paramValues = "true")
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String complaintDescription;
 	
 	@DAOManaged
 	@ManyToMany(linkTable = "person_data_informer_settings_data_alternatives")
@@ -116,6 +126,22 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	
 	public void setReasonAlternatives(List<InformerReasonAlternative> reasonAlternatives) {
 		this.reasonAlternatives = reasonAlternatives;
+	}
+	
+	public boolean isOverrideComplaintDescription() {
+		return overrideComplaintDescription;
+	}
+	
+	public void setOverrideComplaintDescription(boolean overrideComplaintDescription) {
+		this.overrideComplaintDescription = overrideComplaintDescription;
+	}
+	
+	public String getComplaintDescription() {
+		return complaintDescription;
+	}
+	
+	public void setComplaintDescription(String complaintDescription) {
+		this.complaintDescription = complaintDescription;
 	}
 	
 }
