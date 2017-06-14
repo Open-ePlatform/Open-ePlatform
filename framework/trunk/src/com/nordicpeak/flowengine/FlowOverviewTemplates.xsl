@@ -433,7 +433,7 @@
 		
 		<xsl:if test="$ownerExtensionView">
 		
-			<div class="about-flow-extension full border border-radius-small">
+			<div class="about-flow-extension full border border-radius-small noexpander">
 
 				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
 					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
@@ -465,7 +465,7 @@
 		
 		<xsl:if test="$contactExtensionView">
 		
-			<div class="about-flow-extension full border border-radius-small">
+			<div class="about-flow-extension full border border-radius-small noexpander">
 
 				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
 					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
@@ -563,7 +563,7 @@
 	
 	<xsl:template match="ExtensionView" mode="flowOverview-left">
 		
-		<div class="about-flow-extension full border border-radius-small">
+		<div class="about-flow-extension full border border-radius-small noexpander">
 	
 			<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
 				<xsl:value-of select="name" />

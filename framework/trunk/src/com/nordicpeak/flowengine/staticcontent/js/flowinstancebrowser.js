@@ -186,13 +186,35 @@ $(document).ready(function() {
 		expandEffect: "show",
 		collapseEffect: "hide",
 		expandSpeed: 0,
-		collapseSpeed: 0
+		collapseSpeed: 0,
+		onSlice: function(options){
+			
+			var div = $(this);
+			var noExpandElements = div.find(".noexpander");
+			
+			if (noExpandElements.length > 0) {
+			
+				var belowSummary = $('<div class="after-description-summary description"/>');
+				noExpandElements.clone().appendTo(belowSummary);
+				belowSummary.insertAfter(div);
+			}
+			
+		},
 	});
 	
 	$(document).on("click", ".btn-readmore", function(e) {
         e.preventDefault();
         e.returnValue = false;
-        $(this).parents(".description").addClass("active");
+        
+        var descriptionDiv = $(this).parents(".description");
+        descriptionDiv.addClass("active");
+        
+		var belowSummaryDiv = descriptionDiv.siblings(".after-description-summary");
+		
+		if (belowSummaryDiv.length > 0) {
+			
+			belowSummaryDiv.hide();
+		}
     });
 	
 });
