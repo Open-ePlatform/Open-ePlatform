@@ -179,6 +179,7 @@ $(document).ready(function() {
         $(this).parents("section").toggleClass("active");
     });
 	
+	// Copy exists in flowadminmodule.js
 	$(".section-inside div.description").expander({
 		slicePoint : 110,
 		expandText : "",
@@ -194,14 +195,14 @@ $(document).ready(function() {
 			
 			if (noExpandElements.length > 0) {
 			
-				var belowSummary = $('<div class="after-description-summary description"/>');
+				var belowSummary = $('<div class="after-description-summary only-mobile description"/>');
 				noExpandElements.clone().appendTo(belowSummary);
 				belowSummary.insertAfter(div);
 			}
-			
-		},
+		}
 	});
 	
+	// Copy exists in flowadminmodule.js
 	$(document).on("click", ".btn-readmore", function(e) {
         e.preventDefault();
         e.returnValue = false;
@@ -213,7 +214,7 @@ $(document).ready(function() {
 		
 		if (belowSummaryDiv.length > 0) {
 			
-			belowSummaryDiv.hide();
+			belowSummaryDiv.remove();
 		}
     });
 	

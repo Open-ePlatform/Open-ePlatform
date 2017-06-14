@@ -22,6 +22,7 @@
 	<xsl:variable name="scripts">
 		/js/jquery.ui.touch.min.js
 		/js/jquery.blockui.js
+		/js/jquery.expander.min.js
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js

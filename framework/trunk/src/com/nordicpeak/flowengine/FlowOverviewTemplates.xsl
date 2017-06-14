@@ -391,13 +391,12 @@
 	<xsl:template name="appendFlowContactAndOwner">
 
 		<xsl:variable name="ownerExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-owner']"/>
-		<xsl:variable name="contactExtensionView" select="../ExtensionViews/ExtensionView[slot = 'left-contact']"/>
 	
-		<xsl:if test="(FlowFamily/contactName and not($contactExtensionView)) or (FlowFamily/ownerName and not($ownerExtensionView))">
+		<xsl:if test="(FlowFamily/contactName or FlowFamily/ownerName) and not($ownerExtensionView)">
 		
 			<div class="about-flow">
 			
-				<xsl:if test="FlowFamily/contactName and not($contactExtensionView)">
+				<xsl:if test="FlowFamily/contactName">
 				
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Questions" /></h2>
@@ -414,7 +413,7 @@
 					
 				</xsl:if>
 				
-				<xsl:if test="FlowFamily/ownerName and not($ownerExtensionView)">
+				<xsl:if test="FlowFamily/ownerName">
 				
 					<div class="inner">
 						<h2 class="h1"><xsl:value-of select="$i18n.Responsible" /></h2>
@@ -461,23 +460,18 @@
 			
 			</div>
 				
-		</xsl:if>
+			<xsl:if test="FlowFamily/contactName">
 		
-		<xsl:if test="$contactExtensionView">
+				<div class="about-flow-extension full border border-radius-small noexpander">
 		
-			<div class="about-flow-extension full border border-radius-small noexpander">
-
-				<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-					<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
-					<span class="bigmarginleft floatright" data-icon-before="+" />
-					<xsl:value-of select="$contactExtensionView/name" />
-				</h2>
-
-				<div class="bigpaddingleft bigpaddingright bigmarginleft bigmarginright" style="display: none">
-				
-					<xsl:value-of select="$contactExtensionView/ViewFragment/HTML" disable-output-escaping="yes"/>
+					<h2 class="h1 pointer hover border-radius-small lightbackground" onclick="$(this).next().slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+						<span class="bigmarginleft floatright" data-icon-before="-" style="display: none;" />
+						<span class="bigmarginleft floatright" data-icon-before="+" />
+						<xsl:value-of select="$i18n.Questions" />
+					</h2>
+		
+					<div class="bigpaddingleft bigpaddingright bigmarginleft bigmarginright" style="display: none">
 					
-					<xsl:if test="FlowFamily/contactName">
 						<p>
 							<strong><xsl:value-of select="$i18n.QuestionsContact"/></strong>
 							<br/>
@@ -491,11 +485,12 @@
 								<br /><xsl:value-of select="FlowFamily/contactPhone" />
 							</xsl:if>
 						</p>
-					</xsl:if>
+					
+					</div>
 				
 				</div>
-			
-			</div>
+				
+			</xsl:if>
 				
 		</xsl:if>
 	
