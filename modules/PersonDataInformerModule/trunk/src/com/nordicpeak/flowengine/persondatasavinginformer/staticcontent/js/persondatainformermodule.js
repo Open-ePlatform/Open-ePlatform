@@ -1,4 +1,3 @@
-var validationError = false;
 
 $(document).ready(function() {
 	
