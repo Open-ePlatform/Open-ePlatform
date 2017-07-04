@@ -142,7 +142,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_submitglobal", remoteValueColumnName = "email")
 	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
-	@RequiredIfSet(paramName = "sendFlowInstanceSubmittedGlobalEmail")
+	@RequiredIfSet(paramNames = "sendFlowInstanceSubmittedGlobalEmail")
 	@SplitOnLineBreak
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> flowInstanceSubmittedGlobalEmailAddresses;
@@ -167,10 +167,10 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_extmessageglobal", remoteValueColumnName = "email")
 	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
-	@RequiredIfSet(paramName = "sendExternalMessageReceivedGlobalEmail")
+	@RequiredIfSet(paramNames = "sendExternalMessageReceivedGlobalEmail")
 	@SplitOnLineBreak
 	@XMLElement(fixCase=true, childName="address")
-	private List<String> externalMessageReceivedGlobalEmailAddresses;	
+	private List<String> externalMessageReceivedGlobalEmailAddresses;
 
 	public Integer getFlowFamilyID() {
 
