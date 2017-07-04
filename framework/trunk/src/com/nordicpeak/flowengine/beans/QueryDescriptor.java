@@ -75,7 +75,7 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255, populator=XMLElementNamePopulator.class)
-	@RequiredIfSet(paramName="exported")
+	@RequiredIfSet(paramNames = "exported")
 	@XMLElement
 	private String xsdElementName;
 

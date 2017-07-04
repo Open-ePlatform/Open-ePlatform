@@ -83,9 +83,9 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 
 	@DAOManaged
 	@WebPopulate(maxLength=255)
-	@RequiredIfSet(paramName="formatValidator")
+	@RequiredIfSet(paramNames = "formatValidator")
 	@XMLElement
-	private String invalidFormatMessage;	
+	private String invalidFormatMessage;
 	
 	@DAOManaged
 	@WebPopulate
@@ -94,7 +94,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	
 	@DAOManaged
 	@WebPopulate(maxLength=255)
-	@RequiredIfSet(paramName="setAsAttribute")
+	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
 	
@@ -106,7 +106,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@DAOManaged
 	@WebPopulate(maxLength = 255, populator=XMLElementNamePopulator.class)
 	@XMLElement
-	private String xsdElementName;	
+	private String xsdElementName;
 	
 	@DAOManaged(columnName = "queryID")
 	@ManyToOne

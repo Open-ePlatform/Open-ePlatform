@@ -34,20 +34,20 @@ public class UserOrganization extends GeneratedElementable {
 	private String organizationNumber;
 
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "contactByLetter")
+	@RequiredIfSet(paramNames = "contactByLetter")
 	@OrderBy
 	@DAOManaged
 	@XMLElement
 	private String address;
 
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "contactByLetter")
+	@RequiredIfSet(paramNames = "contactByLetter")
 	@DAOManaged
 	@XMLElement
 	private String zipCode;
 
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "contactByLetter")
+	@RequiredIfSet(paramNames = "contactByLetter")
 	@DAOManaged
 	@XMLElement
 	private String postalAddress;
@@ -68,13 +68,13 @@ public class UserOrganization extends GeneratedElementable {
 	private String phone;
 
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "contactBySMS")
+	@RequiredIfSet(paramNames = "contactBySMS")
 	@DAOManaged
 	@XMLElement
 	private String mobilePhone;
 
 	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
-	@RequiredIfSet(paramName = "contactByEmail")
+	@RequiredIfSet(paramNames = "contactByEmail")
 	@DAOManaged
 	@XMLElement
 	private String email;

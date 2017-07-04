@@ -129,7 +129,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@URLRewrite
 	@WebPopulate(maxLength = 16777215)
-	@RequiredIfSet(paramName = "typeOfFlow", value = "INTERNAL")
+	@RequiredIfSet(paramNames = "typeOfFlow", paramValues = "INTERNAL")
 	private String submittedMessage;
 	
 	@DAOManaged
@@ -145,7 +145,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@StringTag
 	@DAOManaged
 	@WebPopulate
-	@RequiredIfSet(paramName = "unPublishDate")
+	@RequiredIfSet(paramNames = "unPublishDate")
 	@XMLElement(valueFormatter = DateStringyfier.class)
 	private Date publishDate;
 	
@@ -168,7 +168,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean paymentSupportEnabled;		
+	private boolean paymentSupportEnabled;
 	
 	@DAOManaged
 	@WebPopulate
@@ -226,7 +226,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate(populator = StringHTTPURLPopulator.class, maxLength = 1024)
 	@PopulateOnlyIfSet(paramNames = { "typeOfFlow" }, paramValues = { "EXTERNAL" })
-	@RequiredIfSet(paramName = "typeOfFlow", value = "EXTERNAL")
+	@RequiredIfSet(paramNames = "typeOfFlow", paramValues = "EXTERNAL")
 	@XMLElement
 	private String externalLink;
 	

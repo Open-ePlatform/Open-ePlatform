@@ -71,9 +71,9 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 	
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "setAsAttribute")
+	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
-	private String attributeName;	
+	private String attributeName;
 	
 	@DAOManaged
 	@WebPopulate
@@ -226,7 +226,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 		if (attributeName != null) {
 			
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
-		}		
+		}
 		
 		if (alternatives != null) {
 			

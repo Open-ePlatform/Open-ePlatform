@@ -56,7 +56,7 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 	
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramName = "setAsAttribute")
+	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
 	
