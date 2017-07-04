@@ -37,7 +37,7 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	
 	@DAOManaged
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
-	@RequiredIfSet(paramName = "yearsSavedType", value = "FINITE")
+	@RequiredIfSet(paramNames = "yearsSavedType", paramValues = "FINITE")
 	@XMLElement
 	private Integer yearsSaved;
 	

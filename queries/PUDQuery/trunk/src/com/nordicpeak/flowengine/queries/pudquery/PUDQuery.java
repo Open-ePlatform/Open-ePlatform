@@ -47,7 +47,7 @@ public class PUDQuery extends BaseQuery {
 	
 	@DAOManaged
 	@WebPopulate(maxLength=255)
-	@RequiredIfSet(paramName="setAsAttribute")
+	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
 	
@@ -159,7 +159,7 @@ public class PUDQuery extends BaseQuery {
 		if(attributeName != null){
 			
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
-		}		
+		}
 		
 		if(!errors.isEmpty()){
 
