@@ -64,7 +64,7 @@ public class GeneralMapQuery extends BaseQuery {
 	private Integer minimalDrawingScale;
 
 	@DAOManaged
-	@RequiredIfSet(paramName = "minimalDrawingScale")
+	@RequiredIfSet(paramNames = "minimalDrawingScale")
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String incorrectDrawingMessage;
