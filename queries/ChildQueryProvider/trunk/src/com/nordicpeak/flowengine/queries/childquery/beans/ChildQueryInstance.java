@@ -329,12 +329,26 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	@Override
 	public List<? extends ImmutableAlternative> getAlternatives() {
 		
+		List<ChildAlternative> alternatives = null; 
+		
 		if (citizenIdentifier != null) {
 			
-			return query.getAlternatives();
+			alternatives = CollectionUtils.addAndInstantiateIfNeeded(alternatives, query.getChildSelectedAlternative());
 		}
 		
-		return null;
+		if(storedGuardians != null){
+			
+			if(storedGuardians.size() == 1){
+				
+				alternatives = CollectionUtils.addAndInstantiateIfNeeded(alternatives, query.getSingleGuardianAlternative());
+				
+			}else if(storedGuardians.size() == 2){
+				
+				alternatives = CollectionUtils.addAndInstantiateIfNeeded(alternatives, query.getMultiGuardianAlternative());
+			}
+		}
+		
+		return alternatives;
 	}
 	
 	@Override

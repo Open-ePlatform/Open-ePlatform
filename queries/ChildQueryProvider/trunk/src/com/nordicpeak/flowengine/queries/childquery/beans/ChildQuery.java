@@ -1,7 +1,6 @@
 package com.nordicpeak.flowengine.queries.childquery.beans;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -34,8 +34,6 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 @Table(name = "child_queries")
 @XMLElement
 public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, MultiSignQuery, CitizenIdentifierQuery {
-
-	private static final Map<Integer, Integer> ALTERNATIVE_CONVERSION_MAP = Collections.singletonMap(1, 1);
 
 	private static final long serialVersionUID = -842191226937409429L;
 
@@ -105,7 +103,11 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@XMLElement
 	private List<ChildQueryInstance> instances;
 
-	private ChildAlternative alternative;
+	private ChildAlternative childSelectedAlternative;
+	
+	private ChildAlternative singleGuardianAlternative;
+	
+	private ChildAlternative multiGuardianAlternative;
 
 	public boolean isShowAddress() {
 
@@ -412,7 +414,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@Override
 	public List<? extends ImmutableAlternative> getAlternatives() {
 
-		return Collections.singletonList(alternative);
+		return CollectionUtils.getList(childSelectedAlternative, singleGuardianAlternative, multiGuardianAlternative);
 	}
 
 	@Override
@@ -424,23 +426,49 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@Override
 	public Map<Integer, Integer> getAlternativeConversionMap() {
 
-		return ALTERNATIVE_CONVERSION_MAP;
-	}
-
-	public ChildAlternative getAlternative() {
-
-		return alternative;
-	}
-
-	public void setAlternative(ChildAlternative alternative) {
-
-		this.alternative = alternative;
+		return null;
 	}
 
 	@Override
 	public boolean requiresMultipartSigning() {
 
 		return this.useMultipartSigning;
+	}
+
+	
+	public ChildAlternative getChildSelectedAlternative() {
+	
+		return childSelectedAlternative;
+	}
+
+	
+	public void setChildSelectedAlternative(ChildAlternative childSelectedAlternative) {
+	
+		this.childSelectedAlternative = childSelectedAlternative;
+	}
+
+	
+	public ChildAlternative getSingleGuardianAlternative() {
+	
+		return singleGuardianAlternative;
+	}
+
+	
+	public void setSingleGuardianAlternative(ChildAlternative singleGuardianAlternative) {
+	
+		this.singleGuardianAlternative = singleGuardianAlternative;
+	}
+
+	
+	public ChildAlternative getMultiGuardianAlternative() {
+	
+		return multiGuardianAlternative;
+	}
+
+	
+	public void setMultiGuardianAlternative(ChildAlternative multiGuardianAlternative) {
+	
+		this.multiGuardianAlternative = multiGuardianAlternative;
 	}
 
 }

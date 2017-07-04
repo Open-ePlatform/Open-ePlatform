@@ -87,7 +87,13 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			"WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
 	
 	@XSLVariable(prefix = "java.")
-	protected String alternativeName = "This variable should be set by your stylesheet";
+	protected String childSelectedAlternativeName = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String singleGuardianAlternativeName = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String multiGuardianAlternativeName = "This variable should be set by your stylesheet";
 	
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenName= "This variable should be set by your stylesheet";
@@ -144,7 +150,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	private QueryParameterFactory<ChildQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<ChildQueryInstance, Integer> queryInstanceIDParamFactory;
 
-	private ChildAlternative alternative;
+	private ChildAlternative childSelectedAlternative;
+	private ChildAlternative singleGuardianAlternative;
+	private ChildAlternative multiGuardianAlternative;
 	
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -153,7 +161,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR);
 
-		alternative = new ChildAlternative(alternativeName);
+		childSelectedAlternative = new ChildAlternative(childSelectedAlternativeName, 1, 1);
+		singleGuardianAlternative = new ChildAlternative(singleGuardianAlternativeName, 2, 2);
+		multiGuardianAlternative = new ChildAlternative(multiGuardianAlternativeName, 3, 3);
 	}
 
 	@Override
@@ -189,7 +199,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
 
-		query.setAlternative(alternative);
+		query.setChildSelectedAlternative(childSelectedAlternative);
+		query.setSingleGuardianAlternative(singleGuardianAlternative);
+		query.setMultiGuardianAlternative(multiGuardianAlternative);
 
 		return query;
 	}
@@ -220,7 +232,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
 
-		query.setAlternative(alternative);
+		query.setChildSelectedAlternative(childSelectedAlternative);
+		query.setSingleGuardianAlternative(singleGuardianAlternative);
+		query.setMultiGuardianAlternative(multiGuardianAlternative);
 
 		return query;
 	}
@@ -237,7 +251,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
 
-		query.setAlternative(alternative);
+		query.setChildSelectedAlternative(childSelectedAlternative);
+		query.setSingleGuardianAlternative(singleGuardianAlternative);
+		query.setMultiGuardianAlternative(multiGuardianAlternative);
 
 		return query;
 	}
@@ -269,7 +285,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			return null;
 		}
 
-		queryInstance.getQuery().setAlternative(alternative);
+		queryInstance.getQuery().setChildSelectedAlternative(childSelectedAlternative);
+		queryInstance.getQuery().setSingleGuardianAlternative(singleGuardianAlternative);
+		queryInstance.getQuery().setMultiGuardianAlternative(multiGuardianAlternative);
 
 		if (req != null) {
 
