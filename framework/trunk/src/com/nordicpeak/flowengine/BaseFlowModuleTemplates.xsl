@@ -70,13 +70,13 @@
 						<xsl:if test="not($concurrentModificationLock)">
 						
 							<xsl:choose>
-								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and FlowInstance/Flow/paymentSupportEnabled = 'true'">
+								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and PaymentRequired">
 									<xsl:call-template name="createFlowInstanceManagerPreviewSigningPaymentButton" />
 								</xsl:when>							
 								<xsl:when test="FlowInstance/Flow/requireSigning = 'true'">
 									<xsl:call-template name="createFlowInstanceManagerPreviewSigningButton" />
 								</xsl:when>
-								<xsl:when test="FlowInstance/Flow/paymentSupportEnabled = 'true'">
+								<xsl:when test="PaymentRequired">
 									<xsl:call-template name="createFlowInstanceManagerPaymentButton" />
 								</xsl:when>
 								<xsl:otherwise>

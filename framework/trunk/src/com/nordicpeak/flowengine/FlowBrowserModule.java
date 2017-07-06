@@ -125,6 +125,7 @@ import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -1294,6 +1295,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected FlowPaymentProvider getFlowPaymentProvider() {
 
 		return paymentProvider;
+	}
+	
+	@Override
+	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+
+		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/pay/" + instanceManager.getFlowInstanceID();
 	}
 
 	@Override

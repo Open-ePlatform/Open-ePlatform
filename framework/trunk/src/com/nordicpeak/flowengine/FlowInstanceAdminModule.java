@@ -125,6 +125,7 @@ import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
@@ -1443,17 +1444,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
-		
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?signprovidererror=1" + preview;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		String preview = instanceManager.getFlowInstance().getFlow().usesPreview() ? "&preview=1" : "";
-		
-		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flowinstance/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?paymentprovidererror=1" + preview;
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override

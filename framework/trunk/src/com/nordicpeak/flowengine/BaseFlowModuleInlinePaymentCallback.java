@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
@@ -18,18 +19,20 @@ public class BaseFlowModuleInlinePaymentCallback implements InlinePaymentCallbac
 
 	private final BaseFlowModule baseFlowModule;
 	private final String actionID;
+	private final SiteProfile siteProfile;
 	
-	public BaseFlowModuleInlinePaymentCallback(BaseFlowModule baseFlowModule, String actionID) {
+	public BaseFlowModuleInlinePaymentCallback(BaseFlowModule baseFlowModule, SiteProfile siteProfile, String actionID) {
 
 		super();
 		this.baseFlowModule = baseFlowModule;
 		this.actionID = actionID;
+		this.siteProfile = siteProfile;
 	}
 
 	@Override
 	public void paymentComplete(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
-		baseFlowModule.inlinePaymentComplete(instanceManager, req, user, actionID, addPaymentEvent, details, eventAttributes);
+		baseFlowModule.inlinePaymentComplete(instanceManager, req, user, siteProfile, actionID, addPaymentEvent, details, eventAttributes);
 	}
 
 	@Override

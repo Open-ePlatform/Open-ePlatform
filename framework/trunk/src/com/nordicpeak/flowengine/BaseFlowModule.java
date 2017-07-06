@@ -837,8 +837,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						}
 						
 						try {
+							
+							SiteProfile instanceProfile = getSiteProfile(instanceManager);
 
-							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, callback.getSubmitActionID()));
+							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
 
 							if (res.isCommitted()) {
 
@@ -1352,6 +1354,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (user != null) {
 			XMLUtils.appendNewElement(doc, flowInstanceManagerPreviewElement, "loggedIn");
+		}
+		
+		if (requiresPayment(instanceManager)) {
+			
+			XMLUtils.appendNewElement(doc, flowInstanceManagerPreviewElement, "PaymentRequired");
 		}
 
 		if (validationError != null) {
@@ -2070,12 +2077,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			return callback.list(req, res, user, uriParser, Collections.singletonList(PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR));
 		}
-
+		
+		SiteProfile instanceProfile = getSiteProfile(instanceManager);
 		ViewFragment viewFragment;
 
 		try {
 
-			viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleStandalonePaymentCallback(this, callback.getSubmitActionID()));
+			viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleStandalonePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
 
 		} catch (Exception e) {
 
@@ -2328,7 +2336,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return submitEventAttributes;
 	}
 
-	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
@@ -2351,7 +2359,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		flowInstance.setStatus(nextStatus);
 		flowInstance.setLastStatusChange(currentTimestamp);
 
-		if(flowInstance.getFirstSubmitted() == null){
+		if (flowInstance.getFirstSubmitted() == null) {
 
 			flowInstance.setFirstSubmitted(currentTimestamp);
 		}
@@ -2360,24 +2368,24 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		FlowInstanceEvent event = addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.SUBMITTED, null, user, null, getPaymentCompleteSubmitEventAttributes(instanceManager));
 
-		sendSubmitEvent(instanceManager, event, actionID, null, true);
+		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
 
 	}
 
-	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
-		if(addPaymentEvent){
+		if (addPaymentEvent) {
 			
 			addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 
 		FlowInstanceEvent event = save(instanceManager, user, req, actionID, EventType.SUBMITTED, getPaymentCompleteSubmitEventAttributes(instanceManager));
 
-		sendSubmitEvent(instanceManager, event, actionID, null, true);
+		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
 
@@ -2388,6 +2396,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		instanceManager.getSessionAttributeHandler().removeAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 	}
 
+	public abstract String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req);
+	
 	public abstract String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req);
 
 	public abstract String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req);
@@ -2432,39 +2442,39 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	}
 
 	public boolean requiresPayment(FlowInstanceManager instanceManager) {
-
-		if(!instanceManager.getFlowInstance().getFlow().isPaymentSupportEnabled() || instanceManager.getFlowInstance().getFirstSubmitted() != null){
-
+		
+		if (!instanceManager.getFlowInstance().getFlow().isPaymentSupportEnabled() || instanceManager.getFlowInstance().getFirstSubmitted() != null) {
+			
 			return false;
 		}
-
+		
 		List<PaymentQuery> paymentQueries = instanceManager.getQueries(PaymentQuery.class);
-
+		
 		if (paymentQueries != null) {
-
+			
 			int amount = 0;
-
+			
 			for (PaymentQuery paymentQuery : paymentQueries) {
-
+				
 				if (paymentQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(paymentQuery.getInvoiceLines())) {
-
+					
 					for (InvoiceLine invoiceLine : paymentQuery.getInvoiceLines()) {
-
+						
 						amount += invoiceLine.getQuanitity() * invoiceLine.getUnitPrice();
-
+						
 					}
-
+					
 				}
-
+				
 			}
-
+			
 			if (amount > 0) {
-
+				
 				return true;
 			}
-
+			
 		}
-
+		
 		return false;
 	}
 

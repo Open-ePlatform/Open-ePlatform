@@ -215,6 +215,7 @@ import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListene
 import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
 import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
@@ -2765,25 +2766,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@Override
 	public String getSignFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return null;
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getSignSuccessURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getSaveAndSubmitURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public SettingHandler getSiteProfileSettingHandler(User user, HttpServletRequest req, URIParser uriParser) {
