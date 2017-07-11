@@ -10,7 +10,7 @@
 	<xsl:variable name="java.queryTypeName">Val av barn</xsl:variable>
 	<xsl:variable name="java.childSelectedAlternativeName">Barn valt</xsl:variable>
 	<xsl:variable name="java.singleGuardianAlternativeName">Ensam vårdnad</xsl:variable>
-	<xsl:variable name="java.multiGuardianAlternativeName">Delad vårdnad</xsl:variable>
+	<xsl:variable name="java.multiGuardianAlternativeName">Gemensam  vårdnad</xsl:variable>
 	
 	<xsl:variable name="java.exportChildCitizenName">Barnets namn</xsl:variable>
 	<xsl:variable name="java.exportChildCitizenIdentifier">Barnets personnummer</xsl:variable>
