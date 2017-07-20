@@ -23,13 +23,13 @@ public class IntegrationConfiguration extends GeneratedElementable {
 
 	@DAOManaged
 	@WebPopulate(maxLength=255)
-	@RequiredIfSet(paramName="enabled")
+	@RequiredIfSet(paramNames="enabled")
 	@XMLElement
 	private String receiverAddress;
 
 	@DAOManaged
 	@WebPopulate(maxLength=255)
-	@RequiredIfSet(paramName="enabled")
+	@RequiredIfSet(paramNames="enabled")
 	@XMLElement
 	private String serviceType;
 
