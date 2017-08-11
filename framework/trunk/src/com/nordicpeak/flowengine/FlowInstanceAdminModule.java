@@ -223,7 +223,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected ExternalMessageCRUD externalMessageCRUD;
 	protected InternalMessageCRUD internalMessageCRUD;
 
-	private FlowInstanceIndexer flowInstanceIndexer;
+	protected FlowInstanceIndexer flowInstanceIndexer;
 
 	private QueryParameterFactory<Status, Integer> statusIDParamFactory;
 	private QueryParameterFactory<Status, Flow> statusFlowParamFactory;
@@ -281,7 +281,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstanceIndexer oldIndexer = flowInstanceIndexer;
 
-		this.flowInstanceIndexer = new FlowInstanceIndexer(daoFactory, maxHitCount, systemInterface);
+		this.flowInstanceIndexer = createIndexer();
 		this.flowInstanceIndexer.setLogIndexing(this.logFlowInstanceIndexing);
 		
 		systemInterface.addStartupListener(this);
@@ -290,6 +290,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			oldIndexer.close();
 		}
+	}
+	
+	protected FlowInstanceIndexer createIndexer() throws Exception {
+		
+		return new FlowInstanceIndexer(daoFactory, maxHitCount, systemInterface);
 	}
 	
 	@Override
