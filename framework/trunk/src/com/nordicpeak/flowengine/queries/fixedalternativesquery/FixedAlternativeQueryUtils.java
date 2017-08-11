@@ -71,9 +71,9 @@ public class FixedAlternativeQueryUtils {
 			
 			for (ImmutableAlternative alternative : queryInstance.getAlternatives()) {
 				
-				if (!StringUtils.isEmpty(alternative.getValue())) {
+				if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {
 					
-					XMLUtils.appendNewElement(doc, element, "Value", alternative.getValue());
+					XMLUtils.appendNewElement(doc, element, "Value", alternative.getExportXMLValue());
 					
 				} else {
 					

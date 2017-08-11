@@ -57,7 +57,8 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 				}
 				
 				String sortOrder = req.getParameter("sortorder_" + alternativeID);
-				String value = req.getParameter("alternativevalue_" + alternativeID);
+				String xmlValue = req.getParameter("alternative-xml-value_" + alternativeID);
+				String attributeValue = req.getParameter("alternative-attribute-value_" + alternativeID);
 				Integer price = ValidationUtils.validateParameter("alternativeprice_" + alternativeID, req, false, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
 				
 				if (NumberUtils.isInt(sortOrder)) {
@@ -79,9 +80,14 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 						this.checkForExistingAlternatives(currentAlternatives, alternative, NumberUtils.toInt(alternativeID));
 					}
 					
-					if (!StringUtils.isEmpty(value)) {
+					if (!StringUtils.isEmpty(xmlValue)) {
 						
-						alternative.setValue(value);
+						alternative.setExportXMLValue(xmlValue);
+					}
+					
+					if (!StringUtils.isEmpty(attributeValue)) {
+						
+						alternative.setAttributeValue(attributeValue);
 					}
 					
 					alternatives.add(alternative);

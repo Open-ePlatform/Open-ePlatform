@@ -49,7 +49,12 @@ public class CheckboxAlternative extends GeneratedElementable implements Mutable
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
-	private String value;
+	private String xmlValue;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String attributeValue;
 	
 	@DAOManaged
 	@WebPopulate(populator = NonNegativeStringIntegerPopulator.class)
@@ -129,15 +134,25 @@ public class CheckboxAlternative extends GeneratedElementable implements Mutable
 	}
 	
 	@Override
-	public String getValue() {
-		return value;
+	public String getExportXMLValue() {
+		return xmlValue;
 	}
 	
 	@Override
-	public void setValue(String value) {
-		this.value = value;
+	public void setExportXMLValue(String value) {
+		this.xmlValue = value;
 	}
 	
+	@Override
+	public String getAttributeValue() {
+		return attributeValue;
+	}
+	
+	@Override
+	public void setAttributeValue(String attributeValue) {
+		this.attributeValue = attributeValue;
+	}
+
 	@Override
 	public Integer getPrice() {
 		return price;
@@ -162,25 +177,25 @@ public class CheckboxAlternative extends GeneratedElementable implements Mutable
 		result = prime * result + ((alternativeID == null) ? 0 : alternativeID.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
-
-		if(this == obj){
+		
+		if (this == obj) {
 			return true;
 		}
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		if(getClass() != obj.getClass()){
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		CheckboxAlternative other = (CheckboxAlternative)obj;
-		if(alternativeID == null){
-			if(other.alternativeID != null){
+		CheckboxAlternative other = (CheckboxAlternative) obj;
+		if (alternativeID == null) {
+			if (other.alternativeID != null) {
 				return false;
 			}
-		}else if(!alternativeID.equals(other.alternativeID)){
+		} else if (!alternativeID.equals(other.alternativeID)) {
 			return false;
 		}
 		return true;
@@ -194,8 +209,17 @@ public class CheckboxAlternative extends GeneratedElementable implements Mutable
 		alternativeID = XMLValidationUtils.validateParameter("alternativeID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
 		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, 1, 255, IntegerPopulator.getPopulator(), errors);
-		value = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		attributeValue = XMLValidationUtils.validateParameter("attributeValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		price = XMLValidationUtils.validateParameter("price", xmlParser, false, 1, 255, IntegerPopulator.getPopulator(), errors);
+		
+		if (xmlParser.getNode("value") != null) {
+			
+			xmlValue = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+			
+		} else {
+			
+			xmlValue = XMLValidationUtils.validateParameter("xmlValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		}
 		
 		if (!errors.isEmpty()) {
 			

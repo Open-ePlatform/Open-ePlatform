@@ -211,9 +211,8 @@
 		<xsl:param name="alternatives" />
 		<xsl:param name="freeTextAlternative" />
 		<xsl:param name="allowFreeTextAlternative" select="'true'"/>
-		<xsl:param name="allowValue" select="'false'"/>
 		<xsl:param name="requestparameters" select="requestparameters" />
-		<xsl:param name="editHiddenValue" select="'false'"/>
+		<xsl:param name="editExtraValues" select="'false'"/>
 		
 		<script type="text/javascript">
 			Alternativesi18n = {
@@ -258,12 +257,12 @@
 				<xsl:choose>
 					<xsl:when test="$requestparameters">
 						<xsl:apply-templates select="$requestparameters/parameter[starts-with(name,'alternative_')]" mode="alternative" >
-							<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+							<xsl:with-param name="editExtraValues" select="$editExtraValues"/>
 						</xsl:apply-templates>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:apply-templates select="$alternatives" >
-							<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+							<xsl:with-param name="editExtraValues" select="$editExtraValues"/>
 						</xsl:apply-templates>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -275,9 +274,10 @@
 					<xsl:with-param name="alternativeID" select="''" />
 					<xsl:with-param name="sortOrder" select="'sortIndex'" />
 					<xsl:with-param name="value" select="''" />
-					<xsl:with-param name="hiddenValue" select="''" />
+					<xsl:with-param name="xmlValue" select="''" />
+					<xsl:with-param name="attributeValue" select="''" />
 					<xsl:with-param name="disabled" select="'true'" />
-					<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+					<xsl:with-param name="editExtraValues" select="$editExtraValues"/>
 				</xsl:call-template>
 			</div>
 			
@@ -294,18 +294,36 @@
 						
 							<div class="floatleft full bigmarginbottom">
 							
-								<label for="alternativevalue" class="floatleft clearboth">
-									<xsl:value-of select="$i18n.AlternativeValue" />
+								<label for="alternative-xml-value" class="floatleft clearboth">
+									<xsl:value-of select="$i18n.AlternativeXMLValue" />
 								</label>
 								
 								<p class="tiny floatleft full">
-							  	<xsl:value-of select="$i18n.AlternativeValueDescription" />
+							  	<xsl:value-of select="$i18n.AlternativeXMLValueDescription" />
 							  </p>
 								
 								<div class="floatleft full">
 									<xsl:call-template name="createTextField">
-										<xsl:with-param name="id" select="'alternativevalue'"/>
-										<xsl:with-param name="name" select="'alternativevalue'"/>
+										<xsl:with-param name="id" select="'alternative-xml-value'"/>
+										<xsl:with-param name="name" select="'alternative-xml-value'"/>
+									</xsl:call-template>
+							  </div>
+							</div>
+							
+							<div class="floatleft full bigmarginbottom">
+							
+								<label for="alternative-attribute-value" class="floatleft clearboth">
+									<xsl:value-of select="$i18n.AlternativeAttributeValue" />
+								</label>
+								
+								<p class="tiny floatleft full">
+							  	<xsl:value-of select="$i18n.AlternativeAttributeValueDescription" />
+							  </p>
+								
+								<div class="floatleft full">
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="id" select="'alternative-attribute-value'"/>
+										<xsl:with-param name="name" select="'alternative-attribute-value'"/>
 									</xsl:call-template>
 							  </div>
 							</div>
@@ -370,9 +388,10 @@
 		<xsl:param name="alternativeID" />
 		<xsl:param name="sortOrder" />
 		<xsl:param name="value" />
-		<xsl:param name="hiddenValue" />
+		<xsl:param name="xmlValue" />
+		<xsl:param name="attributeValue" />
 		<xsl:param name="disabled" select="null" />
-		<xsl:param name="editHiddenValue" select="'false'"/>
+		<xsl:param name="editExtraValues" select="'false'"/>
 		
 		<div class="alternative full floatleft margintop marginbottom">
 			<img class="vertical-align-middle marginright cursor-move" src="{$commonImagePath}/move.png" title="{$i18n.MoveAlternative}"/>
@@ -392,9 +411,16 @@
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>
 			<xsl:call-template name="createHiddenField">
-				<xsl:with-param name="id" select="concat('alternativevalue_', $alternativeID)" />
-				<xsl:with-param name="name" select="concat('alternativevalue_', $alternativeID)" />
-				<xsl:with-param name="value" select="$hiddenValue" />
+				<xsl:with-param name="id" select="concat('alternative-xml-value_', $alternativeID)" />
+				<xsl:with-param name="name" select="concat('alternative-xml-value_', $alternativeID)" />
+				<xsl:with-param name="value" select="$xmlValue" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('alternative-attribute-value_', $alternativeID)" />
+				<xsl:with-param name="name" select="concat('alternative-attribute-value_', $alternativeID)" />
+				<xsl:with-param name="value" select="$attributeValue" />
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>
@@ -416,7 +442,7 @@
 				<xsl:with-param name="context" select="."/>
 			</xsl:apply-templates>
 			
-			<xsl:if test="$editHiddenValue = 'true'">
+			<xsl:if test="$editExtraValues = 'true'">
 			
 				<a href="#" onclick="openAlternativeModal(this, event)" title="{$i18n.EditAlternativeExtra}">
 					<img class="vertical-align-middle marginleft" src="{$commonImagePath}/pen.png"/>
@@ -440,7 +466,7 @@
 	</xsl:template>
 
 	<xsl:template match="parameter" mode="alternative">
-		<xsl:param name="editHiddenValue" select="'false'"/>
+		<xsl:param name="editExtraValues" select="'false'"/>
 		
 		<xsl:variable name="id" select="substring(name,13,47)" />
 		
@@ -448,8 +474,9 @@
 			<xsl:with-param name="alternativeID" select="$id" />
 			<xsl:with-param name="sortOrder" select="../parameter[name = concat('sortorder_',$id)]/value" />
 			<xsl:with-param name="value" select="value" />
-			<xsl:with-param name="hiddenValue" select="../parameter[name = concat('alternativevalue_',$id)]/value" />
-			<xsl:with-param name="editHiddenValue" select="$editHiddenValue"/>
+			<xsl:with-param name="xmlValue" select="../parameter[name = concat('alternative-xml-value_',$id)]/value" />
+			<xsl:with-param name="attributeValue" select="../parameter[name = concat('alternative-attribute-value_',$id)]/value" />
+			<xsl:with-param name="editExtraValues" select="$editExtraValues"/>
 		</xsl:call-template>
 			
 	</xsl:template>

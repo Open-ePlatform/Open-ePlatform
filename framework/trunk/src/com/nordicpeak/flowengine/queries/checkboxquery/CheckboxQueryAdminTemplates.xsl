@@ -48,7 +48,7 @@
 			<xsl:call-template name="createAlternativesForm">
 				<xsl:with-param name="alternatives" select="CheckboxQuery/Alternatives/CheckboxAlternative" />
 				<xsl:with-param name="freeTextAlternative" select="CheckboxQuery/freeTextAlternative" />
-				<xsl:with-param name="editHiddenValue" select="'true'" />
+				<xsl:with-param name="editExtraValues" select="'true'" />
 			</xsl:call-template>
 				
 			<div class="floatleft full bigmarginbottom">
@@ -115,7 +115,7 @@
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="id" select="'setAsAttribute'" />
 						<xsl:with-param name="name" select="'setAsAttribute'" />
-						<xsl:with-param name="element" select="TextAreaQuery" /> 
+						<xsl:with-param name="element" select="CheckboxQuery" /> 
 						<xsl:with-param name="class" select="'vertical-align-middle'" />
 					</xsl:call-template>
 						
@@ -132,7 +132,7 @@
 						<xsl:with-param name="id" select="'attributeName'"/>
 						<xsl:with-param name="name" select="'attributeName'"/>
 						<xsl:with-param name="title" select="$i18n.attributeName"/>
-						<xsl:with-param name="element" select="TextAreaQuery" />
+						<xsl:with-param name="element" select="CheckboxQuery" />
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
 			    </div>
@@ -206,8 +206,9 @@
 			<xsl:with-param name="alternativeID" select="alternativeID" />
 			<xsl:with-param name="sortOrder" select="sortIndex" />
 			<xsl:with-param name="value" select="name" />
-			<xsl:with-param name="hiddenValue" select="value" />
-			<xsl:with-param name="editHiddenValue" select="'true'" />
+			<xsl:with-param name="xmlValue" select="xmlValue" />
+			<xsl:with-param name="attributeValue" select="attributeValue" />
+			<xsl:with-param name="editExtraValues" select="'true'" />
 		</xsl:call-template>
 			
 	</xsl:template>

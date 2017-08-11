@@ -56,7 +56,12 @@ public class ChildAlternative extends GeneratedElementable implements ImmutableA
 	}
 
 	@Override
-	public String getValue() {
+	public String getExportXMLValue() {
+		return null;
+	}
+
+	@Override
+	public String getAttributeValue() {
 		return null;
 	}
 }

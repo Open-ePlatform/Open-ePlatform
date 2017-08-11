@@ -48,7 +48,7 @@
 			<xsl:call-template name="createAlternativesForm">
 				<xsl:with-param name="alternatives" select="DropDownQuery/Alternatives/DropDownAlternative" />
 				<xsl:with-param name="freeTextAlternative" select="DropDownQuery/freeTextAlternative" />
-				<xsl:with-param name="editHiddenValue" select="'true'" />
+				<xsl:with-param name="editExtraValues" select="'true'" />
 			</xsl:call-template>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -150,8 +150,9 @@
 			<xsl:with-param name="alternativeID" select="alternativeID" />
 			<xsl:with-param name="sortOrder" select="sortIndex" />
 			<xsl:with-param name="value" select="name" />
-			<xsl:with-param name="hiddenValue" select="value" />
-			<xsl:with-param name="editHiddenValue" select="'true'" />
+			<xsl:with-param name="xmlValue" select="xmlValue" />
+			<xsl:with-param name="attributeValue" select="attributeValue" />
+			<xsl:with-param name="editExtraValues" select="'true'" />
 		</xsl:call-template>
 			
 	</xsl:template>

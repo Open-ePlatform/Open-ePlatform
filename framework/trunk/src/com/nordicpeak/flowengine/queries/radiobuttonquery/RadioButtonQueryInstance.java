@@ -81,27 +81,34 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
-
+		
 		this.alternative = null;
 		freeTextAlternativeValue = null;
 		
-		if(query.isSetAsAttribute()){
-
+		if (query.isSetAsAttribute()) {
+			
 			resetAttribute(attributeHandler);
 		}
 		
 		super.reset(attributeHandler);
 	}
 	
-	public void setAttribute(MutableAttributeHandler attributeHandler){
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
 		
-		if(!StringUtils.isEmpty(freeTextAlternativeValue)){
+		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
 			
 			attributeHandler.setAttribute(query.getAttributeName(), freeTextAlternativeValue);
 			
-		} else if(alternative != null){
+		} else if (alternative != null) {
 			
-			attributeHandler.setAttribute(query.getAttributeName(), alternative.getName());
+			if (!StringUtils.isEmpty(alternative.getAttributeValue())) {
+				
+				attributeHandler.setAttribute(query.getAttributeName(), alternative.getAttributeValue());
+				
+			} else {
+				
+				attributeHandler.setAttribute(query.getAttributeName(), alternative.getName());
+			}
 		}
 	}
 	
@@ -143,8 +150,8 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 	@Override
 	public List<? extends ImmutableAlternative> getAlternatives() {
 
-		if(alternative == null){
-
+		if (alternative == null) {
+			
 			return null;
 		}
 
@@ -164,12 +171,12 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 	@Override
 	public String getStringValue() {
 
-		if(alternative != null){
-
+		if (alternative != null) {
+			
 			return alternative.getName();
-
-		}else if(freeTextAlternativeValue != null){
-
+			
+		} else if (freeTextAlternativeValue != null) {
+			
 			return freeTextAlternativeValue;
 		}
 

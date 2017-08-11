@@ -123,4 +123,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_query_alternatives`
+					CHANGE COLUMN `value` `xmlValue` VARCHAR(255) NULL DEFAULT NULL AFTER `name`,
+					ADD COLUMN `attributeValue` VARCHAR(255) NULL DEFAULT NULL AFTER `xmlValue`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

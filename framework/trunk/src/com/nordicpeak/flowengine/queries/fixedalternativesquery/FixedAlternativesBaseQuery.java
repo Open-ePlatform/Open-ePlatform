@@ -80,9 +80,9 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 
 				Element enumerationElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:enumeration");
 				
-				if (!StringUtils.isEmpty(alternative.getValue())) {
+				if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {
 					
-					enumerationElement.setAttribute("value", alternative.getValue());
+					enumerationElement.setAttribute("value", alternative.getExportXMLValue());
 					
 				} else {
 					enumerationElement.setAttribute("value", alternative.getName());

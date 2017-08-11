@@ -11,5 +11,7 @@ public interface ImmutableAlternative extends Elementable, Named{
 	@Override
 	public String getName();
 
-	public String getValue();
+	public String getExportXMLValue();
+	
+	public String getAttributeValue();
 }

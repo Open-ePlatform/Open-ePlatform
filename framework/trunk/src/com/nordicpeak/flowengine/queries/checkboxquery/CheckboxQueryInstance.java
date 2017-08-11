@@ -26,7 +26,6 @@ import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativeQueryUtils;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryInstance;
-import com.nordicpeak.flowengine.utils.NameUtils;
 
 @Table(name = "checkbox_query_instances")
 @XMLElement
@@ -158,21 +157,33 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		
 		List<String> attributeValues = null;
 		
-		if(alternatives != null){
+		if (alternatives != null) {
 			
-			attributeValues = NameUtils.getNameList(alternatives);
+			attributeValues = new ArrayList<String>(alternatives.size());
+			
+			for (CheckboxAlternative bean : alternatives) {
+				
+				if (!StringUtils.isEmpty(bean.getAttributeValue())) {
+					
+					attributeValues.add(bean.getAttributeValue());
+					
+				} else {
+					
+					attributeValues.add(bean.getName());
+				}
+			}
 		}
 		
-		if(!StringUtils.isEmpty(freeTextAlternativeValue)){
+		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
 			
 			attributeValues = CollectionUtils.addAndInstantiateIfNeeded(attributeValues, freeTextAlternativeValue);
 		}
 		
-		if(attributeValues != null){
+		if (attributeValues != null) {
 			
 			attributeHandler.setAttribute(query.getAttributeName(), StringUtils.toCommaSeparatedString(attributeValues));
 		}
-	}	
+	}
 	
 	public void copyQueryValues() {
 
