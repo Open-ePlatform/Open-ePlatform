@@ -84,8 +84,8 @@ public class FlowInstanceIndexer {
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
 	private static final String INTERNAL_MESSAGES = "internalMessages";
 	private static final String EXTERNAL_MESSAGES = "externalMessages";
-	private static final String ALLOWED_USER_FIELD = "allowedUser";
-	private static final String ALLOWED_GROUP_FIELD = "allowedGroup";
+	protected static final String ALLOWED_USER_FIELD = "allowedUser";
+	protected static final String ALLOWED_GROUP_FIELD = "allowedGroup";
 	
 	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
 
@@ -529,6 +529,8 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
+			addAdditionalFields(doc, flowInstance, flowFamily);
+			
 			indexWriter.addDocument(doc);
 
 		}catch(Exception e){
@@ -537,6 +539,11 @@ public class FlowInstanceIndexer {
 		}
 	}
 
+	protected void addAdditionalFields(Document doc, FlowInstance flowInstance, FlowFamily flowFamily) {
+		
+		//No extra fields to add here.
+	}
+	
 	public void deleteDocument(FlowInstance flowInstance) {
 
 		log.debug("Removing flow instance " + flowInstance + " from index.");
