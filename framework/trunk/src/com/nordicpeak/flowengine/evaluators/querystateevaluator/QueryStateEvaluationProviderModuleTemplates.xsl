@@ -130,7 +130,7 @@
 					
 				</xsl:when>
 				<xsl:otherwise>
-					<p>
+					<p class="floatleft full">
 						<xsl:value-of select="$i18n.QueryHasNoAlternatives" />
 					</p>
 				</xsl:otherwise>

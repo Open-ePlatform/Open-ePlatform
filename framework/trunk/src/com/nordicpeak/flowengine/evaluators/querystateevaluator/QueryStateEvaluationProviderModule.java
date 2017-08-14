@@ -180,26 +180,29 @@ public class QueryStateEvaluationProviderModule extends BaseQueryStateEvaluation
 			List<? extends ImmutableAlternative> sourceAlternatives = ((FixedAlternativesQuery) sourceQuery).getAlternatives();
 			List<? extends ImmutableAlternative> copyAlternatives = ((FixedAlternativesQuery) copyQuery).getAlternatives();
 			
-			List<Integer> newRequiredAlternativeIDs = new ArrayList<Integer>(evaluator.getRequiredAlternativeIDs().size());
-			
-			for (Integer requiredAlternativeID : evaluator.getRequiredAlternativeIDs()) {
+			if (!CollectionUtils.isEmpty(sourceAlternatives) && !CollectionUtils.isEmpty(copyAlternatives)) {
 				
-				int alternativeIndex = 0;
+				List<Integer> newRequiredAlternativeIDs = new ArrayList<Integer>(evaluator.getRequiredAlternativeIDs().size());
 				
-				while (alternativeIndex < sourceAlternatives.size()) {
+				for (Integer requiredAlternativeID : evaluator.getRequiredAlternativeIDs()) {
 					
-					if (sourceAlternatives.get(alternativeIndex).getAlternativeID().equals(requiredAlternativeID)) {
+					int alternativeIndex = 0;
+					
+					while (alternativeIndex < sourceAlternatives.size()) {
 						
-						newRequiredAlternativeIDs.add(copyAlternatives.get(alternativeIndex).getAlternativeID());
+						if (sourceAlternatives.get(alternativeIndex).getAlternativeID().equals(requiredAlternativeID)) {
+							
+							newRequiredAlternativeIDs.add(copyAlternatives.get(alternativeIndex).getAlternativeID());
+							
+							break;
+						}
 						
-						break;
+						alternativeIndex++;
 					}
-					
-					alternativeIndex++;
 				}
+				
+				evaluator.setRequiredAlternativeIDs(newRequiredAlternativeIDs);
 			}
-			
-			evaluator.setRequiredAlternativeIDs(newRequiredAlternativeIDs);
 		}
 		
 		this.evaluatorDAO.add(evaluator, transactionHandler, null);
