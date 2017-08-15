@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -28,6 +29,7 @@ import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
@@ -322,15 +324,15 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	
 	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
 		
-		String signerSSN = UserUtils.getAttribute(CITIZEN_IDENTIFIER, user);
+		String citizenIdentifier = UserUtils.getAttribute(CITIZEN_IDENTIFIER, user);
 		
-		if (signerSSN == null) {
+		if (citizenIdentifier == null) {
 			
 			log.warn("Unable to find " + CITIZEN_IDENTIFIER + " identifier attribute for user " + user + " requesting flow instance " + instanceManager);
 			return null;
 		}
 		
-		return getValidSignatureForCurrentSigningChain(instanceManager, signerSSN);
+		return getValidSignatureForCurrentSigningChain(instanceManager, citizenIdentifier);
 	}
 	
 	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, SigningParty signingParty) throws SQLException {
@@ -338,11 +340,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return getValidSignatureForCurrentSigningChain(instanceManager, signingParty.getSocialSecurityNumber());
 	}
 	
-	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, String signerSSN) throws SQLException {
+	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, String citizenIdentifier) throws SQLException {
 		
-		if (signerSSN == null) {
+		if (citizenIdentifier == null) {
 			
-			throw new NullPointerException("signerSSN can not be null for flow instance " + instanceManager);
+			throw new NullPointerException("citizenIdentifier can not be null for flow instance " + instanceManager);
 		}
 		
 		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvents(instanceManager.getFlowInstance());
@@ -351,7 +353,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			return null;
 		}
 		
-		Signature signature = getSignature(instanceManager.getFlowInstanceID(), signerSSN);
+		Signature signature = getSignature(instanceManager.getFlowInstanceID(), citizenIdentifier);
 		
 		if (signature != null && signature.getEventID() > signingChainStartEvent.getEventID()) {
 			
@@ -933,4 +935,24 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return null;
 	}
 	
+	@EventListener(channel = FlowInstance.class)
+	public void processEvent(CRUDEvent<FlowInstance> event, EventSource source) throws SQLException {
+		
+		if (source.isLocal()) {
+			
+			if (event.getAction() == CRUDAction.DELETE) {
+				
+				for (FlowInstance flowInstance : event.getBeans()) {
+					
+					log.info("Deleting signatures for flow instance " + flowInstance);
+					
+					HighLevelQuery<Signature> query = new HighLevelQuery<Signature>();
+					
+					query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+					
+					signatureDAO.delete(query);
+				}
+			}
+		}
+	}	
 }
