@@ -388,7 +388,15 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 									String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
 
-									if (NumberUtils.toInt(genderPart) % 2 == 0) {
+									Integer genderPartInt = NumberUtils.toInt(genderPart);
+									
+									if(genderPartInt == null){
+										
+										unkownCount++;
+										continue;
+									}
+									
+									if (genderPartInt % 2 == 0) {
 										femaleCount++;
 									} else {
 										maleCount++;
