@@ -597,8 +597,25 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 					currentRow.setCellValue(columnIndex++, flow.getName());
 					currentRow.setCellValue(columnIndex++, flow.getFlowType().getName());
-					currentRow.setCellValue(columnIndex++, StringUtils.toCommaSeparatedString(setting.getDataAlternatives()));
-					currentRow.setCellValue(columnIndex++, StringUtils.toCommaSeparatedString(setting.getReasonAlternatives()));
+					
+					if (setting.getDataAlternatives() != null) {
+						
+						currentRow.setCellValue(columnIndex++, StringUtils.toCommaSeparatedString(setting.getDataAlternatives()));
+						
+					} else {
+						
+						currentRow.setCellValue(columnIndex++, "");
+					}
+					
+					if (setting.getReasonAlternatives() != null) {
+						
+						currentRow.setCellValue(columnIndex++, StringUtils.toCommaSeparatedString(setting.getReasonAlternatives()));
+						
+					} else {
+						
+						currentRow.setCellValue(columnIndex++, "");
+					}
+					
 					currentRow.setCellValue(columnIndex++, setting.getYearsSaved() != null ? setting.getYearsSaved().toString() : yearsSavedInfinite);
 					currentRow.setCellValue(columnIndex++, flow.getFlowFamily().getOwnerName());
 					currentRow.setCellValue(columnIndex++, setting.getReason());
