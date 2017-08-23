@@ -280,9 +280,9 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		return status;
 	}
 
-	public void setStatus(Status flowState) {
+	public void setStatus(Status status) {
 
-		this.status = flowState;
+		this.status = status;
 	}
 
 	@Override
