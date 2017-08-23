@@ -11,4 +11,8 @@
 	<xsl:variable name="i18n.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part3"> tecken!</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
+	
+	<xsl:variable name="i18n.js.ColorChoose">Välj</xsl:variable>
+	<xsl:variable name="i18n.js.ColorCancel">Avbryt</xsl:variable>
+	
 </xsl:stylesheet>

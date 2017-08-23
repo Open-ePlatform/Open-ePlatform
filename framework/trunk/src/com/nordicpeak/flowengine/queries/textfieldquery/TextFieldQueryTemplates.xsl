@@ -16,8 +16,14 @@
 		/timepicker/css/jquery.timepicker.css
 	</xsl:variable>
 
+	<xsl:variable name="links">
+		/css/spectrum.css
+		/css/textfieldquery.css
+	</xsl:variable>
+
 	<xsl:variable name="scripts">
 		/js/jquery.ui.datepicker-sv.js
+		/js/spectrum.js
 		/js/textfieldquery.js
 	</xsl:variable>
 
@@ -138,7 +144,14 @@
 			
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initTextFieldQuery('<xsl:value-of select="TextFieldQueryInstance/TextFieldQuery/queryID" />');});</script>
+		<script type="text/javascript">
+			TextFieldQueryi18n = {
+				colorChoose: "<xsl:value-of select="$i18n.js.ColorChoose"/>",
+				colorCancel: "<xsl:value-of select="$i18n.js.ColorCancel"/>",
+			}
+					
+			$(document).ready(function(){initTextFieldQuery('<xsl:value-of select="TextFieldQueryInstance/TextFieldQuery/queryID" />');});
+		</script>
 		
 	</xsl:template>
 	
@@ -182,6 +195,25 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
+			
+			<xsl:variable name="class2">
+				<xsl:value-of select="$class"/>
+				<xsl:choose>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHEXValidator'">
+						<xsl:text> color color-hex</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorRGBValidator'">
+						<xsl:text> color color-rgb</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSLValidator'">
+						<xsl:text> color color-hsl</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSVValidator'">
+						<xsl:text> color color-hsv</xsl:text>
+					</xsl:when>
+					<xsl:otherwise/>
+				</xsl:choose>
+			</xsl:variable>
 
 			<xsl:call-template name="createTextField">
 				<xsl:with-param name="name">
@@ -194,7 +226,7 @@
 				<xsl:with-param name="value" select="../../../Values/TextFieldValue[TextField/textFieldID = $textFieldID]/value"/>
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 				<xsl:with-param name="size" select="$size"/>
-				<xsl:with-param name="class" select="$class"/>
+				<xsl:with-param name="class" select="$class2"/>
 				<xsl:with-param name="placeholder" select="placeholderText"/>
 				<xsl:with-param name="type">
 					<xsl:choose>

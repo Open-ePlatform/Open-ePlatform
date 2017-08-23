@@ -1,0 +1,23 @@
+@CHARSET "ISO-8859-1";
+
+.textfieldquery div.sp-replacer {
+	float: left;
+	margin-top: 12px;
+}
+
+.sp-container .sp-palette {
+	max-width: 200px;
+}
+
+.textfieldquery input.color {
+	float: left;
+	margin-right: 10px;
+	width: 327px !important; /* 388px - 10px padding to colorpicker, 51px colorpicker, 56px textfield spacing  */
+/* 	width: calc(100% - 117px) !important; 10px padding to colorpicker, 51px colorpicker, 56px textfield spacing  */
+}
+
+@media screen and (max-width: 1204px) {
+	.textfieldquery input.color {
+		width: calc(100% - 61px) !important; /* 10px padding to colorpicker, 51px colorpicker  */
+	}
+}
