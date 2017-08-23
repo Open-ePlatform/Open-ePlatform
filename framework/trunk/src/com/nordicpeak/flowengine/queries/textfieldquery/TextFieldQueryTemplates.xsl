@@ -165,6 +165,21 @@
 			<xsl:if test="../../../../ValidationErrors/validationError[fieldName = $textFieldID]">
 				<xsl:text>invalid input-error</xsl:text>
 			</xsl:if>
+			<xsl:choose>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHEXValidator'">
+						<xsl:text> color color-hex</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorRGBValidator'">
+						<xsl:text> color color-rgb</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSLValidator'">
+						<xsl:text> color color-hsl</xsl:text>
+					</xsl:when>
+					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSVValidator'">
+						<xsl:text> color color-hsv</xsl:text>
+					</xsl:when>
+					<xsl:otherwise/>
+				</xsl:choose>
 		</xsl:variable>
 
 		<div class="split break {$class}">
@@ -196,25 +211,6 @@
 				</xsl:choose>
 			</xsl:variable>
 			
-			<xsl:variable name="class2">
-				<xsl:value-of select="$class"/>
-				<xsl:choose>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHEXValidator'">
-						<xsl:text> color color-hex</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorRGBValidator'">
-						<xsl:text> color color-rgb</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSLValidator'">
-						<xsl:text> color color-hsl</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSVValidator'">
-						<xsl:text> color color-hsv</xsl:text>
-					</xsl:when>
-					<xsl:otherwise/>
-				</xsl:choose>
-			</xsl:variable>
-
 			<xsl:call-template name="createTextField">
 				<xsl:with-param name="name">
 					<xsl:value-of select="'q'"/>
@@ -226,7 +222,7 @@
 				<xsl:with-param name="value" select="../../../Values/TextFieldValue[TextField/textFieldID = $textFieldID]/value"/>
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 				<xsl:with-param name="size" select="$size"/>
-				<xsl:with-param name="class" select="$class2"/>
+				<xsl:with-param name="class" select="$class"/>
 				<xsl:with-param name="placeholder" select="placeholderText"/>
 				<xsl:with-param name="type">
 					<xsl:choose>
