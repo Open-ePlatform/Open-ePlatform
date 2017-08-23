@@ -608,6 +608,9 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		checkState();
 
+		req.setAttribute("MutableFlowInstanceManager.currentStepIndex", currentStepIndex);
+		req.setAttribute("MutableFlowInstanceManager.flowFamilyID", this.flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+
 		ManagedStep currentStep = managedSteps.get(currentStepIndex);
 
 		ArrayList<QueryResponse> queryResponses = new ArrayList<QueryResponse>(currentStep.getManagedQueryInstances().size());
@@ -625,7 +628,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				queryResponses.add(new QueryResponse(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor()));
 			}
 		}
-
+		
 		return new ManagerResponse(currentStep.getStep().getStepID(), currentStepIndex, queryResponses, false, concurrentModificationLock);
 	}
 
