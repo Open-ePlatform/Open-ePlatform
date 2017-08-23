@@ -1339,6 +1339,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected ForegroundModuleResponse showPreview(HttpServletRequest req, User user, URIParser uriParser, MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowAction lastFlowAction, String baseUpdateURL, ValidationError validationError, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
 
 		log.info("User " + user + " requested preview of flow instance " + instanceManager.getFlowInstance());
+		
+		req.setAttribute("BaseFlowModule.preview", "preview");
 
 		List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, baseUpdateURL, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
 
@@ -1372,7 +1374,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName());
 
 		appendLinksAndScripts(moduleResponse, managerResponses);
-
+		
 		return moduleResponse;
 	}
 
@@ -1453,6 +1455,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		if (showMode == ShowMode.SUBMIT) {
 
 			elementName = "FlowInstanceManagerSubmitted";
+			
+			req.setAttribute("BaseFlowModule.flowFamilyID", instanceManager.getFlowInstance().getFlow().getFlowFamily().getFlowFamilyID());
+			req.setAttribute("BaseFlowModule.submitted", "submitted");
 
 		} else {
 
