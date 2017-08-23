@@ -139,7 +139,7 @@
 
 	<xsl:template match="ShowFlowFeedbackSurveys">
 		
-		<p class="nomargin"><strong><xsl:value-of select="$i18n.FeedbackSurveyTitle" />?</strong></p>
+		<p class="nomargin"><strong><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></strong></p>
 		
 		<xsl:choose>
 			<xsl:when test="ChartData">
