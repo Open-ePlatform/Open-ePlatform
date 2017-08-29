@@ -351,10 +351,19 @@
 							<tr>
 								<th class="icon no-sort"></th>
 								<th class="service"><span data-icon-after="_"><xsl:value-of select="$i18n.Flow" /></span></th>
-								<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID.short" /></span></th>
-								
+
 								<xsl:if test="SiteProfiles">
 									<th class="siteProfile"><span data-icon-after="_"><xsl:value-of select="$i18n.SiteProfile" /></span></th>
+								</xsl:if>
+
+								<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID.short" /></span></th>
+								
+								<xsl:if test="ShowDescriptionColumn">
+									<th class="errando">
+										<span>
+											<xsl:value-of select="$i18n.Description"/>
+										</span>
+									</th>
 								</xsl:if>
 								
 								<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
@@ -371,10 +380,7 @@
 								<xsl:otherwise>
 									<tr>
 										<td />
-										<td colspan="6">
-											<xsl:if test="SiteProfiles">
-												<xsl:attribute name="colspan">7</xsl:attribute>
-											</xsl:if>
+										<td colspan="{6 + count(SiteProfiles) + count(ShowDescriptionColumn)}">
 											<xsl:value-of select="$i18n.NoFlowInstances" />
 										</td>
 									</tr>
@@ -532,23 +538,17 @@
 		<tr class="emergency" onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{flowInstanceID}'">
 			<td class="icon"><i data-icon-before="!"></i></td>
 			<td data-title="{$i18n.Flow}" class="service"><xsl:value-of select="Flow/name" /></td>
-			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno"><xsl:value-of select="flowInstanceID" /></td>
 			
-			<xsl:if test="../../SiteProfiles">
+			<xsl:call-template name="printSiteProfile"/>
+			
+			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno">
 				
-				<td data-title="{$i18n.SiteProfile}" class="siteProfile">
-				
-					<xsl:if test="profileID">
-						
-						<xsl:variable name="profileID" select="profileID"/>
-						
-						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />
-						
-					</xsl:if>
-					
-				</td>
-				
-			</xsl:if>			
+				<xsl:value-of select="flowInstanceID" />
+			
+				<xsl:call-template name="printExternalID"/>
+			</td>
+			
+			<xsl:call-template name="printDescription"/>
 			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date"><xsl:value-of select="lastStatusChange" /></td>
@@ -568,23 +568,18 @@
 		<tr onclick="location.href='{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{flowInstanceID}'">
 			<td class="icon"><i data-icon-before="!"></i></td>
 			<td data-title="{$i18n.Flow}" class="service"><xsl:value-of select="Flow/name" /></td>
-			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno"><xsl:value-of select="flowInstanceID" /></td>
 			
-			<xsl:if test="../../SiteProfiles">
+			<xsl:call-template name="printSiteProfile"/>
+			
+			<td data-title="{$i18n.FlowInstanceID.short}" class="errandno">
+			
+				<xsl:value-of select="flowInstanceID" />
+			
+				<xsl:call-template name="printExternalID"/>
 				
-				<td data-title="{$i18n.SiteProfile}" class="siteProfile">
-				
-					<xsl:if test="profileID">
-						
-						<xsl:variable name="profileID" select="profileID"/>
-						
-						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />
-						
-					</xsl:if>
-					
-				</td>
-				
-			</xsl:if>			
+			</td>
+			
+			<xsl:call-template name="printDescription"/>
 			
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.Date}" class="date"><xsl:value-of select="lastStatusChange" /></td>
@@ -592,6 +587,64 @@
 		</tr>
 	
 	</xsl:template>
+
+	<xsl:template name="printSiteProfile">
+	
+		<xsl:if test="../../SiteProfiles">
+			
+			<td data-title="{$i18n.SiteProfile}" class="siteProfile">
+				
+				<xsl:choose>
+					<xsl:when test="Attributes/Attribute/Name = 'siteProfileName'">
+					
+						<xsl:value-of select="Attributes/Attribute[Name = 'siteProfileName']/Value"/>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<xsl:variable name="profileID" select="profileID"/>
+						
+						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />							
+					
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+					
+		</xsl:if>	
+	
+	</xsl:template>
+	
+	<xsl:template name="printExternalID">
+
+		<xsl:if test="../../ShowExternalID or ../ShowExternalID">
+		
+			<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
+			
+			<xsl:if test="$externalID">
+			
+				<xsl:text> / </xsl:text>
+				
+				<xsl:value-of select="$externalID"/>
+			
+			</xsl:if>					
+		
+		</xsl:if>
+	
+	</xsl:template>		
+	
+	<xsl:template name="printDescription">
+	
+		<xsl:if test="../../ShowDescriptionColumn">
+			
+			<td data-title="{$i18n.Description}" class="description">
+				
+				<xsl:value-of select="Attributes/Attribute[Name = 'description']/Value"/>			
+				
+			</td>
+					
+		</xsl:if>	
+	
+	</xsl:template>	
 	
 	<xsl:template name="createFlowInstanceList">
 		
@@ -602,11 +655,20 @@
 				<tr>
 					<th class="icon no-sort"></th>
 					<th data-title="{$i18n.Flow}" class="service"><span data-icon-after="_"><xsl:value-of select="$i18n.Flow" /></span></th>
-					<th data-title="{$i18n.FlowInstanceID.short}" class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID.short" /></span></th>
 					
 					<xsl:if test="SiteProfiles">
 						<th class="siteProfile"><span data-icon-after="_"><xsl:value-of select="$i18n.SiteProfile" /></span></th>
-					</xsl:if>					
+					</xsl:if>						
+					
+					<th data-title="{$i18n.FlowInstanceID.short}" class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID.short" /></span></th>
+					
+					<xsl:if test="ShowDescriptionColumn">
+						<th class="errando">
+							<span>
+								<xsl:value-of select="$i18n.Description"/>
+							</span>
+						</th>
+					</xsl:if>
 					
 					<th data-title="{$i18n.Status}" class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
 					<th data-title="{$i18n.Date}" class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Date" /></span></th>
@@ -621,12 +683,7 @@
 					<xsl:otherwise>
 						<tr>
 							<td />
-							<td colspan="5">
-								
-								<xsl:if test="SiteProfiles">
-									<xsl:attribute name="colspan">6</xsl:attribute>
-								</xsl:if>
-								
+							<td colspan="{5 + count(SiteProfiles) + count(ShowDescriptionColumn)}">
 								<xsl:value-of select="$i18n.NoFlowInstances" />
 							</td>
 						</tr>
@@ -659,8 +716,59 @@
 		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
 		  				</figure>
 		  				<div class="heading">
-	  						<h1 class="xl"><xsl:value-of select="Flow/name" /><b><xsl:text>&#160;</xsl:text>(<xsl:value-of select="Status/name" />)</b></h1>
-							<span class="errandno hide-mobile"><xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="flowInstanceID" /></span>
+	  						<h1 class="xl">
+	  							<xsl:value-of select="Flow/name" />
+	  							<b>
+	  								<xsl:text>&#160;(</xsl:text>
+	  								<xsl:value-of select="Status/name" />
+	  								<xsl:text>)</xsl:text>
+	  							</b>
+	  						</h1>
+							
+							<span class="errandno hide-mobile">
+								<xsl:value-of select="$i18n.FlowInstanceID" />
+								<xsl:text>:&#160;</xsl:text>
+							</span>
+							
+							<span class="hide-mobile">									
+								<xsl:value-of select="flowInstanceID" />
+								
+								<xsl:call-template name="printExternalID"/>
+							</span>
+							
+							<br/>
+							
+							<xsl:if test="../ShowDescriptionColumn">
+								
+								<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+								
+									<xsl:if test="$description">
+									
+									<span class="errandno hide-mobile">
+										
+										<xsl:value-of select="$i18n.Description" />
+										
+										<xsl:text>:&#160;</xsl:text>
+									</span>
+							
+									<span class="hide-mobile">	
+										<xsl:value-of select="$description"/>	
+									</span>
+											
+									<br/>							
+								
+								</xsl:if>
+								
+							</xsl:if>							
+							
+							<span class="errandno hide-mobile">
+								<xsl:value-of select="$i18n.CurrentStatus" />
+								<xsl:text>:&#160;</xsl:text>
+							</span>
+							
+							<span class="hide-mobile">
+								<xsl:value-of select="Status/name" />
+							</span>
 						</div>
 					</div>
   				</div>
@@ -671,8 +779,35 @@
   					<xsl:variable name="submittedEvents" select="events/FlowInstanceEvent[eventType='SUBMITTED']" />
   					
   					<p class="only-mobile">
-  						<strong class="overview"><xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text></strong><xsl:value-of select="flowInstanceID" />
+  						<strong class="overview">
+  							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
+  						</strong>
+  						
+  						<xsl:value-of select="flowInstanceID" />
+  						
+  						<xsl:call-template name="printExternalID"/>
   					</p>
+  					
+					<xsl:if test="../ShowDescriptionColumn">
+						
+						<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+						
+							<xsl:if test="$description">
+						
+							<p class="only-mobile">	
+								<strong class="overview">
+									
+									<xsl:value-of select="$i18n.Description" />
+									
+									<xsl:text>:&#160;</xsl:text>
+								</strong>
+						
+								<xsl:value-of select="$description"/>	
+							</p>
+									
+						</xsl:if>
+						
+					</xsl:if>
   					
   					<xsl:if test="../Profile">
   					

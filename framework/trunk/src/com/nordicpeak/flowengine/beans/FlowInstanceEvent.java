@@ -34,7 +34,7 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 	private static final long serialVersionUID = -2876177448272548003L;
 
-	public static final Field FLOWINSTANCE_RELATION = ReflectionUtils.getField(FlowInstanceEvent.class,"flowInstance");
+	public static final Field FLOW_INSTANCE_RELATION = ReflectionUtils.getField(FlowInstanceEvent.class,"flowInstance");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstanceEvent.class,"attributes");
 	
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstanceEvent.class,"poster");

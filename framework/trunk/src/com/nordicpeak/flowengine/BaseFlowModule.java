@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +43,6 @@ import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.EventHandler;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
@@ -57,7 +55,6 @@ import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
@@ -157,6 +154,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.validationerrors.FileUploadValidationError;
 
@@ -165,8 +163,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	public static final Field[] FLOW_RELATIONS = { Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION };
 	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.ATTRIBUTES_RELATION };
 	public static final Field[] FLOW_INSTANCE_SAVED_MUTABLE_ACCESS_CHECK_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION };
-
-	public static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 
 	public static final ValidationError PREVIEW_NOT_ENABLED_VALIDATION_ERROR = new ValidationError("PreviewNotEnabledForCurrentFlow");
 	public static final ValidationError PREVIEW_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR = new ValidationError("PreviewOnlyAvailableWhenFlowFullyPopulated");
@@ -233,6 +229,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected QueryParameterFactory<FlowInstanceEvent, FlowInstance> eventFlowInstanceParamFactory;
 	protected QueryParameterFactory<QueryInstanceDescriptor, Integer> queryInstanceDescriptorFlowInstanceIDParamFactory;
 
+	protected FlowInstanceEventGenerator flowInstanceEventGenerator;
+	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
@@ -246,6 +244,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		eventFlowInstanceParamFactory = daoFactory.getFlowInstanceEventDAO().getParamFactory("flowInstance", FlowInstance.class);
 		queryInstanceDescriptorFlowInstanceIDParamFactory = daoFactory.getQueryInstanceDescriptorDAO().getParamFactory("flowInstanceID", Integer.class);
 
+		flowInstanceEventGenerator = new FlowInstanceEventGenerator(daoFactory);
+		
 		eventHandler = systemInterface.getEventHandler();
 	}
 	
@@ -1172,7 +1172,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (!instanceManager.getFlowInstance().getStatus().getContentType().equals(ContentType.NEW)) {
 
-			event = addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, poster, savedTimestamp, eventAttributes);
+			event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, poster, savedTimestamp, eventAttributes);
 		}
 
 		eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(crudAction, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
@@ -1599,54 +1599,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected void sendSubmitEvent(FlowInstanceManager instanceManager, FlowInstanceEvent event, String actionID, SiteProfile siteProfile, boolean forcePDF) {
 
 		eventHandler.sendEvent(FlowInstanceManager.class, new SubmitEvent(instanceManager, event, moduleDescriptor, actionID, siteProfile, forcePDF), EventTarget.ALL);
-	}
-
-	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user) throws SQLException {
-
-		return addFlowInstanceEvent(flowInstance, eventType, details, user, null);
-	}
-
-	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp) throws SQLException {
-
-		return addFlowInstanceEvent(flowInstance, eventType, details, user, timestamp, null);
-	}
-
-	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp, Map<String,String> eventAttributes) throws SQLException {
-
-		FlowInstanceEvent flowInstanceEvent = new FlowInstanceEvent();
-		flowInstanceEvent.setFlowInstance((FlowInstance) flowInstance);
-		flowInstanceEvent.setEventType(eventType);
-		flowInstanceEvent.setDetails(details);
-		flowInstanceEvent.setPoster(user);
-		flowInstanceEvent.setStatus(flowInstance.getStatus().getName());
-		flowInstanceEvent.setStatusDescription(flowInstance.getStatus().getDescription());
-
-		if(timestamp == null){
-
-			flowInstanceEvent.setAdded(TimeUtils.getCurrentTimestamp());
-
-		}else{
-
-			flowInstanceEvent.setAdded(timestamp);
-		}
-
-		if(eventAttributes != null){
-
-			MutableAttributeHandler attributeHandler = flowInstanceEvent.getAttributeHandler();
-
-			for(Entry<String,String> entry : eventAttributes.entrySet()){
-
-				attributeHandler.setAttribute(entry.getKey(), entry.getValue());
-			}
-
-			daoFactory.getFlowInstanceEventDAO().add(flowInstanceEvent, FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY);
-
-		}else{
-
-			daoFactory.getFlowInstanceEventDAO().add(flowInstanceEvent);
-		}
-
-		return flowInstanceEvent;
 	}
 
 	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
@@ -2305,7 +2257,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	public FlowInstanceEvent createSigningEvent(MutableFlowInstanceManager instanceManager, User user, EventType eventType, String actionID) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException {
 
-		return addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, user);
+		return flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, user);
 	}
 
 	public void signingComplete(MutableFlowInstanceManager instanceManager, FlowInstanceEvent event, HttpServletRequest req, SiteProfile siteProfile, String actionID) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
@@ -2349,7 +2301,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (addPaymentEvent) {
 		
-			addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
+			flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 
 		Status nextStatus = flowInstance.getFlow().getDefaultState(actionID);
@@ -2371,7 +2323,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		this.daoFactory.getFlowInstanceDAO().update(flowInstance);
 		
-		FlowInstanceEvent event = addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.SUBMITTED, null, user, null, getPaymentCompleteSubmitEventAttributes(instanceManager));
+		FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.SUBMITTED, null, user, null, getPaymentCompleteSubmitEventAttributes(instanceManager));
 
 		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 
@@ -2385,7 +2337,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		if (addPaymentEvent) {
 			
-			addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.PAYED, eventDetails, user, null, eventAttributes);
+			flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 
 		FlowInstanceEvent event = save(instanceManager, user, req, actionID, EventType.SUBMITTED, getPaymentCompleteSubmitEventAttributes(instanceManager));
@@ -2508,5 +2460,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		query.addParameter(eventIDParamFactory.getParameter(eventID));
 		
 		return daoFactory.getFlowInstanceEventDAO().get(query);
+	}
+
+	
+	public FlowInstanceEventGenerator getFlowInstanceEventHandler() {
+	
+		return flowInstanceEventGenerator;
 	}
 }

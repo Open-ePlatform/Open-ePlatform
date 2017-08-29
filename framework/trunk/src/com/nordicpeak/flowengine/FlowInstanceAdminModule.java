@@ -5,9 +5,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -77,6 +75,7 @@ import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceAttribute;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
@@ -132,6 +131,7 @@ import com.nordicpeak.flowengine.notifications.interfaces.Notification;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
+import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
@@ -161,9 +161,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerUsersNotFoundError");
 
 	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
-	
-	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID = "externalMessageID";
-	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE = "externalMessageFragment";
 	
 	@XSLVariable(prefix = "java.")
 	protected String noManagersSelected = "No managers selected";
@@ -197,6 +194,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected boolean enableSiteProfileSupport;
 
 	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable external ID support", description = "Controls if external ID is displayed")
+	protected boolean enableExternalID;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable the description column", description = "Controls if description column is visible")
+	protected boolean enableDescriptionColumn;
+	
+	@ModuleSetting
 	@CheckboxSettingDescriptor(name="Enable logging of flow instance indexing", description="Enables logging of indexing of flow instances")
 	protected boolean logFlowInstanceIndexing;
 	
@@ -229,14 +234,18 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	private QueryParameterFactory<Status, Flow> statusFlowParamFactory;
 	private QueryParameterFactory<UserBookmark, FlowInstance> bookmarkFlowInstanceParamFactory;
 	private QueryParameterFactory<UserBookmark, User> bookmarkUserParamFactory;
+	private QueryParameterFactory<FlowInstanceAttribute, String> attributeNameParamFactory;
 
+	protected List<String> selectedAttributes;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
 		systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this);
-		
+
+		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 	}
 
 	@Override
@@ -272,8 +281,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		statusFlowParamFactory = daoFactory.getStatusDAO().getParamFactory("flow", Flow.class);
 		bookmarkFlowInstanceParamFactory = daoFactory.getUserBookmarkDAO().getParamFactory("flowInstance", FlowInstance.class);
 		bookmarkUserParamFactory = daoFactory.getUserBookmarkDAO().getParamFactory("user", User.class);
-
-		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
+		attributeNameParamFactory = daoFactory.getFlowInstanceAttributeDAO().getParamFactory("name", String.class);
 	}
 
 	@Override
@@ -290,6 +298,27 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			oldIndexer.close();
 		}
+		
+		if(enableExternalID || enableDescriptionColumn){
+			
+			ArrayList<String> attributes = new ArrayList<String>(2);
+			
+			if(enableExternalID){
+				
+				attributes.add(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE);
+			}
+			
+			if(enableDescriptionColumn){
+				
+				attributes.add(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
+			}
+			
+			this.selectedAttributes = attributes;
+			
+		}else{
+			
+			this.selectedAttributes = null;
+		}	
 	}
 	
 	protected FlowInstanceIndexer createIndexer() throws Exception {
@@ -430,6 +459,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			XMLUtils.append(doc, overviewElement, "SiteProfiles", this.profileHandler.getProfiles());
 		}
 		
+		if(enableDescriptionColumn){
+			
+			XMLUtils.appendNewElement(doc, overviewElement, "ShowDescriptionColumn");
+		}
+		
+		if(enableExternalID){
+			
+			XMLUtils.appendNewElement(doc, overviewElement, "ShowExternalID");
+		}		
+		
 		ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
@@ -468,12 +507,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						if(externalMessage != null){
 							
-							Map<String, String> eventAttributes = new HashMap<String, String>();
-							
-							eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID, externalMessage.getMessageID().toString());
-							eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
-							
-							FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, eventAttributes);
+							FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
@@ -551,6 +585,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
 			}
 
+			if(enableDescriptionColumn){
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowDescriptionColumn");
+			}
+			
+			if(enableExternalID){
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
+			}					
+			
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
 			
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
@@ -664,7 +708,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 						this.daoFactory.getFlowInstanceDAO().update(flowInstance);
 
-						FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user);
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user);
 
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
@@ -784,7 +828,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						this.daoFactory.getFlowInstanceDAO().update(flowInstance, relationQuery);
 
-						FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, user);
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, user);
 
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
@@ -1172,6 +1216,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
 
+		addListRelations(query);
+		
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
@@ -1183,8 +1229,20 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
 
+		addListRelations(query);
+		
 		return this.daoFactory.getFlowInstanceDAO().getAll(query);
 	}
+	
+	protected void addListRelations(RelationQuery query) {
+
+		if (selectedAttributes != null) {
+
+			query.addRelations(FlowInstance.ATTRIBUTES_RELATION);
+
+			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(selectedAttributes));
+		}
+	}	
 
 	public String getActiveFlowInstancesSQL(User user, SiteProfile profile, List<Integer> flowIDs, String template) {
 

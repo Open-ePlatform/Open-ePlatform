@@ -6,11 +6,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +57,6 @@ import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -132,14 +129,13 @@ import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
+import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION };
 
 	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD, FlowInstanceEvent.POSTER_FIELD };
-
-	protected static final List<String> DESCRIPTION_COLUMN_ATTRIBUTES = Collections.unmodifiableList(CollectionUtils.getList(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE, Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE));
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = UserFlowInstanceModule.class.getName();
 
@@ -151,10 +147,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();
 
-	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID = "externalMessageID";
-	private static final String EVENT_ATTRIBUTE_EXTERNAL_MESSAGE = "externalMessageFragment";
-	
-	
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
 
@@ -183,6 +175,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@CheckboxSettingDescriptor(name = "Enable site profile redirect support", description = "Controls if site profile redirect support is enabled")
 	protected boolean enableSiteProfileRedirectSupport;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable external ID support", description = "Controls if external ID is displayed")
+	protected boolean enableExternalID;
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable the description column", description = "Controls if description column is visible")
 	protected boolean enableDescriptionColumn;
@@ -236,6 +232,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	protected ExtensionLink userMenuLink;
 
+	protected List<String> selectedAttributes;
+	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
@@ -282,6 +280,27 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if (userFlowInstanceMenuModule != null) {
 
 			userFlowInstanceMenuModule.sortProviders();
+		}
+		
+		if(enableExternalID || enableDescriptionColumn){
+			
+			ArrayList<String> attributes = new ArrayList<String>(2);
+			
+			if(enableExternalID){
+				
+				attributes.add(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE);
+			}
+			
+			if(enableDescriptionColumn){
+				
+				attributes.add(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
+			}
+			
+			this.selectedAttributes = attributes;
+			
+		}else{
+			
+			this.selectedAttributes = null;
 		}
 	}
 
@@ -350,6 +369,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if(enableDescriptionColumn){
 			
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowDescriptionColumn");
+		}
+		
+		if(enableExternalID){
+			
+			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowExternalID");
 		}
 		
 		List<FlowInstance> flowInstances = getFlowInstances(user, true, excludedFlowTypes != null);
@@ -527,6 +551,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowDescriptionColumn");
 			}
 			
+			if(enableExternalID){
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
+			}
+			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
 				//TODO append message or request parameters
@@ -534,12 +563,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 				if (externalMessage != null) {
 
-					Map<String, String> eventAttributes = new HashMap<String, String>();
-					
-					eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID, externalMessage.getMessageID().toString());
-					eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
-					
-					FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, eventAttributes);
+					FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, instanceProfile, externalMessage, SenderType.USER), EventTarget.ALL);
 
@@ -803,7 +827,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
 
-		addOverviewRelations(query);
+		addListRelations(query);
 
 		query.addExcludedFields(LIST_EXCLUDED_FIELDS);
 
@@ -822,13 +846,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return daoFactory.getFlowInstanceDAO().getAll(query);
 	}
 
-	protected void addOverviewRelations(HighLevelQuery<FlowInstance> query) {
+	protected void addListRelations(HighLevelQuery<FlowInstance> query) {
 
-		if (enableDescriptionColumn) {
+		if (selectedAttributes != null) {
 
 			query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 
-			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(DESCRIPTION_COLUMN_ATTRIBUTES));
+			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(selectedAttributes));
 
 		} else {
 

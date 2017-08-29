@@ -347,7 +347,12 @@
 			
 			<xsl:call-template name="printSiteProfile"/>		
 			
-			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
+			<td data-title="{$i18n.FlowInstanceID}" class="errando">
+			
+				<xsl:value-of select="flowInstanceID" />
+				
+				<xsl:call-template name="printExternalID"/>
+			</td>
 
 			<xsl:call-template name="printDescription"/>
 
@@ -377,7 +382,12 @@
 			
 			<xsl:call-template name="printSiteProfile"/>
 			
-			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
+			<td data-title="{$i18n.FlowInstanceID}" class="errando">
+			
+				<xsl:value-of select="flowInstanceID" />
+				
+				<xsl:call-template name="printExternalID"/>
+			</td>
 
 			<xsl:call-template name="printDescription"/>
 
@@ -419,29 +429,31 @@
 	
 	</xsl:template>
 	
+	<xsl:template name="printExternalID">
+
+		<xsl:if test="../../ShowExternalID or ../ShowExternalID">
+		
+			<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
+			
+			<xsl:if test="$externalID">
+			
+				<xsl:text> / </xsl:text>
+				
+				<xsl:value-of select="$externalID"/>
+			
+			</xsl:if>					
+		
+		</xsl:if>
+	
+	</xsl:template>		
+	
 	<xsl:template name="printDescription">
 	
 		<xsl:if test="../../ShowDescriptionColumn">
 			
 			<td data-title="{$i18n.Description}" class="description">
 				
-				<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
-				
-				<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
-				
-				<xsl:value-of select="$externalID"/>
-	
-				<xsl:if test="$description">
-				
-					<xsl:if test="$externalID">
-					
-						<xsl:text>, </xsl:text>
-					
-					</xsl:if>
-				
-					<xsl:value-of select="$description"/>			
-				
-				</xsl:if>
+				<xsl:value-of select="Attributes/Attribute[Name = 'description']/Value"/>			
 				
 			</td>
 					
@@ -513,41 +525,37 @@
 							<span class="errandno hide-mobile">
 								<xsl:value-of select="$i18n.FlowInstanceID" />
 								<xsl:text>:&#160;</xsl:text>
+							</span>
+							
+							<span class="hide-mobile">									
 								<xsl:value-of select="flowInstanceID" />
+								
+								<xsl:call-template name="printExternalID"/>
 							</span>
 							
 							<br/>
 							
 							<xsl:if test="../ShowDescriptionColumn">
 								
-								<span class="errandno hide-mobile">
-									
-									<xsl:value-of select="$i18n.Description" />
-									
-									<xsl:text>:&#160;</xsl:text>
-									
-									<xsl:variable name="externalID" select="Attributes/Attribute[Name = 'integrationExternalID']/Value"/>
-									
-									<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
-									
-									<xsl:value-of select="$externalID"/>
-						
+								<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+								
 									<xsl:if test="$description">
 									
-										<xsl:if test="$externalID">
+									<span class="errandno hide-mobile">
 										
-											<xsl:text>, </xsl:text>
+										<xsl:value-of select="$i18n.Description" />
 										
-										</xsl:if>
-									
-										<xsl:value-of select="$description"/>			
-									
-									</xsl:if>
-									
-								</span>
-										
-								<br/>		
-										
+										<xsl:text>:&#160;</xsl:text>
+									</span>
+							
+									<span class="hide-mobile">	
+										<xsl:value-of select="$description"/>	
+									</span>
+											
+									<br/>							
+								
+								</xsl:if>
+								
 							</xsl:if>							
 							
 							<span class="errandno hide-mobile">
@@ -567,8 +575,44 @@
   					<xsl:variable name="submittedEvents" select="events/FlowInstanceEvent[eventType='SUBMITTED']" />
   					
   					<p class="only-mobile">
-  						<strong><xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text></strong><xsl:value-of select="flowInstanceID" />
+  						<strong class="overview">
+  							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
+  						</strong>
+  						
+  						<xsl:value-of select="flowInstanceID" />
+  						
+  						<xsl:call-template name="printExternalID"/>
   					</p>
+  					
+					<xsl:if test="../ShowDescriptionColumn">
+						
+						<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
+						
+							<xsl:if test="$description">
+						
+							<p class="only-mobile">	
+								<strong class="overview">
+									
+									<xsl:value-of select="$i18n.Description" />
+									
+									<xsl:text>:&#160;</xsl:text>
+								</strong>
+						
+								<xsl:value-of select="$description"/>	
+							</p>
+									
+						</xsl:if>
+						
+					</xsl:if>
+					
+  					<xsl:if test="../Profile">
+  					
+	  					<p>
+	  						<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
+	  						<xsl:value-of select="../Profile/name" />
+	  					</p>
+  					
+  					</xsl:if>										
   					
 					<p>
 						<strong class="overview">

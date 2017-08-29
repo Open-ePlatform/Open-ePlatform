@@ -163,5 +163,4 @@ public class FlowInstanceUtils {
 			flowInstanceAttributeHandler.removeAttribute("contactBySMS");
 		}
 	}
-	
 }

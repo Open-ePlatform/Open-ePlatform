@@ -18,6 +18,7 @@
 	<xsl:variable name="i18n.Flagged">flaggade</xsl:variable>
 	<xsl:variable name="i18n.Active">aktiva</xsl:variable>
 	<xsl:variable name="i18n.UnAssigned">obehandlade</xsl:variable>
+	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	
 	<xsl:variable name="i18n.EmergencyTab">Ärenden du behöver agera på</xsl:variable>
 	<xsl:variable name="i18n.OwnedTab">Tilldelade</xsl:variable>
@@ -32,7 +33,7 @@
 	<xsl:variable name="i18n.Date">Datum</xsl:variable>
 	<xsl:variable name="i18n.Priority">Prioritet</xsl:variable>
 	
-	<xsl:variable name="i18n.CurrentStatus">Aktuell status:</xsl:variable>
+	<xsl:variable name="i18n.CurrentStatus">Aktuell status</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.SaveAndClose">Spara och stäng</xsl:variable>
 	

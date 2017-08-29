@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -131,6 +129,8 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -1490,7 +1490,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			
 			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvents(flowInstance);
 
-			FlowInstanceEvent event = addFlowInstanceEvent(flowInstance, eventType, null, posterSignEvent.getPoster(), currentTimestamp, eventAttributes);
+			FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, eventType, null, posterSignEvent.getPoster(), currentTimestamp, eventAttributes);
 
 			eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
