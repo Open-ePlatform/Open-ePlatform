@@ -217,7 +217,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 			
 			attachmentDAO.delete(attachment);
 			
-			flowInstanceAdminModule.addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, attachmentsUpdatedMessage, user, now);
+			flowInstanceAdminModule.getFlowInstanceEventHandler().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, attachmentsUpdatedMessage, user, now);
 			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(FlowInstance.class, CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 			
 			flowInstanceAdminModule.redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID() + "#attachments");
@@ -489,7 +489,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 					
 					attachmentDAO.addAll(attachments, null);
 					
-					flowInstanceAdminModule.addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, attachmentsUpdatedMessage, user, now);
+					flowInstanceAdminModule.getFlowInstanceEventHandler().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, attachmentsUpdatedMessage, user, now);
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(FlowInstance.class, CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 					
 					FlowFamililyNotificationSettings notificationSettings = flowNotificationHandler.getNotificationSettings(flowInstance.getFlow());
