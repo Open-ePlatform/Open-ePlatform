@@ -210,58 +210,66 @@ function highlightAffectedQueries($item) {
 	
 	var $targetQueryIDs = $item.find("input.targetQueryIDs");
 	
-	if($targetQueryIDs.length > 0) {
+	if ($targetQueryIDs.length > 0) {
 		
 		$targetQueryIDs.each(function() { $("#query_" + $(this).val()).addClass("affectedQuery");  });
-		
 	}
 	
-	var queryID = $item.attr("id").split("_")[1];
+	var itemID = $item.attr("id");
+	
+	if (itemID.startsWith("step")) {
+		return;
+	}
+	
+	var queryID = itemID.split("_")[1];
 	
 	var $relatedQueryIDs = $("input[value='" + queryID + "'].targetQueryIDs");
 	
-	if($relatedQueryIDs.length > 0) {
+	if ($relatedQueryIDs.length > 0) {
 		
 		$relatedQueryIDs.each(function() {
 			$("#" + $(this).parent().attr("id")).addClass("affectedQuery");
 		});
-	
 	}
-	
 }
 
 function resetHighlightning() {
 	
 	$(".query").removeClass("affectedQuery");
-	
 }
 
 function validatePosition($sortable, $item, newItemPosition) {
 	
-	var queryID = $item.attr("id").split("_")[1];
-	
-	if($($sortable.children(":first")).hasClass("query")) {
+	if ($($sortable.children(":first")).hasClass("query")) {
 		return false;
 	}
+	
+	var itemID = $item.attr("id");
+	
+	if (itemID.startsWith("step")) {
+		return true;
+	}
+	
+	var queryID = itemID.split("_")[1];
 	
 	var isValidPosition = true;
 	
 	var $targetQueryIDs = $("input[name='targetQueryIDs_" + queryID + "']");
 	
-	if($targetQueryIDs.length > 0) {
+	if ($targetQueryIDs.length > 0) {
 		
 		$targetQueryIDs.each(function() {
 			
 			var $targetQuery = $("#query_" + $(this).val());
 			
-			if(newItemPosition.top >= $targetQuery.position().top) {
+			if (newItemPosition.top >= $targetQuery.position().top) {
 				isValidPosition = false;
 				return;
 			}
 			
 		});
 		
-		if(!isValidPosition) {
+		if (!isValidPosition) {
 			return false;
 		}
 		
@@ -269,13 +277,13 @@ function validatePosition($sortable, $item, newItemPosition) {
 
 	var $relatedQueryIDs = $("input[value='" + queryID + "'].targetQueryIDs");
 	
-	if($relatedQueryIDs.length > 0) {
+	if ($relatedQueryIDs.length > 0) {
 		
 		$relatedQueryIDs.each(function() {
 			
 			var $relatedQuery = $("#" + $(this).parent().attr("id"));
 			
-			if(newItemPosition.top <= $relatedQuery.position().top) {
+			if (newItemPosition.top <= $relatedQuery.position().top) {
 				isValidPosition = false;
 				return;
 			}
@@ -285,5 +293,4 @@ function validatePosition($sortable, $item, newItemPosition) {
 	}
 	
 	return isValidPosition;
-	
 }
