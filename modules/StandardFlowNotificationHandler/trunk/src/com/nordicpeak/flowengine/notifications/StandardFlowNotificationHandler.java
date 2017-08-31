@@ -683,42 +683,42 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		FlowFamililyNotificationSettings notificationSettings = POPULATOR.populate(req);
 
 		//Remove texts if they are set to default values
-		if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedUserEmailMessage().equals(flowInstanceArchivedUserEmailMessage)) {
+		if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedUserEmailMessage().trim().equals(flowInstanceArchivedUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceArchivedUserEmailMessage(null);
 		}
 
-		if (notificationSettings.getFlowInstanceArchivedUserEmailSubject() != null && notificationSettings.getFlowInstanceArchivedUserEmailSubject().equals(flowInstanceArchivedUserEmailSubject)) {
+		if (notificationSettings.getFlowInstanceArchivedUserEmailSubject() != null && notificationSettings.getFlowInstanceArchivedUserEmailSubject().trim().equals(flowInstanceArchivedUserEmailSubject.trim())) {
 
 			notificationSettings.setFlowInstanceArchivedUserEmailSubject(null);
 		}
 
-		if (notificationSettings.getFlowInstanceArchivedNotLoggedInUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedNotLoggedInUserEmailMessage().equals(flowInstanceArchivedNotLoggedInUserEmailMessage)) {
+		if (notificationSettings.getFlowInstanceArchivedNotLoggedInUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedNotLoggedInUserEmailMessage().trim().equals(flowInstanceArchivedNotLoggedInUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceArchivedNotLoggedInUserEmailMessage(null);
 		}
 
-		if (notificationSettings.getFlowInstanceSubmittedUserEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedUserEmailMessage().equals(flowInstanceSubmittedUserEmailMessage)) {
+		if (notificationSettings.getFlowInstanceSubmittedUserEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedUserEmailMessage().trim().equals(flowInstanceSubmittedUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceSubmittedUserEmailMessage(null);
 		}
 
-		if (notificationSettings.getFlowInstanceSubmittedUserEmailSubject() != null && notificationSettings.getFlowInstanceSubmittedUserEmailSubject().equals(flowInstanceSubmittedUserEmailSubject)) {
+		if (notificationSettings.getFlowInstanceSubmittedUserEmailSubject() != null && notificationSettings.getFlowInstanceSubmittedUserEmailSubject().trim().equals(flowInstanceSubmittedUserEmailSubject.trim())) {
 
 			notificationSettings.setFlowInstanceSubmittedUserEmailSubject(null);
 		}
 
-		if (notificationSettings.getFlowInstanceSubmittedNotLoggedInUserEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedNotLoggedInUserEmailMessage().equals(flowInstanceSubmittedNotLoggedInUserEmailMessage)) {
+		if (notificationSettings.getFlowInstanceSubmittedNotLoggedInUserEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedNotLoggedInUserEmailMessage().trim().equals(flowInstanceSubmittedNotLoggedInUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceSubmittedNotLoggedInUserEmailMessage(null);
 		}
 
-		if (notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject() != null && notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject().equals(flowInstanceSubmittedGlobalEmailSubject)) {
+		if (notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject() != null && notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject().trim().equals(flowInstanceSubmittedGlobalEmailSubject.trim())) {
 
 			notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(null);
 		}
 
-		if (notificationSettings.getFlowInstanceSubmittedGlobalEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedGlobalEmailMessage().equals(flowInstanceSubmittedGlobalEmailMessage)) {
+		if (notificationSettings.getFlowInstanceSubmittedGlobalEmailMessage() != null && notificationSettings.getFlowInstanceSubmittedGlobalEmailMessage().trim().equals(flowInstanceSubmittedGlobalEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceSubmittedGlobalEmailMessage(null);
 		}
