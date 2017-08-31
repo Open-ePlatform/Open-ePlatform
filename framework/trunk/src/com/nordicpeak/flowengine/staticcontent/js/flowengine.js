@@ -261,7 +261,7 @@ function parseResponse(response) {
 			
 			if (queryModification.Scripts) {
 
-				var loadingStatus = loadScripts(queryModification.Scripts);
+				var loadingStatus = loadFlowEngineScripts(queryModification.Scripts);
 				
 				if (loadingStatus == "LOADED") {
 					
@@ -300,7 +300,7 @@ function parseResponse(response) {
 
 function waitUntilScriptsAreLoaded(queryModification) {
 	
-	var loadingStatus = loadScripts(queryModification.Scripts);
+	var loadingStatus = loadFlowEngineScripts(queryModification.Scripts);
 	
 	if (loadingStatus == "LOADED") {
 		
@@ -552,7 +552,7 @@ function completeLoadingOfScript(script, parentScript, code) {
 	}
 }
 
-function loadScripts(scripts) {
+function loadFlowEngineScripts(scripts) {
 
     var loadingComplete = true
     var loadingError = false
