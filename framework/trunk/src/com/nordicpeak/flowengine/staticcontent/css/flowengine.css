@@ -256,3 +256,23 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	}
 
 }
+
+.query.mergewithpreviousquery > article {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: 0;
+    padding-top: 0px;
+}
+
+.query.mergedquery > article {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.receipt .query.mergewithpreviousquery > article {
+    border-top: none;
+}
+
+.receipt .query.mergedquery > article {
+	border-bottom: none;
+}

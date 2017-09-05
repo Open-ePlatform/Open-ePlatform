@@ -58,4 +58,8 @@
 	
 	<xsl:variable name="i18n.validationError.alternative">alternativ</xsl:variable>
 	
+	<xsl:variable name="i18n.mergeWithPreviousQuery.title">Gruppera frågan med föregående</xsl:variable>
+	<xsl:variable name="i18n.mergeWithPreviousQuery.description">Visuellt gruppera frågan med föregående fråga</xsl:variable>
+	<xsl:variable name="i18n.mergeWithPreviousQuery">Gruppera fråga</xsl:variable>
+	
 </xsl:stylesheet>

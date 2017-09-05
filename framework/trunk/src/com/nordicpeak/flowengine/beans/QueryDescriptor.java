@@ -89,6 +89,11 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 	@XMLElement(fixCase=true)
 	private List<EvaluatorDescriptor> evaluatorDescriptors;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	boolean mergeWithPreviousQuery;
+	
 	private XMLParser importParser;
 
 	@Override

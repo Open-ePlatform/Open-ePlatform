@@ -1685,5 +1685,13 @@
 	        ]]>
 	    </Query>	    
 	</Script>	
+
+	<Script version="86">
+	   <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_query_descriptors` ADD COLUMN `mergeWithPreviousQuery` TINYINT(1) UNSIGNED NOT NULL AFTER `xsdElementName`;
+	        ]]>
+	    </Query>
+	</Script>
 	
 </DBScripts>

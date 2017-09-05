@@ -119,6 +119,27 @@
 				</label>					
 			</div>
 		</div>
+
+		<label class="floatleft"><xsl:value-of select="$i18n.mergeWithPreviousQuery.title"/></label>
+			
+		<div class="clearboth floatleft marginbottom"><xsl:value-of select="$i18n.mergeWithPreviousQuery.description"/></div>	
+	
+		<div class="floatleft full marginbottom">
+						
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'mergeWithPreviousQuery'"/>
+					<xsl:with-param name="name" select="'mergeWithPreviousQuery'"/>
+					<xsl:with-param name="value" select="'true'"/> 
+					<xsl:with-param name="element" select="$element/QueryDescriptor" />
+				</xsl:call-template>
+				
+				<label for="mergeWithPreviousQuery">
+					<xsl:value-of select="$i18n.mergeWithPreviousQuery" />
+				</label>					
+			</div>
+		</div>
+
 	
 		<label class="floatleft"><xsl:value-of select="$i18n.exportQuery.title"/></label>
 			

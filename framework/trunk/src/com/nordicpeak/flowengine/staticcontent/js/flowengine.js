@@ -17,6 +17,11 @@ $(document).ready(function() {
 	
 	actionURL = $("#FlowBrowser form").attr("action");
 	
+	$(".query.mergewithpreviousquery").each(function(){
+		
+		$(this).prevAll(".query:first").addClass("mergedquery");
+	});
+	
 	$(".modal .close").click(function(e) {
 		e.preventDefault();
 		$(this).parent().fadeOut("fast", function() {
@@ -352,7 +357,16 @@ function runAction(queryModification) {
 		
 	}
 	
-	
+	if(updateMerge) {
+		
+		$(".query.mergedquery").removeClass("mergedquery");
+		
+		$(".query.mergewithpreviousquery").each(function(){
+			
+			$(this).prevAll(".query:first").addClass("mergedquery");
+		});
+
+	}
 	
 }
 
