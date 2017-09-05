@@ -10,6 +10,10 @@
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 			
 			<a name="query{CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			

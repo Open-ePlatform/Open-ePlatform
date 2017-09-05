@@ -26,6 +26,10 @@
 	<xsl:template match="ShowQueryValues">
 	
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 		
 			<article>
 				
@@ -90,6 +94,7 @@
 					<xsl:text> hasFreeTextAlternative</xsl:text>
 				</xsl:if>
 				<xsl:if test="EnableAjaxPosting"><xsl:text> enableAjaxPosting</xsl:text></xsl:if>
+				<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 		
 			<a name="{$queryID}" />

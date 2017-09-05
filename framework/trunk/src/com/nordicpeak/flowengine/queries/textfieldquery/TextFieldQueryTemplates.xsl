@@ -40,6 +40,7 @@
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
 				<xsl:if test="TextFieldQueryInstance/TextFieldQuery/hideTitle = 'true'"> notitle</xsl:if>
+				<xsl:if test="TextFieldQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
 			<article>
@@ -91,6 +92,7 @@
 				<xsl:text>query textfieldquery</xsl:text>
 				<xsl:if test="TextFieldQueryInstance/TextFieldQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+				<xsl:if test="TextFieldQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
 			<xsl:if test="ValidationErrors/validationError">

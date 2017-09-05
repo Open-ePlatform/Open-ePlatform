@@ -26,6 +26,10 @@
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="OrganizationDetailQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 			
 			<article>
 				
@@ -191,10 +195,11 @@
 		<xsl:variable name="queryID" select="concat('query_', OrganizationDetailQueryInstance/OrganizationDetailQuery/queryID)" />
 	
 		<div class="query" id="{$queryID}">
-			
-			<xsl:if test="EnableAjaxPosting">
-				<xsl:attribute name="class">query enableAjaxPosting</xsl:attribute>
-			</xsl:if>
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+				<xsl:if test="OrganizationDetailQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 			
 			<a name="{$queryID}" />
 		

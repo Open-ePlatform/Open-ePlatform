@@ -11,6 +11,7 @@
 	
 	<xsl:variable name="i18n.BaseInfo">Grundinformation</xsl:variable>
 	<xsl:variable name="i18n.Layout">Layout</xsl:variable>
+	<xsl:variable name="i18n.MergeQuery">Gruppera frågan</xsl:variable>
 	
 	<xsl:variable name="i18n.TextFieldQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	<xsl:variable name="i18n.TextFields">Textfält</xsl:variable>

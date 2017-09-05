@@ -51,6 +51,16 @@
 			<xsl:call-template name="createCommonShowFields">
 				<xsl:with-param name="element" select="TextFieldQuery" />
 			</xsl:call-template>
+
+			<div class="floatleft full bigmarginbottom">
+				<label class="floatleft clearboth"><xsl:value-of select="$i18n.MergeQuery" /></label>
+				<div class="floatleft full">
+					<xsl:choose>
+						<xsl:when test="TextFieldQuery/QueryDescriptor/mergeWithPreviousQuery = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
+						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
+					</xsl:choose>
+			  </div>
+			</div>
 			
 			<xsl:variable name="layout" select="TextFieldQuery/layout" />
 			
