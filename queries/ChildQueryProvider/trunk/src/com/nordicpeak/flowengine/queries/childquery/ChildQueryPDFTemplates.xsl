@@ -12,6 +12,10 @@
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="ChildQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 			
 			<a name="query{ChildQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			

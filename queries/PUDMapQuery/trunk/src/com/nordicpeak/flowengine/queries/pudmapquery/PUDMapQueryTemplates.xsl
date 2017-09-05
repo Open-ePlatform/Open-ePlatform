@@ -44,6 +44,10 @@
 		<xsl:variable name="queryID" select="concat('query_', PUDMapQueryInstance/PUDMapQuery/queryID)" />
 		
 		<div class="query" id="{$queryID}">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="PUDMapQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 		
 			<article>
 				
@@ -132,6 +136,10 @@
 		<xsl:variable name="queryID" select="concat('query_', PUDMapQueryInstance/PUDMapQuery/queryID)" />
 	
 		<div class="query" id="{$queryID}">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="PUDMapQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 		
 			<a name="{$queryID}" />
 	

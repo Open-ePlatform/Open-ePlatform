@@ -25,6 +25,7 @@
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
 				<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideTitle = 'true'"> notitle</xsl:if>
+				<xsl:if test="FileInfoQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
 			<article class="infoquery show-mode">
@@ -71,6 +72,7 @@
 				<xsl:text>query fileinfoquery</xsl:text>
 				<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
+				<xsl:if test="FileInfoQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
 			<a name="{$queryID}" />

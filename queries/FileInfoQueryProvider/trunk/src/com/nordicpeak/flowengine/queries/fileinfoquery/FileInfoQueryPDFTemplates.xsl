@@ -13,9 +13,11 @@
 		
 		<div class="query">
 			
-			<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideBackground = 'true'">
-				<xsl:attribute name="class">query noborder</xsl:attribute>
-			</xsl:if>			
+			<xsl:attribute name="class">
+				<xsl:text>query </xsl:text>
+				<xsl:if test="FileInfoQueryInstance/FileInfoQuery/hideBackground = 'true'"> noborder</xsl:if>
+				<xsl:if test="FileInfoQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 			
 			<a name="query{FileInfoQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			

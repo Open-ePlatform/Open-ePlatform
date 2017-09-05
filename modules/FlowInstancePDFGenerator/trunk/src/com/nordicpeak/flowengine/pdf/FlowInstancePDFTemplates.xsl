@@ -125,8 +125,16 @@
 	
 	<xsl:template match="PDFQueryResponse" mode="xhtml">
 	
-		<xsl:value-of select="XHTML" disable-output-escaping="yes"/>
-	
+		<div>
+			<xsl:if test="following-sibling::*[1]/QueryDescriptor/mergeWithPreviousQuery = 'true'">
+				<xsl:attribute name="class">
+					<xsl:text> mergedquery</xsl:text>
+				</xsl:attribute>
+			</xsl:if>
+		
+			<xsl:value-of select="XHTML" disable-output-escaping="yes"/>
+		</div>
+		
 	</xsl:template>	
 	
 	<xsl:template match="StyleSheet">

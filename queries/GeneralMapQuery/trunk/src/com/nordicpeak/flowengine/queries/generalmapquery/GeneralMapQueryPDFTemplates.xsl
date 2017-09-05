@@ -12,6 +12,10 @@
 		<xsl:variable name="queryInstance" select="GeneralMapQueryInstance" />
 	
 		<div class="query">
+			<xsl:attribute name="class">
+				<xsl:text>query</xsl:text>
+				<xsl:if test="$queryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+			</xsl:attribute>
 	
 			<a name="query{$queryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 				
