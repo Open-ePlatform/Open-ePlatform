@@ -1879,7 +1879,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				try {
 					res.setDateHeader("Expires", System.currentTimeMillis() + MillisecondTimeUnits.HOUR);
 					
-					HTTPUtils.sendFile(DEFAULT_FLOW_ICON, DEFAULT_FLOW_ICON.openStream(), DEFAULT_FLOW_ICON.getFile(), req, res, ContentDisposition.INLINE);
+					HTTPUtils.sendFile(DEFAULT_FLOW_ICON, DEFAULT_FLOW_ICON.getFile(), req, res, ContentDisposition.INLINE);
 
 				} catch (RuntimeException e) {
 
