@@ -233,7 +233,8 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 
 		this.exported = xmlParser.getPrimitiveBoolean("exported");
 		this.xsdElementName = XMLValidationUtils.validateParameter("xsdElementName", xmlParser, false, 1, 255, new XMLElementNamePopulator(), errors);
-
+		this.mergeWithPreviousQuery = xmlParser.getPrimitiveBoolean("mergeWithPreviousQuery");
+		
 		//Backwards compatibility for flows exported with FlowEngine version before 1.2
 		if(xsdElementName == null){
 
