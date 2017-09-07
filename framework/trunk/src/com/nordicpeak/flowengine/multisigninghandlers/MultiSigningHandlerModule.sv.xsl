@@ -25,11 +25,11 @@
 	<xsl:variable name="i18n.FlowDisabled.title">E-tjänsten ej tillgänglig</xsl:variable>
 	<xsl:variable name="i18n.FlowDisabled.message">Den här tjänsten är stängd för underhåll.</xsl:variable>
 	
-	<xsl:variable name="i18n.SigningPartyNotFound.title">Signering ej möjlig</xsl:variable>
-	<xsl:variable name="i18n.SigningPartyNotFound.message">Du kan inte signera detta ärende. Detta kan bero på att du är inloggad som fel person. Prova att logga ut och logga in igen.</xsl:variable>
+	<xsl:variable name="i18n.SigningPartyNotFound.title">Åtgärden ej möjlig</xsl:variable>
+	<xsl:variable name="i18n.SigningPartyNotFound.message">Detta kan bero på att ärendet bytt status, ändrats, tagits bort eller att du är inloggad som fel person.</xsl:variable>
 	
-	<xsl:variable name="i18n.WrongStatusContentType.title">Signering ej möjlig</xsl:variable>
-	<xsl:variable name="i18n.WrongStatusContentType.message">Detta ärende går inte längre att signera. Detta kan bero på att ärendet bytt status eller ändrats. Kontakta den som bett dig signera ärendet för mer information.</xsl:variable>
+	<xsl:variable name="i18n.WrongStatusContentType.title">Åtgärden ej möjlig</xsl:variable>
+	<xsl:variable name="i18n.WrongStatusContentType.message">Detta kan bero på att ärendet bytt status, ändrats, tagits bort eller att du är inloggad som fel person.</xsl:variable>
 	
 	<xsl:variable name="i18n.CancelSigning">Avbryt flerpartssignering</xsl:variable>
 	<xsl:variable name="i18n.CancelSigning.Confirm">Är du säker på att du vill avbryta flerpartssigneringen?</xsl:variable>
