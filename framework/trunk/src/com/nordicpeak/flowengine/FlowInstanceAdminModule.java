@@ -1809,4 +1809,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return this.getBareFlow(flowID);
 	}
+
+	
+	public String getNoManagersSelectedMessage() {
+	
+		return noManagersSelected;
+	}
 }
