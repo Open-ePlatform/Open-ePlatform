@@ -2273,6 +2273,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return emailSenderAddress;
 	}
 
+	public String getEmailSenderAddress() {
+		
+		return emailSenderAddress;
+	}
+	
 	public String getSmsSenderName(ImmutableFlowInstance flowInstance) {
 
 		return smsSenderName;
