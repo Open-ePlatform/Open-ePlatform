@@ -357,16 +357,12 @@ function runAction(queryModification) {
 		
 	}
 	
-	if(updateMerge) {
+	$(".query.mergedquery").removeClass("mergedquery");
+	
+	$(".query.mergewithpreviousquery").each(function(){
 		
-		$(".query.mergedquery").removeClass("mergedquery");
-		
-		$(".query.mergewithpreviousquery").each(function(){
-			
-			$(this).prevAll(".query:first").addClass("mergedquery");
-		});
-
-	}
+		$(this).prevAll(".query:first").addClass("mergedquery");
+	});
 	
 }
 
