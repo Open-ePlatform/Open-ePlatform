@@ -1,10 +1,7 @@
 package com.nordicpeak.flowengine.cruds;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,15 +32,12 @@ import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.io.CloseUtils;
-import se.unlogic.standardutils.io.FileUtils;
-import se.unlogic.standardutils.mime.MimeUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.streams.StreamUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.http.enums.ContentDisposition;
 
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.beans.BaseAttachment;
@@ -211,24 +205,10 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 				log.info("User " + user + " downloading " + getTypeLogName() + " message attachment " + attachment);
 				
-				InputStream in = null;
-				OutputStream out = null;
-
 				try {
 
-					Blob data = attachment.getData();
-
-					HTTPUtils.setContentLength(data.length(), res);
-
-					res.setContentType(MimeUtils.getMimeType(attachment.getFilename()));
-					res.setHeader("Content-Disposition", "inline; filename=\"" + FileUtils.toValidHttpFilename(attachment.getFilename()) + "\"");
-
-					in = data.getBinaryStream();
-
-					out = res.getOutputStream();
-
-					StreamUtils.transfer(in, out);
-
+					HTTPUtils.sendBlob(attachment.getData(), attachment.getFilename(), attachment.getAdded(), req, res, ContentDisposition.ATTACHMENT);
+					
 				} catch (RuntimeException e) {
 
 					log.debug("Caught exception " + e + " while sending message attachment " + attachment.getFilename() + " to " + user);
@@ -237,10 +217,6 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 					log.debug("Caught exception " + e + " while sending message attachment " + attachment.getFilename() + " to " + user);
 
-				} finally {
-
-					CloseUtils.close(in);
-					CloseUtils.close(out);
 				}
 				
 				return null;
