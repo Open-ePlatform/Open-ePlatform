@@ -246,7 +246,7 @@ function validatePosition($sortable, $item, newItemPosition) {
 	
 	var itemID = $item.attr("id");
 	
-	if (itemID.startsWith("step")) {
+	if (itemID.indexOf("step") == 0) {
 		return true;
 	}
 	
