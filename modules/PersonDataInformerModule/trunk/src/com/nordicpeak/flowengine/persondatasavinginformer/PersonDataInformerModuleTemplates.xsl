@@ -221,16 +221,16 @@
 			
 			<td class="persondata" data-title="{$i18n.Column.PersonData}">
 				<ul>
-					<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+					<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
 				</ul>
 			</td>
 			<td data-title="{$i18n.Reasons}">
 				<ul>
-					<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
+					<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 				</ul>
 			</td>
 			<td data-title="{$i18n.YearsSaved}">
-				<xsl:variable name="years" select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/yearsSaved"/>
+				<xsl:variable name="years" select="FlowFamilyInformerSetting/yearsSaved"/>
 			
 				<xsl:choose>
 					<xsl:when test="$years">
