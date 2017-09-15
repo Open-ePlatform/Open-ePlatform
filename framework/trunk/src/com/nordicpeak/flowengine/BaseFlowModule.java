@@ -2463,7 +2463,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	}
 
 	
-	public FlowInstanceEventGenerator getFlowInstanceEventHandler() {
+	public FlowInstanceEventGenerator getFlowInstanceEventGenerator() {
 	
 		return flowInstanceEventGenerator;
 	}

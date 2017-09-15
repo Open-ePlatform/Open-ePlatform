@@ -367,6 +367,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
+	
+//	@ModuleSetting(allowsNull = true)
+//	@GroupMultiListSettingDescriptor(name = "Manager groups", description = "Groups with users that are allowed to be set as managers")
+//	protected List<Integer> managerGroupIDs;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")

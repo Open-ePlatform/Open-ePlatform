@@ -535,7 +535,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						if (mentionedUserIDs != null) {
 
-							List<User> availableManagers = getAvailableManagers(flowInstance);
+							List<User> availableManagers = getAllowedManagers(flowInstance);
 
 							List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
 
@@ -770,7 +770,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			doc.getDocumentElement().appendChild(updateInstanceManagersElement);
 
-			List<User> availableManagers = getAvailableManagers(flowInstance);
+			List<User> allowedManagers = getAllowedManagers(flowInstance);
 
 			if(req.getMethod().equalsIgnoreCase("POST")){
 
@@ -795,7 +795,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						for(User selectedManager : users){
 
-							if(!availableManagers.contains(selectedManager)){
+							if(!allowedManagers.contains(selectedManager)){
 
 								throw new ValidationException(new UnauthorizedManagerUserValidationError(selectedManager));
 							}
@@ -849,7 +849,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			XMLUtils.append(doc, updateInstanceManagersElement, user);
 
-			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagers", availableManagers);
+			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagers", allowedManagers);
 
 			appendBookmark(doc, updateInstanceManagersElement, flowInstance, req, user);
 
@@ -992,7 +992,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return daoFactory.getUserBookmarkDAO().get(query);
 	}
 
-	protected List<User> getAvailableManagers(FlowInstance flowInstance) {
+	protected List<User> getAllowedManagers(FlowInstance flowInstance) {
 
 		List<User> availableManagers = null;
 
@@ -1036,7 +1036,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 
-			List<User> availableManagers = getAvailableManagers(flowInstance);
+			List<User> availableManagers = getAllowedManagers(flowInstance);
 
 			JsonArray jsonArray = new JsonArray();
 
