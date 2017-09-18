@@ -15,6 +15,7 @@ $(document).ready(function() {
 			var currentValue = $input.val();
 			
 			$textarea.removeAttr("disabled");
+			
 			setCKEditorReadOnly(id, false);
 			
 			setCKEditorValue(id, currentValue);
@@ -39,7 +40,9 @@ $(document).ready(function() {
 		
 	});
 	
-	$("#type").trigger("change");
+	CKEDITOR.on('instanceReady', function( evt ) {
+		$("#type").trigger("change");
+	});
 	
 	$(".modal .close").click(function(e) {
 		e.preventDefault();
