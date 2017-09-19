@@ -1,6 +1,5 @@
 package com.nordicpeak.flowengine.integration.callback;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -421,7 +420,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		throw new RuntimeException("Missing required dependency " + FlowAdminModule.class.getSimpleName());
 	}
 	
-	private FlowInstance getFlowInstance(Integer flowInstanceID, ExternalID externalID) throws FlowInstanceNotFoundException {
+	protected FlowInstance getFlowInstance(Integer flowInstanceID, ExternalID externalID) throws FlowInstanceNotFoundException {
 
 		FlowInstance flowInstance = null;
 		
@@ -464,18 +463,18 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 	}
 	
-	public FlowInstance getFlowInstance(int flowInstanceID, List<Field> excludedFields, Field... relations) throws SQLException {
-
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(relations);
-
-		if (excludedFields != null) {
-			query.addExcludedFields(excludedFields);
-		}
-
-		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
-
-		return daoFactory.getFlowInstanceDAO().get(query);
-	}
+//	public FlowInstance getFlowInstance(int flowInstanceID, List<Field> excludedFields, Field... relations) throws SQLException {
+//
+//		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(relations);
+//
+//		if (excludedFields != null) {
+//			query.addExcludedFields(excludedFields);
+//		}
+//
+//		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
+//
+//		return daoFactory.getFlowInstanceDAO().get(query);
+//	}
 	
 	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp) {
 
