@@ -72,12 +72,7 @@ public class FileUploadQuery extends BaseQuery {
 	@DAOManaged
 	@XMLElement
 	private String attributeName;
-	
-	@DAOManaged
-	@WebPopulate
-	@XMLElement
-	private boolean hideAttachmentDescription;
-	
+
 	public static long getSerialversionuid() {
 
 		return serialVersionUID;
@@ -144,15 +139,7 @@ public class FileUploadQuery extends BaseQuery {
 
 		this.maxFileSize = maxFileSize;
 	}
-	
-	public boolean isHideAttachmentDescription() {
-		return hideAttachmentDescription;
-	}
-	
-	public void setHideAttachmentDescription(boolean hideAttachmentDescription) {
-		this.hideAttachmentDescription = hideAttachmentDescription;
-	}
-	
+
 	@Override
 	public String getXSDTypeName() {
 
@@ -247,19 +234,19 @@ public class FileUploadQuery extends BaseQuery {
 		maxFileSize = XMLValidationUtils.validateParameter("maxFileSize", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
-		hideAttachmentDescription = xmlParser.getPrimitiveBoolean("hideAttachmentDescription");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
-		if (attributeName != null) {
+		if(attributeName != null){
 			
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
 		
-		if (!errors.isEmpty()) {
-			
+		if(!errors.isEmpty()){
+
 			throw new ValidationException(errors);
 		}
+		
 	}
 	
 	public boolean isSetAsAttribute() {

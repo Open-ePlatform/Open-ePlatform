@@ -860,33 +860,26 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 	@Override
 	protected List<PDFAttachment> getPDFAttachments(FileUploadQueryInstance queryInstance) {
-		
+
 		if (queryInstance.getFiles() == null) {
-			
+
 			return null;
 		}
 
-		String attachmentName = null;
-		
-		if (!queryInstance.getQuery().isHideAttachmentDescription()) {
-			
-			attachmentName = pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName();
-		}
-		
 		List<PDFAttachment> attachments = new ArrayList<PDFAttachment>(queryInstance.getFiles().size());
-		
+
 		for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
+
+			if(queryInstance.getQueryInstanceDescriptor().getFlowInstanceID() != null){
 			
-			if (queryInstance.getQueryInstanceDescriptor().getFlowInstanceID() != null) {
-				
-				attachments.add(new PDFFileAttachment(new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor())), fileDescriptor.getName(), attachmentName));
+				attachments.add(new PDFFileAttachment(new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor())), fileDescriptor.getName(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
 				
 			} else {
 				
-				attachments.add(new PDFFileAttachment(new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID())), fileDescriptor.getName(), attachmentName));
+				attachments.add(new PDFFileAttachment(new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID())), fileDescriptor.getName(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
 			}
 		}
-		
+
 		return attachments;
 	}
 

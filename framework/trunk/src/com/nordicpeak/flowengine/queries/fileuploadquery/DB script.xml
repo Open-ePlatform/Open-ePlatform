@@ -74,14 +74,5 @@
 	    		ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
 			]]>
 		</Query>
-	</Script>
-	
-	<Script version="3">
-		<Query>
-			<![CDATA[
-				ALTER TABLE `file_upload_queries` ADD COLUMN `hideAttachmentDescription` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `attributeName`;
-			]]>
-		</Query>
-	</Script>
-	
+	</Script>	
 </DBScripts>
