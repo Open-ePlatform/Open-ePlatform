@@ -137,12 +137,18 @@
 				</xsl:if>		
 		
 				<div class="search-select">
+				
+					<div style="display: none;">
+						<div data-search-service="PUD" data-url="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchpud" />
+						<div data-search-service="ADDRESS" data-url="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchaddress" />
+					</div>
+					
 					<select name="{$shortQueryID}_searchservice">
 						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices[allowedSearchService='PUD']">
-							<option value="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchpud" data-search-service="PUD"><xsl:value-of select="$i18n.PUD" /></option>
+							<option value="PUD"><xsl:value-of select="$i18n.PUD" /></option>
 						</xsl:if>
 						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices[allowedSearchService='ADDRESS']">
-							<option value="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchaddress" data-search-service="ADDRESS"><xsl:value-of select="$i18n.Address" /></option>
+							<option value="ADDRESS"><xsl:value-of select="$i18n.Address" /></option>
 						</xsl:if>
 					</select>
 				</div>

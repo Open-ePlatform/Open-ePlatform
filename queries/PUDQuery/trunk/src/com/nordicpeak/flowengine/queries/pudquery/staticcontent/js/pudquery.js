@@ -31,7 +31,7 @@ function initPUDQuery(queryID) {
 			$input.val("");
 		}
 		
-		var type = $selectedOption.attr("data-search-service");
+		var type = $selectedOption.val();
 		
 		if(type == "PUD") {
 			
@@ -79,10 +79,10 @@ function initPUDQuery(queryID) {
 	
 }
 
-function searchPUD(request, response, queryID, $input, $selectedOption, fnr) {
+function searchPUD(request, response, queryID, $input, $selectedOption) {
 	
 	$.ajax({
-		url : $selectedOption.val(),
+		url : $selectedOption.closest(".search-select").find("div[data-search-service='" + $selectedOption.val() + "']").data("url"),
 		dataType : "json",
 		data : {
 			q : request.term
@@ -125,7 +125,7 @@ function searchPUD(request, response, queryID, $input, $selectedOption, fnr) {
 function searchAddress(request, response, queryID, $input, $selectedOption) {
 	
 	$.ajax({
-		url : $selectedOption.val(),
+		url : $selectedOption.closest(".search-select").find("div[data-search-service='" + $selectedOption.val() + "']").data("url"),
 		dataType : "json",
 		data : {
 			q : request.term
@@ -163,7 +163,7 @@ function searchPUDFromFnr(fnumber, queryID, $input, $select, $hidden) {
 	$input.addClass("ui-autocomplete-loading");
 	
 	$.ajax({
-		url : $select.find("option[data-search-service='PUD']").val(),
+		url : $selectedOption.closest(".search-select").find("div[data-search-service='PUD']").data("url"),
 		dataType : "json",
 		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 		data : {
