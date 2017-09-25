@@ -1436,13 +1436,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return;
 		}
 
-		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
+		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
 		if (event.getSenderType() == SenderType.MANAGER) {
 
 			if (notificationSettings.isSendExternalMessageReceivedUserEmail() || notificationSettings.isSendExternalMessageReceivedUserSMS()) {
 
-				Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
+				Collection<Contact> contacts = getContacts(flowInstance);
 
 				if (contacts != null) {
 
@@ -1450,12 +1452,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						if (notificationSettings.isSendExternalMessageReceivedUserEmail()) {
 
-							sendContactEmail(event.getFlowInstance(), contact, externalMessageReceivedUserEmailSubject, externalMessageReceivedUserEmailMessage, null);
+							sendContactEmail(flowInstance, contact, externalMessageReceivedUserEmailSubject, externalMessageReceivedUserEmailMessage, null);
 						}
 
 						if (notificationSettings.isSendExternalMessageReceivedUserSMS()) {
 
-							sendContactSMS(event.getFlowInstance(), contact, externalMessageReceivedUserSMS);
+							sendContactSMS(flowInstance, contact, externalMessageReceivedUserSMS);
 						}
 					}
 				}
@@ -1465,18 +1467,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			if (notificationSettings.isSendExternalMessageReceivedManagerEmail() || notificationSettings.isSendExternalMessageReceivedGlobalEmail()) {
 
-				Contact contact = getPosterContact(event.getFlowInstance(), event.getSiteProfile());
+				Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
 
 				if (notificationSettings.isSendExternalMessageReceivedManagerEmail()) {
 
-					sendManagerEmails(event.getFlowInstance(), contact, externalMessageReceivedManagerEmailSubject, externalMessageReceivedManagerEmailMessage, null, false);
+					sendManagerEmails(flowInstance, contact, externalMessageReceivedManagerEmailSubject, externalMessageReceivedManagerEmailMessage, null, false);
 				}
 
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
 
 					for (String email : notificationSettings.getExternalMessageReceivedGlobalEmailAddresses()) {
 
-						sendGlobalEmail(event.getSiteProfile(), event.getFlowInstance(), contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);
 					}
 				}
 			}
