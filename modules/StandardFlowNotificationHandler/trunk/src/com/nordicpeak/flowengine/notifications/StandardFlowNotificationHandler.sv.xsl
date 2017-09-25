@@ -235,10 +235,10 @@
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedUserEmail">E-post vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceArchivedUserEmail">E-post vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.ManagerNotifications">Notifikationer till handläggare</xsl:variable>
-	<xsl:variable name="i18n.SendExternalMessageReceivedManagerEmail">E-post vid nytt meddelande från medborgare</xsl:variable>
+	<xsl:variable name="i18n.SendExternalMessageReceivedManagerEmail">E-post till tilldelade handläggare vid nytt meddelande från medborgare</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceAssignedManagerEmail">E-post vid tilldelning av ärende</xsl:variable>
-	<xsl:variable name="i18n.SendStatusChangedManagerEmail">E-post vid byte av status</xsl:variable>
-	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post när nya ärenden skickas in</xsl:variable>
+	<xsl:variable name="i18n.SendStatusChangedManagerEmail">E-post till tilldelade handläggare vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.NoNotificationsEnabled">Inga notifikationer är aktiverade för denna e-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailSubject">Rubrik på e-postmeddelande vid inskickat ärende</xsl:variable>
