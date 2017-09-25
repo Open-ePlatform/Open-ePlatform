@@ -25,3 +25,30 @@
 		width: calc(100% - 61px) !important; /* 10px padding to colorpicker, 51px colorpicker  */
 	}
 }
+
+@media screen and (max-width: 767px) {
+	.textfieldquery .input-error i {
+		display: block;
+		pointer-events: none;
+		position: static;
+		height: auto;
+		width: auto;
+		margin: auto;
+	}
+	
+	.textfieldquery .input-error i::after {
+    float: right;
+/*     display: inline-block; */
+    content: attr(title);
+/*     text-align: left; */
+    font-family: "Source Sans Pro",sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-right: 5px;
+  }
+  
+  .textfieldquery .input-error input {
+		padding: 12px !important;
+	}
+}
