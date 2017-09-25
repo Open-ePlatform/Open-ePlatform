@@ -272,7 +272,13 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 .receipt .query.mergewithpreviousquery > article {
     border-top: none;
 }
+.preview .query.mergewithpreviousquery > article {
+    border-top: none;
+}
 
 .receipt .query.mergedquery > article {
+	border-bottom: none;
+}
+.preview .query.mergedquery > article {
 	border-bottom: none;
 }
