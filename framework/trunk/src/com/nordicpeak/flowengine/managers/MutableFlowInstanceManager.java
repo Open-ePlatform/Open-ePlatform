@@ -1129,14 +1129,17 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				flowInstance.setPoster(user);
 				flowInstance.setAdded(currentTimestamp);
 				
-				if(user != null){
+				if (user != null) {
 					
 					if (flowInstance.getOwners() == null) {
 						
 						flowInstance.setOwners(new ArrayList<User>(1));
 					}
 					
-					flowInstance.getOwners().add(user);
+					if (!flowInstance.getOwners().contains(user)) {
+						
+						flowInstance.getOwners().add(user);
+					}
 				}
 				
 				//Add flow instance to database
