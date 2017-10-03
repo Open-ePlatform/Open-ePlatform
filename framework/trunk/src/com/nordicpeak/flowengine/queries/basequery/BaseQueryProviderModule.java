@@ -306,6 +306,8 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		}
 
 		XMLUtils.append(doc, showQueryFormElement, "ValidationErrors", validationErrors);
+		
+		showQueryFormElement.appendChild(requestMetadata.toXML(doc));
 
 		return createQueryResponse(doc, queryInstance.getQueryInstanceDescriptor().getQueryDescriptor());
 	}
