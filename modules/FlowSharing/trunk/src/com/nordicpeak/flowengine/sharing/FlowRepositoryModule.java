@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine.sharing;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -689,9 +690,14 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		return null;
 	}
 	
-	protected void unauthorized(HttpServletResponse response, String message) throws IOException {
+	protected void unauthorized(HttpServletResponse res, String message) throws IOException {
 		
-		response.setHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
-		response.sendError(401, message);
+		res.setHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
+		res.setStatus(401);
+		
+		PrintWriter writer = res.getWriter();
+		writer.println(message);
+		writer.flush();
+		writer.close();
 	}
 }
