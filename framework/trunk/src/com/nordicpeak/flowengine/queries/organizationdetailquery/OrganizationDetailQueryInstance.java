@@ -435,7 +435,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 
 	@Override
 	public boolean isPersist() {
-		return isPersistOrganization();
+		return false;
 	}
 
 }
