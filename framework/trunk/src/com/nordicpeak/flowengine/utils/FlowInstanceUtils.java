@@ -113,10 +113,10 @@ public class FlowInstanceUtils {
 		}
 		
 		return null;
-	}	
+	}
 	
 	// Used when saving flow instance on submit and multipart signing complete
-	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler attributeHandler) {
+	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler flowInstanceAttributeHandler) {
 		
 		List<ContactQueryInstance> contactQueryInstances = flowInstanceManager.getQueries(ContactQueryInstance.class);
 		
@@ -124,46 +124,46 @@ public class FlowInstanceUtils {
 			
 			for (ContactQueryInstance contactQueryInstance : contactQueryInstances) {
 				
-				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated()) {
+				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated() && !contactQueryInstance.isPersist()) {
 					
 					Contact contact = contactQueryInstance.getContact();
 					
 					if (contact != null) {
 						
-						attributeHandler.setAttribute("firstname", contact.getFirstname());
-						attributeHandler.setAttribute("lastname", contact.getLastname());
-						attributeHandler.setAttribute("address", contact.getAddress());
-						attributeHandler.setAttribute("zipCode", contact.getZipCode());
-						attributeHandler.setAttribute("postalAddress", contact.getPostalAddress());
-						attributeHandler.setAttribute("email", contact.getEmail());
-						attributeHandler.setAttribute("phone", contact.getPhone());
-						attributeHandler.setAttribute("mobilePhone", contact.getMobilePhone());
-						attributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
+						flowInstanceAttributeHandler.setAttribute("firstname", contact.getFirstname());
+						flowInstanceAttributeHandler.setAttribute("lastname", contact.getLastname());
+						flowInstanceAttributeHandler.setAttribute("address", contact.getAddress());
+						flowInstanceAttributeHandler.setAttribute("zipCode", contact.getZipCode());
+						flowInstanceAttributeHandler.setAttribute("postalAddress", contact.getPostalAddress());
+						flowInstanceAttributeHandler.setAttribute("email", contact.getEmail());
+						flowInstanceAttributeHandler.setAttribute("phone", contact.getPhone());
+						flowInstanceAttributeHandler.setAttribute("mobilePhone", contact.getMobilePhone());
+						flowInstanceAttributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
 						
-						attributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
+						flowInstanceAttributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
 						
-						attributeHandler.setAttribute("organizationName", contact.getOrganizationName());
-						attributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
+						flowInstanceAttributeHandler.setAttribute("organizationName", contact.getOrganizationName());
+						flowInstanceAttributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
 						
 						return;
 					}
 				}
 			}
 			
-			attributeHandler.removeAttribute("firstname");
-			attributeHandler.removeAttribute("lastname");
-			attributeHandler.removeAttribute("address");
-			attributeHandler.removeAttribute("zipCode");
-			attributeHandler.removeAttribute("postalAddress");
-			attributeHandler.removeAttribute("email");
-			attributeHandler.removeAttribute("phone");
-			attributeHandler.removeAttribute("mobilePhone");
-			attributeHandler.removeAttribute("citizenIdentifier");
+			flowInstanceAttributeHandler.removeAttribute("firstname");
+			flowInstanceAttributeHandler.removeAttribute("lastname");
+			flowInstanceAttributeHandler.removeAttribute("address");
+			flowInstanceAttributeHandler.removeAttribute("zipCode");
+			flowInstanceAttributeHandler.removeAttribute("postalAddress");
+			flowInstanceAttributeHandler.removeAttribute("email");
+			flowInstanceAttributeHandler.removeAttribute("phone");
+			flowInstanceAttributeHandler.removeAttribute("mobilePhone");
+			flowInstanceAttributeHandler.removeAttribute("citizenIdentifier");
 			
-			attributeHandler.removeAttribute("organizationName");
-			attributeHandler.removeAttribute("organizationNumber");
+			flowInstanceAttributeHandler.removeAttribute("organizationName");
+			flowInstanceAttributeHandler.removeAttribute("organizationNumber");
 			
-			attributeHandler.removeAttribute("contactBySMS");
+			flowInstanceAttributeHandler.removeAttribute("contactBySMS");
 		}
 	}
 	
