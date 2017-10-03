@@ -11,20 +11,32 @@ function initContactDetailQuery(queryID) {
 	
 	$(shortQueryID + "_mobilephone").on("keyup blur change", function() {
 		
-		if($(this).val() != "") {
-			$(shortQueryID + "_contactBySMS").removeAttr("disabled").next("label").removeClass("disabled");
+		var smsCheckbox = $(shortQueryID + "_contactBySMS");
+		
+		if ($(this).val() != "") {
+			
+			if (smsCheckbox.hasClass('forced')) {
+				smsCheckbox.prop("checked", true);
+				
+			} else {
+				smsCheckbox.removeAttr("disabled").next("label").removeClass("disabled");
+			}
+			
 		} else {
-			$(shortQueryID + "_contactBySMS").removeAttr("checked").attr("disabled", "disabled").next("label").addClass("disabled");
+			smsCheckbox.prop("checked", false).attr("disabled", "disabled").next("label").addClass("disabled");
 		}
 		
 	});
 	
 	$(shortQueryID + "_email").on("keyup blur change", function() {
 		
-		if($(this).val() != "") {
-			$(shortQueryID + "_contactByEmail").attr("checked", true);
+		var emailCheckbox = $(shortQueryID + "_contactByEmail");
+		
+		if ($(this).val() != "") {
+			emailCheckbox.prop("checked", true);
+			
 		} else {
-			$(shortQueryID + "_contactByEmail").removeAttr("checked");
+			emailCheckbox.prop("checked", false);
 		}
 		
 	});
