@@ -20,4 +20,6 @@ public class Constants {
 	public static final String FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE = "integrationExternalID";
 	
 	public static final String FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE = "description";
+	
+	public static final String FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE = "descriptionGenerated";
 }

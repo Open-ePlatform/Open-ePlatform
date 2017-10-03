@@ -1,12 +1,15 @@
 package com.nordicpeak.flowengine.utils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
@@ -113,7 +116,7 @@ public class FlowInstanceUtils {
 	}	
 	
 	// Used when saving flow instance on submit and multipart signing complete
-	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler flowInstanceAttributeHandler) {
+	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler attributeHandler) {
 		
 		List<ContactQueryInstance> contactQueryInstances = flowInstanceManager.getQueries(ContactQueryInstance.class);
 		
@@ -127,40 +130,61 @@ public class FlowInstanceUtils {
 					
 					if (contact != null) {
 						
-						flowInstanceAttributeHandler.setAttribute("firstname", contact.getFirstname());
-						flowInstanceAttributeHandler.setAttribute("lastname", contact.getLastname());
-						flowInstanceAttributeHandler.setAttribute("address", contact.getAddress());
-						flowInstanceAttributeHandler.setAttribute("zipCode", contact.getZipCode());
-						flowInstanceAttributeHandler.setAttribute("postalAddress", contact.getPostalAddress());
-						flowInstanceAttributeHandler.setAttribute("email", contact.getEmail());
-						flowInstanceAttributeHandler.setAttribute("phone", contact.getPhone());
-						flowInstanceAttributeHandler.setAttribute("mobilePhone", contact.getMobilePhone());
-						flowInstanceAttributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
+						attributeHandler.setAttribute("firstname", contact.getFirstname());
+						attributeHandler.setAttribute("lastname", contact.getLastname());
+						attributeHandler.setAttribute("address", contact.getAddress());
+						attributeHandler.setAttribute("zipCode", contact.getZipCode());
+						attributeHandler.setAttribute("postalAddress", contact.getPostalAddress());
+						attributeHandler.setAttribute("email", contact.getEmail());
+						attributeHandler.setAttribute("phone", contact.getPhone());
+						attributeHandler.setAttribute("mobilePhone", contact.getMobilePhone());
+						attributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
 						
-						flowInstanceAttributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
+						attributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
 						
-						flowInstanceAttributeHandler.setAttribute("organizationName", contact.getOrganizationName());
-						flowInstanceAttributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
+						attributeHandler.setAttribute("organizationName", contact.getOrganizationName());
+						attributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
 						
 						return;
 					}
 				}
 			}
 			
-			flowInstanceAttributeHandler.removeAttribute("firstname");
-			flowInstanceAttributeHandler.removeAttribute("lastname");
-			flowInstanceAttributeHandler.removeAttribute("address");
-			flowInstanceAttributeHandler.removeAttribute("zipCode");
-			flowInstanceAttributeHandler.removeAttribute("postalAddress");
-			flowInstanceAttributeHandler.removeAttribute("email");
-			flowInstanceAttributeHandler.removeAttribute("phone");
-			flowInstanceAttributeHandler.removeAttribute("mobilePhone");
-			flowInstanceAttributeHandler.removeAttribute("citizenIdentifier");
+			attributeHandler.removeAttribute("firstname");
+			attributeHandler.removeAttribute("lastname");
+			attributeHandler.removeAttribute("address");
+			attributeHandler.removeAttribute("zipCode");
+			attributeHandler.removeAttribute("postalAddress");
+			attributeHandler.removeAttribute("email");
+			attributeHandler.removeAttribute("phone");
+			attributeHandler.removeAttribute("mobilePhone");
+			attributeHandler.removeAttribute("citizenIdentifier");
 			
-			flowInstanceAttributeHandler.removeAttribute("organizationName");
-			flowInstanceAttributeHandler.removeAttribute("organizationNumber");
+			attributeHandler.removeAttribute("organizationName");
+			attributeHandler.removeAttribute("organizationNumber");
 			
-			flowInstanceAttributeHandler.removeAttribute("contactBySMS");
+			attributeHandler.removeAttribute("contactBySMS");
+		}
+	}
+	
+	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
+		
+		if(!attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE) || attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE)){
+			
+			Map<String,String> attributeMap = attributeHandler.getAttributeMap();
+			
+			for(Entry<String,String> entry : attributeMap.entrySet()){
+				
+				if(entry.getKey().startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)){
+					
+					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, entry.getValue());
+					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
+					
+					return;
+				}
+			}
+			
+			attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 		}
 	}
 }
