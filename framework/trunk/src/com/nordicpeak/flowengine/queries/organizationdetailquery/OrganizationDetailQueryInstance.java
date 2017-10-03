@@ -434,7 +434,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 
 	@Override
-	public boolean isPersist() {
+	public boolean updatedPoster() {
 		return false;
 	}
 

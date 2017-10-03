@@ -124,7 +124,7 @@ public class FlowInstanceUtils {
 			
 			for (ContactQueryInstance contactQueryInstance : contactQueryInstances) {
 				
-				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated() && !contactQueryInstance.isPersist()) {
+				if (contactQueryInstance.getQueryInstanceDescriptor().isPopulated() && !contactQueryInstance.updatedPoster()) {
 					
 					Contact contact = contactQueryInstance.getContact();
 					

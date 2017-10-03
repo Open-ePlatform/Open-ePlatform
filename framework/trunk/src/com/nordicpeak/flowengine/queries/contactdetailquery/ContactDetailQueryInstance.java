@@ -551,7 +551,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	}
 	
 	@Override
-	public boolean isPersist() {
+	public boolean updatedPoster() {
 		return isPersistUserProfile();
 	}
 	

@@ -6,5 +6,5 @@ public interface ContactQueryInstance extends QueryInstance {
 	
 	public Contact getContact();
 	
-	public boolean isPersist();
+	public boolean updatedPoster();
 }
