@@ -433,4 +433,9 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 		this.citizenIdentifier = citizenIdentifier;
 	}
 
+	@Override
+	public boolean isPersist() {
+		return isPersistOrganization();
+	}
+
 }
