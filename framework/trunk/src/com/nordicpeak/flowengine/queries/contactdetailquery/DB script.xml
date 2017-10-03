@@ -153,5 +153,121 @@
 			]]>
 		</Query>
 	</Script>
-		    	
+	
+	<Script version="14">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries`
+					ADD COLUMN `fieldCitizenID` CHAR(8) NOT NULL DEFAULT 'HIDDEN' AFTER `disableProfileUpdate`,
+					ADD COLUMN `fieldName` CHAR(8) NOT NULL DEFAULT 'REQUIRED' AFTER `fieldCitizenID`,
+					ADD COLUMN `fieldAddress` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldName`,
+					ADD COLUMN `fieldPhone` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldAddress`,
+					ADD COLUMN `fieldMobilePhone` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldPhone`,
+					ADD COLUMN `fieldEmail` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldMobilePhone`;		
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="15">
+		<Query>
+			<![CDATA[		
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `fieldUpdate` CHAR(6) NOT NULL DEFAULT 'ASK' AFTER `fieldEmail`;		
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `requireAtLeastOneContactWay` TINYINT(1) NOT NULL AFTER `disableProfileUpdate`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="17">
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldCitizenID = 'VISIBLE' WHERE showSocialSecurityNumberField = 1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldAddress = 'REQUIRED' WHERE requireAddress = 1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldPhone = 'REQUIRED' WHERE requirePhone = 1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldMobilePhone = 'REQUIRED' WHERE requireMobilePhone = 1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldEmail = 'REQUIRED' WHERE requireEmail = 1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries`
+					DROP COLUMN `requireAddress`,
+					DROP COLUMN `showSocialSecurityNumberField`,
+					DROP COLUMN `requirePhone`,
+					DROP COLUMN `requireMobilePhone`,
+					DROP COLUMN `requireEmail`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="19">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_query_instances` CHANGE COLUMN `zipCode` `zipCode` CHAR(10) NULL DEFAULT NULL AFTER `address`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="20">
+		<Query>
+			<![CDATA[		
+				UPDATE `contact_detail_queries` SET fieldUpdate = 'NEVER' WHERE disableProfileUpdate = 1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="21">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries` DROP COLUMN `disableProfileUpdate`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="22">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_query_instances` CHANGE COLUMN `socialSecurityNumber` `citizenID` VARCHAR(16) NULL DEFAULT NULL AFTER `persistUserProfile`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="23">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `fieldCareOf` CHAR(8) NOT NULL DEFAULT 'HIDDEN' AFTER `fieldEmail`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_query_instances` ADD COLUMN `careOf` VARCHAR(255) NULL DEFAULT NULL AFTER `officalAddress`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

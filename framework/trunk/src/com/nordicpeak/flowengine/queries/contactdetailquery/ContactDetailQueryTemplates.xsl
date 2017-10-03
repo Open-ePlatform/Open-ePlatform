@@ -11,6 +11,10 @@
 	<xsl:variable name="scripts">
 		/js/contactdetailquery.js
 	</xsl:variable>
+	
+	<xsl:variable name="links">
+		/css/contactdetailquery.css
+	</xsl:variable>
 
 	<xsl:template match="Document">	
 		
@@ -53,33 +57,52 @@
 				
 				<div class="clearboth"/>
 				
-				<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/showSocialSecurityNumberField = 'true'">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCitizenID = 'HIDDEN')">
 
 					<fieldset>
 
 						<div class="split">
-							<strong class="block"><xsl:value-of select="$i18n.SocialSecurityNumber" /></strong>
-							<xsl:value-of select="ContactDetailQueryInstance/socialSecurityNumber" />						
+							<strong class="block"><xsl:value-of select="$i18n.CitizenID" /></strong>
+							<xsl:value-of select="ContactDetailQueryInstance/citizenID" />						
 						</div>				
 				
 					</fieldset>
 				
-				</xsl:if>				
+				</xsl:if>
 				
-				<fieldset>
-					
-					<div class="split">
-						<strong class="block"><xsl:value-of select="$i18n.FirstnameAndLastname" /></strong>
-						<xsl:value-of select="ContactDetailQueryInstance/firstname" />
-						<xsl:text>&#160;</xsl:text>
-						<xsl:value-of select="ContactDetailQueryInstance/lastname" />
-					</div>
-					
-					<div class="split odd"></div>
-					
-				</fieldset>
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'HIDDEN')">
 				
-				<xsl:if test="ContactDetailQueryInstance/address">
+					<fieldset>
+						
+						<div class="split">
+							<strong class="block"><xsl:value-of select="$i18n.FirstnameAndLastname" /></strong>
+							<xsl:value-of select="ContactDetailQueryInstance/firstname" />
+							<xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="ContactDetailQueryInstance/lastname" />
+						</div>
+						
+						<div class="split odd"></div>
+						
+					</fieldset>
+				
+				</xsl:if>
+				
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'HIDDEN')">
+				
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCareOf = 'HIDDEN')">
+					
+						<fieldset>
+					
+							<div class="split">
+								<strong class="block"><xsl:value-of select="$i18n.CareOf" /></strong>
+								<xsl:call-template name="printValue">
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/careOf" />
+								</xsl:call-template>
+							</div>
+						
+						</fieldset>
+					
+					</xsl:if>
 					
 					<fieldset>
 					
@@ -88,7 +111,7 @@
 							<xsl:call-template name="printValue">
 								<xsl:with-param name="value" select="ContactDetailQueryInstance/address" />
 							</xsl:call-template>
-						</div>					
+						</div>
 						
 						<div class="split odd">
 							<strong class="block"><xsl:value-of select="$i18n.ZipCodeAndPostalAddress" /></strong>
@@ -107,7 +130,7 @@
 				
 				<fieldset>
 					
-					<xsl:if test="ContactDetailQueryInstance/phone">
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'HIDDEN')">
 						
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.Phone" /></strong>
@@ -118,7 +141,7 @@
 					
 					</xsl:if>
 					
-					<xsl:if test="ContactDetailQueryInstance/email">
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN')">
 			
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.Email" /></strong>
@@ -129,7 +152,7 @@
 					
 					</xsl:if>
 					
-					<xsl:if test="ContactDetailQueryInstance/mobilePhone">
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.MobilePhone" /></strong>
 							<xsl:call-template name="printValue">
@@ -140,27 +163,31 @@
 					
 				</fieldset>
 				
-				<fieldset>
-					
-					<div>
-						<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
+				<xsl:if test="ContactDetailQueryInstance/email or ContactDetailQueryInstance/contactBySMS = 'true'">
+				
+					<fieldset>
 						
-						<xsl:if test="ContactDetailQueryInstance/email">
-							<xsl:value-of select="$i18n.ContactByEmail" /><br/>
-						</xsl:if>
+						<div>
+							<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
+							
+							<xsl:if test="ContactDetailQueryInstance/email">
+								<xsl:value-of select="$i18n.ContactByEmail" /><br/>
+							</xsl:if>
+							
+							<xsl:if test="ContactDetailQueryInstance/contactBySMS = 'true'">
+								<xsl:value-of select="$i18n.ContactBySMS" /><br/>
+							</xsl:if>
+						</div>
 						
-						<xsl:if test="ContactDetailQueryInstance/contactBySMS = 'true'">
-							<xsl:value-of select="$i18n.ContactBySMS" /><br/>
-						</xsl:if>
-					</div>
-					
- 				</fieldset>
+	 				</fieldset>
+ 				
+ 				</xsl:if>
 				
 			</article>
 			
 		</div>
 		
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template name="printValue">
 		
@@ -186,7 +213,7 @@
 		<div class="query" id="{$queryID}">
 			
 			<xsl:attribute name="class">
-				<xsl:text>query</xsl:text>
+				<xsl:text>query contactdetailquery</xsl:text>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
 				<xsl:if test="ContactDetailQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
@@ -196,26 +223,19 @@
 			<xsl:if test="ValidationErrors/validationError">
 				<div id="{$queryID}-validationerrors" class="validationerrors">
 				
-					<xsl:if test="ValidationErrors/validationError[messageKey = 'NoContactChannelChoosen']">
-						<div class="info-box error">
-							<xsl:apply-templates select="ValidationErrors/validationError[messageKey = 'NoContactChannelChoosen']"/>
-							<div class="marker"></div>
-						</div>
-					</xsl:if>
+					<div class="info-box error">
 					
-					<xsl:if test="ValidationErrors/validationError[messageKey = 'UnableToUpdateUser']">
-						<div class="info-box error">
-							<xsl:apply-templates select="ValidationErrors/validationError[messageKey = 'UnableToUpdateUser']"/>
-							<div class="marker"></div>
-						</div>
-					</xsl:if>
-					
-					<xsl:if test="not(ValidationErrors/validationError[messageKey = 'NoContactChannelChoosen'] or ValidationErrors/validationError[messageKey = 'UnableToUpdateUser'])">
-						<div class="info-box error">
-							<span/>
-							<div class="marker"></div>
-						</div>
-					</xsl:if>
+						<xsl:choose>
+							<xsl:when test="ValidationErrors/validationError[not(fieldName)]">
+								<xsl:apply-templates select="ValidationErrors/validationError[not(fieldName)]"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<span/>
+							</xsl:otherwise>
+						</xsl:choose>
+				
+						<div class="marker"></div>
+					</div>
 				
 				</div>
 			</xsl:if>
@@ -250,13 +270,13 @@
 					</span>
 				</xsl:if>
 				
-				<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/showSocialSecurityNumberField = 'true'">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCitizenID = 'HIDDEN')">
 
 					<fieldset>
 
 						<div class="split">
 	
-							<xsl:variable name="fieldName" select="concat($shortQueryID, '_socialSecurityNumber')" />
+							<xsl:variable name="fieldName" select="concat($shortQueryID, '_citizenID')" />
 						
 							<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
 								<xsl:attribute name="class">
@@ -264,19 +284,26 @@
 								</xsl:attribute>
 							</xsl:if>
 						
-							<label for="{$fieldName}" class="required"><xsl:value-of select="$i18n.SocialSecurityNumberWithFormat" /></label>
+							<label for="{$fieldName}" >
+								<xsl:attribute name="class">
+									<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldCitizenID = 'REQUIRED'">required</xsl:if>
+								</xsl:attribute>
+							
+								<xsl:value-of select="$i18n.CitizenIDWithFormat" />
+							</label>
+							
 							<xsl:call-template name="createTextField">
 								<xsl:with-param name="id" select="$fieldName" />
 								<xsl:with-param name="name" select="$fieldName" />
-								<xsl:with-param name="title" select="$i18n.SocialSecurityNumberWithFormat"/>
+								<xsl:with-param name="title" select="$i18n.CitizenIDWithFormat"/>
 								<xsl:with-param name="size" select="50"/>
 								<xsl:with-param name="disabled">
-									<xsl:if test="/Document/user">disabled</xsl:if>
+									<xsl:if test="/Document/Poster">disabled</xsl:if>
 								</xsl:with-param>
 								<xsl:with-param name="value">
 									<xsl:choose>
-										<xsl:when test="/Document/user"><xsl:value-of select="/Document/user/SocialSecurityNumber" /></xsl:when>
-										<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/socialSecurityNumber" /></xsl:otherwise>
+										<xsl:when test="/Document/Poster and not(RequestMetadata/manager = 'true')"><xsl:value-of select="/Document/Poster/citizenID" /></xsl:when>
+										<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/citizenID" /></xsl:otherwise>
 									</xsl:choose>
 								</xsl:with-param>
 							</xsl:call-template>
@@ -289,312 +316,463 @@
 				
 				</xsl:if>				
 				
-				<fieldset>
-					
-					<div class="split">
-					
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_firstname')" />
-					
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
-							<xsl:attribute name="class">
-								<xsl:text>split invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>
-					
-						<label for="{$fieldName}" class="required"><xsl:value-of select="$i18n.Firstname" /></label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.Firstname"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="disabled">
-								<xsl:if test="/Document/user">disabled</xsl:if>
-							</xsl:with-param>
-							<xsl:with-param name="value">
-								<xsl:choose>
-									<xsl:when test="/Document/user"><xsl:value-of select="/Document/user/firstname" /></xsl:when>
-									<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/firstname" /></xsl:otherwise>
-								</xsl:choose>
-							</xsl:with-param>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						
-					</div>
-					
-					<div class="split odd">
-						
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_lastname')" />
-						
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
-							<xsl:attribute name="class">
-								<xsl:text>split odd invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>	
-					
-						<label for="{$fieldName}" class="required"><xsl:value-of select="$i18n.Lastname" /></label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.Lastname"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="disabled">
-								<xsl:if test="/Document/user">disabled</xsl:if>
-							</xsl:with-param>
-							<xsl:with-param name="value">
-								<xsl:choose>
-									<xsl:when test="/Document/user"><xsl:value-of select="/Document/user/lastname" /></xsl:when>
-									<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/lastname" /></xsl:otherwise>
-								</xsl:choose>
-							</xsl:with-param>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						
-					</div>
-					
-				</fieldset>
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'HIDDEN')">
 				
-				<fieldset>
-				
-					<xsl:variable name="requireAddress" select="ContactDetailQueryInstance/ContactDetailQuery/requireAddress = 'true'" />
-				
-					<div class="split">
+					<fieldset>
 						
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_address')" />
-					
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
-							<xsl:attribute name="class">
-								<xsl:text>split invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>	
+						<div class="split">
 						
-						<label for="{$fieldName}">
-							<xsl:if test="$requireAddress"><xsl:attribute name="class">required</xsl:attribute></xsl:if>
-							<xsl:value-of select="$i18n.Address" />
-						</label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.Address"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="disabled">
-								<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
-							</xsl:with-param>
-							<xsl:with-param name="value" select="ContactDetailQueryInstance/address"/>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						
-					</div>					
-					
-					<div class="split">
-						
-						<div class="left">
-						
-							<xsl:variable name="fieldName" select="concat($shortQueryID, '_zipcode')" />
+							<xsl:variable name="fieldName" select="concat($shortQueryID, '_firstname')" />
 						
 							<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
 								<xsl:attribute name="class">
-									<xsl:text>left invalid input-error</xsl:text>
+									<xsl:text>split invalid input-error</xsl:text>
 								</xsl:attribute>
-							</xsl:if>	
-							
-							<label for="{$fieldName}" class="floatleft">
-								<xsl:if test="$requireAddress"><xsl:attribute name="class">floatleft required</xsl:attribute></xsl:if>
-								<xsl:value-of select="$i18n.ZipCode" />
+							</xsl:if>
+						
+							<label for="{$fieldName}" >
+								<xsl:attribute name="class">
+									<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'REQUIRED'">required</xsl:if>
+								</xsl:attribute>
+								
+								<xsl:value-of select="$i18n.Firstname" />
 							</label>
+							
 							<xsl:call-template name="createTextField">
 								<xsl:with-param name="id" select="$fieldName" />
 								<xsl:with-param name="name" select="$fieldName" />
-								<xsl:with-param name="title" select="$i18n.ZipCode"/>
-								<xsl:with-param name="size" select="15"/>
-								<xsl:with-param name="class" select="'floatleft clearboth'"/>
+								<xsl:with-param name="title" select="$i18n.Firstname"/>
+								<xsl:with-param name="size" select="50"/>
 								<xsl:with-param name="disabled">
-									<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+									<xsl:if test="/Document/Poster">disabled</xsl:if>
 								</xsl:with-param>
-								<xsl:with-param name="value" select="ContactDetailQueryInstance/zipCode"/>
+								<xsl:with-param name="value">
+									<xsl:choose>
+										<xsl:when test="/Document/Poster and not(RequestMetadata/manager = 'true')"><xsl:value-of select="/Document/Poster/firstname" /></xsl:when>
+										<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/firstname" /></xsl:otherwise>
+									</xsl:choose>
+								</xsl:with-param>
 							</xsl:call-template>
 							
 							<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						
+							
 						</div>
-						
-						<div class="right">
-						
-							<xsl:variable name="fieldName" select="concat($shortQueryID, '_postaladdress')" />
-						
+					
+						<div class="split odd">
+							
+							<xsl:variable name="fieldName" select="concat($shortQueryID, '_lastname')" />
+							
 							<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
 								<xsl:attribute name="class">
-									<xsl:text>right invalid input-error</xsl:text>
+									<xsl:text>split odd invalid input-error</xsl:text>
 								</xsl:attribute>
 							</xsl:if>	
 						
-							<label for="{$fieldName}" class="floatleft">
-								<xsl:if test="$requireAddress"><xsl:attribute name="class">floatleft required</xsl:attribute></xsl:if>
-								<xsl:value-of select="$i18n.PostalAddress" />
+							<label for="{$fieldName}" >
+								<xsl:attribute name="class">
+									<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'REQUIRED'">required</xsl:if>
+								</xsl:attribute>
+								
+								<xsl:value-of select="$i18n.Lastname" />
 							</label>
+							
 							<xsl:call-template name="createTextField">
-								<xsl:with-param name="id" select="concat($shortQueryID, '_postaladdress')" />
-								<xsl:with-param name="name" select="concat($shortQueryID, '_postaladdress')" />
-								<xsl:with-param name="title" select="$i18n.PostalAddress"/>
-								<xsl:with-param name="size" select="28"/>
-								<xsl:with-param name="class" select="'floatleft clearboth'"/>
+								<xsl:with-param name="id" select="$fieldName" />
+								<xsl:with-param name="name" select="$fieldName" />
+								<xsl:with-param name="title" select="$i18n.Lastname"/>
+								<xsl:with-param name="size" select="50"/>
 								<xsl:with-param name="disabled">
-									<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+									<xsl:if test="/Document/Poster">disabled</xsl:if>
 								</xsl:with-param>
-								<xsl:with-param name="value" select="ContactDetailQueryInstance/postalAddress"/>
+								<xsl:with-param name="value">
+									<xsl:choose>
+										<xsl:when test="/Document/Poster and not(RequestMetadata/manager = 'true')"><xsl:value-of select="/Document/Poster/lastname" /></xsl:when>
+										<xsl:otherwise><xsl:value-of select="ContactDetailQueryInstance/lastname" /></xsl:otherwise>
+									</xsl:choose>
+								</xsl:with-param>
 							</xsl:call-template>
 							
 							<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-							
-						</div>
-						
-					</div>
-					
-				</fieldset>
-				
-				<fieldset>
-					
-					<div class="split">
-					
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_phone')" />
-					
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
-							<xsl:attribute name="class">
-								<xsl:text>split invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>
-					
-						<label for="concat($shortQueryID, '_phone')" class="floatleft full">
-							<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/requirePhone = 'true'"><xsl:attribute name="class">floatleft full required</xsl:attribute></xsl:if>
-							<xsl:value-of select="$i18n.Phone" />
-						</label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.Phone"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="value" select="ContactDetailQueryInstance/phone"/>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-					</div>
-					
-					<div class="split">
-						
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_email')" />
-					
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName] or ValidationErrors/validationError[messageKey = 'EmailAlreadyTaken']">
-							<xsl:attribute name="class">
-								<xsl:text>split invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>	
-					
-						<label for="{$fieldName}" class="floatleft full">
-							<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/requireEmail = 'true'"><xsl:attribute name="class">floatleft full required</xsl:attribute></xsl:if>
-							<xsl:value-of select="$i18n.Email" />
-						</label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.Email"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="value" select="ContactDetailQueryInstance/email"/>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						<xsl:apply-templates select="ValidationErrors/validationError[messageKey = 'EmailAlreadyTaken']" />
-						
-					</div>
-					
-					<div class="split">
-						
-						<xsl:variable name="fieldName" select="concat($shortQueryID, '_mobilephone')" />
-					
-						<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
-							<xsl:attribute name="class">
-								<xsl:text>split invalid input-error</xsl:text>
-							</xsl:attribute>
-						</xsl:if>
-						
-						<label for="{$fieldName}" class="floatleft full">
-							<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/requireMobilePhone = 'true'"><xsl:attribute name="class">floatleft full required</xsl:attribute></xsl:if>
-							<xsl:value-of select="$i18n.MobilePhone" />
-						</label>
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="$fieldName" />
-							<xsl:with-param name="name" select="$fieldName" />
-							<xsl:with-param name="title" select="$i18n.MobilePhone"/>
-							<xsl:with-param name="size" select="50"/>
-							<xsl:with-param name="value" select="ContactDetailQueryInstance/mobilePhone"/>
-						</xsl:call-template>
-						
-						<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
-						
-					</div>
-					
-				</fieldset>
-				
-				<fieldset>
-				
-					<div>
-						<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
-					</div>
-				
-					<div>
-					
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="id" select="concat($shortQueryID, '_contactByEmail')" />
-							<xsl:with-param name="name" select="concat($shortQueryID, '_contactByEmail')" />
-							<xsl:with-param name="value" select="'true'" />
-							<xsl:with-param name="disabled" select="'disabled'" />
-							<xsl:with-param name="checked">
-								<xsl:if test="ContactDetailQueryInstance/email != ''">true</xsl:if>
-							</xsl:with-param>
-						</xsl:call-template>
-						<label for="{concat($shortQueryID, '_contactByEmail')}" class="checkbox disabled"><xsl:value-of select="$i18n.AllowContactByEmail" /></label><br/>
-						
-					</div>
-					
-					<div>
-						
-						<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/allowSMS = 'true'">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="id" select="concat($shortQueryID, '_contactBySMS')" />
-								<xsl:with-param name="name" select="concat($shortQueryID, '_contactBySMS')" />
-								<xsl:with-param name="value" select="'true'" />
-								<xsl:with-param name="disabled" select="'disabled'" />
-								<xsl:with-param name="checked" select="ContactDetailQueryInstance/contactBySMS"/>
-							</xsl:call-template>
-							<label for="{concat($shortQueryID, '_contactBySMS')}" class="checkbox"><xsl:value-of select="$i18n.AllowContactBySMS" /></label><br/>
-						</xsl:if>
-						
-					</div>
-					
-				</fieldset>
-				
-				<xsl:if test="ContactDetailQueryInstance/isMutableUserWithAccess = 'true' and ContactDetailQueryInstance/ContactDetailQuery/disableProfileUpdate = 'false'">
-				
-					<br/>
-				
-					<fieldset>
-							
-						<div class="split">
-						
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="id" select="concat($shortQueryID, '_persistUserProfile')" />
-								<xsl:with-param name="name" select="concat($shortQueryID, '_persistUserProfile')" />
-								<xsl:with-param name="value" select="'true'" />
-								<xsl:with-param name="checked" select="ContactDetailQueryInstance/persistUserProfile" />
-							</xsl:call-template>
-							
-							<label for="{concat($shortQueryID, '_persistUserProfile')}" class="checkbox"><xsl:value-of select="$i18n.UpdateMyUserProfile" /></label>
 							
 						</div>
 						
 					</fieldset>
 				
+				</xsl:if>
+				
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'HIDDEN')">
+				
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCareOf = 'HIDDEN')">
+
+						<fieldset>
+	
+							<div class="split">
+								
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_careof')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+									<xsl:attribute name="class">
+										<xsl:text>split invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>	
+								
+								<label for="{$fieldName}">
+									<xsl:attribute name="class">
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldCareOf = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.CareOf" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="$fieldName" />
+									<xsl:with-param name="name" select="$fieldName" />
+									<xsl:with-param name="title" select="$i18n.CareOf"/>
+									<xsl:with-param name="size" select="50"/>
+									<xsl:with-param name="disabled">
+										<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/careOf"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+								
+							</div>				
+					
+						</fieldset>
+						
+					</xsl:if>
+					
+					<fieldset>
+					
+						<xsl:variable name="requireAddress" select="ContactDetailQueryInstance/ContactDetailQuery/requireAddress = 'true'" />
+					
+						<div class="split">
+							
+							<xsl:variable name="fieldName" select="concat($shortQueryID, '_address')" />
+						
+							<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+								<xsl:attribute name="class">
+									<xsl:text>split invalid input-error</xsl:text>
+								</xsl:attribute>
+							</xsl:if>	
+							
+							<label for="{$fieldName}">
+								<xsl:attribute name="class">
+									<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'REQUIRED'">required</xsl:if>
+								</xsl:attribute>
+								
+								<xsl:value-of select="$i18n.Address" />
+							</label>
+							
+							<xsl:call-template name="createTextField">
+								<xsl:with-param name="id" select="$fieldName" />
+								<xsl:with-param name="name" select="$fieldName" />
+								<xsl:with-param name="title" select="$i18n.Address"/>
+								<xsl:with-param name="size" select="50"/>
+								<xsl:with-param name="disabled">
+									<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+								</xsl:with-param>
+								<xsl:with-param name="value" select="ContactDetailQueryInstance/address"/>
+							</xsl:call-template>
+							
+							<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+							
+						</div>
+					
+						<div class="split">
+							
+							<div class="left">
+							
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_zipcode')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+									<xsl:attribute name="class">
+										<xsl:text>left invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>	
+								
+								<label for="{$fieldName}">
+									<xsl:attribute name="class">
+										<xsl:text>floatleft </xsl:text>
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.ZipCode" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="$fieldName" />
+									<xsl:with-param name="name" select="$fieldName" />
+									<xsl:with-param name="title" select="$i18n.ZipCode"/>
+									<xsl:with-param name="size" select="15"/>
+									<xsl:with-param name="class" select="'floatleft clearboth'"/>
+									<xsl:with-param name="disabled">
+										<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/zipCode"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+							
+							</div>
+						
+							<div class="right">
+							
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_postaladdress')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+									<xsl:attribute name="class">
+										<xsl:text>right invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>	
+							
+								<label for="{$fieldName}">
+									<xsl:attribute name="class">
+										<xsl:text>floatleft </xsl:text>
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.PostalAddress" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="concat($shortQueryID, '_postaladdress')" />
+									<xsl:with-param name="name" select="concat($shortQueryID, '_postaladdress')" />
+									<xsl:with-param name="title" select="$i18n.PostalAddress"/>
+									<xsl:with-param name="size" select="28"/>
+									<xsl:with-param name="class" select="'floatleft clearboth'"/>
+									<xsl:with-param name="disabled">
+										<xsl:if test="ContactDetailQueryInstance/officalAddress = 'true'">disabled</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/postalAddress"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+								
+							</div>
+							
+						</div>
+						
+					</fieldset>
+				
+				</xsl:if>
+				
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
+				
+					<fieldset>
+						
+						<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'HIDDEN')">
+						
+							<div class="split">
+							
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_phone')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+									<xsl:attribute name="class">
+										<xsl:text>split invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>
+							
+								<label for="{$shortQueryID}_phone">
+									<xsl:attribute name="class">
+										<xsl:text>floatleft full </xsl:text>
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.Phone" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="$fieldName" />
+									<xsl:with-param name="name" select="$fieldName" />
+									<xsl:with-param name="title" select="$i18n.Phone"/>
+									<xsl:with-param name="size" select="50"/>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/phone"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+							</div>
+						
+						</xsl:if>
+						
+						<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN')">
+						
+							<div class="split">
+								
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_email')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName] or ValidationErrors/validationError[messageKey = 'EmailAlreadyTaken']">
+									<xsl:attribute name="class">
+										<xsl:text>split invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>	
+							
+								<label for="{$fieldName}">
+									<xsl:attribute name="class">
+										<xsl:text>floatleft full </xsl:text>
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.Email" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="$fieldName" />
+									<xsl:with-param name="name" select="$fieldName" />
+									<xsl:with-param name="title" select="$i18n.Email"/>
+									<xsl:with-param name="size" select="50"/>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/email"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+								<xsl:apply-templates select="ValidationErrors/validationError[messageKey = 'EmailAlreadyTaken']" />
+								
+							</div>
+						
+						</xsl:if>
+						
+						<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
+						
+							<div class="split">
+								
+								<xsl:variable name="fieldName" select="concat($shortQueryID, '_mobilephone')" />
+							
+								<xsl:if test="ValidationErrors/validationError[fieldName = $fieldName]">
+									<xsl:attribute name="class">
+										<xsl:text>split invalid input-error</xsl:text>
+									</xsl:attribute>
+								</xsl:if>
+								
+								<label for="{$fieldName}">
+									<xsl:attribute name="class">
+										<xsl:text>floatleft full </xsl:text>
+										<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'REQUIRED'">required</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.MobilePhone" />
+								</label>
+								
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="$fieldName" />
+									<xsl:with-param name="name" select="$fieldName" />
+									<xsl:with-param name="title" select="$i18n.MobilePhone"/>
+									<xsl:with-param name="size" select="50"/>
+									<xsl:with-param name="value" select="ContactDetailQueryInstance/mobilePhone"/>
+								</xsl:call-template>
+								
+								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
+								
+							</div>
+						
+						</xsl:if>
+						
+					</fieldset>
+				
+				</xsl:if>
+				
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
+				
+					<fieldset>
+					
+						<div>
+							<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
+						</div>
+					
+						<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN')">
+					
+							<div>
+							
+								<xsl:call-template name="createCheckbox">
+									<xsl:with-param name="id" select="concat($shortQueryID, '_contactByEmail')" />
+									<xsl:with-param name="name" select="concat($shortQueryID, '_contactByEmail')" />
+									<xsl:with-param name="value" select="'true'" />
+									<xsl:with-param name="disabled" select="'disabled'" />
+									<xsl:with-param name="checked">
+										<xsl:if test="ContactDetailQueryInstance/email != ''">true</xsl:if>
+									</xsl:with-param>
+								</xsl:call-template>
+								<label for="{$shortQueryID}_contactByEmail" class="checkbox disabled"><xsl:value-of select="$i18n.AllowContactByEmail" /></label><br/>
+								
+							</div>
+						
+						</xsl:if>
+						
+						<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN') and ContactDetailQueryInstance/ContactDetailQuery/allowSMS = 'true'">
+							
+							<xsl:variable name="forced" select="ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'REQUIRED' and ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN'"/>
+							
+							<div>
+								<xsl:call-template name="createCheckbox">
+									<xsl:with-param name="id" select="concat($shortQueryID, '_contactBySMS')" />
+									<xsl:with-param name="name" select="concat($shortQueryID, '_contactBySMS')" />
+									<xsl:with-param name="value" select="'true'" />
+									<xsl:with-param name="disabled" select="'disabled'" />
+									<xsl:with-param name="class" >
+										<xsl:if test="$forced">forced</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="checked" >
+										<xsl:choose>
+											<xsl:when test="$forced">true</xsl:when>
+											<xsl:when test="ContactDetailQueryInstance">
+												<xsl:value-of select="ContactDetailQueryInstance/contactBySMS"/>
+											</xsl:when>
+											<xsl:otherwise>false</xsl:otherwise>
+										</xsl:choose>
+									</xsl:with-param>
+								</xsl:call-template>
+								
+								<label for="{$shortQueryID}_contactBySMS" class="checkbox">
+									<xsl:if test="$forced">
+										<xsl:attribute name="class">checkbox disabled</xsl:attribute>
+									</xsl:if>
+									<xsl:value-of select="$i18n.AllowContactBySMS" />
+								</label>
+								
+								<br/>
+							</div>
+							
+						</xsl:if>
+						
+					</fieldset>
+				
+				</xsl:if>
+				
+				<xsl:if test="ContactDetailQueryInstance/isMutableUserWithAccess = 'true'">
+					
+					<xsl:choose>
+						<xsl:when test="ContactDetailQueryInstance/ContactDetailQuery/fieldUpdate = 'ALWAYS'">
+						
+							<br/>
+							
+							<div>
+								<xsl:value-of select="$i18n.UpdatingMyUserProfile"/>
+							</div>
+						
+						</xsl:when>
+						<xsl:when test="ContactDetailQueryInstance/ContactDetailQuery/fieldUpdate = 'ASK'">
+						
+							<br/>
+						
+							<fieldset>
+									
+								<div class="split">
+								
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="id" select="concat($shortQueryID, '_persistUserProfile')" />
+										<xsl:with-param name="name" select="concat($shortQueryID, '_persistUserProfile')" />
+										<xsl:with-param name="value" select="'true'" />
+										<xsl:with-param name="checked" select="ContactDetailQueryInstance/persistUserProfile" />
+									</xsl:call-template>
+									
+									<label for="{$shortQueryID}_persistUserProfile" class="checkbox"><xsl:value-of select="$i18n.UpdateMyUserProfile" /></label>
+									
+								</div>
+								
+							</fieldset>
+						
+						</xsl:when>
+				</xsl:choose>
 				</xsl:if>
 				
 			</article>
@@ -609,7 +787,7 @@
 	
 		<span>
 			<strong data-icon-before="!">
-				<xsl:value-of select="$i18n.NoContactChannelChoosen" />
+				<xsl:value-of select="$i18n.ValidationError.NoContactChannelChoosen" />
 			</strong>
 		</span>
 	
@@ -619,7 +797,17 @@
 	
 		<span>
 			<strong data-icon-before="!">
-				<xsl:value-of select="$i18n.UnableToUpdateUser" />
+				<xsl:value-of select="$i18n.ValidationError.UnableToUpdateUser" />
+			</strong>
+		</span>
+	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey = 'RequiresCitizenIDOnUser']">
+	
+		<span>
+			<strong data-icon-before="!">
+				<xsl:value-of select="$i18n.ValidationError.RequiresCitizenIDOnUser" />
 			</strong>
 		</span>
 	
@@ -628,11 +816,11 @@
 	<xsl:template match="validationError[validationErrorType = 'TooLong']">
 		
 		<xsl:variable name="message">
-			<xsl:value-of select="$i18n.TooLongFieldContent.part1"/>
+			<xsl:value-of select="$i18n.ValidationError.TooLongFieldContent.part1"/>
 			<xsl:value-of select="currentLength"/>
-			<xsl:value-of select="$i18n.TooLongFieldContent.part2"/>
+			<xsl:value-of select="$i18n.ValidationError.TooLongFieldContent.part2"/>
 			<xsl:value-of select="maxLength"/>
-			<xsl:value-of select="$i18n.TooLongFieldContent.part3"/>
+			<xsl:value-of select="$i18n.ValidationError.TooLongFieldContent.part3"/>
 		</xsl:variable>
 		
 		<i data-icon-after="!" title="{$message}"></i>
@@ -641,19 +829,19 @@
 	
 	<xsl:template match="validationError[messageKey = 'RequiredField']">
 		
-		<i data-icon-after="!" title="{$i18n.RequiredField}"></i>
+		<i data-icon-after="!" title="{$i18n.ValidationError.RequiredField}"></i>
 		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'RequiredField']">
 		
-		<i data-icon-after="!" title="{$i18n.RequiredField}"></i>
+		<i data-icon-after="!" title="{$i18n.ValidationError.RequiredField}"></i>
 		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'InvalidFormat']">
 		
-		<i data-icon-after="!" title="{$i18n.InvalidFormat}"></i>
+		<i data-icon-after="!" title="{$i18n.ValidationError.InvalidFormat}"></i>
 		
 	</xsl:template>		
 	
@@ -661,7 +849,7 @@
 		
 		<span>
 			<strong data-icon-before="!">
-				<xsl:value-of select="$i18n.UnknownValidationError"/>
+				<xsl:value-of select="$i18n.ValidationError.UnknownValidationError"/>
 			</strong>
 		</span>
 		

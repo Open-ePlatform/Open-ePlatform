@@ -5,11 +5,12 @@
 	<xsl:include href="classpath://com/nordicpeak/flowengine/queries/common/xsl/QueryCommon.sv.xsl"/>
 	<xsl:include href="ContactDetailQueryTemplates.xsl"/>
 	
-	<xsl:variable name="i18n.SocialSecurityNumber">Personnummer</xsl:variable>
-	<xsl:variable name="i18n.SocialSecurityNumberWithFormat">Personnummer (ÅÅÅÅMMDDXXXX)</xsl:variable>
+	<xsl:variable name="i18n.CitizenID">Personnummer</xsl:variable>
+	<xsl:variable name="i18n.CitizenIDWithFormat">Personnummer (ÅÅÅÅMMDDXXXX)</xsl:variable>
 	<xsl:variable name="i18n.Firstname">Förnamn</xsl:variable>
 	<xsl:variable name="i18n.Lastname">Efternamn</xsl:variable>
 	<xsl:variable name="i18n.FirstnameAndLastname">För- och efternamn</xsl:variable>
+	<xsl:variable name="i18n.CareOf">C/O</xsl:variable>
 	<xsl:variable name="i18n.Address">Adress</xsl:variable>
 	<xsl:variable name="i18n.ZipCode">Postnummer</xsl:variable>
 	<xsl:variable name="i18n.PostalAddress">Ort</xsl:variable>
@@ -25,16 +26,17 @@
 	<xsl:variable name="i18n.ContactByEmail">E-post</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateMyUserProfile">Uppdatera kontaktuppgifterna under mina uppgifter</xsl:variable>
+	<xsl:variable name="i18n.UpdatingMyUserProfile">Dina kontaktuppgifter kommer att sparas under mina uppgifter.</xsl:variable>
 	
-	<xsl:variable name="i18n.UnableToUpdateUser">Det gick inte att uppdatera dina kontaktuppgifter, försök igen</xsl:variable>
-	
-	<xsl:variable name="i18n.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
-	<xsl:variable name="i18n.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
-	<xsl:variable name="i18n.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
-	<xsl:variable name="i18n.TooLongFieldContent.part3"> tecken!</xsl:variable>
-	<xsl:variable name="i18n.InvalidFormat">Felaktigt format på fältet</xsl:variable>
-	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
-	<xsl:variable name="i18n.NoContactChannelChoosen">Du behöver välja minst en form av notifiering!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
+	<xsl:variable name="i18n.ValidationError.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
+	<xsl:variable name="i18n.ValidationError.TooLongFieldContent.part3"> tecken!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnableToUpdateUser">Det gick inte att uppdatera dina kontaktuppgifter, försök igen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.NoContactChannelChoosen">Du behöver välja minst en form av notifiering!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.RequiresCitizenIDOnUser">Ditt användarkonto saknar personnummer, vänligen kontakta administratören!</xsl:variable>
 	
 	<xsl:variable name="i18n.ZipCodeAndPostalAddress">Postnummer och ort</xsl:variable>
 </xsl:stylesheet>

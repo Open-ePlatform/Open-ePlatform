@@ -4,9 +4,10 @@
 
 	<xsl:include href="ContactDetailQueryPDFTemplates.xsl"/>
 	
-	<xsl:variable name="i18n.SocialSecurityNumber">Personnummer</xsl:variable>
+	<xsl:variable name="i18n.CitizenID">Personnummer</xsl:variable>
 	
 	<xsl:variable name="i18n.FirstnameAndLastname">För- &amp; Efternamn</xsl:variable>
+	<xsl:variable name="i18n.CareOf">C/O</xsl:variable>
 	<xsl:variable name="i18n.Address">Adress</xsl:variable>
 	
 	<xsl:variable name="i18n.MobilePhone">Mobiltelefon</xsl:variable>

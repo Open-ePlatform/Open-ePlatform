@@ -34,24 +34,37 @@
 							</p>
 						</xsl:otherwise>
 					</xsl:choose>
-				</div>				
+				</div>
 			</xsl:if>
 			
 			<div class="full display-table bigmarginbottom">
 				
-				<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/showSocialSecurityNumberField = 'true'">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCitizenID = 'HIDDEN')">
 					<div class="floatleft full bigmarginbottom">
-						<strong><xsl:value-of select="$i18n.SocialSecurityNumber" /></strong><br/>
-						<xsl:value-of select="ContactDetailQueryInstance/socialSecurityNumber" />
+						<strong><xsl:value-of select="$i18n.CitizenID" /></strong><br/>
+						<xsl:value-of select="ContactDetailQueryInstance/citizenID" />
 					</div>	
 				</xsl:if>
 				
-				<div class="floatleft full bigmarginbottom">
-					<strong><xsl:value-of select="$i18n.FirstnameAndLastname" /></strong><br/>
-					<xsl:value-of select="ContactDetailQueryInstance/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="ContactDetailQueryInstance/lastname" />
-				</div>
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'HIDDEN')">
+					<div class="floatleft full bigmarginbottom">
+						<strong><xsl:value-of select="$i18n.FirstnameAndLastname" /></strong><br/>
+						<xsl:value-of select="ContactDetailQueryInstance/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="ContactDetailQueryInstance/lastname" />
+					</div>
+				</xsl:if>
 				
-				<xsl:if test="ContactDetailQueryInstance/address">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldAddress = 'HIDDEN')">
+					
+					<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldCareOf = 'HIDDEN')">
+					
+						<div class="floatleft full bigmarginbottom">
+							<strong><xsl:value-of select="$i18n.CareOf" /></strong><br/>
+							<xsl:call-template name="printValue">
+								<xsl:with-param name="value" select="ContactDetailQueryInstance/careOf" />
+							</xsl:call-template>
+						</div>	
+					
+					</xsl:if>
 					
 					<div class="floatleft fifty bigmarginbottom">
 						<strong><xsl:value-of select="$i18n.Address" /></strong><br/>
@@ -73,7 +86,7 @@
 						
 				</xsl:if>
 				
-				<xsl:if test="ContactDetailQueryInstance/phone">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'HIDDEN')">
 						
 					<div class="floatleft fifty bigmarginbottom">
 						<strong><xsl:value-of select="$i18n.Phone" /></strong><br/>
@@ -84,7 +97,7 @@
 				
 				</xsl:if>
 				
-				<xsl:if test="ContactDetailQueryInstance/email">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN')">
 			
 					<div class="floatleft fifty bigmarginbottom">
 						<strong><xsl:value-of select="$i18n.Email" /></strong><br/>
@@ -95,7 +108,7 @@
 				
 				</xsl:if>
 				
-				<xsl:if test="ContactDetailQueryInstance/mobilePhone">
+				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
 			
 					<div class="floatleft fifty bigmarginbottom">
 						<strong><xsl:value-of select="$i18n.MobilePhone" /></strong><br/>
@@ -106,17 +119,22 @@
 				
 				</xsl:if>
 				
-				<div class="floatleft full">
-					<strong><xsl:value-of select="$i18n.ChooseContactChannels" /></strong><br/>
-					
-					<xsl:if test="ContactDetailQueryInstance/email">
-						<xsl:value-of select="$i18n.ContactByEmail" /><br/>
-					</xsl:if>
-					
-					<xsl:if test="ContactDetailQueryInstance/contactBySMS = 'true'">
-						<xsl:value-of select="$i18n.ContactBySMS" /><br/>
-					</xsl:if>
-				</div>
+				<xsl:if test="ContactDetailQueryInstance/email or ContactDetailQueryInstance/contactBySMS = 'true'">
+				
+					<div class="floatleft full">
+						<strong><xsl:value-of select="$i18n.ChooseContactChannels" /></strong><br/>
+						
+						<xsl:if test="ContactDetailQueryInstance/email">
+							<xsl:value-of select="$i18n.ContactByEmail" /><br/>
+						</xsl:if>
+						
+						<xsl:if test="ContactDetailQueryInstance/contactBySMS = 'true'">
+							<xsl:value-of select="$i18n.ContactBySMS" /><br/>
+						</xsl:if>
+					</div>
+				
+				</xsl:if>
+				
 			</div>
 					
 		</div>
