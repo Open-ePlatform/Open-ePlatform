@@ -20,6 +20,9 @@ public class Contact {
 	private String phone;
 	
 	@StringTag
+	private String careOf;
+	
+	@StringTag
 	private String address;
 	
 	@StringTag
@@ -64,6 +67,14 @@ public class Contact {
 	public String getPhone() {
 		
 		return phone;
+	}
+	
+	public String getCareOf() {
+		return careOf;
+	}
+	
+	public void setCareOf(String careOf) {
+		this.careOf = careOf;
 	}
 	
 	public String getAddress() {
@@ -170,14 +181,14 @@ public class Contact {
 	}
 	
 	@Override
-	public String toString(){
+	public String toString() {
 		
-		if(citizenIdentifier != null){
+		if (citizenIdentifier != null) {
 			
 			return firstname + " " + lastname + " (" + citizenIdentifier + ")";
-		
-		}else{
-		
+			
+		} else {
+			
 			return firstname + " " + lastname;
 		}
 	}
