@@ -169,22 +169,25 @@ public class FlowInstanceUtils {
 	
 	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
 		
-		if(!attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE) || attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE)){
+		if (!attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE) || attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE)) {
 			
-			Map<String,String> attributeMap = attributeHandler.getAttributeMap();
+			Map<String, String> attributeMap = attributeHandler.getAttributeMap();
 			
-			for(Entry<String,String> entry : attributeMap.entrySet()){
+			if (attributeMap != null && !CollectionUtils.isEmpty(attributeMap.entrySet())) {
 				
-				if(entry.getKey().startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)){
+				for (Entry<String, String> entry : attributeMap.entrySet()) {
 					
-					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, entry.getValue());
-					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
-					
-					return;
+					if (entry.getKey().startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
+						
+						attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, entry.getValue());
+						attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
+						
+						return;
+					}
 				}
+				
+				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 			}
-			
-			attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 		}
 	}
 }
