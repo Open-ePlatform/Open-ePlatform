@@ -1,8 +1,9 @@
 package com.nordicpeak.flowengine.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
@@ -173,17 +174,26 @@ public class FlowInstanceUtils {
 			
 			Map<String, String> attributeMap = attributeHandler.getAttributeMap();
 			
-			if (attributeMap != null && !CollectionUtils.isEmpty(attributeMap.entrySet())) {
+			if (!CollectionUtils.isEmpty(attributeMap)) {
 				
-				for (Entry<String, String> entry : attributeMap.entrySet()) {
+				ArrayList<String> descriptionAttributes = new ArrayList<String>(attributeMap.size());
+				
+				for (String attributeName : attributeMap.keySet()) {
 					
-					if (entry.getKey().startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
+					if (attributeName.startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
 						
-						attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, entry.getValue());
-						attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
-						
-						return;
+						descriptionAttributes.add(attributeName);
 					}
+				}
+				
+				if(!descriptionAttributes.isEmpty()){
+					
+					Collections.sort(descriptionAttributes);
+					
+					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size()-1)));
+					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
+					
+					return;
 				}
 				
 				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
