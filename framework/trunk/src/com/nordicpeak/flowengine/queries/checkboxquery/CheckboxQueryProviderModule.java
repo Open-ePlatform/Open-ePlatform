@@ -354,7 +354,11 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 		if(queryInstance.getQuery().isSetAsAttribute()){
 			
 			queryInstance.resetAttribute(attributeHandler);
-			queryInstance.setAttribute(attributeHandler);
+			
+			if(queryInstance.getQueryInstanceDescriptor().isPopulated()){
+				
+				queryInstance.setAttribute(attributeHandler);
+			}
 		}
 	}
 
