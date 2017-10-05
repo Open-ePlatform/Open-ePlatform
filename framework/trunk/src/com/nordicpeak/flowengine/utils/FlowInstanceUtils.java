@@ -170,8 +170,10 @@ public class FlowInstanceUtils {
 	
 	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
 		
-		if (!attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE) || attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE)) {
-			
+		boolean descriptionAttributeSet = attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
+		
+		if(!descriptionAttributeSet || (descriptionAttributeSet && attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE))){
+		
 			Map<String, String> attributeMap = attributeHandler.getAttributeMap();
 			
 			if (!CollectionUtils.isEmpty(attributeMap)) {
@@ -196,6 +198,7 @@ public class FlowInstanceUtils {
 					return;
 				}
 				
+				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
 				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 			}
 		}
