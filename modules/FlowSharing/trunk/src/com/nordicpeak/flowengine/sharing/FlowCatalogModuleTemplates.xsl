@@ -4,6 +4,8 @@
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 	
+	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics</xsl:variable>
+	
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
 	</xsl:variable>
@@ -11,14 +13,18 @@
 	<xsl:variable name="scripts">
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
-		/js/flowsharing.js
+		/js/featherlight.min.js
+		/js/datatables.min.js
+		/js/flowcatalog.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/flowsharing.css
 		/css/flowengine.css
+		/css/featherlight.min.css
+		/css/datatables.css
+		/css/flowcatalog.css
 	</xsl:variable>
-
+	
 	<xsl:template match="Document">
 		
 		<div id="FlowBrowser" class="contentitem errands-wrapper">
@@ -41,17 +47,251 @@
 			<xsl:call-template name="ErrorConnectingToRepository"/>
 		</xsl:for-each>
 		
-		<p>
-			<xsl:value-of select="$i18n.ListRepositories.Description" />
-		</p>
-		
 		<xsl:choose>
 			<xsl:when test="not(Repositories/Repository)">
 				<span><strong><xsl:value-of select="$i18n.ListRepositories.NoRepositoriesFound" /></strong></span>
 			</xsl:when>
 			<xsl:otherwise>
 			
-				<xsl:apply-templates select="Repositories/Repository[not(Missing)]"/>
+				<div id="table-description" class="floatleft">
+					<p><xsl:value-of select="$i18n.ListRepositories.Description"/></p>
+				</div>
+				
+				<div id="table-searchbuttons" class="floatright bigmarginleft">
+					<label>
+						<xsl:value-of select="$i18n.FilterRepository" />
+						
+						<xsl:variable name="options">
+							<xsl:for-each select="Repositories/Repository">
+								<option>
+									<name><xsl:value-of select="RepositoryConfiguration/name"/></name>
+									<value><xsl:value-of select="RepositoryIndex"/></value>
+								</option>
+							</xsl:for-each>
+						</xsl:variable>
+						
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'table-filterrepository'" />
+							<xsl:with-param name="class" select="'marginleft'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'value'" />
+							<xsl:with-param name="element" select="exsl:node-set($options)/option" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.FilterRepository.None"/>
+						</xsl:call-template>
+						
+					</label>
+				</div>
+				
+				<table id="catalogtable" class="stripe display">
+					<thead>	
+						<tr>
+							<th><xsl:value-of select="$i18n.Column.FlowName" /></th>
+							<th><xsl:value-of select="$i18n.Column.Source" /></th>
+							<th><xsl:value-of select="$i18n.Column.Repository" /></th>
+							<th><xsl:value-of select="$i18n.Column.Versions" /></th>
+							<th><xsl:value-of select="$i18n.Column.LastModified" /></th>
+							<th/><!-- repositoryID -->
+							<th/><!-- sourceID -->
+							<th/><!-- flowfamilyID -->
+						</tr>
+					</thead>
+					<tbody/>
+				</table>
+				
+				<xsl:variable name="ajaxURL">
+					<xsl:value-of select="/Document/requestinfo/currentURI"/>
+					<xsl:text>/</xsl:text>
+					<xsl:value-of select="/Document/module/alias"/>
+					<xsl:text>/flows</xsl:text>
+				</xsl:variable>
+				
+				<script type="text/javascript">
+					$(document).ready(function() {
+					
+						var table = $('#catalogtable').DataTable({
+							ajax: { 
+								url: '<xsl:value-of select="$ajaxURL"/>',
+								dataSrc: 'rows',
+							},
+							deferRender: true,
+							columns: [
+								{ name: "name", type: "text",
+									render: function(data, type, row) {
+									
+										if (type == "display") {
+											return '<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/family/' + row[5] +  '/' + row[6] +  '/' + row[7] +  '">' + data + '</a>';
+										}
+										
+										return data;
+									}
+								},
+								{ name: "source", type: "text" },
+								{ name: "repository", type: "text",
+									render: function(data, type, row) {
+									
+										if (type == "display") {
+											return data + '<a class="marginleft" onclick="showRepositoryDescription(' + row[5] + ', event)"><img src="{$imgPath}/info.png" /></a>';
+										}
+										
+										return data;
+									}
+								},
+								{ name: "versions", sClass: "text-align-right", type: "num-fmt" },
+								{ name: "lastModified", sClass: "text-align-right", type: "date" },
+								{ name: "repositoryID", visible: false },
+								{ name: "sourceID", visible: false, searchable: false },
+								{ name: "flowFamilyID", visible: false, searchable: false }
+						  ],
+						  order: [[ 4, 'desc' ]],
+						  dom: 'frtipl',
+						  responsive: true,
+						  bAutoWidth: false,
+							paging: true,
+							pagingType: 'simple_numbers',
+							pageLength: 15,
+							lengthMenu: [ 15, 25, 35, 50, 100, 500 ],
+							language: {
+								"decimal":        "<xsl:value-of select="$i18n.DataTable.decimal"/>",
+								"emptyTable":     "<xsl:value-of select="$i18n.DataTable.emptyTable"/>",
+								"info":           "<xsl:value-of select="$i18n.DataTable.info"/>",
+								"infoEmpty":      "<xsl:value-of select="$i18n.DataTable.infoEmpty"/>",
+								"infoFiltered":   "<xsl:value-of select="$i18n.DataTable.infoFiltered"/>",
+								"infoPostFix":    "<xsl:value-of select="$i18n.DataTable.infoPostFix"/>",
+								"thousands":      " ",
+								"lengthMenu":     "<xsl:value-of select="$i18n.DataTable.lengthMenu"/>",
+								"loadingRecords": "<xsl:value-of select="$i18n.DataTable.loadingRecords"/>",
+								"processing":     "<xsl:value-of select="$i18n.DataTable.processing"/>",
+								"search":         "<xsl:value-of select="$i18n.DataTable.search"/>",
+								"zeroRecords":    "<xsl:value-of select="$i18n.DataTable.zeroRecords"/>",
+								"paginate": {
+									"first":      "<xsl:value-of select="$i18n.DataTable.paginate.first"/>",
+									"last":       "<xsl:value-of select="$i18n.DataTable.paginate.last"/>",
+									"next":       "<xsl:value-of select="$i18n.DataTable.paginate.next"/>",
+									"previous":   "<xsl:value-of select="$i18n.DataTable.paginate.previous"/>"
+								},
+								"aria": {
+									"sortAscending":  "<xsl:value-of select="$i18n.DataTable.aria.sortAscending"/>",
+									"sortDescending": "<xsl:value-of select="$i18n.DataTable.aria.sortDescending"/>"
+								}
+							},
+							stateSave: true,
+							stateSaveParams: function (settings, data) {
+								data.order = undefined;
+								data.search.search = "";
+		    				
+		    				data.custom = {};
+		    				data.custom.filterRepository = $("#table-filterrepository").val();
+		  				},
+		  				stateLoadParams: function (settings, data) {
+		  					
+		  					if (data != undefined) {
+									
+									data.order = undefined;
+									data.search.search = "";
+									
+									data.columns.forEach(function(column){
+										column.visible = undefined;
+									});
+			    				
+			    				if (data.custom != undefined) {
+			    				
+				    				if (data.custom.filterRepository != undefined) {
+				    				
+					    				var select = $("#table-filterrepository");
+					    				select.val(data.custom.filterRepository);
+				    				}
+			    				}
+		    				}
+		  				},
+		  				initComplete: function(settings, json){
+			        
+			        	filterOnRepositories(false);
+			        	
+			        	var api = this.api();
+		  					api.draw();
+		  					api.responsive.recalc();
+			        }
+						});
+						
+						$("#catalogtable_wrapper").prepend($("#table-description"));
+						$("#catalogtable_filter").after($("#table-searchbuttons"));
+						
+						$("#catalogtable").on( 'click', 'tbody td a', function(event) {
+							event.stopPropagation();
+						});
+						
+						$("#catalogtable").on( 'click', 'tbody td', function(event) {
+						
+							var td = $(this);
+							var tr = td.parent();
+							
+							if (tr.children("td").first().hasClass("dataTables_empty")) {
+								return;
+							}
+							
+							if (tr.closest("table").hasClass("collapsed") &amp;&amp; td.is(":first-child")) {
+								return;
+							}
+							
+							event.stopPropagation();
+							
+							var repositoryID = table.cell(tr, "repositoryID:name").data();
+							var sourceID = table.cell(tr, "sourceID:name").data();
+							var flowFamilyID = table.cell(tr, "flowFamilyID:name").data();
+							
+							window.location.href = "<xsl:value-of select="/Document/requestinfo/url"/>/family/" + repositoryID + "/" + sourceID + "/" + flowFamilyID;
+						});
+						
+						var filterOnRepositories = function(render) {
+							
+							var select = $("#table-filterrepository");
+							var repository = select.val();
+							var column = table.column(["repositoryID:name"]);
+							
+							if (repository != "") {
+							
+								column.search(repository, false, false, false);
+										
+							} else {
+								
+								column.search("");
+							}
+							
+							if (render) {
+								table.draw();
+								table.responsive.recalc();
+							}
+						};
+						
+						$("#table-filterrepository").on('change', filterOnRepositories);
+					});
+				</script>
+				
+				<div id="repository-modal-template" style="display: none;">
+					
+					<div class="repository-modal contentitem">
+						<div class="modal-content">
+						
+							<div class="modal-header bigmarginbottom">
+								<h1/>
+							</div>
+							
+							<div class="modal-body">
+							
+								<p class="description floatleft full"/>
+								
+								<input class="close bigmargintop floatright" type="button" value="{$i18n.Close}" />
+								
+							</div>
+							
+						</div>
+					</div>
+				
+				</div>
+			
+				<div style="display: none;">
+					<xsl:apply-templates select="Repositories/Repository[not(Missing)]"/>
+				</div>
 				
 			</xsl:otherwise>
 		</xsl:choose>
@@ -60,64 +300,13 @@
 	
 	<xsl:template match="Repository">
 	
-		<div class="bigmarginbottom">
-		
-			<h2><xsl:value-of select="RepositoryConfiguration/name"/></h2>
+		<div id="repository-{RepositoryIndex}">
+			<h2 class="name"><xsl:value-of select="RepositoryConfiguration/name"/></h2>
 			
-			<div class="bigmarginleft">
+			<div class="description">
 				<xsl:value-of select="RepositoryConfiguration/description" disable-output-escaping="yes"/>
 			</div>
-			
-			<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
-				<thead class="sortable">	
-					<tr>
-						<th class="default-sort"><xsl:value-of select="$i18n.Column.FlowName" /></th>
-						<th><xsl:value-of select="$i18n.Column.Source" /></th>
-						<th><xsl:value-of select="$i18n.Column.Versions" /></th>
-						<th><xsl:value-of select="$i18n.Column.LastModified" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<xsl:choose>
-						<xsl:when test="not(SharedFlows/SharedFlow)">
-							<tr>
-								<td colspan="4">
-									<strong>
-										<xsl:value-of select="$i18n.ListRepositories.NoFlowsFound" />
-									</strong>
-								</td>
-							</tr>
-						</xsl:when>
-						<xsl:otherwise>
-							
-							<xsl:apply-templates select="SharedFlows/SharedFlow" mode="list"/>
-							
-						</xsl:otherwise>
-					</xsl:choose>
-				</tbody>
-			</table>
-			
-			<br/>
 		</div>
-	
-	</xsl:template>
-	
-	<xsl:template match="SharedFlow" mode="list">
-		
-		<tr>
-			<td data-title="{$i18n.Column.FlowName}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/family/{../../RepositoryIndex}/{Source/sourceID}/{flowFamilyID}"><xsl:value-of select="name" /></a>
-			</td>
-			<td data-title="{$i18n.Column.Source}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/family/{../../RepositoryIndex}/{Source/sourceID}/{flowFamilyID}"><xsl:value-of select="Source/name" /></a>
-			</td>
-			<td data-title="{$i18n.Column.Versions}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/family/{../../RepositoryIndex}/{Source/sourceID}/{flowFamilyID}"><xsl:value-of select="familySize" /></a>
-			</td>
-			<td data-title="{$i18n.Column.LastModified}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/family/{../../RepositoryIndex}/{Source/sourceID}/{flowFamilyID}"><xsl:value-of select="added" /></a>
-			</td>
-		</tr>
 	
 	</xsl:template>
 	

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
@@ -52,6 +53,8 @@ import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
 import se.unlogic.standardutils.io.CloseUtils;
+import se.unlogic.standardutils.json.JsonArray;
+import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.readwrite.ReadWriteUtils;
 import se.unlogic.standardutils.settings.SettingNode;
@@ -233,17 +236,6 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			RepositoryConfiguration repo = repositories.get(i);
 			fetchRepositoryInfo(repo);
 			
-			Document response = sendGetRequest(repo, "flows");
-			
-			if (response != null) {
-				
-				copyChildrenToOtherDocument(doc, response.getDocumentElement(), repositoryElement);
-				
-			} else {
-				
-				XMLUtils.appendNewElement(doc, repositoryElement, "Missing");
-			}
-			
 			repositoryElement.appendChild(repo.toXML(doc));
 		}
 		
@@ -253,6 +245,69 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		}
 		
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+	}
+	
+	@WebPublic(alias = "flows")
+	public ForegroundModuleResponse getFlowData(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+		
+		log.info("Sending shared flows to user " + user);
+		
+		res.setCharacterEncoding("ISO-8859-1");
+		res.setContentType(JsonUtils.getContentType());
+		
+		PrintWriter writer = res.getWriter();
+		
+		writer.append("{\"rows\":[");
+		
+		boolean first = true;;
+		JsonArray row = new JsonArray(8);
+		
+		for (int i = 0; i < repositories.size(); i++) {
+			
+			RepositoryConfiguration repo = repositories.get(i);
+			
+			Document response = sendGetRequest(repo, "flows");
+			
+			if (response != null) {
+				
+				XMLParser responseParser = new XMLParser(response);
+				List<XMLParser> sharedFlows = responseParser.getNodes("SharedFlows/SharedFlow", true);
+				
+				for (SettingNode sharedFlow : sharedFlows) {
+
+					if (!first) {
+						
+						writer.append(",");
+						
+					} else {
+						
+						first = false;
+					}
+					
+					row.addNode(sharedFlow.getString("name"));
+					row.addNode(sharedFlow.getString("Source/name"));
+					row.addNode(repo.getName());
+					row.addNode(sharedFlow.getString("familySize"));
+					row.addNode(sharedFlow.getString("added"));
+					row.addNode(i);
+					row.addNode(sharedFlow.getString("Source/sourceID"));
+					row.addNode(sharedFlow.getString("flowFamilyID"));
+					
+					writer.append(row.toJson());
+					row.clearNodes();
+				}
+				
+			} else {
+				
+//				XMLUtils.appendNewElement(doc, repositoryElement, "Missing");
+			}
+		}
+		
+		writer.append("]}");
+		writer.flush();
+		
+//		log.info("Sending orders took " + TimeUtils.millisecondsToString(System.currentTimeMillis() - start));
+		return null;
 	}
 	
 	@WebPublic(alias = "family")
