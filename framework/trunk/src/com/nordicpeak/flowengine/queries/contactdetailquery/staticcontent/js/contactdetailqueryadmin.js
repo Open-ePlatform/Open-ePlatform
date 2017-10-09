@@ -24,7 +24,11 @@ $(document).ready(function() {
 		
 		var visible = fieldAddress.val() != "HIDDEN";
 		$("#useOfficalAddress").prop("disabled", !visible).parent().toggle(visible);
-		$("#fieldCareOf").prop("disabled", !visible).parent().parent().parent().toggle(visible);
+		$("#fieldCareOf").parent().parent().parent().toggle(visible);
+		
+		if (!visible) {
+			$("#fieldCareOf").val("HIDDEN");
+		}
 	}
 	
 	showHideAllowSMS();
