@@ -10,7 +10,7 @@
 	<xsl:variable name="i18n.Firstname">Förnamn</xsl:variable>
 	<xsl:variable name="i18n.Lastname">Efternamn</xsl:variable>
 	<xsl:variable name="i18n.FirstnameAndLastname">För- och efternamn</xsl:variable>
-	<xsl:variable name="i18n.CareOf">C/O</xsl:variable>
+	<xsl:variable name="i18n.CareOf">c/o</xsl:variable>
 	<xsl:variable name="i18n.Address">Adress</xsl:variable>
 	<xsl:variable name="i18n.ZipCode">Postnummer</xsl:variable>
 	<xsl:variable name="i18n.PostalAddress">Ort</xsl:variable>
