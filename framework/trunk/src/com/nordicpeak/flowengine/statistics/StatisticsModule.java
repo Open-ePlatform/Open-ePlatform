@@ -38,6 +38,7 @@ import se.unlogic.hierarchy.core.beans.SimpleBackgroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
@@ -340,6 +341,12 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 			for (FlowFamily flowFamily : flowFamilies) {
 
+				if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
+					
+					log.info("Caching of statistics aborted...");
+					return;
+				}
+				
 				if (flowFamily.getFlows() == null) {
 
 					log.warn("Flow familiy with ID " + flowFamily.getFlowFamilyID() + " has no flows");
@@ -368,6 +375,12 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 						for (Entry<String, List<FlowInstance>> entry : flowInstancesByWeek) {
 
+							if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
+								
+								log.info("Caching of statistics aborted...");
+								return;
+							}
+							
 							int totalCount = 0;
 							int femaleCount = 0;
 							int maleCount = 0;
@@ -379,6 +392,12 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 								for (FlowInstance flowInstance : entry.getValue()) {
 
+									if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
+										
+										log.info("Caching of statistics aborted...");
+										return;
+									}
+									
 									String citizenIdentifier;
 
 									if (flowInstance.getPoster() == null || flowInstance.getPoster().getAttributeHandler() == null || (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(CITIZEN_IDENTIFIER)) == null) {
@@ -433,10 +452,11 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 				for (Flow flow : flowFamily.getFlows()) {
 
-					//					if(flow.getSteps() == null){
-					//
-					//						continue;
-					//					}
+					if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
+						
+						log.info("Caching of statistics aborted...");
+						return;
+					}
 
 					FlowStatistics flowStatistics = new FlowStatistics();
 
