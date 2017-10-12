@@ -389,6 +389,10 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			if (!CollectionUtils.isEmpty(queryInstance.getChildren())) {
 
 				selectedChild = queryInstance.getChildren().get(childCitizenIdentifier);
+				
+				if (selectedChild.isUnderSecrecy()) {
+					selectedChild = null;
+				}
 
 			} else if (queryInstance.getChildren() == null && childCitizenIdentifier.equals(queryInstance.getCitizenIdentifier())) {
 
@@ -589,40 +593,44 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					return null;
 				}
 				
-//				Map<String, StoredChild> children = new HashMap<String, StoredChild>();
-//
-//				StoredChild child1 = new StoredChild("kalle", "kula", "200123456789");
-//				child1.setGuardians(Arrays.asList(new StoredGuardian[]{new StoredGuardian("förälder", "1", poster.getAttributeHandler().getString("citizenIdentifier")), new StoredGuardian("förälder", "2", "191234567890")}));
-//				children.put(child1.getCitizenIdentifier(), child1);
-//
-//				return children;
-				
 				if (childRelationProvider == null) {
-					
+
 					log.error("Missing required instance manager dependency: childRelationProvider");
 					queryInstance.setFetchChildrenException(new CommunicationException("Missing required instance manager dependency: childRelationProvider"));
 					return null;
 				}
-				
+
 				log.info("Getting children information for user " + poster);
-				
+
 				try {
 					Map<String, Child> childMap = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
-					
+
 					if (childMap != null) {
-						
+
 						Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
-						
+
+						int dummyMapID = 1;
+
 						for (Entry<String, Child> entry : childMap.entrySet()) {
-							
-							storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
+
+							Child child = entry.getValue();
+
+							if (child.isUnderSecrecy()) {
+
+								storedChildMap.put("" + dummyMapID++, new StoredChild(child));
+
+							} else {
+
+								storedChildMap.put(entry.getKey(), new StoredChild(child));
+							}
+
 						}
-						
+
 						return storedChildMap;
 					}
-					
+
 				} catch (ChildRelationProviderException e) {
-					
+
 					queryInstance.setFetchChildrenException(e);
 				}
 			}

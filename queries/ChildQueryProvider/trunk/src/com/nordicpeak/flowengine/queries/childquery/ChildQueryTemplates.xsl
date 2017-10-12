@@ -266,9 +266,15 @@
 						<xsl:value-of select="ChildQueryInstance/ChildQuery/description" disable-output-escaping="yes" />
 					</xsl:if>
 						
-					<xsl:if test="ChildQueryInstance/Children">
+					<xsl:if test="ChildQueryInstance/Children/Child[secrecy = 'true']">
 						<p class="tiny">
 							<xsl:value-of select="$i18n.SecretChildrenInfo"/>
+						</p>
+					</xsl:if>
+					
+					<xsl:if test="(ChildQueryInstance/ChildQuery/minAge and ChildQueryInstance/Children/Child[current()/ChildQueryInstance/ChildQuery/minAge > Age]) or (ChildQueryInstance/ChildQuery/maxAge and ChildQueryInstance/Children/Child[Age > current()/ChildQueryInstance/ChildQuery/maxAge])">
+						<p class="tiny">
+							<xsl:value-of select="$i18n.AgeChildrenInfo"/>
 						</p>
 					</xsl:if>
 				</span>
@@ -279,7 +285,7 @@
 						<xsl:when test="ChildQueryInstance/Children/Child">	<!-- Children from provider -->
 						
 							<div>
-								<xsl:apply-templates select="ChildQueryInstance/Children/Child"/>
+								<xsl:apply-templates select="ChildQueryInstance/Children/Child[secrecy = 'false']"/>
 							</div>
 							
 						</xsl:when>
@@ -344,7 +350,7 @@
 						<xsl:choose>
 							<xsl:when test="ChildQueryInstance/Children">
 							
-								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]"/>							
+								<xsl:apply-templates select="ChildQueryInstance/Children/Child[secrecy = 'false']/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child[secrecy = 'false']/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]"/>							
 	
 							</xsl:when>
 							<xsl:when test="ChildQueryInstance/citizenIdentifier">
