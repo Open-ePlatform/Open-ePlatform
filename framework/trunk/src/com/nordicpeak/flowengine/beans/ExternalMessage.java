@@ -29,6 +29,10 @@ public class ExternalMessage extends BaseMessage {
 	private boolean postedByManager;
 	
 	@DAOManaged
+	@XMLElement
+	private boolean systemMessage;
+	
+	@DAOManaged
 	@OneToMany(autoAdd=true)
 	@XMLElement
 	private List<ExternalMessageAttachment> attachments;
@@ -81,6 +85,18 @@ public class ExternalMessage extends BaseMessage {
 	public void setPostedByManager(boolean postedByManager) {
 	
 		this.postedByManager = postedByManager;
+	}
+
+	
+	public boolean isSystemMessage() {
+	
+		return systemMessage;
+	}
+
+	
+	public void setSystemMessage(boolean systemMessage) {
+	
+		this.systemMessage = systemMessage;
 	}
 
 }

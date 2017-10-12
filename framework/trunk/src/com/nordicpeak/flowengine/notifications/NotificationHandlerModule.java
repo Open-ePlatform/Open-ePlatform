@@ -679,7 +679,18 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			
 			for (User owner : flowInstance.getOwners()) {
 				
-				addNotification(flowInstanceID, owner.getUserID(), notificationSource.getModuleDescriptor().getModuleID(), type, sendingUser.getUserID(), title, attributes);
+				Integer sendingUserID;
+				
+				if(sendingUser != null){
+					
+					sendingUserID = sendingUser.getUserID();
+				
+				}else{
+				
+					sendingUserID = null;
+				}
+				
+				addNotification(flowInstanceID, owner.getUserID(), notificationSource.getModuleDescriptor().getModuleID(), type, sendingUserID, title, attributes);
 			}
 		}
 	}

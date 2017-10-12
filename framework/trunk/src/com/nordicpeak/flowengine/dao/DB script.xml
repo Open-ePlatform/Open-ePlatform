@@ -1694,4 +1694,13 @@
 	    </Query>
 	</Script>
 	
+	<Script version="87">
+	   <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_external_messages` MODIFY COLUMN `poster` INT(10) UNSIGNED DEFAULT NULL,
+				 ADD COLUMN `systemMessage` BOOLEAN NOT NULL AFTER `postedByManager`;
+	        ]]>
+	    </Query>
+	</Script>
+	
 </DBScripts>
