@@ -6,9 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.nordicpeak.flowengine.sharing.FlowRepositoryModule;
-import com.nordicpeak.flowengine.sharing.beans.Source;
-
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
@@ -16,7 +13,8 @@ import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.IntegerBasedCRUD;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
-import se.unlogic.standardutils.dao.LowLevelQuery;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -25,23 +23,28 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
+import com.nordicpeak.flowengine.sharing.FlowRepositoryModule;
+import com.nordicpeak.flowengine.sharing.beans.Repository;
+import com.nordicpeak.flowengine.sharing.beans.Source;
+
 public class SourceCRUD extends IntegerBasedCRUD<Source, FlowRepositoryModule> {
 	
 	private AnnotatedDAO<Source> sourceDAO;
+	private QueryParameterFactory<Source, Repository> sourceRepositoryParamFactory;
 
-	public SourceCRUD(AnnotatedDAOWrapper<Source, Integer> crudDAO, FlowRepositoryModule callback) {
+	public SourceCRUD(AnnotatedDAOWrapper<Source, Integer> crudDAO, QueryParameterFactory<Source, Repository> sourceRepositoryParamFactory, FlowRepositoryModule callback) {
 
 		super(crudDAO, new AnnotatedRequestPopulator<Source>(Source.class), "Source", "source", "", callback);
 		sourceDAO = crudDAO.getAnnotatedDAO();
+		this.sourceRepositoryParamFactory = sourceRepositoryParamFactory;
 	}
 	
 	@Override
 	protected List<Source> getAllBeans(User user) throws SQLException {
 
-		LowLevelQuery<Source> query = new LowLevelQuery<Source>("SELECT * FROM " + sourceDAO.getTableName() + " WHERE repositoryID = ?;");
-
-		query.addParameter(callback.getRepository().getRepositoryID());
-
+		HighLevelQuery<Source> query = new HighLevelQuery<Source>();
+		query.addParameter(sourceRepositoryParamFactory.getParameter(callback.getRepository()));
+		
 		return sourceDAO.getAll(query);
 	}
 

@@ -105,6 +105,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	private QueryParameterFactory<SharedFlow, Integer> sharedFlowFlowIDParamFactory;
 	private QueryParameterFactory<SharedFlow, Integer> sharedFlowFamilyIDParamFactory;
 	private QueryParameterFactory<SharedFlow, Source> sharedFlowSourceParamFactory;
+	private QueryParameterFactory<Source, Repository> sourceRepositoryParamFactory;
 	
 	private SourceCRUD sourceCRUD;
 	private Repository repository;
@@ -134,7 +135,9 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		repositoryDAO = daoFactory.getDAO(Repository.class);
 		sharedFlowDAO = daoFactory.getDAO(SharedFlow.class);
 		
-		sourceCRUD = new SourceCRUD(sourceDAO.getWrapper(Integer.class), this);
+		sourceRepositoryParamFactory = sourceDAO.getParamFactory("repository", Repository.class);
+		
+		sourceCRUD = new SourceCRUD(sourceDAO.getWrapper(Integer.class), sourceRepositoryParamFactory, this);
 		
 //		sharedFlowIDParamFactory = sharedFlowDAO.getParamFactory("sharedFlowID", Integer.class);
 		sharedFlowFlowIDParamFactory = sharedFlowDAO.getParamFactory("flowID", Integer.class);
