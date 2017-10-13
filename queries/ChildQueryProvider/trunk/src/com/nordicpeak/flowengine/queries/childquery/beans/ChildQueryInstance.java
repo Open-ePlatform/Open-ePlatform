@@ -78,6 +78,9 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
 	
+	@XMLElement
+	private boolean hasChildrenUnderSecrecy;
+	
 	private Map<String, StoredChild> children;
 	
 	private ChildRelationProviderException fetchChildrenException;
@@ -182,6 +185,14 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	public void setPostalAddress(String postalAddress) {
 		
 		this.postalAddress = postalAddress;
+	}
+	
+	public boolean isHasChildrenUnderSecrecy() {
+		return hasChildrenUnderSecrecy;
+	}
+	
+	public void setHasChildrenUnderSecrecy(boolean hasChildrenUnderSecrecy) {
+		this.hasChildrenUnderSecrecy = hasChildrenUnderSecrecy;
 	}
 	
 	public void setAttributes(MutableAttributeHandler attributeHandler) {
@@ -329,7 +340,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	@Override
 	public List<? extends ImmutableAlternative> getAlternatives() {
 		
-		List<ChildAlternative> alternatives = null; 
+		List<ChildAlternative> alternatives = null;
 		
 		if (citizenIdentifier != null) {
 			

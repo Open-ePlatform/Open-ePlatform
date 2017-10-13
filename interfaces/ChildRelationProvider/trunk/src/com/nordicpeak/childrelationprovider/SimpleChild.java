@@ -6,8 +6,6 @@ public class SimpleChild extends BasePerson implements Child {
 
 	private static final long serialVersionUID = 5461893983752333815L;
 
-	private boolean secrecy;
-	
 	private List<Guardian> guardians;
 
 	public SimpleChild(){};
@@ -32,25 +30,4 @@ public class SimpleChild extends BasePerson implements Child {
 		this.guardians = guardians;
 	}
 
-	@Override
-	public boolean isUnderSecrecy() {
-		return secrecy;
-	}
-
-	public void setSecrecy(boolean secrecy) {
-		this.secrecy = secrecy;
-		
-		if (secrecy) {
-			
-			citizenIdentifier = null;
-			firstname = null;
-			lastname = null;
-			address = null;
-			zipCode = null;
-			postalAddress = null;
-			
-			guardians = null;
-		}
-	}
-	
 }

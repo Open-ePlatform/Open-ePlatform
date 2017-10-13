@@ -22,6 +22,4 @@ public interface Child extends Serializable, Elementable {
 	public String getZipCode();
 
 	public String getPostalAddress();
-	
-	public boolean isUnderSecrecy();
 }

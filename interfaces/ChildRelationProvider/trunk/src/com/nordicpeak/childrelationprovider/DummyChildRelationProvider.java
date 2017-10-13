@@ -67,11 +67,11 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 	}
 	
 	@Override
-	public Map<String, Child> getChildrenWithGuardians(String citizenIdentifier) throws ChildRelationProviderException {
+	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier) throws ChildRelationProviderException {
 		
 		Map<String, Child> children = new HashMap<String, Child>();
 		
-		if (child1) {
+		if (child1 && !secret1) {
 			
 			SimpleChild child1 = new SimpleChild("kalle", "kula", childID1);
 			
@@ -84,21 +84,18 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
 			}
 			
-			child1.setSecrecy(secret1);
-			
 			children.put(child1.getCitizenIdentifier(), child1);
 		}
 		
-		if (child2) {
+		if (child2 && !secret2) {
 			
 			SimpleChild child2 = new SimpleChild("lisa", "kula", childID2);
 			child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
-			child2.setSecrecy(secret2);
 			
 			children.put(child2.getCitizenIdentifier(), child2);
 		}
 		
-		return children;
+		return new ChildrenResponse(children, secret1 || secret2);
 	}
 	
 }

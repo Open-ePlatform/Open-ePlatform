@@ -42,43 +42,26 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	@XMLElement
 	private String postalAddress;
 	
-	@XMLElement
-	private boolean secrecy;
-	
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
 	
 	public StoredChild(Child child) {
 		super();
 		
-		secrecy = child.isUnderSecrecy();
+		citizenIdentifier = child.getCitizenIdentifier();
+		firstname = child.getFirstname();
+		lastname = child.getLastname();
+		address = child.getAddress();
+		zipcode = child.getZipCode();
+		postalAddress = child.getPostalAddress();
 		
-		if (secrecy) {
+		if (!CollectionUtils.isEmpty(child.getGuardians())) {
 			
-			citizenIdentifier = null;
-			firstname = null;
-			lastname = null;
-			address = null;
-			zipcode = null;
-			postalAddress = null;
+			storedGuardians = new ArrayList<StoredGuardian>(child.getGuardians().size());
 			
-		} else {
-			
-			citizenIdentifier = child.getCitizenIdentifier();
-			firstname = child.getFirstname();
-			lastname = child.getLastname();
-			address = child.getAddress();
-			zipcode = child.getZipCode();
-			postalAddress = child.getPostalAddress();
-			
-			if (!CollectionUtils.isEmpty(child.getGuardians())) {
+			for (Guardian guardian : child.getGuardians()) {
 				
-				storedGuardians = new ArrayList<StoredGuardian>(child.getGuardians().size());
-				
-				for (Guardian guardian : child.getGuardians()) {
-					
-					storedGuardians.add(new StoredGuardian(guardian));
-				}
+				storedGuardians.add(new StoredGuardian(guardian));
 			}
 		}
 	}
@@ -143,10 +126,6 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	public void setPostalAddress(String postalAddress) {
 		
 		this.postalAddress = postalAddress;
-	}
-	
-	public boolean isUnderSecrecy() {
-		return secrecy;
 	}
 	
 	/** @return Returns the age solely based on the birth year ignoring months and days */

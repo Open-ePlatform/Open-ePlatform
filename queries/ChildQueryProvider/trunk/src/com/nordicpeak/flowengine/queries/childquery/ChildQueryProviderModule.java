@@ -56,6 +56,7 @@ import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.childrelationprovider.Child;
 import com.nordicpeak.childrelationprovider.ChildRelationProvider;
+import com.nordicpeak.childrelationprovider.ChildrenResponse;
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
 import com.nordicpeak.flowengine.beans.QueryResponse;
@@ -389,10 +390,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			if (!CollectionUtils.isEmpty(queryInstance.getChildren())) {
 
 				selectedChild = queryInstance.getChildren().get(childCitizenIdentifier);
-				
-				if (selectedChild.isUnderSecrecy()) {
-					selectedChild = null;
-				}
 
 			} else if (queryInstance.getChildren() == null && childCitizenIdentifier.equals(queryInstance.getCitizenIdentifier())) {
 
@@ -603,32 +600,28 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				log.info("Getting children information for user " + poster);
 
 				try {
-					Map<String, Child> childMap = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
-
-					if (childMap != null) {
-
+					ChildrenResponse childrenResponse = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
+					
+					if (childrenResponse != null) {
+						
+						queryInstance.setHasChildrenUnderSecrecy(childrenResponse.hasChildrenUnderSecrecy());
+						
 						Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
-
-						int dummyMapID = 1;
-
+						
+						Map<String, Child> childMap = childrenResponse.getChildren();
+						
 						for (Entry<String, Child> entry : childMap.entrySet()) {
-
-							Child child = entry.getValue();
-
-							if (child.isUnderSecrecy()) {
-
-								storedChildMap.put("" + dummyMapID++, new StoredChild(child));
-
-							} else {
-
-								storedChildMap.put(entry.getKey(), new StoredChild(child));
-							}
-
+							
+							storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
 						}
-
+						
 						return storedChildMap;
+						
+					} else {
+						
+						queryInstance.setHasChildrenUnderSecrecy(false);
 					}
-
+					
 				} catch (ChildRelationProviderException e) {
 
 					queryInstance.setFetchChildrenException(e);
