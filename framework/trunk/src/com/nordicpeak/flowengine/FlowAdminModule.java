@@ -2359,6 +2359,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return null;
 	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse reCacheFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, URINotFoundException, IOException {
+		
+		Integer flowID;
+		Flow flow;
+		
+		if (user != null && user.isAdmin() && uriParser.size() == 3 && (flowID = uriParser.getInt(2)) != null && (flow = getFlow(flowID)) != null) {
+			
+			systemInterface.getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
+			
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
 
 	private void closeInstanceManagers(Flow flow) {
 

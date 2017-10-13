@@ -327,6 +327,12 @@
 
 					<div class="floatright">
 					
+						<xsl:if test="/Document/user/admin = 'true'">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/recacheflow/{Flow/flowID}" title="{$i18n.ReCacheFlow}">
+								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/reload.png" alt="" />
+							</a>
+						</xsl:if>
+					
 						<xsl:variable name="extensionLinks" select="ExtensionLink[slot='top-right']"/>
 					
 						<xsl:if test="$extensionLinks">
