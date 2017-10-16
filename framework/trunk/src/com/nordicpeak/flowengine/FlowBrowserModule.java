@@ -539,6 +539,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		}
 
+		log.info("User " + user + " overview of flow " + flow);
+		
 		Document doc = this.createDocument(req, uriParser, user);
 
 		Element showFlowOverviewElement = doc.createElement("ShowFlowOverview");
@@ -564,7 +566,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if (operatingStatus != null) {
 				showFlowOverviewElement.appendChild(operatingStatus.toXML(doc));
 			}
-
 		}
 		
 		List<ExtensionView> extensionViews = null;
