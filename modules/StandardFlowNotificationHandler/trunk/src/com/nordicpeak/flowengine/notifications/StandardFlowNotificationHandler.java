@@ -56,7 +56,6 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -120,6 +119,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -2065,13 +2065,52 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowInstanceDAO.get(query);
 	}
+	
+	public Contact getContactForUser(User user) {
 
-	//TODO change logic here to use editor or latest submit event
+		if (user != null) {
+			
+			Contact contact = new Contact();
+
+			contact.setFirstname(user.getFirstname());
+			contact.setLastname(user.getLastname());
+			contact.setEmail(user.getEmail());
+
+			AttributeHandler attributeHandler = user.getAttributeHandler();
+
+			if (attributeHandler != null) {
+
+				contact.setPhone(attributeHandler.getString("phone"));
+				contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
+				contact.setAddress(attributeHandler.getString("address"));
+				contact.setZipCode(attributeHandler.getString("zipCode"));
+				contact.setPostalAddress(attributeHandler.getString("postalAddress"));
+				contact.setCareOf(attributeHandler.getString("careOf"));
+				contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
+			}
+
+			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
+			
+			if (attributeHandler.isSet("contactByEmail")) {
+				
+				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
+				
+			} else {
+				
+				contact.setContactByEmail(true);
+			}
+
+			return contact;
+		}
+
+		return null;
+	}
+
 	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
 
 		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 
-		if (attributeHandler.isSet("email")) {
+		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
 
 			Contact contact = new Contact();
 
@@ -2083,32 +2122,36 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			contact.setAddress(attributeHandler.getString("address"));
 			contact.setZipCode(attributeHandler.getString("zipCode"));
 			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
+			contact.setCareOf(attributeHandler.getString("careOf"));
 			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
 			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-			contact.setContactByEmail(true);
+			
+			if (attributeHandler.isSet("contactByEmail")) {
+				
+				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
+				
+			} else {
+				
+				contact.setContactByEmail(true);
+			}
 
 			return contact;
 		}
-
-		User poster = flowInstance.getPoster();
-
-		if (poster != null) {
-
-			Contact contact = new Contact();
-
-			contact.setFirstname(poster.getFirstname());
-			contact.setLastname(poster.getLastname());
-			contact.setEmail(poster.getEmail());
-			contact.setMobilePhone(UserUtils.getAttribute("mobilePhone", poster));
-
-			contact.setContactBySMS(UserUtils.getBooleanAttribute("contactBySMS", poster));
-			contact.setContactByEmail(true);
-
-			return contact;
+		
+		ImmutableFlowInstanceEvent latestSubmitEvent = FlowInstanceUtils.getLatestSubmitEvent(flowInstance);
+		
+		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null){
+			
+			Contact contact = getContactForUser(latestSubmitEvent.getPoster());
+			
+			if (contact != null) {
+				
+				return contact;
+			}
 		}
-
-		return null;
+		
+		return getContactForUser(flowInstance.getPoster());
 	}
 
 	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
@@ -2117,7 +2160,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 
-		if (attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
+		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
 
 			Contact contact = new Contact();
 
@@ -2128,12 +2171,21 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
 			contact.setAddress(attributeHandler.getString("address"));
 			contact.setZipCode(attributeHandler.getString("zipCode"));
+			contact.setCareOf(attributeHandler.getString("careOf"));
 			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
 			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
 			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
 
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-			contact.setContactByEmail(true);
+			
+			if (attributeHandler.isSet("contactByEmail")) {
+				
+				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
+				
+			} else {
+				
+				contact.setContactByEmail(true);
+			}
 
 			contacts.add(contact);
 		}
@@ -2142,27 +2194,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			for (User owner : flowInstance.getOwners()) {
 
-				Contact contact = new Contact();
-
-				contact.setFirstname(owner.getFirstname());
-				contact.setLastname(owner.getLastname());
-				contact.setEmail(owner.getEmail());
-
-				AttributeHandler ownerAttributeHandler = owner.getAttributeHandler();
-
-				if (ownerAttributeHandler != null) {
-
-					contact.setPhone(ownerAttributeHandler.getString("phone"));
-					contact.setMobilePhone(ownerAttributeHandler.getString("mobilePhone"));
-					contact.setAddress(ownerAttributeHandler.getString("address"));
-					contact.setZipCode(ownerAttributeHandler.getString("zipCode"));
-					contact.setPostalAddress(ownerAttributeHandler.getString("postalAddress"));
-					contact.setCitizenIdentifier(ownerAttributeHandler.getString("citizenIdentifier"));
-				}
-
-				contact.setContactBySMS(UserUtils.getBooleanAttribute("contactBySMS", owner));
-				contact.setContactByEmail(true);
-
+				Contact contact = getContactForUser(owner);
 				addUniqueContact(contacts, contact);
 			}
 		}

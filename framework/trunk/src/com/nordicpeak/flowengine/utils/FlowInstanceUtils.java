@@ -131,6 +131,8 @@ public class FlowInstanceUtils {
 					
 					if (contact != null) {
 						
+						flowInstanceAttributeHandler.setAttribute("contactInfoAttributes", "true");
+						
 						flowInstanceAttributeHandler.setAttribute("firstname", contact.getFirstname());
 						flowInstanceAttributeHandler.setAttribute("lastname", contact.getLastname());
 						flowInstanceAttributeHandler.setAttribute("address", contact.getAddress());
@@ -142,6 +144,7 @@ public class FlowInstanceUtils {
 						flowInstanceAttributeHandler.setAttribute("citizenIdentifier", contact.getCitizenIdentifier());
 						
 						flowInstanceAttributeHandler.setAttribute("contactBySMS", Boolean.toString(contact.isContactBySMS()));
+						flowInstanceAttributeHandler.setAttribute("contactByEmail", Boolean.toString(contact.isContactByEmail()));
 						
 						flowInstanceAttributeHandler.setAttribute("organizationName", contact.getOrganizationName());
 						flowInstanceAttributeHandler.setAttribute("organizationNumber", contact.getOrganizationNumber());
@@ -150,6 +153,8 @@ public class FlowInstanceUtils {
 					}
 				}
 			}
+			
+			flowInstanceAttributeHandler.removeAttribute("contactInfoAttributes");
 			
 			flowInstanceAttributeHandler.removeAttribute("firstname");
 			flowInstanceAttributeHandler.removeAttribute("lastname");
@@ -165,6 +170,7 @@ public class FlowInstanceUtils {
 			flowInstanceAttributeHandler.removeAttribute("organizationNumber");
 			
 			flowInstanceAttributeHandler.removeAttribute("contactBySMS");
+			flowInstanceAttributeHandler.removeAttribute("contactByEmail");
 		}
 	}
 	
