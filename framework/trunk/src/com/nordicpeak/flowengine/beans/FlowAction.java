@@ -55,4 +55,9 @@ public class FlowAction extends GeneratedElementable {
 		this.required = required;
 	}
 
+	@Override
+	public String toString(){
+		
+		return name + " (actionID: " +  actionID + ")";
+	}
 }
