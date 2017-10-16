@@ -633,15 +633,14 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 	@Override
 	public void addNotificationSource(NotificationSource notificationSource) {
 		
-		if (notificationCreatorMap.containsKey(notificationSource.getModuleDescriptor().getModuleID())) {
+		if(notificationCreatorMap.putIfAbsent(notificationSource.getModuleDescriptor().getModuleID(), notificationSource) == null){
+			
+			log.info("NotificationCreator " + notificationSource + " registered");
+		
+		}else{
 			
 			log.error("NotificationCreator " + notificationSource + " is already registered");
-			return;
-		}
-		
-		notificationCreatorMap.put(notificationSource.getModuleDescriptor().getModuleID(), notificationSource);
-		
-		log.info("NotificationCreator " + notificationSource + " registered");
+		}	
 	}
 	
 	@Override
