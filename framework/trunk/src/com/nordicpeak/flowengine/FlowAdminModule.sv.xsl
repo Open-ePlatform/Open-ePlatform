@@ -51,8 +51,8 @@
 	<xsl:variable name="i18n.Flowslist.title">E-tjänster</xsl:variable>
 	<xsl:variable name="i18n.Flowlist.description">Nedan visas samtliga e-tjänster i systemet som du har behörighet att administrera.</xsl:variable>
 	<xsl:variable name="i18n.typeOfFlow">Typ av e-tjänst</xsl:variable>
-	<xsl:variable name="i18n.internal">Intern</xsl:variable>
-	<xsl:variable name="i18n.external">Extern</xsl:variable>
+	<xsl:variable name="i18n.internal">E-tjänst i denna plattform</xsl:variable>
+	<xsl:variable name="i18n.external">Länk till e-tjänst i annan plattform</xsl:variable>
 	<xsl:variable name="i18n.externalLink">Länk till e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.OpenExternalFlow">Öppna e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.flowType">Kategori</xsl:variable>
