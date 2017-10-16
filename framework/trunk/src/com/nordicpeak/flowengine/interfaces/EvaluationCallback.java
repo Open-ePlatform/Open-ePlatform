@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.interfaces;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 import com.nordicpeak.flowengine.beans.QueryModification;
@@ -24,4 +26,6 @@ public interface EvaluationCallback {
 	public SiteProfile getSiteProfile();
 	
 	public RequestMetadata getRequestMetadata();
+	
+	public HttpServletRequest getRequest();
 }

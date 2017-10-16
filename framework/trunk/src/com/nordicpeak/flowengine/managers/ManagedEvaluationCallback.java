@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.managers;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -25,8 +27,9 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	private final User poster;
 	private final SiteProfile siteProfile;
 	private final RequestMetadata requestMetadata;
+	private final HttpServletRequest request;
 	
-	public ManagedEvaluationCallback(List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster, SiteProfile siteProfile, RequestMetadata requestMetadata) {
+	public ManagedEvaluationCallback(List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster, SiteProfile siteProfile, RequestMetadata requestMetadata, HttpServletRequest request) {
 
 		super();
 		this.managedSteps = managedSteps;
@@ -37,6 +40,7 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 		this.poster = poster;
 		this.siteProfile = siteProfile;
 		this.requestMetadata = requestMetadata;
+		this.request = request;
 	}
 
 	@Override
@@ -116,7 +120,7 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 						
 						if(evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof EvaluationEventListener && ((EvaluationEventListener) evaluator).supportsEvent(event)){
 							
-							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata), evaluationHandler));
+							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, request), evaluationHandler));
 						}
 					}
 				}
@@ -145,5 +149,11 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	public RequestMetadata getRequestMetadata() {
 	
 		return requestMetadata;
+	}
+
+	@Override
+	public HttpServletRequest getRequest() {
+
+		return request;
 	}
 }
