@@ -401,29 +401,24 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 				if (bean.getDefaultFlowStateMappings() != null) {
 
-					for (FlowAction flowAction : requiredFlowActions) {
-
-						boolean hasAction = false;
+					actionLoop: for (FlowAction flowAction : requiredFlowActions) {
 
 						for (DefaultStatusMapping mapping : bean.getDefaultFlowStateMappings()) {
 
 							if (flowAction.getActionID().equals(mapping.getActionID())) {
 
-								hasAction = true;
-
+								continue actionLoop;
 							}
-
 						}
 
-						if (!hasAction) {
-
-							errors.add(new ValidationError("MissingDefaultStatusMapping"));
-						}
+						log.info("Flow " + bean + " is missing status mapping for action " + flowAction);
+						errors.add(new ValidationError("MissingDefaultStatusMapping"));
 
 					}
 
 				} else {
 
+					log.info("Flow " + bean + " is missing status mappings for all required actions");
 					errors.add(new ValidationError("MissingDefaultStatusMapping"));
 				}
 
