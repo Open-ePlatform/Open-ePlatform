@@ -5,7 +5,9 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -318,7 +320,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}else{
 			
 			this.selectedAttributes = null;
-		}	
+		}
 	}
 	
 	protected FlowInstanceIndexer createIndexer() throws Exception {
@@ -467,7 +469,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		if(enableExternalID){
 			
 			XMLUtils.appendNewElement(doc, overviewElement, "ShowExternalID");
-		}		
+		}
 		
 		ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
 
@@ -593,7 +595,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			if(enableExternalID){
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
-			}					
+			}
 			
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
 			
@@ -1242,7 +1244,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(selectedAttributes));
 		}
-	}	
+	}
 
 	public String getActiveFlowInstancesSQL(User user, SiteProfile profile, List<Integer> flowIDs, String template) {
 
@@ -1432,10 +1434,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
-		if(this.pdfProvider != null){
+		if (this.pdfProvider != null) {
 			
 			try {
-				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user);
+				Map<String, String> extraElements = new HashMap<String, String>();
+				extraElements.put("EditedByManager", "true");
+				
+				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user, extraElements, event);
 				
 				pdfProvider.saveTemporaryPDF(instanceManager, event);
 				
