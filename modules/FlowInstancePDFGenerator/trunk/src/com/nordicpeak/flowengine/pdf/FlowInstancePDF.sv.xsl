@@ -6,5 +6,15 @@
 	<xsl:include href="FlowInstancePDFTemplates.xsl"/>
 	
 	<xsl:variable name="i18n.AnonymousUser">anonym användare</xsl:variable>
+	<xsl:variable name="i18n.EditedByManager">Ändrad av handläggare</xsl:variable>
+	<xsl:variable name="i18n.EditDate">Ändrings datum</xsl:variable>
+	
+	<xsl:variable name="i18n.Signing">Signeringsunderlag</xsl:variable>
+	<xsl:variable name="i18n.Signed.Title">Signering</xsl:variable>
+	<xsl:variable name="i18n.Signed.Description">Följande parter har signerat detta ärende.</xsl:variable>
+	<xsl:variable name="i18n.Signed.Name">Namn</xsl:variable>
+	<xsl:variable name="i18n.Signed.CitizenIdentifier">Person ID</xsl:variable>
+	<xsl:variable name="i18n.Signed.Date">Datum</xsl:variable>
+	<xsl:variable name="i18n.Signed.Checksum">Signerad checksumma</xsl:variable>
 	
 </xsl:stylesheet>
