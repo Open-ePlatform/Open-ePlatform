@@ -36,28 +36,64 @@ public class FlowInstanceUtils {
 	
 	public static String getSubmitterName(ImmutableFlowInstance flowInstance) {
 		
-		if (flowInstance.getAttributeHandler().isSet("organizationName")) {
+		StringBuilder builder = new StringBuilder();
+		
+		boolean hasOrganization = flowInstance.getAttributeHandler().isSet("organizationName");
+		
+		if (hasOrganization) {
 			
-			String orgName = flowInstance.getAttributeHandler().getString("organizationName");
+			builder.append(flowInstance.getAttributeHandler().getString("organizationName"));
+			builder.append(" (");
+		}
+		
+		ImmutableFlowInstanceEvent submitEvent = getLatestSubmitEvent(flowInstance);
+		
+		if (submitEvent != null && submitEvent.getPoster() != null) {
 			
-			if (flowInstance.getPoster() != null) {
-				
-				return orgName + " (" + getNameFromUser(flowInstance.getPoster()) + ")";
-				
-			} else if (flowInstance.getAttributeHandler().isSet("firstname")) {
-				
-				return orgName + " (" + getNameFromAttributes(flowInstance.getAttributeHandler()) + ")";
-			}
-			
-			return orgName;
+			builder.append(getNameFromUser(submitEvent.getPoster()));
 			
 		} else if (flowInstance.getPoster() != null) {
 			
-			return getNameFromUser(flowInstance.getPoster());
+			builder.append(getNameFromUser(flowInstance.getPoster()));
 			
 		} else if (flowInstance.getAttributeHandler().isSet("firstname")) {
 			
-			return getNameFromAttributes(flowInstance.getAttributeHandler());
+			builder.append(getNameFromAttributes(flowInstance.getAttributeHandler()));
+		}
+		
+		if (hasOrganization) {
+			builder.append(")");
+		}
+		
+		if (builder.length() > 0) {
+			
+			return builder.toString();
+		}
+		
+		return null;
+	}
+	
+	public static String getSubmitterCitizenID(ImmutableFlowInstance flowInstance) {
+
+		AttributeHandler attributeHandler = null;
+		ImmutableFlowInstanceEvent submitEvent = getLatestSubmitEvent(flowInstance);
+		
+		if (submitEvent != null && submitEvent.getPoster() != null) {
+			
+			attributeHandler = submitEvent.getPoster().getAttributeHandler();
+			
+		} else if (flowInstance.getPoster() != null) {
+			
+			attributeHandler = flowInstance.getPoster().getAttributeHandler();
+			
+		} else {
+			
+			attributeHandler = flowInstance.getAttributeHandler();
+		}
+		
+		if (attributeHandler != null && attributeHandler.isSet("citizenIdentifier")) {
+		
+			return attributeHandler.getString("citizenIdentifier");
 		}
 		
 		return null;

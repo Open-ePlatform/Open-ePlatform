@@ -92,6 +92,7 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.PDFManagerResponse;
 import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 
@@ -138,7 +139,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "XML debug file", description = "The file to write the generated XML to for debug purposes.")
-	private String xmlDebugFile;
+	protected String xmlDebugFile;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable XHTML debug", description = "Enables writing of the generated XHTML to file if a file is set below.")
@@ -146,7 +147,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "XHTML debug file", description = "The file to write the generated XHTML to for debug purposes.")
-	private String xhtmlDebugFile;
+	protected String xhtmlDebugFile;
 	
 	@InstanceManagerDependency(required = true)
 	private EvaluationHandler evaluationHandler;
@@ -360,12 +361,32 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
 						}
 					}
+					
+				} else if (event.getEventType() == EventType.UPDATED) {
+					
+					ImmutableFlowInstanceEvent latestSubmit = FlowInstanceUtils.getLatestSubmitEvent(instanceManager.getFlowInstance());
+					
+					if (latestSubmit != null) {
+						
+						submitDate = latestSubmit.getAdded();
+					}
+					
+					XMLUtils.appendNewElement(doc, documentElement, "EditDate", DateUtils.DATE_TIME_FORMATTER.format(event.getAdded()));
+					
+					if (!instanceManager.getFlowInstance().getFlow().hidesManagerDetails()) {
+						
+						Element managerElement = XMLUtils.appendNewElement(doc, documentElement, "Manager");
+						managerElement.appendChild(event.getPoster().toXML(doc));
+					}
 				}
 				
 			} else {
 				
 				submitDate = TimeUtils.getCurrentTimestamp();
 			}
+			
+			XMLUtils.appendNewElement(doc, documentElement, "PostedBy", FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance()));
+			XMLUtils.appendNewElement(doc, documentElement, "PostedByCitizenID", FlowInstanceUtils.getSubmitterCitizenID(instanceManager.getFlowInstance()));
 			
 			XMLUtils.appendNewCDATAElement(doc, documentElement, "SubmitDate", DateUtils.DATE_TIME_FORMATTER.format(submitDate));
 			
@@ -467,7 +488,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			}
 		}
 	}
-	
+
 	private void setEventAttributes(FlowInstanceEvent event) throws SQLException {
 		
 		event.getAttributeHandler().setAttribute("pdf", "true");
