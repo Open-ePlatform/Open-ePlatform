@@ -269,7 +269,7 @@
 	<xsl:variable name="i18n.tags">Extra sökord (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.checks.title">Krav för e-tjänsten (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.checks">Krav för e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.administrateFlowTypes">Administrera kategorier</xsl:variable>
+	<xsl:variable name="i18n.administrateFlowTypes">Adm. kategorier</xsl:variable>
 	<xsl:variable name="i18n.ListFlowTypes.title">Kategorier</xsl:variable>
 	<xsl:variable name="i18n.ListFlowTypes.description">Nedan visas en lista på de kategorier som du har behörighet att komma åt.</xsl:variable>
 	<xsl:variable name="i18n.categories">Underkategorier</xsl:variable>
