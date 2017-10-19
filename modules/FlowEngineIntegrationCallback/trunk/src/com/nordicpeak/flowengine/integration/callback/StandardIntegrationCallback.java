@@ -56,6 +56,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	private FlowEngineDAOFactory daoFactory;
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
 	private QueryParameterFactory<Status, Integer> statusIDParamFactory;
+	private QueryParameterFactory<Status, String> statusNameParamFactory;
 	private QueryParameterFactory<Status, Flow> statusFlowParamFactory;
 	
 	@Override
@@ -67,6 +68,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		
 		flowInstanceIDParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flowInstanceID", Integer.class);
 		statusIDParamFactory = daoFactory.getStatusDAO().getParamFactory("statusID", Integer.class);
+		statusNameParamFactory = daoFactory.getStatusDAO().getParamFactory("name", String.class);
 		statusFlowParamFactory = daoFactory.getStatusDAO().getParamFactory("flow", Flow.class);
 		
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FlowAdminModule.class, this);
@@ -99,6 +101,10 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		if(statusID != null){
 			
 			status = getStatus(flowInstance.getFlow(), statusID);
+		
+		}else if(statusAlias != null){
+			
+			status = getStatus(flowInstance.getFlow(), statusAlias);
 		}
 		
 		if(status == null){
@@ -463,18 +469,21 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 	}
 	
-//	public FlowInstance getFlowInstance(int flowInstanceID, List<Field> excludedFields, Field... relations) throws SQLException {
-//
-//		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(relations);
-//
-//		if (excludedFields != null) {
-//			query.addExcludedFields(excludedFields);
-//		}
-//
-//		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
-//
-//		return daoFactory.getFlowInstanceDAO().get(query);
-//	}
+	private Status getStatus(Flow flow, String statusName) {
+
+		HighLevelQuery<Status> query = new HighLevelQuery<>();
+
+		query.addParameter(statusNameParamFactory.getParameter(statusName));
+		query.addParameter(statusFlowParamFactory.getParameter(flow));
+
+		try {
+			return daoFactory.getStatusDAO().get(query);
+			
+		} catch (SQLException e) {
+
+			throw new RuntimeException(e);
+		}
+	}
 	
 	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp) {
 
