@@ -32,7 +32,7 @@
 	<xsl:variable name="i18n.OtherGuardiansDescription">Beskrivning för andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.UseMultipartSigning">Använd flerpartssignering</xsl:variable>
 	<xsl:variable name="i18n.AlwaysShowOtherGuardians">Visa alltid andra vårdnadshavare</xsl:variable>
-	<xsl:variable name="i18n.ShowAddress">Visa folkbokföringsaddress för barn</xsl:variable>
+	<xsl:variable name="i18n.ShowAddress">Visa folkbokföringsadress för barn</xsl:variable>
 	<xsl:variable name="i18n.ShowGuardianAddress">Visa folkbokföringsaddress för vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWays">Krävda kontaktvägar för andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWayVerification">Kräv verifiering av kontaktvägar</xsl:variable>
