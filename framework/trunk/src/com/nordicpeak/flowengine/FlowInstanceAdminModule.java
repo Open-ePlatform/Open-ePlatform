@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -54,6 +56,7 @@ import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.json.JsonArray;
@@ -215,6 +218,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@TextFieldSettingDescriptor(name = "Max file size", description = "Maxmium allowed file size in megabytes", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxFileSize = 50;
 	
+	@ModuleSetting
+	@EnumDropDownSettingDescriptor(name="Flow instance event sort order", description="The order of flow instance events when displayed in this module", required = true)
+	protected Order flowInstanceEventSortOrder = Order.ASC;	
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -320,7 +327,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}else{
 			
 			this.selectedAttributes = null;
-		}
+		}	
 	}
 	
 	protected FlowInstanceIndexer createIndexer() throws Exception {
@@ -469,7 +476,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		if(enableExternalID){
 			
 			XMLUtils.appendNewElement(doc, overviewElement, "ShowExternalID");
-		}
+		}		
 		
 		ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
 
@@ -576,6 +583,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 			}
 
+			if(flowInstanceEventSortOrder == Order.DESC){
+				
+				Collections.reverse(flowInstance.getEvents());
+			}
+			
 			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser);
 
 			if(user != null){
@@ -595,7 +607,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			if(enableExternalID){
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
-			}
+			}					
 			
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
 			
@@ -1244,7 +1256,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			query.addRelationParameter(FlowInstanceAttribute.class, attributeNameParamFactory.getWhereInParameter(selectedAttributes));
 		}
-	}
+	}	
 
 	public String getActiveFlowInstancesSQL(User user, SiteProfile profile, List<Integer> flowIDs, String template) {
 
@@ -1434,7 +1446,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
-		if (this.pdfProvider != null) {
+		if(this.pdfProvider != null){
 			
 			try {
 				Map<String, String> extraElements = new HashMap<String, String>();

@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
@@ -53,6 +54,7 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -190,6 +192,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "10";
+	
+	@ModuleSetting
+	@EnumDropDownSettingDescriptor(name="Flow instance event sort order", description="The order of flow instance events when displayed in this module", required=true)
+	protected Order flowInstanceEventSortOrder = Order.ASC;
 
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -574,6 +580,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			}
 
 			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
+			
+			if(flowInstanceEventSortOrder == Order.DESC){
+				
+				Collections.reverse(flowInstance.getEvents());
+			}
 
 			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
 
