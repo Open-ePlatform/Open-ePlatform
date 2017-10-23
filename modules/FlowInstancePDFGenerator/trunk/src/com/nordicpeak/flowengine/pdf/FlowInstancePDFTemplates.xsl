@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 	<xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" indent="yes" encoding="ISO-8859-1"/>
 	
@@ -10,9 +10,7 @@
 			
 			<xsl:call-template name="title"/>
 			
-			<xsl:call-template name="applyTemplate">
-				<xsl:with-param name="name">staticStylesheets</xsl:with-param>
-			</xsl:call-template>
+			<xsl:apply-templates select="staticStylesheets"/>>
 			
 			<xsl:apply-templates select="StyleSheets/StyleSheet"/>
 			
@@ -345,17 +343,6 @@
 			
 		</div>
 	
-	</xsl:template>
-	
-	<xsl:template name="applyTemplate">
-		<xsl:param name="name" />
-		
-		<xsl:variable name="helper">
-			<xsl:element name="{$name}"/>
-		</xsl:variable>
-		
-		<xsl:apply-templates select="exsl:node-set($helper)/*" />
-		
 	</xsl:template>
 	
 </xsl:stylesheet>

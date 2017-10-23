@@ -322,6 +322,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			
 			XMLUtils.appendNewCDATAElement(doc, documentElement, "Logotype", logotype);
 			
+			XMLUtils.appendNewElement(doc, documentElement, "staticStylesheets");
 			XMLUtils.append(doc, documentElement, "StyleSheets", "StyleSheet", customStyleSheets);
 			
 			Timestamp submitDate;
