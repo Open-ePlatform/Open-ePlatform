@@ -256,40 +256,40 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 
 	@Override
 	public void populate(CheckboxQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
-
+		
 		List<CheckboxAlternative> availableAlternatives = queryInstance.getQuery().getAlternatives();
-
+		
 		if (CollectionUtils.isEmpty(availableAlternatives)) {
-
+			
 			//If the parent query doesn't have any alternatives then there is no population to do
 			queryInstance.reset(attributeHandler);
 			return;
 		}
-
+		
 		List<CheckboxAlternative> selectedAlternatives = new ArrayList<CheckboxAlternative>(queryInstance.getQuery().getAlternatives().size());
-
+		
 		for (CheckboxAlternative alternative : availableAlternatives) {
-
+			
 			if (req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_alternative" + alternative.getAlternativeID()) != null) {
-
+				
 				selectedAlternatives.add(alternative);
 			}
 		}
-
+		
 		int alternativesSelected = selectedAlternatives.size();
-
+		
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-
+		
 		String freeTextAlternativeValue = null;
 		
-		if(queryInstance.getQuery().getFreeTextAlternative() != null){
+		if (queryInstance.getQuery().getFreeTextAlternative() != null) {
 			
 			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryInstance.getQuery().getQueryID(), "_freeTextAlternative", req, validationErrors);
 		}
-
-		if(freeTextAlternativeValue != null){
+		
+		if (freeTextAlternativeValue != null) {
 			
-			if(!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)){
+			if (!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)) {
 				
 				allowPartialPopulation = false;
 			}
@@ -297,65 +297,64 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 			alternativesSelected++;
 		}
 		
-
 		//If partial population is allowed and the user has not selected any alternatives, skip validation
 		if (allowPartialPopulation) {
-
-			if(alternativesSelected == 0) {
-
+			
+			if (alternativesSelected == 0) {
+				
 				queryInstance.setAlternatives(null);
 				queryInstance.setFreeTextAlternativeValue(null);
 				queryInstance.getQueryInstanceDescriptor().setPopulated(false);
 				
 				queryInstance.resetAttribute(attributeHandler);
-
+				
 			} else {
-
+				
 				queryInstance.setAlternatives(selectedAlternatives);
 				queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 				queryInstance.getQueryInstanceDescriptor().setPopulated(true);
-
-				if(queryInstance.getQuery().isSetAsAttribute()){
+				
+				if (queryInstance.getQuery().isSetAsAttribute()) {
 					
 					queryInstance.resetAttribute(attributeHandler);
 					queryInstance.setAttribute(attributeHandler);
 				}
 			}
-
+			
 			return;
 		}
-
+		
 		//Check if this query is required or if the user has selected any alternatives anyway
 		if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED || alternativesSelected != 0) {
-
+			
 			if (queryInstance.getMinChecked() != null && alternativesSelected < queryInstance.getMinChecked()) {
-
+				
 				validationErrors.add(new TooFewAlternativesSelectedValidationError(alternativesSelected, queryInstance.getMinChecked()));
-
+				
 			} else if (queryInstance.getMaxChecked() != null && alternativesSelected > queryInstance.getMaxChecked()) {
-
+				
 				validationErrors.add(new TooManyAlternativesSelectedValidationError(alternativesSelected, queryInstance.getMaxChecked()));
-
+				
 			} else if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && alternativesSelected == 0) {
-
+				
 				validationErrors.add(new ValidationError("RequiredQuery"));
 			}
 		}
-
-		if(!validationErrors.isEmpty()) {
+		
+		if (!validationErrors.isEmpty()) {
 			
 			throw new ValidationException(validationErrors);
 		}
-
+		
 		queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 		queryInstance.setAlternatives(selectedAlternatives);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(!selectedAlternatives.isEmpty() || freeTextAlternativeValue != null);
 		
-		if(queryInstance.getQuery().isSetAsAttribute()){
+		if (queryInstance.getQuery().isSetAsAttribute()) {
 			
 			queryInstance.resetAttribute(attributeHandler);
 			
-			if(queryInstance.getQueryInstanceDescriptor().isPopulated()){
+			if (queryInstance.getQueryInstanceDescriptor().isPopulated()) {
 				
 				queryInstance.setAttribute(attributeHandler);
 			}

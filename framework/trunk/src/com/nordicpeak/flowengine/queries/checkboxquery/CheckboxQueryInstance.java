@@ -68,47 +68,39 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		return queryInstanceID;
 	}
 
-
 	public void setQueryInstanceID(Integer queryInstanceID) {
 
 		this.queryInstanceID = queryInstanceID;
 	}
-
 
 	public Integer getMinChecked() {
 
 		return minChecked;
 	}
 
-
 	public void setMinChecked(Integer minChecked) {
 
 		this.minChecked = minChecked;
 	}
-
 
 	public Integer getMaxChecked() {
 
 		return maxChecked;
 	}
 
-
 	public void setMaxChecked(Integer maxChecked) {
 
 		this.maxChecked = maxChecked;
 	}
-
 
 	@Override
 	public String getFreeTextAlternativeValue() {
 		return freeTextAlternativeValue;
 	}
 
-
 	public void setFreeTextAlternativeValue(String freeTextAlternativeValue) {
 		this.freeTextAlternativeValue = freeTextAlternativeValue;
 	}
-
 
 	@Override
 	public CheckboxQuery getQuery() {
@@ -116,19 +108,16 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		return query;
 	}
 
-
 	public void setQuery(CheckboxQuery query) {
 
 		this.query = query;
 	}
-
 
 	@Override
 	public List<CheckboxAlternative> getAlternatives() {
 
 		return alternatives;
 	}
-
 
 	public void setAlternatives(List<CheckboxAlternative> alternatives) {
 
@@ -138,10 +127,11 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
-		this.alternatives = null;
+		alternatives = null;
+		freeTextAlternativeValue = null;
 		
-		if(query.isSetAsAttribute()){
-
+		if (query.isSetAsAttribute()) {
+			
 			resetAttribute(attributeHandler);
 		}
 		
@@ -208,7 +198,6 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		return element;
 	}
 
-
 	@Override
 	public String getStringValue() {
 
@@ -245,7 +234,6 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 		return stringBuilder.toString();
 	}
-
 
 	@Override
 	public List<String> getColumnLabels(QueryHandler queryHandler) {
