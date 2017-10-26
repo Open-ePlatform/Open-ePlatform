@@ -174,6 +174,31 @@
 	
 	<xsl:template name="createMobileSavePanel" />
 	
+	<xsl:template name="FlowInstanceManagerFormFollower">
+		<xsl:param name="currentStepID"/>
+		<xsl:param name="totalStepCount"/>
+	
+		<div class="panel-wrapper follow" style="display: none">
+	 		<div class="inner">
+	 			<div class="current-step" data-step="1">
+	 				<xsl:value-of select="$i18n.StepDescription.Part1" />
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="ManagerResponse/currentStepIndex + 1" />
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="$i18n.StepDescription.Part2" />
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="$totalStepCount" />
+					<xsl:text>:&#160;</xsl:text>
+					<xsl:value-of select="FlowInstance/Flow/Steps/Step[stepID = $currentStepID]/name" />
+	 			</div>
+	 			<div class="buttons">
+	 				<a href="#" class="btn btn-green" onclick="submitStep('save-close', event)"><xsl:value-of select="$i18n.SaveAndClose" /></a>
+	 			</div>
+	 		</div>
+	 	</div>
+	
+	</xsl:template>
+	
 	<xsl:template name="createSubmitStep" />
 	
 	<xsl:template match="OverviewElement">
@@ -1254,7 +1279,7 @@
 						<xsl:choose>
 							<xsl:when test="postedByManager = 'false'"> official</xsl:when>
 							<xsl:otherwise> me</xsl:otherwise>
-						</xsl:choose>					
+						</xsl:choose>
 					</xsl:when>
 					
 					<!-- Internal message -->
@@ -1262,7 +1287,7 @@
 						<xsl:choose>
 							<xsl:when test="../../../user/userID = poster/userID">me</xsl:when>
 							<xsl:otherwise> official</xsl:otherwise>
-						</xsl:choose>					
+						</xsl:choose>
 					</xsl:otherwise>
 				</xsl:choose>
 				
