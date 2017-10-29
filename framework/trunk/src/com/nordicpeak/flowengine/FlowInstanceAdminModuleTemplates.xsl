@@ -1298,9 +1298,23 @@
 			</div>
 			
 			<div class="message">
-				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="$message/message" />
-				</xsl:call-template>
+				<xsl:choose>
+					<xsl:when test="postedByManager = 'true'">
+						<xsl:call-template name="createHyperlinks">
+							<xsl:with-param name="string">
+								<xsl:call-template name="replaceLineBreak">
+									<xsl:with-param name="string" select="message" />
+								</xsl:call-template>							
+							</xsl:with-param>
+							<xsl:with-param name="target" select="'_blank'"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="message" />
+						</xsl:call-template>					
+					</xsl:otherwise>
+				</xsl:choose>
 				<span class="author">
 					<i data-icon-before="m"/>
 					<xsl:call-template name="printUser">
