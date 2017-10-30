@@ -51,7 +51,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="3">
+	<Script version="4">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `pud_query_instances` ADD COLUMN `address` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
