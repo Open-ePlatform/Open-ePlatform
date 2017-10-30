@@ -38,7 +38,7 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 	
 	<Script version="2">
@@ -46,7 +46,7 @@
 			<![CDATA[
 				DROP TABLE query_state_evaluator_queries;			
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 	
 	<Script version="3">
@@ -54,18 +54,27 @@
 			<![CDATA[
 				ALTER TABLE `query_state_evaluators` ADD COLUMN `doNotResetQueryState` BOOLEAN NOT NULL AFTER `queryState`;		
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 	
 	<Script version="4">
 		<Query>
 			DELETE FROM query_state_evaluators WHERE evaluatorID NOT IN (SELECT evaluatorID FROM flowengine_evaluator_descriptors);		    
-		</Query>	    
+		</Query>
 	</Script>
 	
 	<Script version="5">
 		<Query>
 			ALTER TABLE `query_state_evaluators` ADD COLUMN `freeTextAlternative` BOOLEAN NOT NULL AFTER `doNotResetQueryState`;
-		</Query>	    
+		</Query>
 	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `query_state_evaluators` ADD COLUMN `forceReload` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `doNotResetQueryState`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
