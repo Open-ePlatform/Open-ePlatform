@@ -69,6 +69,21 @@ public abstract class BaseQueryStateEvaluationProviderModule<T extends BaseQuery
 
 						throw new RuntimeException("Unknown query state: " + evaluatorQueryState);
 					}
+					
+				} else if (evaluator.isForceReload() && evaluatorQueryState != QueryState.HIDDEN) {
+					
+					if (evaluatorQueryState == QueryState.VISIBLE) {
+
+						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.SHOW, attributeHandler));
+
+					} else if (evaluatorQueryState == QueryState.VISIBLE_REQUIRED) {
+
+						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.MAKE_REQUIRED, attributeHandler));
+
+					} else {
+
+						throw new RuntimeException("Unknown query state: " + evaluatorQueryState);
+					}
 				}
 
 			} catch (IllegalQueryInstanceAccessException e) {

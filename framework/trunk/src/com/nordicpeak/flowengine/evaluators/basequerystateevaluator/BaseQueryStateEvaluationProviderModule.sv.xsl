@@ -28,4 +28,5 @@
 
 	<xsl:variable name="i18n.enabled">Aktivera regeln</xsl:variable>
 	<xsl:variable name="i18n.doNotResetQueryState">Återställ INTE frågornas standardläge automatiskt (användbart när flera regler påverkar samma frågor).</xsl:variable>
+	<xsl:variable name="i18n.forceReload">Tvinga omladdning av redan synlig fråga</xsl:variable>
 </xsl:stylesheet>
