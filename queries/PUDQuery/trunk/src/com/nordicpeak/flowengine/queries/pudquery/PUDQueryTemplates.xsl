@@ -70,7 +70,14 @@
 					</span>		
 				</xsl:if>				
 				
-				<xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" />
+				<xsl:choose>
+					<xsl:when test="PUDQueryInstance/PUDQuery/useAddressAsResult = 'true'">
+						<xsl:value-of select="PUDQueryInstance/address" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" />
+					</xsl:otherwise>
+				</xsl:choose>
 				
 			</article>
 				
@@ -138,16 +145,24 @@
 		
 				<div class="search-select">
 				
+					<xsl:if test="count(PUDQueryInstance/PUDQuery/AllowedSearchServices/allowedSearchService) = 1">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					
+					<xsl:if test="PUDQueryInstance/PUDQuery/useAddressAsResult = 'true'">
+						<xsl:attribute name="data-useaddressasresult">true</xsl:attribute>
+					</xsl:if>
+						
 					<div style="display: none;">
 						<div data-search-service="PUD" data-url="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchpud" />
 						<div data-search-service="ADDRESS" data-url="{/Document/requestinfo/contextpath}{/Document/fullAlias}/searchaddress" />
 					</div>
 					
 					<select name="{$shortQueryID}_searchservice">
-						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices[allowedSearchService='PUD']">
+						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices/allowedSearchService = 'PUD'">
 							<option value="PUD"><xsl:value-of select="$i18n.PUD" /></option>
 						</xsl:if>
-						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices[allowedSearchService='ADDRESS']">
+						<xsl:if test="PUDQueryInstance/PUDQuery/AllowedSearchServices/allowedSearchService = 'ADDRESS'">
 							<option value="ADDRESS"><xsl:value-of select="$i18n.Address" /></option>
 						</xsl:if>
 					</select>
@@ -161,19 +176,39 @@
 				</div>
 				
 				<div class="selected-pud">
-					<xsl:if test="not(PUDQueryInstance/propertyUnitDesignation)">
+					<xsl:if test="not(PUDQueryInstance/propertyUnitDesignation) and not(PUDQueryInstance/address)">
 						<xsl:attribute name="class">selected-pud hidden</xsl:attribute>
 					</xsl:if>
+					
 					<xsl:call-template name="createHiddenField">
 						<xsl:with-param name="id" select="concat($shortQueryID, '_propertyUnitDesignation')" />
 						<xsl:with-param name="name" select="concat($shortQueryID, '_propertyUnitDesignation')" />
 						<xsl:with-param name="value" select="PUDQueryInstance/propertyUnitDesignation"/>
 					</xsl:call-template>
-					<p>
-						<strong><xsl:value-of select="$i18n.SelectedPud" /><xsl:text>:&#160;</xsl:text></strong>
-						<span class="pud"><xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" /></span>
-						<i data-icon-after="t" title="{$i18n.DeleteSelectedPUD}"></i>
-					</p>
+					
+					<xsl:call-template name="createHiddenField">
+						<xsl:with-param name="id" select="concat($shortQueryID, '_address')" />
+						<xsl:with-param name="name" select="concat($shortQueryID, '_address')" />
+						<xsl:with-param name="value" select="PUDQueryInstance/address"/>
+					</xsl:call-template>
+					
+					<xsl:choose>
+						<xsl:when test="PUDQueryInstance/PUDQuery/useAddressAsResult = 'true'">
+							<p>
+								<strong><xsl:value-of select="$i18n.SelectedAddress" /><xsl:text>:&#160;</xsl:text></strong>
+								<span class="address"><xsl:value-of select="PUDQueryInstance/address" /></span>
+								<i data-icon-after="t" title="{$i18n.DeleteSelectedAddress}"></i>
+							</p>
+						</xsl:when>
+						<xsl:otherwise>
+							<p>
+								<strong><xsl:value-of select="$i18n.SelectedPud" /><xsl:text>:&#160;</xsl:text></strong>
+								<span class="pud"><xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" /></span>
+								<i data-icon-after="t" title="{$i18n.DeleteSelectedPUD}"></i>
+							</p>
+						</xsl:otherwise>
+					</xsl:choose>
+					
 				</div>
 				
 			</article>

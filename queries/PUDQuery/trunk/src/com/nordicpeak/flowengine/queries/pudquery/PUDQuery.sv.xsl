@@ -14,6 +14,8 @@
 	<xsl:variable name="i18n.AddressPlaceHolder">Skriv din adress här</xsl:variable>
 	<xsl:variable name="i18n.SelectedPud">Vald fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="i18n.DeleteSelectedPUD">Ta bort vald fastighetsbeteckning</xsl:variable>
+	<xsl:variable name="i18n.SelectedAddress">Vald adress</xsl:variable>
+	<xsl:variable name="i18n.DeleteSelectedAddress">Ta bort vald adress</xsl:variable>
 
 	<xsl:variable name="i18n.RequiredQuery">Du behöver välja en korrekt fastighetsbeteckning.</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått.</xsl:variable>

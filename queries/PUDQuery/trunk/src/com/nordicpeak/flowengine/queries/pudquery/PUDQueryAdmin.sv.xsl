@@ -10,6 +10,8 @@
 	<xsl:variable name="java.lmUserSettingDescription">Användare som används för anrop mot lantmäteriet via Search LM</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingName">Sökprefix</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingDescription">Sökprefix som används vid anrop mot lantmäteriet via Serch LM</xsl:variable>
+	<xsl:variable name="java.isPopulatedAlternativeName">Fastighet eller address vald</xsl:variable>
+	<xsl:variable name="java.isNotPopulatedAlternativeName">Ej ifylld</xsl:variable>
 	
 	<xsl:variable name="i18n.PUDQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	<xsl:variable name="i18n.AllowedSearchServices">Söktjänster</xsl:variable>
@@ -18,6 +20,7 @@
 	
 	<xsl:variable name="i18n.PUD">Sök via fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="i18n.Address">Sök via adress</xsl:variable>
+	<xsl:variable name="i18n.useAddressAsResult">Använd address som resultat</xsl:variable>
 	
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>

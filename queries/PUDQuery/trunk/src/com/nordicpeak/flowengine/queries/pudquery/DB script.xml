@@ -34,11 +34,29 @@
 			]]>
 		</Query>
 	</Script>
+	
 	<Script version="2">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `pud_query_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `helpText`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
 			]]>
-		</Query>	
-	</Script>	
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_queries` ADD COLUMN `useAddressAsResult` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_instances` ADD COLUMN `address` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

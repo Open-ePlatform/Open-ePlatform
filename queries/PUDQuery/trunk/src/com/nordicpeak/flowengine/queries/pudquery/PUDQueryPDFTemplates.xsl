@@ -39,7 +39,14 @@
 			</xsl:if>
 			
 			<p>
-				<xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" />
+				<xsl:choose>
+					<xsl:when test="PUDQueryInstance/PUDQuery/useAddressAsResult = 'true'">
+						<xsl:value-of select="PUDQueryInstance/address" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="PUDQueryInstance/propertyUnitDesignation" />
+					</xsl:otherwise>
+				</xsl:choose>
 			</p>	
 			
 		</div>

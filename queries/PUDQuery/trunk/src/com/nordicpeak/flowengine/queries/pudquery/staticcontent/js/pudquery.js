@@ -15,9 +15,12 @@ $(document).ready(function() {
 function initPUDQuery(queryID) {
 
 	var init = true;
-	var $select = $("#query_" + queryID).find("select");
+	var query = $("#query_" + queryID);
+	var $select = query.find("select");
 	var $input = $("#q" + queryID + "_searchInput");
-	var $hidden = $("#q" + queryID + "_propertyUnitDesignation");
+	var pudField = $("#q" + queryID + "_propertyUnitDesignation");
+	var addressField = $("#q" + queryID + "_address");
+	var useAddressAsResult = $select.closest(".search-select").data("useaddressasresult");
 	
 	$select.change(function(e) {
 
@@ -27,13 +30,13 @@ function initPUDQuery(queryID) {
 		
 		$input.attr("placeholder", $selectedOption.attr("label"));
 		
-		if(!init) {
+		if (!init) {
 			$input.val("");
 		}
 		
 		var type = $selectedOption.val();
 		
-		if(type == "PUD") {
+		if (type == "PUD") {
 			
 			$input.autocomplete({
 				source : function(request, response) {
@@ -42,14 +45,16 @@ function initPUDQuery(queryID) {
 				minLength : 3,
 				select: function( event, ui ) {
 					
-					$hidden.val(ui.item.label);
-					$hidden.parent().find("span").text(ui.item.label);
-					$hidden.parent().show();
+					addressField.val("");
 					
+					pudField.val(ui.item.label);
+					pudField.parent().find("span").text(ui.item.label);
+					pudField.parent().show();
+					pudField.change();
 				}
 			});
 			
-		} else if(type == "ADDRESS") {
+		} else if (type == "ADDRESS") {
 			
 			$input.autocomplete({
 				source : function(request, response) {
@@ -57,26 +62,47 @@ function initPUDQuery(queryID) {
 				},
 				minLength : 3,
 				select: function( event, ui ) {
+
+					addressField.val(ui.item.label);
 					
-					searchPUDFromFnr(ui.item.fnr, queryID, $input, $select, $hidden);
-					
+					if (useAddressAsResult) {
+						
+						pudField.parent().find("span").text(ui.item.label);
+						pudField.parent().show();
+						pudField.change();
+						
+					} else {
+						
+						searchPUDFromFnr(ui.item.fnr, queryID, $input, $select, pudField);
+					}
 				}
 			});
-			
 		}
-		
 	});
 
-	$hidden.parent().find("i").click(function(e) {
-		$hidden.val("");
-		$hidden.parent().find("span").text("");
-		$hidden.parent().hide();
+	pudField.parent().find("i").click(function(e) {
+		pudField.val("");
+		addressField.val("");
+		pudField.parent().find("span").text("");
+		pudField.parent().hide();
+		pudField.change();
 	});
 	
 	$select.trigger("change");
 	
 	init = false;
 	
+	if (query.hasClass("enableAjaxPosting")) {
+		
+		pudField.change(function() {
+			
+			var parameters = {};
+			parameters[pudField.attr("name")] = pudField.val();
+			parameters[addressField.attr("name")] = addressField.val();
+			
+			runQueryEvaluators(queryID, parameters);
+		});
+	}
 }
 
 function searchPUD(request, response, queryID, $input, $selectedOption) {
@@ -91,11 +117,11 @@ function searchPUD(request, response, queryID, $input, $selectedOption) {
 			
 			removePUDQueryError(queryID);
 			
-			if(data.features != undefined && data.features.length > 0) {
+			if (data.features != undefined && data.features.length > 0) {
 				data = data.features;
 			}
 			
-			if(data.length > 0) {
+			if (data.length > 0) {
 				
 				response($.map(data, function(item) {
 					var pud = item.properties.name.replace("Enhetsomr�de 1", "");
@@ -109,17 +135,14 @@ function searchPUD(request, response, queryID, $input, $selectedOption) {
 			}
 					
 			$input.removeClass("ui-autocomplete-loading");
-			
 		},
 		error : function() {
 			
 			$input.removeClass("ui-autocomplete-loading");
 			removePUDQueryError(queryID);
 			showPUDQueryErrorMessage(queryID, pudQueryLanguage.UNKOWN_ERROR_MESSAGE);
-			
 		}
 	});
-	
 }
 
 function searchAddress(request, response, queryID, $input, $selectedOption) {
@@ -134,7 +157,7 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 			
 			removePUDQueryError(queryID);
 			
-			if(data.length > 0) {
+			if (data.length > 0) {
 				response($.map(data, function(item) {
 					return {
 						label : item[1],
@@ -145,20 +168,17 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 			}
 			
 			$input.removeClass("ui-autocomplete-loading");
-			
 		},
 		error : function() {
 			
 			$input.removeClass("ui-autocomplete-loading");
 			removePUDQueryError(queryID);
 			showPUDQueryErrorMessage(queryID, pudQueryLanguage.UNKOWN_ERROR_MESSAGE);
-		
 		}
 	});
-	
 }
 
-function searchPUDFromFnr(fnumber, queryID, $input, $select, $hidden) {
+function searchPUDFromFnr(fnumber, queryID, $input, $select, pudField) {
 	
 	$input.addClass("ui-autocomplete-loading");
 	
@@ -173,36 +193,33 @@ function searchPUDFromFnr(fnumber, queryID, $input, $select, $hidden) {
 			
 			removePUDQueryError(queryID);
 			
-			if(data.features == undefined) {
+			if (data.features == undefined) {
 				
 				showPUDQueryErrorMessage(queryID, pudQueryLanguage.PUD_NOT_FOUND);
 			
-			} else if(data.features.length == 1) {
+			} else if (data.features.length == 1) {
 				
 				var pud = data.features[0].properties.name;
 				
-				$hidden.val(pud);
-				$hidden.parent().find("span").text(pud);
-				$hidden.parent().show();
+				pudField.val(pud);
+				pudField.parent().find("span").text(pud);
+				pudField.parent().show();
+				pudField.change();
 				
 			} else {
 				
 				showPUDQueryErrorMessage(queryID, pudQueryLanguage.TO_MANY_PUD_FOUND);
-				
 			}
 					
 			$input.removeClass("ui-autocomplete-loading");
-			
 		},
 		error : function() {
 			
 			$input.removeClass("ui-autocomplete-loading");
 			removePUDQueryError(queryID);
 			showPUDQueryErrorMessage(queryID, pudQueryLanguage.UNKOWN_ERROR_MESSAGE);
-			
 		}
 	});	
-	
 }
 
 function makePUDQueryRequired(queryID) {

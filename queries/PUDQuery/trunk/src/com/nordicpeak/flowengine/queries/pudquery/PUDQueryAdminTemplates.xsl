@@ -10,7 +10,11 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
-	</xsl:variable>	
+	</xsl:variable>
+	
+	<xsl:variable name="scripts">
+		/js/pudqueryadmin.js
+	</xsl:variable>
 
 	<xsl:template match="Document">	
 		
@@ -61,10 +65,17 @@
 				</xsl:call-template>
 				<label for="allowedSearchService_Address"><xsl:value-of select="$i18n.Address" /></label>
 			</div>
-
-			<div class="floatleft full bigmarginbottom">
-				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
+			
+			<div class="floatleft full marginbottom">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'useAddressAsResult'" />
+					<xsl:with-param name="name" select="'useAddressAsResult'" />
+					<xsl:with-param name="element" select="PUDQuery" />
+				</xsl:call-template>
+				<label for="useAddressAsResult"><xsl:value-of select="$i18n.useAddressAsResult" /></label>
 			</div>
+
+			<h2 class="floatleft full bigmargintop"><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
 			
 			<div class="floatleft full bigmarginbottom">
 				<div class="floatleft full">
@@ -120,7 +131,10 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'attributeName'">
 				<xsl:value-of select="$i18n.attributeName" />
-			</xsl:when>			
+			</xsl:when>
+			<xsl:when test="$fieldName = 'useAddressAsResult'">
+				<xsl:value-of select="$i18n.useAddressAsResult" />
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />
 			</xsl:otherwise>
