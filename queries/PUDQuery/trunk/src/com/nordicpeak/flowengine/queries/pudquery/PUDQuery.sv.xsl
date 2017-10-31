@@ -18,6 +18,7 @@
 	<xsl:variable name="i18n.DeleteSelectedAddress">Ta bort vald adress</xsl:variable>
 
 	<xsl:variable name="i18n.RequiredQuery">Du behöver välja en korrekt fastighetsbeteckning.</xsl:variable>
+	<xsl:variable name="i18n.RequiredQueryAddress">Du behöver välja en adress.</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått.</xsl:variable>
 	<xsl:variable name="i18n.PUDNotFound">Fastighetsbeteckningen för den valda adressen hittades inte. Kontakta administratören.</xsl:variable>
 	<xsl:variable name="i18n.ToManyPUDFound">Flera fastighetsbeteckningar hittades för den valda adressen. Kontakta administratören.</xsl:variable>

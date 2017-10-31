@@ -223,7 +223,14 @@
 	
 		<span>
 			<strong data-icon-before="!">
-				<xsl:value-of select="$i18n.RequiredQuery" />
+				<xsl:choose>
+					<xsl:when test="../../PUDQueryInstance/PUDQuery/useAddressAsResult = 'true'">
+						<xsl:value-of select="$i18n.RequiredQueryAddress" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.RequiredQuery" />
+					</xsl:otherwise>
+				</xsl:choose>
 			</strong>
 		</span>
 		
