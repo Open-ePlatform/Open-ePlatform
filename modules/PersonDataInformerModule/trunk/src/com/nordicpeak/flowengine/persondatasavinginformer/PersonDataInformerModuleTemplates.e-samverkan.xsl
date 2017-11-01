@@ -178,9 +178,9 @@
 								<xsl:value-of select="$i18n.Column.PersonData"/>
 							</strong>
 							<ul>
-								<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="show"/>
+								<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
 							</ul>
-							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/DataAlternatives/InformerDataAlternative" mode="hiddenInputs"/>
+							<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="hiddenInputs"/>
 						</p>
 						
 <!-- 						<p> -->
@@ -188,9 +188,9 @@
 <!-- 								<xsl:value-of select="$i18n.Reasons"/> -->
 <!-- 							</strong> -->
 <!-- 							<ul> -->
-<!-- 								<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="show"/> -->
+<!-- 								<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="show"/> -->
 <!-- 							</ul> -->
-<!-- 							<xsl:apply-templates select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/ReasonAlternatives/InformerReasonAlternative" mode="hiddenInputs"/> -->
+<!-- 							<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="hiddenInputs"/> -->
 <!-- 						</p> -->
 						
 <!-- 						<p> -->
@@ -198,7 +198,7 @@
 <!-- 								<xsl:value-of select="$i18n.YearsSaved"/> -->
 <!-- 							</strong> -->
 <!-- 							<br/> -->
-<!-- 							<xsl:variable name="years" select="../../Settings/FlowFamilyInformerSetting[flowFamilyID = current()/FlowFamily/flowFamilyID]/yearsSaved"/> -->
+<!-- 							<xsl:variable name="years" select="FlowFamilyInformerSetting/yearsSaved"/> -->
 						
 <!-- 							<xsl:choose> -->
 <!-- 								<xsl:when test="$years"> -->
