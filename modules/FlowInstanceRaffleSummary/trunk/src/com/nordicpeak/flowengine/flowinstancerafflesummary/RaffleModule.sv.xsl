@@ -7,7 +7,7 @@
 	
 	<xsl:variable name="java.cellValueYes">Ja</xsl:variable>
 	<xsl:variable name="java.cellValueNo">Nej</xsl:variable>
-	<xsl:variable name="java.raffledMessage">Lottning utförd. Du fick nummer $nummer</xsl:variable>
+	<xsl:variable name="java.numberAssignedMessage">Lottning utförd. Du fick nummer $nummer</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidationError.RequiredField">Du behöver fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
@@ -64,7 +64,7 @@
 
 	<xsl:variable name="i18n.UseForAddFlow">Använd för manuell inläggning av ärenden</xsl:variable>
 	
-	<xsl:variable name="i18n.UserTagsTable.description">Följande taggar kan användas i notifikationer gällande beslut</xsl:variable>
+	<xsl:variable name="i18n.UserTagsTable.description">Följande taggar kan användas i notifikationer gällande lottning</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.FlowNameTag">E-tjänsten namn</xsl:variable>
@@ -75,9 +75,9 @@
 	<xsl:variable name="i18n.PosterLastnameTag">Kontaktpersonens efternamn</xsl:variable>
 	<xsl:variable name="i18n.NumberTag">Nummer</xsl:variable>
 
-	<xsl:variable name="i18n.OverideStatusChangedNotificationOnDecision">Använd annan text i notifikationer vid beslut (annars används standardtexter för byte av status)</xsl:variable>
-	<xsl:variable name="i18n.DecisionEmailMessage">Innehåll i e-postmeddelande vid beslut</xsl:variable>
-	<xsl:variable name="i18n.DecisionSMSMessage">Innehåll i SMS vid beslut</xsl:variable>
+	<xsl:variable name="i18n.OverideStatusChangedNotificationOnDecision">Använd annan text i notifikationer vid lottning (annars används standardtexter för byte av status)</xsl:variable>
+	<xsl:variable name="i18n.DecisionEmailMessage">Innehåll i e-postmeddelande vid lottning</xsl:variable>
+	<xsl:variable name="i18n.DecisionSMSMessage">Innehåll i SMS vid lottning</xsl:variable>
 	
 	<xsl:variable name="i18n.Button.Back">Tillbaka till omgångar</xsl:variable>
 </xsl:stylesheet>
