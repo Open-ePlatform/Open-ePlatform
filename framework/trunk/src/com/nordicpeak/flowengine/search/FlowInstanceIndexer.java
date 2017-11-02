@@ -81,13 +81,14 @@ public class FlowInstanceIndexer {
 	private static final String OWNERS_FIELD = "owners";
 	private static final String MANAGER_FIELD = "manager";
 	private static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
+	private static final String CHILD_CITIZEN_IDENTIFIER = "childCitizenIdentifier";
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
 	private static final String INTERNAL_MESSAGES = "internalMessages";
 	private static final String EXTERNAL_MESSAGES = "externalMessages";
 	protected static final String ALLOWED_USER_FIELD = "allowedUser";
 	protected static final String ALLOWED_GROUP_FIELD = "allowedGroup";
 	
-	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
+	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -419,58 +420,65 @@ public class FlowInstanceIndexer {
 		return systemInterface.getSystemStatus() == SystemStatus.STARTED;
 	}
 
-	public void indexFlowInstance(FlowInstance flowInstance, Flow flow, FlowFamily flowFamily){
-
+	public void indexFlowInstance(FlowInstance flowInstance, Flow flow, FlowFamily flowFamily) {
+		
 		log.debug("Indexing flow instance " + flowInstance);
-
-		try{
+		
+		try {
 			Document doc = new Document();
-
+			
 			doc.add(new StringField(ID_FIELD, flowInstance.getFlowInstanceID().toString(), Field.Store.YES));
 			doc.add(new StringField(FLOW_ID_FIELD, flow.getFlowID().toString(), Field.Store.YES));
 			doc.add(new StringField(FLOW_FAMILY_ID_FIELD, flowFamily.getFlowFamilyID().toString(), Field.Store.YES));
 			doc.add(new TextField(FLOW_NAME_FIELD, flow.getName(), Field.Store.YES));
 			doc.add(new TextField(FIRST_SUBMITTED_FIELD, DateUtils.DATE_TIME_FORMATTER.format(flowInstance.getFirstSubmitted()), Field.Store.YES));
 			doc.add(new TextField(STATUS_NAME_FIELD, flowInstance.getStatus().getName(), Field.Store.YES));
-
+			
 			AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 			
 			String citizenIdentifier = attributeHandler.getString(CITIZEN_IDENTIFIER);
 			
-			if(citizenIdentifier == null && flowInstance.getPoster() != null){
+			if (citizenIdentifier == null && flowInstance.getPoster() != null) {
 				
 				citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(CITIZEN_IDENTIFIER);
 			}
 			
-			if(citizenIdentifier != null){
+			if (citizenIdentifier != null) {
 				
 				doc.add(new TextField(CITIZEN_IDENTIFIER, citizenIdentifier, Field.Store.NO));
 			}
 			
+			String childCitizenIdentifier = attributeHandler.getString(CHILD_CITIZEN_IDENTIFIER);
+			
+			if (childCitizenIdentifier != null) {
+				
+				doc.add(new TextField(CHILD_CITIZEN_IDENTIFIER, childCitizenIdentifier, Field.Store.NO));
+			}
+			
 			String organizationNumber = attributeHandler.getString(ORGANIZATION_NUMBER);
 			
-			if(organizationNumber != null){
+			if (organizationNumber != null) {
 				
 				doc.add(new TextField(ORGANIZATION_NUMBER, organizationNumber, Field.Store.NO));
 			}
 			
 			String organizationName = attributeHandler.getString(Constants.FLOW_INSTANCE_ORGANIZATION_NAME_ATTRIBUTE);
 			
-			if(organizationName != null){
+			if (organizationName != null) {
 				
 				doc.add(new TextField(POSTER_FIELD, organizationName, Field.Store.NO));
 			}
 			
-			if(flowInstance.getPoster() != null){
-
+			if (flowInstance.getPoster() != null) {
+				
 				doc.add(new TextField(POSTER_FIELD, flowInstance.getPoster().getFirstname() + " " + flowInstance.getPoster().getLastname(), Field.Store.NO));
 				
-			}else{
+			} else {
 				
 				String firstname = attributeHandler.getString(Constants.FLOW_INSTANCE_FIRSTNAME_ATTRIBUTE);
 				String lastname = attributeHandler.getString(Constants.FLOW_INSTANCE_LASTNAME_ATTRIBUTE);
 				
-				if(firstname != null || lastname != null){
+				if (firstname != null || lastname != null) {
 					
 					doc.add(new TextField(POSTER_FIELD, firstname + " " + lastname, Field.Store.NO));
 				}
@@ -488,43 +496,43 @@ public class FlowInstanceIndexer {
 					}
 				}
 			}
-
-			if(flowInstance.getManagers() != null){
-
-				for(User manager : flowInstance.getManagers()){
-
+			
+			if (flowInstance.getManagers() != null) {
+				
+				for (User manager : flowInstance.getManagers()) {
+					
 					doc.add(new TextField(MANAGER_FIELD, manager.getFirstname() + " " + manager.getLastname(), Field.Store.NO));
 				}
 			}
 			
-			if(flowInstance.getInternalMessages() != null){
+			if (flowInstance.getInternalMessages() != null) {
 				
-				for(InternalMessage message : flowInstance.getInternalMessages()){
+				for (InternalMessage message : flowInstance.getInternalMessages()) {
 					
 					doc.add(new TextField(INTERNAL_MESSAGES, message.getMessage(), Field.Store.NO));
 				}
 			}
-
-			if(flowInstance.getExternalMessages() != null){
+			
+			if (flowInstance.getExternalMessages() != null) {
 				
-				for(ExternalMessage message : flowInstance.getExternalMessages()){
+				for (ExternalMessage message : flowInstance.getExternalMessages()) {
 					
 					doc.add(new TextField(EXTERNAL_MESSAGES, message.getMessage(), Field.Store.NO));
 				}
 			}
 			
-			if(flowFamily.getManagerGroupIDs() != null){
-
-				for(Integer groupID : flowFamily.getManagerGroupIDs()){
-
+			if (flowFamily.getManagerGroupIDs() != null) {
+				
+				for (Integer groupID : flowFamily.getManagerGroupIDs()) {
+					
 					doc.add(new IntField(ALLOWED_GROUP_FIELD, groupID, Field.Store.YES));
 				}
 			}
-
-			if(flowFamily.getManagerUserIDs() != null){
-
-				for(Integer userID : flowFamily.getManagerUserIDs()){
-
+			
+			if (flowFamily.getManagerUserIDs() != null) {
+				
+				for (Integer userID : flowFamily.getManagerUserIDs()) {
+					
 					doc.add(new IntField(ALLOWED_USER_FIELD, userID, Field.Store.YES));
 				}
 			}
@@ -532,9 +540,9 @@ public class FlowInstanceIndexer {
 			addAdditionalFields(doc, flowInstance, flowFamily);
 			
 			indexWriter.addDocument(doc);
-
-		}catch(Exception e){
-
+			
+		} catch (Exception e) {
+			
 			log.error("Error indexing flow instance " + flowInstance, e);
 		}
 	}
