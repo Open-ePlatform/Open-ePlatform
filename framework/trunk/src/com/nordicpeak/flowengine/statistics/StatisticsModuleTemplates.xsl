@@ -29,6 +29,7 @@
 			<xsl:apply-templates select="GlobalStatistics"/>
 			<xsl:apply-templates select="FlowFamilyStatistics"/>
 			<xsl:apply-templates select="FlowFamilyList"/>
+			<xsl:apply-templates select="StatisticsLoading"/>
 		</div>
 		
 	</xsl:template>
@@ -349,6 +350,12 @@
 			</a>
 		
 		</li>		
+	
+	</xsl:template>
+	
+	<xsl:template match="StatisticsLoading">
+	
+		<h2><xsl:value-of select="$i18n.LoadingPleaseWait"/></h2>
 	
 	</xsl:template>
 

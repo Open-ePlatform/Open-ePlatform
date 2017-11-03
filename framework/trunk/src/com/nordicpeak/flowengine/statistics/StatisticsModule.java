@@ -1,5 +1,8 @@
 package com.nordicpeak.flowengine.statistics;
 
+import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.Task;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
@@ -81,9 +84,6 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
-
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.Task;
 
 public class StatisticsModule extends AnnotatedForegroundModule implements Runnable, SystemStartupListener {
 
@@ -222,7 +222,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 	@XSLVariable(prefix = "java.")
 	private String csvFlowType = "Category";
-
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Log SQL", description = "Log generated SQL queries")
 	private boolean logSQL;
@@ -668,7 +668,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		log.info("User " + user + " listing global statistics");
-
+		
 		Document doc = createDocument(req, uriParser);
 
 		Element globalStatisticsElement = doc.createElement("GlobalStatistics");
@@ -721,6 +721,11 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 			if (AccessUtils.checkAccess(user, internalAccessInterface)) {
 
+				if (flowFamilyStatisticsMap == null) {
+					
+					return showStatisticsLoading(req, uriParser);
+				}
+				
 				familyStatistics = this.flowFamilyStatisticsMap.values();
 
 			} else {
@@ -797,7 +802,10 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	@WebPublic(alias = "family")
 	public ForegroundModuleResponse showFlowFamilyStatistics(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
-		//TODO handle NPE during initial caching
+		if (flowFamilyStatisticsMap == null) {
+			
+			return showStatisticsLoading(req, uriParser);
+		}
 		
 		FlowFamilyStatistics familyStatistics = this.flowFamilyStatisticsMap.get(uriParser.getInt(2));
 
@@ -1466,4 +1474,14 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		initScheduler();
 	}
 
+	protected ForegroundModuleResponse showStatisticsLoading(HttpServletRequest req, URIParser uriParser) {
+		
+		Document doc = createDocument(req, uriParser);
+
+		Element familyStatisticsElement = doc.createElement("StatisticsLoading");
+		doc.getDocumentElement().appendChild(familyStatisticsElement);
+		
+		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
+	}
+	
 }

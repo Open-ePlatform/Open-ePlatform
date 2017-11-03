@@ -48,4 +48,6 @@
 	<xsl:variable name="i18n.DownloadChartData">Ladda ner</xsl:variable>
 	<xsl:variable name="i18n.DownloadDetailedChartData">Ladda ner detaljerad statistik</xsl:variable>
 	
+	<xsl:variable name="i18n.LoadingPleaseWait">Beräknar statistik, vänligen försök igen om 1 minut</xsl:variable>
+	
 </xsl:stylesheet>
