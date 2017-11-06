@@ -9,7 +9,7 @@
 	
 	<xsl:variable name="i18n.ChecklistTitle">Följande behövs för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.StartFlow">Starta e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.StepDescriptionTitle">Du kommer gå igenom följande steg</xsl:variable>	
+	<xsl:variable name="i18n.StepDescriptionTitle">Du kommer att gå igenom följande steg</xsl:variable>	
 	
 	<xsl:variable name="i18n.Questions">Frågor om e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.QuestionsContact">Kontaktperson</xsl:variable>
