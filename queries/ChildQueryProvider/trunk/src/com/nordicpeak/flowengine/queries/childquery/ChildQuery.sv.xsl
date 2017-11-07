@@ -29,7 +29,7 @@
 	<xsl:variable name="i18n.Guardians">Vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.OtherGuardians">Barnets andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.SecretChildrenInfo">Barn under sekretess visas inte. Kontakta verksamheten för andra ansökningsmöjligheter.</xsl:variable>
-	<xsl:variable name="i18n.AgeChildrenInfo">Barn som inte upfyller ålderskravet går inte att välja.</xsl:variable>
+	<xsl:variable name="i18n.AgeChildrenInfo">Barn som inte uppfyller ålderskravet går inte att välja.</xsl:variable>
 	<xsl:variable name="i18n.OtherGuardiansNotificationInfo">Båda vårdnadshavares signaturer krävs. Den andra vårdnadshavaren kommer att få ett meddelande med uppmaning om att signera ärendet.</xsl:variable>
 	
 	<xsl:variable name="i18n.Column.Email">E-post</xsl:variable>
