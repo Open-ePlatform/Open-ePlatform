@@ -54,10 +54,30 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	private boolean sendStatusChangedUserEmail;
 
 	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String statusChangedUserEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String statusChangedUserEmailMessage;
+	
+	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendExternalMessageReceivedUserEmail;
 
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String externalMessageReceivedUserEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String externalMessageReceivedUserEmailMessage;
+	
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -107,6 +127,16 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendExternalMessageReceivedManagerEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String externalMessageReceivedManagerSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String externalMessageReceivedManagerMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -303,7 +333,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceArchivedUserEmailSubject() {
-
+		
 		return flowInstanceArchivedUserEmailSubject;
 	}
 
@@ -313,7 +343,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceArchivedUserEmailMessage() {
-
+		
 		return flowInstanceArchivedUserEmailMessage;
 	}
 
@@ -406,7 +436,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceSubmittedGlobalEmailSubject() {
-
+		
 		return flowInstanceSubmittedGlobalEmailSubject;
 	}
 
@@ -416,7 +446,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceSubmittedGlobalEmailMessage() {
-
+		
 		return flowInstanceSubmittedGlobalEmailMessage;
 	}
 
@@ -446,7 +476,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public List<String> getFlowInstanceSubmittedGlobalEmailAddresses() {
-
+		
 		return flowInstanceSubmittedGlobalEmailAddresses;
 	}
 
@@ -454,19 +484,16 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		this.flowInstanceSubmittedGlobalEmailAddresses = flowInstanceSubmittedGlobalEmailAddresses;
 	}
-
 	
 	public List<String> getExternalMessageReceivedGlobalEmailAddresses() {
-	
+		
 		return externalMessageReceivedGlobalEmailAddresses;
 	}
-
 	
 	public void setExternalMessageReceivedGlobalEmailAddresses(List<String> externalMessageReceivedGlobalEmailAddresses) {
 	
 		this.externalMessageReceivedGlobalEmailAddresses = externalMessageReceivedGlobalEmailAddresses;
 	}
-
 	
 	public boolean isSendExternalMessageReceivedGlobalEmail() {
 	
@@ -477,5 +504,66 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setSendExternalMessageReceivedGlobalEmail(boolean sendExternalMessageReceivedGlobalEmail) {
 	
 		this.sendExternalMessageReceivedGlobalEmail = sendExternalMessageReceivedGlobalEmail;
+	}
+	
+	public String getStatusChangedUserEmailSubject() {
+		
+		return statusChangedUserEmailSubject;
+	}
+
+	public void setStatusChangedUserEmailSubject(String statusChangedUserEmailSubject) {
+	
+		this.statusChangedUserEmailSubject = statusChangedUserEmailSubject;
+	}
+
+	public String getStatusChangedUserEmailMessage() {
+		
+		return statusChangedUserEmailMessage;
+	}
+
+	public void setStatusChangedUserEmailMessage(String statusChangedUserEmailMessage) {
+	
+		this.statusChangedUserEmailMessage = statusChangedUserEmailMessage;
+	}
+	
+	public String getExternalMessageReceivedUserEmailSubject() {
+		
+		return externalMessageReceivedUserEmailSubject;
+	}
+
+	public void setExternalMessageReceivedUserEmailSubject(String externalMessageReceivedUserEmailSubject) {
+	
+		this.externalMessageReceivedUserEmailSubject = externalMessageReceivedUserEmailSubject;
+	}
+
+	public String getExternalMessageReceivedUserEmailMessage() {
+		
+		return externalMessageReceivedUserEmailMessage;
+	}
+
+	
+	public void setExternalMessageReceivedUserEmailMessage(String externalMessageReceivedUserEmailMessage) {
+	
+		this.externalMessageReceivedUserEmailMessage = externalMessageReceivedUserEmailMessage;
+	}
+	
+	public String getExternalMessageReceivedManagerSubject() {
+	
+		return externalMessageReceivedManagerSubject;
+	}
+	
+	public void setExternalMessageReceivedManagerSubject(String externalMessageReceivedManagerSubject) {
+	
+		this.externalMessageReceivedManagerSubject = externalMessageReceivedManagerSubject;
+	}
+	
+	public String getExternalMessageReceivedManagerMessage() {
+		
+		return externalMessageReceivedManagerMessage;
+	}
+
+	public void setExternalMessageReceivedManagerMessage(String externalMessageReceivedManagerMessage) {
+	
+		this.externalMessageReceivedManagerMessage = externalMessageReceivedManagerMessage;
 	}
 }

@@ -174,6 +174,19 @@
 				ALTER TABLE `flow_familiy_notification_setting_extmessageglobal` DROP PRIMARY KEY, ADD PRIMARY KEY  USING BTREE(`flowFamilyID`, `email`);
 			]]>
 		</Query>
+	</Script>
+	
+	<Script version="12">    
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `statusChangedUserEmailSubject` VARCHAR(255) AFTER `sendStatusChangedUserEmail`,
+				 ADD COLUMN `statusChangedUserEmailMessage` TEXT AFTER `statusChangedUserEmailSubject`,
+				 ADD COLUMN `externalMessageReceivedUserEmailSubject` VARCHAR(255) AFTER `sendExternalMessageReceivedUserEmail`,
+				 ADD COLUMN `externalMessageReceivedUserEmailMessage` TEXT AFTER `externalMessageReceivedUserEmailSubject`,
+				 ADD COLUMN `externalMessageReceivedManagerSubject` VARCHAR(255) AFTER `sendExternalMessageReceivedManagerEmail`,
+				 ADD COLUMN `externalMessageReceivedManagerMessage` TEXT AFTER `externalMessageReceivedManagerSubject`;
+			]]>
+		</Query>
 	</Script>	
 	
 </DBScripts>

@@ -282,4 +282,11 @@
 	
 	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från medborgare</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från medborgare (en adress per rad)</xsl:variable>
+	
+	<xsl:variable name="i18n.StatusChangedUserEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.StatusChangedUserEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageReceivedUserEmailSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageReceivedUserEmailMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageReceivedManagerSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageReceivedManagerMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 </xsl:stylesheet>

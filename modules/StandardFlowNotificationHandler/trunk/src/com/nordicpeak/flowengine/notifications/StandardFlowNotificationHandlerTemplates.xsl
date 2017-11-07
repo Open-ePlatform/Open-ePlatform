@@ -159,6 +159,18 @@
 	<xsl:template match="UpdateSettings">
 	
 		<script>
+			function toggleUserStatus(){
+				
+				$("#user-status-subject").toggleClass("hidden");
+				$("#user-status-message").toggleClass("hidden");
+			}
+		
+			function toggleUserExternalMessage(){
+				
+				$("#user-message-subject").toggleClass("hidden");
+				$("#user-message-message").toggleClass("hidden");
+			}		
+		
 			function toggleSubmit(){
 				
 				$("#submit-subject").toggleClass("hidden");
@@ -170,6 +182,12 @@
 				$("#archived-subject").toggleClass("hidden");
 				$("#archived-message").toggleClass("hidden");
 			}
+			
+			function toggleManagerExternalMessage(){
+				
+				$("#manager-message-subject").toggleClass("hidden");
+				$("#manager-message-message").toggleClass("hidden");
+			}			
 			
 			function toggleGlobal(){
 				
@@ -274,9 +292,54 @@
 				
 				<label for="sendStatusChangedUserEmail">
 					<xsl:value-of select="$i18n.SendStatusChangedUserEmail" />
-				</label>				
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleUserStatus();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="user-status-subject">
+		
+			<xsl:if test="not(validationException/validationError/fieldName = 'statusChangedUserEmailSubject') and not(validationException/validationError/fieldName = 'statusChangedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceSubmittedUserEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.StatusChangedUserEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'statusChangedUserEmailSubject'"/>
+					<xsl:with-param name="name" select="'statusChangedUserEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />          
+				</xsl:call-template>
+			</div>
+		</div>				
+		
+		<div class="floatleft full bigmarginbottom" id="user-status-message">
+			
+			<xsl:if test="not(validationException/validationError/fieldName = 'statusChangedUserEmailSubject') and not(validationException/validationError/fieldName = 'statusChangedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>			
+			
+			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.StatusChangedUserEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'statusChangedUserEmailMessage'"/>
+					<xsl:with-param name="name" select="'statusChangedUserEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />		
+				</xsl:call-template>									
+										
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>		
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -289,9 +352,54 @@
 				
 				<label for="sendExternalMessageReceivedUserEmail">
 					<xsl:value-of select="$i18n.SendExternalMessageReceivedUserEmail" />
-				</label>				
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleUserExternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>				
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="user-message-subject">
+		
+			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceSubmittedUserEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'externalMessageReceivedUserEmailSubject'"/>
+					<xsl:with-param name="name" select="'externalMessageReceivedUserEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />          
+				</xsl:call-template>
+			</div>
+		</div>				
+		
+		<div class="floatleft full bigmarginbottom" id="user-message-message">
+			
+			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>			
+			
+			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'externalMessageReceivedUserEmailMessage'"/>
+					<xsl:with-param name="name" select="'externalMessageReceivedUserEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />		
+				</xsl:call-template>									
+										
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>				
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -484,8 +592,53 @@
 				
 				<label for="sendExternalMessageReceivedManagerEmail">
 					<xsl:value-of select="$i18n.SendExternalMessageReceivedManagerEmail" />
-				</label>				
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerExternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>			
 			</div>
+		</div>	
+	
+		<div class="floatleft full bigmarginbottom" id="manager-message-subject">
+		
+			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedManagerSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedManagerMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceSubmittedManagerSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ExternalMessageReceivedManagerSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'externalMessageReceivedManagerSubject'"/>
+					<xsl:with-param name="name" select="'externalMessageReceivedManagerSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />          
+				</xsl:call-template>
+			</div>
+		</div>				
+		
+		<div class="floatleft full bigmarginbottom" id="manager-message-message">
+			
+			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedManagerSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedManagerMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>			
+			
+			<label for="flowInstanceSubmittedManagerMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'externalMessageReceivedManagerMessage'"/>
+					<xsl:with-param name="name" select="'externalMessageReceivedManagerMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />		
+				</xsl:call-template>									
+										
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
 		</div>	
 	
 		<div class="floatleft full bigmarginbottom margintop internal">

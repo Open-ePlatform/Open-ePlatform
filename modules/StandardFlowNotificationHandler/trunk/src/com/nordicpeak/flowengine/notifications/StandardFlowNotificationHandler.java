@@ -218,7 +218,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@TextAreaSettingDescriptor(name = "Flow instance multi sign SMS message (users)", description = "The SMS sent to the users when they have to sign a multi sign flow instance", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignInitiatedUserSMS;
-	
+
 	@ModuleSetting
 	@TextAreaSettingDescriptor(name = "Flow instance multi sign cancel SMS message (users)", description = "The SMS sent to the users when a flow instance they had to sign is canceled", required = true)
 	@XSLVariable(prefix = "java.")
@@ -317,7 +317,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance multi sign email message (users)", description = "The message of emails sent to the users when they have to sign a multi sign flow instance", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignInitiatedUserEmailMessage;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow instance multi sign cancel email subject (users)", description = "The subject of emails sent to the users when a flow instance they had to sign is canceled", required = true)
 	@XSLVariable(prefix = "java.")
@@ -683,6 +683,36 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		FlowFamililyNotificationSettings notificationSettings = POPULATOR.populate(req);
 
 		//Remove texts if they are set to default values
+		if (notificationSettings.getStatusChangedUserEmailSubject() != null && notificationSettings.getStatusChangedUserEmailSubject().trim().equals(statusChangedUserEmailSubject.trim())) {
+
+			notificationSettings.setStatusChangedUserEmailSubject(null);
+		}
+
+		if (notificationSettings.getStatusChangedUserEmailMessage() != null && notificationSettings.getStatusChangedUserEmailMessage().trim().equals(statusChangedUserEmailMessage.trim())) {
+
+			notificationSettings.setStatusChangedUserEmailMessage(null);
+		}
+
+		if (notificationSettings.getExternalMessageReceivedUserEmailSubject() != null && notificationSettings.getExternalMessageReceivedUserEmailSubject().trim().equals(externalMessageReceivedUserEmailSubject.trim())) {
+
+			notificationSettings.setExternalMessageReceivedUserEmailSubject(null);
+		}
+
+		if (notificationSettings.getExternalMessageReceivedUserEmailMessage() != null && notificationSettings.getExternalMessageReceivedUserEmailMessage().trim().equals(externalMessageReceivedUserEmailMessage.trim())) {
+
+			notificationSettings.setExternalMessageReceivedUserEmailMessage(null);
+		}
+
+		if (notificationSettings.getExternalMessageReceivedManagerSubject() != null && notificationSettings.getExternalMessageReceivedManagerSubject().trim().equals(externalMessageReceivedManagerEmailSubject.trim())) {
+
+			notificationSettings.setExternalMessageReceivedManagerSubject(null);
+		}
+
+		if (notificationSettings.getExternalMessageReceivedManagerMessage() != null && notificationSettings.getExternalMessageReceivedManagerMessage().trim().equals(externalMessageReceivedManagerEmailMessage.trim())) {
+
+			notificationSettings.setExternalMessageReceivedManagerMessage(null);
+		}
+		
 		if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedUserEmailMessage().trim().equals(flowInstanceArchivedUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceArchivedUserEmailMessage(null);
@@ -734,6 +764,26 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (notificationSettings != null) {
 
+			if (notificationSettings.getStatusChangedUserEmailSubject() == null) {
+
+				notificationSettings.setStatusChangedUserEmailSubject(statusChangedUserEmailSubject);
+			}
+
+			if (notificationSettings.getStatusChangedUserEmailMessage() == null) {
+
+				notificationSettings.setStatusChangedUserEmailMessage(statusChangedUserEmailMessage);
+			}
+			
+			if (notificationSettings.getExternalMessageReceivedUserEmailSubject() == null) {
+
+				notificationSettings.setExternalMessageReceivedUserEmailSubject(externalMessageReceivedUserEmailSubject);
+			}
+
+			if (notificationSettings.getExternalMessageReceivedUserEmailMessage() == null) {
+
+				notificationSettings.setExternalMessageReceivedUserEmailMessage(externalMessageReceivedUserEmailMessage);
+			}
+			
 			if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() == null) {
 
 				notificationSettings.setFlowInstanceArchivedUserEmailMessage(flowInstanceArchivedUserEmailMessage);
@@ -764,6 +814,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				notificationSettings.setFlowInstanceSubmittedUserEmailSubject(flowInstanceSubmittedUserEmailSubject);
 			}
 
+			if (notificationSettings.getExternalMessageReceivedManagerSubject() == null) {
+
+				notificationSettings.setExternalMessageReceivedManagerSubject(externalMessageReceivedManagerEmailSubject);
+			}
+
+			if (notificationSettings.getExternalMessageReceivedManagerMessage() == null) {
+
+				notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
+			}
+			
 			if (notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject() == null) {
 
 				notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
@@ -779,6 +839,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		notificationSettings = new FlowFamililyNotificationSettings();
 
+		
+		notificationSettings.setStatusChangedUserEmailSubject(statusChangedUserEmailSubject);
+		notificationSettings.setStatusChangedUserEmailMessage(statusChangedUserEmailMessage);
+		notificationSettings.setExternalMessageReceivedUserEmailSubject(externalMessageReceivedUserEmailSubject);
+		notificationSettings.setExternalMessageReceivedUserEmailMessage(externalMessageReceivedUserEmailMessage);
+		
+		
 		notificationSettings.setSendFlowInstanceArchivedUserEmail(sendFlowInstanceArchivedUserEmail);
 		notificationSettings.setSendFlowInstanceArchivedUserSMS(sendFlowInstanceArchivedUserSMS);
 		notificationSettings.setFlowInstanceArchivedUserEmailMessage(flowInstanceArchivedUserEmailMessage);
@@ -796,6 +863,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setSendExternalMessageReceivedUserEmail(sendExternalMessageReceivedUserEmail);
 		notificationSettings.setSendExternalMessageReceivedUserSMS(sendExternalMessageReceivedUserSMS);
 
+		notificationSettings.setExternalMessageReceivedManagerSubject(externalMessageReceivedManagerEmailSubject);
+		notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
+		
 		notificationSettings.setSendFlowInstanceAssignedManagerEmail(sendFlowInstanceAssignedManagerEmail);
 
 		notificationSettings.setSendStatusChangedManagerEmail(sendStatusChangedManagerEmail);
@@ -823,179 +893,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		doc.appendChild(document);
 
 		return doc;
-	}
-
-	public boolean equalsDefaultValues(FlowFamililyNotificationSettings other) {
-
-		if (flowInstanceArchivedUserEmailMessage == null) {
-
-			if (other.getFlowInstanceArchivedUserEmailMessage() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceArchivedUserEmailMessage.equals(other.getFlowInstanceArchivedUserEmailMessage())) {
-
-			return false;
-		}
-
-		if (flowInstanceArchivedNotLoggedInUserEmailMessage == null) {
-
-			if (other.getFlowInstanceArchivedNotLoggedInUserEmailMessage() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceArchivedNotLoggedInUserEmailMessage.equals(other.getFlowInstanceArchivedNotLoggedInUserEmailMessage())) {
-
-			return false;
-		}
-
-		if (flowInstanceArchivedUserEmailSubject == null) {
-
-			if (other.getFlowInstanceArchivedUserEmailSubject() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceArchivedUserEmailSubject.equals(other.getFlowInstanceArchivedUserEmailSubject())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedGlobalEmailAddress == null) {
-
-			if (other.getFlowInstanceSubmittedGlobalEmailAddresses() != null) {
-
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedGlobalEmailAddress.equals(other.getFlowInstanceSubmittedGlobalEmailAddresses())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedUserEmailMessage == null) {
-
-			if (other.getFlowInstanceSubmittedUserEmailMessage() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedUserEmailMessage.equals(other.getFlowInstanceSubmittedUserEmailMessage())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedNotLoggedInUserEmailMessage == null) {
-
-			if (other.getFlowInstanceSubmittedNotLoggedInUserEmailMessage() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedNotLoggedInUserEmailMessage.equals(other.getFlowInstanceSubmittedNotLoggedInUserEmailMessage())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedUserEmailSubject == null) {
-
-			if (other.getFlowInstanceSubmittedUserEmailSubject() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedUserEmailSubject.equals(other.getFlowInstanceSubmittedUserEmailSubject())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedGlobalEmailMessage == null) {
-
-			if (other.getFlowInstanceSubmittedGlobalEmailMessage() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedGlobalEmailMessage.equals(other.getFlowInstanceSubmittedGlobalEmailMessage())) {
-
-			return false;
-		}
-
-		if (flowInstanceSubmittedGlobalEmailSubject == null) {
-
-			if (other.getFlowInstanceSubmittedGlobalEmailSubject() != null) {
-				return false;
-			}
-
-		} else if (!flowInstanceSubmittedGlobalEmailSubject.equals(other.getFlowInstanceSubmittedGlobalEmailSubject())) {
-
-			return false;
-		}
-
-		if (sendExternalMessageReceivedManagerEmail != other.isSendExternalMessageReceivedManagerEmail()) {
-			return false;
-		}
-
-		if (sendExternalMessageReceivedUserEmail != other.isSendExternalMessageReceivedUserEmail()) {
-			return false;
-		}
-
-		if (sendExternalMessageReceivedUserSMS != other.isSendExternalMessageReceivedUserSMS()) {
-			return false;
-		}
-
-		if (sendFlowInstanceArchivedUserEmail != other.isSendFlowInstanceArchivedUserEmail()) {
-			return false;
-		}
-
-		if (sendFlowInstanceArchivedUserSMS != other.isSendFlowInstanceArchivedUserSMS()) {
-			return false;
-		}
-
-		if (sendFlowInstanceAssignedManagerEmail != other.isSendFlowInstanceAssignedManagerEmail()) {
-			return false;
-		}
-
-		if (sendFlowInstanceSubmittedManagerEmail != other.isSendFlowInstanceSubmittedManagerEmail()) {
-			return false;
-		}
-
-		if (sendFlowInstanceSubmittedUserEmail != other.isSendFlowInstanceSubmittedUserEmail()) {
-			return false;
-		}
-
-		if (flowInstanceSubmittedUserEmailAttachPDF != other.isFlowInstanceSubmittedUserEmailAttachPDF()) {
-			return false;
-		}
-
-		if (sendFlowInstanceSubmittedUserSMS != other.isSendFlowInstanceSubmittedUserSMS()) {
-			return false;
-		}
-
-		if (sendStatusChangedManagerEmail != other.isSendStatusChangedManagerEmail()) {
-			return false;
-		}
-
-		if (sendStatusChangedUserEmail != other.isSendStatusChangedUserEmail()) {
-			return false;
-		}
-
-		if (sendStatusChangedUserSMS != other.isSendStatusChangedUserSMS()) {
-			return false;
-		}
-
-		if (sendFlowInstanceSubmittedGlobalEmail != other.isSendFlowInstanceSubmittedGlobalEmail()) {
-			return false;
-		}
-
-		if (flowInstanceSubmittedGlobalEmailAttachPDF != other.isFlowInstanceSubmittedGlobalEmailAttachPDF()) {
-			return false;
-		}
-
-		if (flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately != other.isFlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately()) {
-			return false;
-		}
-
-		if (sendExternalMessageReceivedGlobalEmail != other.isSendExternalMessageReceivedGlobalEmail()) {
-			return false;
-		}
-
-		return true;
 	}
 
 	@WebPublic(alias = "globalmailsubmit")
@@ -1452,7 +1349,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						if (notificationSettings.isSendExternalMessageReceivedUserEmail()) {
 
-							sendContactEmail(flowInstance, contact, externalMessageReceivedUserEmailSubject, externalMessageReceivedUserEmailMessage, null);
+							sendContactEmail(flowInstance, contact, notificationSettings.getExternalMessageReceivedUserEmailSubject(), notificationSettings.getExternalMessageReceivedUserEmailMessage(), null);
 						}
 
 						if (notificationSettings.isSendExternalMessageReceivedUserSMS()) {
@@ -1471,7 +1368,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				if (notificationSettings.isSendExternalMessageReceivedManagerEmail()) {
 
-					sendManagerEmails(flowInstance, contact, externalMessageReceivedManagerEmailSubject, externalMessageReceivedManagerEmailMessage, null, false);
+					sendManagerEmails(flowInstance, contact, notificationSettings.getExternalMessageReceivedManagerSubject(), notificationSettings.getExternalMessageReceivedManagerMessage(), null, false);
 				}
 
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
@@ -1525,7 +1422,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						if (notificationSettings.isSendStatusChangedUserEmail()) {
 
-							sendContactEmail(event.getFlowInstance(), contact, statusChangedUserEmailSubject, statusChangedUserEmailMessage, null);
+							sendContactEmail(event.getFlowInstance(), contact, notificationSettings.getStatusChangedUserEmailSubject(), notificationSettings.getStatusChangedUserEmailMessage(), null);
 						}
 
 						if (notificationSettings.isSendStatusChangedUserSMS()) {
@@ -1565,7 +1462,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			sendManagerEmails(event.getFlowInstance(), getPosterContact(event.getFlowInstance(), event.getSiteProfile()), flowInstanceAssignedManagerEmailSubject, flowInstanceAssignedManagerEmailMessage, excludedManagers, false);
 		}
 	}
-	
+
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
 
@@ -1582,7 +1479,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
-	
+
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException {
 
@@ -1599,7 +1496,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
-	
+
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagerMentionedEvent event, EventSource eventSource) throws SQLException {
 
@@ -2065,11 +1962,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowInstanceDAO.get(query);
 	}
-	
+
 	public Contact getContactForUser(User user) {
 
 		if (user != null) {
-			
+
 			Contact contact = new Contact();
 
 			contact.setFirstname(user.getFirstname());
@@ -2090,13 +1987,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-			
+
 			if (attributeHandler.isSet("contactByEmail")) {
-				
+
 				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-				
+
 			} else {
-				
+
 				contact.setContactByEmail(true);
 			}
 
@@ -2105,7 +2002,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return null;
 	}
-	
+
 	private Contact getContactFromFlowInstanceAttributes(AttributeHandler attributeHandler) {
 
 		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
@@ -2124,13 +2021,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
 			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-			
+
 			if (attributeHandler.isSet("contactByEmail")) {
-				
+
 				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-				
+
 			} else {
-				
+
 				contact.setContactByEmail(true);
 			}
 
@@ -2143,24 +2040,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
 
 		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-		
+
 		if (flowInstanceContact != null) {
-			
+
 			return flowInstanceContact;
 		}
-		
+
 		ImmutableFlowInstanceEvent latestSubmitEvent = FlowInstanceUtils.getLatestSubmitEvent(flowInstance);
-		
-		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null){
-			
+
+		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null) {
+
 			Contact posterContact = getContactForUser(latestSubmitEvent.getPoster());
-			
+
 			if (posterContact != null) {
-				
+
 				return posterContact;
 			}
 		}
-		
+
 		return getContactForUser(flowInstance.getPoster());
 	}
 
@@ -2169,9 +2066,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		List<Contact> contacts = new ArrayList<Contact>(2);
 
 		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-		
+
 		if (flowInstanceContact != null) {
-			
+
 			contacts.add(flowInstanceContact);
 		}
 
@@ -2293,18 +2190,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	public String getEmailSenderAddress() {
-		
+
 		return emailSenderAddress;
 	}
-	
+
 	public String getSmsSenderName(ImmutableFlowInstance flowInstance) {
 
 		return smsSenderName;
-	}
-
-	public String getStatusChangedUserEmailSubject() {
-
-		return statusChangedUserEmailSubject;
 	}
 
 	public String getUserFlowInstanceModuleAlias(ImmutableFlowInstance flowInstance) {
@@ -2391,14 +2283,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return flowInstanceSubmittedManagerEmailMessage;
 	}
 
-	public String getStatusChangedUserEmailMessage() {
-
-		return statusChangedUserEmailMessage;
-	}
-
 	public String getStatusChangedUserSMS() {
 
 		return statusChangedUserSMS;
 	}
-
 }
