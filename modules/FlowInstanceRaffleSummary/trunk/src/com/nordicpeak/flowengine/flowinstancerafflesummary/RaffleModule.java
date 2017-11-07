@@ -486,7 +486,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 											
 											if (contact.getEmail() != null && notificationSettings.isSendStatusChangedUserEmail()) {
 												
-												sendContactEmail(round, flowInstance, contact, standardFlowNotificationHandler.getStatusChangedUserEmailSubject(), round.getDecisionEmailMessage());
+												sendContactEmail(round, flowInstance, contact, notificationSettings.getStatusChangedUserEmailSubject(), round.getDecisionEmailMessage());
 											}
 										}
 									}
