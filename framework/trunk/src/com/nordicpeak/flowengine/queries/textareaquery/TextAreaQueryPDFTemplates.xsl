@@ -42,9 +42,13 @@
 
 			</xsl:if>
 			
-			<xsl:call-template name="replaceLineBreaksWithParagraph">
-				<xsl:with-param name="string" select="TextAreaQueryInstance/value"/>
-			</xsl:call-template>	
+			<div class="break-word">
+			
+				<xsl:call-template name="replaceLineBreaksWithParagraph">
+					<xsl:with-param name="string" select="TextAreaQueryInstance/value"/>
+				</xsl:call-template>
+				
+			</div>
 					
 		</div>
 		
