@@ -192,6 +192,7 @@
 	<xsl:variable name="i18n.addFlowForm.link.title">Lägg till blankett</xsl:variable>
 	<xsl:variable name="i18n.updateFlowForm.link.title">Uppdatera blankett</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowForm.link.title">Ta bort blankett</xsl:variable>
+	<xsl:variable name="i18n.deleteFlowForm.confirm">Ta bort blankett</xsl:variable>
 	<xsl:variable name="i18n.AddFlowForm.title">Uppdatera blankett för e-tjänsten:</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowForm.title">Uppdatera blankett för e-tjänsten:</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowForm.description">Välj antigen en PDF fil att ladda upp eller länka till en extern PDF</xsl:variable>

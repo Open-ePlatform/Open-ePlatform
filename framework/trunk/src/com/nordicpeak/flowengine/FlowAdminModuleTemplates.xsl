@@ -1297,6 +1297,20 @@
 	
 		<div class="full">
 		
+			<xsl:variable name="name">
+				<xsl:choose>
+					<xsl:when test="name">
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="name"/>
+					</xsl:when>
+					<xsl:when test="count(../FlowForm) = 1"></xsl:when>
+					<xsl:otherwise>
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="position()"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+		
 			<xsl:choose>
 				<xsl:when test="externalURL">
 
@@ -1307,17 +1321,7 @@
 						<xsl:text>(</xsl:text>
 						<xsl:value-of select="$i18n.link" />
 						<xsl:text>)</xsl:text>
-						<xsl:choose>
-							<xsl:when test="name">
-								<xsl:text>:&#160;</xsl:text>
-								<xsl:value-of select="name"/>
-							</xsl:when>
-							<xsl:when test="count(../FlowForm) = 1"></xsl:when>
-							<xsl:otherwise>
-								<xsl:text>:&#160;</xsl:text>
-								<xsl:value-of select="position()"/>
-							</xsl:otherwise>
-						</xsl:choose>
+						<xsl:value-of select="$name"/>
 					</a>
 
 				</xsl:when>
@@ -1333,17 +1337,7 @@
 							<xsl:value-of select="')'" />
 						</xsl:if>
 						
-						<xsl:choose>
-							<xsl:when test="name">
-								<xsl:text>:&#160;</xsl:text>
-								<xsl:value-of select="name"/>
-							</xsl:when>
-							<xsl:when test="count(../FlowForm) = 1"></xsl:when>
-							<xsl:otherwise>
-								<xsl:text>:&#160;</xsl:text>
-								<xsl:value-of select="position()"/>
-							</xsl:otherwise>
-						</xsl:choose>
+						<xsl:value-of select="$name"/>
 					</a>
 
 				</xsl:otherwise>
@@ -1355,7 +1349,7 @@
 					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>
 				
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}: {$name}" onclick="return confirm('{$i18n.deleteFlowForm.confirm}: {$name}?');" >
 				
 					<xsl:if test="../../MayNotRemoveFlowFormIfNoSteps">
 						<xsl:attribute name="onclick">alert('<xsl:value-of select="$i18n.MayNotRemoveFlowFormIfNoSteps"/>'); return false;</xsl:attribute>
