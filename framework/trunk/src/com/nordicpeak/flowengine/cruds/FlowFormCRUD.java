@@ -85,21 +85,6 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 	}
 	
 	@Override
-	protected void checkAddAccess(User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
-		
-		Flow flow = callback.getRequestedFlow(req, user, uriParser);
-		
-		if (flow == null) {
-			
-			throw new URINotFoundException(uriParser);
-		}
-		
-		checkFlowTypeAccess(user, flow.getFlowType());
-		
-		req.setAttribute("flow", flow);
-	}
-	
-	@Override
 	protected void checkUpdateAccess(FlowForm flowForm, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 		
 		checkFlowTypeAccess(user, flowForm.getFlow().getFlowType());
@@ -116,7 +101,7 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		}
 	}
 	
-	private void checkFlowTypeAccess(User user, FlowType flowType) throws AccessDeniedException {
+	public void checkFlowTypeAccess(User user, FlowType flowType) throws AccessDeniedException {
 		
 		if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
 			

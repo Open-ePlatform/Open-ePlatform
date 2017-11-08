@@ -1887,7 +1887,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
-
+		
+		Flow flow = getRequestedFlow(req, user, uriParser);
+		
+		if (flow == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		flowFormCRUD.checkFlowTypeAccess(user, flow.getFlowType());
+		
+		req.setAttribute("flow", flow);
+		
 		return flowFormCRUD.add(req, res, user, uriParser);
 	}
 
