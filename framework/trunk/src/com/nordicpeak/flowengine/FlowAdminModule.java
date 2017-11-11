@@ -368,10 +368,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
 	
-//	@ModuleSetting(allowsNull = true)
-//	@GroupMultiListSettingDescriptor(name = "Manager groups", description = "Groups with users that are allowed to be set as managers")
-//	protected List<Integer> managerGroupIDs;
-
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
 	protected boolean requireManagers = false;
@@ -498,6 +494,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		this.userGroupListConnector = new UserGroupListConnector(systemInterface);
 
+		this.userGroupListConnector.setUserGroupFilter((List<Integer>) moduleDescriptor.getAllowedGroupIDs());
+		
 		if (!systemInterface.getInstanceHandler().addInstance(FlowAdminModule.class, this)) {
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
@@ -630,7 +628,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			log.error("Module " + this.moduleDescriptor + " has no/invalid PDF form filestore set, check modulesettings");
 		}
-
+		
+		if(this.userGroupListConnector != null){
+			
+			this.userGroupListConnector.setUserGroupFilter((List<Integer>) moduleDescriptor.getAllowedGroupIDs());
+		}
 	}
 
 	protected synchronized void cacheFlowTypes() throws SQLException {
