@@ -42,15 +42,6 @@
 				</div>			
 			</xsl:if>
 	
-			<xsl:choose>
-				<xsl:when test="StopQueryInstance/StopQuery/displayValidationError = 'true'">
-				
-				</xsl:when>
-				<xsl:otherwise>
-				
-				</xsl:otherwise>
-			</xsl:choose>
-	
 			<article class="stopquery">
 			
 				<xsl:attribute name="class">
