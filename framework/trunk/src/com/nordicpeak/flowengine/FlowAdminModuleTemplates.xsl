@@ -4270,7 +4270,7 @@
 					<xsl:value-of select="/Document/requestinfo/currentURI"/>
 					<xsl:text>/</xsl:text>
 					<xsl:value-of select="/Document/module/alias"/>
-					<xsl:text>/groups</xsl:text>
+					<xsl:text>/allgroups</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'group'"/>
 				<xsl:with-param name="groups" select="AllowedGroups" />
@@ -4285,7 +4285,7 @@
 					<xsl:value-of select="/Document/requestinfo/currentURI"/>
 					<xsl:text>/</xsl:text>
 					<xsl:value-of select="/Document/module/alias"/>
-					<xsl:text>/users</xsl:text>
+					<xsl:text>/allusers</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'user'"/>
 				<xsl:with-param name="users" select="AllowedUsers" />

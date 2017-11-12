@@ -477,6 +477,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private HashMap<Integer, FlowFamily> flowFamilyCacheMap;
 
 	protected UserGroupListConnector userGroupListConnector;
+	
+	protected UserGroupListConnector unrestrcitedUserGroupListConnector;
 
 	protected CopyOnWriteArrayList<PDFRequestFilter> pdfRequestFilters = new CopyOnWriteArrayList<PDFRequestFilter>();
 
@@ -495,6 +497,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		this.userGroupListConnector = new UserGroupListConnector(systemInterface);
 
 		this.userGroupListConnector.setUserGroupFilter((List<Integer>) moduleDescriptor.getAllowedGroupIDs());
+		
+		this.unrestrcitedUserGroupListConnector = new UserGroupListConnector(systemInterface);
 		
 		if (!systemInterface.getInstanceHandler().addInstance(FlowAdminModule.class, this)) {
 
@@ -3946,6 +3950,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return userGroupListConnector.getGroups(req, res, user, uriParser);
 	}
 
+	@WebPublic(alias = "allusers")
+	public ForegroundModuleResponse getAllUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		return unrestrcitedUserGroupListConnector.getUsers(req, res, user, uriParser);
+	}
+
+	@WebPublic(alias = "allgroups")
+	public ForegroundModuleResponse getAllGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		return unrestrcitedUserGroupListConnector.getGroups(req, res, user, uriParser);
+	}	
+	
 	public FlowNotificationHandler getNotificationHandler() {
 
 		return notificationHandler;
