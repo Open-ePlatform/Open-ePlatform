@@ -368,6 +368,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
 	
+	@ModuleSetting(allowsNull = true)
+	@GroupMultiListSettingDescriptor(name = "Manager groups", description = "Groups with users that are allowed to be set as managers")
+	protected List<Integer> managerGroupIDs;
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
 	protected boolean requireManagers = false;
@@ -496,7 +500,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		this.userGroupListConnector = new UserGroupListConnector(systemInterface);
 
-		this.userGroupListConnector.setUserGroupFilter((List<Integer>) moduleDescriptor.getAllowedGroupIDs());
+		this.userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		
 		this.unrestrcitedUserGroupListConnector = new UserGroupListConnector(systemInterface);
 		
@@ -635,7 +639,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		if(this.userGroupListConnector != null){
 			
-			this.userGroupListConnector.setUserGroupFilter((List<Integer>) moduleDescriptor.getAllowedGroupIDs());
+			this.userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		}
 	}
 
@@ -3030,6 +3034,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		XMLGeneratorDocument xmlGeneratorDocument = new XMLGeneratorDocument(doc);
 
+		//TODO exclude flowtype
+		//TODO exclude config url
+		
 		xmlGeneratorDocument.addElementableListener(QueryDescriptor.class, new QueryDescriptorElementableListener(queryHandler, validationErrors));
 		xmlGeneratorDocument.addElementableListener(EvaluatorDescriptor.class, new EvaluatorDescriptorElementableListener(evaluationHandler, validationErrors));
 		xmlGeneratorDocument.addElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
