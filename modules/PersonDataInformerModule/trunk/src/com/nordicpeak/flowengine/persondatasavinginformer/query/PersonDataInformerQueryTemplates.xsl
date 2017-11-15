@@ -9,7 +9,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/persondatainformerquery.js
+		/js/persondataquery.js
 	</xsl:variable>
 
 	<xsl:template match="Document">	
