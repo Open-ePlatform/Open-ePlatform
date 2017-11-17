@@ -438,63 +438,66 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 					
 					if (validationErrors.isEmpty()) {
 						
-						List<Integer> freeNumbers = new ArrayList<Integer>();
-						
-						for (int i = 0; i < flowInstances.size(); i++) {
+						if (!CollectionUtils.isEmpty(flowInstances)) {
 							
-							freeNumbers.add(i + 1);
-						}
-						
-						for (FlowInstance flowInstance : flowInstances) {
+							List<Integer> freeNumbers = new ArrayList<Integer>();
 							
-							int number = freeNumbers.remove((int) (Math.random() * freeNumbers.size()));
-							flowInstance.getAttributeHandler().setAttribute(numberAttribute, number);
-						}
-						
-						HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.ATTRIBUTES_RELATION);
-						
-						flowInstanceDAO.update(flowInstances, query);
-						
-						Timestamp now = TimeUtils.getCurrentTimestamp();
-						
-						for (FlowInstance flowInstance : flowInstances) {
-							
-							boolean sendCustomNotification = (flowInstance.getPoster() != null || !CollectionUtils.isEmpty(flowInstance.getOwners())) && round.isOverrideStatusChangedNotification();
-							
-							FlowInstanceEvent flowInstanceStatusEvent = flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user, now);
-							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceStatusEvent, getCurrentSiteProfile(req, user, uriParser), oldStatusMap.get(flowInstance), user, sendCustomNotification), EventTarget.ALL);
-							
-							String details = numberAssignedMessage.replace("$number", flowInstance.getAttributeHandler().getString(numberAttribute));
-							flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, details, user, now);
-							
-							if (sendCustomNotification) {
+							for (int i = 0; i < flowInstances.size(); i++) {
 								
-								FlowFamililyNotificationSettings notificationSettings = standardFlowNotificationHandler.getNotificationSettings(flowInstance.getFlow());
+								freeNumbers.add(i + 1);
+							}
+							
+							for (FlowInstance flowInstance : flowInstances) {
 								
-								if (notificationSettings.isSendStatusChangedUserEmail() || notificationSettings.isSendStatusChangedUserSMS()) {
+								int number = freeNumbers.remove((int) (Math.random() * freeNumbers.size()));
+								flowInstance.getAttributeHandler().setAttribute(numberAttribute, number);
+							}
+							
+							HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.ATTRIBUTES_RELATION);
+							
+							flowInstanceDAO.update(flowInstances, query);
+							
+							Timestamp now = TimeUtils.getCurrentTimestamp();
+							
+							for (FlowInstance flowInstance : flowInstances) {
+								
+								boolean sendCustomNotification = (flowInstance.getPoster() != null || !CollectionUtils.isEmpty(flowInstance.getOwners())) && round.isOverrideStatusChangedNotification();
+								
+								FlowInstanceEvent flowInstanceStatusEvent = flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user, now);
+								systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceStatusEvent, getCurrentSiteProfile(req, user, uriParser), oldStatusMap.get(flowInstance), user, sendCustomNotification), EventTarget.ALL);
+								
+								String details = numberAssignedMessage.replace("$number", flowInstance.getAttributeHandler().getString(numberAttribute));
+								flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, details, user, now);
+								
+								if (sendCustomNotification) {
 									
-									Collection<Contact> contacts = standardFlowNotificationHandler.getContactsFromDB(flowInstance);
+									FlowFamililyNotificationSettings notificationSettings = standardFlowNotificationHandler.getNotificationSettings(flowInstance.getFlow());
 									
-									if (contacts != null) {
+									if (notificationSettings.isSendStatusChangedUserEmail() || notificationSettings.isSendStatusChangedUserSMS()) {
 										
-										for (Contact contact : contacts) {
+										Collection<Contact> contacts = standardFlowNotificationHandler.getContactsFromDB(flowInstance);
+										
+										if (contacts != null) {
 											
-											if (contact.getMobilePhone() != null && notificationSettings.isSendStatusChangedUserSMS()) {
+											for (Contact contact : contacts) {
 												
-												sendContactSMS(round, flowInstance, contact, round.getDecisionSMSMessage());
-											}
-											
-											if (contact.getEmail() != null && notificationSettings.isSendStatusChangedUserEmail()) {
+												if (contact.getMobilePhone() != null && notificationSettings.isSendStatusChangedUserSMS()) {
+													
+													sendContactSMS(round, flowInstance, contact, round.getDecisionSMSMessage());
+												}
 												
-												sendContactEmail(round, flowInstance, contact, notificationSettings.getStatusChangedUserEmailSubject(), round.getDecisionEmailMessage());
+												if (contact.getEmail() != null && notificationSettings.isSendStatusChangedUserEmail()) {
+													
+													sendContactEmail(round, flowInstance, contact, notificationSettings.getStatusChangedUserEmailSubject(), round.getDecisionEmailMessage());
+												}
 											}
 										}
 									}
 								}
 							}
+							
+							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(FlowInstance.class, CRUDAction.UPDATE, flowInstances), EventTarget.ALL);
 						}
-						
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(FlowInstance.class, CRUDAction.UPDATE, flowInstances), EventTarget.ALL);
 						
 					} else {
 						
