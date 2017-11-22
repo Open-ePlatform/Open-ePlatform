@@ -1703,4 +1703,42 @@
 	    </Query>
 	</Script>
 	
+	<Script version="88">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses`
+					ADD COLUMN `requireSigning` TINYINT(1) NOT NULL AFTER `isAdminDeletable`,
+					ADD COLUMN `useAccessCheck` TINYINT(1) NOT NULL AFTER `requireSigning`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_statuses_manager_groups` (
+				  `statusID` INTEGER UNSIGNED NOT NULL,
+				  `groupID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`statusID`, `groupID`),
+				  CONSTRAINT `FK_flowengine_flow_statuses_manager_groups_1` FOREIGN KEY `FK_flowengine_flow_statuses_manager_groups_1` (`statusID`)
+				    REFERENCES `flowengine_flow_statuses` (`statusID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_statuses_manager_users` (
+				  `statusID` INTEGER UNSIGNED NOT NULL,
+				  `userID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`statusID`, `userID`),
+				  CONSTRAINT `FK_flowengine_flow_statuses_manager_users_1` FOREIGN KEY `FK_flowengine_flow_statuses_manager_users_1` (`statusID`)
+				    REFERENCES `flowengine_flow_statuses` (`statusID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
