@@ -198,6 +198,12 @@ $(document).ready(function() {
 		}
     });
 	
+	$("#useAccessCheck").change(function(e) {
+		
+		var checked = $(useAccessCheck).prop("checked");
+		
+		$("#allowedManagers").toggle(checked).find("input").not(".usergroup-list input").prop("disabled", !checked);
+	}).trigger("change");
 });
 
 function updateSortOrder(obj) {
