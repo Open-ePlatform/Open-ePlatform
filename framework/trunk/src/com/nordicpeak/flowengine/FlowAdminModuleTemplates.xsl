@@ -2873,6 +2873,76 @@
 				</label>				
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'requireSigning'" />
+					<xsl:with-param name="id" select="'requireSigning'" />
+					<xsl:with-param name="element" select="Status" />  					     
+				</xsl:call-template>
+				
+				<label for="requireSigning">
+					<xsl:value-of select="$i18n.Status.requireSigning" />
+				</label>				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'useAccessCheck'" />
+					<xsl:with-param name="id" select="'useAccessCheck'" />
+					<xsl:with-param name="element" select="Status" />  					     
+				</xsl:call-template>
+				
+				<label for="useAccessCheck">
+					<xsl:value-of select="$i18n.Status.useAccessCheck" />
+				</label>				
+			</div>
+		</div>
+		
+		<div id="allowedManagers">
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.allowedGroups" />
+				</label>
+								
+				<xsl:call-template name="GroupList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/groups</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'group'"/>
+					<xsl:with-param name="groups" select="ManagerGroups" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.allowedUsers" />
+				</label>
+				
+				<xsl:call-template name="UserList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/managerusers/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'user'"/>
+					<xsl:with-param name="users" select="ManagerUsers" />
+				</xsl:call-template>
+			</div>
+		</div>
 	
 		<h2><xsl:value-of select="$i18n.statusContentType.title"/></h2>
 		
@@ -2999,7 +3069,7 @@
 			<xsl:apply-templates select="FlowActions/FlowAction" mode="statusForm"/>
 		
 		</xsl:if>
-	
+		
 	</xsl:template>
 	
 	<xsl:template match="FlowAction" mode="statusForm">
@@ -4460,7 +4530,7 @@
 					<xsl:with-param name="name" select="'user'"/>
 					<xsl:with-param name="users" select="ManagerUsers" />
 				</xsl:call-template>
-			</div>		
+			</div>
 		
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateManagers.submit}" />
@@ -5287,6 +5357,14 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"/>
+		</p>
+	
+	</xsl:template>		
+	
 	<xsl:template match="validationError[messageKey='FlowFamilyAliasCollision']">
 			
 		<p class="error">
@@ -5345,6 +5423,19 @@
 			</xsl:if>
 			
 			<xsl:value-of select="$i18n.UnauthorizedManagerUserError.Part2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/firstname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/lastname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
 		</p>
 	</xsl:template>
 	

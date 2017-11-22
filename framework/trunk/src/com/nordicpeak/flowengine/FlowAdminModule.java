@@ -218,6 +218,7 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
@@ -481,8 +482,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private HashMap<Integer, FlowFamily> flowFamilyCacheMap;
 
 	protected UserGroupListConnector userGroupListConnector;
-	
-	protected UserGroupListConnector unrestrcitedUserGroupListConnector;
+	protected UserGroupListConnector unrestrictedUserGroupListConnector;
+	protected UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
 
 	protected CopyOnWriteArrayList<PDFRequestFilter> pdfRequestFilters = new CopyOnWriteArrayList<PDFRequestFilter>();
 
@@ -498,11 +499,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
-		this.userGroupListConnector = new UserGroupListConnector(systemInterface);
-
-		this.userGroupListConnector.setUserGroupFilter(managerGroupIDs);
+		userGroupListConnector = new UserGroupListConnector(systemInterface);
+		userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		
-		this.unrestrcitedUserGroupListConnector = new UserGroupListConnector(systemInterface);
+		unrestrictedUserGroupListConnector = new UserGroupListConnector(systemInterface);
+		
+		userGroupListFlowManagersConnector = new UserGroupListFlowManagersConnector(systemInterface, this);
 		
 		if (!systemInterface.getInstanceHandler().addInstance(FlowAdminModule.class, this)) {
 
@@ -584,9 +586,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		stepCRUD = new StepCRUD(stepDAOWrapper, this);
 		stepCRUD.addRequestFilter(new TransactionRequestFilter(dataSource));
 
-		AnnotatedDAOWrapper<Status, Integer> statusDAOWrapper = daoFactory.getStatusDAO().getWrapper("statusID", Integer.class);
-		statusDAOWrapper.addRelations(Status.DEFAULT_STATUS_MAPPINGS_RELATION, Status.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION);
-		statusDAOWrapper.setUseRelationsOnGet(true);
+		AdvancedAnnotatedDAOWrapper<Status, Integer> statusDAOWrapper = daoFactory.getStatusDAO().getAdvancedWrapper("statusID", Integer.class);
+		statusDAOWrapper.getGetQuery().addRelations(Status.DEFAULT_STATUS_MAPPINGS_RELATION, Status.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
+		statusDAOWrapper.getAddQuery().addRelations(Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
+		statusDAOWrapper.getUpdateQuery().addRelations(Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
 
 		statusCRUD = new StatusCRUD(statusDAOWrapper, this);
 
@@ -3960,14 +3963,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@WebPublic(alias = "allusers")
 	public ForegroundModuleResponse getAllUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
-		return unrestrcitedUserGroupListConnector.getUsers(req, res, user, uriParser);
+		return unrestrictedUserGroupListConnector.getUsers(req, res, user, uriParser);
 	}
 
 	@WebPublic(alias = "allgroups")
 	public ForegroundModuleResponse getAllGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
-		return unrestrcitedUserGroupListConnector.getGroups(req, res, user, uriParser);
-	}	
+		return unrestrictedUserGroupListConnector.getGroups(req, res, user, uriParser);
+	}
+	
+	@WebPublic(alias = "managerusers")
+	public ForegroundModuleResponse getManagerUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		return userGroupListFlowManagersConnector.getUsers(req, res, user, uriParser);
+	}
 	
 	public FlowNotificationHandler getNotificationHandler() {
 

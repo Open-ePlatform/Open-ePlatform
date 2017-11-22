@@ -42,6 +42,7 @@
 			<xsl:apply-templates select="UpdateInstanceStatus"/>
 			<xsl:apply-templates select="UpdateInstanceManagers"/>
 			<xsl:apply-templates select="SigningForm"/>
+			<xsl:apply-templates select="UpdateStatusSigning"/>
 		</div>
 		
 	</xsl:template>
@@ -1483,9 +1484,18 @@
 					<xsl:attribute name="checked"/>
 				</xsl:if>
 				
+				<xsl:if test="noAccess">
+					<xsl:attribute name="disabled">disabled</xsl:attribute>
+				</xsl:if>
+				
 			</input>
 				
 			<label class="radio" for="status_{statusID}">
+			
+				<xsl:if test="noAccess">
+					<xsl:attribute name="class">radio disabled</xsl:attribute>
+				</xsl:if>
+			
 				<xsl:value-of select="name"/>
 			</label>
 		</div>
@@ -1797,6 +1807,30 @@
 			
 			</a>
 		</li>
+	
+	</xsl:template>
+	
+	<xsl:template match="UpdateStatusSigning">
+	
+		<section class="service">
+
+			<form id="paymentForm" method="POST" action="{/Document/ModuleURL}/processsignstatus/{FlowInstance/flowInstanceID}/{Status/statusID}">
+
+				<div class="section-full push">
+
+					<h2 class="h1 hide-tablet">
+						<xsl:text>Signera ändring av status på ärende </xsl:text>
+						<xsl:value-of select="FlowInstance/flowInstanceID"/>
+						<xsl:text> till </xsl:text>
+						<xsl:value-of select="Status/name"/>
+					</h2>
+
+					<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
+				</div>
+
+			</form>
+
+		</section>
 	
 	</xsl:template>
 	

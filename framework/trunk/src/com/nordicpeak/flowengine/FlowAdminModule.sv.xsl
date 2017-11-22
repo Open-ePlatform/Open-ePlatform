@@ -157,6 +157,11 @@
 	<xsl:variable name="i18n.managingTime">Handläggningstid</xsl:variable>
 	<xsl:variable name="i18n.required">obligatorisk</xsl:variable>
 	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
+	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
+	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.2">är inte handläggare för den här e-tjänsten!</xsl:variable>
 	
 	<xsl:variable name="i18n.deleteStatusDisabledHasInstances">Den här statusen kan inte tas bort eftersom det finns en eller flera ansökningar kopplade till den.</xsl:variable>
 	<xsl:variable name="i18n.updateStatus.link.title">Uppdatera statusen</xsl:variable>
