@@ -13,6 +13,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 public class ExternalMessageAttachment extends BaseAttachment {
 
 	public static final Field DATA_FIELD = ReflectionUtils.getField(ExternalMessageAttachment.class, "data");
+	public static final Field MESSAGE_RELATION = ReflectionUtils.getField(ExternalMessageAttachment.class, "message");
 	
 	@DAOManaged(columnName = "messageID")
 	@ManyToOne
