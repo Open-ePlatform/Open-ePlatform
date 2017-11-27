@@ -33,6 +33,7 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.validationerrors.FileCountExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.FileNameLengthLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToSaveFileValidationError;
@@ -547,6 +548,14 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					continue;
 				}
 
+				//Validate file name length
+				if (queryInstance.getQuery().getMaxFileNameLength() != null && fileItem.getName().length() > queryInstance.getQuery().getMaxFileNameLength()) {
+
+					validationErrors.add(new FileNameLengthLimitExceededValidationError(FilenameUtils.getName(fileItem.getName()), fileItem.getName().length(), queryInstance.getQuery().getMaxFileNameLength()));
+
+					continue;
+				}
+				
 				//Create file descriptor
 				FileDescriptor fileDescriptor = new FileDescriptor();
 				fileDescriptor.setTemporaryFileID(queryInstance.getNextTemporaryFileID());

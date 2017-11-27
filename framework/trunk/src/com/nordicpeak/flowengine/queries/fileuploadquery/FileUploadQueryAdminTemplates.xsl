@@ -84,6 +84,22 @@
 					</xsl:call-template>
 			    </div>
 			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<label for="maxFileNameLength" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.MaxFileNameLength" />
+				</label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'maxFileNameLength'"/>
+						<xsl:with-param name="name" select="'maxFileNameLength'"/>
+						<xsl:with-param name="title" select="$i18n.MaxFileNameLength"/>
+						<xsl:with-param name="size" select="'30'"/>
+						<xsl:with-param name="value" select="MaxFileNameLength" />
+					</xsl:call-template>
+			    </div>
+			</div>
+
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />

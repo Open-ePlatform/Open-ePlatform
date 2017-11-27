@@ -88,6 +88,11 @@ public class FileUploadQueryCRUD extends BaseQueryCRUD<FileUploadQuery, FileUplo
 			XMLUtils.appendNewElement(doc, updateTypeElement, "MaxFileSizeInMB", bean.getMaxFileSize() / BinarySizes.MegaByte);
 		}
 
+		if(bean.getMaxFileNameLength() != null) {
+			XMLUtils.appendNewElement(doc, updateTypeElement, "MaxFileNameLength", bean.getMaxFileNameLength());
+		}
+		
+		
 		XMLUtils.appendNewElement(doc, updateTypeElement, "MaxAllowedFileSize", callback.getMaxAllowedFileSize());
 		
 	}

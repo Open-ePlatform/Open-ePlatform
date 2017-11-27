@@ -74,5 +74,14 @@
 	    		ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `maxFileNameLength` INT(10) UNSIGNED AFTER `attributeName`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

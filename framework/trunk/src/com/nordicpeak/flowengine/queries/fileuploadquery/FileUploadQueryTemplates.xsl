@@ -183,6 +183,14 @@
 								<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount" />
 							</span>
 						</xsl:if>
+
+						<xsl:if test="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength">
+							<span>
+								<xsl:value-of select="$i18n.MaximumFileNameLength" />
+								<xsl:text>: </xsl:text>
+								<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength" />
+							</span>
+						</xsl:if>
 						
 						<xsl:if test="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value">
 							<span>
@@ -329,6 +337,22 @@
 				<xsl:value-of select="$i18n.FileSizeLimitExceeded.part3"/>
 				<xsl:value-of select="maxFileSize"/>
 				<xsl:value-of select="$i18n.FileSizeLimitExceeded.part4"/>
+			</strong>
+		</span>
+			
+	</xsl:template>
+
+	<xsl:template match="validationError[messageKey='FileNameLengthLimitExceeded']">
+	
+		<span>
+			<strong data-icon-before="!">
+				<xsl:value-of select="$i18n.FileNameLengthLimitExceeded.part1"/>
+				<xsl:value-of select="filename"/>
+				<xsl:value-of select="$i18n.FileNameLengthLimitExceeded.part2"/>
+				<xsl:value-of select="length"/>
+				<xsl:value-of select="$i18n.FileNameLengthLimitExceeded.part3"/>
+				<xsl:value-of select="maxFileNameLength"/>
+				<xsl:value-of select="$i18n.FileNameLengthLimitExceeded.part4"/>
 			</strong>
 		</span>
 			

@@ -24,6 +24,11 @@
 	<xsl:variable name="i18n.ChooseFiles">Välj filer</xsl:variable>
 	<xsl:variable name="i18n.MaximumFileSize">Maximal filstorlek vid uppladdning</xsl:variable>
 	<xsl:variable name="i18n.MaximumFileCount">Maximalt antal filer</xsl:variable>
+	<xsl:variable name="i18n.MaximumFileNameLength">Maximalt antal tecken i filnamnet</xsl:variable>
 	<xsl:variable name="i18n.AllowedFilextentions">Tillåtna filtyper</xsl:variable>
+	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part1">Filen </xsl:variable>
+	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part2"> har ett filnamn med </xsl:variable>
+	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part3"> tecken vilket överskrider det maximalt tillåtna antalet tecken som är </xsl:variable>
+	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part4">.</xsl:variable>
 
 </xsl:stylesheet>
