@@ -138,6 +138,9 @@
 			<xsl:when test="$fieldName = 'maxFileSize'">
 				<xsl:value-of select="$i18n.maxFileSize" />
 			</xsl:when>
+			<xsl:when test="$fieldName = 'maxFileNameLength'">
+				<xsl:value-of select="$i18n.maxFileNameLength" />
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />
 			</xsl:otherwise>

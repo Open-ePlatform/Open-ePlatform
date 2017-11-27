@@ -52,6 +52,14 @@ public class FileUploadQueryCRUD extends BaseQueryCRUD<FileUploadQuery, FileUplo
 			
 		}
 		
+		if(query.getMaxFileNameLength() != null) {
+			
+			if(query.getMaxFileNameLength() > 255) {
+				
+				validationErrors.add(new ValidationError("maxFileNameLength", ValidationErrorType.TooLong));
+			}
+		}
+		
 		if(!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
