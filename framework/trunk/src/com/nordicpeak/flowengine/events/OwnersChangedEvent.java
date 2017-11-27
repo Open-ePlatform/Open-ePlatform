@@ -19,6 +19,8 @@ public class OwnersChangedEvent implements Serializable {
 	private final List<User> previousOwners;
 	private final User user;
 
+	//TODO listen for this in contact detail query to clear address fields
+	
 	public OwnersChangedEvent(FlowInstance flowInstance, FlowInstanceEvent event,  SiteProfile siteProfile, List<User> previousOwners, User user) {
 
 		super();
