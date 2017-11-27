@@ -2395,6 +2395,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			systemInterface.getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
 			
 			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+			return null;
 		}
 		
 		throw new URINotFoundException(uriParser);
