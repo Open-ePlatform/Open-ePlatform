@@ -18,6 +18,6 @@
 	<xsl:variable name="i18n.maxFileCount">antal filer som får bifogas</xsl:variable>
 	<xsl:variable name="i18n.maxFileSize">största datamängd som får bifogas i MB</xsl:variable>
 	<xsl:variable name="i18n.MaxFileNameLength">Maximalt antal tecken i filnamnet, inklusive filändelse</xsl:variable>
-	<xsl:variable name="i18n.maxFileNameLength">maximalt antal tecken i filnamnet</xsl:variable>
+	<xsl:variable name="i18n.maxFileNameLength">maximalt antal tecken i filnamnet, maximalt värde är 255</xsl:variable>
 
 </xsl:stylesheet>
