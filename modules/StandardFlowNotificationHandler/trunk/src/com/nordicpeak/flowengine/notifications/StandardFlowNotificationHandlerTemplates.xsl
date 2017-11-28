@@ -958,12 +958,18 @@
 					<xsl:when test="fieldName = 'flowInstanceArchivedUserEmailMessage'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailMessage"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'externalMessageReceivedManagerSubject'">
+						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'externalMessageReceivedManagerMessage'">
+						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceSubmittedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailAddresses"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedGlobalEmailAddresses"/>
-					</xsl:when>					
+					</xsl:when>									
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
 					</xsl:otherwise>
