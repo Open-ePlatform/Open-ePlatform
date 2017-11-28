@@ -820,7 +820,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateStatusSigning");
 		
-		String description = "Byt status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
 		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
 		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
 		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
@@ -849,13 +849,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			String statusID = uriParser.get(3);
 			
-//			int parameterIndex = statusID.indexOf("&");
-//
-//			if (parameterIndex != -1) {
-//
-//				statusID = statusID.substring(0, parameterIndex);
-//			}
-			
 			Status status;
 			
 			if (NumberUtils.isInt(statusID) && (status = getStatus(flowInstance.getFlow(), Integer.valueOf(statusID))) != null && status.isRequireSigning()) {
@@ -877,7 +870,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				log.info("User " + user + " processing singing for changing status of instance " + flowInstance + " from " + previousStatus + " to " + status);
 				
-				String description = "Byt status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+				String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
 				String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
 				String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
 				String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
