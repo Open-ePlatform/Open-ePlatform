@@ -480,7 +480,7 @@
 	<xsl:variable name="i18n.Unpublished">Ej publicerade</xsl:variable>
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
 	
-	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på förstasidan</xsl:variable>
+	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Dölj interna noteringar i handläggargränssnittet</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
