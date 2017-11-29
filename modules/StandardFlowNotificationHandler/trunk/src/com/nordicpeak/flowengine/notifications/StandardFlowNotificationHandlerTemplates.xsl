@@ -304,7 +304,7 @@
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
-			<label for="flowInstanceSubmittedUserEmailSubject" class="floatleft full">
+			<label for="statusChangedUserEmailSubject" class="floatleft full">
 				<xsl:value-of select="$i18n.StatusChangedUserEmailSubject" />
 			</label>
 			
@@ -323,7 +323,7 @@
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>			
 			
-			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
+			<label for="statusChangedUserEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.StatusChangedUserEmailMessage" />
 			</label>
 			
