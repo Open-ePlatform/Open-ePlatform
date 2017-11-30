@@ -6,7 +6,7 @@
 	<xsl:include href="PUDQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Ange fastighetsbeteckning</xsl:variable>
-	<xsl:variable name="java.lmUserSettingName">Användare lanmäteriet</xsl:variable>
+	<xsl:variable name="java.lmUserSettingName">Användare Lantmäteriet</xsl:variable>
 	<xsl:variable name="java.lmUserSettingDescription">Användare som används för anrop mot lantmäteriet via Search LM</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingName">Sökprefix</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingDescription">Sökprefix som används vid anrop mot lantmäteriet via Serch LM</xsl:variable>
