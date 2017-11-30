@@ -6,7 +6,7 @@
 
 	<xsl:variable name="java.startExtentSettingName">Start extent</xsl:variable>
 	<xsl:variable name="java.startExtentSettingDescription">Start position for kartor (kommaspearerad lista med koordinater t.ex. 608114,6910996,641846,6932596) </xsl:variable>
-	<xsl:variable name="java.lmUserSettingName">Användare lanmäteriet</xsl:variable>
+	<xsl:variable name="java.lmUserSettingName">Användare Lantmäteriet</xsl:variable>
 	<xsl:variable name="java.lmUserSettingDescription">Användare som används för anrop mot lantmäteriet via Search LM</xsl:variable>
 	<xsl:variable name="java.municipalityCodeSettingName">Kommunkod</xsl:variable>
 	<xsl:variable name="java.municipalityCodeDescription">Kommunkod som skall användas vid sökning på ort via Search LM</xsl:variable>
