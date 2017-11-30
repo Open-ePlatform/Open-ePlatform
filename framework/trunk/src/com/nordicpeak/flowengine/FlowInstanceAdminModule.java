@@ -259,16 +259,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected List<String> selectedAttributes;
 	
-//	protected boolean register = true;
-	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
-//		if (register) {
-			systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this);
-//		}
+		systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this);
 		
 		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 	}
@@ -276,9 +272,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void unload() throws Exception {
 		
-//		if (register) {
-			systemInterface.getInstanceHandler().removeInstance(FlowInstanceAdminModule.class, this);
-//		}
+		systemInterface.getInstanceHandler().removeInstance(FlowInstanceAdminModule.class, this);
 		
 		eventHandler.removeEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 		
