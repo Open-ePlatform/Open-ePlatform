@@ -947,12 +947,8 @@
 			
 				<xsl:choose>
 					<xsl:when test="postedByManager = 'true'">
-						<xsl:call-template name="createHyperlinks">
-							<xsl:with-param name="string">
-								<xsl:call-template name="replaceLineBreak">
-									<xsl:with-param name="string" select="message" />
-								</xsl:call-template>							
-							</xsl:with-param>
+						<xsl:call-template name="replaceLineBreaksAndLinks">
+							<xsl:with-param name="string" select="message"/>
 							<xsl:with-param name="target" select="'_blank'"/>
 						</xsl:call-template>
 					</xsl:when>
