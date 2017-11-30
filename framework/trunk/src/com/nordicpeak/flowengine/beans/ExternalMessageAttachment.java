@@ -20,6 +20,19 @@ public class ExternalMessageAttachment extends BaseAttachment {
 	@XMLElement
 	private ExternalMessage message;
 
+	public ExternalMessageAttachment() {
+
+		super();
+	}
+
+	public ExternalMessageAttachment(ExternalMessageAttachment attachement) {
+
+		this.setData(attachement.getData());
+		this.setAdded(attachement.getAdded());
+		this.setFilename(attachement.getFilename());
+		this.setSize(attachement.getSize());
+	}
+
 	@Override
 	public ExternalMessage getMessage() {
 
