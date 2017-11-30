@@ -344,10 +344,10 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 
 		super.moduleConfigured();
 
-		startExtentSetting = new TextFieldSetting("BaseMapQuery-startExtent", startExtentSettingName, startExtentSettingDescription, defaultStartExtent, true);
-		lmUserSetting = new TextFieldSetting("BaseMapQuery-lmUser", lmUserSettingName, lmUserSettingDescription, defaultLMUser, true);
+		startExtentSetting = new TextFieldSetting("BaseMapQuery-startExtent", startExtentSettingName, startExtentSettingDescription, defaultStartExtent, false);
+		lmUserSetting = new TextFieldSetting("BaseMapQuery-lmUser", lmUserSettingName, lmUserSettingDescription, defaultLMUser, false);
 		searchPrefixSetting = new TextFieldSetting("BaseMapQuery-searchPrefix", searchPrefixSettingName, searchPrefixSettingDescription, defaultSearchPrefix, false);
-		municipalityCodeSetting = new TextFieldSetting("BaseMapQuery-municipalityCode", municipalityCodeSettingName, municipalityCodeDescription, defaultMunicipalityCode, true);
+		municipalityCodeSetting = new TextFieldSetting("BaseMapQuery-municipalityCode", municipalityCodeSettingName, municipalityCodeDescription, defaultMunicipalityCode, false);
 
 	}
 
