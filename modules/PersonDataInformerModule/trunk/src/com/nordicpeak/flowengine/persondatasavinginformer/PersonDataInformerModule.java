@@ -476,7 +476,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		} else {
 
-			log.warn("User " + user + " trying to deleting person data informer settings for flow " + flow + " which has no settings");
+			log.warn("User " + user + " trying to delete person data informer settings for flow " + flow + " which has no settings");
 		}
 
 		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#informersettings");
