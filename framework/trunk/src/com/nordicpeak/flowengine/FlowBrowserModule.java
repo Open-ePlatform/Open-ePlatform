@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -63,6 +65,7 @@ import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -129,8 +132,6 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -540,6 +541,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 
 		log.info("User " + user + " overview of flow " + flow);
+		
+		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), flowAdminModule);
 		
 		Document doc = this.createDocument(req, uriParser, user);
 

@@ -79,11 +79,21 @@
   			<div class="aside-inside start-flow-panel">
   			
   				<div class="section noborder">
-  					<xsl:if test="Checks/check">
+  					<xsl:if test="Checks/check or FlowFamily/useLoginHelpLink = 'true'">
 	  					<xsl:attribute name="class">section yellow</xsl:attribute>
 	  					<h2 class="bordered"><xsl:value-of select="$i18n.ChecklistTitle" /></h2>
 	  					<ul class="checklist">
 	  						<xsl:apply-templates select="Checks/check" mode="overview" />
+	  						
+	  						<xsl:if test="FlowFamily/useLoginHelpLink = 'true'">
+	  						
+	  							<li class="link">
+	  								<a href="{FlowFamily/loginHelpLinkURL}">
+	  									<xsl:value-of select="FlowFamily/loginHelpLinkName" />
+	  								</a>
+	  							</li>
+	  						
+	  						</xsl:if>
 	  					</ul>
   					</xsl:if>
   					

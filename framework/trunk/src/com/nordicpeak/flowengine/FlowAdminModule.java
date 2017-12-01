@@ -127,9 +127,11 @@ import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringURLPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.streams.StreamUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -440,6 +442,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max flowtype icon height", description = "Max allowed flowtype icon height.")
 	private int maxFlowTypeIconHeight = 100;
+	
+	@ModuleSetting(allowsNull = true)
+	@TextFieldSettingDescriptor(name = "Default login help link name", description = "Name of the login help link.")
+	private String defaultLoginHelpLinkName;
+	
+	@ModuleSetting(allowsNull = true)
+	@TextFieldSettingDescriptor(name = "Default login help url", description = "URL to redirect the user to for login help.", formatValidator = StringURLPopulator.class)
+	private String defaultLoginHelpLinkURL;
 
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
@@ -2001,6 +2011,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				return null;
 			}
+			
+			TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
 
 			Document doc = this.createDocument(req, uriParser, user);
 

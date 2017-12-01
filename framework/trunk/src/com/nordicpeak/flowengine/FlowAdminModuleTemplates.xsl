@@ -1784,7 +1784,7 @@
 			<xsl:value-of select="$i18n.flowVersion"/>
 			<xsl:text>&#x20;</xsl:text>
 			<xsl:value-of select="Flow/version"/>
-			<xsl:text>)</xsl:text>			
+			<xsl:text>)</xsl:text>
 		</h1>
 
 		<xsl:apply-templates select="validationException/validationError" />
@@ -2140,46 +2140,6 @@
 			
 		</xsl:if>
 			
-			<div class="floatleft full bigmarginbottom">
-				
-				<label for="statisticsMode" class="floatleft full">
-					<xsl:value-of select="$i18n.StatisticsSettings" />
-				</label>
-				
-				<xsl:variable name="options">
-					<option>
-						<name><xsl:value-of select="$i18n.StatisticsMode.Internal"/></name>
-						<value>INTERNAL</value>
-					</option>
-					<option>
-						<name><xsl:value-of select="$i18n.StatisticsMode.Public"/></name>
-						<value>PUBLIC</value>
-					</option>
-				</xsl:variable>
-			
-				<xsl:call-template name="createDropdown">
-					<xsl:with-param name="id" select="'statisticsMode'"/>
-					<xsl:with-param name="name" select="'statisticsMode'"/>
-					<xsl:with-param name="class" select="'forty'"/>
-					<xsl:with-param name="element" select="exsl:node-set($options)/option"/>
-					<xsl:with-param name="labelElementName" select="'name'" />
-					<xsl:with-param name="valueElementName" select="'value'" />
-					<xsl:with-param name="addEmptyOption" select="$i18n.StatisticsMode.None" />
-					<xsl:with-param name="selectedValue">
-						
-						<xsl:choose>
-							<xsl:when test="name() = 'AddFlow'">
-								<xsl:value-of select="DefaultStatisticsMode"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="Flow/FlowFamily/statisticsMode"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					
-					</xsl:with-param>
-				</xsl:call-template>
-			</div>						
-			
 		<xsl:if test="$isInternal = 'true'">	
 			
 			<!-- Disable if we are NOT in add mode -->
@@ -2336,6 +2296,50 @@
 				
 			</div>
 			
+		</div>
+		
+		<h2 class="floatleft bigmargintop">
+			<xsl:value-of select="$i18n.FlowFamily.SharedSettings"/>
+		</h2>
+		
+		<div class="floatleft full bigmarginbottom">
+				
+			<label for="statisticsMode" class="floatleft full">
+				<xsl:value-of select="$i18n.StatisticsSettings" />
+			</label>
+			
+			<xsl:variable name="options">
+				<option>
+					<name><xsl:value-of select="$i18n.StatisticsMode.Internal"/></name>
+					<value>INTERNAL</value>
+				</option>
+				<option>
+					<name><xsl:value-of select="$i18n.StatisticsMode.Public"/></name>
+					<value>PUBLIC</value>
+				</option>
+			</xsl:variable>
+		
+			<xsl:call-template name="createDropdown">
+				<xsl:with-param name="id" select="'statisticsMode'"/>
+				<xsl:with-param name="name" select="'statisticsMode'"/>
+				<xsl:with-param name="class" select="'forty'"/>
+				<xsl:with-param name="element" select="exsl:node-set($options)/option"/>
+				<xsl:with-param name="labelElementName" select="'name'" />
+				<xsl:with-param name="valueElementName" select="'value'" />
+				<xsl:with-param name="addEmptyOption" select="$i18n.StatisticsMode.None" />
+				<xsl:with-param name="selectedValue">
+					
+					<xsl:choose>
+						<xsl:when test="name() = 'AddFlow'">
+							<xsl:value-of select="DefaultStatisticsMode"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="Flow/FlowFamily/statisticsMode"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				
+				</xsl:with-param>
+			</xsl:call-template>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
@@ -2498,8 +2502,82 @@
 			
 			</div>
 			
-		</div>	
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop">
+		
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'useLoginHelpLink'" />
+					<xsl:with-param name="name" select="'useLoginHelpLink'" />
+					<xsl:with-param name="element" select="Flow/FlowFamily" />    
+				</xsl:call-template>
 				
+				<label for="useLoginHelpLink">
+					<xsl:value-of select="$i18n.FlowFamily.LoginHelp" />
+				</label>
+			</div>
+			
+			<div id="loginhelplink-container" class="floatleft full margintop">
+			
+				<div class="floatleft forty">
+				
+					<label for="loginHelpLinkName" class="floatleft full">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name" />
+					</label>
+					
+					<div class="floatleft full">
+		
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'loginHelpLinkName'" />
+							<xsl:with-param name="id" select="'loginHelpLinkName'" />
+							<xsl:with-param name="element" select="Flow/FlowFamily" />
+							<xsl:with-param name="size" select="10" />         
+						</xsl:call-template>
+												
+					</div>
+				
+				</div>
+				
+				<div class="floatleft forty bigmarginleft">
+				
+					<label for="loginHelpLinkURL" class="floatleft full">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL" />
+					</label>
+					
+					<div class="floatleft full">
+		
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'loginHelpLinkURL'" />
+							<xsl:with-param name="id" select="'loginHelpLinkURL'" />
+							<xsl:with-param name="element" select="Flow/FlowFamily" />
+							<xsl:with-param name="size" select="10" />         
+						</xsl:call-template>
+						
+					</div>
+				
+				</div>
+				
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function() {
+					
+					var checkbox = $("#useLoginHelpLink");
+					
+					var showHideLoginHelpLink = function() {
+						
+						var checked = checkbox.prop("checked");
+						
+						$("#loginhelplink-container").toggle(checked).find("input").attr("disabled", !checked);
+					};
+					
+					checkbox.change(showHideLoginHelpLink);
+					showHideLoginHelpLink();
+				});
+			</script>
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template match="AddQueryDescriptor">
@@ -5549,6 +5627,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'iconColor'">
 						<xsl:value-of select="$i18n.FlowType.iconColor"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'loginHelpLinkName'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'loginHelpLinkURL'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
