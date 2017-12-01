@@ -37,6 +37,7 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
@@ -127,6 +128,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
 		
+		TemplateUtils.setTemplatedFields(bean.getFlowFamily(), callback);
+		
 		super.appendBean(bean, targetElement, genDoc, user);
 	}
 
@@ -136,6 +139,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		appendAddUpdateFormData(doc, addTypeElement, user);
 
 		callback.appendUserFlowTypes(doc, addTypeElement, user);
+		
+		FlowFamily dummyFlowFamily = new FlowFamily();
+		TemplateUtils.setTemplatedFields(dummyFlowFamily, callback);
+		
+		Flow dummyFlow = new Flow();
+		dummyFlow.setFlowFamily(dummyFlowFamily);
+
+		addTypeElement.appendChild(dummyFlow.toXML(doc));
 	}
 
 	@Override
@@ -382,6 +393,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	protected void validateUpdatePopulation(Flow bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
 		FLOW_FAMILY_POULATOR.populate(bean.getFlowFamily(), req);
+		
+		TemplateUtils.clearUnchangedTemplatedFields(bean.getFlowFamily(), callback);
 
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
