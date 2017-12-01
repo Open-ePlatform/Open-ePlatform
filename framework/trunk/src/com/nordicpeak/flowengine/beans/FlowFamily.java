@@ -7,7 +7,9 @@ import java.util.List;
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.standardutils.annotations.NoDuplicates;
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
+import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -16,6 +18,7 @@ import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringURLAliasPopulator;
+import se.unlogic.standardutils.populators.StringURLPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
@@ -68,6 +71,25 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
 	@XMLElement
 	private String ownerEmail;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean useLoginHelpLink;
+	
+	@DAOManaged
+	@Templated(fieldName = "defaultLoginHelpLinkName")
+	@WebPopulate(maxLength = 50)
+	@RequiredIfSet(paramNames = "useLoginHelpLink")
+	@XMLElement
+	private String loginHelpLinkName;
+
+	@DAOManaged
+	@Templated(fieldName = "defaultLoginHelpLinkURL")
+	@WebPopulate(maxLength = 255, populator = StringURLPopulator.class)
+	@RequiredIfSet(paramNames = "useLoginHelpLink")
+	@XMLElement
+	private String loginHelpLinkURL;
 
 	@DAOManaged
 	@WebPopulate
@@ -77,7 +99,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@WebPopulate(populator=NonNegativeStringIntegerPopulator.class)
 	@XMLElement
-	private Integer popularityBoost;	
+	private Integer popularityBoost;
 	
 	@DAOManaged
 	@OneToMany
