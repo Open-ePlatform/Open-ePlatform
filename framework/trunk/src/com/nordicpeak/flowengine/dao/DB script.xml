@@ -1741,4 +1741,22 @@
 		</Query>
 	</Script>
 	
+	<Script version="89">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_families`
+					ADD COLUMN `loginHelpLinkName` VARCHAR(50) NULL DEFAULT NULL AFTER `startButtonText`,
+					ADD COLUMN `loginHelpLinkURL` VARCHAR(255) NULL DEFAULT NULL AFTER `loginHelpLinkName`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="90">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_families` ADD COLUMN `useLoginHelpLink` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `startButtonText`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
