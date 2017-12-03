@@ -360,6 +360,12 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		String action = req.getParameter("action");
 		
+		if ("download".equals(action)) {
+			
+			downloadAttachment(req, res, user, uriParser, flowInstance);
+			return null;
+		}
+		
 		if (manager) {
 			
 			if(flowInstance.getStatus().getContentType().equals(ContentType.ARCHIVED)){
@@ -377,12 +383,6 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 				deleteAttachment(flowInstance, req, res, user, uriParser);
 				return null;
 			}
-		}
-		
-		if ("download".equals(action)) {
-			
-			downloadAttachment(req, res, user, uriParser, flowInstance);
-			return null;
 		}
 		
 		throw new URINotFoundException(uriParser);
