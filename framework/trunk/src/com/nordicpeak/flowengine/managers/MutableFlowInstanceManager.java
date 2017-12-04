@@ -45,6 +45,7 @@ import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.beans.SubmitCheckFailedResponse;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.FlowDirection;
@@ -81,6 +82,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.interfaces.SubmitCheck;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
@@ -1236,10 +1238,65 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
+	public SubmitCheckFailedResponse checkValidForSubmit(User user, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) {
+		
+		User poster = getPoster(user, requestMetadata);
+		
+		ManagedQueryInstance blockingQueryInstance = null;
+		ManagedStep blockingStep = null;
+		
+		outer: for (ManagedStep step : managedSteps) {
+			for (ManagedQueryInstance managedQueryInstance : step.getManagedQueryInstances()) {
+				
+				QueryInstance queryInstance = managedQueryInstance.getQueryInstance();
+				
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+					
+					if (queryInstance instanceof SubmitCheck) {
+						
+						if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+							
+							blockingQueryInstance = managedQueryInstance;
+							blockingStep = step;
+							break outer;
+						}
+					}
+					
+					if (managedQueryInstance.getEvaluators() != null) {
+						
+						for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
+							
+							if (evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof SubmitCheck) {
+								
+								if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+									
+									blockingQueryInstance = managedQueryInstance;
+									blockingStep = step;
+									break outer;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (blockingQueryInstance == null) {
+			return null;
+		}
+		
+		flowInstance.setFullyPopulated(false);
+		currentStepIndex = managedSteps.indexOf(blockingStep);
+		
+		String redirectURL = baseUpdateURL + "?step=" + blockingStep.getStep().getStepID() + "#query_" + blockingQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor().getQueryID();
+		
+		return new SubmitCheckFailedResponse(blockingQueryInstance.getQueryInstance(), redirectURL);
+	}
+	
 	public synchronized void close(QueryHandler queryHandler) {
-
-		if(closed){
-
+		
+		if (closed) {
+			
 			return;
 		}
 
@@ -1256,7 +1313,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 	public synchronized void checkState() throws FlowInstanceManagerClosedException {
 
-		if(closed){
+		if (closed) {
 
 			throw new FlowInstanceManagerClosedException(this.getFlowInstance(), this.instanceManagerID);
 		}

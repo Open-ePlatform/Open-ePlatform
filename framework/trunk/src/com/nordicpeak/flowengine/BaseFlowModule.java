@@ -84,6 +84,7 @@ import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.beans.SubmitCheckFailedResponse;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
@@ -707,6 +708,15 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						log.info("Save & submit denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT fully populated");
 						return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
+					}
+					
+					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(user, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
+					
+					if (submitCheckResponse != null) {
+						
+						log.info("Save & submit denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT valid for submit due to validation error in query " + submitCheckResponse.getQueryInstance().getQueryInstanceDescriptor());
+						res.sendRedirect(submitCheckResponse.getRedirectURL());
+						return null;
 					}
 
 					if (enableSaving && instanceManager.getFlowInstance().getFlow().requiresSigning()) {
