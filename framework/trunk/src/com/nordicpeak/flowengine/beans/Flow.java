@@ -42,6 +42,7 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLParserPopulateable;
 import se.unlogic.standardutils.xml.XMLPopulationUtils;
@@ -564,7 +565,15 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	public Element toXML(Document doc, SiteProfile siteProfile, String absoluteFileURL, HttpServletRequest req) {
 		
-		Element flowElement = super.toXML(doc);
+		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+		genDoc.addIgnoredFields(FLOW_FAMILY_RELATION);
+		
+		Element flowElement = super.toXML(genDoc);
+		
+		if (flowFamily != null) {
+			
+			flowElement.appendChild(flowFamily.toXML(doc, siteProfile));
+		}
 		
 		String shortDescription = this.shortDescription;
 		String longDescription = this.longDescription;
@@ -922,6 +931,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		return null;
 	}
 	
+	@Override
 	public boolean hidesManagerDetails() {
 		
 		return hideManagerDetails;
