@@ -5629,9 +5629,13 @@
 						<xsl:value-of select="$i18n.FlowType.iconColor"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'loginHelpLinkName'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
+						<xsl:text>: </xsl:text>
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'loginHelpLinkURL'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
+						<xsl:text>: </xsl:text>
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
 					</xsl:when>
 					<xsl:otherwise>

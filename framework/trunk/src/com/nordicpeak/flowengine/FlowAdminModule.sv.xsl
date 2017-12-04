@@ -46,6 +46,8 @@
 	<xsl:variable name="java.bundleStandardStatuses">Adm. standardstatusar</xsl:variable>
 	<xsl:variable name="java.bundleFlowtypes">Adm. kategorier</xsl:variable>
 	
+	<xsl:variable name="java.defaultLoginHelpLinkName">Så här skaffar du e-legitimation</xsl:variable>
+	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.Flowslist.title">E-tjänster</xsl:variable>
