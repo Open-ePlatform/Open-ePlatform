@@ -65,7 +65,6 @@ import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -856,8 +855,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 							flow.getFlowFamily().setHasTextTags(TextTagReplacer.hasTextTags(flow.getFlowFamily()));
 							flow.setHasFileURLs(FCKUtils.hasAbsoluteFileUrls(flow));
 							flow.setHasRelativeURLs(URLRewriter.hasAbsoluteLinkUrls(flow));
-							
-							TemplateUtils.setTemplatedFields(flow.getFlowFamily(), flowAdminModule);
 							
 							flow.setFlowType(flowType);
 							flowMap.put(flow.getFlowID(), flow);

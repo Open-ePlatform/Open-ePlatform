@@ -394,8 +394,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		FLOW_FAMILY_POULATOR.populate(bean.getFlowFamily(), req);
 		
-		TemplateUtils.clearUnchangedTemplatedFields(bean.getFlowFamily(), callback);
-
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		validateFlowCategory(bean, req, errors);

@@ -131,7 +131,6 @@ import se.unlogic.standardutils.populators.StringURLPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.streams.StreamUtils;
 import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -713,7 +712,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					flow.setLatestVersion(isLatestVersion(flow, transactionHandler));
 
 					setStatusFlowInstanceCount(flow, transactionHandler);
-					TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
 
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
@@ -2020,8 +2018,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			doc.getDocumentElement().appendChild(showFlowOverviewElement);
 
-			TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
-			
 			flow.setHasTextTags(TextTagReplacer.hasTextTags(flow));
 			flow.getFlowFamily().setHasTextTags(TextTagReplacer.hasTextTags(flow.getFlowFamily()));
 			flow.setHasFileURLs(FCKUtils.hasAbsoluteFileUrls(flow));
