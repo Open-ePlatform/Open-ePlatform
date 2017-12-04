@@ -443,6 +443,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@TextFieldSettingDescriptor(name = "Max flowtype icon height", description = "Max allowed flowtype icon height.")
 	private int maxFlowTypeIconHeight = 100;
 	
+	@XSLVariable(prefix = "java.")
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Default login help link name", description = "Name of the login help link.")
 	private String defaultLoginHelpLinkName;
@@ -509,6 +510,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
+		cacheFlows();
+		cacheFlowTypes();
+
+		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
+		
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 		userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		
@@ -633,11 +639,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		flowVersionOrderByCriteria = daoFactory.getFlowDAO().getOrderByCriteria("version", Order.DESC);
 
 		flowFamilyEventFlowFamilyParamFactory = daoFactory.getFlowFamilyEventDAO().getParamFactory("flowFamily", FlowFamily.class);
-
-		cacheFlows();
-		cacheFlowTypes();
-
-		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 	}
 
 	@Override
@@ -712,6 +713,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 					flow.setLatestVersion(isLatestVersion(flow, transactionHandler));
 
 					setStatusFlowInstanceCount(flow, transactionHandler);
+					TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
 
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
@@ -2011,8 +2013,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				return null;
 			}
-			
-			TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
 
 			Document doc = this.createDocument(req, uriParser, user);
 
@@ -2020,7 +2020,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			doc.getDocumentElement().appendChild(showFlowOverviewElement);
 
+			TemplateUtils.setTemplatedFields(flow.getFlowFamily(), this);
+			
 			flow.setHasTextTags(TextTagReplacer.hasTextTags(flow));
+			flow.getFlowFamily().setHasTextTags(TextTagReplacer.hasTextTags(flow.getFlowFamily()));
 			flow.setHasFileURLs(FCKUtils.hasAbsoluteFileUrls(flow));
 			flow.setHasRelativeURLs(URLRewriter.hasAbsoluteLinkUrls(flow));
 
