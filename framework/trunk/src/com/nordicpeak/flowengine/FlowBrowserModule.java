@@ -542,8 +542,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		log.info("User " + user + " overview of flow " + flow);
 		
-		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), flowAdminModule);
-		
 		Document doc = this.createDocument(req, uriParser, user);
 
 		Element showFlowOverviewElement = doc.createElement("ShowFlowOverview");
@@ -855,9 +853,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 						for (Flow flow : flowType.getFlows()) {
 
 							flow.setHasTextTags(TextTagReplacer.hasTextTags(flow));
+							flow.getFlowFamily().setHasTextTags(TextTagReplacer.hasTextTags(flow.getFlowFamily()));
 							flow.setHasFileURLs(FCKUtils.hasAbsoluteFileUrls(flow));
 							flow.setHasRelativeURLs(URLRewriter.hasAbsoluteLinkUrls(flow));
-
+							
+							TemplateUtils.setTemplatedFields(flow.getFlowFamily(), flowAdminModule);
+							
 							flow.setFlowType(flowType);
 							flowMap.put(flow.getFlowID(), flow);
 						}
