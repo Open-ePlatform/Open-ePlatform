@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.naming.OperationNotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
@@ -1261,7 +1262,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@WebPublic(alias = "preview")
-	public ForegroundModuleResponse processPreviewRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
+	public ForegroundModuleResponse processPreviewRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException, OperationNotSupportedException {
 		
 		return this.showImmutableFlowInstance(req, res, user, uriParser, getGeneralAccessController(), this, ShowMode.PREVIEW, MANAGER_REQUEST_METADATA);
 	}
@@ -2003,5 +2004,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public String getNoManagersSelectedMessage() {
 		
 		return noManagersSelected;
+	}
+
+	public String getFlowInstancePreviewURL(Integer flowInstanceID) {
+
+		return this.getFullAlias() + "/preview/" + flowInstanceID;
 	}
 }
