@@ -120,6 +120,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowIns
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryInstanceHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
@@ -1268,7 +1269,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@WebPublic(alias = "flowinstance")
-	public ForegroundModuleResponse processFlowRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException, FlowDefaultStatusNotFound, EvaluationException {
+	public ForegroundModuleResponse processFlowRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
 		
 		Integer flowID = null;
 		Integer flowInstanceID = null;

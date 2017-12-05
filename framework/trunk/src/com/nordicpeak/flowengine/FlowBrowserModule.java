@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -107,6 +105,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowIns
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryInstanceHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
@@ -131,6 +130,8 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -614,7 +615,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@WebPublic(alias = "flow")
-	public ForegroundModuleResponse processFlowRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException {
+	public ForegroundModuleResponse processFlowRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
 
 		Integer flowID = null;
 		Integer flowInstanceID = null;

@@ -4,6 +4,6 @@ import se.unlogic.hierarchy.core.beans.User;
 
 public interface SubmitCheck {
 
-	boolean isValidForSubmit(User poster, QueryHandler queryHandler);
+	boolean isValidForSubmit(User poster, QueryHandler queryHandler) throws Exception;
 
 }

@@ -30,6 +30,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStep
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstancePDFContentException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
@@ -41,6 +42,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SubmitCheck;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 
@@ -342,4 +344,47 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		
 		return sessionAttributeHandler;
 	}
+	
+	public boolean checkValidForSubmit(User user, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) throws SubmitCheckException  {
+		
+		User poster = getPoster(user, requestMetadata);
+		
+		for (ImmutableManagedStep step : managedSteps) {
+			
+			for (ImmutableQueryInstance queryInstance : step.getQueryInstances()) {
+				
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+					
+					if (queryInstance instanceof SubmitCheck) {
+						
+						try {
+							if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+
+								return false;
+							}
+						} catch (Exception e) {
+
+							throw new SubmitCheckException(queryInstance.getQueryInstanceDescriptor(), e);
+						}
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	public User getPoster(User user, RequestMetadata requestMetadata) {
+		
+		if (flowInstance.getPoster() != null || flowInstance.getFirstSubmitted() != null) {
+
+			return flowInstance.getPoster();
+
+		} else if (user != null && !requestMetadata.isManager()) {
+
+			return user;
+		}
+
+		return null;
+	}	
 }

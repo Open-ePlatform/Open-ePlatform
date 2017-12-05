@@ -61,6 +61,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowIns
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.IllegalQueryInstanceAccessException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryModificationException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceFormHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstancePDFContentException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
@@ -1238,7 +1239,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
-	public SubmitCheckFailedResponse checkValidForSubmit(User user, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) {
+	public SubmitCheckFailedResponse checkValidForSubmit(User user, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) throws SubmitCheckException {
 		
 		User poster = getPoster(user, requestMetadata);
 		
@@ -1254,29 +1255,34 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					
 					if (queryInstance instanceof SubmitCheck) {
 						
-						if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+						try {
+							if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+								
+								blockingQueryInstance = managedQueryInstance;
+								blockingStep = step;
+								break outer;
+							}
+						} catch (Exception e) {
 							
-							blockingQueryInstance = managedQueryInstance;
-							blockingStep = step;
-							break outer;
+							throw new SubmitCheckException(queryInstance.getQueryInstanceDescriptor(), e);
 						}
 					}
 					
-					if (managedQueryInstance.getEvaluators() != null) {
-						
-						for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
-							
-							if (evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof SubmitCheck) {
-								
-								if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
-									
-									blockingQueryInstance = managedQueryInstance;
-									blockingStep = step;
-									break outer;
-								}
-							}
-						}
-					}
+//					if (managedQueryInstance.getEvaluators() != null) {
+//						
+//						for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
+//							
+//							if (evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof SubmitCheck) {
+//								
+//								if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
+//									
+//									blockingQueryInstance = managedQueryInstance;
+//									blockingStep = step;
+//									break outer;
+//								}
+//							}
+//						}
+//					}
 				}
 			}
 		}

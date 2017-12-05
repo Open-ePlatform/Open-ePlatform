@@ -116,6 +116,7 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.QueryInstanceNot
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryModificationException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestsNotSupported;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceFormHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToPopulateQueryInstanceException;
@@ -532,7 +533,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		SessionUtils.removeAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID, session);
 	}
 
-	public ForegroundModuleResponse processFlowRequest(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowInstanceAccessController accessController, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, boolean enableSaving, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, ModuleConfigurationException, FlowInstanceManagerClosedException, FlowDefaultStatusNotFound, EvaluationException {
+	public ForegroundModuleResponse processFlowRequest(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowInstanceAccessController accessController, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, boolean enableSaving, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, ModuleConfigurationException, FlowInstanceManagerClosedException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
 
 		MultipartRequest multipartRequest = null;
 
@@ -2044,6 +2045,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			return callback.list(req, res, user, uriParser, Collections.singletonList(PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR));
 		}
+		
+		//TODO Submit check
+		
 		
 		SiteProfile instanceProfile = getSiteProfile(instanceManager);
 		ViewFragment viewFragment;

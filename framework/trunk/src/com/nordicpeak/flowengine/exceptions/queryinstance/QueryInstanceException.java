@@ -7,13 +7,13 @@ public abstract class QueryInstanceException extends FlowEngineException {
 
 	private static final long serialVersionUID = 7972212276440856822L;
 
+	private final ImmutableQueryInstanceDescriptor queryInstanceDescriptor;
+
 	public QueryInstanceException(ImmutableQueryInstanceDescriptor queryInstanceDescriptor, String message) {
 
 		super(message);
 		this.queryInstanceDescriptor = queryInstanceDescriptor;
 	}
-
-	private final ImmutableQueryInstanceDescriptor queryInstanceDescriptor;
 
 	public QueryInstanceException(ImmutableQueryInstanceDescriptor queryInstanceDescriptor, Throwable cause) {
 
