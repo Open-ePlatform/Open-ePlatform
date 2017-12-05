@@ -53,7 +53,6 @@
 				
 				</xsl:attribute>
 
-			
 				<div class="heading-wrapper">
 					
 					<h2>
@@ -71,6 +70,8 @@
 				</span>
 				
 				<div class="clearboth"/>
+				
+				<script type="text/javascript">$(document).ready(function(){initStopQuery('<xsl:value-of select="StopQueryInstance/StopQuery/queryID" />');});</script>
 				
 			</article>			
 		

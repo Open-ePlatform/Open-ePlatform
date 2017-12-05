@@ -1,14 +1,16 @@
 $(document).ready(function() {
 	
 	hideQueryFunctions.push(hideQueryListener);
-	
-	$(".navigator-buttons .next").hide();
-	
 });
+
+function initStopQuery(queryID) {
+
+	$(".navigator-buttons .next").hide();
+}
 
 function hideQueryListener(queryID) {
 	
-	if($(".stopquery").length == 1) {
+	if ($(".stopquery").length == 1) {
 		
 		$(".navigator-buttons .next").show();
 	}
