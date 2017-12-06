@@ -22,7 +22,6 @@ import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringURLAliasPopulator;
-import se.unlogic.standardutils.populators.StringURLPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
@@ -99,7 +98,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@TextTagReplace
 	@Templated(fieldName = "defaultLoginHelpLinkURL")
-	@WebPopulate(maxLength = 255, populator = StringURLPopulator.class)
+	@WebPopulate(maxLength = 255)
 	@RequiredIfSet(paramNames = "useLoginHelpLink")
 	@XMLElement
 	private String loginHelpLinkURL;

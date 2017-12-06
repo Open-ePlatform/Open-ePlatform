@@ -2302,6 +2302,80 @@
 			<xsl:value-of select="$i18n.FlowFamily.SharedSettings"/>
 		</h2>
 		
+		<div class="floatleft full bigmarginbottom margintop">
+		
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'useLoginHelpLink'" />
+					<xsl:with-param name="name" select="'useLoginHelpLink'" />
+					<xsl:with-param name="element" select="Flow/FlowFamily" />    
+				</xsl:call-template>
+				
+				<label for="useLoginHelpLink">
+					<xsl:value-of select="$i18n.FlowFamily.LoginHelp" />
+				</label>
+			</div>
+			
+			<div id="loginhelplink-container" class="floatleft full margintop">
+			
+				<div class="floatleft forty">
+				
+					<label for="loginHelpLinkName" class="floatleft full">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name" />
+					</label>
+					
+					<div class="floatleft full">
+		
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'loginHelpLinkName'" />
+							<xsl:with-param name="id" select="'loginHelpLinkName'" />
+							<xsl:with-param name="element" select="Flow/FlowFamily" />
+							<xsl:with-param name="size" select="10" />         
+						</xsl:call-template>
+												
+					</div>
+				
+				</div>
+				
+				<div class="floatleft forty bigmarginleft">
+				
+					<label for="loginHelpLinkURL" class="floatleft full">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL" />
+					</label>
+					
+					<div class="floatleft full">
+		
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'loginHelpLinkURL'" />
+							<xsl:with-param name="id" select="'loginHelpLinkURL'" />
+							<xsl:with-param name="element" select="Flow/FlowFamily" />
+							<xsl:with-param name="size" select="10" />         
+						</xsl:call-template>
+						
+					</div>
+				
+				</div>
+				
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function() {
+					
+					var checkbox = $("#useLoginHelpLink");
+					
+					var showHideLoginHelpLink = function() {
+						
+						var checked = checkbox.prop("checked");
+						
+						$("#loginhelplink-container").toggle(checked).find("input").attr("disabled", !checked);
+					};
+					
+					checkbox.change(showHideLoginHelpLink);
+					showHideLoginHelpLink();
+				});
+			</script>
+		</div>		
+		
 		<div class="floatleft full bigmarginbottom">
 				
 			<label for="statisticsMode" class="floatleft full">
@@ -2502,80 +2576,6 @@
 			
 			</div>
 			
-		</div>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft full">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'useLoginHelpLink'" />
-					<xsl:with-param name="name" select="'useLoginHelpLink'" />
-					<xsl:with-param name="element" select="Flow/FlowFamily" />    
-				</xsl:call-template>
-				
-				<label for="useLoginHelpLink">
-					<xsl:value-of select="$i18n.FlowFamily.LoginHelp" />
-				</label>
-			</div>
-			
-			<div id="loginhelplink-container" class="floatleft full margintop">
-			
-				<div class="floatleft forty">
-				
-					<label for="loginHelpLinkName" class="floatleft full">
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name" />
-					</label>
-					
-					<div class="floatleft full">
-		
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="name" select="'loginHelpLinkName'" />
-							<xsl:with-param name="id" select="'loginHelpLinkName'" />
-							<xsl:with-param name="element" select="Flow/FlowFamily" />
-							<xsl:with-param name="size" select="10" />         
-						</xsl:call-template>
-												
-					</div>
-				
-				</div>
-				
-				<div class="floatleft forty bigmarginleft">
-				
-					<label for="loginHelpLinkURL" class="floatleft full">
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL" />
-					</label>
-					
-					<div class="floatleft full">
-		
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="name" select="'loginHelpLinkURL'" />
-							<xsl:with-param name="id" select="'loginHelpLinkURL'" />
-							<xsl:with-param name="element" select="Flow/FlowFamily" />
-							<xsl:with-param name="size" select="10" />         
-						</xsl:call-template>
-						
-					</div>
-				
-				</div>
-				
-			</div>
-			
-			<script type="text/javascript">
-				$(document).ready(function() {
-					
-					var checkbox = $("#useLoginHelpLink");
-					
-					var showHideLoginHelpLink = function() {
-						
-						var checked = checkbox.prop("checked");
-						
-						$("#loginhelplink-container").toggle(checked).find("input").attr("disabled", !checked);
-					};
-					
-					checkbox.change(showHideLoginHelpLink);
-					showHideLoginHelpLink();
-				});
-			</script>
 		</div>
 		
 	</xsl:template>
