@@ -88,7 +88,7 @@
 	  						<xsl:if test="FlowFamily/useLoginHelpLink = 'true'">
 	  						
 	  							<li class="link">
-	  								<a href="{FlowFamily/loginHelpLinkURL}">
+	  								<a href="{FlowFamily/loginHelpLinkURL}" target="_blank">
 	  									<xsl:value-of select="FlowFamily/loginHelpLinkName" />
 	  								</a>
 	  							</li>
