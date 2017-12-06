@@ -295,7 +295,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		
 		appendQueryInstance(queryInstance, doc, showQueryFormElement, attributeHandler);
 		
-		if (!CollectionUtils.isEmpty(validationErrors)) {
+		if (!CollectionUtils.isEmpty(validationErrors) && req.getMethod().equalsIgnoreCase("POST")) {
 
 			showQueryFormElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
