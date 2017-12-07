@@ -1366,7 +1366,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		if (!flowInstance.getFlow().hidesManagerDetails()) {
 
-			metadata.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+			if(notification.getExternalNotificationID() != null){
+				
+				metadata.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+			}
 
 		} else {
 
