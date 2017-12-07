@@ -510,7 +510,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 
 	@WebPublic(alias = "external")
-	public ForegroundModuleResponse checkExternalLogin(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, AccessDeniedException {
+	public ForegroundModuleResponse redirectToExternalLink(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, AccessDeniedException {
 
 		Flow flow;
 
@@ -521,8 +521,18 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				throw new AccessDeniedException("External flow requires login");
 			}
 
-			daoFactory.getExternalFlowRedirectDAO().add(new ExternalFlowRedirect(flow.getFlowID(), TimeUtils.getCurrentTimestamp()));
+			String userAgent = req.getHeader("user-agent");
+			
+			if(userAgent != null && !HTTPUtils.isBotOrCrawler(userAgent)){
+				
+				daoFactory.getExternalFlowRedirectDAO().add(new ExternalFlowRedirect(flow.getFlowID(), TimeUtils.getCurrentTimestamp()));
+			
+			}else{
+				
+				log.info("Excluding request from statistics due to user agent " + userAgent);
+			}
 
+			log.info("Redirecting user " + user + " to external flow " + flow);
 			res.sendRedirect(flow.getExternalLink());
 			return null;
 		}
@@ -879,7 +889,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 					this.flowMap = Collections.<Integer,Flow>emptyMap();
 					this.latestPublishedFlowVersionsMap = null;
-					this.flowIndexer = null;
 					this.flowIndexer = null;
 				}
 

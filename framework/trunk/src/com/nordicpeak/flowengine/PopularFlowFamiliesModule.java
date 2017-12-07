@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -43,6 +41,8 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 
 public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule implements EventListener<CRUDEvent<Flow>>, Runnable {
@@ -174,7 +174,7 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 				}
 
 				//Get external flow redirects
-				ObjectQuery<Integer> redirectCountQuery = new ObjectQuery<Integer>(dataSource, "SELECT COUNT(redirectID) FROM flowengine_external_flow_redirects WHERE flowID IN (" + StringUtils.toCommaSeparatedString(flowIDs) + ") AND time >= ?", IntegerPopulator.getPopulator());
+				ObjectQuery<Integer> redirectCountQuery = new ObjectQuery<Integer>(dataSource, "SELECT COUNT(redirectID)/4 FROM flowengine_external_flow_redirects WHERE flowID IN (" + StringUtils.toCommaSeparatedString(flowIDs) + ") AND time >= ?", IntegerPopulator.getPopulator());
 
 				redirectCountQuery.setTimestamp(1, calculateTime);
 
