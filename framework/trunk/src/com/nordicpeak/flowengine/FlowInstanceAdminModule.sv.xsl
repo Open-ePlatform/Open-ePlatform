@@ -21,7 +21,7 @@
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	
 	<xsl:variable name="i18n.EmergencyTab">Ärenden du behöver agera på</xsl:variable>
-	<xsl:variable name="i18n.OwnedTab">Tilldelade</xsl:variable>
+	<xsl:variable name="i18n.OwnedTab">Mina</xsl:variable>
 	<xsl:variable name="i18n.FlaggedTab">Flaggade</xsl:variable>
 	<xsl:variable name="i18n.ActiveTab">Aktiva</xsl:variable>
 	<xsl:variable name="i18n.UnAssignedTab">Obehandlade</xsl:variable>
@@ -45,9 +45,9 @@
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.UserAssignedInstancesDescription.Part1">Du har</xsl:variable>
-	<xsl:variable name="i18n.UserAssignedInstancesDescription.Part2">tilldelade ärenden, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
+	<xsl:variable name="i18n.UserAssignedInstancesDescription.Part2"> ärenden, klicka på knappen "Välj" för att fortsätta.</xsl:variable>
 	<xsl:variable name="i18n.UserAssignedInstancesHelp">
-<h2 class="h1 full" data-icon-before="?">Tilldelade ärenden</h2>
+<h2 class="h1 full" data-icon-before="?">Mina ärenden</h2>
 <p>Här hittar du dina pågående ärenden.</p>
 	</xsl:variable>
 	
