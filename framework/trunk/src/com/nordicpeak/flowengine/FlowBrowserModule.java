@@ -138,7 +138,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
 	private static final Comparator<FlowFamily> FAMILY_COMPARATOR = new MethodComparator<FlowFamily>(FlowFamily.class, "getFlowInstanceCount", Order.DESC);
-	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
 
 	public static final String SAVE_ACTION_ID = FlowBrowserModule.class.getName() + ".save";
 	public static final String SUBMIT_ACTION_ID = FlowBrowserModule.class.getName() + ".submit";
@@ -1670,7 +1669,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			
 			tempProviders.add(flowAdminExtensionProvider);
 			
-			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
+			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 			
 			extensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>(tempProviders);
 		}

@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.ServerStartupListener;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
@@ -43,7 +44,6 @@ import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
@@ -83,7 +83,7 @@ import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvid
 import com.nordicpeak.flowengine.sharing.beans.RepositoryConfiguration;
 import com.nordicpeak.flowengine.sharing.validators.RepositoryConfigurationValidator;
 
-public class FlowCatalogModule extends AnnotatedForegroundModule implements ExtensionLinkProvider, FlowAdminShowFlowExtensionLinkProvider, SystemStartupListener, Runnable {
+public class FlowCatalogModule extends AnnotatedForegroundModule implements ExtensionLinkProvider, FlowAdminShowFlowExtensionLinkProvider, Runnable {
 	
 	
 	protected static final List<Field> FLOW_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.TAGS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
@@ -127,8 +127,6 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
 		super.init(moduleDescriptor, sectionInterface, dataSource);
-		
-		systemInterface.addStartupListener(this);
 	}
 	
 	@Override
@@ -168,8 +166,8 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		super.moduleConfigured();
 	}
 	
-	@Override
-	public void systemStarted() {
+	@ServerStartupListener
+	public void serverStarted() {
 		
 		cacheRepositoryInfo();
 	}

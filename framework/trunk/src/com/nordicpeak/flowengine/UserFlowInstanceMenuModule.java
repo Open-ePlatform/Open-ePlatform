@@ -45,7 +45,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			throw new RuntimeException("Unable to register module in global instance handler using key " + UserFlowInstanceMenuModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 		
-		systemInterface.addStartupListener(this);
+		systemInterface.addSystemStartupListener(this);
 	}
 	
 	@Override

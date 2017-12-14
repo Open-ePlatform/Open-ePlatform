@@ -239,8 +239,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
 
-	private static final PriorityComparator EXTENSION_PRIORITY_COMPARATOR = new PriorityComparator(Order.ASC);
-
 	@SuppressWarnings("rawtypes")
 	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class, FlowForm.class };
 
@@ -529,7 +527,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 			systemStarted();
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
-			systemInterface.addStartupListener(this);
+			systemInterface.addSystemStartupListener(this);
 		}
 	}
 
@@ -4194,7 +4192,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			tempProviders.add(flowAdminExtensionProvider);
 
-			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
+			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 
 			extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>(tempProviders);
 		}
@@ -4810,7 +4808,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			
 			tempProviders.add(flowAdminExtensionProvider);
 			
-			Collections.sort(tempProviders, EXTENSION_PRIORITY_COMPARATOR);
+			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 			
 			flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>(tempProviders);
 		}

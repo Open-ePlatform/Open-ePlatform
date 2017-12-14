@@ -95,7 +95,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
-		systemInterface.addStartupListener(this);
+		systemInterface.addSystemStartupListener(this);
 	}
 	
 	@Override

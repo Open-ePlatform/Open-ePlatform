@@ -269,7 +269,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 		internalAccessInterface = new SimpleAccessInterface(internalGroups, null);
 
-		systemInterface.addStartupListener(this);
+		systemInterface.addSystemStartupListener(this);
 	}
 
 	@Override

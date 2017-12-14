@@ -42,7 +42,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.ModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.SystemStartupListener;
+import se.unlogic.hierarchy.core.interfaces.ServerStartupListener;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
@@ -150,7 +150,7 @@ import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
-public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, SystemStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
+public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, ServerStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 	
 	
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION };
@@ -315,7 +315,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		this.flowInstanceIndexer = createIndexer();
 		this.flowInstanceIndexer.setLogIndexing(this.logFlowInstanceIndexing);
 		
-		systemInterface.addStartupListener(this);
+		systemInterface.addServerStartupListener(this);
 		
 		if (oldIndexer != null) {
 			
@@ -1490,7 +1490,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@Override
-	public void systemStarted() {
+	public void serverStarted() {
 		
 		Thread indexThreading = new Thread(this, "Flow instance indexer for " + moduleDescriptor);
 		

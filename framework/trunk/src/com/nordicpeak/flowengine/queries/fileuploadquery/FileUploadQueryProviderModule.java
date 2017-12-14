@@ -138,7 +138,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
 
-			systemInterface.addStartupListener(this);
+			systemInterface.addSystemStartupListener(this);
 		}
 
 	}
