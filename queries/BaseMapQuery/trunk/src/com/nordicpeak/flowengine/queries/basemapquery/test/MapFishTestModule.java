@@ -75,7 +75,7 @@ public class MapFishTestModule extends AnnotatedForegroundModule implements Runn
 
 		}else{
 
-			this.systemInterface.addStartupListener(this);
+			this.systemInterface.addSystemStartupListener(this);
 		}
 
 	}
