@@ -69,7 +69,7 @@
 	<xsl:variable name="i18n.published">Publicerad</xsl:variable>
 	<xsl:variable name="i18n.notPublished">Ej publicerad</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowDisabledIsPublished">Den här e-tjänsten kan inte tas bort eftersom den är publicerad.</xsl:variable>
-	<xsl:variable name="i18n.deleteFlowDisabledHasInstances">Den här e-tjänsten kan inte tas bort eftersom det finns en eller flera ansökningar kopplade till den.</xsl:variable>
+	<xsl:variable name="i18n.deleteFlowDisabledHasInstances">Den här e-tjänsten kan inte tas bort eftersom det finns en eller flera ärenden kopplade till den.</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowConfirm">Ta bort e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.deleteFlow.title">Ta bort e-tjänsten</xsl:variable>
 	
@@ -124,7 +124,7 @@
 	
 	<xsl:variable name="i18n.updateFlowBaseInfo.title">Uppdatera e-tjänstens grundinformation</xsl:variable>
 		
-	<xsl:variable name="i18n.stepAndQueryManipulationDisabledHasInstances">Det går inte att redigera frågorna och stegen för denna e-tjänst eftersom det finns en eller flera ansökningar kopplade till den.</xsl:variable>
+	<xsl:variable name="i18n.stepAndQueryManipulationDisabledHasInstances">Det går inte att redigera frågorna och stegen för denna e-tjänst eftersom det finns en eller flera ärenden kopplad till den.</xsl:variable>
 	<xsl:variable name="i18n.stepAndQueryManipulationDisabledIsPublished">Det går inte att redigera frågorna och stegen för denna e-tjänst eftersom den är publicerad.</xsl:variable>
 	<xsl:variable name="i18n.updateStep.title">Uppdatera steget</xsl:variable>
 	<xsl:variable name="i18n.deleteStep.confirm.part1">Ta bort steget</xsl:variable>
@@ -154,9 +154,9 @@
 	<xsl:variable name="i18n.AddStatus.submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.UpdateStatus.title">Uppdatera status: </xsl:variable>
 	<xsl:variable name="i18n.UpdateStatus.submit">Spara ändringar</xsl:variable>
-	<xsl:variable name="i18n.isUserMutable">Tillåt användare att ändra ansökningar med denna status</xsl:variable>
-	<xsl:variable name="i18n.isUserDeletable">Tillåt användare att ta bort ansökningar med denna status</xsl:variable>
-	<xsl:variable name="i18n.isAdminMutable">Tillåt handläggare att ändra ansökningar med denna status</xsl:variable>
+	<xsl:variable name="i18n.isUserMutable">Tillåt användare att ändra ärenden med denna status</xsl:variable>
+	<xsl:variable name="i18n.isUserDeletable">Tillåt användare att ta bort ärenden med denna status</xsl:variable>
+	<xsl:variable name="i18n.isAdminMutable">Tillåt handläggare att ändra ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.isAdminDeletable">Tillåt handläggare att ta bort ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.defaultStatusMappings.title">Statusmappningar</xsl:variable>
 	<xsl:variable name="i18n.defaultStatusMappings.description">Använd denna status vid följande händelser.</xsl:variable>
@@ -169,7 +169,7 @@
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.2">är inte handläggare för den här e-tjänsten!</xsl:variable>
 	
-	<xsl:variable name="i18n.deleteStatusDisabledHasInstances">Den här statusen kan inte tas bort eftersom det finns en eller flera ansökningar kopplade till den.</xsl:variable>
+	<xsl:variable name="i18n.deleteStatusDisabledHasInstances">Den här statusen kan inte tas bort eftersom det finns en eller flera ärenden kopplade till den.</xsl:variable>
 	<xsl:variable name="i18n.updateStatus.link.title">Uppdatera statusen</xsl:variable>
 	<xsl:variable name="i18n.deleteStatus.link.title">Ta bort statusen</xsl:variable>
 	<xsl:variable name="i18n.deleteStatus.confirm">Ta bort statusen</xsl:variable>
@@ -252,7 +252,7 @@
 	<xsl:variable name="i18n.addNewVersion">Lägg till en ny version</xsl:variable>
 	<xsl:variable name="i18n.createNewFlow">Skapa en ny e-tjänst</xsl:variable>
 	
-	<xsl:variable name="i18n.deleteFlowFamilyDisabledHasInstances">Det går inte att ta bort den här e-tjänsten för en eller flera av dess versioner har ansökningar kopplade till sig.</xsl:variable>
+	<xsl:variable name="i18n.deleteFlowFamilyDisabledHasInstances">Det går inte att ta bort den här e-tjänsten för en eller flera av dess versioner har ärenden kopplade till sig.</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowFamilyDisabledIsPublished">Det går inte att ta bort den här e-tjänsten för en eller flera av dess versioner är publicerade.</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowFamilyConfirm">Är du säker på att du vill ta bort samtliga versioner av e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.deleteFlowFamily.title">Ta bort samtliga versioner av e-tjänsten</xsl:variable>
@@ -274,7 +274,7 @@
 	<xsl:variable name="i18n.deleteStandardStatus.link.title">Ta bort standardstatus</xsl:variable>
 	<xsl:variable name="i18n.addStandardStatuses">Lägg till standardstatusar</xsl:variable>
 	<xsl:variable name="i18n.RequestedFlowFamilyNotFound">Den begärda e-tjänsten hittades inte.</xsl:variable>
-	<xsl:variable name="i18n.FlowFamilyCannotBeDeleted">Den begärda e-tjänsten kan inte tas bort då en eller flera versioner av den är publicerade eller har ansökningar knuta till sig.</xsl:variable>
+	<xsl:variable name="i18n.FlowFamilyCannotBeDeleted">Den begärda e-tjänsten kan inte tas bort då en eller flera versioner av den är publicerade eller har ärenden knuta till sig.</xsl:variable>
 	<xsl:variable name="i18n.testFlow">Testa e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.downloadxsd.title">Ladda ner XSD schema</xsl:variable>
 	
