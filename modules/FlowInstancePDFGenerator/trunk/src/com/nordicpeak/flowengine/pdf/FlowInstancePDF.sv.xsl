@@ -17,4 +17,5 @@
 	<xsl:variable name="i18n.Signed.Date">Datum</xsl:variable>
 	<xsl:variable name="i18n.Signed.Checksum">Signerad checksumma</xsl:variable>
 	
+	<xsl:variable name="i18n.UnsubmittedExport">Ej inskickat ärende</xsl:variable>
 </xsl:stylesheet>

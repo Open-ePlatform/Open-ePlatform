@@ -59,6 +59,7 @@
 				<p class="clearboth">
 					<xsl:choose>
 						<xsl:when test="Signing"><xsl:value-of select="$i18n.Signing"/></xsl:when>
+						<xsl:when test="UnsubmittedExport"><xsl:value-of select="$i18n.UnsubmittedExport"/></xsl:when>
 						<xsl:otherwise>
 						
 							<xsl:text>Ärendenummer: #</xsl:text>
@@ -92,7 +93,7 @@
 	
 		<div id="footer">
 			
-			<xsl:if test="not(Signing)">
+			<xsl:if test="not(Signing) and not(UnsubmittedExport)">
 			
 				<xsl:text>Ärendenummer: #</xsl:text>
 				<xsl:value-of select="FlowInstance/flowInstanceID"/>
