@@ -1112,11 +1112,17 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			transactionHandler = daoFactory.getTransactionHandler();
 
-			Timestamp currentTimestamp = TimeUtils.getCurrentTimestamp();
+			Timestamp saveTimestamp = flowInstance.getLastStatusChange();
+			
+			if(saveTimestamp == null) {
+				
+				saveTimestamp = TimeUtils.getCurrentTimestamp(false);
+				
+			}
 			
 			if(flowInstance.getFirstSubmitted() == null && eventType == EventType.SUBMITTED){
 				
-				flowInstance.setFirstSubmitted(currentTimestamp);
+				flowInstance.setFirstSubmitted(saveTimestamp);
 				setFirstSubmitted = true;
 			}
 			
@@ -1132,7 +1138,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				isAdd = true;
 				
 				flowInstance.setPoster(user);
-				flowInstance.setAdded(currentTimestamp);
+				flowInstance.setAdded(saveTimestamp);
 				
 				if (user != null) {
 					
@@ -1167,7 +1173,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				
 			} else {
 				
-				flowInstance.setUpdated(currentTimestamp);
+				flowInstance.setUpdated(saveTimestamp);
 				flowInstance.setEditor(user);
 				
 				//Update flow instance
@@ -1206,7 +1212,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			hasUnsavedChanges = false;
 			
-			return currentTimestamp;
+			return saveTimestamp;
 			
 		}finally{
 
@@ -1384,7 +1390,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 	public synchronized void setFlowState(Status flowState) {
 
 		if(flowInstance.getStatus() == null || !flowInstance.getStatus().equals(flowState)) {
-			flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
+			flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp(false));
 		}
 
 		flowInstance.setStatus(flowState);

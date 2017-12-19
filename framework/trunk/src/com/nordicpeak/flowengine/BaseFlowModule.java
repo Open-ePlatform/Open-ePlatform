@@ -289,10 +289,16 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					throw e;
 				}
 
+				log.warn("dbFlowInstance.getUpdated(): " + dbFlowInstance.getUpdated());
+				log.warn("instanceManager.getFlowInstance().getUpdated(): " + instanceManager.getFlowInstance().getUpdated());
+				
 				if (dbFlowInstance.getUpdated() != null && (instanceManager.getFlowInstance().getUpdated() == null || instanceManager.getFlowInstance().getUpdated().before(dbFlowInstance.getUpdated()))) {
 
 					instanceManager.setConcurrentModificationLock(true);
 				}
+				
+				log.warn("dbFlowInstance.getLastStatusChange(): " + dbFlowInstance.getLastStatusChange());
+				log.warn("instanceManager.getFlowInstance().getLastStatusChange(): " + instanceManager.getFlowInstance().getLastStatusChange());
 				
 				if (dbFlowInstance.getLastStatusChange() != null && (instanceManager.getFlowInstance().getLastStatusChange() == null || instanceManager.getFlowInstance().getLastStatusChange().before(dbFlowInstance.getLastStatusChange()))) {
 
@@ -1166,6 +1172,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		Timestamp savedTimestamp = instanceManager.saveInstance(this, poster, eventType);
 
+		log.warn("savedTimestamp: " + savedTimestamp);
+		
 		CRUDAction crudAction;
 
 		if (!wasPreviouslySaved) {
