@@ -353,7 +353,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 			
 			for (ImmutableQueryInstance queryInstance : step.getQueryInstances()) {
 				
-				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && queryInstance.getQueryInstanceDescriptor().isPopulated()) {
 					
 					if (queryInstance instanceof SubmitCheck) {
 						
@@ -386,5 +386,5 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		}
 
 		return null;
-	}	
+	}
 }

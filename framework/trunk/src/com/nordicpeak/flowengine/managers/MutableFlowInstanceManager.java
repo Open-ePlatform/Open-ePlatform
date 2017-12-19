@@ -1257,7 +1257,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				
 				QueryInstance queryInstance = managedQueryInstance.getQueryInstance();
 				
-				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && queryInstance.getQueryInstanceDescriptor().isPopulated()) {
 					
 					if (queryInstance instanceof SubmitCheck) {
 						
@@ -1275,13 +1275,13 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					}
 					
 //					if (managedQueryInstance.getEvaluators() != null) {
-//						
+//
 //						for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
-//							
+//
 //							if (evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof SubmitCheck) {
-//								
+//
 //								if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
-//									
+//
 //									blockingQueryInstance = managedQueryInstance;
 //									blockingStep = step;
 //									break outer;
