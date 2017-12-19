@@ -1,6 +1,6 @@
 package com.nordicpeak.flowengine.notifications.beans;
 
-import se.unlogic.hierarchy.core.interfaces.MutableAttribute;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttribute;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;

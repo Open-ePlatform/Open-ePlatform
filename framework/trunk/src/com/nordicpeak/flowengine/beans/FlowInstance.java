@@ -10,9 +10,9 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.AttributeSource;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeSource;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;

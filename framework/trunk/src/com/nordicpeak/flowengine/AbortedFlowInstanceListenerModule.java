@@ -6,9 +6,9 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpSessionEvent;
 import javax.sql.DataSource;
 
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.SessionListener;
+import se.unlogic.hierarchy.core.interfaces.listeners.SessionListener;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.time.TimeUtils;

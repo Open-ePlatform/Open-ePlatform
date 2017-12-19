@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.time.TimeUtils;

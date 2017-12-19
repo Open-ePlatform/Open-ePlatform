@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import se.unlogic.hierarchy.core.interfaces.SettingHandler;
+import se.unlogic.hierarchy.core.interfaces.settings.SettingHandler;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.html.HTMLUtils;
 import se.unlogic.standardutils.reflection.ReflectionUtils;

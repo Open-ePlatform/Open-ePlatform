@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.Elementable;
 
 public interface ImmutableFlowInstance extends Elementable, Serializable{

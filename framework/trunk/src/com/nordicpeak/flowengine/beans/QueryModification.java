@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;

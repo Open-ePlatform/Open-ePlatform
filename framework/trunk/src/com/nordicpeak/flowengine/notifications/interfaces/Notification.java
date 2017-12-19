@@ -2,7 +2,7 @@ package com.nordicpeak.flowengine.notifications.interfaces;
 
 import java.sql.Timestamp;
 
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.XMLable;
 
 public interface Notification extends XMLable {

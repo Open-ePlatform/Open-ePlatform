@@ -1,7 +1,7 @@
 package com.nordicpeak.listuserprovider;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 
 
 public class SimpleListUser implements ListUser {

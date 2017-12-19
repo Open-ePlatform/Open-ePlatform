@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 
 import com.nordicpeak.flowengine.Constants;

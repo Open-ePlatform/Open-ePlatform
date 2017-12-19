@@ -3,7 +3,7 @@ package com.nordicpeak.flowengine.evaluators.calculatequerystateevaluator;
 import java.math.BigDecimal;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.validation.ValidationException;
 

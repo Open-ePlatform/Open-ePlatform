@@ -3,7 +3,7 @@ package com.nordicpeak.flowengine.interfaces;
 import java.sql.Timestamp;
 
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.Elementable;
 
 import com.nordicpeak.flowengine.enums.EventType;

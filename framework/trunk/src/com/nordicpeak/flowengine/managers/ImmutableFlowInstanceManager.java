@@ -11,8 +11,8 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SimpleMutableAttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.webutils.url.URLRewriter;

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.AttributeSource;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeSource;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
