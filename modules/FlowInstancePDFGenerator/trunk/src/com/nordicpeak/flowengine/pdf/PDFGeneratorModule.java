@@ -386,7 +386,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				submitDate = TimeUtils.getCurrentTimestamp();
 			}
 			
-			if (!(extraElements != null && extraElements.containsKey("anonymizePoster"))) {
+			if (!(extraElements != null && extraElements.containsKey("AnonymizePoster"))) {
 				
 				XMLUtils.appendNewElement(doc, documentElement, "PostedBy", FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance()));
 				XMLUtils.appendNewElement(doc, documentElement, "PostedByCitizenID", FlowInstanceUtils.getSubmitterCitizenID(instanceManager.getFlowInstance()));
