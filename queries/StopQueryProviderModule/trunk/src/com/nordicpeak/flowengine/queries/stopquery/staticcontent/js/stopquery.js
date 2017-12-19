@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	
-	hideQueryFunctions.push(hideQueryListener);
+	hideQueryFunctions.push(hideStopQueryListener);
 });
 
 function initStopQuery(queryID) {
@@ -8,11 +8,12 @@ function initStopQuery(queryID) {
 	$(".navigator-buttons .next").hide();
 }
 
-function hideQueryListener(queryID) {
+function hideStopQueryListener($query) {
 	
-	if ($(".stopquery").length == 1) {
+	if ($query.find(".stopquery").length > 0 && $(".stopquery").length == 1) {
 		
 		$(".navigator-buttons .next").show();
+		
 	}
 	
 }
