@@ -164,7 +164,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
-		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		
 		if (!systemInterface.getInstanceHandler().addInstance(MultiSigningHandler.class, this)) {
 			

@@ -159,7 +159,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.WARN);
 		
-		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		viewFragmentTransformer.setDebugXML(debugFragmententXML);
 	}
 	

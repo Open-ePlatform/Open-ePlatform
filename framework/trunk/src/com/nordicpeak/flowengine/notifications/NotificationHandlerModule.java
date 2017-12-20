@@ -118,7 +118,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 			throw new RuntimeException("Unable to register " + this.moduleDescriptor + " in global instance handler using key " + NotificationHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 		
-		moduleViewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		moduleViewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		
 		initScheduler();
 	}

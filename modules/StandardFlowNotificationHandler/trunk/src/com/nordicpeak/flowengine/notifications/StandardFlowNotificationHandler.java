@@ -543,7 +543,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			throw new RuntimeException("Unable to register module in global instance handler using key " + StandardFlowNotificationHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 
 		this.viewFragmentTransformer.setDebugXML(debugFragmententXML);
 	}

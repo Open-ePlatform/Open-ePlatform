@@ -61,7 +61,7 @@ public class DummyPaymentProvider extends AnnotatedForegroundModule implements F
 	@Override
 	protected void moduleConfigured() {
 
-		fragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		fragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 
 	}
 	

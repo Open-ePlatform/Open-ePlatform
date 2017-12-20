@@ -120,7 +120,7 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 
 		this.configured = ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.WARN);
 		
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 
 		this.viewFragmentTransformer.setDebugXML(debugFragmententXML);		
 	}

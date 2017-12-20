@@ -755,7 +755,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 	private Transformer getTransformer() throws TransformerConfigurationException {
 
-		return this.sectionInterface.getModuleXSLTCache().getModuleTranformer(moduleDescriptor);
+		return this.sectionInterface.getForegroundModuleXSLTCache().getModuleTranformer(moduleDescriptor);
 	}
 
 	private static String formatWeek(Integer id) {

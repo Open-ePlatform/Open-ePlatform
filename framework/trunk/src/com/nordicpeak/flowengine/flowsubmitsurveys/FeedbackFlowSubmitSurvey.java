@@ -107,7 +107,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 			log.warn("Unable to register module " + moduleDescriptor + " in instance handler, another module is already registered for class " + FlowSubmitSurveyProvider.class.getName());
 		}
 
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 		super.update(descriptor, dataSource);
 
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 	}
 
 	@Override

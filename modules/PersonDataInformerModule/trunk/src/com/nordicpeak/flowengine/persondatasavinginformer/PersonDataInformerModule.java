@@ -147,7 +147,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
-		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
