@@ -23,7 +23,7 @@ $(document).ready(function() {
 	var showHideLockAddress = function() {
 		
 		var visible = fieldAddress.val() != "HIDDEN";
-		$("#useOfficalAddress").prop("disabled", !visible).parent().toggle(visible);
+		$("#useOfficalAddress").parent().toggle(visible);
 		$("#fieldCareOf").parent().parent().parent().toggle(visible);
 		
 		if (!visible) {

@@ -137,6 +137,10 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 					update = true;
 				}
 				
+				if (updateAttributes((MutableUser) user, attributeMap)) {
+					update = true;
+				}
+				
 				if(update){
 					
 					try {
@@ -169,6 +173,11 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 		return minimalUser;
 	}
 
+	protected boolean updateAttributes(MutableUser user, HashMap<String, String> attributeMap) { 
+		
+		return false;
+	}
+	
 	protected MinimalUser createUser(String userIdentifier, String firstName, String lastName, HashMap<String, String> attributeMap) {
 
 		MinimalUser minimalUser = new MinimalUser();

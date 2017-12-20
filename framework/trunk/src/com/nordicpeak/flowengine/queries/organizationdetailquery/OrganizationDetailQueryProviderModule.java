@@ -25,7 +25,6 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -51,7 +50,6 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
-import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.UserOrganizationsModule;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
@@ -68,6 +66,7 @@ import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModule<OrganizationDetailQueryInstance> implements BaseQueryCRUDCallback {
 
@@ -402,7 +401,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		
 		if (poster != null && poster.equals(user)) {
 
-			queryInstance.setCitizenIdentifier(UserUtils.getAttribute(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE, poster));
+			queryInstance.setCitizenIdentifier(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster));
 			
 			if(persistOrganization){
 			

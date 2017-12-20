@@ -58,6 +58,7 @@ import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
@@ -358,7 +359,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 				
 				if (poster.getAttributeHandler() != null) {
 					
-					citizenID = poster.getAttributeHandler().getString("citizenIdentifier");
+					citizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 				}
 				
 				if (query.getFieldCitizenID() == ContactDetailQueryField.REQUIRED && StringUtils.isEmpty(citizenID)) {
@@ -665,7 +666,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 			
 			if (poster.getAttributeHandler() != null) {
 				
-				XMLUtils.appendNewElement(doc, userElement, "citizenID", poster.getAttributeHandler().getString("citizenIdentifier"));
+				XMLUtils.appendNewElement(doc, userElement, "citizenID", CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster));
 			}
 		}
 		

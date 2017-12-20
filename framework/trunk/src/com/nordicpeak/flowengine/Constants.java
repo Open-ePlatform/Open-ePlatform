@@ -17,6 +17,8 @@ public class Constants {
 	
 	public static final String USER_CITIZEN_IDENTIFIER_ATTRIBUTE = "citizenIdentifier";
 	
+	public static final String MANAGER_CITIZEN_IDENTIFIER_ATTRIBUTE = "managerCitizenIdentifier";
+	
 	public static final String FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE = "integrationExternalID";
 	
 	public static final String FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE = "description";
