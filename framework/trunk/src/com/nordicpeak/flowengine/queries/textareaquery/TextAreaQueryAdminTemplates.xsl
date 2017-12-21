@@ -100,7 +100,7 @@
 						<xsl:with-param name="id" select="'hideTitle'" />
 						<xsl:with-param name="name" select="'hideTitle'" />
 						<xsl:with-param name="value" select="'true'" />
-						<xsl:with-param name="element" select="InfoQuery" />
+						<xsl:with-param name="element" select="TextAreaQuery" />
 					</xsl:call-template>
 					
 					<label for="hideTitle">
