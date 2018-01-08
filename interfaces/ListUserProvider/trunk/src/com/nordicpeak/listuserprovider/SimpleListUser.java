@@ -38,7 +38,7 @@ public class SimpleListUser implements ListUser {
 
 		if (attributeHandler != null) {
 			
-			String citizenIdentifier = UserUtils.getAttribute("citizenIdentifier", user);
+			citizenIdentifier = UserUtils.getAttribute("citizenIdentifier", user);
 
 			if (StringUtils.isEmpty(citizenIdentifier)) {
 
