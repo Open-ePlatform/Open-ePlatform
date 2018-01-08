@@ -2,6 +2,8 @@ package com.nordicpeak.listuserprovider;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.utils.UserUtils;
+import se.unlogic.standardutils.string.StringUtils;
 
 
 public class SimpleListUser implements ListUser {
@@ -35,8 +37,14 @@ public class SimpleListUser implements ListUser {
 		AttributeHandler attributeHandler = user.getAttributeHandler();
 
 		if (attributeHandler != null) {
+			
+			String citizenIdentifier = UserUtils.getAttribute("citizenIdentifier", user);
 
-			citizenIdentifier = attributeHandler.getString("citizenIdentifier");
+			if (StringUtils.isEmpty(citizenIdentifier)) {
+
+				citizenIdentifier = UserUtils.getAttribute("managerCitizenIdentifier", user);
+			}
+
 			phone = attributeHandler.getString("mobilePhone");
 		}
 	}
