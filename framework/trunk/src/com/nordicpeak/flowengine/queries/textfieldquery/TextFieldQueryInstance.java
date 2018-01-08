@@ -302,7 +302,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 			}
 		}
 		
-		if(getQuery().getFields() != null){
+		if(getQuery().getFields() != null && attributeHandler != null){
 			
 			for (TextField textField : getQuery().getFields()) {
 				
