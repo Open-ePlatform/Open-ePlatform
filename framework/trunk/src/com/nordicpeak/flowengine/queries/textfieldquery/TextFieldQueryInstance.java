@@ -302,7 +302,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 			}
 		}
 		
-		if(getQuery().getFields() != null && attributeHandler != null){
+		if(getQuery().getFields() != null){
 			
 			for (TextField textField : getQuery().getFields()) {
 				
@@ -315,7 +315,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 					
 					values.add(new TextFieldValue(textField, value));
 					
-					if (textField.isSetAsAttribute()) {
+					if (attributeHandler != null && textField.isSetAsAttribute()) {
 						
 						attributeHandler.setAttribute(textField.getAttributeName(), value);
 					}
