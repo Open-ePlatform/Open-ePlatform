@@ -340,6 +340,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@XSLVariable(prefix = "java.")
 	private String eventStatusSortMessage = "eventStatusSortMessage";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventFunctionConfigured = "eventFunctionConfigured";
 
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows= "List flows";
@@ -4820,6 +4823,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		flowBrowserExtensionViewProviders.remove(flowAdminExtensionProvider);
 		
 		log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " removed");
+	}
+
+	
+	public String getEventFunctionConfigured() {
+	
+		return eventFunctionConfigured;
 	}
 
 }

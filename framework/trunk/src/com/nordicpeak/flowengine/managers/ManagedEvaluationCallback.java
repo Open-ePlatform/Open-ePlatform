@@ -15,10 +15,12 @@ import com.nordicpeak.flowengine.interfaces.EvaluationCallback;
 import com.nordicpeak.flowengine.interfaces.EvaluationEventListener;
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.Evaluator;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 
 public class ManagedEvaluationCallback implements EvaluationCallback {
 
+	private final ImmutableFlowInstance flowInstance;
 	private final List<ManagedStep> managedSteps;
 	private final int minStepIndex;
 	private int minQueryIndex;
@@ -29,9 +31,10 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	private final RequestMetadata requestMetadata;
 	private final HttpServletRequest request;
 	
-	public ManagedEvaluationCallback(List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster, SiteProfile siteProfile, RequestMetadata requestMetadata, HttpServletRequest request) {
+	public ManagedEvaluationCallback(ImmutableFlowInstance flowInstance, List<ManagedStep> managedSteps, int minStepIndex, int minQueryIndex, EvaluationHandler evaluationHandler, User user, User poster, SiteProfile siteProfile, RequestMetadata requestMetadata, HttpServletRequest request) {
 
 		super();
+		this.flowInstance = flowInstance;
 		this.managedSteps = managedSteps;
 		this.minStepIndex = minStepIndex;
 		this.minQueryIndex = minQueryIndex;
@@ -120,7 +123,7 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 						
 						if(evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof EvaluationEventListener && ((EvaluationEventListener) evaluator).supportsEvent(event)){
 							
-							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, request), evaluationHandler));
+							queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, ((EvaluationEventListener)evaluator).processEvent(event, managedQueryInstance.getQueryInstance(), user, user, new ManagedEvaluationCallback(flowInstance, managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, request), evaluationHandler));
 						}
 					}
 				}
@@ -155,5 +158,11 @@ public class ManagedEvaluationCallback implements EvaluationCallback {
 	public HttpServletRequest getRequest() {
 
 		return request;
+	}
+
+	@Override
+	public ImmutableFlowInstance getFlowInstance() {
+
+		return flowInstance;
 	}
 }

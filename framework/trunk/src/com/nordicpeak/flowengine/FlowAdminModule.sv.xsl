@@ -40,6 +40,8 @@
 	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
 	
+	<xsl:variable name="java.eventFunctionConfigured">Ändrande konfigurationen av funktionen</xsl:variable>
+	
 	<xsl:variable name="java.bundleListFlows">Lista e-tjänster</xsl:variable>
 	<xsl:variable name="java.bundleAddFlow">Lägg till e-tjänst</xsl:variable>
 	<xsl:variable name="java.bundleImportFlow">Importera e-tjänst</xsl:variable>

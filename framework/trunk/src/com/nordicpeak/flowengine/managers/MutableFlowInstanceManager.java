@@ -543,7 +543,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							
 							if(evaluationCallback == null){
 								
-								evaluationCallback = new ManagedEvaluationCallback(managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster, metadata.getSiteProfile(), requestMetadata, req);
+								evaluationCallback = new ManagedEvaluationCallback(flowInstance, managedSteps, initStepIndex, initQueryIndex, evaluationHandler, user, poster, metadata.getSiteProfile(), requestMetadata, req);
 							}
 							
 							try {
@@ -785,7 +785,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			User poster = getPoster(user, requestMetadata);
 			
-			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
+			ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(flowInstance, managedSteps, currentStepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
 
 			for(Evaluator evaluator : managedQueryInstance.getEvaluators()){
 
@@ -935,7 +935,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 									continue;
 								}
 								
-								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
+								ManagedEvaluationCallback generatedEvalutionCallback = new ManagedEvaluationCallback(flowInstance, managedSteps, stepIndex, queryIndex, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
 								
 								evaluate(managedQueryInstance.getQueryInstance(), triggeredEvaluator, user, poster, generatedEvalutionCallback, evaluationHandler, hasValidationErrors, queryModifications, resetHiddenInstances, siteProfile, requestMetadata, req);
 							}
@@ -983,7 +983,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		User poster = getPoster(user, requestMetadata);
 		
-		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(managedSteps, currentStepIndex, 0, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
+		ManagedEvaluationCallback evaluationCallback = new ManagedEvaluationCallback(flowInstance, managedSteps, currentStepIndex, 0, evaluationHandler, user, poster, siteProfile, requestMetadata, req);
 
 		//Iterate over all questions in the current step and populate them
 		for(ManagedQueryInstance managedQueryInstance : managedSteps.get(currentStepIndex).getManagedQueryInstances()){

@@ -28,4 +28,6 @@ public interface EvaluationCallback {
 	public RequestMetadata getRequestMetadata();
 	
 	public HttpServletRequest getRequest();
+	
+	public ImmutableFlowInstance getFlowInstance();
 }
