@@ -29,6 +29,10 @@ public class SimpleFormatValidator extends FormatValidator {
 	@XMLElement
 	private String placeholder;
 	
+	@DAOManaged
+	@XMLElement
+	private String replacementClassName;
+	
 	private StringFormatValidator instance;
 
 	public SimpleFormatValidator() {}
@@ -60,7 +64,14 @@ public class SimpleFormatValidator extends FormatValidator {
 
 	public void init() throws NoClassDefFoundError, ClassNotFoundException, InstantiationException, IllegalAccessException{
 		
-		instance = (StringFormatValidator) ReflectionUtils.getInstance(className);
+		if(replacementClassName != null){
+
+			instance = (StringFormatValidator) ReflectionUtils.getInstance(replacementClassName);
+			
+		}else{
+			
+			instance = (StringFormatValidator) ReflectionUtils.getInstance(className);
+		}
 	}
 	
 	@Override

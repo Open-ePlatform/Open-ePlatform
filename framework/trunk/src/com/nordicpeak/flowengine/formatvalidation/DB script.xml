@@ -27,6 +27,29 @@
 				ALTER TABLE `format_validators` ADD COLUMN `placeholder` VARCHAR(255) AFTER `validationMessage`;
 			]]>
 		</Query>				
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `format_validators` ADD COLUMN `replacementClassName` VARCHAR(255) AFTER `validationMessage`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `format_validators` SET replacementClassName = 'se.unlogic.standardutils.validation.NonNegativeStringLongValidator' WHERE className = 'se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `format_validators` SET replacementClassName = 'se.unlogic.standardutils.validation.PositiveStringLongValidator' WHERE className = 'se.unlogic.standardutils.validation.PositiveStringIntegerValidator';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `format_validators` SET replacementClassName = 'se.unlogic.standardutils.validation.SpacedPositiveStringLongValidator' WHERE className = 'se.unlogic.standardutils.validation.SpacedPositiveStringIntegerValidator';
+			]]>
+		</Query>						
 	</Script>	
-
+	
 </DBScripts>
