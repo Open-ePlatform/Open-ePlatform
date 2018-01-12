@@ -41,7 +41,6 @@ import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
@@ -105,6 +104,7 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 
@@ -324,7 +324,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	
 	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
 		
-		String citizenIdentifier = UserUtils.getAttribute(CITIZEN_IDENTIFIER, user);
+		String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 		
 		if (citizenIdentifier == null) {
 			
@@ -373,7 +373,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			userTag.append(" ");
 			userTag.append(instanceManager.getFlowInstance().getPoster().getLastname());
 			
-			String citizenIdentifier = UserUtils.getAttribute("citizenIdentifier", instanceManager.getFlowInstance().getPoster());
+			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(instanceManager.getFlowInstance().getPoster());
 			
 			if (citizenIdentifier != null && !CollectionUtils.contains(flowTypesWithHiddenCitizenIdentifier, instanceManager.getFlowInstance().getFlow().getFlowType().getFlowTypeID())) {
 				
@@ -795,7 +795,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	@Override
 	public ViewFragment getListFlowInstancesViewFragment(List<FlowInstance> flowInstances, SiteProfileHandler profileHandler, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
 		
-		String citizenIdentifier = user.getAttributeHandler().getString("citizenIdentifier");
+		String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 		
 		if (!StringUtils.isEmpty(citizenIdentifier)) {
 			
