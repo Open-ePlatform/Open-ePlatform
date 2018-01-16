@@ -218,7 +218,7 @@ public class FlowInstanceDeleterModule extends AnnotatedForegroundModule {
 	
 		int deletedCount = 0;
 		
-		log.info("User " + user + " deleting all flow instances with ID's: " + flowIDs);
+		log.info("User " + user + " deleting all flow instances belonging to flowID's: " + flowIDs);
 		
 		TransactionHandler transactionHandler = null;
 		
