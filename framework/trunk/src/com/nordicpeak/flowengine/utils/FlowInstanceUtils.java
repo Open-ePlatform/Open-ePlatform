@@ -224,7 +224,7 @@ public class FlowInstanceUtils {
 				
 				for (String attributeName : attributeMap.keySet()) {
 					
-					if (attributeName.startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
+					if (!attributeName.equals(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE) && attributeName.startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
 						
 						descriptionAttributes.add(attributeName);
 					}
