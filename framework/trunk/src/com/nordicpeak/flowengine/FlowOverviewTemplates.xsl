@@ -149,11 +149,11 @@
   				</div>
   				
   				<xsl:if test="FlowForms/FlowForm">
-						<xsl:call-template name="FlowFormButton">
-							<xsl:with-param name="isDisabled" select="$isDisabled"/>
-							<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
-						</xsl:call-template>
-					</xsl:if>
+					<xsl:call-template name="FlowFormButton">
+						<xsl:with-param name="isDisabled" select="$isDisabled"/>
+						<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
+					</xsl:call-template>
+				</xsl:if>
   					
   			</div>
   			
