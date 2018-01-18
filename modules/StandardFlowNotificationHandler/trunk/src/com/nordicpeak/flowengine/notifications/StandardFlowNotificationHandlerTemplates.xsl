@@ -798,6 +798,21 @@
 				</label>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailAttachXML'" />
+					<xsl:with-param name="id" select="'flowInstanceSubmittedGlobalEmailAttachXML'" />
+					<xsl:with-param name="element" select="NotificationSettings" />       
+				</xsl:call-template>
+				
+				<label for="flowInstanceSubmittedGlobalEmailAttachXML">
+					<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailAttachXML" />
+				</label>
+			</div>
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
 		

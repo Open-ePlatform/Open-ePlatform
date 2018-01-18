@@ -181,6 +181,11 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDF;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean flowInstanceSubmittedGlobalEmailAttachXML;
 
 	@DAOManaged
 	@WebPopulate
@@ -459,12 +464,20 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		return flowInstanceSubmittedGlobalEmailAttachPDF;
 	}
-
+	
 	public void setFlowInstanceSubmittedGlobalEmailAttachPDF(boolean flowInstanceSubmittedGlobalEmailAttachPDF) {
-
+		
 		this.flowInstanceSubmittedGlobalEmailAttachPDF = flowInstanceSubmittedGlobalEmailAttachPDF;
 	}
-
+	
+	public boolean isFlowInstanceSubmittedGlobalEmailAttachXML() {
+		return flowInstanceSubmittedGlobalEmailAttachXML;
+	}
+	
+	public void setFlowInstanceSubmittedGlobalEmailAttachXML(boolean flowInstanceSubmittedGlobalEmailAttachXML) {
+		this.flowInstanceSubmittedGlobalEmailAttachXML = flowInstanceSubmittedGlobalEmailAttachXML;
+	}
+	
 	public boolean isFlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately() {
 
 		return flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;

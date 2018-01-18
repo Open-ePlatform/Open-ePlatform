@@ -187,6 +187,14 @@
 				 ADD COLUMN `externalMessageReceivedManagerMessage` TEXT AFTER `externalMessageReceivedManagerSubject`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `flowInstanceSubmittedGlobalEmailAttachXML` BOOLEAN NOT NULL AFTER `flowInstanceSubmittedGlobalEmailAttachPDF`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

@@ -273,6 +273,7 @@
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedGlobalEmail">E-post när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAddresses">E-postadresser för notifiering om nya ärenden (en adress per rad)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachXML">Bifoga ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately">Bifoga bilagor separat</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid inskickat ärende</xsl:variable>

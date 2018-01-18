@@ -10,6 +10,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 public interface NotificationEmailFilter {
 
-	public void filterGlobalEmail(SiteProfile siteProfile, ImmutableFlowInstance flowInstance, Contact contact, File pdfFile, String generatedFilename, boolean sendPDFAttachmentsSeparately, SimpleEmail email) throws Exception;
+	public void filterGlobalEmail(SiteProfile siteProfile, ImmutableFlowInstance flowInstance, Contact contact, File pdfFile, String generatedPDFFilename, boolean sendPDFAttachmentsSeparately, File xmlFile, String generateXMLFilename, SimpleEmail email) throws Exception;
 
 }
