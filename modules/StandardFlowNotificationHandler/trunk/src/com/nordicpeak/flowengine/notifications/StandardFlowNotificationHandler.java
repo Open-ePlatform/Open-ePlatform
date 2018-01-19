@@ -435,6 +435,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	protected String pdfFilename = "$flow.name, $flowInstance.flowInstanceID";
 
 	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "XML filename (without file extension)", description = "Filename of the attached XML (without file extension). Available tags: $flow.name, $flow.version, $flowInstance.flowInstanceID, $poster.*", required = true)
+	protected String xmlFilename = "$flow.name, $flowInstance.flowInstanceID";		
+	
+	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are submitted", description = "Controls if email messages are the sent to specified address when new flow instances are submitted.")
 	private boolean sendExternalMessageReceivedGlobalEmail;
 
@@ -1899,9 +1903,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				}
 			}
 			
-			if (xmlFile != null && pdfFilename != null) {
+			if (xmlFile != null && xmlFilename != null) {
 				
-				generatedXMLFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".xml");
+				generatedXMLFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(xmlFilename) + ".xml");
 				email.add(new FileAttachment(xmlFile, generatedXMLFilename));
 			}
 
