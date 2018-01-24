@@ -88,7 +88,7 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 
 		if(description != null && hasDescriptionAttributeTags()){
 			
-			return AttributeTagUtils.replaceTags(description, attributeHandler, descriptionAttributeTags);
+			return AttributeTagUtils.replaceTags(description, attributeHandler, descriptionAttributeTags, true);
 			
 		}else{
 			
@@ -105,7 +105,7 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 
 		if(helpText != null && hasHelpTextAttributeTags()){
 			
-			return AttributeTagUtils.replaceTags(helpText, attributeHandler, helpTextAttributeTags);
+			return AttributeTagUtils.replaceTags(helpText, attributeHandler, helpTextAttributeTags, true);
 			
 		}else{
 			

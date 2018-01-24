@@ -31,6 +31,11 @@ public class AttributeTagUtils {
 	
 	public static String replaceTags(String text, AttributeHandler attributeHandler){
 		
+		return replaceTags(text, attributeHandler, false);
+	}	
+	
+	public static String replaceTags(String text, AttributeHandler attributeHandler, boolean escapeHTML){
+		
 		Set<String> tags = getAttributeTags(text);
 		
 		if(tags == null){
@@ -38,10 +43,10 @@ public class AttributeTagUtils {
 			return text;
 		}
 		
-		return replaceTags(text, attributeHandler, tags);
+		return replaceTags(text, attributeHandler, tags, escapeHTML);
 	}
 	
-	public static String replaceTags(String text, AttributeHandler attributeHandler, Set<String> tags){
+	public static String replaceTags(String text, AttributeHandler attributeHandler, Set<String> tags, boolean escapeHTML){
 		
 		for(String tag : tags){
 			
@@ -51,7 +56,7 @@ public class AttributeTagUtils {
 				
 				value = "";
 				
-			}else{
+			}else if(escapeHTML){
 				
 				value = HTMLUtils.escapeHTML(value);
 			}
