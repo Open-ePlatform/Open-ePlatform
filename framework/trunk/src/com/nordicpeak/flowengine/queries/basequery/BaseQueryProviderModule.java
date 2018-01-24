@@ -80,10 +80,6 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	@TextFieldSettingDescriptor(name = "Editor CSS", description = "Path to the desired CSS stylesheet for FCKEditor (relative from the contextpath)", required = false)
 	protected String cssPath;
 
-	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Use CKEditor for description", description="Use CKEditor for description field when adding/updating query")
-	protected boolean useCKEditorForDescription = false;
-
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
@@ -420,7 +416,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		document.appendChild(this.queryTypeDescriptor.toXML(doc));
 		document.appendChild(RequestUtils.getRequestInfoAsXML(doc, req));
 		XMLUtils.appendNewElement(doc, document, "fullAlias", this.getFullAlias());
-		XMLUtils.appendNewElement(doc, document, "useCKEditorForDescription", useCKEditorForDescription);
+		XMLUtils.appendNewElement(doc, document, "useCKEditorForDescription", true);
 		XMLUtils.appendNewElement(doc, document, "ckConnectorModuleAlias", ckConnectorModuleAlias);
 
 		doc.appendChild(document);
@@ -436,7 +432,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		documentElement.appendChild(this.moduleDescriptor.toXML(doc));
 
 		XMLUtils.appendNewElement(doc, documentElement, "cssPath", cssPath);
-		XMLUtils.appendNewElement(doc, documentElement, "useCKEditorForDescription", useCKEditorForDescription);
+		XMLUtils.appendNewElement(doc, documentElement, "useCKEditorForDescription", true);
 		XMLUtils.appendNewElement(doc, documentElement, "ckConnectorModuleAlias", ckConnectorModuleAlias);
 
 		doc.appendChild(documentElement);
