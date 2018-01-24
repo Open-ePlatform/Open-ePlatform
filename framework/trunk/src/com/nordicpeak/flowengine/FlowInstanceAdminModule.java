@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -558,7 +560,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						
 						if (mentionedUserIDs != null) {
 							
-							List<User> availableManagers = getAllowedManagers(flowInstance);
+							Collection<User> availableManagers = getAllowedManagers(flowInstance);
 							
 							List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
 							
@@ -960,7 +962,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			doc.getDocumentElement().appendChild(updateInstanceManagersElement);
 			
-			List<User> allowedManagers = getAllowedManagers(flowInstance);
+			Collection<User> allowedManagers = getAllowedManagers(flowInstance);
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
@@ -1182,39 +1184,34 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return daoFactory.getUserBookmarkDAO().get(query);
 	}
 	
-	protected List<User> getAllowedManagers(FlowInstance flowInstance) {
+	protected Collection<User> getAllowedManagers(FlowInstance flowInstance) {
 		
-		List<User> availableManagers = null;
+		HashSet<User> availableManagers = new HashSet<User>();
 		
-		if (flowInstance.getFlow().getFlowFamily().getAllowedUserIDs() != null) {
+		if (flowInstance.getFlow().getFlowFamily() != null) {
 			
-			availableManagers = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getAllowedUserIDs(), false, false);
-		}
-		
-		if (flowInstance.getFlow().getFlowFamily().getAllowedGroupIDs() != null) {
-			
-			List<User> groupUsers = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getAllowedGroupIDs(), false);
-			
-			if (groupUsers != null) {
+			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerUserIDs())) {
 				
-				if (availableManagers == null) {
+				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, false);
+				
+				if (users != null) {
 					
-					availableManagers = new ArrayList<User>(groupUsers.size());
-					
+					availableManagers.addAll(users);
 				}
+			}
+			
+			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs())) {
 				
-				for (User groupUser : groupUsers) {
+				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs(), false);
+				
+				if (users != null) {
 					
-					if (!availableManagers.contains(groupUser)) {
-						availableManagers.add(groupUser);
-					}
-					
+					availableManagers.addAll(users);
 				}
-				
 			}
 		}
 		
-		return availableManagers;
+		return availableManagers;		
 	}
 	
 	@WebPublic(alias = "getmentionusers")
@@ -1226,7 +1223,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			List<User> availableManagers = getAllowedManagers(flowInstance);
+			Collection<User> availableManagers = getAllowedManagers(flowInstance);
 			
 			JsonArray jsonArray = new JsonArray();
 			
