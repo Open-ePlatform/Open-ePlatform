@@ -521,7 +521,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 		
 		if (uriParser.size() == 3 && (roundID = uriParser.getInt(2)) != null && (round = getRound(roundID)) != null && round.getAddFlowID() != null) {
 			
-			return addFlowInstanceModule.createAddFlowInstanceRequest(req, res, round.getAddFlowID(), user, systemInterface.getContextPath() + getFullAlias() + "/show/" + round.getRoundID(), new RequestMetadata(true), null, ADD_FLOW_INSTANCE_CALLBACK);
+			return addFlowInstanceModule.createAddFlowInstanceRequest(req, res, round.getAddFlowID(), user, null, systemInterface.getContextPath() + getFullAlias() + "/show/" + round.getRoundID(), new RequestMetadata(true), ADD_FLOW_INSTANCE_CALLBACK);
 		}
 		
 		return show(req, res, user, uriParser, Arrays.asList(ROUND_DOES_NOT_SUPPORT_ADD_VALIDATION_ERROR));
