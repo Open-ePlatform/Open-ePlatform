@@ -4332,7 +4332,7 @@
 				</div>
 			
 			</div>
-		
+
 			<div class="floatleft full bigmarginbottom">
 				
 					<label for="flowTypeColor" class="floatleft full"><xsl:value-of select="$i18n.FlowType.IconColor" />:</label>
@@ -4345,6 +4345,18 @@
 						</xsl:call-template>
 					</div>
 							
+			</div>
+		
+			<div class="floatleft full bigmarginbottom">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'useIconOnAllFlows'" />
+					<xsl:with-param name="id" select="'useIconOnAllFlows'" />
+					<xsl:with-param name="element" select="FlowType" />
+				</xsl:call-template>
+				
+				<label for="useIconOnAllFlows">
+					<xsl:value-of select="$i18n.FlowType.UseIconOnAllFlows" />
+				</label>
 			</div>
 		
 		</xsl:if>

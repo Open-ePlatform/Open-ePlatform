@@ -2094,7 +2094,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected Flow getBareFlow(Integer flowID) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>();
+		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION);
 
 		query.addParameter(flowIDParamFactory.getParameter(flowID));
 

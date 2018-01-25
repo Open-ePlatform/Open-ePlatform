@@ -10,6 +10,9 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
+
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.color.ColorUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -23,9 +26,6 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
-
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
 
 @Table(name = "flowengine_flow_types")
 @XMLElement
@@ -61,11 +61,11 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	@WebPopulate
 	@XMLElement
 	private boolean useAccessFilter;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean allowAnonymousAccess;	
+	private boolean allowAnonymousAccess;
 
 	@DAOManaged
 	@XMLElement
@@ -73,8 +73,8 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 
 	@DAOManaged
 	@XMLElement
-	private Timestamp iconLastModified;	
-	
+	private Timestamp iconLastModified;
+
 	@DAOManaged
 	private transient Blob icon;
 
@@ -82,6 +82,11 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	@WebPopulate(maxLength = 8, populator = HexColorPopulator.class)
 	@XMLElement
 	private String iconColor;
+
+	@WebPopulate
+	@DAOManaged
+	@XMLElement
+	private boolean useIconOnAllFlows;
 
 	@DAOManaged
 	@OneToMany
@@ -271,6 +276,16 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		this.iconColor = iconColor;
 	}
 
+	public boolean useIconOnAllFlows() {
+
+		return useIconOnAllFlows;
+	}
+
+	public void setUseIconOnAllFlows(boolean useIconOnAllFlows) {
+
+		this.useIconOnAllFlows = useIconOnAllFlows;
+	}
+
 	public List<Integer> getAllowedGroupIDs() {
 
 		return allowedGroupIDs;
@@ -336,15 +351,13 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		return element;
 	}
 
-	
 	public boolean allowsAnonymousAccess() {
-	
+
 		return allowAnonymousAccess;
 	}
 
-	
 	public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
-	
+
 		this.allowAnonymousAccess = allowAnonymousAccess;
 	}
 
@@ -366,9 +379,8 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 		return iconLastModified;
 	}
 
-	
 	public void setIconLastModified(Timestamp iconLastModified) {
-	
+
 		this.iconLastModified = iconLastModified;
 	}
 }

@@ -149,6 +149,7 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
+import com.nordicpeak.flowengine.utils.FlowIconUtils;
 import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
@@ -1996,7 +1997,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected Icon getFlowIcon(Integer flowID) throws SQLException {
 		
-		return this.getBareFlow(flowID);
+		return FlowIconUtils.getFlowIcon(getBareFlow(flowID));
 	}
 	
 	public String getNoManagersSelectedMessage() {

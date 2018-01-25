@@ -482,6 +482,7 @@
 	<xsl:variable name="i18n.FlowType.DeleteIcon">Ta bort</xsl:variable>
 	<xsl:variable name="i18n.FlowType.IconColor">Bakgrundsfärg</xsl:variable>
 	<xsl:variable name="i18n.FlowType.iconColor">bakgrundsfärg</xsl:variable>
+	<xsl:variable name="i18n.FlowType.UseIconOnAllFlows">Använd kategorins ikon på samtliga e-tjänster</xsl:variable>
 	
 	<xsl:variable name="i18n.All">Alla</xsl:variable>
 	<xsl:variable name="i18n.Published">Publicerade</xsl:variable>

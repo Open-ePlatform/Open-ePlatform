@@ -1759,4 +1759,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="91">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `useIconOnAllFlows` TINYINT(1) UNSIGNED NOT NULL AFTER `iconColor`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

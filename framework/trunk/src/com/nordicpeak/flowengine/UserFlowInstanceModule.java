@@ -133,6 +133,7 @@ import com.nordicpeak.flowengine.notifications.interfaces.Notification;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
+import com.nordicpeak.flowengine.utils.FlowIconUtils;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
@@ -1397,7 +1398,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@Override
 	protected Icon getFlowIcon(Integer flowID) throws SQLException {
 
-		return getBareFlow(flowID);
+		return FlowIconUtils.getFlowIcon(getBareFlow(flowID));
 	}
 
 	@Override
