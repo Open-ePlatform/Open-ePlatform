@@ -634,7 +634,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, uriParser, req, true, true, true, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, user, uriParser, req, true, true, true, true, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -697,7 +697,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 
 		try {
-			return processFlowRequest(instanceManager, this, this, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, this, this, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -718,11 +718,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} catch (QueryInstanceHTMLException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
 
 		} catch (RuntimeException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
 		}
 	}
 
@@ -764,7 +764,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, uriParser, this, true, true, true, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, this, true, true, true, DEFAULT_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")

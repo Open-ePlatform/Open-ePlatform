@@ -22,7 +22,7 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 
 public interface FlowInstanceManager {
 
-	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException;
+	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, User poster, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException;
 
 	public List<PDFManagerResponse> getPDFContent(ImmutableFlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException;
 

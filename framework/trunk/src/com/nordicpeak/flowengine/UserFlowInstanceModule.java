@@ -762,10 +762,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
 
-				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
 			}
 
-			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -779,11 +779,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		} catch (QueryInstanceHTMLException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
 
 		} catch (RuntimeException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
 		}
 	}
 
@@ -811,7 +811,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, uriParser, UPDATE_ACCESS_CONTROLLER, true, true, false, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, UPDATE_ACCESS_CONTROLLER, true, true, false, DEFAULT_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")

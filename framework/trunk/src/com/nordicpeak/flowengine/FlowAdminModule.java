@@ -430,7 +430,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Use flowtype icon upload", description = "Controls whether flowtype icon upload should be used for flowtypes")
 	protected boolean useFlowTypeIconUpload = false;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Use bundle instead of menuitem", description = "Controls whether bundle should be generated instead of menuitem")
 	protected boolean useBundle = false;
@@ -2088,7 +2088,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCacheMap.get(flowID) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -2119,7 +2119,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		try {
-			return processFlowRequest(instanceManager, this, updateAccessController, req, res, user, uriParser, false, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, this, updateAccessController, req, res, user, user, uriParser, false, DEFAULT_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -2200,7 +2200,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2681,7 +2681,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	}
 
 	@Override
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String actionID, EventType eventType) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
+	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
 
 		return null;
 	}
@@ -2791,7 +2791,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flowInstance.getEvents().add(submittedEvent);
 
 				try {
-					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, uriParser, instanceManager, previewAccessController, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
+					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, user, uriParser, instanceManager, previewAccessController, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
 
 					instanceManager.close(queryHandler);
 

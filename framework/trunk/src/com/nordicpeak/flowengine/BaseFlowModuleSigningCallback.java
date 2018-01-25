@@ -26,8 +26,9 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 	private final SiteProfile siteProfile;
 	private final boolean addSubmitEvent;
 	private final long signingChainID;
+	private final User poster;
 	
-	public BaseFlowModuleSigningCallback(BaseFlowModule baseFlowModule, String actionID, EventType submitEventType, SiteProfile siteProfile, boolean addSubmitEvent) {
+	public BaseFlowModuleSigningCallback(BaseFlowModule baseFlowModule, User poster, String actionID, EventType submitEventType, SiteProfile siteProfile, boolean addSubmitEvent) {
 
 		super();
 		this.baseFlowModule = baseFlowModule;
@@ -35,6 +36,7 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		this.submitEventType = submitEventType;
 		this.siteProfile = siteProfile;
 		this.addSubmitEvent = addSubmitEvent;
+		this.poster = poster;
 		
 		signingChainID = System.currentTimeMillis();
 	}
@@ -50,13 +52,13 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		
 		if (addSubmitEvent) {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, req, actionID, EventType.SIGNED, eventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, eventAttributes);
 			
-			submitEvent = baseFlowModule.save(instanceManager, user, req, actionID, submitEventType, eventAttributes);
+			submitEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, submitEventType, eventAttributes);
 			
 		} else {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, req, actionID, EventType.SIGNED, eventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, eventAttributes);
 		}
 		
 		return new SigningConfirmedResponse(signingEvent, submitEvent);

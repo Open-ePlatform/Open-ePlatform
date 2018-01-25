@@ -343,8 +343,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
-
+	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, User poster, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
+		
 		if (session == null) {
 
 			throw new RuntimeException("Session cannot be null");
@@ -389,7 +389,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			checkFlowLimit(user, flow);
 
-			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			SiteProfile profile = getCurrentSiteProfile(req, poster, uriParser, flow.getFlowFamily());
 			
 			callback.checkNewFlowInstanceAccess(flow, user, profile);
 
@@ -412,7 +412,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			
 			InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
 
-			instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, instanceMetadata, requestMetadata, getAbsoluteFileURL(uriParser, flow));
+			instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, poster, instanceMetadata, requestMetadata, getAbsoluteFileURL(uriParser, flow));
 
 			session.setAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + null, instanceManager);
 
@@ -533,7 +533,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		SessionUtils.removeAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID, session);
 	}
 
-	public ForegroundModuleResponse processFlowRequest(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowInstanceAccessController accessController, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, boolean enableSaving, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, ModuleConfigurationException, FlowInstanceManagerClosedException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
+	public ForegroundModuleResponse processFlowRequest(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowInstanceAccessController accessController, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, boolean enableSaving, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, ModuleConfigurationException, FlowInstanceManagerClosedException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
 
 		MultipartRequest multipartRequest = null;
 
@@ -564,7 +564,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							String response = null;
 
 							try {
-								response = instanceManager.populateQueryInCurrentStep(req, user, queryID, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
+								response = instanceManager.populateQueryInCurrentStep(req, user, poster, queryID, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
 							} catch (QueryModificationException e) {
 								log.error("Error populating queryID " + queryID + " in flow instance " + instanceManager, e);
 							}
@@ -587,13 +587,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					FlowDirection flowDirection = parseFlowDirection(req, flowAction);
 
-					managerResponse = instanceManager.populateCurrentStep(req, user, flowDirection, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
+					managerResponse = instanceManager.populateCurrentStep(req, user, poster, flowDirection, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
 
 					if (managerResponse.hasValidationErrors()) {
 
 						// Show form for current step
 						log.info("Validation errors detected in POST from user " + user + " for flow instance " + instanceManager);
-						return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, null, flowAction, requestMetadata);
+						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, null, flowAction, requestMetadata);
 					}
 				}
 
@@ -626,7 +626,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					}
 
 					// Show form for current step
-					return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, null, null, requestMetadata);
+					return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, null, null, requestMetadata);
 
 				} else if (flowAction == FlowAction.CLOSE_AND_REOPEN) {
 
@@ -650,7 +650,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
 
-						save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
 
 						// Check if we need to redirect to new url
 						if (!previouslySaved && enableSaving) {
@@ -660,7 +660,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						}
 					}
 
-					return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, null, flowAction, requestMetadata);
+					return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, null, flowAction, requestMetadata);
 
 				} else if (flowAction == FlowAction.PREVIEW || flowAction == FlowAction.SAVE_AND_PREVIEW) {
 
@@ -668,7 +668,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
 
-						save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
 
 						// Check if we need to redirect to new url
 						if (!previouslySaved) {
@@ -691,15 +691,15 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						// Show form for current step
 						log.info("Preview denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", flow does NOT have preview enabled");
-						return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, PREVIEW_NOT_ENABLED_VALIDATION_ERROR, flowAction, requestMetadata);
+						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, PREVIEW_NOT_ENABLED_VALIDATION_ERROR, flowAction, requestMetadata);
 
 					} else if (!instanceManager.isFullyPopulated()) {
 
 						log.info("Preview denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT fully populated");
-						return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, PREVIEW_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
+						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, PREVIEW_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 
-					return showPreview(req, user, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), null, requestMetadata);
+					return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), null, requestMetadata);
 
 				} else if (flowAction == FlowAction.SAVE_AND_SUBMIT) {
 
@@ -708,10 +708,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					if (!instanceManager.isFullyPopulated()) {
 
 						log.info("Save & submit denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT fully populated");
-						return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
+						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 					
-					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(user, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
+					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(user, poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
 					
 					if (submitCheckResponse != null) {
 						
@@ -728,11 +728,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
 
-								return showPreview(req, user, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
+								return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
 
 							} else {
 
-								return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
+								return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
 							}
 						}
 
@@ -744,7 +744,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							
 							boolean previouslySaved = instanceManager.isPreviouslySaved();
 							
-							save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
 							
 							if (!previouslySaved) {
 								
@@ -774,15 +774,15 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							
 							if (requiresMultiSigning(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getMultiSigningActionID(), instanceProfile, false);
+								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, false);
 
 							} else if (requiresPayment(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, null, callback.getPaymentActionID(), instanceProfile, false);
+								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getPaymentActionID(), instanceProfile, false);
 
 							} else {
 
-								signingCallback = getSigningCallback(instanceManager, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, true);
+								signingCallback = getSigningCallback(instanceManager, poster, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, true);
 							}
 
 							ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
@@ -819,11 +819,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
 
-								return showPreview(req, user, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
+								return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
 
 							} else {
 
-								return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, managerResponse, PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
+								return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
 							}
 						}
 
@@ -833,7 +833,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							log.info("User " + user + " saving and preparing to pay flow instance " + instanceManager.getFlowInstance());
 
-							save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
 
 						} else {
 
@@ -851,7 +851,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							
 							SiteProfile instanceProfile = getSiteProfile(instanceManager);
 
-							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
+							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, poster, instanceProfile, callback.getSubmitActionID()));
 
 							if (res.isCommitted()) {
 
@@ -880,7 +880,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					log.info("User " + user + " saving and submitting flow instance " + instanceManager.getFlowInstance());
 
-					FlowInstanceEvent event = save(instanceManager, user, req, callback.getSubmitActionID(), EventType.SUBMITTED);
+					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null);
 
 					if (enableSaving) {
 
@@ -899,7 +899,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					log.info("User " + user + " saving and closing flow instance " + instanceManager.getFlowInstance());
 
-					FlowInstanceEvent event = save(instanceManager, user, req, callback.getSaveActionID(), EventType.UPDATED);
+					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
 
@@ -920,25 +920,25 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				log.warn("Unable to parse request for flow instance " + instanceManager + " from user " + user, e);
 			}
 
-			return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, null, new FileUploadValidationError(this.maxRequestSize), null, requestMetadata);
+			return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, null, new FileUploadValidationError(this.maxRequestSize), null, requestMetadata);
 
 		} catch (UnableToPopulateQueryInstanceException e) {
 
 			log.error("Error populating flow instance " + instanceManager + " from user " + user, e);
 
-			return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, null, UNABLE_TO_POPULATE_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
+			return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, null, UNABLE_TO_POPULATE_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
 
 		} catch (UnableToResetQueryInstanceException e) {
 
 			log.error("Error populating flow instance " + instanceManager + " from user " + user, e);
 
-			return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, null, UNABLE_TO_RESET_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
+			return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, null, UNABLE_TO_RESET_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
 
 		} catch (UnableToSaveQueryInstanceException e) {
 
 			log.error("Unable to save flow instance " + instanceManager + " from user " + user, e);
 
-			return showCurrentStepForm(instanceManager, callback, req, res, user, uriParser, null, UNABLE_TO_SAVE_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
+			return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, null, UNABLE_TO_SAVE_QUERY_INSTANCE_VALIDATION_ERROR, null, requestMetadata);
 
 		} finally {
 
@@ -959,9 +959,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		instanceManager.close(queryHandler);
 	}
 
-	protected SigningCallback getSigningCallback(MutableFlowInstanceManager instanceManager, EventType eventType, String actionID, SiteProfile siteProfile, boolean addSubmitEvent) {
+	protected SigningCallback getSigningCallback(MutableFlowInstanceManager instanceManager, User poster, EventType eventType, String actionID, SiteProfile siteProfile, boolean addSubmitEvent) {
 
-		return new BaseFlowModuleSigningCallback(this, actionID, eventType, siteProfile, addSubmitEvent);
+		return new BaseFlowModuleSigningCallback(this, poster, actionID, eventType, siteProfile, addSubmitEvent);
 	}
 
 	protected void redirectToSignError(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, MutableFlowInstanceManager instanceManager) throws IOException {
@@ -1135,22 +1135,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return req.getContextPath() + this.getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
 	}
 	
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String actionID, EventType eventType) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
-
-		return save(instanceManager, user, req, actionID, eventType, user, null);
-	}
-
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
-
-		return save(instanceManager, user, req, actionID, eventType, user, eventAttributes);
-	}
-
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String actionID, EventType eventType, User poster) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
-		
-		return save(instanceManager, user, req, actionID, eventType, poster, null);
-	}
-	
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req, String actionID, EventType eventType, User poster, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
+	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
 
 		HttpSession session = null;
 
@@ -1164,7 +1149,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		setFlowStatus(instanceManager, actionID);
 
-		Timestamp savedTimestamp = instanceManager.saveInstance(this, poster, eventType);
+		Timestamp savedTimestamp = instanceManager.saveInstance(this, user, poster, eventType);
 
 		CRUDAction crudAction;
 
@@ -1183,7 +1168,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (!instanceManager.getFlowInstance().getStatus().getContentType().equals(ContentType.NEW)) {
 
-			event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, poster, savedTimestamp, eventAttributes);
+			event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), eventType, null, user, savedTimestamp, eventAttributes);
 		}
 
 		eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(crudAction, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
@@ -1307,13 +1292,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected ForegroundModuleResponse showCurrentStepForm(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ManagerResponse managerResponse, ValidationError validationError, FlowAction lastFlowAction, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceFormHTMLException {
+	protected ForegroundModuleResponse showCurrentStepForm(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, ManagerResponse managerResponse, ValidationError validationError, FlowAction lastFlowAction, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceFormHTMLException {
 
 		log.info("User " + user + " requested form for step " + (instanceManager.getCurrentStepIndex() + 1) + ". " + instanceManager.getCurrentStep() + " in flow instance " + instanceManager.getFlowInstance());
 
 		if (managerResponse == null) {
 
-			managerResponse = instanceManager.getCurrentStepFormHTML(queryHandler, req, user, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
+			managerResponse = instanceManager.getCurrentStepFormHTML(queryHandler, req, user, poster, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
 		}
 
 		Document doc = createDocument(req, uriParser, user);
@@ -1334,7 +1319,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			flowInstanceManagerFormElement.appendChild(validationError.toXML(doc));
 		}
 
-		if (user != null) {
+		if (poster != null) {
 			XMLUtils.appendNewElement(doc, flowInstanceManagerFormElement, "loggedIn");
 		}
 
@@ -1347,13 +1332,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return moduleResponse;
 	}
 
-	protected ForegroundModuleResponse showPreview(HttpServletRequest req, User user, URIParser uriParser, MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowAction lastFlowAction, String baseUpdateURL, ValidationError validationError, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
+	protected ForegroundModuleResponse showPreview(HttpServletRequest req, User user, User poster, URIParser uriParser, MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowAction lastFlowAction, String baseUpdateURL, ValidationError validationError, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException {
 
 		log.info("User " + user + " requested preview of flow instance " + instanceManager.getFlowInstance());
 		
 		req.setAttribute("BaseFlowModule.preview", "preview");
 
-		List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, baseUpdateURL, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
+		List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, poster, this, true, baseUpdateURL, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
 
 		Document doc = createDocument(req, uriParser, user);
 		Element flowInstanceManagerPreviewElement = doc.createElement("FlowInstanceManagerPreview");
@@ -1365,7 +1350,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		XMLUtils.appendNewElement(doc, flowInstanceManagerPreviewElement, "lastFlowAction", lastFlowAction);
 
-		if (user != null) {
+		if (poster != null) {
 			XMLUtils.appendNewElement(doc, flowInstanceManagerPreviewElement, "loggedIn");
 		}
 		
@@ -1486,16 +1471,16 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			breadcrumb = this.getFlowInstancePreviewBreadcrumb(instanceManager.getFlowInstance(), req, uriParser);
 		}
 
-		return showFlowInstance(req, res, user, uriParser, instanceManager, accessController, callback, elementName, breadcrumb, showMode, requestMetadata);
+		return showFlowInstance(req, res, user, null, uriParser, instanceManager, accessController, callback, elementName, breadcrumb, showMode, requestMetadata);
 	}
 
-	protected ForegroundModuleResponse showFlowInstance(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceManager instanceManager, FlowInstanceAccessController accessController, FlowProcessCallback callback, String elementName, Breadcrumb breadcrumb, ShowMode showMode, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException, AccessDeniedException, SQLException, ModuleConfigurationException {
+	protected ForegroundModuleResponse showFlowInstance(HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, FlowInstanceManager instanceManager, FlowInstanceAccessController accessController, FlowProcessCallback callback, String elementName, Breadcrumb breadcrumb, ShowMode showMode, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException, FlowInstanceManagerClosedException, AccessDeniedException, SQLException, ModuleConfigurationException {
 
 		log.info("User " + user + " requested preview of flow instance " + instanceManager.getFlowInstance());
 
 		String baseUpdateURL = getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController);
 
-		List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, baseUpdateURL, getImmutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
+		List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, poster, this, true, baseUpdateURL, getImmutableQueryRequestBaseURL(req, instanceManager), requestMetadata);
 
 		Document doc = createDocument(req, uriParser, user);
 		Element flowInstanceManagerElement = doc.createElement(elementName);
@@ -1714,7 +1699,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return daoFactory;
 	}
 
-	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
+	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
 		Integer flowID = null;
 
@@ -1732,7 +1717,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				queryID = NumberUtils.toInt(uriParser.get(4));
 
 				//Get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, uriParser, req, false, checkEnabled, checkPublishDate, checkFlowTypeAccess, requestMetadata);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, poster, uriParser, req, false, checkEnabled, checkPublishDate, checkFlowTypeAccess, requestMetadata);
 
 			} else if (uriParser.size() > 5 && NumberUtils.isInt(uriParser.get(3)) && uriParser.get(4).equals("q") && NumberUtils.isInt(uriParser.get(5))) {
 
@@ -2345,7 +2330,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
-	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, User poster, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
@@ -2354,7 +2339,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 
-		FlowInstanceEvent event = save(instanceManager, user, req, actionID, EventType.SUBMITTED, getPaymentCompleteSubmitEventAttributes(instanceManager));
+		FlowInstanceEvent event = save(instanceManager, user, poster, req, actionID, EventType.SUBMITTED, getPaymentCompleteSubmitEventAttributes(instanceManager));
 
 		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 

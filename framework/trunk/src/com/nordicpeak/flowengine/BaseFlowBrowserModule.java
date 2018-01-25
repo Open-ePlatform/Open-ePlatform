@@ -36,7 +36,7 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 	
 	protected static final RequestMetadata DEFAULT_REQUEST_METADATA = new RequestMetadata(false);
 
-	protected ForegroundModuleResponse processFlowRequestException(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, Exception e) throws SQLException, ModuleConfigurationException {
+	protected ForegroundModuleResponse processFlowRequestException(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, Exception e) throws SQLException, ModuleConfigurationException {
 
 		log.error("Error processing flow instance " + instanceManager + " belonging to user " + user + ". Trying to save flow instance...", e);
 
@@ -45,13 +45,13 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 				if(instanceManager.getFlowInstance().getStepID() != null){
 				
 					//TODO add flow instance event
-					instanceManager.saveInstance(this, user, EventType.UPDATED);
+					instanceManager.saveInstance(this, user, poster, EventType.UPDATED);
 					
 					rebindFlowInstance(req.getSession(), instanceManager);
 					
 					log.info("Saved flow instance " + instanceManager + " belonging to user " + user + " after previous exception.");
 
-					return list(req, res, user, uriParser, Collections.singletonList(FLOW_INSTANCE_ERROR_DATA_SAVED_VALIDATION_ERROR));					
+					return list(req, res, user, uriParser, Collections.singletonList(FLOW_INSTANCE_ERROR_DATA_SAVED_VALIDATION_ERROR));
 				}
 
 			} catch (FlowInstanceManagerClosedException e1) {

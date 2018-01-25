@@ -24,4 +24,8 @@ public class Constants {
 	public static final String FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE = "description";
 	
 	public static final String FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE = "descriptionGenerated";
+	
+	public static final String FLOW_INSTANCE_ADDED_BY_MANAGER_ATTRIBUTE = "addedByManager";
+	
+	public static final String FLOW_INSTANCE_PREPARED_BY_MANAGER_ATTRIBUTE = "preparedByManager";
 }
