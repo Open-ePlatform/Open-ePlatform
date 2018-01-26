@@ -18,5 +18,10 @@ public interface TreeNode extends Map<String, TreeNode>{
 	
 	public TreeNode put(TreeNode node);
 	
+	public TreeNode remove(TreeNode node);
+	
+	public TreeNode remove(String key);
+		
 	public void setParent(TreeNode parent);
+	
 }

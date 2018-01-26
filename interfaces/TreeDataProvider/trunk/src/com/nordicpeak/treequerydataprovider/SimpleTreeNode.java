@@ -41,6 +41,7 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		return super.put(key, node);
 	}
 	
+	@Override
 	public TreeNode remove(TreeNode node) {
 
 		super.remove(node.getKey());
@@ -49,6 +50,7 @@ public class SimpleTreeNode extends LinkedHashMap<String, TreeNode> implements T
 		return node;
 	}
 	
+	@Override
 	public TreeNode remove(String key) {
 
 		TreeNode node = super.remove(key);
