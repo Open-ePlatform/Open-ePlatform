@@ -248,6 +248,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	@Override
 	public ViewFragment getShowView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
+		if(!AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)){
+			
+			return null;
+		}
+		
 		Document doc = createDocument(req, uriParser, user);
 
 		Element showViewElement = doc.createElement("ShowSettings");
@@ -534,7 +539,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	@WebPublic()
 	public ForegroundModuleResponse export(HttpServletRequest req, final HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-
+		
 		log.info("User " + user + " exporting person data settings");
 
 		String[] familyParams = req.getParameterValues("flowFamilyID");
