@@ -4,7 +4,7 @@
 
 	<xsl:include href="TextTagAdminModuleTemplates.xsl"/>
 	
-	<xsl:variable name="i18n.TextTagDescription">Taggar används för att kunna få olika texter beroende på aktuell profil i e-tjänsteplattformen. Läs mer om hur du använder taggar under "Hjälp" nedan.</xsl:variable>
+	<xsl:variable name="i18n.TextTagDescription">Taggar används för att kunna återanvända texter i e-tjänsteplattformen. Läs mer om hur du använder taggar under "Hjälp" nedan.</xsl:variable>
 	
 	<xsl:variable name="i18n.Name">Taggens namn</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
@@ -33,7 +33,7 @@
 	<xsl:variable name="i18n.TextTagTitle.Part2.Plural">taggar</xsl:variable>
 
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
-	<xsl:variable name="i18n.TextTagAdminHelp">Inkludera taggar i texter genom att skriva: ${taggens namn}. För att erhålla olika värden per profil, gå in under profiler och ställ in önskade värden för den aktuella taggen.</xsl:variable>
+	<xsl:variable name="i18n.TextTagAdminHelp">Inkludera taggar i texter genom att skriva: ${taggens namn}.</xsl:variable>
 	
 	<xsl:variable name="i18n.validation.requiredField" select="'Du behöver fylla i fältet'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet'"/>
@@ -42,4 +42,6 @@
 	<xsl:variable name="i18n.validation.unknownError" select="'Okänt fel på fältet'"/>
 	<xsl:variable name="i18n.unknownFault" select="'Ett okänt fel har uppstått'"/>
 	
+	<xsl:variable name="i18n.Filter">Sök</xsl:variable>
+	<xsl:variable name="i18n.Preview">Visa</xsl:variable>
 </xsl:stylesheet>

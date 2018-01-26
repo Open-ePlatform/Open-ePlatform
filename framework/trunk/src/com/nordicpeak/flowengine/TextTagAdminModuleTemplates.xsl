@@ -18,6 +18,7 @@
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.helpdialog.js
+		/js/flowengine.tablefilter.js
 		/js/texttagadminmodule.js
 	</xsl:variable>
 	
@@ -40,14 +41,22 @@
 	<xsl:template match="ListTextTags">
 		
 		<xsl:apply-templates select="validationError"/>
-		
+
 		<section class="settings">
 			
 			<div class="heading-wrapper">
+			
+				<div class="floatright bigmarginright" style="margin-top: 15px; margin-right: 35px;">
+					<label for="tag-filter-input" class="bigmarginright" style="margin-top: 15px;"><xsl:value-of select="$i18n.Filter" />:</label>
+					<input type="text" size="20" name="tag-filter-input" class="filter-input" data-tableid="taglist" />
+				</div>			
+			
 				<h1>
 					<xsl:value-of select="/Document/module/name" />
 				</h1>
+				
 				<p class="description"><xsl:value-of select="$i18n.TextTagDescription" /></p>
+				
 			</div>
 			
 			<xsl:variable name="textTagCount" select="count(TextTags/TextTag)" />
@@ -89,7 +98,7 @@
 					<div class="help-backdrop" data-help-box="helpdialog" />
 					
 				</div>
-				<table class="full oep-table" cellspacing="0">
+				<table class="full oep-table" cellspacing="0" id="taglist">
 					<thead class="sortable">
 						<tr>
 							<th class="icon no-sort"></th>
@@ -119,6 +128,8 @@
 					</tbody>
 				</table>	
 					
+				<xsl:apply-templates select="TextTags/TextTag" mode="preview" />					
+					
 			</div>
 			
 			<article class="buttons">
@@ -134,16 +145,32 @@
 	<xsl:template match="TextTag" mode="list">
 	
 		<tr>
-			<td />
+			<td>
+				<input type="checkbox" name="textTagID" value="{textTagID}" style="display: inherit;"/>
+			</td>
 			<td data-title="{$i18n.Name}" class="name"><xsl:value-of select="name" /></td>
 			<td data-title="{$i18n.Description}" class="description"><xsl:value-of select="description" /></td>
 			<td class="link">
-				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{name}"><xsl:value-of select="$i18n.Update" /></a>
+				<a class="open-help btn btn-blue vertical-align-middle" data-help-box="tag-preview-{textTagID}" href="#"><xsl:value-of select="$i18n.Preview" /></a>
+				<a class="btn btn-green vertical-align-middle" style="margin-left: 2px" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{name}"><xsl:value-of select="$i18n.Update" /></a>
 				<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" data-icon-before="x" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{name}" onclick="return confirm('{$i18n.DeleteTextTagConfirm}: {name}?');"></a>
 			</td>
 		</tr>
 	
 	</xsl:template>
+	
+	<xsl:template match="TextTag" mode="preview">
+	
+		<div class="help-box" data-help-box="tag-preview-{textTagID}">
+			<div>
+	  			<div> 
+	  				<a class="close" href="#" data-icon-after="x"></a>
+	  				<xsl:value-of select="defaultValue" disable-output-escaping="yes"/>
+	  			</div> 
+			</div>
+		</div>
+	
+	</xsl:template>	
 	
 	<xsl:template match="AddTextTag">
 
