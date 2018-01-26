@@ -111,8 +111,8 @@
 				<option value="published"><xsl:value-of select="$i18n.Published" /></option>
 				<option value="unpublished"><xsl:value-of select="$i18n.Unpublished" /></option>
 			</select>
-			<label for="name" class="bigmarginleft marginright margintop"><xsl:value-of select="$i18n.Filter" />:</label>
-			<input type="text" size="20" name="flow-filter-input" class="flow-filter-input" data-tableid="flowlist" />
+			<label for="flow-filter-input" class="bigmarginleft marginright margintop"><xsl:value-of select="$i18n.Filter" />:</label>
+			<input type="text" size="20" id="flow-filter-input" class="flow-filter-input" data-tableid="flowlist" />
 		</div>
 		
 		<table id="flowlist" class="clearboth full coloredtable oep-table" cellspacing="0">
