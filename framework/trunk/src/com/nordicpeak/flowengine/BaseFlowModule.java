@@ -1254,7 +1254,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				return FlowDirection.BACKWARD;
 			}
 
-		}else if(flowAction == FlowAction.SAVE){
+		}else if(flowAction == FlowAction.SAVE || flowAction == FlowAction.SAVE_AND_CLOSE){
 
 			return FlowDirection.STAY_AND_POPULATE_PARTIALLY;
 		}
