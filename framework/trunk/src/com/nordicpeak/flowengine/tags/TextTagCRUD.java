@@ -1,9 +1,13 @@
-package com.nordicpeak.flowengine.cruds;
+package com.nordicpeak.flowengine.tags;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
@@ -12,11 +16,9 @@ import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.TextTagAdminModule;
-import com.nordicpeak.flowengine.beans.TextTag;
 
 
 public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdminModule> {
@@ -99,6 +101,12 @@ public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdmin
 		}
 
 		return null;
+	}
+
+	@Override
+	protected void appendListFormData(Document doc, Element listTypeElement, User user, HttpServletRequest req, URIParser uriParser, List<ValidationError> validationError) throws SQLException {
+
+		XMLUtils.append(doc, listTypeElement, "TagSharingTargets", callback.getTagSharingTargets());
 	}
 	
 }

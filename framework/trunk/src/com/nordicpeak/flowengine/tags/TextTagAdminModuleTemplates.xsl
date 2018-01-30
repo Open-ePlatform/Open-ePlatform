@@ -20,6 +20,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.tablefilter.js
 		/js/texttagadminmodule.js
+		/js/texttagadmin.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -42,111 +43,152 @@
 		
 		<xsl:apply-templates select="validationError"/>
 
-		<section class="settings">
-			
-			<div class="heading-wrapper">
-			
-				<div class="floatright bigmarginright" style="margin-top: 15px; margin-right: 35px;">
-					<label for="tag-filter-input" class="bigmarginright" style="margin-top: 15px;"><xsl:value-of select="$i18n.Filter" />:</label>
-					<input type="text" size="20" name="tag-filter-input" class="filter-input" data-tableid="taglist" />
-				</div>			
-			
-				<h1>
-					<xsl:value-of select="/Document/module/name" />
-				</h1>
-				
-				<p class="description"><xsl:value-of select="$i18n.TextTagDescription" /></p>
-				
-			</div>
-			
-			<xsl:variable name="textTagCount" select="count(TextTags/TextTag)" />
-			
-			<div class="errands-wrapper draft">
+		<form method="POST" action="{/Document/requestinfo/currentURI}/{/Document/module/alias}/share">
+
+			<section class="settings">
 				
 				<div class="heading-wrapper">
-					<h3>
-						<xsl:value-of select="$i18n.TextTagTitle.Part1" />
-						<xsl:text>&#160;</xsl:text>
-						
-						<strong>
-							<xsl:value-of select="$textTagCount" />
-							<xsl:text>&#160;</xsl:text>
-						</strong>
-						
-						<xsl:choose>
-							<xsl:when test="$textTagCount > 1">
-								<xsl:value-of select="$i18n.TextTagTitle.Part2.Plural" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$i18n.TextTagTitle.Part2" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</h3>
+				
+					<div class="floatright bigmarginright" style="margin-top: 15px; margin-right: 35px;">
+						<label for="tag-filter-input" class="bigmarginright" style="margin-top: 15px;"><xsl:value-of select="$i18n.Filter" />:</label>
+						<input type="text" size="20" name="tag-filter-input" class="filter-input" data-tableid="taglist" />
+					</div>			
+				
+					<h1>
+						<xsl:value-of select="/Document/module/name" />
+					</h1>
 					
-					<div class="help">
-						<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog"><span><xsl:value-of select="$i18n.Help" /></span></a>
-						<div class="help-box" data-help-box="helpdialog">
-							<div>
-					  			<div> 
-					  				<a class="close" href="#" data-icon-after="x"></a>
-					  				<xsl:value-of select="$i18n.TextTagAdminHelp" />
-					  			</div> 
-							</div>
-						</div>
-					</div>
-		
-					<div class="help-backdrop" data-help-box="helpdialog" />
+					<p class="description"><xsl:value-of select="$i18n.TextTagDescription" /></p>
 					
 				</div>
-				<table class="full oep-table" cellspacing="0" id="taglist">
-					<thead class="sortable">
-						<tr>
-							<th class="icon no-sort"></th>
-							<th class="id default-sort">
-								<span><xsl:value-of select="$i18n.Name" /></span>
-							</th>
-							<th class="description">
-								<span><xsl:value-of select="$i18n.Description" /></span>
-							</th>
-							<th class="link no-sort" />
-						</tr>
-					</thead>
-					<tbody>
-						
-						<xsl:choose>
-							<xsl:when test="TextTags/TextTag">
-								<xsl:apply-templates select="TextTags/TextTag" mode="list" />
-							</xsl:when>
-							<xsl:otherwise>
-								<tr>
-									<td />
-									<td colspan="3"><xsl:value-of select="$i18n.NoTextTags" /></td>
-								</tr>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-					</tbody>
-				</table>	
+				
+				<xsl:variable name="textTagCount" select="count(TextTags/TextTag)" />
+				
+				<div class="errands-wrapper draft">
 					
-				<xsl:apply-templates select="TextTags/TextTag" mode="preview" />					
+					<div class="heading-wrapper">
+						<h3>
+							<xsl:value-of select="$i18n.TextTagTitle.Part1" />
+							<xsl:text>&#160;</xsl:text>
+							
+							<strong>
+								<xsl:value-of select="$textTagCount" />
+								<xsl:text>&#160;</xsl:text>
+							</strong>
+							
+							<xsl:choose>
+								<xsl:when test="$textTagCount > 1">
+									<xsl:value-of select="$i18n.TextTagTitle.Part2.Plural" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.TextTagTitle.Part2" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</h3>
+						
+						<div class="help">
+							<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog"><span><xsl:value-of select="$i18n.Help" /></span></a>
+							<div class="help-box" data-help-box="helpdialog">
+								<div>
+						  			<div> 
+						  				<a class="close" href="#" data-icon-after="x"></a>
+						  				<xsl:value-of select="$i18n.TextTagAdminHelp" />
+						  			</div> 
+								</div>
+							</div>
+						</div>
+			
+						<div class="help-backdrop" data-help-box="helpdialog" />
+						
+					</div>
+					<table class="full oep-table" cellspacing="0" id="taglist">
+						<thead class="sortable">
+							<tr>
+								<th class="icon no-sort"></th>
+								<th class="id default-sort">
+									<span><xsl:value-of select="$i18n.Name" /></span>
+								</th>
+								<th class="description">
+									<span><xsl:value-of select="$i18n.Description" /></span>
+								</th>
+								<th class="link no-sort" />
+							</tr>
+						</thead>
+						<tbody>
+							
+							<xsl:choose>
+								<xsl:when test="TextTags/TextTag">
+									<xsl:apply-templates select="TextTags/TextTag" mode="list" />
+								</xsl:when>
+								<xsl:otherwise>
+									<tr>
+										<td />
+										<td colspan="3"><xsl:value-of select="$i18n.NoTextTags" /></td>
+									</tr>
+								</xsl:otherwise>
+							</xsl:choose>
+							
+						</tbody>
+					</table>	
+						
+					<xsl:apply-templates select="TextTags/TextTag" mode="preview" />					
+						
+				</div>
+				
+				<article class="buttons">
+			
+					<a class="btn btn-green btn-right" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/add"><xsl:value-of select="$i18n.AddTextTag" /></a>
 					
+					<xsl:if test="TagSharingTargets and TextTags">
+					
+						<a class="btn btn-blue btn-right disabled open-help" id="share-button" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
+					
+					</xsl:if>
+			
+				</article>
+				
+			</section>
+	
+			<div class="help-box" data-help-box="tag-sharing">
+				<div>
+		  			<div class="no-sections"> 
+		  				<a class="close" href="#" data-icon-after="x"></a>
+		  				
+		  				<h1><xsl:value-of select="$i18n.SelectTargets.Title" /></h1>
+		  				
+		  				<p><xsl:value-of select="$i18n.SelectTargets.Description" /></p>
+		  				
+	 					<xsl:apply-templates select="TagSharingTargets/TagSharingTarget"/>
+	  					
+	  					<h2 class="bigmargintop"><xsl:value-of select="$i18n.SelectTargets.Settings" /></h2>
+	  					
+						<input type="checkbox" name="overwrite" id="overwrite" value="true" style="display: inline-block;"/>
+	
+						<xsl:text> </xsl:text>
+						
+						<label for="overwrite" style="display: inline-block !important;">
+							<xsl:value-of select="$i18n.SelectTargets.Overwrite"/>
+						</label>
+						
+						<br/>
+	  						
+	  					<input type="submit" id="share-submit-button" disabled="true" class="floatright btn btn-green bigmargintop" value="{$i18n.SelectTargets.Submit}"/>
+		  				
+		  			</div> 
+				</div>
 			</div>
-			
-			<article class="buttons">
 		
-				<a class="btn btn-green btn-right" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/add"><xsl:value-of select="$i18n.AddTextTag" /></a>
-		
-			</article>
-			
-		</section>
-		
+		</form>
+
 	</xsl:template>
 	
 	<xsl:template match="TextTag" mode="list">
 	
 		<tr>
 			<td>
-				<input type="checkbox" name="textTagID" value="{textTagID}" style="display: inherit;"/>
+				<xsl:if test="../../TagSharingTargets">
+					<input type="checkbox" class="tag" name="textTagID" value="{textTagID}" style="display: inherit;"/>
+				</xsl:if>
 			</td>
 			<td data-title="{$i18n.Name}" class="name"><xsl:value-of select="name" /></td>
 			<td data-title="{$i18n.Description}" class="description"><xsl:value-of select="description" /></td>
@@ -170,7 +212,21 @@
 			</div>
 		</div>
 	
-	</xsl:template>	
+	</xsl:template>
+	
+	<xsl:template match="TagSharingTarget">
+	
+			<input type="checkbox" name="target" id="target{position()}" value="{name}" style="display: inline-block;"/>
+			
+			<xsl:text> </xsl:text>
+			
+			<label for="target{position()}" style="display: inline-block !important;">
+				<xsl:value-of select="name"/>
+			</label>
+			
+			<br/>
+	
+	</xsl:template>
 	
 	<xsl:template match="AddTextTag">
 

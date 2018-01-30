@@ -44,4 +44,12 @@
 	
 	<xsl:variable name="i18n.Filter">Sök</xsl:variable>
 	<xsl:variable name="i18n.Preview">Visa</xsl:variable>
+	<xsl:variable name="i18n.ShareTextTags">Dela taggar</xsl:variable>
+	
+	<xsl:variable name="i18n.SelectTargets.Title">Dela taggar</xsl:variable>
+	<xsl:variable name="i18n.SelectTargets.Description">Välj till vilka miljöer som du vill dela de valda taggarna.</xsl:variable>
+	<xsl:variable name="i18n.SelectTargets.Submit">Dela</xsl:variable>
+	
+	<xsl:variable name="i18n.SelectTargets.Settings">Inställningar</xsl:variable>
+	<xsl:variable name="i18n.SelectTargets.Overwrite">Skriv över värdet om taggarna finns sen tidigare</xsl:variable>
 </xsl:stylesheet>
