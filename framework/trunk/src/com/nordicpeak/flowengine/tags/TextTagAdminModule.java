@@ -232,6 +232,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 					existingTag.setName(importTag.getName());
 					existingTag.setDescription(importTag.getDescription());
 					existingTag.setDefaultValue(importTag.getDefaultValue());
+					existingTag.setType(importTag.getType());
 					
 					log.info("Updating tag " + existingTag);
 					textTagDAO.update(existingTag);
