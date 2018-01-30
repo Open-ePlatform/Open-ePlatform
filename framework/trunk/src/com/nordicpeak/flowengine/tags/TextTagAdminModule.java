@@ -236,6 +236,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 					
 					log.info("Updating tag " + existingTag);
 					textTagDAO.update(existingTag);
+					ensureDefaultValue(existingTag);
 					
 				}else{
 					
@@ -246,8 +247,11 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 				
 				log.info("Adding tag " + importTag);
 				textTagDAO.add(importTag);
+				ensureDefaultValue(importTag);
 			}
 		}
+		
+		cacheSiteProfileSettings();
 	}
 	
 	private TextTag getTag(String name) throws SQLException {
