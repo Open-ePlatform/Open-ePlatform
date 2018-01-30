@@ -101,7 +101,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	protected String shareFlowTitle;
 	
 	@ModuleSetting(allowsNull = true)
-	@TextAreaSettingDescriptor(name = "Repositories", description = "http|https://url:username:password", formatValidator = RepositoryConfigurationValidator.class)
+	@TextAreaSettingDescriptor(name = "Repositories", description = "https://url:username:password", formatValidator = RepositoryConfigurationValidator.class)
 	protected List<String> repositoriesSettings;
 	
 	@ModuleSetting
