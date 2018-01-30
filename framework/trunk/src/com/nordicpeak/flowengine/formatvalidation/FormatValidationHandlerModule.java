@@ -219,7 +219,7 @@ public class FormatValidationHandlerModule extends AnnotatedForegroundModule imp
 			throw new NullPointerException("Format validator cannot be null");
 		}
 		
-		boolean removed = validatorMap.remove(formatValidator) != null;
+		boolean removed = validatorMap.remove(formatValidator.getClassName()) != null;
 		
 		if(removed){
 			
