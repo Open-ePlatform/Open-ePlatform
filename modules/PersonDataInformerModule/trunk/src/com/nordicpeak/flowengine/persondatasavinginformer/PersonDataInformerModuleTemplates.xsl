@@ -262,13 +262,13 @@
 		
 		<a href="{/Document/ModuleURI}/updateflowsettings/{Flow/flowID}" class="floatright">
 			<xsl:value-of select="$i18n.UpdateSettings" />
-			<img class="alignbottom" src="{/Document/StaticContentURL}/pics/pen.png" alt="" />
+			<img class="marginleft vertical-align-bottom" src="{/Document/StaticContentURL}/pics/pen.png" alt="" />
 		</a>
 		
 		<xsl:if test="FlowFamilyInformerSetting">
 			<a href="{/Document/ModuleURI}/deleteflowsettings/{Flow/flowID}" class="floatright clearboth" onclick="return confirm('{$i18n.DeleteSettings.Confirm}');">
 				<xsl:value-of select="$i18n.DeleteSettings" />
-				<img class="alignbottom" src="{/Document/StaticContentURL}/pics/delete.png" alt="" />
+				<img class="marginleft vertical-align-bottom" src="{/Document/StaticContentURL}/pics/delete.png" alt="" />
 			</a>		
 		</xsl:if>
 	
@@ -544,7 +544,7 @@
 		
 		</div>
 
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="InformerDataAlternative" mode="form">
 
