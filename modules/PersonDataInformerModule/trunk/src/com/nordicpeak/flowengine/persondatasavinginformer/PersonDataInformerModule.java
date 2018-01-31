@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +64,7 @@ import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.XSLVariableReader;
+import se.unlogic.standardutils.xsl.XSLVariableReaderRenamer;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
@@ -142,7 +145,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
-	private List<ScriptTag> updateScriptTags;
+	private List<ScriptTag> updateGlobalScriptTags;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -241,7 +244,9 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		if (variableReader != null) {
 
-			updateScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, "updateglobalscripts"));
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("globalscripts", "updateglobalscripts");
+			updateGlobalScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, map));
 		}
 	}
 
@@ -452,7 +457,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		}
 
 		SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
-		response.addScripts(updateScriptTags);
+		response.addScripts(updateGlobalScriptTags);
 
 		return response;
 	}
