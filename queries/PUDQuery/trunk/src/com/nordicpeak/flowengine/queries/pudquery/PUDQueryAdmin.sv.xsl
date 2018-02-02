@@ -5,7 +5,7 @@
 	<xsl:include href="classpath://com/nordicpeak/flowengine/queries/common/xsl/QueryAdminCommon.sv.xsl"/>
 	<xsl:include href="PUDQueryAdminTemplates.xsl"/>
 	
-	<xsl:variable name="java.queryTypeName">Ange fastighetsbeteckning</xsl:variable>
+	<xsl:variable name="java.queryTypeName">Ange adress eller fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="java.lmUserSettingName">Användare Lantmäteriet</xsl:variable>
 	<xsl:variable name="java.lmUserSettingDescription">Användare som används för anrop mot lantmäteriet via Search LM</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingName">Sökprefix</xsl:variable>

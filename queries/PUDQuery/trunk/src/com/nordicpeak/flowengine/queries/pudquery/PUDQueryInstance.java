@@ -18,12 +18,13 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryInstance;
 
 @Table(name = "pud_query_instances")
 @XMLElement
-public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance {
+public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance {
 
 	private static final long serialVersionUID = -405719839906745735L;
 
@@ -170,6 +171,17 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 	@Override
 	public String getFreeTextAlternativeValue() {
 		return null;
+	}
+
+	@Override
+	public String getStringValue() {
+
+		if(propertyUnitDesignation != null) {
+			
+			return propertyUnitDesignation;
+		}
+		
+		return address;
 	}
 
 }
