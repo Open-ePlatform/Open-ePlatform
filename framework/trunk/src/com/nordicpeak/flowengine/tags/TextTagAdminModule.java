@@ -221,6 +221,8 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 
 	public void importTags(List<TextTag> tags, boolean overwrite) throws SQLException {
 		
+		List<TextTag> importedTags = new ArrayList<TextTag>(tags.size());
+		
 		for(TextTag importTag : tags) {
 			
 			TextTag existingTag = getTag(importTag.getName());
@@ -236,7 +238,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 					
 					log.info("Updating tag " + existingTag);
 					textTagDAO.update(existingTag);
-					ensureDefaultValue(existingTag);
+					importedTags.add(existingTag);
 					
 				}else{
 					
@@ -247,11 +249,16 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 				
 				log.info("Adding tag " + importTag);
 				textTagDAO.add(importTag);
-				ensureDefaultValue(importTag);
+				importedTags.add(importTag);
 			}
 		}
 		
 		cacheSiteProfileSettings();
+		
+		for(TextTag textTag : importedTags) {
+			
+			ensureDefaultValue(textTag);
+		}
 	}
 	
 	private TextTag getTag(String name) throws SQLException {
