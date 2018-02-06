@@ -25,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
@@ -158,6 +159,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@TextAreaSettingDescriptor(name = "Recommended tags (one search tag per line)", description = "Recommended tag listed between flow search form (one search tag per line)", required = false)
 	private List<String> recommendedTags;
 
+	@ModuleSetting(allowsNull = true)
+	@HTMLEditorSettingDescriptor(name = "Search description", description = "Search description displayed above the search input field")
+	private String searchDescription;
+	
 	@XSLVariable(prefix = "java.")
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Search hints", description = "Search hints used as placeholder for search input field", required = true)
@@ -422,6 +427,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "popularFlowCount", popularFlowCount);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
+			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchDescription", searchDescription);
 
 			if (useCategoryFilter) {
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "useCategoryFilter", true);
