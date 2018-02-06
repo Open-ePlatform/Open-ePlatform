@@ -522,7 +522,14 @@
 					</xsl:when>
 					<xsl:when test="count($flow/FlowForms/FlowForm) = 1">
 					
-						<a class="btn btn-blue xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{$flow/flowID}/{$flow/FlowForms/FlowForm[1]/flowFormID}" target="_blank"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
+						<a class="btn btn-blue xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{$flow/flowID}/{$flow/FlowForms/FlowForm[1]/flowFormID}" target="_blank">
+							
+							<xsl:if test="$flow/FlowForms/FlowForm/showExternalLinkIcon = 'true'">
+								<xsl:attribute name="data-icon-after">e</xsl:attribute>
+							</xsl:if>							
+							
+							<xsl:value-of select="$i18n.DownloadFlowForm" />
+						</a>
 						
 					</xsl:when>
 					<xsl:otherwise>
@@ -562,6 +569,9 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			
+			<xsl:if test="showExternalLinkIcon = 'true'">
+				<span class="bigmarginleft" data-icon-before="e" />
+			</xsl:if>
 		</a>
 	
 	</xsl:template>

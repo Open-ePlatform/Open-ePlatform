@@ -54,6 +54,11 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 	@XMLElement
 	private String externalURL;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean showExternalLinkIcon;
+	
 	private transient byte[] importFileContents = null;
 	
 	public Integer getFlowFormID() {
@@ -139,6 +144,8 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 				errors.add(new UnableToParseFileValidationError(name));
 			}
 		}
+		
+		this.showExternalLinkIcon = xmlParser.getPrimitiveBoolean("showExternalLinkIcon");
 		
 		if (!errors.isEmpty()) {
 			

@@ -513,4 +513,6 @@
 	<xsl:variable name="i18n.UnpublishFlowFamilyConfirm">Är du säker på att du vill avpublicera alla versioner av e-tjänsten?</xsl:variable>
 	
 	<xsl:variable name="i18n.ReCacheFlow">Cacha om e-tjänst</xsl:variable>
+	<xsl:variable name="i18n.FlowForm.externalIcon">Visa ikon för extern länk</xsl:variable>
+	
 </xsl:stylesheet>

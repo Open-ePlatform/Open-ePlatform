@@ -3341,6 +3341,22 @@
 				</xsl:call-template>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<xsl:call-template name="createCheckbox">
+				<xsl:with-param name="id" select="'showExternalLinkIcon'"/>
+				<xsl:with-param name="name" select="'showExternalLinkIcon'"/>
+				<xsl:with-param name="element" select="FlowForm" />
+			</xsl:call-template>	
+		
+			<xsl:text> </xsl:text>
+		
+			<label for="showExternalLinkIcon">
+				<xsl:value-of select="$i18n.FlowForm.externalIcon" />
+			</label>
+			
+		</div>		
 	
 	</xsl:template>
 	

@@ -1767,4 +1767,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="92">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_forms` ADD COLUMN `showExternalLinkIcon` BOOLEAN NOT NULL AFTER `externalURL`;				
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
