@@ -109,28 +109,9 @@
 					$(document).ready(function() {
 					
 						var table = $('#catalogtable').DataTable({
-							ajax: {
+							ajax: { 
 								url: '<xsl:value-of select="$ajaxURL"/>',
 								dataSrc: 'rows',
-								error: function(jqXHR, textStatus, errorThrown) {
-									
-									if (jqXHR.status == 401) { // Unauthenticated, 
-										alert("Du har blivit utloggad, vänligen ladda om sidan eller logga in i en annan flik och försök igen.");
-										
-									} else if (jqXHR.status == 403) { // Forbidden
-										alert("Du har inte åtkomst till den här funktionen, är du inloggad som rätt användare?");
-									
-									}  else if (jqXHR.status == 500) { // Internal Server Error
-										alert("Ett server fel har uppstått, vänligen försök igen senare.");
-									
-									} else {
-										alert("Ett okänt fel har uppstått, vänligen försök igen senare.");
-									}
-									
-									if (console != undefined) {
-										console.error("Ajax error: " + jqXHR.status + " " + textStatus + ", " + errorThrown);
-									}
-								}
 							},
 							deferRender: true,
 							columns: [
