@@ -549,9 +549,11 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 				}
 
 				//Validate file name length
-				if (queryInstance.getQuery().getMaxFileNameLength() != null && fileItem.getName().length() > queryInstance.getQuery().getMaxFileNameLength()) {
+				String filename = FilenameUtils.getName(fileItem.getName());
+				
+				if (queryInstance.getQuery().getMaxFileNameLength() != null && filename.length() > queryInstance.getQuery().getMaxFileNameLength()) {
 
-					validationErrors.add(new FileNameLengthLimitExceededValidationError(FilenameUtils.getName(fileItem.getName()), fileItem.getName().length(), queryInstance.getQuery().getMaxFileNameLength()));
+					validationErrors.add(new FileNameLengthLimitExceededValidationError(filename, filename.length(), queryInstance.getQuery().getMaxFileNameLength()));
 
 					continue;
 				}
