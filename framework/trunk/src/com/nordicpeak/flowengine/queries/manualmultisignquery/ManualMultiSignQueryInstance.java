@@ -185,7 +185,14 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 	@Override
 	public List<? extends SigningParty> getSigningParties() {
 
-		return Collections.singletonList(new SigningParty(firstname, lastname, email, mobilePhone, socialSecurityNumber, getQuery().isSetMultipartsAsOwners()));
+		if (getQueryInstanceDescriptor().isPopulated()) {
+		
+			return Collections.singletonList(new SigningParty(firstname, lastname, email, mobilePhone, socialSecurityNumber, getQuery().isSetMultipartsAsOwners()));
+			
+		} else {
+			
+			return null;
+		}
 	}
 
 	
