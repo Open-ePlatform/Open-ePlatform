@@ -15,6 +15,7 @@ import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.populators.SwedishSocialSecurity12DigitsWithoutMinusPopulator;
 
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
+import com.nordicpeak.childrelationprovider.exceptions.IncompleteDataException;
 
 public class DummyChildRelationProvider extends AnnotatedForegroundModule implements ChildRelationProvider {
 	
@@ -47,6 +48,10 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 	@CheckboxSettingDescriptor(name = "1 - ensam vårdnad", description = "")
 	private boolean ensam1;
 	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "1 - delad vårdnad utan personnr", description = "")
+	private boolean noID1;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
@@ -67,7 +72,7 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 	}
 	
 	@Override
-	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier) throws ChildRelationProviderException {
+	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException {
 		
 		Map<String, Child> children = new HashMap<String, Child>();
 		
@@ -78,6 +83,14 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 			if (ensam1) {
 				
 				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier) }));
+			
+			}  else if (noID1) {
+				
+				if (requireCitizenIDsForGuardians) {
+					throw new IncompleteDataException("Guardian without person number");
+				}
+				
+				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", null) }));
 				
 			} else {
 				

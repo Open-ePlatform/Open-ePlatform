@@ -4,7 +4,9 @@ import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderExce
 
 public interface ChildRelationProvider {
 	
-	// Returns empty map if citizen has no visible children
-	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier) throws ChildRelationProviderException;
+	/**
+	 * Never returns null. If no children are found an empty ChildrenResponse is returned.
+	 */
+	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException;
 	
 }
