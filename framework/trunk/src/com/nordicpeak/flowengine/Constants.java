@@ -29,7 +29,7 @@ public class Constants {
 	
 	public static final String FLOW_INSTANCE_PREPARED_BY_MANAGER_ATTRIBUTE = "preparedByManager";
 	
-	public static final String FLOW_INSTANCE_ALTERNATE_SUBMITT_MESSAGE_HEADER = "alternateSubmittMessageHeader";
+	public static final String FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_HEADER = "alternateSubmitMessageHeader";
 	
-	public static final String FLOW_INSTANCE_ALTERNATE_SUBMITT_MESSAGE_TEXT = "alternateSubmittMessageText";
+	public static final String FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_TEXT = "alternateSubmitMessageText";
 }

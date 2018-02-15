@@ -383,8 +383,8 @@
 		<div>
 			<xsl:attribute name="class">
 				<xsl:choose>
-					<xsl:when test="AlternateSubmittMessageHeader or AlternateSubmittMessageText">
-						info-box success alternatesubmitttext
+					<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
+						info-box success alternatesubmittext
 					</xsl:when>
 					<xsl:otherwise>
 						info-box success
@@ -394,8 +394,8 @@
 		
 			<span data-icon-before="c">
 				<xsl:choose>
-					<xsl:when test="AlternateSubmittMessageHeader">
-						<strong><xsl:value-of select="AlternateSubmittMessageHeader" /></strong>
+					<xsl:when test="AlternateSubmitMessageHeader">
+						<strong><xsl:value-of select="AlternateSubmitMessageHeader" /></strong>
 					</xsl:when>
 					<xsl:otherwise>
 						<strong><xsl:value-of select="$i18n.FlowInstanceManagerSubmitted" /></strong>
@@ -409,8 +409,8 @@
 		<div>
 			<xsl:attribute name="class">
 				<xsl:choose>
-					<xsl:when test="AlternateSubmittMessageHeader or AlternateSubmittMessageText">
-						info-box-message success alternatesubmitttext
+					<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
+						info-box-message success alternatesubmittext
 					</xsl:when>
 					<xsl:otherwise>
 						info-box-message success
@@ -419,8 +419,8 @@
 			</xsl:attribute>
 			
 			<xsl:choose>
-				<xsl:when test="AlternateSubmittMessageText">
-					<xsl:value-of select="AlternateSubmittMessageText" disable-output-escaping="yes"/>
+				<xsl:when test="AlternateSubmitMessageText">
+					<xsl:value-of select="AlternateSubmitMessageText" disable-output-escaping="yes"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="FlowInstance/Flow/submittedMessage" disable-output-escaping="yes"/>
