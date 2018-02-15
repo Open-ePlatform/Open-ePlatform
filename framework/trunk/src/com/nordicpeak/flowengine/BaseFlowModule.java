@@ -157,6 +157,7 @@ import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.validationerrors.FileUploadValidationError;
 
@@ -1506,6 +1507,21 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					}
 				}
+			}
+			
+			ImmutableFlowInstanceEvent event = FlowInstanceUtils.getLatestSubmitEvent(instanceManager.getFlowInstance());
+			
+			String alternateSubmittMessageHeader = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMITT_MESSAGE_HEADER);
+			String alternateSubmittMessageText = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMITT_MESSAGE_TEXT);
+			
+			if(alternateSubmittMessageHeader != null) {
+				
+				XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmittMessageHeader", alternateSubmittMessageHeader);
+			}
+			
+			if(alternateSubmittMessageText != null) {
+			
+				XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmittMessageText", alternateSubmittMessageText);
 			}
 		}
 

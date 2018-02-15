@@ -379,19 +379,54 @@
 	</xsl:template>
 			
 	<xsl:template match="FlowInstanceManagerSubmitted">
-	
-		<div class="info-box success">
+
+		<div>
+			<xsl:attribute name="class">
+				<xsl:choose>
+					<xsl:when test="AlternateSubmittMessageHeader or AlternateSubmittMessageText">
+						info-box success alternatesubmitttext
+					</xsl:when>
+					<xsl:otherwise>
+						info-box success
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
+		
 			<span data-icon-before="c">
-				<strong><xsl:value-of select="$i18n.FlowInstanceManagerSubmitted" /></strong>
+				<xsl:choose>
+					<xsl:when test="AlternateSubmittMessageHeader">
+						<strong><xsl:value-of select="AlternateSubmittMessageHeader" /></strong>
+					</xsl:when>
+					<xsl:otherwise>
+						<strong><xsl:value-of select="$i18n.FlowInstanceManagerSubmitted" /></strong>
+					</xsl:otherwise>				
+				</xsl:choose>
 				<i class="icon close">x</i>
 			</span>
 			<div class="marker"></div>
 		</div>
 		
-		<div class="info-box-message success">
+		<div>
+			<xsl:attribute name="class">
+				<xsl:choose>
+					<xsl:when test="AlternateSubmittMessageHeader or AlternateSubmittMessageText">
+						info-box-message success alternatesubmitttext
+					</xsl:when>
+					<xsl:otherwise>
+						info-box-message success
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
 			
-			<xsl:value-of select="FlowInstance/Flow/submittedMessage" disable-output-escaping="yes"/>
-			
+			<xsl:choose>
+				<xsl:when test="AlternateSubmittMessageText">
+					<xsl:value-of select="AlternateSubmittMessageText" disable-output-escaping="yes"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="FlowInstance/Flow/submittedMessage" disable-output-escaping="yes"/>
+				</xsl:otherwise>
+			</xsl:choose>
+				
 			<xsl:if test="SubmitSurveyHTML">
 				<xsl:value-of select="SubmitSurveyHTML" disable-output-escaping="yes" />
 			</xsl:if>
