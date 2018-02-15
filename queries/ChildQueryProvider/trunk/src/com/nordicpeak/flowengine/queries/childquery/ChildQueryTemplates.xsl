@@ -350,7 +350,9 @@
 						<xsl:choose>
 							<xsl:when test="ChildQueryInstance/Children">
 							
-								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]"/>							
+								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
+									<xsl:with-param name="useMultipartSigning" select="ChildQueryInstance/ChildQuery/useMultipartSigning"/>
+								</xsl:apply-templates>							
 	
 							</xsl:when>
 							<xsl:when test="ChildQueryInstance/citizenIdentifier">
@@ -529,11 +531,12 @@
 	<xsl:template match="Guardian">
 	
 		<xsl:variable name="citizenIdentifier" select="citizenIdentifier"/>
+		<xsl:variable name="useMultipartSigning" />
 	
 		<div class="guardian clearboth floatleft" data-citizenid="{citizenIdentifier}">
 	
 			<xsl:choose>
-				<xsl:when test="not(citizenIdentifier)">
+				<xsl:when test="$useMultipartSigning = 'true' and not(citizenIdentifier)">
 					
 					<span><xsl:value-of select="$i18n.Error.SecretGuardian"/></span>
 					

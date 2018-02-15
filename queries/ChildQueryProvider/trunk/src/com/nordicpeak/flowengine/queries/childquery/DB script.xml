@@ -169,4 +169,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians` CHANGE COLUMN `citizenIdentifier` `citizenIdentifier` VARCHAR(13) NULL AFTER `queryInstanceID`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

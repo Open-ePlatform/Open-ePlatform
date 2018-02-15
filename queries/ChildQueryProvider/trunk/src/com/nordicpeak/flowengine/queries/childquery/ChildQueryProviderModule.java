@@ -600,7 +600,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				log.info("Getting children information for user " + poster);
 
 				try {
-					ChildrenResponse childrenResponse = childRelationProvider.getChildrenWithGuardians(citizenIdentifier);
+					ChildrenResponse childrenResponse = childRelationProvider.getChildrenWithGuardians(citizenIdentifier, queryInstance.getQuery().isUseMultipartSigning());
 					
 					if (childrenResponse != null) {
 						
