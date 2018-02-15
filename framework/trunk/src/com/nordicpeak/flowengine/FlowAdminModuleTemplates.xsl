@@ -773,7 +773,7 @@
 									<li>
 										
 										<xsl:variable name="url">
-											<xsl:value-of select="'http://'"/>
+											<xsl:value-of select="'https://'"/>
 											<xsl:value-of select="/Document/requestinfo/servername"/>
 											<xsl:value-of select="/Document/requestinfo/contextpath"/>
 											<xsl:value-of select="'/'"/>
