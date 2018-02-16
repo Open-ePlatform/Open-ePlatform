@@ -1511,17 +1511,21 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			
 			ImmutableFlowInstanceEvent event = FlowInstanceUtils.getLatestSubmitEvent(instanceManager.getFlowInstance());
 			
-			String alternateSubmitMessageHeader = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_HEADER);
-			String alternateSubmitMessageText = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_TEXT);
+			if(event != null) {
 			
-			if(alternateSubmitMessageHeader != null) {
+				String alternateSubmitMessageHeader = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_HEADER);
+				String alternateSubmitMessageText = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_TEXT);
 				
-				XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmitMessageHeader", alternateSubmitMessageHeader);
-			}
+				if(alternateSubmitMessageHeader != null) {
+					
+					XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmitMessageHeader", alternateSubmitMessageHeader);
+				}
+				
+				if(alternateSubmitMessageText != null) {
+				
+					XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmitMessageText", alternateSubmitMessageText);
+				}
 			
-			if(alternateSubmitMessageText != null) {
-			
-				XMLUtils.appendNewElement(doc, flowInstanceManagerElement, "AlternateSubmitMessageText", alternateSubmitMessageText);
 			}
 		}
 
