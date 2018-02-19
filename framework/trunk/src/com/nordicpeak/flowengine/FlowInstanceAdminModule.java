@@ -196,6 +196,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@XSLVariable(prefix = "java.")
 	private String mentionedInFlowInstance = "Mentioned in message";
 	
+	@XSLVariable(prefix = "java.")
+	private String managerSignedDetailsText = "Signed by manager";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "High priority lapsed managing time", description = "The precent of the managing time of the current status that has to have elapsed for an instance to be classified as high priority", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected int highPriorityThreshold = 90;
@@ -893,8 +896,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 						this.daoFactory.getFlowInstanceDAO().update(flowInstance);
 						
-						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user);
-						//flowInstanceEvent.setAttributes(signingResponse.getSigningAttributes());
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, managerSignedDetailsText, user);
+						flowInstanceEvent.getAttributeHandler().getAttributeMap().putAll(signingResponse.getSigningAttributes());
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 						
