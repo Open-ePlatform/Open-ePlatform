@@ -59,6 +59,8 @@ public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdmin
 	@Override
 	protected ForegroundModuleResponse beanDeleted(TextTag bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
+		textTagModule.deleteTagValue(bean);
+		
 		textTagModule.cacheSiteProfileSettings();
 		
 		return super.beanDeleted(bean, req, res, user, uriParser);

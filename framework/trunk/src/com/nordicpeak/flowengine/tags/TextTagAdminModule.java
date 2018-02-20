@@ -452,4 +452,14 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 		
 		return null;
 	}
+	
+	protected void deleteTagValue(TextTag textTag) throws SQLException {
+		
+		Setting setting = siteProfileSettings.get(textTag.getName());
+		
+		if(siteProfileHandler != null) {
+			
+			siteProfileHandler.deleteSettingValues(setting);
+		}		
+	}
 }
