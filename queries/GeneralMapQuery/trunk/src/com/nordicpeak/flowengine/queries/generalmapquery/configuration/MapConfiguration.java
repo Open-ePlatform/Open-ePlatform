@@ -7,6 +7,8 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.queries.generalmapquery.GeneralMapQuery;
+
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToMany;
@@ -15,8 +17,6 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
-
-import com.nordicpeak.flowengine.queries.generalmapquery.GeneralMapQuery;
 
 @Table(name = "general_map_query_mapconfigurations")
 @XMLElement
@@ -53,10 +53,14 @@ public class MapConfiguration extends GeneratedElementable implements Serializab
 	private List<MapTool> mapTools;
 
 	@DAOManaged
+	@XMLElement
+	private Integer printConfigurationID;
+
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<GeneralMapQuery> generalMapQueries;
-	
+
 	public Integer getMapConfigurationID() {
 
 		return mapConfigurationID;
@@ -107,28 +111,34 @@ public class MapConfiguration extends GeneratedElementable implements Serializab
 		this.mapTools = mapTools;
 	}
 
-	
 	public String getOpenEmapVersion() {
-	
+
 		return openEmapVersion;
 	}
 
-	
 	public void setOpenEmapVersion(String openEmapVersion) {
-	
+
 		this.openEmapVersion = openEmapVersion;
 	}
 
-	
 	public List<GeneralMapQuery> getGeneralMapQueries() {
-	
+
 		return generalMapQueries;
 	}
 
-	
 	public void setGeneralMapQueries(List<GeneralMapQuery> generalMapQueries) {
-	
+
 		this.generalMapQueries = generalMapQueries;
+	}
+
+	public Integer getPrintConfigurationID() {
+
+		return printConfigurationID;
+	}
+
+	public void setPrintConfigurationID(Integer printConfigurationID) {
+
+		this.printConfigurationID = printConfigurationID;
 	}
 
 	@Override

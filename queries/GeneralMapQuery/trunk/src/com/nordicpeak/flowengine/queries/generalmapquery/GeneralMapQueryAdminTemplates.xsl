@@ -13,7 +13,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/generalmapqueryadmin.js
+		/js/generalmapqueryadmin.js?v2
 	</xsl:variable>
 
 	<xsl:variable name="links">
@@ -114,6 +114,14 @@
 											<xsl:with-param name="addEmptyOption" select="$i18n.ChooseMapConfiguration" />
 											<xsl:with-param name="selectedValue" select="GeneralMapQuery/MapConfiguration/mapConfigurationID" />
 										</xsl:call-template>
+										<xsl:for-each select="MapConfiguration">
+											<xsl:if test="printConfigurationID">
+												<xsl:call-template name="createHiddenField">
+													<xsl:with-param name="name" select="concat('mapconfig_', mapConfigurationID)" />
+													<xsl:with-param name="value" select="printConfigurationID" />
+												</xsl:call-template>
+											</xsl:if>
+										</xsl:for-each>
 									</xsl:when>
 									<xsl:otherwise>
 										
@@ -426,7 +434,7 @@
 		
 		<xsl:variable name="generalMapQueryPrint" select="$mapQueryElement/mapPrints/GeneralMapQueryPrint[MapPrint/mapPrintID = $mapPrintID]" />
 		
-		<div class="floatleft full">
+		<div class="floatleft full mapprint" data-printconfigurationid="{PrintConfiguration/printConfigurationID}">
 		
 			<div class="floatleft bigmarginbottom">
 				<label class="floatleft clearboth" for="minimumScale"><xsl:value-of select="name" /></label>

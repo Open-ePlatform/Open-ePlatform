@@ -142,6 +142,10 @@ public class GeneralMapQueryCRUD extends BaseQueryCRUD<GeneralMapQuery, GeneralM
 
 			for (MapPrint mapPrint : mapPrints) {
 
+				if(mapConfiguration.getPrintConfigurationID() != null && !mapPrint.getPrintConfiguration().getPrintConfigurationID().equals(mapConfiguration.getPrintConfigurationID())) {
+					continue;
+				}
+				
 				String id = "mapprint_" + mapPrint.getMapPrintID();
 
 				GeneralMapQueryPrint generalMapQueryPrint = getExistingGeneralMapQueryPrint(generalMapQuery, mapPrint.getMapPrintID());

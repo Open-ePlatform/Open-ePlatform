@@ -13,6 +13,15 @@ $(document).ready(function() {
 		} else {
 			
 			$("#tools_" + $this.val()).show();
+
+			var $mapPrints = $(".mapprint").show();
+			
+			var printConfigurationID = $("input[name='mapconfig_" + $this.val() + "']").val();
+			
+			if(printConfigurationID) {
+				$("div.mapprint[data-printconfigurationid != " + printConfigurationID + "]").hide();
+			}
+			
 			$(".mapquery-wrapper").show();
 			
 		}

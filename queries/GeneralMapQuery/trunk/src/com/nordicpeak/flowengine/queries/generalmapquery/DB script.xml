@@ -292,4 +292,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="9">
+		<Query>
+			ALTER TABLE `general_map_query_mapconfigurations` ADD COLUMN `printConfigurationID` INTEGER UNSIGNED AFTER `enabled`,
+			 ADD CONSTRAINT `FK_general_map_query_mapconfigurations_1` FOREIGN KEY `FK_general_map_query_mapconfigurations_1` (`printConfigurationID`)
+			    REFERENCES `general_map_query_printconfigurations` (`printConfigurationID`)
+			    ON DELETE SET NULL
+			    ON UPDATE CASCADE;
+		</Query>
+	</Script>
+	
 </DBScripts>
