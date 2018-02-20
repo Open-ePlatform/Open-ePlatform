@@ -12,4 +12,6 @@ public interface BaseEvaluatorCRUDCallback extends AdvancedCRUDCallback<User> {
 	
 	public EventHandler getEventHandler();
 	
+	public String getEvaluatorTypeName();
+	
 }

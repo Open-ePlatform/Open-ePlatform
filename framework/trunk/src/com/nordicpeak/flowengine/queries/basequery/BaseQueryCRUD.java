@@ -174,4 +174,9 @@ public class BaseQueryCRUD<BeanType extends BaseQuery, CallbackType extends Base
 
 	}
 
+	@Override
+	protected String getUpdateTitle(BeanType bean, HttpServletRequest req, User user, URIParser uriParser) {
+
+		return callback.getQueryTypeName();
+	}
 }

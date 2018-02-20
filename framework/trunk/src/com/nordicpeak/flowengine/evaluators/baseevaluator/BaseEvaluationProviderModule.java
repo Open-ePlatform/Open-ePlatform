@@ -169,4 +169,10 @@ public abstract class BaseEvaluationProviderModule<E extends BaseEvaluator> exte
 
 		return this.moduleDescriptor.getName();
 	}
+
+	
+	public String getEvaluatorTypeName() {
+	
+		return evaluatorTypeName;
+	}
 }

@@ -519,4 +519,10 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		throw new RuntimeException("Query import not supported for query type " + queryTypeDescriptor);
 	}
+
+	
+	public String getQueryTypeName() {
+	
+		return queryTypeName;
+	}
 }

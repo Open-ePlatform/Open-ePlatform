@@ -183,4 +183,10 @@ public class BaseEvaluatorCRUD<BeanType extends BaseEvaluator, CallbackType exte
 		return bean;
 	}
 
+	@Override
+	protected String getUpdateTitle(BeanType bean, HttpServletRequest req, User user, URIParser uriParser) {
+
+		return callback.getEvaluatorTypeName();
+	}
+
 }

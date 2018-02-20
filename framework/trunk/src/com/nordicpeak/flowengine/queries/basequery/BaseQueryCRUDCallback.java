@@ -12,4 +12,6 @@ public interface BaseQueryCRUDCallback extends AdvancedCRUDCallback<User> {
 	
 	public EventHandler getEventHandler();
 	
+	public String getQueryTypeName();
+	
 }
