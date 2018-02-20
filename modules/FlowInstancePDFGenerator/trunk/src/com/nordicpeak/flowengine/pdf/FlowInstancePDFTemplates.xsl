@@ -328,7 +328,16 @@
 			<xsl:if test="$showCitizenID = 'true'">
 				<div>
 					<strong><xsl:value-of select="$i18n.Signed.CitizenIdentifier"/>:&#160;</strong>
-					<xsl:value-of select="Attributes/Attribute[Name = 'citizenIdentifier']/Value"/>
+					
+					<xsl:choose>
+						<xsl:when test="Attributes/Attribute[Name = 'citizenIdentifier']">
+							<xsl:value-of select="Attributes/Attribute[Name = 'citizenIdentifier']/Value"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="Attributes/Attribute[Name = 'SerialNumber']/Value"/>
+						</xsl:otherwise>
+					</xsl:choose>
+					
 				</div>
 			</xsl:if>
 			
