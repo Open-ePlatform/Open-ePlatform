@@ -427,7 +427,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			if (queryInstance.getQuery().isUseMultipartSigning()) {
 
-				String posterCitizienIdentifier = user.getAttributeHandler().getString(citizenIdentifierAttribute);
+				String posterCitizienIdentifier = poster.getAttributeHandler().getString(citizenIdentifierAttribute);
 
 				for (StoredGuardian storedGuardian : storedGuardians) {
 
@@ -438,8 +438,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					} else if (storedGuardian.getCitizenIdentifier().equals(posterCitizienIdentifier)) {
 
 						storedGuardian.setPoster(true);
-						storedGuardian.setEmail(user.getEmail());
-						storedGuardian.setPhone(user.getAttributeHandler().getString(phoneAttribute));
+						storedGuardian.setEmail(poster.getEmail());
+						storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
 
 					} else {
 
