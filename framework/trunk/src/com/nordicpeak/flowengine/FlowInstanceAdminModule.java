@@ -328,6 +328,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			oldIndexer.close();
 		}
 		
+		this.selectedAttributes = getSelectedAttributes();
+	}
+	
+	protected List<String> getSelectedAttributes() {
+
 		if (enableExternalID || enableDescriptionColumn) {
 			
 			ArrayList<String> attributes = new ArrayList<String>(2);
@@ -342,14 +347,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				attributes.add(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
 			}
 			
-			this.selectedAttributes = attributes;
+			return attributes;
 			
-		} else {
-			
-			this.selectedAttributes = null;
 		}
+		
+		return null;
 	}
-	
+
 	protected FlowInstanceIndexer createIndexer() throws Exception {
 		
 		return new FlowInstanceIndexer(daoFactory, maxHitCount, systemInterface);
