@@ -244,35 +244,8 @@
 		
 		<div class="alternatives-container full floatleft bigmarginbottom">
 		
-			<div class="floatright bigmargintop" style="margin-right: 42px">
-			
-				<xsl:variable name="options">
-					<option>
-						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Select"/></name>
-						<value></value>
-					</option>
-					<option>
-						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Descending"/></name>
-						<value>d</value>
-					</option>
-					<option>
-						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Ascending"/></name>
-						<value>a</value>
-					</option>
-				</xsl:variable>
-			
-				<xsl:call-template name="createDropdown">
-					<xsl:with-param name="class" select="'sorting'"/>
-					<xsl:with-param name="name" select="'sorting'"/>
-					<xsl:with-param name="labelElementName" select="'name'" />
-					<xsl:with-param name="valueElementName" select="'value'" />
-					<xsl:with-param name="element" select="exsl:node-set($options)/option" />
-				</xsl:call-template>
-
-			</div>
+			<xsl:call-template name="createAlternativesFormHeader"/>
 		
-			<label class="floatleft"><xsl:value-of select="$i18n.Alternative" /></label>
-			
 			<div class="alternatives full floatleft marginleft sortable">
 				
 				<xsl:choose>
@@ -398,6 +371,39 @@
 		
 		</div>
 		
+	</xsl:template>
+	
+	<xsl:template name="createAlternativesFormHeader">
+		
+		<div class="floatright bigmargintop" style="margin-right: 42px">
+			
+				<xsl:variable name="options">
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Select"/></name>
+						<value></value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Descending"/></name>
+						<value>d</value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.AutoSortAlternatives.Ascending"/></name>
+						<value>a</value>
+					</option>
+				</xsl:variable>
+			
+				<xsl:call-template name="createDropdown">
+					<xsl:with-param name="class" select="'sorting'"/>
+					<xsl:with-param name="name" select="'sorting'"/>
+					<xsl:with-param name="labelElementName" select="'name'" />
+					<xsl:with-param name="valueElementName" select="'value'" />
+					<xsl:with-param name="element" select="exsl:node-set($options)/option" />
+				</xsl:call-template>
+
+			</div>
+		
+			<label class="floatleft"><xsl:value-of select="$i18n.Alternative" /></label>
+			
 	</xsl:template>
 	
 	<xsl:template match="AlternativeModalExtra">
@@ -535,10 +541,10 @@
 		<xsl:choose>
 			<xsl:when test="starts-with(fieldName, 'alternative_')">
 				
-				<xsl:variable name="id" select="substring(fieldName,13,47)" />
+				<xsl:variable name="id" select="substring(fieldName,13)" />
 		
 				<p class="error">
-					<xsl:value-of select="$i18n.AlternativeRequired" /><xsl:text>&#160;</xsl:text><xsl:value-of select="../../requestparameters/parameter[name = concat('sortorder_',$id)]/value + 1" />!
+					<xsl:value-of select="$i18n.AlternativeRequired" /><xsl:text>&#160;</xsl:text><xsl:value-of select="../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />!
 				</p>
 				
 			</xsl:when>
@@ -587,8 +593,10 @@
 				<xsl:value-of select="$i18n.freeTextAlternative" />
 			</xsl:when>
 			<xsl:when test="starts-with($fieldName, 'alternative_')">
-				<xsl:value-of select="$i18n.validationError.alternative" /><xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', substring($fieldName, 13))]/value + 1" />
+				<xsl:value-of select="$i18n.validationError.alternative" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:variable name="id" select="substring($fieldName,13)" />
+				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:apply-templates select="$fieldName" />
