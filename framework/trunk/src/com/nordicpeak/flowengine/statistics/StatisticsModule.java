@@ -1,5 +1,8 @@
 package com.nordicpeak.flowengine.statistics;
 
+import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.Task;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
@@ -82,24 +85,21 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.Task;
-
 public class StatisticsModule extends AnnotatedForegroundModule implements Runnable, SystemStartupListener {
 
 	private static final AnnotatedBeanTagSourceFactory<FlowFamilyStatistics> FAMILY_STATISTICS_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowFamilyStatistics>(FlowFamilyStatistics.class, "$family.");
 
 	private static final AnnotatedResultSetPopulator<IntegerEntry> INTEGER_ENTRY_POPULATOR = new AnnotatedResultSetPopulator<IntegerEntry>(IntegerEntry.class);
 
-	private static final String GLOBAL_FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(firstSubmitted)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE firstSubmitted BETWEEN ? AND ? GROUP BY id ORDER BY id ASC;";
-	private static final String GLOBAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?) as id FROM flowengine_flows WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
+	private static final String GLOBAL_FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(firstSubmitted, 3)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE firstSubmitted BETWEEN ? AND ? GROUP BY id ORDER BY id ASC;";
+	private static final String GLOBAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
 
-	private static final String GLOBAL_INTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?) as id FROM flowengine_flows INNER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
-	private static final String GLOBAL_EXTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?) as id FROM flowengine_flows WHERE externalLink IS NOT NULL AND publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
-	private static final String GLOBAL_PDFFORM_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?) as id FROM flowengine_flows LEFT OUTER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) INNER JOIN flowengine_flow_forms ON(flowengine_flow_forms.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?) AND flowengine_steps.flowID IS NULL;";
+	private static final String GLOBAL_INTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows INNER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
+	private static final String GLOBAL_EXTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows WHERE externalLink IS NOT NULL AND publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
+	private static final String GLOBAL_PDFFORM_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows LEFT OUTER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) INNER JOIN flowengine_flow_forms ON(flowengine_flow_forms.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?) AND flowengine_steps.flowID IS NULL;";
 
-	private static final String FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_flow_instances.firstSubmitted)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_flow_instances.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_flow_instances.firstSubmitted BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
-	private static final String EXTERNAL_FLOW_REDIRECT_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_external_flow_redirects.time)) as id, count(redirectID)/4 as value FROM flowengine_external_flow_redirects INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_external_flow_redirects.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_external_flow_redirects.time BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
+	private static final String FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_flow_instances.firstSubmitted, 3)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_flow_instances.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_flow_instances.firstSubmitted BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
+	private static final String EXTERNAL_FLOW_REDIRECT_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_external_flow_redirects.time, 3)) as id, count(redirectID)/4 as value FROM flowengine_external_flow_redirects INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_external_flow_redirects.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_external_flow_redirects.time BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
 	private static final String STEP_ABORT_COUNT_QUERY = "SELECT DISTINCT(stepID) as id, count(abortID) as value FROM flowengine_aborted_flow_instances WHERE flowID = ? AND added BETWEEN ? AND ? GROUP BY id;";
 	private static final String STEP_UNSUBMITTED_COUNT_QUERY = "SELECT DISTINCT(stepID) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE statusID IN (SELECT statusID FROM flowengine_flow_statuses WHERE flowID = ? AND contentType = ?) AND ((updated IS NOT NULL AND updated BETWEEN ? AND ?) OR (updated IS NULL AND added BETWEEN ? AND ?)) GROUP BY id;";
 
