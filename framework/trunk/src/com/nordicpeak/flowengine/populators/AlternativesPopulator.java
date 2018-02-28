@@ -52,32 +52,31 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 				String name = ValidationUtils.validateParameter("alternative_" + alternativeID, req, true, 1, maxLength, validationErrors);
 				
 				if (name == null) {
-					
 					continue;
 				}
 				
 				String sortOrder = req.getParameter("sortorder_" + alternativeID);
 				String xmlValue = req.getParameter("alternative-xml-value_" + alternativeID);
 				String attributeValue = req.getParameter("alternative-attribute-value_" + alternativeID);
-				Integer price = ValidationUtils.validateParameter("alternativeprice_" + alternativeID, req, false, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
 				
 				if (NumberUtils.isInt(sortOrder)) {
 					
-					AlternativeType alternative = this.getNewAlternativeInstance();
+					AlternativeType alternative = getNewAlternativeInstance();
 					
 					alternative.setName(name);
 					alternative.setSortIndex(NumberUtils.toInt(sortOrder));
 					
-					if(alternative instanceof PricedAlternative){
+					if (alternative instanceof PricedAlternative) {
 						
+						Integer price = ValidationUtils.validateParameter("alternativeprice_" + alternativeID, req, false, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
 						((PricedAlternative) alternative).setPrice(price);
 					}
 					
-					extraPopulation(alternative, req, alternativeID);
+					extraPopulation(alternative, req, alternativeID, validationErrors);
 					
 					if (NumberUtils.isInt(alternativeID)) {
 						
-						this.checkForExistingAlternatives(currentAlternatives, alternative, NumberUtils.toInt(alternativeID));
+						checkForExistingAlternatives(currentAlternatives, alternative, NumberUtils.toInt(alternativeID));
 					}
 					
 					if (!StringUtils.isEmpty(xmlValue)) {
@@ -91,7 +90,6 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					}
 					
 					alternatives.add(alternative);
-					
 				}
 			}
 		}
@@ -99,7 +97,7 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 		return alternatives;
 	}
 	
-	protected void extraPopulation(AlternativeType alternative, HttpServletRequest req, String alternativeID) {}
+	protected void extraPopulation(AlternativeType alternative, HttpServletRequest req, String alternativeID, List<ValidationError> validationErrors) {}
 	
 	public List<AlternativeType> populate(XMLParser xmlParser, List<ValidationError> errors) throws ValidationException {
 		
@@ -111,10 +109,9 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 			
 			for (XMLParser parser : xmlParsers) {
 				
-				AlternativeType alternative = this.getNewAlternativeInstance();
+				AlternativeType alternative = getNewAlternativeInstance();
 				alternative.populate(parser);
 				alternatives.add(alternative);
-				
 			}
 			
 			return alternatives;
@@ -133,7 +130,6 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 					
 					alternative.setAlternativeID(alternativeID);
 					break;
-					
 				}
 			}
 		}
