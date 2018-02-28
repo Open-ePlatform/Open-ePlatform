@@ -599,7 +599,7 @@
 				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:apply-templates select="$fieldName" />
+				<xsl:value-of select="$fieldName"/>
 			</xsl:otherwise>
 		</xsl:choose>
 		
