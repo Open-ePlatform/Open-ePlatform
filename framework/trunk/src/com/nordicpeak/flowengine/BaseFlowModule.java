@@ -344,7 +344,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, User poster, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
+	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, User poster, SiteProfile profile, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
 		
 		if (session == null) {
 
@@ -390,7 +390,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			checkFlowLimit(user, flow);
 
-			SiteProfile profile = getCurrentSiteProfile(req, poster, uriParser, flow.getFlowFamily());
+			if (profile == null) {
+				
+				profile = getCurrentSiteProfile(req, poster, uriParser, flow.getFlowFamily());
+			}
 			
 			callback.checkNewFlowInstanceAccess(flow, user, profile);
 
@@ -1737,7 +1740,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				queryID = NumberUtils.toInt(uriParser.get(4));
 
 				//Get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, poster, uriParser, req, false, checkEnabled, checkPublishDate, checkFlowTypeAccess, requestMetadata);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, poster, null, uriParser, req, false, checkEnabled, checkPublishDate, checkFlowTypeAccess, requestMetadata);
 
 			} else if (uriParser.size() > 5 && NumberUtils.isInt(uriParser.get(3)) && uriParser.get(4).equals("q") && NumberUtils.isInt(uriParser.get(5))) {
 

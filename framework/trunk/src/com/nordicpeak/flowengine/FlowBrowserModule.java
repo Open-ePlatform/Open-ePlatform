@@ -640,7 +640,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, user, uriParser, req, true, true, true, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, user, null, uriParser, req, true, true, true, true, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 

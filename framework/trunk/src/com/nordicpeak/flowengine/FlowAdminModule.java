@@ -2088,7 +2088,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCacheMap.get(flowID) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
