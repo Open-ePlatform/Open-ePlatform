@@ -307,11 +307,6 @@ public class FlowInstanceEmailNotificationModule extends AnnotatedForegroundModu
 	}
 
 	@Override
-	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler) {
-		
-	}
-
-	@Override
 	public List<Setting> getSiteSubProfileSettings() {
 
 		return null;
