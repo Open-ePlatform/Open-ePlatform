@@ -70,6 +70,14 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
 
+import com.vividsolutions.jts.algorithm.CentroidArea;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
@@ -89,13 +97,6 @@ import com.nordicpeak.flowengine.utils.BlobPDFAttachment;
 import com.nordicpeak.flowengine.utils.BlobResourceProvider;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-import com.vividsolutions.jts.algorithm.CentroidArea;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
 
 public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQuery, MapQueryInstanceType extends BaseMapQueryInstance<MapQueryType>> extends BaseQueryProviderModule<MapQueryInstanceType> implements BaseQueryCRUDCallback, SiteProfileSettingProvider {
 
@@ -1384,9 +1385,6 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 
 	}
 
-	@Override
-	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler){};
-	
 	@Override
 	public List<Setting> getSiteSubProfileSettings() {
 
