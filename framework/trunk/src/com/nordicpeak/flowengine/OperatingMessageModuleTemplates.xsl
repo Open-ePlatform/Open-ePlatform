@@ -224,104 +224,109 @@
 	</xsl:template>
 	
 	<xsl:template name="operatingMessageForm">
-		
-		<xsl:param name="operatingMessage" select="null" />
-		
-		<script type="text/javascript">
-		
-			$(function() {						
-				$( "#startDate" ).datepicker({
-					showOn: "button",
-					buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
-					buttonImageOnly: true,
-					buttonText: '<xsl:value-of select="$i18n.StartDate"/>',
-					changeMonth: true,
-            		changeYear: true,
-           			showWeek: true,
-				});
-				
-				$( "#endDate" ).datepicker({
-					showOn: "button",
-					buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
-					buttonImageOnly: true,
-					buttonText: '<xsl:value-of select="$i18n.EndDate"/>',
-					changeMonth: true,
-            		changeYear: true,
-           			showWeek: true,
-				});								    							  									
-			});	
-			
-		</script>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<label for="message" class="floatleft full">
-				<xsl:value-of select="$i18n.Message" />
-			</label>
-			
-			<div class="floatleft full">
+       
+        <xsl:param name="operatingMessage" select="null" />
+       
+        <script type="text/javascript">
+       
+            $(function() {
+                if (!Modernizr.inputtypes.date) {
+               
+                    $( "#startDate" ).datepicker({
+                        showOn: "button",
+                        buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
+                        buttonImageOnly: true,
+                        buttonText: '<xsl:value-of select="$i18n.StartDate"/>',
+                        changeMonth: true,
+                        changeYear: true,
+                        showWeek: true,
+                    });
+                   
+                    $( "#endDate" ).datepicker({
+                        showOn: "button",
+                        buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
+                        buttonImageOnly: true,
+                        buttonText: '<xsl:value-of select="$i18n.EndDate"/>',
+                        changeMonth: true,
+                        changeYear: true,
+                        showWeek: true,
+                    });
+                }
+            });   
+           
+        </script>
+       
+        <div class="floatleft full bigmarginbottom">
+           
+            <label for="message" class="floatleft full">
+                <xsl:value-of select="$i18n.Message" />
+            </label>
+           
+            <div class="floatleft full">
 
-				<xsl:call-template name="createTextField">
-					<xsl:with-param name="name" select="'message'"/>
-					<xsl:with-param name="class" select="'full'"/>
-					<xsl:with-param name="element" select="$operatingMessage" />		
-				</xsl:call-template>									
-										
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft marginright">
+                <xsl:call-template name="createTextField">
+                    <xsl:with-param name="name" select="'message'"/>
+                    <xsl:with-param name="class" select="'full'"/>
+                    <xsl:with-param name="element" select="$operatingMessage" />       
+                </xsl:call-template>                                   
+                                       
+            </div>
+        </div>
+       
+        <div class="floatleft full bigmarginbottom">
+           
+            <div class="floatleft marginright">
 
-				<label for="startDate" class="floatleft clearboth">
-					<xsl:value-of select="$i18n.StartDate" />
-				</label>
+                <label for="startDate" class="floatleft clearboth">
+                    <xsl:value-of select="$i18n.StartDate" />
+                </label>
 
-				<div class="floatleft clearboth">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'startDate'"/>
-						<xsl:with-param name="name" select="'startDate'"/>
-						<xsl:with-param name="element" select="$operatingMessage" />
-						<xsl:with-param name="size" select="'15'" />
-					</xsl:call-template>									
-				</div>						
-			
-			</div>
-						
-			<div class="floatleft bigmarginright">
+                <div class="floatleft clearboth">
+                    <xsl:call-template name="createTextField">
+                        <xsl:with-param name="id" select="'startDate'"/>
+                        <xsl:with-param name="name" select="'startDate'"/>
+                        <xsl:with-param name="element" select="$operatingMessage" />
+                        <xsl:with-param name="type" select="'date'" />
+                        <xsl:with-param name="size" select="'15'" />
+                    </xsl:call-template>                                   
+                </div>                       
+           
+            </div>
+                       
+            <div class="floatleft bigmarginright">
 
-				<label for="startTime" class="floatleft clearboth">
-					<xsl:value-of select="$i18n.StartTime" />
-				</label>
+                <label for="startTime" class="floatleft clearboth">
+                    <xsl:value-of select="$i18n.StartTime" />
+                </label>
 
-				<div class="floatleft clearboth">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'startTime'"/>
-						<xsl:with-param name="name" select="'startTime'"/>
-						<xsl:with-param name="size" select="'10'"/>
-						<xsl:with-param name="element" select="$operatingMessage" />
-					</xsl:call-template>									
-				</div>
-								
-			</div>
-			
-			<div class="floatleft bigmarginleft marginright">
+                <div class="floatleft clearboth">
+                    <xsl:call-template name="createTextField">
+                        <xsl:with-param name="id" select="'startTime'"/>
+                        <xsl:with-param name="name" select="'startTime'"/>
+                        <xsl:with-param name="size" select="'10'"/>
+                        <xsl:with-param name="element" select="$operatingMessage" />
+                    </xsl:call-template>                                   
+                </div>
+                               
+            </div>
+           
+            <div class="floatleft bigmarginleft marginright">
 
-				<label for="endDate" class="floatleft clearboth">
-					<xsl:value-of select="$i18n.EndDate" />
-				</label>
+                <label for="endDate" class="floatleft clearboth">
+                    <xsl:value-of select="$i18n.EndDate" />
+                </label>
 
-				<div class="floatleft clearboth">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'endDate'"/>
-						<xsl:with-param name="name" select="'endDate'"/>
-						<xsl:with-param name="size" select="'15'" />
-						<xsl:with-param name="element" select="$operatingMessage" />
-					</xsl:call-template>
-				</div>									
-										
-			</div>
+                <div class="floatleft clearboth">
+                    <xsl:call-template name="createTextField">
+                        <xsl:with-param name="id" select="'endDate'"/>
+                        <xsl:with-param name="name" select="'endDate'"/>
+                        <xsl:with-param name="element" select="$operatingMessage" />
+                        <xsl:with-param name="type" select="'date'" />
+                        <xsl:with-param name="size" select="'15'" />
+                    </xsl:call-template>
+                </div>                                   
+                                       
+            </div>
 			
 			<div class="floatleft">
 
