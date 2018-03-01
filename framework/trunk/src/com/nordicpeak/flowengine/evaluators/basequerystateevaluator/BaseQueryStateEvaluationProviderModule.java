@@ -78,7 +78,7 @@ public abstract class BaseQueryStateEvaluationProviderModule<T extends BaseQuery
 
 					} else if (evaluatorQueryState == QueryState.VISIBLE_REQUIRED) {
 
-						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.MAKE_REQUIRED, attributeHandler));
+						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.SHOW, attributeHandler));
 
 					} else {
 
