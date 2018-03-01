@@ -26,6 +26,7 @@ import se.unlogic.hierarchy.core.interfaces.BackgroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.events.EventListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.BackgroundModuleDescriptor;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.MethodComparator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.LowLevelQuery;
@@ -41,6 +42,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
@@ -125,8 +127,18 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 		documentElement.appendChild(this.moduleDescriptor.toXML(doc));
 
 		XMLUtils.appendNewCDATAElement(doc, documentElement, "browserModuleAlias", req.getContextPath() + flowBrowserModule.getFullAlias());
-		XMLUtils.append(doc, documentElement, "Flows", popularFlows);
-
+		
+		Element flowsElement = XMLUtils.appendNewElement(doc, documentElement, "Flows");
+		
+		SiteProfile siteProfile = flowBrowserModule.getCurrentSiteProfile(req, user, uriParser, null);
+		
+		String absoluteFileURL = flowBrowserModule.getAbsoluteFileURL(uriParser, null);
+		
+		for(Flow flow : popularFlows) {
+			
+			flowsElement.appendChild(flow.toXML(doc, siteProfile, absoluteFileURL, req));
+		}
+		
 		if(user != null){
 			XMLUtils.appendNewElement(doc, documentElement, "loggedIn");
 		}
@@ -220,6 +232,7 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 					if(flow != null && !flow.getFlowType().isUseAccessFilter() && !flow.isHideFromOverview()){
 
 						flow.setFlowFamily(flowFamily);
+						flow.setHasTextTags(TextTagReplacer.hasTextTags(flow));
 						flows.add(flow);
 
 						if(flows.size() == flowCount){
