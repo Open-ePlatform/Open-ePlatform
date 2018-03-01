@@ -618,9 +618,6 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 	}
 	
 	@Override
-	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler) {}
-	
-	@Override
 	public List<Setting> getSiteSubProfileSettings() {
 		
 		return null;
