@@ -72,11 +72,7 @@ public abstract class BaseQueryStateEvaluationProviderModule<T extends BaseQuery
 					
 				} else if (evaluator.isForceReload() && evaluatorQueryState != QueryState.HIDDEN) {
 					
-					if (evaluatorQueryState == QueryState.VISIBLE) {
-
-						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.SHOW, attributeHandler));
-
-					} else if (evaluatorQueryState == QueryState.VISIBLE_REQUIRED) {
+					if (evaluatorQueryState == QueryState.VISIBLE || evaluatorQueryState == QueryState.VISIBLE_REQUIRED) {
 
 						queryModifications = CollectionUtils.addAndInstantiateIfNeeded(queryModifications, new QueryModification(targetInstance, ModificationAction.SHOW, attributeHandler));
 
