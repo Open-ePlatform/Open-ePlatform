@@ -397,12 +397,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if (latestPublishedFlowVersionsMap != null) {
 
 				if(siteProfile != null){
+					
+					String absoluteFileURL = getAbsoluteFileURL(uriParser, null);
 
 					for (Flow flow : latestPublishedFlowVersionsMap.values()) {
 
 						if(!flow.isHideFromOverview() && AccessUtils.checkAccess(user, flow.getFlowType().getUserAccessInterface()) && isFilterPublished(flow, siteProfile)) {
 
-							showFlowTypesElement.appendChild(flow.toXML(doc, siteProfile, getAbsoluteFileURL(uriParser, flow), req));
+							showFlowTypesElement.appendChild(flow.toXML(doc, siteProfile, absoluteFileURL, req));
 						}
 					}
 
