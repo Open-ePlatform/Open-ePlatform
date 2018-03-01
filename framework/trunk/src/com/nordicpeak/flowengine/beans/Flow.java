@@ -202,7 +202,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	@DAOManaged
 	@OneToMany
-	@SimplifiedRelation(table = "flowengine_flow_checks", remoteValueColumnName = "value")
+	@SimplifiedRelation(table = "flowengine_flow_checks", remoteValueColumnName = "value", preserveListOrder=true, indexColumn="checkIndex")
 	@WebPopulate(maxLength = 255)
 	@NoDuplicates
 	@SplitOnLineBreak

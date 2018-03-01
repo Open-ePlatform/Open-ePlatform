@@ -1775,4 +1775,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="93">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_checks` ADD COLUMN `checkIndex` INTEGER UNSIGNED NOT NULL AFTER `value`;			
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
