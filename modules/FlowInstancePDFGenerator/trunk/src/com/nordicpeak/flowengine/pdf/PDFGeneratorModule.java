@@ -48,7 +48,6 @@ import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.settings.Setting;
 import se.unlogic.hierarchy.core.settings.SingleFileUploadSetting;
-import se.unlogic.hierarchy.core.settings.TextFieldSetting;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -74,6 +73,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -98,7 +98,6 @@ import com.nordicpeak.flowengine.utils.SigningUtils;
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
 	
-	private static final String LOGOTYPE_SETTING_ID_OLD = "pdf.flowinstance.logo";
 	private static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
 	private static final String TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE = "pdf.temp.id";
 	
@@ -162,8 +161,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private FlowEngineDAOFactory daoFactory;
 	
 	protected URIXSLTransformer pdfTransformer;
-	
-	private boolean needsMigration = true;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -277,18 +274,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			
 			if (siteProfile != null) {
 				
-				if (needsMigration) {
+				File logotypeFile = siteProfile.getSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+				
+				if (logotypeFile != null) {
 					
-					logotype = siteProfile.getSettingHandler().getString(LOGOTYPE_SETTING_ID_OLD);
-					
-				} else {
-					
-					File logotypeFile = siteProfile.getSettingHandler().getFile(LOGOTYPE_SETTING_ID);
-					
-					if (logotypeFile != null) {
-						
-						logotype = "file://" + logotypeFile.getAbsolutePath();
-					}
+					logotype = "file://" + logotypeFile.getAbsolutePath();
 				}
 				
 				XMLUtils.appendNewElement(doc, siteProfileElement, "Name", siteProfile.getName());
@@ -297,18 +287,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				
 			} else if (this.siteProfileHandler != null) {
 				
-				if (needsMigration) {
+				File logotypeFile = siteProfileHandler.getGlobalSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+				
+				if (logotypeFile != null) {
 					
-					logotype = siteProfileHandler.getGlobalSettingHandler().getString(LOGOTYPE_SETTING_ID_OLD);
-					
-				} else {
-					
-					File logotypeFile = siteProfileHandler.getGlobalSettingHandler().getFile(LOGOTYPE_SETTING_ID);
-					
-					if (logotypeFile != null) {
-						
-						logotype = "file://" + logotypeFile.getAbsolutePath();
-					}
+					logotype = "file://" + logotypeFile.getAbsolutePath();
 				}
 				
 				SiteProfileUtils.appendSiteProfileValues(siteProfileHandler.getGlobalSettingHandler(), siteProfileElement, doc);
@@ -807,8 +790,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		
 		if (siteProfileHandler != null) {
 			
-			checkSettings(siteProfileHandler);
-			
 			siteProfileHandler.addSettingProvider(this);
 			
 		} else {
@@ -819,36 +800,10 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		this.siteProfileHandler = siteProfileHandler;
 	}
 	
-	private void checkSettings(SiteProfileHandler siteProfileHandler) {
-		
-		if (siteProfileHandler != null && siteProfileHandler.isConfigured()) {
-			
-			try {
-				siteProfileHandler.migrateOldFileSetting(LOGOTYPE_SETTING_ID_OLD, LOGOTYPE_SETTING_ID);
-				needsMigration = false;
-				
-				return;
-				
-			} catch (Exception e) {
-				
-				log.error("Error migrating old logotype setting to new", e);
-			}
-		}
-		
-		needsMigration = true;
-	}
-	
 	@Override
 	public List<Setting> getSiteProfileSettings() {
 		
-		if (needsMigration) {
-			
-			return Collections.singletonList((Setting) new TextFieldSetting(LOGOTYPE_SETTING_ID_OLD, "Generated PDF logotype", "The logotype used in generated PDF documents.", defaultLogotype, false));
-			
-		} else {
-			
-			return Collections.singletonList((Setting) new SingleFileUploadSetting(LOGOTYPE_SETTING_ID, "Generated PDF logotype", "The logotype used in generated PDF documents.", false, Arrays.asList(new String[] { "jpg", "png" }), 5 * BinarySizes.MegaByte));
-		}
+		return Collections.singletonList((Setting) new SingleFileUploadSetting(LOGOTYPE_SETTING_ID, "Generated PDF logotype", "The logotype used in generated PDF documents.", false, Arrays.asList(new String[] { "jpg", "png" }), 5 * BinarySizes.MegaByte));
 	}
 	
 	@Override
@@ -934,12 +889,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	public File getTemporaryPDF(FlowInstanceManager instanceManager) {
 		
 		return getTempFile(instanceManager);
-	}
-	
-	@Override
-	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler) {
-		
-		checkSettings(siteProfileHandler);
 	}
 	
 	@Override
