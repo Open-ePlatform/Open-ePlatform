@@ -105,7 +105,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 		tagNameParamFactory = textTagDAO.getParamFactory("name", String.class);
 
 		textTagCRUD = new TextTagCRUD(textTagDAO.getWrapper("name", String.class), new AnnotatedRequestPopulator<TextTag>(TextTag.class), this);
-	}	
+	}
 	
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -174,7 +174,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 				log.warn("User " + user + " submitted sharing request with invalid target parameters");
 				
 				return null;
-			}		
+			}
 			
 			List<Integer> tagIDs = NumberUtils.toInt(req.getParameterValues("textTagID"));
 			
@@ -196,7 +196,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 				log.warn("User " + user + " submitted sharing request with invalid tag parameters");
 				
 				return null;
-			}			
+			}
 			
 			log.info("User " + user + " sharing tags " + tags + " with " + targets);
 			
@@ -217,7 +217,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 		
 		return null;
 		
-	}	
+	}
 
 	public void importTags(List<TextTag> tags, boolean overwrite) throws SQLException {
 		
@@ -417,11 +417,6 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 	}
 
 	@Override
-	public void siteProfileHandlerConfigurationUpdated(SiteProfileHandler siteProfileHandler) {
-		
-	}
-
-	@Override
 	public List<Setting> getSiteSubProfileSettings() {
 
 		return null;
@@ -460,6 +455,6 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 		if(siteProfileHandler != null) {
 			
 			siteProfileHandler.deleteSettingValues(setting);
-		}		
+		}
 	}
 }
