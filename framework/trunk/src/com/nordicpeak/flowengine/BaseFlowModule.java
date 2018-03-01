@@ -156,6 +156,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
@@ -1490,6 +1491,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		Element flowInstanceManagerElement = doc.createElement(elementName);
 		doc.getDocumentElement().appendChild(flowInstanceManagerElement);
 
+		Flow flow = (Flow) instanceManager.getFlowInstance().getFlow();
+		
+		flow.setSubmittedMessage(AttributeTagUtils.replaceTags(flow.getSubmittedMessage(), instanceManager.getFlowInstance().getAttributeHandler()));
+		
 		flowInstanceManagerElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
 		XMLUtils.append(doc, flowInstanceManagerElement, "ManagerResponses", managerResponses);
