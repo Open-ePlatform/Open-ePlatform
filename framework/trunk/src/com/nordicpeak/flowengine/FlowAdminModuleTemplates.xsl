@@ -447,6 +447,13 @@
 				</div>
 			</div>				
 			
+			<div class="floatleft min-width-thirtytree bigmarginbottom">
+				<div class="floatleft full">
+					<label><xsl:value-of select="$i18n.FlowFamilyID" /></label>
+					<div><xsl:value-of select="Flow/FlowFamily/flowFamilyID" /></div>
+				</div>
+			</div>
+			
 			<xsl:if test="Flow/publishDate">	
 				<div class="floatleft min-width-thirtytree">
 				
@@ -475,6 +482,13 @@
 					</xsl:if>
 				</div>
 			</xsl:if>
+			
+			<div class="floatright min-width-thirtytree">
+				<div class="floatleft fifty">
+					<label><xsl:value-of select="$i18n.FlowID" /></label>
+					<div><xsl:value-of select="Flow/flowID" /></div>
+				</div>
+			</div>
 			
 			<div class="full clearboth"/>
 			

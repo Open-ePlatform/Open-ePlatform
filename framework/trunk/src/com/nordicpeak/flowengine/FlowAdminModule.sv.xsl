@@ -515,4 +515,7 @@
 	<xsl:variable name="i18n.ReCacheFlow">Cacha om e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowForm.externalIcon">Visa ikon för extern länk</xsl:variable>
 	
+	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens ID</xsl:variable>
+	<xsl:variable name="i18n.FlowID">Versionens ID</xsl:variable>
+	
 </xsl:stylesheet>
