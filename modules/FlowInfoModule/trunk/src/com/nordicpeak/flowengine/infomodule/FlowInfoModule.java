@@ -488,6 +488,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				JsonObject flowsJson = new JsonObject(8);
 
 				flowsJson.putField("ID", flow.getFlowID());
+				flowsJson.putField("FlowFamilyID", flow.getFlowFamily().getFlowFamilyID());
 				flowsJson.putField("Name", flow.getName());
 				flowsJson.putField("URL", getFlowURL(req, flow));
 				flowsJson.putField("Category", flow.getFlowType().getName());
