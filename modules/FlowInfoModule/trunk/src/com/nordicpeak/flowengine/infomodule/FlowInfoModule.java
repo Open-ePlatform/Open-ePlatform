@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.infomodule;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -21,6 +19,12 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowType;
+
+import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -43,11 +47,6 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowType;
 
 public class FlowInfoModule extends AnnotatedRESTModule implements EventListener<CRUDEvent<Flow>>, Runnable {
 
@@ -264,7 +263,43 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		return null;
 	}
+	
+	@RESTMethod(alias = "getflowbyfamily/{flowFamilyID}/{responseType}", method = "get")
+	public void getFlowByFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType, @URIParam(name = "flowFamilyID") Integer flowFamilyID) throws Throwable {
 
+		log.info("User " + user + " requested flowFamilyID " + flowFamilyID + " as " + StringUtils.toLogFormat(responseType, 30));
+
+		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
+
+		Flow requestedFlow = getFlowByFamily(flowFamilyID, flows);
+
+		if (requestedFlow != null) {
+
+			getResponse(req, res, responseType, Collections.singletonList(requestedFlow), uriParser);
+
+		} else {
+
+			getResponse(req, res, responseType, null, uriParser);
+		}
+	}
+	
+	private Flow getFlowByFamily(Integer flowFamilyID, Collection<Flow> flows) {
+
+		if(flows == null) {
+			return null;
+		}
+		
+		for (Flow flow : flows) {
+
+			if (flow.getFlowFamily().getFlowFamilyID().equals(flowFamilyID)) {
+
+				return flow;
+			}
+		}
+
+		return null;
+	}
+	
 	@RESTMethod(alias = "getflows/{responseType}", method = "get")
 	public void getFlows(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
@@ -423,6 +458,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				Element flowElement = XMLUtils.appendNewElement(doc, flowsElement, "Flow");
 
 				XMLUtils.appendNewElement(doc, flowElement, "ID", flow.getFlowID());
+				XMLUtils.appendNewElement(doc, flowElement, "FlowFamilyID", flow.getFlowFamily().getFlowFamilyID());
 				XMLUtils.appendNewElement(doc, flowElement, "Name", flow.getName());
 				XMLUtils.appendNewElement(doc, flowElement, "URL", getFlowURL(req, flow));
 				XMLUtils.appendNewElement(doc, flowElement, "Category", flow.getFlowType().getName());
