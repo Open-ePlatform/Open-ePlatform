@@ -867,7 +867,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		//Only populated if no externalLink is set
 		if (externalLink == null) {
 			
-			this.submittedMessage = XMLValidationUtils.validateParameter("submittedMessage", xmlParser, true, 1, 16777215, StringPopulator.getPopulator(), errors);
+			this.submittedMessage = XMLValidationUtils.validateParameter("submittedMessage", xmlParser, false, 1, 16777215, StringPopulator.getPopulator(), errors);
 			
 			this.statuses = XMLPopulationUtils.populateBeans(xmlParser, "Statuses/Status", Status.class, errors);
 			this.defaultFlowStateMappings = XMLPopulationUtils.populateBeans(xmlParser, "defaultFlowStateMappings/DefaultStatusMapping", DefaultStatusMapping.class, errors);
