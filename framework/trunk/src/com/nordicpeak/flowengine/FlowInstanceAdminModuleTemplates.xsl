@@ -947,7 +947,12 @@
   					
   					<xsl:if test="not(Flow/hideInternalMessages = 'true')">
 	  					<li class="notes" data-tabid="#notes">
-	  						<a data-icon-before="i" href="#notes"><xsl:value-of select="$i18n.InternalMessages" /></a>
+	  						<a data-icon-before="i" href="#notes">
+	  							<xsl:value-of select="$i18n.InternalMessages" />
+	  							<xsl:text>&#160;(</xsl:text>
+	  							<xsl:value-of select="count(internalMessages/InternalMessage)"/>
+	  							<xsl:text>)</xsl:text>
+	  						</a>
 	  					</li>
   					</xsl:if>
   					
