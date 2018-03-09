@@ -170,6 +170,7 @@
 	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>
 	<xsl:variable name="i18n.Summary">Sammanfattning av öppna ärenden</xsl:variable>
 
-	<xsl:variable name="i18n.PosterWasNotLoggedIn">Användaren som skickade in denna ansökan var inte inloggad</xsl:variable>
+	<xsl:variable name="i18n.PosterWasNotLoggedIn">Användaren som skickade in denna ansökan var inte inloggad och ser inte detta ärende på Mina sidor</xsl:variable>
+	<xsl:variable name="i18n.PosterAnonymized">Användaren som skickade in denna ansökan ser inte detta ärende på Mina sidor</xsl:variable>
 	<xsl:variable name="i18n.Owners">Sökande</xsl:variable>
 </xsl:stylesheet>

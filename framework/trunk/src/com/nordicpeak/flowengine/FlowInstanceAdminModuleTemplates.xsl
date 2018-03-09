@@ -856,12 +856,18 @@
 							
 							<!-- TODO add social security number -->
 							
-		 					<xsl:if test="not(poster)">
-							
-								<span class="overview">
-									<xsl:value-of select="$i18n.PosterWasNotLoggedIn" />
-								</span>
-							</xsl:if>
+							<xsl:choose>
+								<xsl:when test="Attributes/Attribute[Name = 'anonymized']/Value = 'true'">
+									<span class="overview">
+										<xsl:value-of select="$i18n.PosterAnonymized" />
+									</span>
+								</xsl:when>
+								<xsl:when test="not(poster)">
+									<span class="overview">
+										<xsl:value-of select="$i18n.PosterWasNotLoggedIn" />
+									</span>
+								</xsl:when>
+							</xsl:choose>
 							
 						</p>
 						
