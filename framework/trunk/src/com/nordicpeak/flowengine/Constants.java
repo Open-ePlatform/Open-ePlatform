@@ -32,4 +32,6 @@ public class Constants {
 	public static final String FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_HEADER = "alternateSubmitMessageHeader";
 	
 	public static final String FLOW_INSTANCE_ALTERNATE_SUBMIT_MESSAGE_TEXT = "alternateSubmitMessageText";
+	
+	public static final String FLOW_INSTANCE_ANONYMIZED_ATTRIBUTE = "anonymized";
 }
