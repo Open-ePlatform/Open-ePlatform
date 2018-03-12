@@ -359,7 +359,7 @@
 	<xsl:variable name="i18n.SelectImportTargetType.description">Välj vilken kategori av e-tjänst du vill importera.</xsl:variable>
 	<xsl:variable name="i18n.ImportFlow.NewVersion.title">Importera ny version av e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ImportFlow.NewVersion.description">Använd formuläret nedan för att importera en ny version. Filen du väljer behöver vara av typen oeflow.</xsl:variable>
-	<xsl:variable name="i18n.ImportFlow.NewFamily.title">Importera ny e-tjänst av typen</xsl:variable>
+	<xsl:variable name="i18n.ImportFlow.NewFamily.title">Importera ny e-tjänst i kategorin</xsl:variable>
 	<xsl:variable name="i18n.ImportFlow.NewFamily.description">Använd formuläret nedan för att importera en ny e-tjänst. Filen du väljer behöver vara av typen oeflow.</xsl:variable>
 	<xsl:variable name="i18n.selectFlowFile">Välj fil</xsl:variable>	
 	
@@ -515,7 +515,7 @@
 	<xsl:variable name="i18n.ReCacheFlow">Cacha om e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowForm.externalIcon">Visa ikon för extern länk</xsl:variable>
 	
-	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens ID</xsl:variable>
+	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens familje ID</xsl:variable>
 	<xsl:variable name="i18n.FlowID">Versionens ID</xsl:variable>
 	
 </xsl:stylesheet>
