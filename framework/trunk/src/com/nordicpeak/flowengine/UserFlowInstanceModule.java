@@ -187,6 +187,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@CheckboxSettingDescriptor(name = "Enable the description column", description = "Controls if description column is visible")
 	protected boolean enableDescriptionColumn;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Hide manager email address in flow instance overview", description = "Controls if manager email address is shown in flow instance overview")
+	protected boolean hideManagerEmailInOverview;
+	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
 	protected List<Integer> excludedFlowTypes;
@@ -562,6 +566,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			if(enableExternalID){
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
+			}
+			
+			if(hideManagerEmailInOverview) {
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideManagerEmailInOverview");
 			}
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {

@@ -993,7 +993,10 @@
 	
 	<xsl:template match="user" mode="manager">
 		
-		<i title="{email}" data-icon-before="p" class="sender"></i><xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /> 
+		<xsl:if test="not(../../../HideManagerEmailInOverview)">
+			<i title="{email}" data-icon-before="p" class="sender"></i>
+		</xsl:if>
+		<xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /> 
 		
 		<xsl:if test="position() != last()"><xsl:text>,&#160;</xsl:text></xsl:if>
 		
