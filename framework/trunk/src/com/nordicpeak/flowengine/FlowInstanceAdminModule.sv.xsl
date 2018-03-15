@@ -155,10 +155,10 @@
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidationError.UnableToParseRequest">Ett okänt fel uppstod vid filuppladdningen</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.ExternalMessageRequired">Du behöver skriva ett meddelande</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.ExternalMessageRequired">Du måste skriva ett meddelande</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.ExternalMessageToLong">Du har skrivit ett för långt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.ExternalMessageToShort">Du har skrivit ett för kort meddelande</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.InternalMessageRequired">Du behöver skriva en notering</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InternalMessageRequired">Du måste skriva en notering</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.InternalMessageToLong">Du har skrivit en för lång notering</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.InternalMessageToShort">Du har skrivit en för kort notering</xsl:variable>
 	

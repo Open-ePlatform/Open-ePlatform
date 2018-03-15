@@ -249,7 +249,7 @@
 	<xsl:variable name="i18n.FlowInstanceArchivedUserEmailMessage">Innehåll i e-postmeddelande vid avslutat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedNotLoggedInUserEmailMessage">Innehåll i e-postmeddelande vid avslutat ärende (ej inloggad användare)</xsl:variable>
 	
-	<xsl:variable name="i18n.validation.requiredField" select="'Du behöver fylla i fältet:'"/>
+	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet:'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet:'"/>
 	<xsl:variable name="i18n.validation.tooShort" select="'För kort innehåll i fältet:'"/>
 	<xsl:variable name="i18n.validation.tooLong" select="'För långt innehåll i fältet:'"/>	

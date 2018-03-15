@@ -32,7 +32,7 @@
 	<xsl:variable name="i18n.Submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
 	
-	<xsl:variable name="i18n.Validation.RequiredField" select="'Du behöver fylla i fältet'"/>
+	<xsl:variable name="i18n.Validation.RequiredField" select="'Du måste fylla i fältet'"/>
 	<xsl:variable name="i18n.Validation.InvalidFormat" select="'Felaktigt format på fältet'"/>
 	<xsl:variable name="i18n.Validation.TooShort" select="'För kort innehåll i fältet'"/>
 		

@@ -18,14 +18,14 @@
 	<xsl:variable name="i18n.Send">Skicka</xsl:variable>
 	<xsl:variable name="i18n.CommentPlaceHolder">Lämna gärna en kommentar till ditt betyg</xsl:variable>
 	<xsl:variable name="i18n.FeedbackSurveySuccess">Ditt betyg är registrerat, tack för din medverkan</xsl:variable>
-	<xsl:variable name="i18n.NoAnswer">Du behöver välja ett betyg för att kunna skicka in</xsl:variable>
+	<xsl:variable name="i18n.NoAnswer">Du måste välja ett betyg för att kunna skicka in</xsl:variable>
 	<xsl:variable name="i18n.ShowComments">Visa betyg med kommentarer</xsl:variable>
 	<xsl:variable name="i18n.HideComments">Dölj betyg med kommentarer</xsl:variable>
 	<xsl:variable name="i18n.Answer">Betyg</xsl:variable>
 	
 	<xsl:variable name="i18n.NoFlowFeedbackSurveys">Den här versionen av e-tjänsten har ännu inga betyg</xsl:variable>
 
-	<xsl:variable name="i18n.validationError.RequiredField">Du behöver fylla i fältet</xsl:variable>
+	<xsl:variable name="i18n.validationError.RequiredField">Du måste fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.TooLong">För långt värde på fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.TooShort">För kort värde på fältet</xsl:variable>

@@ -47,7 +47,7 @@
 	<xsl:variable name="i18n.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	
-	<xsl:variable name="i18n.NoContactChannelChoosen">Du behöver välja minst en form av notifiering!</xsl:variable>
+	<xsl:variable name="i18n.NoContactChannelChoosen">Du måste välja minst en form av notifiering!</xsl:variable>
 	
 	<xsl:variable name="i18n.ZipCodeAndPostalAddress">Postnummer och ort</xsl:variable>
 </xsl:stylesheet>

@@ -21,7 +21,7 @@
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part3"> tecken!</xsl:variable>
 	<xsl:variable name="i18n.Error.SecretGuardian">Din ansökan kan inte slutföras. Vänligen kontakta kommunen för mer hjälp.</xsl:variable>
-	<xsl:variable name="i18n.Error.EmailOrPhoneRequired">Du behöver fylla i e-post eller mobiltelefon för den andra vårdnadshavaren.</xsl:variable>
+	<xsl:variable name="i18n.Error.EmailOrPhoneRequired">Du måste fylla i e-post eller mobiltelefon för den andra vårdnadshavaren.</xsl:variable>
 	<xsl:variable name="i18n.Error.EmailVerificationMismatch">De angivna e-postaddresserna överenstämmer inte</xsl:variable>
 	<xsl:variable name="i18n.Error.PhoneVerificationMismatch">De angivna mobiltelefonnumren överenstämmer inte</xsl:variable>
 	

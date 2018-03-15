@@ -673,7 +673,7 @@
 				
 				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
 				
-					<fieldset>
+					<fieldset class="notification-channel-settings">
 					
 						<div>
 							<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>

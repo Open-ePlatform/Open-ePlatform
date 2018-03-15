@@ -17,6 +17,6 @@
 	<xsl:variable name="i18n.TooLongFieldContent.part3"> tecken!</xsl:variable>
 	<xsl:variable name="i18n.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
-	<xsl:variable name="i18n.NoContactChannelSpecified">Du behöver fylla i fältet e-postadress eller mobiltelefon</xsl:variable>
+	<xsl:variable name="i18n.NoContactChannelSpecified">Du måste fylla i fältet e-postadress eller mobiltelefon</xsl:variable>
 	
 </xsl:stylesheet>

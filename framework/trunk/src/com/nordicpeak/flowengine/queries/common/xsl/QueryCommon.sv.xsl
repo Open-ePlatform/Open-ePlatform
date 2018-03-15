@@ -8,7 +8,7 @@
 	<xsl:variable name="i18n.UpdateQuery">Ändra</xsl:variable>
 	
 	<xsl:variable name="i18n.FreeTextAlternativeToLong">Innehållet i fritextalternativfältet överskrider gränsen på 255 tecken!</xsl:variable>
-	<xsl:variable name="i18n.FreeTextAlternativeValueRequired">Du behöver fylla i fältet för fritextalternativet!</xsl:variable>
+	<xsl:variable name="i18n.FreeTextAlternativeValueRequired">Du måste fylla i fältet för fritextalternativet!</xsl:variable>
 	
 	<xsl:variable name="i18n.Currency">SEK</xsl:variable>
 	

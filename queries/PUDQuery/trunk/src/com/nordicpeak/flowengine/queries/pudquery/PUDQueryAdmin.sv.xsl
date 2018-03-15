@@ -16,7 +16,7 @@
 	<xsl:variable name="i18n.PUDQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	<xsl:variable name="i18n.AllowedSearchServices">Söktjänster</xsl:variable>
 	<xsl:variable name="i18n.AllowedSearchServicesDescription">Välj vilka söktjänster som skall finnas tillgänglig för den här frågan</xsl:variable>
-	<xsl:variable name="i18n.NoSearchService">Du behöver välja minst en söktjänst</xsl:variable>
+	<xsl:variable name="i18n.NoSearchService">Du måste välja minst en söktjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.PUD">Sök via fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="i18n.Address">Sök via adress</xsl:variable>

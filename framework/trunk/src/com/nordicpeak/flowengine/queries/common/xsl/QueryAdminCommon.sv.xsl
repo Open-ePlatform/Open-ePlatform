@@ -31,9 +31,9 @@
 	<xsl:variable name="i18n.FreeTextAlternativeDescription">Välj om frågan skall ha ett fritextalternativ</xsl:variable>
 	<xsl:variable name="i18n.freeTextAlternative">fritextalternativ</xsl:variable>
 	
-	<xsl:variable name="i18n.RequiredField">Du behöver fylla i fältet</xsl:variable>
-	<xsl:variable name="i18n.AlternativeRequired">Du behöver fylla i ett namn för alternativ</xsl:variable>
-	<xsl:variable name="i18n.TooFewAlternatives">Du behöver skapa minst 2 alternativ för frågan!</xsl:variable>
+	<xsl:variable name="i18n.RequiredField">Du måste fylla i fältet</xsl:variable>
+	<xsl:variable name="i18n.AlternativeRequired">Du måste fylla i ett namn för alternativ</xsl:variable>
+	<xsl:variable name="i18n.TooFewAlternatives">Du måste skapa minst 2 alternativ för frågan!</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent">För långt innehåll i fältet</xsl:variable>
 	<xsl:variable name="i18n.InvalidFormat">Ogiltigt format på innehållet i fältet</xsl:variable>

@@ -13,7 +13,7 @@
 
 	<xsl:variable name="i18n.CoordinatesNotValid">Koordinaterna för punkten ligger inte inom den angivna fastigheten. Försök igen.</xsl:variable>
 	<xsl:variable name="i18n.RetrievingPUD">Hämtar fastighet...</xsl:variable>
-	<xsl:variable name="i18n.ZoomScaleMessage">Du behöver zooma i kartan för att kunna sätta ut punkten med tillräcklig precision.</xsl:variable>
+	<xsl:variable name="i18n.ZoomScaleMessage">Du måste zooma i kartan för att kunna sätta ut punkten med tillräcklig precision.</xsl:variable>
 	<xsl:variable name="i18n.ZoomScaleButton">Ta mig till rätt zoomnivå</xsl:variable>
 	
 	<xsl:variable name="i18n.SearchToolDescription">Sök via fastighet, adress eller ort</xsl:variable>

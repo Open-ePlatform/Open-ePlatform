@@ -107,7 +107,7 @@
 	<xsl:variable name="i18n.SelectedFlowTypeNotFound">Den valda typen hittades inte!</xsl:variable>
 	<xsl:variable name="i18n.FlowTypeAccessDenied">Du har inte behörighet till den valda typen!</xsl:variable>
 
-	<xsl:variable name="i18n.validation.requiredField" select="'Du behöver fylla i fältet:'"/>
+	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet:'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet:'"/>
 	<xsl:variable name="i18n.validation.tooShort" select="'För kort innehåll i fältet:'"/>
 	<xsl:variable name="i18n.validation.tooLong" select="'För långt innehåll i fältet:'"/>	

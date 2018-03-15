@@ -9,17 +9,17 @@
 	<xsl:variable name="i18n.TooManyAlternativesSelected.part2"> alternativ och du har valt </xsl:variable>
 	<xsl:variable name="i18n.TooManyAlternativesSelected.part3"> alternativ!</xsl:variable>
 	
-	<xsl:variable name="i18n.TooFewAlternativesSelected.part1">Du har valt för få alternativ. Du behöver välja minst </xsl:variable>
+	<xsl:variable name="i18n.TooFewAlternativesSelected.part1">Du har valt för få alternativ. Du måste välja minst </xsl:variable>
 	<xsl:variable name="i18n.TooFewAlternativesSelected.part2"> alternativ och du har endast valt </xsl:variable>
 	<xsl:variable name="i18n.TooFewAlternativesSelected.part3"> alternativ!</xsl:variable>
 	
-	<xsl:variable name="i18n.MinAlternatives.part1">Du behöver välja minst</xsl:variable>
+	<xsl:variable name="i18n.MinAlternatives.part1">Du måste välja minst</xsl:variable>
 	<xsl:variable name="i18n.MinAlternatives.part2">alternativ.</xsl:variable>
 	
 	<xsl:variable name="i18n.MaxAlternatives.part1">Du får max välja</xsl:variable>
 	<xsl:variable name="i18n.MaxAlternatives.part2">alternativ.</xsl:variable>
 	
-	<xsl:variable name="i18n.MinMaxAlternatives.part1">Du behöver välja minst</xsl:variable>
+	<xsl:variable name="i18n.MinMaxAlternatives.part1">Du måste välja minst</xsl:variable>
 	<xsl:variable name="i18n.MinMaxAlternatives.part2">alternativ och får max välja</xsl:variable>
 	<xsl:variable name="i18n.MinMaxAlternatives.part3">alternativ.</xsl:variable>
 	

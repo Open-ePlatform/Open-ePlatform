@@ -94,7 +94,7 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.UnableToParseRequest">Ett okänt fel uppstod vid filuppladdningen</xsl:variable>
-	<xsl:variable name="i18n.validationError.MessageRequired">Du behöver skriva ett meddelande</xsl:variable>
+	<xsl:variable name="i18n.validationError.MessageRequired">Du måste skriva ett meddelande</xsl:variable>
 	<xsl:variable name="i18n.validationError.MessageToLong">Du har skrivit ett för långt meddelande</xsl:variable>
 	<xsl:variable name="i18n.validationError.MessageToShort">Du har skrivit ett för kort meddelande</xsl:variable>
 	

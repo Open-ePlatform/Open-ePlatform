@@ -35,7 +35,7 @@
 	<xsl:variable name="i18n.ValidationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnableToUpdateUser">Det gick inte att uppdatera dina kontaktuppgifter, försök igen</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.NoContactChannelChoosen">Du behöver välja minst en form av notifiering!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.NoContactChannelChoosen">Du måste välja minst en form av notifiering!</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.RequiresCitizenIDOnUser">Ditt användarkonto saknar personnummer, vänligen kontakta administratören!</xsl:variable>
 	
 	<xsl:variable name="i18n.ZipCodeAndPostalAddress">Postnummer och ort</xsl:variable>
