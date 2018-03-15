@@ -9,7 +9,7 @@
 	<xsl:variable name="java.cellValueNo">Nej</xsl:variable>
 	<xsl:variable name="java.numberAssignedMessage">Lottning utförd. Du fick nummer $nummer</xsl:variable>
 	
-	<xsl:variable name="i18n.ValidationError.RequiredField">Du behöver fylla i fältet</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.RequiredField">Du måste fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.TooLong">För långt värde på fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.TooShort">För kort värde på fältet</xsl:variable>

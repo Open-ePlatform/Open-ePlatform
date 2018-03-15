@@ -50,7 +50,7 @@
 	<xsl:variable name="i18n.MapConfigurationDescription">Välj vilken kartkonfiguration som du vill utgå ifrån för den här kartfrågan</xsl:variable>
 	<xsl:variable name="i18n.ChooseMapConfiguration">Välj kartkonfiguration</xsl:variable>
 	
-	<xsl:variable name="i18n.NoMapConfigurationChoosen">Du behöver välja en kartkonfiguration</xsl:variable>
+	<xsl:variable name="i18n.NoMapConfigurationChoosen">Du måste välja en kartkonfiguration</xsl:variable>
 	<xsl:variable name="i18n.MapConfigurationNotFound">Den valda kartkonfigurationen hittades inte, försök igen</xsl:variable>
 	
 	<xsl:variable name="i18n.NoMapConfigurationsFound">Inga kartkonfigurationer hittades, kontakta systemansvarig</xsl:variable>

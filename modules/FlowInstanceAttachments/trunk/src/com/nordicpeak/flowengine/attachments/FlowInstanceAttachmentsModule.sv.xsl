@@ -26,7 +26,7 @@
 	
 	<xsl:variable name="i18n.Description">Hit bifogas handlingar till ärendet av handläggarna.</xsl:variable>
 	
-	<xsl:variable name="i18n.validationError.RequiredField">Du behöver fylla i fältet</xsl:variable>
+	<xsl:variable name="i18n.validationError.RequiredField">Du måste fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.TooLong">För långt värde på fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.TooShort">För kort värde på fältet</xsl:variable>

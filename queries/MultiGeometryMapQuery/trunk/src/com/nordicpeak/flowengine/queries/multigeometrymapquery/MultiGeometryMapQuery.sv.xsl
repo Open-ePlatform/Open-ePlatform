@@ -22,7 +22,7 @@
 	<xsl:variable name="i18n.SearchToolDescription">Sök via fastighet, adress eller ort</xsl:variable>
 	<xsl:variable name="i18n.SearchCoordinateToolDescription">Sök via koordinat</xsl:variable>
 	
-	<xsl:variable name="i18n.PUDRequired">Du behöver sätta ut på kartan vilken fastighet som avses.</xsl:variable>
+	<xsl:variable name="i18n.PUDRequired">Du måste sätta ut på kartan vilken fastighet som avses.</xsl:variable>
 	
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått.</xsl:variable>
 	<xsl:variable name="i18n.UnkownErrorMessageTitle">Oväntat fel</xsl:variable>

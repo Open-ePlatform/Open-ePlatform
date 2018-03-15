@@ -11,7 +11,7 @@
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	<xsl:variable name="i18n.No">Nej</xsl:variable>
 	
-	<xsl:variable name="i18n.validation.requiredField" select="'Du behöver fylla i fältet'"/>
+	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet'"/>
 	<xsl:variable name="i18n.validation.tooShort" select="'För kort innehåll i fältet'"/>
 	<xsl:variable name="i18n.validation.tooLong" select="'För långt innehåll i fältet'"/>	
