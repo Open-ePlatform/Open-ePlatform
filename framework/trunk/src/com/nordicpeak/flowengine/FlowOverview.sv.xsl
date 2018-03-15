@@ -14,7 +14,8 @@
 	<xsl:variable name="i18n.Questions">Frågor om e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.QuestionsContact">Kontaktperson</xsl:variable>
 	<xsl:variable name="i18n.Responsible">Personuppgiftsansvarig</xsl:variable>
-	<xsl:variable name="i18n.SendMailTo">Skicka mail till</xsl:variable>
+	<xsl:variable name="i18n.SendMailTo">Skicka e-post till</xsl:variable>
+	<xsl:variable name="i18n.CallNumber">Ring nummer</xsl:variable>
 	<xsl:variable name="i18n.MostPopular">Populärast</xsl:variable>
 	<xsl:variable name="i18n.Uncategorized">Övriga</xsl:variable>
 	<xsl:variable name="i18n.NoFlowsFound">Inga publicerade e-tjänster hittades.</xsl:variable>

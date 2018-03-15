@@ -417,7 +417,7 @@
 						</xsl:if>
 						
 						<xsl:if test="FlowFamily/contactPhone">
-							<br /><xsl:value-of select="FlowFamily/contactPhone" />
+							<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 						</xsl:if>
 					</div>
 					
@@ -492,7 +492,7 @@
 							</xsl:if>
 							
 							<xsl:if test="FlowFamily/contactPhone">
-								<br /><xsl:value-of select="FlowFamily/contactPhone" />
+								<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 							</xsl:if>
 						</p>
 					

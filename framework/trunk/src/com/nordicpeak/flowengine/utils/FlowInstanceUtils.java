@@ -210,6 +210,7 @@ public class FlowInstanceUtils {
 		}
 	}
 	
+	//TODO Add support for manager only attribute
 	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
 		
 		boolean descriptionAttributeSet = attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
