@@ -60,6 +60,8 @@ import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
+import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
@@ -193,6 +195,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
 
 	protected static final URL DEFAULT_FLOW_ICON = BaseFlowModule.class.getResource("staticcontent/pics/flow_default.png");
+	
+	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
 	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Temp dir", description = "Directory for temporary files. Should be on the same filesystem as the file store for best performance. If not set system default temp directory will be used")
@@ -1494,6 +1498,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		Flow flow = (Flow) instanceManager.getFlowInstance().getFlow();
 		
 		flow.setSubmittedMessage(AttributeTagUtils.replaceTags(flow.getSubmittedMessage(), instanceManager.getFlowInstance().getAttributeHandler()));
+		
+		TagReplacer tagReplacer = new TagReplacer();
+		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance)instanceManager.getFlowInstance()));
+		flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));	
 		
 		flowInstanceManagerElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
