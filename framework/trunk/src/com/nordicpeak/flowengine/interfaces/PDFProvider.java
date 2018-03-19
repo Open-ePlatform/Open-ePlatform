@@ -30,7 +30,7 @@ public interface PDFProvider {
 	
 	public boolean hasTemporaryPDF(FlowInstanceManager instanceManager);
 	
-	public List<PDFByteAttachment> getPDFAttachments(File pdfFile) throws Exception;
+	public List<PDFByteAttachment> getPDFAttachments(File pdfFile, boolean getData) throws Exception;
 	
 	public byte[] removePDFAttachments(File pdfFile) throws Exception;
 }
