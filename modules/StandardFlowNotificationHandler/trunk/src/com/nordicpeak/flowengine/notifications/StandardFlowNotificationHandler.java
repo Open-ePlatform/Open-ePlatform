@@ -1891,7 +1891,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
 
-					List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile);
+					List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
 
 					if (!CollectionUtils.isEmpty(attachments)) {
 
