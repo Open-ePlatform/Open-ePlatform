@@ -73,7 +73,6 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
-
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -898,9 +897,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	}
 	
 	@Override
-	public List<PDFByteAttachment> getPDFAttachments(File pdfFile) throws IOException {
+	public List<PDFByteAttachment> getPDFAttachments(File pdfFile, boolean getData) throws IOException {
 		
-		return PDFUtils.getAttachments(pdfFile);
+		return PDFUtils.getAttachments(pdfFile, getData);
 	}
 	
 	@Override

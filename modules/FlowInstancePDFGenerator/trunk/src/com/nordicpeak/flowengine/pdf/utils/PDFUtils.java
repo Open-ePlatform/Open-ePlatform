@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.FileUtils;
+
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PRStream;
 import com.lowagie.text.pdf.PdfArray;
@@ -19,13 +22,10 @@ import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.io.FileUtils;
-
 public class PDFUtils {
 
 	// http://stackoverflow.com/questions/14947829/reading-pdf-file-attachment-annotations-with-itextsharp
-	public static List<com.nordicpeak.flowengine.utils.PDFByteAttachment> getAttachments(File pdfFile) throws IOException {
+	public static List<com.nordicpeak.flowengine.utils.PDFByteAttachment> getAttachments(File pdfFile, boolean getData) throws IOException {
 
 		List<PDFByteAttachment> attachments = new ArrayList<PDFByteAttachment>();
 
@@ -73,9 +73,16 @@ public class PDFUtils {
 
 									String filename = fileSpec.getAsString(key).toString();
 
-									PRStream stream = (PRStream) PdfReader.getPdfObject(references.getAsIndirectObject(key));
-
-									attachments.add(new PDFByteAttachment(attachmentName, filename, PdfReader.getStreamBytes(stream)));
+									if(getData) {
+										
+										PRStream stream = (PRStream) PdfReader.getPdfObject(references.getAsIndirectObject(key));
+										
+										attachments.add(new PDFByteAttachment(attachmentName, filename, PdfReader.getStreamBytes(stream)));
+										
+									}else {
+										
+										attachments.add(new PDFByteAttachment(attachmentName, filename, null));
+									}
 								}
 							}
 						}
