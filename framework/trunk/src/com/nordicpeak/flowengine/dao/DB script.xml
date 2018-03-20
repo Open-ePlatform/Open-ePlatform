@@ -1783,4 +1783,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="94">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_notifications` MODIFY COLUMN `title` VARCHAR(1024) DEFAULT NULL;		
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>
