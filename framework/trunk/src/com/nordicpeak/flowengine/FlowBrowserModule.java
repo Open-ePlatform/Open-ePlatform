@@ -146,7 +146,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final String MULTI_SIGNING_ACTION_ID = FlowBrowserModule.class.getName() + ".multisigning";
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = FlowBrowserModule.class.getName();
-	
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show all flowtypes", description = "List all flowtypes in this module")
@@ -1556,6 +1555,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowMap.get(flowID)) != null) {
 			
 			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			checkFlowAccess(user, flow, profile);
 			
 			if (!flow.isPublished() || !flow.isEnabled() || !isFilterPublished(flow, profile)) {
 				
