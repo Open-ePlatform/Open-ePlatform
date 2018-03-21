@@ -876,18 +876,41 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 			return null;
 		}
+		
+		FileUploadQuery query = queryInstance.getQuery();
 
 		List<PDFAttachment> attachments = new ArrayList<PDFAttachment>(queryInstance.getFiles().size());
-
+		
 		for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
-
-			if(queryInstance.getQueryInstanceDescriptor().getFlowInstanceID() != null){
 			
-				attachments.add(new PDFFileAttachment(new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor())), fileDescriptor.getName(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+			File file;
+			
+			if (queryInstance.getQueryInstanceDescriptor().getFlowInstanceID() != null) {
+				
+				file = new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor()));
 				
 			} else {
 				
-				attachments.add(new PDFFileAttachment(new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID())), fileDescriptor.getName(), this.pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+				file = new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID()));
+			}
+			
+			FileUploadQueryAttachmentNamePrefixMode prefixMode = query.getAttachmentNamePrefixMode();
+			
+			if (prefixMode == FileUploadQueryAttachmentNamePrefixMode.QUERY_NAME) {
+				
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+				
+			} else if (prefixMode == FileUploadQueryAttachmentNamePrefixMode.CUSTOM) {
+				
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), query.getAttachmentNameCustomPrefix() + " " + fileDescriptor.getName()));
+				
+			} else if (prefixMode == FileUploadQueryAttachmentNamePrefixMode.NO_PREFIX) {
+				
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), fileDescriptor.getName()));
+				
+			} else {
+				
+				log.error("Unknown prefix mode " + prefixMode + " for query " + query);
 			}
 		}
 

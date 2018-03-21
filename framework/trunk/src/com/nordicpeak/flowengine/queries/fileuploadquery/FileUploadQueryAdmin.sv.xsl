@@ -20,4 +20,13 @@
 	<xsl:variable name="i18n.MaxFileNameLength">Maximalt antal tecken i filnamnet, inklusive filändelse</xsl:variable>
 	<xsl:variable name="i18n.maxFileNameLength">maximalt antal tecken i filnamnet, maximalt värde är 255</xsl:variable>
 
+	<xsl:variable name="i18n.attachmentNamePrefixMode">filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>
+	<xsl:variable name="i18n.AttachmentNamePrefixMode">Filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>
+	<xsl:variable name="i18n.AttachmentNamePrefixMode.QUERY_NAME">Frågans namn</xsl:variable>
+	<xsl:variable name="i18n.AttachmentNamePrefixMode.NO_PREFIX">Inget prefix</xsl:variable>
+	<xsl:variable name="i18n.AttachmentNamePrefixMode.CUSTOM">Eget prefix</xsl:variable>
+	
+	<xsl:variable name="i18n.attachmentNameCustomPrefix">filnamnsprefix</xsl:variable>
+	<xsl:variable name="i18n.AttachmentNameCustomPrefix">Filnamnsprefix</xsl:variable>
+
 </xsl:stylesheet>

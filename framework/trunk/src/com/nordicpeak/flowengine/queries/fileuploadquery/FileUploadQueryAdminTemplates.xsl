@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
@@ -97,9 +97,68 @@
 						<xsl:with-param name="size" select="'30'"/>
 						<xsl:with-param name="value" select="MaxFileNameLength" />
 					</xsl:call-template>
-			    </div>
+				</div>
+			</div>
+			
+			<xsl:variable name="prefixModes">
+				<option>
+					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.QUERY_NAME" /></name>
+					<value>QUERY_NAME</value>
+				</option>
+				<option>
+					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.NO_PREFIX" /></name>
+					<value>NO_PREFIX</value>
+				</option>
+				<option>
+					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.CUSTOM" /></name>
+					<value>CUSTOM</value>
+				</option>
+			</xsl:variable>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="attachmentNamePrefixMode" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.AttachmentNamePrefixMode" />
+				</label>
+				<div class="floatleft full">
+					<xsl:call-template name="createDropdown">
+						<xsl:with-param name="id" select="'attachmentNamePrefixMode'" />
+						<xsl:with-param name="name" select="'attachmentNamePrefixMode'" />
+						<xsl:with-param name="title" select="$i18n.AttachmentNamePrefixMode" />
+						<xsl:with-param name="labelElementName" select="'name'" />
+						<xsl:with-param name="valueElementName" select="'value'" />
+						<xsl:with-param name="element" select="exsl:node-set($prefixModes)/option" />
+						<xsl:with-param name="selectedValue" select="FileUploadQuery/attachmentNamePrefixMode" />
+					</xsl:call-template>
+				</div>
 			</div>
 
+			<div class="floatleft full bigmarginbottom">
+				<label for="attachmentNameCustomPrefix" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.AttachmentNameCustomPrefix" />
+				</label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'attachmentNameCustomPrefix'" />
+						<xsl:with-param name="name" select="'attachmentNameCustomPrefix'" />
+						<xsl:with-param name="title" select="$i18n.MaxFileNameLength" />
+						<xsl:with-param name="element" select="FileUploadQuery" />
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				(function(){
+					var prefixMode = $("#attachmentNamePrefixMode");
+					
+					var showHideCustomPrefix = function() {
+						var useCustom = prefixMode.val() == "CUSTOM";
+						$("#attachmentNameCustomPrefix").prop("disabled", !useCustom).parent().parent().toggle(useCustom);
+					};
+					
+					showHideCustomPrefix();
+					prefixMode.change(showHideCustomPrefix);
+				})();
+			</script>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
@@ -140,6 +199,12 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'maxFileNameLength'">
 				<xsl:value-of select="$i18n.maxFileNameLength" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'attachmentNamePrefixMode'">
+				<xsl:value-of select="$i18n.attachmentNamePrefixMode" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'attachmentNameCustomPrefix'">
+				<xsl:value-of select="$i18n.attachmentNameCustomPrefix" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

@@ -84,4 +84,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries`
+					ADD COLUMN `attachmentNamePrefixMode` VARCHAR(10) NOT NULL DEFAULT 'QUERY_NAME' AFTER `maxFileNameLength`,
+					ADD COLUMN `attachmentNameCustomPrefix` VARCHAR(80) NULL DEFAULT NULL AFTER `attachmentNamePrefixMode`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

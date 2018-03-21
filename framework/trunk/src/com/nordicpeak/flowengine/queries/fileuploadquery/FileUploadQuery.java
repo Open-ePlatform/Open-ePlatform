@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.standardutils.annotations.NoDuplicates;
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -64,6 +65,17 @@ public class FileUploadQuery extends BaseQuery {
 	@NoDuplicates
 	@XMLElement
 	private List<String> allowedFileExtensions;
+	
+	@DAOManaged
+	@WebPopulate(required = true)
+	@XMLElement
+	protected FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 80)
+	@RequiredIfSet(paramNames = "attachmentNamePrefixMode", paramValues = "CUSTOM")
+	@XMLElement
+	protected String attachmentNameCustomPrefix;
 
 	@DAOManaged
 	@OneToMany
@@ -255,6 +267,15 @@ public class FileUploadQuery extends BaseQuery {
 		
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
 		
+		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, FileUploadQueryAttachmentNamePrefixMode.getPopulator(), errors);
+		
+		if (attachmentNamePrefixMode == null) {
+			
+			attachmentNamePrefixMode = FileUploadQueryAttachmentNamePrefixMode.QUERY_NAME;
+		}
+		
+		attachmentNameCustomPrefix = XMLValidationUtils.validateParameter("attachmentNameCustomPrefix", xmlParser, attachmentNamePrefixMode == FileUploadQueryAttachmentNamePrefixMode.CUSTOM, 0, 80, StringPopulator.getPopulator(), errors);
+		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
 		if(attributeName != null){
@@ -285,7 +306,24 @@ public class FileUploadQuery extends BaseQuery {
 	}
 	
 	public void setAttributeName(String attributeName) {
-	
+		
 		this.attributeName = attributeName;
 	}
+	
+	public FileUploadQueryAttachmentNamePrefixMode getAttachmentNamePrefixMode() {
+		return attachmentNamePrefixMode;
+	}
+	
+	public void setAttachmentNamePrefixMode(FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode) {
+		this.attachmentNamePrefixMode = attachmentNamePrefixMode;
+	}
+	
+	public String getAttachmentNameCustomPrefix() {
+		return attachmentNameCustomPrefix;
+	}
+	
+	public void setAttachmentNameCustomPrefix(String attachmentNameCustomPrefix) {
+		this.attachmentNameCustomPrefix = attachmentNameCustomPrefix;
+	}
+	
 }
