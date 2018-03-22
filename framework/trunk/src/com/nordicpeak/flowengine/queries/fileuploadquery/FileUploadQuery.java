@@ -65,12 +65,12 @@ public class FileUploadQuery extends BaseQuery {
 	@NoDuplicates
 	@XMLElement
 	private List<String> allowedFileExtensions;
-	
+
 	@DAOManaged
 	@WebPopulate(required = true)
 	@XMLElement
 	protected FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 80)
 	@RequiredIfSet(paramNames = "attachmentNamePrefixMode", paramValues = "CUSTOM")
@@ -81,11 +81,11 @@ public class FileUploadQuery extends BaseQuery {
 	@OneToMany
 	@XMLElement
 	private List<FileUploadQueryInstance> instances;
-	
+
 	@DAOManaged
 	@XMLElement
 	private boolean setAsAttribute;
-	
+
 	@DAOManaged
 	@XMLElement
 	private String attributeName;
@@ -119,7 +119,7 @@ public class FileUploadQuery extends BaseQuery {
 	@Override
 	public String toString() {
 
-		if(this.queryDescriptor != null){
+		if (this.queryDescriptor != null) {
 
 			return queryDescriptor.getName() + " (queryID: " + queryID + ")";
 		}
@@ -158,15 +158,15 @@ public class FileUploadQuery extends BaseQuery {
 	}
 
 	public Integer getMaxFileNameLength() {
-		
+
 		return maxFileNameLength;
 	}
 
 	public void setMaxFileNameLength(Integer maxFileNameLength) {
-	
+
 		this.maxFileNameLength = maxFileNameLength;
 	}
-	
+
 	@Override
 	public String getXSDTypeName() {
 
@@ -178,17 +178,17 @@ public class FileUploadQuery extends BaseQuery {
 
 		Element queryElement = super.toXML(doc);
 
-		if(maxFileSize != null) {
+		if (maxFileSize != null) {
 			XMLUtils.appendNewElement(doc, queryElement, "FormatedMaxSize", BinarySizeFormater.getFormatedSize(maxFileSize));
 		}
 
-		if(maxFileNameLength != null) {
+		if (maxFileNameLength != null) {
 			XMLUtils.appendNewElement(doc, queryElement, "MaxFileNameLength", maxFileNameLength);
 		}
-		
+
 		return queryElement;
 	}
-	
+
 	@Override
 	public void toXSD(Document doc) {
 
@@ -205,7 +205,7 @@ public class FileUploadQuery extends BaseQuery {
 		Element sequenceElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:sequence");
 		extensionElement.appendChild(sequenceElement);
 
-		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		nameElement.setAttribute("name", "Name");
 		nameElement.setAttribute("type", "xs:string");
 		nameElement.setAttribute("minOccurs", "1");
@@ -236,7 +236,7 @@ public class FileUploadQuery extends BaseQuery {
 
 		addElementType(doc, sequenceElement, "ID", "xs:string");
 		addElementType(doc, sequenceElement, "Name", "xs:string");
-		addElementType(doc, sequenceElement, "Size" ,"xs:long");
+		addElementType(doc, sequenceElement, "Size", "xs:long");
 		addElementType(doc, sequenceElement, "EncodedData", "xs:string");
 
 		doc.getDocumentElement().appendChild(complexTypeElement);
@@ -257,73 +257,77 @@ public class FileUploadQuery extends BaseQuery {
 	public void populate(XMLParser xmlParser) throws ValidationException {
 
 		List<ValidationError> errors = new ArrayList<ValidationError>();
-		
+
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		
+
 		maxFileCount = XMLValidationUtils.validateParameter("maxFileCount", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxFileSize = XMLValidationUtils.validateParameter("maxFileSize", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxFileNameLength = XMLValidationUtils.validateParameter("maxFileNameLength", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
-		
+
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
-		
+
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, FileUploadQueryAttachmentNamePrefixMode.getPopulator(), errors);
-		
+
 		if (attachmentNamePrefixMode == null) {
-			
+
 			attachmentNamePrefixMode = FileUploadQueryAttachmentNamePrefixMode.QUERY_NAME;
 		}
-		
+
 		attachmentNameCustomPrefix = XMLValidationUtils.validateParameter("attachmentNameCustomPrefix", xmlParser, attachmentNamePrefixMode == FileUploadQueryAttachmentNamePrefixMode.CUSTOM, 0, 80, StringPopulator.getPopulator(), errors);
-		
+
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
-		
-		if(attributeName != null){
-			
+
+		if (attributeName != null) {
+
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
-		
-		if(!errors.isEmpty()){
+
+		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
-		
+
 	}
-	
+
 	public boolean isSetAsAttribute() {
-		
+
 		return setAsAttribute;
 	}
 
 	public void setSetAsAttribute(boolean setAsAttribute) {
-	
+
 		this.setAsAttribute = setAsAttribute;
 	}
-	
+
 	public String getAttributeName() {
-		
+
 		return attributeName;
 	}
-	
+
 	public void setAttributeName(String attributeName) {
-		
+
 		this.attributeName = attributeName;
 	}
-	
+
 	public FileUploadQueryAttachmentNamePrefixMode getAttachmentNamePrefixMode() {
+
 		return attachmentNamePrefixMode;
 	}
-	
+
 	public void setAttachmentNamePrefixMode(FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode) {
+
 		this.attachmentNamePrefixMode = attachmentNamePrefixMode;
 	}
-	
+
 	public String getAttachmentNameCustomPrefix() {
+
 		return attachmentNameCustomPrefix;
 	}
-	
+
 	public void setAttachmentNameCustomPrefix(String attachmentNameCustomPrefix) {
+
 		this.attachmentNameCustomPrefix = attachmentNameCustomPrefix;
 	}
-	
+
 }
