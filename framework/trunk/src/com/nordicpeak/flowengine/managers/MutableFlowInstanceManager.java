@@ -925,13 +925,22 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							stepIndex++;
 						}
 						
-						//TODO avoid recurssion;
-						
 						if (managedQueryInstance.getEvaluators() != null) {
+							
+							boolean skipUntilCallingEvaluator = queryInstance == managedQueryInstance.getQueryInstance();
 							
 							for (Evaluator triggeredEvaluator : managedQueryInstance.getEvaluators()) {
 								
-								if (!triggeredEvaluator.getEvaluatorDescriptor().isEnabled() || evaluator == triggeredEvaluator) {
+								if (skipUntilCallingEvaluator) {
+									
+									if (evaluator == triggeredEvaluator) {
+										skipUntilCallingEvaluator = false;
+									}
+									
+									continue;
+								}
+								
+								if (!triggeredEvaluator.getEvaluatorDescriptor().isEnabled()) {
 									
 									continue;
 								}
