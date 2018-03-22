@@ -12,6 +12,21 @@
 		/ckeditor/init.js
 	</xsl:variable>	
 
+	<xsl:variable name="prefixModes">
+		<option>
+			<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.QUERY_NAME" /></name>
+			<value>QUERY_NAME</value>
+		</option>
+		<option>
+			<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.NO_PREFIX" /></name>
+			<value>NO_PREFIX</value>
+		</option>
+		<option>
+			<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.CUSTOM" /></name>
+			<value>CUSTOM</value>
+		</option>
+	</xsl:variable>
+
 	<xsl:template match="Document">	
 		
 		<div id="FileUploadQueryProvider" class="contentitem">
@@ -99,21 +114,6 @@
 					</xsl:call-template>
 				</div>
 			</div>
-			
-			<xsl:variable name="prefixModes">
-				<option>
-					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.QUERY_NAME" /></name>
-					<value>QUERY_NAME</value>
-				</option>
-				<option>
-					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.NO_PREFIX" /></name>
-					<value>NO_PREFIX</value>
-				</option>
-				<option>
-					<name><xsl:value-of select="$i18n.AttachmentNamePrefixMode.CUSTOM" /></name>
-					<value>CUSTOM</value>
-				</option>
-			</xsl:variable>
 			
 			<div class="floatleft full bigmarginbottom">
 				<label for="attachmentNamePrefixMode" class="floatleft clearboth">
