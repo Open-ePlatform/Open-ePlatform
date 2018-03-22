@@ -1460,18 +1460,28 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(StatusChangedByManagerEvent event, EventSource eventSource) throws SQLException {
 
+		FlowInstance flowInstance = event.getFlowInstance();
+		
+		try { // Read from DB as event flow instance might not have all the fields we need
+			flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
+			
+		} catch (Exception e) {
+			
+			log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
+		}
+		
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
 		if (!event.isSuppressUserNotifications()) {
-
-			Collection<Contact> contacts = getContactsFromDB(event.getFlowInstance());
+			
+			Collection<Contact> contacts = getContacts(flowInstance);
 
 			if (contacts != null) {
 
 				//Check which type of notification the contact should get
 				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
 					
-					if (!event.getFlowInstance().getAttributeHandler().getPrimitiveBoolean(Constants.FLOW_INSTANCE_SUPPRESS_ARCHIVED_NOTIFICATION_ATTRIBUTE)) {
+					if (!flowInstance.getAttributeHandler().getPrimitiveBoolean(Constants.FLOW_INSTANCE_SUPPRESS_ARCHIVED_NOTIFICATION_ATTRIBUTE)) {
 						
 						if (notificationSettings.isSendFlowInstanceArchivedUserEmail() || notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 							
@@ -1479,29 +1489,29 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 								
 								if (notificationSettings.isSendFlowInstanceArchivedUserEmail()) {
 									
-									sendContactEmail(event.getFlowInstance(), contact, notificationSettings.getFlowInstanceArchivedUserEmailSubject(), getFlowInstaceArchivedUserEmailMessage(notificationSettings, event.getFlowInstance()), null);
+									sendContactEmail(flowInstance, contact, notificationSettings.getFlowInstanceArchivedUserEmailSubject(), getFlowInstaceArchivedUserEmailMessage(notificationSettings, flowInstance), null);
 								}
 								
 								if (notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 									
-									sendContactSMS(event.getFlowInstance(), contact, getFlowInstaceArchivedUserSMSMessage(event.getFlowInstance()));
+									sendContactSMS(flowInstance, contact, getFlowInstaceArchivedUserSMSMessage(flowInstance));
 								}
 							}
 						}
 					}
 
-				} else {
+				} else if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
 
 					for (Contact contact : contacts) {
 
 						if (notificationSettings.isSendStatusChangedUserEmail()) {
 
-							sendContactEmail(event.getFlowInstance(), contact, notificationSettings.getStatusChangedUserEmailSubject(), notificationSettings.getStatusChangedUserEmailMessage(), null);
+							sendContactEmail(flowInstance, contact, notificationSettings.getStatusChangedUserEmailSubject(), notificationSettings.getStatusChangedUserEmailMessage(), null);
 						}
 
 						if (notificationSettings.isSendStatusChangedUserSMS()) {
 
-							sendContactSMS(event.getFlowInstance(), contact, statusChangedUserSMS);
+							sendContactSMS(flowInstance, contact, statusChangedUserSMS);
 						}
 					}
 				}
@@ -1510,7 +1520,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (notificationSettings.isSendStatusChangedManagerEmail()) {
 
-			sendManagerEmails(event.getFlowInstance(), getPosterContact(event.getFlowInstance(), event.getSiteProfile()), statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
+			sendManagerEmails(flowInstance, getPosterContact(flowInstance), statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
 		}
 	}
 
@@ -1907,7 +1917,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						for (PDFByteAttachment attachment : attachments) {
 
-							email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachment.getAttachmentName() + " - " + attachment.getFilename()));
+							String attachmentName;
+							
+							if (attachment.getAttachmentName().equals(attachment.getFilename())) {
+								
+								attachmentName = attachment.getFilename();
+								
+							} else {
+								
+								attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
+							}
+							
+							email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
 						}
 					}
 				}
@@ -1998,7 +2019,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.error("Error creating immutable flow instance manager for flow instance " + flowInstance, e);
+			log.error("Error getting flow instance with attributes and owners " + flowInstance, e);
 		}
 
 		return null;
@@ -2018,7 +2039,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.error("Error creating immutable flow instance manager for flow instance " + flowInstance, e);
+			log.error("Error getting flow instance with attributes and owners " + flowInstance, e);
 		}
 
 		return null;
