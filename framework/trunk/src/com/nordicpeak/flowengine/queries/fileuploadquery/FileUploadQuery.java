@@ -69,7 +69,7 @@ public class FileUploadQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate(required = true)
 	@XMLElement
-	protected FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode;
+	protected AttachmentNamePrefixType attachmentNamePrefixMode;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 80)
@@ -267,14 +267,14 @@ public class FileUploadQuery extends BaseQuery {
 
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
 
-		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, FileUploadQueryAttachmentNamePrefixMode.getPopulator(), errors);
+		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 
 		if (attachmentNamePrefixMode == null) {
 
-			attachmentNamePrefixMode = FileUploadQueryAttachmentNamePrefixMode.QUERY_NAME;
+			attachmentNamePrefixMode = AttachmentNamePrefixType.QUERY_NAME;
 		}
 
-		attachmentNameCustomPrefix = XMLValidationUtils.validateParameter("attachmentNameCustomPrefix", xmlParser, attachmentNamePrefixMode == FileUploadQueryAttachmentNamePrefixMode.CUSTOM, 0, 80, StringPopulator.getPopulator(), errors);
+		attachmentNameCustomPrefix = XMLValidationUtils.validateParameter("attachmentNameCustomPrefix", xmlParser, attachmentNamePrefixMode == AttachmentNamePrefixType.CUSTOM, 0, 80, StringPopulator.getPopulator(), errors);
 
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
@@ -310,12 +310,12 @@ public class FileUploadQuery extends BaseQuery {
 		this.attributeName = attributeName;
 	}
 
-	public FileUploadQueryAttachmentNamePrefixMode getAttachmentNamePrefixMode() {
+	public AttachmentNamePrefixType getAttachmentNamePrefixMode() {
 
 		return attachmentNamePrefixMode;
 	}
 
-	public void setAttachmentNamePrefixMode(FileUploadQueryAttachmentNamePrefixMode attachmentNamePrefixMode) {
+	public void setAttachmentNamePrefixMode(AttachmentNamePrefixType attachmentNamePrefixMode) {
 
 		this.attachmentNamePrefixMode = attachmentNamePrefixMode;
 	}
