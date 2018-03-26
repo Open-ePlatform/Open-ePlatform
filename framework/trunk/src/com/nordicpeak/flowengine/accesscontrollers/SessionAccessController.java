@@ -28,18 +28,22 @@ public class SessionAccessController implements FlowInstanceAccessController {
 
 		throw new AccessDeniedException("Operation not supported");
 	}
-
-	@Override
-	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
-
-		try{
-			if(session != null && session.getAttribute(SessionAccessController.class.getName() + "-" + tag + "-" + flowInstance.getFlowInstanceID()) != null){
-
+	
+	public static void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user, HttpSession session, String tag) throws AccessDeniedException {
+		
+		try {
+			if (session != null && session.getAttribute(SessionAccessController.class.getName() + "-" + tag + "-" + flowInstance.getFlowInstanceID()) != null) {
 				return;
 			}
-		}catch(IllegalStateException e){}
-
+		} catch (IllegalStateException e) {}
+		
 		throw new AccessDeniedException("Session based access check failed using tag: " + tag);
+	}
+	
+	@Override
+	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
+		
+		checkFlowInstanceAccess(flowInstance, user, session, tag);
 	}
 
 	@Override
@@ -50,6 +54,6 @@ public class SessionAccessController implements FlowInstanceAccessController {
 
 	public static void setSessionAttribute(Integer flowInstanceID, HttpSession session, String tag){
 
-		SessionUtils.setAttribute(SessionAccessController.class.getName() + "-" + tag + "-" + flowInstanceID, true, session);		
-	}	
+		SessionUtils.setAttribute(SessionAccessController.class.getName() + "-" + tag + "-" + flowInstanceID, true, session);
+	}
 }

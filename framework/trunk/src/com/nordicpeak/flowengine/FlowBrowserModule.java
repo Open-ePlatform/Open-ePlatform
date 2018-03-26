@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -74,6 +76,7 @@ import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
 
+import com.nordicpeak.flowengine.accesscontrollers.FlowBrowserAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.ExtensionView;
@@ -131,8 +134,6 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -652,7 +653,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			} else if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
 
 				//Get saved instance from DB or session
-				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, this, req.getSession(true), user, uriParser, req, false, true, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, new FlowBrowserAccessController(this, req.getSession(false)), req.getSession(true), user, uriParser, req, false, true, true, DEFAULT_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -796,15 +797,21 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			throw new AccessDeniedException("Flow " + flow + " requires autentication");
 		}
 	}
-
-	@Override
-	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
+	
+	public void checkFlowInstanceTypeAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
 
 		if (!isListAllFlowTypes() && !this.getFlowTypeIDs().contains(flowInstance.getFlow().getFlowType().getFlowTypeID())) {
 
 			throw new AccessDeniedException("Access to flow instance " + flowInstance + " belonging to flow type " + flowInstance.getFlow().getFlowType() + " is not allowed via this module");
+		}
+	}
 
-		} else if (flowInstance.getOwners() == null || user == null || !flowInstance.getOwners().contains(user)) {
+	@Override
+	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
+
+		checkFlowInstanceTypeAccess(flowInstance, user);
+		
+		if (flowInstance.getOwners() == null || user == null || !flowInstance.getOwners().contains(user)) {
 
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the current user is not owner of the requested instance.");
 
@@ -1354,7 +1361,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	public String getSaveAndSubmitURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		if(instanceManager.getFlowInstanceID() != null){
+		if (instanceManager.getFlowInstanceID() != null) {
 			
 			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/flow/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "?save-submit=1&nopost=1";
 			
@@ -1690,6 +1697,15 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		extensionViewProviders.remove(flowAdminExtensionProvider);
 		
 		log.info("Extension view provider " + flowAdminExtensionProvider + " removed");
+	}
+	
+	@Override
+	protected void savedFlowInstanceForPayment(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req) {
+		
+		if (user == null) {
+			
+			SessionAccessController.setSessionAttribute(instanceManager.getFlowInstanceID(), req.getSession(), SESSION_ACCESS_CONTROLLER_TAG);
+		}
 	}
 	
 }

@@ -843,6 +843,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							log.info("User " + user + " saving and preparing to pay flow instance " + instanceManager.getFlowInstance());
 
 							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+							
+							savedFlowInstanceForPayment(instanceManager, user, req);
 
 						} else {
 
@@ -956,6 +958,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				multipartRequest.deleteFiles();
 			}
 		}
+	}
+
+	protected void savedFlowInstanceForPayment(MutableFlowInstanceManager instanceManager, User user, HttpServletRequest req) {
+		
 	}
 
 	protected void reOpenFlowInstance(Integer flowID, Integer flowInstanceID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
@@ -1501,7 +1507,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		TagReplacer tagReplacer = new TagReplacer();
 		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance)instanceManager.getFlowInstance()));
-		flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));	
+		flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));
 		
 		flowInstanceManagerElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
