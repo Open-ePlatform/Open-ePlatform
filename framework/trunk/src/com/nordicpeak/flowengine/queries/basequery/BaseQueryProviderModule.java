@@ -36,7 +36,7 @@ import se.unlogic.standardutils.xml.ClassPathURIResolver;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.standardutils.xsl.URIXSLTransformer;
+import se.unlogic.standardutils.xsl.XSLTransformer;
 import se.unlogic.standardutils.xsl.XSLVariableReader;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -94,9 +94,9 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	
 	protected QueryTypeDescriptor queryTypeDescriptor;
 
-	protected URIXSLTransformer queryTransformer;
+	protected XSLTransformer queryTransformer;
 
-	protected URIXSLTransformer pdfTransformer;
+	protected XSLTransformer pdfTransformer;
 
 	protected List<ScriptTag> queryScripts;
 	protected List<LinkTag> queryLinks;
@@ -192,7 +192,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 			if(styleSheetURL != null){
 
 				try {
-					queryTransformer = new URIXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
+					queryTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
 
 					parseQueryXSLStyleSheet(styleSheetURL);
 
@@ -221,7 +221,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 			if(styleSheetURL != null){
 
 				try {
-					pdfTransformer = new URIXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
+					pdfTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
 
 					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
 
@@ -382,7 +382,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		return new QueryResponse(transformQuery(doc, queryTransformer, false), queryScripts, queryLinks, queryDescriptor);
 	}
 
-	protected String transformQuery(Document doc, URIXSLTransformer xslTransformer, boolean pdf) throws TransformerConfigurationException, TransformerException {
+	protected String transformQuery(Document doc, XSLTransformer xslTransformer, boolean pdf) throws TransformerConfigurationException, TransformerException {
 
 		StringWriter stringWriter = new StringWriter();
 
