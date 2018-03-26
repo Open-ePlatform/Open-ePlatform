@@ -900,8 +900,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 						this.daoFactory.getFlowInstanceDAO().update(flowInstance);
 						
-						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, managerSignedDetailsText, user);
-						flowInstanceEvent.getAttributeHandler().getAttributeMap().putAll(signingResponse.getSigningAttributes());
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, managerSignedDetailsText, user, null, signingResponse.getSigningAttributes());
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 						
