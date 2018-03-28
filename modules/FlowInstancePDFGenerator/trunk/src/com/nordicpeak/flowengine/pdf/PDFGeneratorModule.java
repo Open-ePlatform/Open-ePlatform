@@ -244,7 +244,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			
 			if (temporary && !instanceManager.getSessionAttributeHandler().isSet(TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE)) {
 				
-				String tempID = RandomUtils.getRandomString(32, 32);
+				String tempID = RandomUtils.getRandomString(32, RandomUtils.LOWER_CASE_CHARACTERS);
 				
 				int attempts = 1;
 				while (hasTemporaryPDF(tempID)) {
@@ -253,7 +253,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						throw new RuntimeException("Unable to find unused PDF tempID");
 					}
 					
-					tempID = RandomUtils.getRandomString(32, 32);
+					tempID = RandomUtils.getRandomString(32, RandomUtils.LOWER_CASE_CHARACTERS);
 				}
 				
 				instanceManager.getSessionAttributeHandler().setAttribute(TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE, tempID);
