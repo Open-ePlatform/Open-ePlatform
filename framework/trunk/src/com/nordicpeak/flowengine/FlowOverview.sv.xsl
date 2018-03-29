@@ -9,6 +9,9 @@
 	
 	<xsl:variable name="i18n.ChecklistTitle">Följande behövs för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.StartFlow">Starta e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.StartFlow.LoginQuestion.title">Fråga om inloggning</xsl:variable>
+	<xsl:variable name="i18n.StartFlow.LoginQuestion.Login">Logga in och starta e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.StartFlow.LoginQuestion.NoLogin">Gå vidare utan inloggning</xsl:variable>
 	<xsl:variable name="i18n.StepDescriptionTitle">Du kommer att gå igenom följande steg</xsl:variable>	
 	
 	<xsl:variable name="i18n.Questions">Frågor om e-tjänsten</xsl:variable>

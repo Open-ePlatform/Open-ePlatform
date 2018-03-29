@@ -113,6 +113,11 @@
 	  									<xsl:otherwise>
 	  									
 	  										<a class="btn btn-green xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/{$internalFlowMethodAlias}/{flowID}">
+	  											
+	  											<xsl:if test="showLoginQuestion = 'true' and not(/Document/user)">
+	  												<xsl:attribute name="onclick">askForLoginOrContinue(this, event);</xsl:attribute>
+	  											</xsl:if>
+	  											
 	  											<xsl:value-of select="$startButtonText" />
 	  										</a>
 	  										
@@ -123,6 +128,10 @@
 	  							<xsl:otherwise>
 	  							
 	  								<a class="btn btn-green xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/{$externalFlowMethodAlias}/{flowID}">
+	  									
+	  									<xsl:if test="showLoginQuestion = 'true' and not(/Document/user)">
+ 												<xsl:attribute name="onclick">askForLoginOrContinue(this, event);</xsl:attribute>
+ 											</xsl:if>
 	  									
 	  									<xsl:if test="externalFlowMethodAlias = ''">
 	  										<xsl:attribute name="href"><xsl:value-of select="externalLink"/></xsl:attribute>
@@ -144,6 +153,35 @@
 	  							</xsl:otherwise>
 	  						</xsl:choose>
 	  					</div>
+	  					
+	  					<xsl:if test="showLoginQuestion = 'true' and not(/Document/user)">
+	  					
+								<div class="help-box" data-help-box="askLogin">
+									<div>
+						  			<div> 
+						  				<a class="close" href="#" data-icon-after="x"></a> 
+						  				
+						  				<h1 class="nopadding bigmarginbottom">
+						  					<xsl:value-of select="$i18n.StartFlow.LoginQuestion.title" />
+						  				</h1>
+						  				
+						  				<xsl:value-of select="loginQuestionText" disable-output-escaping="yes" />
+						  				
+						  				<a class="btn btn-green xl full login">
+  											<xsl:value-of select="$i18n.StartFlow.LoginQuestion.Login" />
+  										</a>
+  										
+						  				<a class="btn btn-green xl full bigmargintop continue">
+  											<xsl:value-of select="$i18n.StartFlow.LoginQuestion.NoLogin" />
+  										</a>
+						  			</div>
+									</div>
+								</div>
+								
+								<div class="help-backdrop" data-help-box="askLogin" />
+								
+	  					</xsl:if>
+	  					
   					</xsl:if>
   					
   				</div>

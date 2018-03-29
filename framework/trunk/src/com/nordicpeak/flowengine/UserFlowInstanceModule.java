@@ -1427,4 +1427,5 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return userMenuLink;
 	}
+
 }

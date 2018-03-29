@@ -5,7 +5,9 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedIntegerBasedCRUD;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -58,6 +61,7 @@ import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
@@ -65,6 +69,7 @@ import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
@@ -123,14 +128,22 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	}
 	
 	@Override
-	protected void appendBean(Flow bean, Element targetElement, Document doc, User user) {
+	protected void appendBean(Flow flow, Element targetElement, Document doc, User user) {
 		
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
 		
-		TemplateUtils.setTemplatedFields(bean.getFlowFamily(), callback);
+		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), callback);
 		
-		super.appendBean(bean, targetElement, genDoc, user);
+		boolean emptyLoginQuestionText = flow.getLoginQuestionText() == null;
+		TemplateUtils.setTemplatedFields(flow, callback);
+		
+		if (emptyLoginQuestionText && flow.getLoginQuestionText() != null) {
+			
+			flow.setLoginQuestionText(flow.getLoginQuestionText().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
+		}
+		
+		super.appendBean(flow, targetElement, genDoc, user);
 	}
 
 	@Override
@@ -145,6 +158,12 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		Flow dummyFlow = new Flow();
 		dummyFlow.setFlowFamily(dummyFlowFamily);
+		TemplateUtils.setTemplatedFields(dummyFlow, callback);
+		
+		if (dummyFlow.getLoginQuestionText() != null) {
+			
+			dummyFlow.setLoginQuestionText(dummyFlow.getLoginQuestionText().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
+		}
 
 		addTypeElement.appendChild(dummyFlow.toXML(doc));
 	}
@@ -660,9 +679,22 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		if (flow.getFlowFamily().getAllowedUserIDs() != null) {
 
-			List<User> users = callback.getUserHandler().getUsers(flow.getFlowFamily().getAllowedUserIDs(), false, true);
-
-			XMLUtils.append(doc, showTypeElement, "AllowedUsers", users);
+			List<Integer> userIDs = new ArrayList<Integer>();
+			
+			for (FlowFamilyManager manager : flow.getFlowFamily().getManagerUsers()) {
+				
+				userIDs.add(manager.getUserID());
+			}
+			
+			Map<Integer, User> userMap = UserUtils.getUserIDMap(callback.getUserHandler().getUsers(userIDs, false, true));
+			
+			for (FlowFamilyManager manager : flow.getFlowFamily().getManagerUsers()) {
+				
+				manager.setUser(userMap.get(manager.getUserID()));
+			}
+			
+			Collections.sort(flow.getFlowFamily().getManagerUsers(), FlowFamilyManagerComparator.getComparator());
+			XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagerUsers());
 		}
 
 		FlowSubmitSurveyProvider submitSurveyProvider = callback.getSystemInterface().getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);

@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -47,12 +49,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
@@ -220,6 +224,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
+import com.nordicpeak.flowengine.runnables.UpdateExpiringFlowManagersRunnable;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
@@ -343,6 +348,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	@XSLVariable(prefix = "java.")
 	private String eventFunctionConfigured = "eventFunctionConfigured";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventFlowInstanceManagerExpired = "eventFlowInstanceManagerExpired";
 
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows= "List flows";
@@ -444,13 +452,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private int maxFlowTypeIconHeight = 100;
 	
 	@XSLVariable(prefix = "java.")
-	@ModuleSetting(allowsNull = true)
+	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Default login help link name", description = "Name of the login help link.")
 	private String defaultLoginHelpLinkName;
 	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Default login help url", description = "URL to redirect the user to for login help.", formatValidator = StringURLPopulator.class)
 	private String defaultLoginHelpLinkURL;
+	
+	@XSLVariable(prefix = "java.")
+	@ModuleSetting
+	@TextAreaSettingDescriptor(name = "Default login question text", description = "Description of the login question.")
+	private String defaultFlowStartLoginQuestionText;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Check for expirint managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
+	private String managersUpdateInterval = "0 0 * * *";
 
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
@@ -505,6 +522,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
 
+	private Scheduler scheduler;
+	private String updateManagersScheduleID;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
@@ -529,13 +549,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 			systemStarted();
+			
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
 			systemInterface.addSystemStartupListener(this);
 		}
 	}
+	
+	@Override
+	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
+		
+		super.update(descriptor, dataSource);
+		
+		scheduler.reschedule(updateManagersScheduleID, managersUpdateInterval);
+	}
 
 	@Override
 	public void unload() throws Exception {
+		
+		stopScheduler();
 
 		eventHandler.removeEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 
@@ -4635,7 +4666,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		if(flow == null) {
 			
-			return null;			
+			return null;
 		}
 		
 		FlowType flowType = flowTypeCacheMap.get(flow.getFlowType().getFlowTypeID());
@@ -4749,6 +4780,36 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public void systemStarted() throws Exception {
 		
 		sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+		
+		initScheduler();
+	}
+	
+	protected synchronized void initScheduler() {
+		
+		if (scheduler != null) {
+			
+			log.warn("Invalid state, scheduler already running!");
+			stopScheduler();
+		}
+		
+		scheduler = new Scheduler();
+		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, new UpdateExpiringFlowManagersRunnable(this, daoFactory, eventFlowInstanceManagerExpired));
+		
+		scheduler.start();
+	}
+	
+	protected synchronized void stopScheduler() {
+		
+		try {
+			if (scheduler != null) {
+				
+				scheduler.stop();
+				scheduler = null;
+			}
+			
+		} catch (IllegalStateException e) {
+			log.error("Error stopping scheduler", e);
+		}
 	}
 	
 	@WebPublic(toLowerCase = true)
@@ -4845,4 +4906,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return eventFunctionConfigured;
 	}
 
+	//TODO remove
+	@WebPublic(requireLogin = true)
+	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
+		
+		if (user.isAdmin()) {
+			
+			new UpdateExpiringFlowManagersRunnable(this, daoFactory, eventFlowInstanceManagerExpired).run();
+			return null;
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
 }

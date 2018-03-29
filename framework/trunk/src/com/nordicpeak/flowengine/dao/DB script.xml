@@ -1791,4 +1791,24 @@
 		</Query>
 	</Script>	
 	
+	<Script version="95">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows`
+					ADD COLUMN `showLoginQuestion` TINYINT(1) NOT NULL AFTER `paymentSupportEnabled`,
+					ADD COLUMN `loginQuestionText` TEXT NULL DEFAULT NULL AFTER `showLoginQuestion`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="96">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_manager_users`
+					ADD COLUMN `validFromDate` DATE NULL DEFAULT NULL AFTER `userID`,
+					ADD COLUMN `validToDate` DATE NULL DEFAULT NULL AFTER `validFromDate`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.beans;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -15,14 +17,17 @@ import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringURLAliasPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
@@ -41,7 +46,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 	public static final Field FLOWS_RELATION = ReflectionUtils.getField(FlowFamily.class, "flows");
 	public static final Field MANAGER_GROUPS_RELATION = ReflectionUtils.getField(FlowFamily.class, "managerGroupIDs");
-	public static final Field MANAGER_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "managerUserIDs");
+	public static final Field MANAGER_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "managerUsers");
 	public static final Field ALIASES_RELATION = ReflectionUtils.getField(FlowFamily.class, "aliases");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowFamily.class, "events");
 	
@@ -122,9 +127,8 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 	@DAOManaged
 	@OneToMany
-	@SimplifiedRelation(table = "flowengine_flow_family_manager_users", remoteValueColumnName = "userID")
-	@WebPopulate(paramName = "user")
-	@XMLElement(childName = "userID")
+	private List<FlowFamilyManager> managerUsers;
+	
 	private List<Integer> managerUserIDs;
 
 	@DAOManaged
@@ -147,7 +151,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@OneToMany
 	@XMLElement
 	private List<FlowFamilyEvent> events;
-
+	
 	@DAOManaged
 	@WebPopulate(maxLength = 24)
 	@XMLElement
@@ -227,16 +231,6 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		this.ownerEmail = ownerEmail;
 	}
 
-	public void setManagerGroupIDs(List<Integer> managerGroupIDs) {
-
-		this.managerGroupIDs = managerGroupIDs;
-	}
-
-	public void setManagerUserIDs(List<Integer> managerUserIDs) {
-
-		this.managerUserIDs = managerUserIDs;
-	}
-
 	@Override
 	public List<Flow> getFlows() {
 
@@ -299,10 +293,43 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 		return managerGroupIDs;
 	}
+	
+	public List<FlowFamilyManager> getManagerUsers() {
+
+		return managerUsers;
+	}
 
 	public List<Integer> getManagerUserIDs() {
-
+		
+		if (managerUserIDs == null && !CollectionUtils.isEmpty(managerUsers)) {
+			
+			Timestamp startOfToday = DateUtils.setTimeToMidnight(TimeUtils.getCurrentTimestamp());
+			List<Integer> temp = new ArrayList<Integer>(managerUsers.size());
+			
+			for (FlowFamilyManager manager : managerUsers) {
+				
+				if (manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
+					continue;
+				}
+				
+				temp.add(manager.getUserID());
+			}
+			
+			managerUserIDs = temp;
+		}
+		
 		return managerUserIDs;
+	}
+	
+	public void setManagerGroupIDs(List<Integer> managerGroupIDs) {
+
+		this.managerGroupIDs = managerGroupIDs;
+	}
+
+	public void setManagerUsers(List<FlowFamilyManager> managerUsers) {
+
+		this.managerUsers = managerUsers;
+		managerUserIDs = null;
 	}
 
 	@Override
@@ -326,13 +353,13 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@Override
 	public List<Integer> getAllowedGroupIDs() {
 
-		return managerGroupIDs;
+		return getManagerGroupIDs();
 	}
 
 	@Override
 	public List<Integer> getAllowedUserIDs() {
 
-		return managerUserIDs;
+		return getManagerUserIDs();
 	}
 
 	@Override
@@ -395,7 +422,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 	public boolean hasManagers() {
 
-		return managerUserIDs != null || managerGroupIDs != null;
+		return managerUsers != null || managerGroupIDs != null;
 	}
 	
 	public boolean hasTextTags() {

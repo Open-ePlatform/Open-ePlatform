@@ -164,7 +164,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@SuppressWarnings("rawtypes")
 	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class };
 	
-	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ?";
+	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ? AND (ffu.validFromDate IS NULL OR ffu.validFromDate <= ?)";
 	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID WHERE ffib.userID = ? AND ffi.flowID IN (";
 	protected static final String ACTIVE_FLOWS = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_statuses ffs ON ffi.statusID = ffs.statusID WHERE ffi.firstSubmitted IS NOT NULL AND ffi.flowID IN ($flowIDs) AND ffs.contentType NOT IN ('" + ContentType.NEW + "', '" + ContentType.ARCHIVED + "') ORDER BY lastStatusChange DESC";
 	
@@ -1218,7 +1218,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 		
-		return availableManagers;		
+		return availableManagers;
 	}
 	
 	@WebPublic(alias = "getmentionusers")
@@ -1386,10 +1386,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(dataSource, sql, IntegerPopulator.getPopulator());
 		
 		query.setInt(1, user.getUserID());
+		query.setDate(2, DateUtils.setTimeToMidnight(new java.sql.Date(System.currentTimeMillis())));
 		
 		if (!CollectionUtils.isEmpty(user.getGroups())) {
 			
-			int paramPosition = 2;
+			int paramPosition = 3;
 			
 			for (Group group : user.getGroups()) {
 				

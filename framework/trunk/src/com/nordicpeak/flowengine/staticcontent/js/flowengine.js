@@ -670,11 +670,32 @@ function initFlowInstanceControlPanel() {
 			} else {
 				
 				$controlPanel.css({position: "static"});
-				
 			}
-			
 		});
-	
 	}
+}
+
+function askForLoginOrContinue(aLink, event) {
+	event.preventDefault();
+	event.stopPropagation();
 	
+	var helpBoxHeight = $('body').height();
+
+    $('div[data-help-box]').removeClass('active');
+
+    var helpBox = $("div[data-help-box='askLogin']");
+    $("div[data-help-box='askLogin'].help-backdrop").show();
+    helpBox.addClass('active').find('> div > div').attr('style', 'max-height: ' + (helpBoxHeight - 80) + 'px !important;');
+
+    $("body > header").css("position", "inherit");
+    
+    helpBox.find("a.btn").off();
+    
+    helpBox.find("a.btn.login").click(function(){
+    	window.location = $(aLink).attr("href") + "?triggerlogin=1";
+    });
+    
+    helpBox.find("a.btn.continue").click(function(){
+    	window.location = $(aLink).attr("href");
+    });
 }

@@ -300,3 +300,68 @@ function validatePosition($sortable, $item, newItemPosition) {
 	
 	return isValidPosition;
 }
+
+function openUpdateManagersModal(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var modalContainer = $("#updateManagersModal"); 
+	var modal = modalContainer.find(".manager-modal");
+	var row = $(button).closest(".manager-list-entry");
+	var userID = row.find("input[name='manager']").val();
+	var userName = row.find("input[name='manager-name" + userID + "']").val();
+	
+	var config = {
+			otherClose: '.close',
+			
+			beforeOpen: function(){
+				
+				var h1 = modal.find(".modal-header").find("h1");
+				h1.text(h1.data("title") + " " + userName);
+				
+				modal.find("input, select").each(function(){
+					
+					var input = $(this);
+					var savedInput = row.find("input[name^='manager-" + input.prop("name") + userID + "']");
+					
+					if (savedInput.length > 0) {
+						input.val(savedInput.val());
+					}
+				});
+			},
+	
+			afterContent: function(){
+				var feather = this;
+				var content = feather.$content; 
+				content.removeClass("no-sections");
+				
+				if (!Modernizr.inputtypes.date) {
+					
+					content.closest(".featherlight").css("z-index", 1000).css("background", "rgba(0,0,0,.8");
+					
+					content.find("input[type='date']").datepicker({
+			            changeMonth: true,
+			            changeYear: true,
+			            showWeek: true,
+					});
+					
+				}
+				
+				modal.detach();
+			},
+			
+			beforeClose: function(){
+				var feather = this;
+				
+				feather.$content.find("input, select").each(function(){
+					
+					var input = $(this);
+					row.find("input[name^='manager-" + input.prop("name") + userID + "']").val(input.val());
+				});
+				
+				modalContainer.append(modal);
+			},
+	};
+	
+	$.featherlight(modal, config);
+}

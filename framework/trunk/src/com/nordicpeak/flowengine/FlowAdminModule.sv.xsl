@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	
-	<xsl:include href="FlowTestCommon.sv.xsl"/>
+	<xsl:import href="classpath://se/unlogic/hierarchy/core/utils/usergrouplist/UserGroupList.sv.xsl"/>
 	
-	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/usergrouplist/UserGroupList.sv.xsl"/>
+	<xsl:include href="FlowTestCommon.sv.xsl"/>
 	
 	<xsl:include href="FlowAdminModuleTemplates.xsl"/>
 	
@@ -39,6 +39,7 @@
 	<xsl:variable name="java.eventFlowFormAddedMessage">Skapade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
+	<xsl:variable name="java.eventFlowInstanceManagerExpired">Handläggare automatiskt borttagen:</xsl:variable>
 	
 	<xsl:variable name="java.eventFunctionConfigured">Ändrande konfigurationen av funktionen</xsl:variable>
 	
@@ -49,6 +50,10 @@
 	<xsl:variable name="java.bundleFlowtypes">Adm. kategorier</xsl:variable>
 	
 	<xsl:variable name="java.defaultLoginHelpLinkName">Så här skaffar du e-legitimation</xsl:variable>
+	<xsl:variable name="java.defaultFlowStartLoginQuestionText">
+		&lt;p&gt;Om du loggar in så kan vi förifylla frågor med uppgifter vi hämtar från andra system t.ex. skatteverket.&lt;/p&gt;
+		&lt;p&gt;Du kan även få återkoppling om ärendets status och notifiering om handläggaren behöver mer information.&lt;/p&gt;
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>
 	
@@ -320,6 +325,14 @@
 	<xsl:variable name="i18n.NoManagers">Inga handläggare har åtkomst till ärenden för den här e-tjänsten.</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.title">Uppdatera handläggare för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.openModal">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.validFromDate">Giltig från och med</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.validToDate">Giltig till och med</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
+	<xsl:variable name="i18n.Manager.validFromDate">Giltig från</xsl:variable>
+	<xsl:variable name="i18n.Manager.validToDate">Giltig till</xsl:variable>
+	<xsl:variable name="i18n.Manager.validFromToDate">till</xsl:variable>
 	
 	<xsl:variable name="i18n.AddFlowCategoryNotFound">Den begärda underkategorin hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.AddCategoryFailedFlowTypeNotFound">Den begärda kategorin hittades inte.</xsl:variable>
@@ -341,6 +354,7 @@
 	<xsl:variable name="i18n.FlowTypeQueryTypeAccessDenied">Den här typen av e-tjänster har inte behörighet att använda den valda frågetypen.</xsl:variable>
 	<xsl:variable name="i18n.requireAuthentication">Kräv inloggning</xsl:variable>
 	<xsl:variable name="i18n.requirersAuthentication">Kräver inloggning</xsl:variable>
+	<xsl:variable name="i18n.Flow.showLoginQuestion">Fråga om inloggning</xsl:variable>
 	<xsl:variable name="i18n.requireSigning">Kräv signering</xsl:variable>
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>

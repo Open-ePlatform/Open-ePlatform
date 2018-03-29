@@ -21,6 +21,7 @@ import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfNotSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
+import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.beans.Named;
@@ -190,6 +191,20 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideSubmitStepText;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean showLoginQuestion;
+	
+	@FCKContent
+	@URLRewrite
+	@DAOManaged
+	@WebPopulate(maxLength = 65535)
+	@RequiredIfSet(paramNames = "showLoginQuestion", paramValues = "true")
+	@Templated(fieldName = "defaultFlowStartLoginQuestionText")
+	@XMLElement(cdata = true)
+	protected String loginQuestionText;
 	
 	@DAOManaged
 	@OneToMany
@@ -843,6 +858,8 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.usePreview = xmlParser.getPrimitiveBoolean("usePreview");
 		this.paymentSupportEnabled = xmlParser.getPrimitiveBoolean("paymentSupportEnabled");
 		this.requireAuthentication = xmlParser.getPrimitiveBoolean("requireAuthentication");
+		showLoginQuestion = xmlParser.getPrimitiveBoolean("showLoginQuestion");
+		loginQuestionText = XMLValidationUtils.validateParameter("loginQuestionText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -967,7 +984,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		return paymentSupportEnabled;
 	}
 
-	
 	public void setPaymentSupportEnabled(boolean paymentSupportEnabled) {
 	
 		this.paymentSupportEnabled = paymentSupportEnabled;
@@ -981,20 +997,35 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 	@Override
 	public Blob getIconBlob() {
-
+		
 		return this.icon;
 	}
 	
 	@Override
 	public Timestamp getIconLastModified() {
-	
+		
 		return iconLastModified;
 	}
-
 	
 	public void setIconLastModified(Timestamp iconLastModified) {
-	
+		
 		this.iconLastModified = iconLastModified;
+	}
+	
+	public boolean isShowLoginQuestion() {
+		return showLoginQuestion;
+	}
+	
+	public void setShowLoginQuestion(boolean showLoginQuestion) {
+		this.showLoginQuestion = showLoginQuestion;
+	}
+	
+	public String getLoginQuestionText() {
+		return loginQuestionText;
+	}
+	
+	public void setLoginQuestionText(String loginQuestionText) {
+		this.loginQuestionText = loginQuestionText;
 	}
 	
 }

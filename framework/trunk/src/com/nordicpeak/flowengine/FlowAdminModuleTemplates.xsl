@@ -32,12 +32,14 @@
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
 		/js/UserGroupList.js
+		/js/featherlight.min.js
 		/js/colorpicker/jquery.minicolors.min.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css
 		/css/UserGroupList.css
+		/css/featherlight.min.css
 		/js/colorpicker/jquery.minicolors.css
 	</xsl:variable>
 
@@ -1104,7 +1106,7 @@
 				<legend><xsl:value-of select="$i18n.Managers"/></legend>
 				
 				<xsl:choose>
-					<xsl:when test="AllowedGroups or AllowedUsers">
+					<xsl:when test="AllowedGroups or ManagerUsers">
 					
 						<p class="nomargin"><xsl:value-of select="$i18n.ManagersDescription"/></p>
 						
@@ -1116,12 +1118,12 @@
 							<xsl:apply-templates select="AllowedGroups/group" mode="list"/>
 						</xsl:if>
 					
-						<xsl:if test="AllowedUsers">
+						<xsl:if test="ManagerUsers">
 							<span class="floatleft bold">
 								<xsl:value-of select="$i18n.allowedUsers"/>
 							</span>
 							
-							<xsl:apply-templates select="AllowedUsers/user" mode="list"/>
+							<xsl:apply-templates select="ManagerUsers/FlowFamilyManager" mode="list"/>
 						</xsl:if>
 					
 					</xsl:when>
@@ -1304,6 +1306,77 @@
 			<xsl:value-of select="HTML" disable-output-escaping="yes"/>
 			
 		</fieldset>
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowFamilyManager" mode="list">
+		
+		<div class="floatleft full marginbottom border">
+
+			<xsl:choose>
+				<xsl:when test="user/enabled='true'">
+					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user.png" alt="" />
+				</xsl:when>
+				<xsl:otherwise>
+					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user_disabled.png" alt="" />
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:value-of select="user/firstname"/>
+			
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:value-of select="user/lastname"/>
+			
+			<xsl:if test="user/username">
+				<xsl:text>&#x20;(</xsl:text>
+					<xsl:value-of select="user/username"/>
+				<xsl:text>)</xsl:text>
+			</xsl:if>
+			
+			<xsl:choose>
+				<xsl:when test="validFromDate and not(Active = 'true') and validToDate">
+				
+					<xsl:text>&#x20;(</xsl:text>
+						<xsl:value-of select="$i18n.Manager.validFromDate"/>
+						<xsl:text>&#x20;</xsl:text>
+						<xsl:value-of select="validFromDate"/>
+						<xsl:text>&#x20;</xsl:text>
+						<xsl:value-of select="$i18n.Manager.validFromToDate"/>
+						<xsl:text>&#x20;</xsl:text>
+						<xsl:value-of select="validToDate"/>
+					<xsl:text>)</xsl:text>
+				
+				</xsl:when>
+				<xsl:otherwise>
+				
+					<xsl:if test="validFromDate and not(Active = 'true')">
+					
+						<xsl:text>&#x20;(</xsl:text>
+							<xsl:value-of select="$i18n.Manager.validFromDate"/>
+							<xsl:text>&#x20;</xsl:text>
+							<xsl:value-of select="validFromDate"/>
+						<xsl:text>)</xsl:text>
+						
+					</xsl:if>
+					
+					<xsl:if test="validToDate">
+					
+						<xsl:text>&#x20;(</xsl:text>
+							<xsl:value-of select="$i18n.Manager.validToDate"/>
+							<xsl:text>&#x20;</xsl:text>
+							<xsl:value-of select="validToDate"/>
+						<xsl:text>)</xsl:text>
+					
+					</xsl:if>
+				
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			
+		</div>	
 		
 	</xsl:template>
 	
@@ -2048,6 +2121,60 @@
 				</label>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'showLoginQuestion'" />
+					<xsl:with-param name="name" select="'showLoginQuestion'" />
+					<xsl:with-param name="element" select="Flow" />
+				</xsl:call-template>
+				
+				<label for="showLoginQuestion">
+					<xsl:value-of select="$i18n.Flow.showLoginQuestion" />
+				</label>
+			</div>
+		
+			<div class="floatleft full margintop">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'loginQuestionText'" />
+					<xsl:with-param name="name" select="'loginQuestionText'" />
+					<xsl:with-param name="class" select="'flow-ckeditor'" />
+					<xsl:with-param name="element" select="Flow" />
+				</xsl:call-template>
+	    </div>
+	    
+	    <script type="text/javascript">
+				$(document).ready(function() {
+					
+					var authCheckbox = $("#requireAuthentication");
+					
+					var showLoginQuestionCheckbox = function() {
+						
+						var checked = authCheckbox.prop("checked");
+						
+						$("#showLoginQuestion").parent().parent().toggle(!checked);
+					};
+					
+					authCheckbox.change(showLoginQuestionCheckbox);
+					showLoginQuestionCheckbox();
+					
+					
+					var checkbox = $("#showLoginQuestion");
+					
+					var showLoginQuestionText = function() {
+						
+						var checked = checkbox.prop("checked");
+						
+						$("#loginQuestionText").parent().toggle(checked);
+					};
+					
+					checkbox.change(showLoginQuestionText);
+					showLoginQuestionText();
+				});
+			</script>
+		</div>
 			
 		<xsl:if test="$isInternal = 'true'">
 			
@@ -2388,7 +2515,7 @@
 					showHideLoginHelpLink();
 				});
 			</script>
-		</div>		
+		</div>
 		
 		<div class="floatleft full bigmarginbottom">
 				
@@ -4647,16 +4774,67 @@
 						<xsl:value-of select="/Document/module/alias"/>
 						<xsl:text>/users</xsl:text>
 					</xsl:with-param>
-					<xsl:with-param name="name" select="'user'"/>
-					<xsl:with-param name="users" select="ManagerUsers" />
+					<xsl:with-param name="name" select="'manager'"/>
+					<xsl:with-param name="users" select="ManagerUsers/FlowFamilyManager" />
 				</xsl:call-template>
+				
 			</div>
 		
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateManagers.submit}" />
 			</div>
 		
-		</form>		
+		</form>
+		
+		<div id="updateManagersModal" style="display: none;" >
+			
+			<div class="manager-modal contentitem" data-calendaricon="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/calendar_grid.png">
+				<div class="modal-content">
+				
+					<div class="modal-header bigmarginbottom">
+						<h1 data-title="{$i18n.UpdateManagers.Modal.Title}" />
+					</div>
+					
+					<div class="modal-body">
+					
+						<div class="floatleft full bigmarginbottom">
+						
+							<label for="validFromDate" class="floatleft clearboth">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.validFromDate" />
+							</label>
+							
+							<div class="floatleft full">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="'validFromDate'"/>
+									<xsl:with-param name="name" select="'validFromDate'"/>
+									<xsl:with-param name="type" select="'date'"/>
+								</xsl:call-template>
+						  </div>
+						</div>
+						
+						<div class="floatleft full bigmarginbottom">
+						
+							<label for="validToDate" class="floatleft clearboth">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.validToDate" />
+							</label>
+							
+							<div class="floatleft full">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="'validToDate'"/>
+									<xsl:with-param name="name" select="'validToDate'"/>
+									<xsl:with-param name="type" select="'date'"/>
+								</xsl:call-template>
+						  </div>
+						</div>
+						
+						<input class="close bigmargintop floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
+						
+					</div>
+					
+				</div>
+			</div>
+		
+		</div>
 		
 		<!--
 		
@@ -4685,6 +4863,70 @@
 		</xsl:for-each> 
 		
 		-->
+		
+	</xsl:template>
+	
+	<xsl:template name="userlist-extension-buttons">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager'">
+			
+				<a class="floatright marginright" href="#" onclick="openUpdateManagersModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
+					<img class="vertical-align-middle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
+				</a>
+			
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template name="userlist-extension-defaults">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager'">
+			
+				<xsl:call-template name="userlist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'validFromDate'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'validToDate'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+			
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template match="user" mode="userlist-extension">
+		<xsl:param name="listname"/>
+		<xsl:param name="requestparameters" />
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager'">
+			
+				<xsl:call-template name="userlist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'validFromDate'" />
+					<xsl:with-param name="value" select="../validFromDate" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'validToDate'" />
+					<xsl:with-param name="value" select="../validToDate" />
+				</xsl:call-template>
+			
+			</xsl:when>
+		</xsl:choose>
 		
 	</xsl:template>
 
@@ -5637,7 +5879,7 @@
 					<xsl:when test="fieldName = 'group'">
 						<xsl:value-of select="$i18n.allowedGroups"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'user'">
+					<xsl:when test="fieldName = 'user' or fieldName = 'manager'">
 						<xsl:value-of select="$i18n.allowedUsers"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalLink'">
@@ -5670,6 +5912,9 @@
 					<xsl:when test="fieldName = 'iconColor'">
 						<xsl:value-of select="$i18n.FlowType.iconColor"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'showLoginQuestion'">
+						<xsl:value-of select="$i18n.Flow.showLoginQuestion"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'loginHelpLinkName'">
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
 						<xsl:text>: </xsl:text>
@@ -5679,6 +5924,22 @@
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
 						<xsl:text>: </xsl:text>
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
+						
+						<xsl:variable name="id" select="substring(fieldName, 22)" />
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('manager-name', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.UpdateManagers.Modal.validFromDate" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'manager-validToDate')">
+						
+						<xsl:variable name="id" select="substring(fieldName, 20)" />
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('manager-name', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.UpdateManagers.Modal.validToDate" />
+						
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

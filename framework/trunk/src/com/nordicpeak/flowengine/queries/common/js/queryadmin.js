@@ -187,7 +187,8 @@ function openAlternativeModal(button, event) {
 	event.preventDefault();
 	event.stopPropagation();
 	
-	var modal = $(button).closest(".alternatives-container").find(".alternatives-modal");
+	var alternativesContainer = $(button).closest(".alternatives-container");
+	var modal = alternativesContainer.find(".alternatives-modal");
 	var alternative = $(button).closest(".alternative");
 	
 	var config = {
@@ -209,6 +210,8 @@ function openAlternativeModal(button, event) {
 			afterContent: function(){
 				var feather = this;
 				feather.$content.removeClass("no-sections");
+				
+				modal.detach();
 			},
 			
 			beforeClose: function(){
@@ -219,6 +222,8 @@ function openAlternativeModal(button, event) {
 					var input = $(this);
 					alternative.find("input[name^='" + input.prop("name") + "_']").val(input.val());
 				});
+				
+				alternativesContainer.append(modal);
 			},
 	};
 	
