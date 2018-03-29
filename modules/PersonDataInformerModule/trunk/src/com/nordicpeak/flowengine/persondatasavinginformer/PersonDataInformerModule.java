@@ -19,8 +19,25 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -30,6 +47,10 @@ import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
@@ -43,6 +64,8 @@ import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.csv.CSVRow;
 import se.unlogic.standardutils.csv.CSVWriter;
@@ -50,11 +73,13 @@ import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.enums.EnumUtils;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.string.StringUtils;
@@ -68,17 +93,7 @@ import se.unlogic.standardutils.xsl.XSLVariableReaderRenamer;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
-
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import se.unlogic.webutils.validation.ValidationUtils;
 
 public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
 
@@ -116,11 +131,12 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	@XSLVariable(name = "i18n.YearsSaved.Infinite")
 	private String yearsSavedInfinite = "";
-
-	@XSLVariable(prefix = "java.")
-	@ModuleSetting
-	@HTMLEditorSettingDescriptor(name = "Default complaint description", description = "The descripion for how users are to complain about personal data being stored", required = true)
-	private String defaultComplaintDescription;
+	
+	@XSLVariable(name = "i18n.YearsSaved.Years")
+	private String yearsSavedYears = "";
+	
+	@XSLVariable(name = "i18n.YearsSaved.Months")
+	private String yearsSavedMonths = "";
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
@@ -133,11 +149,15 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	private AnnotatedDAO<FlowFamilyInformerSetting> settingsDAO;
 	private AnnotatedDAOWrapper<InformerDataAlternative, Integer> dataAlternativesDAOWrapper;
 	private AnnotatedDAOWrapper<InformerReasonAlternative, Integer> reasonAlternativesDAOWrapper;
-
+	private AnnotatedDAO<InformerStandardText> standardTextsDAO;
+	
 	private QueryParameterFactory<FlowFamilyInformerSetting, Integer> flowFamilyIDParamFactory;
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
+	
+	@InstanceManagerDependency
+	protected SiteProfileHandler profileHandler;
 
 	private FlowBrowserModule flowBrowserModule;
 
@@ -146,6 +166,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
 	private List<ScriptTag> updateGlobalScriptTags;
+	
+	private String defaultComplaintDescription = "";
+	private String defaultReasonDescription = "";
+	private String defaultStorageDescription = "";
+	
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -233,6 +258,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		dataAlternativesDAOWrapper = daoFactory.getDAO(InformerDataAlternative.class).getWrapper(Integer.class);
 		reasonAlternativesDAOWrapper = daoFactory.getDAO(InformerReasonAlternative.class).getWrapper(Integer.class);
+		standardTextsDAO = daoFactory.getDAO(InformerStandardText.class);
 	}
 
 	@Override
@@ -248,6 +274,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			map.put("globalscripts", "updateglobalscripts");
 			updateGlobalScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, map));
 		}
+		
+		cacheStandardTexts();
 	}
 
 	@Override
@@ -266,9 +294,34 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		showViewElement.appendChild(flow.toXML(doc));
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
+
+		TextTagReplacer.replaceTextTags(informerSettings, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
+		
 		XMLUtils.append(doc, showViewElement, informerSettings);
 
 		return viewFragmentTransformer.createViewFragment(doc);
+	}
+	
+	public SiteProfile getCurrentSiteProfile(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowFamily flowFamily) {
+
+		if (profileHandler != null) {
+
+			SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
+
+			if (profile != null && flowFamily != null) {
+
+				SiteProfile subProfile = profileHandler.getMatchingSubProfile(profile.getProfileID(), "flowfamily-" + flowFamily.getFlowFamilyID());
+
+				if (subProfile != null) {
+
+					return subProfile;
+				}
+			}
+
+			return profile;
+		}
+
+		return null;
 	}
 
 	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
@@ -288,23 +341,16 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	public FlowFamilyInformerSetting getInformerSetting(ImmutableFlowFamily flowFamily) throws SQLException {
 
-		HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION);
+		HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.STORAGE_SETTINGS_RELATION);
 
 		query.addParameter(flowFamilyIDParamFactory.getParameter(flowFamily.getFlowFamilyID()));
 
 		return settingsDAO.get(query);
 	}
 
-	public List<FlowFamilyInformerSetting> getInformerSettings(List<Flow> flowIDs) throws SQLException {
-
-		HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION);
-
-		return settingsDAO.getAll(query);
-	}
-
 	public List<FlowFamilyInformerSetting> getInformerSettings(Collection<Integer> flowFamilyIDs) throws SQLException {
 
-		HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION);
+		HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.STORAGE_SETTINGS_RELATION);
 
 		query.addParameter(flowFamilyIDParamFactory.getWhereInParameter(flowFamilyIDs));
 
@@ -414,7 +460,72 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 						validationErrors.add(new ValidationError("reasonAlternatives", ValidationErrorType.RequiredField));
 					}
 				}
+				
+				Integer storageCounter = NumberUtils.toInt(req.getParameter("storageCounter"));
 
+				if (storageCounter == null) {
+					validationErrors.add(new ValidationError("NoStorageCounter"));
+				}
+				else {
+					informerSettings.setStorageSettings(new ArrayList<InformerDataSettingStorage>());
+					
+					boolean storageValidationError = false;
+					
+					for (int i = 1; i <= storageCounter; i++) {
+						StorageType storageType = EnumUtils.toEnum(StorageType.class, req.getParameter("storageType-" + i));
+						
+						if (storageType != null) {
+							String description = req.getParameter("storageDescription-" + i);
+							Integer period = NumberUtils.toInt(req.getParameter("storagePeriod-" + i));
+							
+							if (StringUtils.isEmpty(description)) {
+								validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.RequiredField));
+								
+								storageValidationError = true;
+								
+								break;
+							}
+							else if (description.length() > 255) {
+								validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.TooLong));
+								
+								storageValidationError = true;
+								
+								break;
+							}
+							
+							if (storageType != StorageType.INFINITY && period == null) {
+								validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.RequiredField));
+								
+								storageValidationError = true;
+								
+								break;
+							}
+							else if (storageType != StorageType.INFINITY && period < 1) {
+								
+								validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.InvalidFormat));
+								
+								storageValidationError = true;
+								
+								break;
+							}
+							
+							InformerDataSettingStorage storageSetting = new InformerDataSettingStorage();
+							storageSetting.setDescription(description);
+							storageSetting.setPeriod(period);
+							storageSetting.setStorageType(storageType);
+							
+							informerSettings.getStorageSettings().add(storageSetting);
+						}
+					}
+					
+					if (CollectionUtils.isEmpty(informerSettings.getStorageSettings()) && !storageValidationError) {
+						validationErrors.add(new ValidationError("NoStorageSettings"));
+					}
+				}
+				
+				String ownerName = ValidationUtils.validateParameter("ownerName", req, false, 0, 255, validationErrors);
+				String ownerEmail = ValidationUtils.validateParameter("ownerEmail", req, false, 0, 255, EmailPopulator.getPopulator(), validationErrors);
+				
 				if (CollectionUtils.isEmpty(validationErrors)) {
 
 					informerSettings.setDataAlternatives(selectedDataAlternatives);
@@ -422,11 +533,19 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 					log.info("User " + user + " updated person data informer settings for flow " + flow);
 
-					HighLevelQuery<FlowFamilyInformerSetting> query = new HighLevelQuery<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION);
-
-					settingsDAO.addOrUpdate(informerSettings, query);
+					settingsDAO.addOrUpdate(informerSettings, new RelationQuery(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.STORAGE_SETTINGS_RELATION));
+					
+					flow.getFlowFamily().setOwnerName(ownerName);
+					flow.getFlowFamily().setOwnerEmail(ownerEmail);
+					
+					flowAdminModule.getDAOFactory().getFlowFamilyDAO().update(flow.getFlowFamily());
+					
+					systemInterface.getEventHandler().sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.UPDATE, flow.getFlowFamily()), EventTarget.ALL);
+					
+					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
 
 					flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#informersettings");
+					
 					return null;
 				}
 
@@ -449,6 +568,16 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		XMLUtils.append(doc, settingsElement, "DataAlternatives", allDataAlternatives);
 		XMLUtils.append(doc, settingsElement, "ReasonAlternatives", allReasonAlternatives);
 		XMLUtils.appendNewElement(doc, settingsElement, "DefaultComplaintDescription", defaultComplaintDescription);
+		XMLUtils.appendNewElement(doc, settingsElement, "DefaultReasonDescription", defaultReasonDescription);
+		XMLUtils.appendNewElement(doc, settingsElement, "DefaultStorageDescription", defaultStorageDescription);
+		
+		if (flow.getFlowFamily().getOwnerName() != null) {
+			XMLUtils.appendNewElement(doc, settingsElement, "OwnerName", flow.getFlowFamily().getOwnerName());
+		}
+		
+		if (flow.getFlowFamily().getOwnerEmail() != null) {
+			XMLUtils.appendNewElement(doc, settingsElement, "OwnerEmail", flow.getFlowFamily().getOwnerEmail());
+		}
 
 		if (validationErrors != null) {
 
@@ -624,8 +753,39 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 							currentRow.setCellValue(columnIndex++, "");
 						}
+						
+						
+						StringBuilder yearsSavedString = new StringBuilder();
+						
+						int storageSettingIndex = 1;
+						
+						for (InformerDataSettingStorage storageSetting : setting.getStorageSettings()) {
+							yearsSavedString.append(storageSetting.getDescription());
+							yearsSavedString.append(": ");
+							
+							if (storageSetting.getStorageType() == StorageType.INFINITY) {
+								yearsSavedString.append(yearsSavedInfinite);
+							}
+							else {
+								yearsSavedString.append(storageSetting.getPeriod());
+								yearsSavedString.append(" ");
+								
+								if (storageSetting.getStorageType() == StorageType.YEAR) {
+									yearsSavedString.append(yearsSavedYears);
+								}
+								else {
+									yearsSavedString.append(yearsSavedMonths);
+								}
+							}
+							
+							if (storageSettingIndex < setting.getStorageSettings().size()) {
+								yearsSavedString.append(", ");
+							}
+							
+							storageSettingIndex++;
+						}
 
-						currentRow.setCellValue(columnIndex++, setting.getYearsSaved() != null ? setting.getYearsSaved().toString() : yearsSavedInfinite);
+						currentRow.setCellValue(columnIndex++, yearsSavedString.toString());
 						currentRow.setCellValue(columnIndex++, flow.getFlowFamily().getOwnerName());
 						currentRow.setCellValue(columnIndex++, setting.getReason());
 						currentRow.setCellValue(columnIndex++, setting.getExtraInformation());
@@ -644,6 +804,36 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		return null;
 	}
+	
+	@EventListener(channel = InformerStandardText.class)
+	public void processStandardTextsEvent(CRUDEvent<InformerStandardText> event, EventSource eventSource) throws SQLException {
+		
+		setStandardText(event.getBeans().get(0));
+	}
+	
+	private void cacheStandardTexts() throws SQLException {
+
+		List<InformerStandardText> standardTexts = standardTextsDAO.getAll();
+		
+		if (!CollectionUtils.isEmpty(standardTexts)) {
+			for (InformerStandardText text : standardTexts) {
+				setStandardText(text);
+			}
+		}
+	}
+
+	private void setStandardText(InformerStandardText text) {
+
+		if (text.getName().equals("defaultComplaintDescription")) {
+			defaultComplaintDescription = text.getValue();
+		}
+		else if (text.getName().equals("defaultReasonDescription")) {
+			defaultReasonDescription = text.getValue();
+		}
+		else if (text.getName().equals("defaultStorageDescription")) {
+			defaultStorageDescription = text.getValue();
+		}
+	}
 
 	@Override
 	public ExtensionView getFlowOverviewExtensionView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
@@ -655,14 +845,17 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			Document doc = createDocument(req, uriParser, user);
 			Element extensionElement = doc.createElement("FlowOverviewExtension");
 			doc.getDocumentElement().appendChild(extensionElement);
+			
+			TextTagReplacer.replaceTextTags(setting, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
 
 			extensionElement.appendChild(setting.toXML(doc));
 			XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", defaultComplaintDescription);
+			XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", defaultReasonDescription);
+			XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", defaultStorageDescription);
 
 			return new ExtensionView(browserExtensionViewTitle, viewFragmentTransformer.createViewFragment(doc), "left-owner");
 		}
 
 		return null;
 	}
-
 }

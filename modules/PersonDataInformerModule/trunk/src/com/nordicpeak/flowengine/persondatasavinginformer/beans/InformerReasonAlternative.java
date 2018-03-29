@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.persondatasavinginformer.beans;
 import java.io.Serializable;
 import java.util.List;
 
+import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToMany;
@@ -22,6 +23,7 @@ public class InformerReasonAlternative extends GeneratedElementable implements S
 	private Integer alternativeID;
 	
 	@DAOManaged
+	@WebPopulate(required = true, maxLength = 255)
 	@XMLElement
 	private String name;
 	
@@ -47,8 +49,8 @@ public class InformerReasonAlternative extends GeneratedElementable implements S
 	}
 	
 	@Override
-	public String toString(){
-		return name;
+	public String toString() {
+		
+		return name + " (ID: " + alternativeID + ")";
 	}
-	
 }

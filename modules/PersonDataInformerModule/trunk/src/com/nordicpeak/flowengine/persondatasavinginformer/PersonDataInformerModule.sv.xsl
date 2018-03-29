@@ -5,17 +5,7 @@
 	<xsl:include href="PersonDataInformerModuleTemplates.xsl"/>
 	
 	<xsl:variable name="java.adminExtensionViewTitle">Personuppgiftsinställningar</xsl:variable>
-	<xsl:variable name="java.browserExtensionViewTitle">E-tjänsten kräver behandling av dina personuppgifter</xsl:variable>
-	<xsl:variable name="java.defaultComplaintDescription">
-		&lt;p&gt;
-		&lt;strong&gt;Lämna klagomål på personuppgiftshantering&lt;/strong&gt;
-		&lt;br/&gt;
-		Klagomål rörande personuppgiftshanteringen i e-tjänsten kan lämnas till tillsynsmyndigheten, Datainspektionen.
-	 	Besök Datainspektionens hemsida (
-	 		&lt;a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/"&gt;http://www.datainspektionen.se/om-oss/arbetssatt/klagomal&lt;/a&gt;
-	 	) för mer information om hur du lämnar klagomål.
-	 	&lt;/p&gt;
-	</xsl:variable>
+	<xsl:variable name="java.browserExtensionViewTitle">Behandling av personuppgifter</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateSettingsTitle">Personuppgiftsinställningar för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
@@ -34,6 +24,8 @@
 	<xsl:variable name="i18n.Reasons">Laglig grund för behandlingen</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Years">år</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Months">månader</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite">Gallras</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite.Years">Antal år uppgifterna sparas</xsl:variable>
 	<xsl:variable name="i18n.ExtraInformation">Övriga upplysningar</xsl:variable>
@@ -46,22 +38,42 @@
 	<xsl:variable name="i18n.validation.tooLong" select="'För långt innehåll i fältet:'"/>	
 	<xsl:variable name="i18n.validation.unknownError" select="'Okänt fel på fältet:'"/>
 	<xsl:variable name="i18n.validation.unknownFault" select="'Ett okänt valideringsfel har uppstått.'"/>
+	<xsl:variable name="i18n.validation.NoStorageCounter" select="'Felaktigt antal lagringsobjekt'"/>
+	<xsl:variable name="i18n.validation.NoStorageSettings">Du måste ange minst en lagringstid</xsl:variable>
 	
 	<xsl:variable name="i18n.DataFilter">Visa</xsl:variable>
 	<xsl:variable name="i18n.FlowFilter">Sök</xsl:variable>
 	<xsl:variable name="i18n.Filter.ShowAll">Alla</xsl:variable>
 	
-	<xsl:variable name="i18n.ListFlows.title">Följande e-tjänster hanterar personuppgifter</xsl:variable>
+	<xsl:variable name="i18n.ListFlows.title">Följande tjänster hanterar personuppgifter</xsl:variable>
 <!-- 	<xsl:variable name="i18n.ListFlows.description"></xsl:variable> -->
 	<xsl:variable name="i18n.Column.FlowName">E-tjänst</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowType">Kategori</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowCategory">Underkategori</xsl:variable>
 	<xsl:variable name="i18n.Column.PersonData">Personuppgifter</xsl:variable>
-	<xsl:variable name="i18n.noFlowsFound">Inga e-tjänster som hanterar personuppgifter hittades.</xsl:variable>
+	<xsl:variable name="i18n.noFlowsFound">Inga tjänster som hanterar personuppgifter hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.Export">Exportera</xsl:variable>
 	
 	<xsl:variable name="i18n.ComplaintDescription">Beskrivning för lämna klagomål på personuppgiftshantering</xsl:variable>
-	<xsl:variable name="i18n.OverrideComplaintDescription">Ange annan beskrivning än standard</xsl:variable>
+	<xsl:variable name="i18n.OverrideTextDescription">Ange annan beskrivning än standard</xsl:variable>
+	<xsl:variable name="i18n.StorageDescription">Beskrivning av lagringsobjekt</xsl:variable>
+	<xsl:variable name="i18n.StorageType">Lagringstid</xsl:variable>
+	<xsl:variable name="i18n.StoragePeriod">Antal</xsl:variable>
+	<xsl:variable name="i18n.ResponsibleContact">Personuppgiftsansvarig</xsl:variable>
+	<xsl:variable name="i18n.ExtraInformationStorage">Övrigt om lagringstid</xsl:variable>
+	<xsl:variable name="i18n.ContactOwnerTitle">Kontaktuppgifter - Personuppgiftsansvarig</xsl:variable>
+	<xsl:variable name="i18n.Name">Namn</xsl:variable>
+	<xsl:variable name="i18n.Email">E-post</xsl:variable>
+	
+	<xsl:variable name="i18n.Infinity">För evigt</xsl:variable>
+	<xsl:variable name="i18n.Years">År</xsl:variable>
+	<xsl:variable name="i18n.Months">Månader</xsl:variable>
+	<xsl:variable name="i18n.AddStorageSetting">Lägg till lagringsobjekt</xsl:variable>
+	<xsl:variable name="i18n.RemoveStorageSettingConfirm">Vill du ta bort lagringsobjektet</xsl:variable>
+	
+	<xsl:variable name="i18n.ComplaintTitle">Lämna klagomål på personuppgiftshantering</xsl:variable>
+	
+	
 	
 </xsl:stylesheet>

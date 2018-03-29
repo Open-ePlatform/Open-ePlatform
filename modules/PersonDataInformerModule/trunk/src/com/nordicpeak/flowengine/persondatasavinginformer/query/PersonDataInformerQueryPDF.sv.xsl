@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-	<xsl:output method="xml" indent="yes" encoding="ISO-8859-1" omit-xml-declaration="yes"/>
+	<xsl:output encoding="ISO-8859-1" indent="yes" method="xml" omit-xml-declaration="yes"/>
 
 	<xsl:include href="PersonDataInformerQueryPDFTemplates.xsl"/>
 	
@@ -12,8 +12,12 @@
 	
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
-	<xsl:variable name="i18n.years">år</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.Accept">Jag har tagit del av ovanstående information och godkänner behandlingen av personuppgifter</xsl:variable>
 	
+	<xsl:variable name="i18n.ExtraInformationStorage">Övrigt om lagringstid</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Years">år</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Months">månader</xsl:variable>
+	<xsl:variable name="i18n.ExtraInformationStorage">Övrigt om lagringstid</xsl:variable>
 </xsl:stylesheet>

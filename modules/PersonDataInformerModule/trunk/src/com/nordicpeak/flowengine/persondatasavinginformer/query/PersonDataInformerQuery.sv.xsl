@@ -16,11 +16,15 @@
 	<xsl:variable name="i18n.Reason">Ändamålet med behandlingen</xsl:variable>
 	<xsl:variable name="i18n.Reasons">Laglig grund för behandlingen</xsl:variable>
 	<xsl:variable name="i18n.ExtraInformation">Övriga upplysningar</xsl:variable>
+	<xsl:variable name="i18n.ExtraInformationStorage">Övrigt om lagringstid</xsl:variable>
 	
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
-	<xsl:variable name="i18n.years">år</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.Accept">Jag har tagit del av ovanstående information och godkänner behandlingen av personuppgifter</xsl:variable>
+		
+	<xsl:variable name="i18n.YearsSaved.Years">år</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Months">månader</xsl:variable>
 	
 </xsl:stylesheet>

@@ -183,4 +183,86 @@
 		</Query>
 	</Script>
 	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `extraInformationStorage` TEXT NULL AFTER `complaintDescription`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_storage` (
+					`storageSettingID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowFamilyID` INT UNSIGNED NOT NULL,
+					`period` INT UNSIGNED NULL,
+					`type` VARCHAR(10) NOT NULL,
+					`description` VARCHAR(255) NULL,
+					PRIMARY KEY (`storageSettingID`),
+					CONSTRAINT `FK__person_data_informer_settings` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, yearsSaved, 'YEAR', 'Alla uppgifter' FROM `person_data_informer_settings` WHERE yearsSaved IS NOT NULL
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, null, 'INFINITY', 'Alla uppgifter' FROM `person_data_informer_settings` WHERE yearsSaved IS NULL
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+ 				ALTER TABLE `person_data_informer_settings` DROP COLUMN `accountable`, DROP COLUMN `yearsSaved`;
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_data_alternatives` SET name = 'E-postadress' WHERE name = 'E-post';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_standardtexts` (
+					`textID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(50) NOT NULL,
+					`value` TEXT NOT NULL,
+					PRIMARY KEY (`textID`),
+					UNIQUE INDEX `name` (`name`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) (SELECT 'defaultComplaintDescription', value FROM `openhierarchy_foreground_module_settings` WHERE id = 'defaultComplaintDescription' AND moduleID = (SELECT moduleID FROM `openhierarchy_foreground_modules` WHERE classname = 'com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule'));
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultComplaintDescription', '<p>Klagom&aring;l r&ouml;rande personuppgiftshanteringen i tj&auml;nsten kan l&auml;mnas till tillsynsmyndigheten, Datainspektionen. Bes&ouml;k Datainspektionens hemsida (<a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/">http://www.datainspektionen.se/om-oss/arbetssatt/klagomal</a>) f&ouml;r mer information om hur du l&auml;mnar klagom&aring;l.</p>') ON DUPLICATE KEY UPDATE textID = textID;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultReasonDescription', '<p>Vid handl&auml;ggningen av ditt &auml;rende registreras och behandlas de personuppgifter som framg&aring;r av informationen ovan. Behandlingen sker i det &auml;rendehanteringssystem som verksamheten anv&auml;nder f&ouml;r handl&auml;ggning av ditt &auml;rende.</p>');
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultStorageDescription', '<p>L&auml;s mer om behandling av personuppgifter under Personuppgifter i menyn ovan.</p>');
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

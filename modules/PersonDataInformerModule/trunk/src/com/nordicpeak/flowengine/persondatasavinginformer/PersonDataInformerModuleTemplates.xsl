@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exslt="http://exslt.org/common">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1" />
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
@@ -23,6 +23,23 @@
 	<xsl:variable name="links">
 		/css/persondatainformer.css
 	</xsl:variable>
+	
+	<xsl:variable name="storageOptionsVar">
+		<option>
+			<name><xsl:value-of select="$i18n.Infinity"/></name>
+			<value>INFINITY</value>
+		</option>
+		<option>
+			<name><xsl:value-of select="$i18n.Years"/></name>
+			<value>YEAR</value>
+		</option>
+		<option>
+			<name><xsl:value-of select="$i18n.Months"/></name>
+			<value>MONTH</value>
+		</option>
+	</xsl:variable>
+	
+	<xsl:variable name="storageOptions" select="exslt:node-set($storageOptionsVar)/option" />
 
 	<xsl:template match="Document">
 	
@@ -44,17 +61,20 @@
 			<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
-		<xsl:if test="FlowFamilyInformerSetting/reason">
-			<p>
-				<strong>
-					<xsl:value-of select="$i18n.Reason"/>
-				</strong>
-				<br/>
-				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="FlowFamilyInformerSetting/reason"/>
-				</xsl:call-template>
-			</p>
-		</xsl:if>
+		<strong>
+			<xsl:value-of select="$i18n.Reason"/>
+		</strong>
+		
+		<br/>
+		
+		<xsl:choose>
+			<xsl:when test="FlowFamilyInformerSetting/reason">
+				<xsl:value-of select="FlowFamilyInformerSetting/reason" disable-output-escaping="yes"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="DefaultReasonDescription" disable-output-escaping="yes"/>
+			</xsl:otherwise>
+		</xsl:choose>
 		
 		<p>
 			<strong>
@@ -65,36 +85,46 @@
 			<xsl:apply-templates select="FlowFamilyInformerSetting/ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 		</ul>
 		
-		<p>
-			<strong>
-				<xsl:value-of select="$i18n.YearsSaved"/>
-			</strong>
-			<br/>
-			<xsl:variable name="years" select="FlowFamilyInformerSetting/yearsSaved"/>
-		
-			<xsl:choose>
-				<xsl:when test="$years">
-					<xsl:value-of select="$years"/>
-					<xsl:text> </xsl:text>
-					<xsl:value-of select="$i18n.years"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</p>
-		
 		<xsl:if test="FlowFamilyInformerSetting/extraInformation">
 			<p>
 				<strong>
 					<xsl:value-of select="$i18n.ExtraInformation"/>
 				</strong>
 				<br/>
-				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="FlowFamilyInformerSetting/extraInformation"/>
-				</xsl:call-template>
+				<xsl:value-of select="FlowFamilyInformerSetting/extraInformation" disable-output-escaping="yes"/>
 			</p>
 		</xsl:if>
+		
+		<p>
+			<strong>
+				<xsl:value-of select="$i18n.YearsSaved"/>
+			</strong>
+			<br/>
+			<ul>
+				<xsl:apply-templates select="FlowFamilyInformerSetting/StorageSettings" mode="list"/>
+			</ul>
+		</p>
+		
+		<strong>
+			<xsl:value-of select="$i18n.ExtraInformationStorage"/>
+		</strong>
+		
+		<br/>
+		
+		<xsl:choose>
+			<xsl:when test="FlowFamilyInformerSetting/extraInformationStorage">
+				<xsl:value-of select="FlowFamilyInformerSetting/extraInformationStorage" disable-output-escaping="yes"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="DefaultStorageDescription" disable-output-escaping="yes"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		
+		<strong>
+			<xsl:value-of select="$i18n.ComplaintTitle"/>
+		</strong>
+		
+		<br/>
 		
 		<xsl:choose>
 			<xsl:when test="FlowFamilyInformerSetting/complaintDescription">
@@ -105,6 +135,36 @@
 			</xsl:otherwise>
 		</xsl:choose>
 				
+	</xsl:template>
+	
+	<xsl:template match="StorageSetting" mode="list">
+	
+		<li>
+			<xsl:value-of select="description"/>
+			
+			<xsl:text> - </xsl:text>
+			
+			<xsl:choose>
+				<xsl:when test="storageType = 'INFINITY'">
+					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="period"/>
+					
+					<xsl:text> </xsl:text>
+					
+					<xsl:choose>
+						<xsl:when test="storageType = 'YEAR'">
+							<xsl:value-of select="$i18n.YearsSaved.Years"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.YearsSaved.Months"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:otherwise>
+			</xsl:choose>
+		</li>
+		
 	</xsl:template>
 	
 	<xsl:template match="ListFlows">
@@ -307,7 +367,7 @@
 				
 				<script type="text/javascript">
 				
-					$(document).ready(function() {
+					$(function() {
 					
 						var checkbox = $("#usesPersonData");
 						var settingsDiv = $("#settings");
@@ -338,14 +398,44 @@
 							<xsl:value-of select="$i18n.Reason" />
 						</label>
 						
-						<div class="floatleft full">
+						<div class="floatleft full marginleft marginbottom">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="id" select="'overrideReasonDescription'" />
+								<xsl:with-param name="name" select="'overrideReasonDescription'" />
+								<xsl:with-param name="value" select="'true'" />
+								<xsl:with-param name="checked" select="FlowFamilyInformerSetting/reason != ''" />
+							</xsl:call-template>
+							
+							<label for="overrideReasonDescription">
+								<xsl:value-of select="$i18n.OverrideTextDescription" />
+							</label>
+						</div>
+						
+						<div id="reasonDescriptionContainer" class="floatleft full">
 							<xsl:call-template name="createTextArea">
 								<xsl:with-param name="id" select="'reason'"/>
 								<xsl:with-param name="name" select="'reason'"/>
-								<xsl:with-param name="rows" select="5"/>
-								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />      
+								<xsl:with-param name="class" select="'ckeditor'" />
+								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />
+								<xsl:with-param name="value" select="DefaultReasonDescription" />
 							</xsl:call-template>
 						</div>
+						
+						<script type="text/javascript">
+				
+							$(function() {
+								var checkbox = $("#overrideReasonDescription");
+								var div = $("#reasonDescriptionContainer");
+								
+								div.toggle(checkbox[0].checked);
+								
+								checkbox.click(function(){
+									var checked = checkbox[0].checked;
+									div.toggle(checked).find('textarea').prop('disabled', !checked);
+								});
+							});
+						
+						</script>
 					</div>
 					
 					<div class="floatleft full">
@@ -368,78 +458,173 @@
 								<xsl:with-param name="id" select="'extraInformation'"/>
 								<xsl:with-param name="name" select="'extraInformation'"/>
 								<xsl:with-param name="rows" select="5"/>
+								<xsl:with-param name="class" select="'ckeditor'" />
 								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />      
 							</xsl:call-template>
 						</div>
 					</div>
 					
-					<div class="floatleft full">
+					<div class="floatleft full" id="storage-settings-wrapper">
 					
 						<label class="floatleft full">
 							<xsl:value-of select="$i18n.YearsSaved" />
 							<span class="required">*</span>
 						</label>
 						
-						<div class="alternative floatleft full">
-						
-							<xsl:call-template name="createRadio">
-								<xsl:with-param name="id" select="'yearsSavedInfinite'" />
-								<xsl:with-param name="name" select="'yearsSavedType'"/>
-								<xsl:with-param name="value" select="'INFINITE'"/>
-								<xsl:with-param name="checked" select="FlowFamilyInformerSetting and not(FlowFamilyInformerSetting/yearsSaved)" />
-							</xsl:call-template>
-							
-							<label for="yearsSavedInfinite">
-								<xsl:value-of select="$i18n.YearsSaved.Infinite" />
-							</label>
-						
-						</div>
-						
-						<div class="alternative floatleft full">
-							
-							<xsl:call-template name="createRadio">
-								<xsl:with-param name="id" select="'yearsSavedFinite'" />
-								<xsl:with-param name="name" select="'yearsSavedType'"/>
-								<xsl:with-param name="value" select="'FINITE'"/>
-								<xsl:with-param name="checked" select="FlowFamilyInformerSetting/yearsSaved >= 0" />
-							</xsl:call-template>
-							
-							<label for="yearsSavedFinite">
-								<xsl:value-of select="$i18n.YearsSaved.Finite" />
-							</label>
-						
-						</div>
-						
 						<script type="text/javascript">
 				
-							$(document).ready(function() {
-							
-								var radio = $("#yearsSavedFinite");
-								var div = $("#yearsSavedContainer");
+							$(function() {
+								var $storageSettings = $("#storage-settings-wrapper");
 								
-								div.toggle(radio[0].checked);
+								$storageSettings.on("change", ".storagetype-selector", function() {
+									var $select = $(this);
+									
+									$select.parent().siblings(".storagetype-period").toggle($select.val() !== "INFINITY");
+									
+								}).on("click", ".remove-storage-setting", function(e) {
+									e.preventDefault();
+									
+									$(this).closest(".storage-setting").remove();
+								});
 								
-								$("input[name = 'yearsSavedType']").click(function(){
-									var checked = radio[0].checked;
-									div.toggle(checked).find('input').prop('disabled', !checked);
+								$(".storagetype-selector").change();
+								
+								var $storageCounter = $("#storageCounter");
+								
+								$("#addStorageSetting").click(function(e) {
+									e.preventDefault();
+									
+									var $clone = $("#storage-settings-template").clone();
+									
+									var counter = Number($storageCounter.val()) + 1;
+									
+									$storageCounter.val(counter);
+									
+									$clone.find("input, select").prop("disabled", false).each(function() {
+										var $this = $(this);
+										
+										$this.attr("name", $this.attr("name") + "-" + counter);
+									});
+									
+									$storageSettings.append($clone.html());
 								});
 							});
 						
 						</script>
 						
-						<div id="yearsSavedContainer" class="floatleft full">
-							<label for="yearsSaved" class="floatleft full">
-								<xsl:value-of select="$i18n.YearsSaved.Finite.Years" />
-								<span class="required">*</span>
-							</label>
+						<div class="hidden" id="storage-settings-template">
+							<div class="clearfix storage-setting">
+								<div class="floatleft forty">
+									<label class="floatleft full">
+										<xsl:value-of select="$i18n.StorageDescription"/>
+									</label>
+									
+									<input type="text" disabled="disabled" name="storageDescription" class="floatleft full"/>
+								</div>
+								
+								<div class="floatleft ten">
+									<label class="floatleft full">
+										<xsl:value-of select="$i18n.StorageType"/>
+									</label>
+									
+									<xsl:call-template name="createDropdown">
+										<xsl:with-param name="name" select="'storageType'"/>
+										<xsl:with-param name="element" select="$storageOptions"/>
+										<xsl:with-param name="disabled" select="true()"/>
+										<xsl:with-param name="valueElementName" select="'value'" />
+										<xsl:with-param name="labelElementName" select="'name'" />
+										<xsl:with-param name="class" select="'floatleft bigmargintop full storagetype-selector'"/>
+									</xsl:call-template>
+								</div>
+								
+								<div class="floatleft bigmarginleft ten storagetype-period">
+									<label class="floatleft full">
+										<xsl:value-of select="$i18n.StoragePeriod"/>
+									</label>
+									
+									<input disabled="disabled" type="text" name="storagePeriod" class="floatleft full"/>
+								</div>
+								
+								<div class="floatleft bigmarginleft ten" style="padding-top: 48px">
+									<a href="#" class="remove-storage-setting icon" onclick="return confirm('{$i18n.RemoveStorageSettingConfirm}?');">
+										<i data-icon-before="x"></i>
+									</a>
+								</div>
+							</div>
+						</div>
+						
+						<xsl:choose>
+							<xsl:when test="requestparameters">
+								<input type="hidden" value="{requestparameters/parameter[name='storageCounter']/value}" id="storageCounter" name="storageCounter"/>
+								
+								<xsl:call-template name="LoopStorageSettingTemplate">
+									<xsl:with-param name="loopFrom" select="'1'"/>
+									<xsl:with-param name="loopTo" select="requestparameters/parameter[name='storageCounter']/value"/>
+									<xsl:with-param name="requestparameters" select="requestparameters"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:when test="FlowFamilyInformerSetting/StorageSettings/StorageSetting">
+								<input type="hidden" value="{count(FlowFamilyInformerSetting/StorageSettings/StorageSetting)}" id="storageCounter" name="storageCounter"/>
+								
+								<xsl:apply-templates select="FlowFamilyInformerSetting/StorageSettings/StorageSetting"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<input type="hidden" value="1" id="storageCounter" name="storageCounter"/>
+								
+								<xsl:call-template name="StorageSettingTemplate">
+									<xsl:with-param name="counter" select="'1'"/>
+								</xsl:call-template>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					
+					<div class="floatleft full text-align-right">
+						<button class="btn btn-green display-inline-block" id="addStorageSetting"><xsl:value-of select="$i18n.AddStorageSetting"/></button>
+					</div>
+					
+					<div class="floatleft full">
+						<label for="extraInformationStorage" class="floatleft full">
+							<xsl:value-of select="$i18n.ExtraInformationStorage" />
+						</label>
+						
+						<div class="floatleft full marginleft marginbottom">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="id" select="'overrideExtraInformationDescription'" />
+								<xsl:with-param name="name" select="'overrideExtraInformationDescription'" />
+								<xsl:with-param name="value" select="'true'" />
+								<xsl:with-param name="checked" select="FlowFamilyInformerSetting/extraInformation != ''" />
+							</xsl:call-template>
 							
-							<xsl:call-template name="createTextField">
-								<xsl:with-param name="id" select="'yearsSaved'"/>
-								<xsl:with-param name="name" select="'yearsSaved'"/>
-								<xsl:with-param name="element" select="FlowFamilyInformerSetting"/>
+							<label for="overrideExtraInformationDescription">
+								<xsl:value-of select="$i18n.OverrideTextDescription" />
+							</label>
+						</div>
+						
+						<div id="extraInformationDescriptionContainer" class="floatleft full">
+							<xsl:call-template name="createTextArea">
+								<xsl:with-param name="id" select="'extraInformationStorage'"/>
+								<xsl:with-param name="name" select="'extraInformationStorage'"/>
+								<xsl:with-param name="class" select="'ckeditor'" />
+								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />
+								<xsl:with-param name="value" select="DefaultStorageDescription" />
 							</xsl:call-template>
 						</div>
 						
+						<script type="text/javascript">
+				
+							$(function() {
+								var checkbox = $("#overrideExtraInformationDescription");
+								var div = $("#extraInformationDescriptionContainer");
+								
+								div.toggle(checkbox[0].checked);
+								
+								checkbox.click(function(){
+									var checked = checkbox[0].checked;
+									div.toggle(checked).find('textarea').prop('disabled', !checked);
+								});
+							});
+						
+						</script>
 					</div>
 					
 					<div class="floatleft full">
@@ -457,7 +642,7 @@
 							</xsl:call-template>
 							
 							<label for="overrideComplaintDescription">
-								<xsl:value-of select="$i18n.OverrideComplaintDescription" />
+								<xsl:value-of select="$i18n.OverrideTextDescription" />
 							</label>
 						</div>
 						
@@ -473,8 +658,7 @@
 						
 						<script type="text/javascript">
 				
-							$(document).ready(function() {
-							
+							$(function() {
 								var checkbox = $("#overrideComplaintDescription");
 								var div = $("#complaintDescriptionContainer");
 								
@@ -533,7 +717,36 @@
 						</xsl:with-param>
 						
 					</xsl:call-template>
-				
+					
+					<div class="floatleft full bigmarginbottom margintop">
+						<h3><xsl:value-of select="$i18n.ContactOwnerTitle"/></h3>
+						
+						<div class="floatleft forty">
+							<label for="ownerName" class="floatleft full"><xsl:value-of select="$i18n.Name"/></label>
+							
+							<div class="floatleft full">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="'ownerName'"/>
+									<xsl:with-param name="name" select="'ownerName'"/>
+									<xsl:with-param name="value" select="OwnerName" />
+									<xsl:with-param name="size" select="'10'"/>
+								</xsl:call-template>
+							</div>
+						</div>
+						
+						<div class="floatleft forty bigmarginleft">
+							<label for="ownerEmail" class="floatleft full"><xsl:value-of select="$i18n.Email"/></label>
+							
+							<div class="floatleft full">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="'ownerEmail'"/>
+									<xsl:with-param name="name" select="'ownerEmail'"/>
+									<xsl:with-param name="value" select="OwnerEmail" />
+									<xsl:with-param name="size" select="'10'"/>
+								</xsl:call-template>
+							</div>
+						</div>
+					</div>
 				</div>
 				
 				<div class="floatright clearboth bigmargintop">
@@ -544,6 +757,152 @@
 		
 		</div>
 
+	</xsl:template>
+	
+	<xsl:template name="LoopStorageSettingTemplate">
+		
+		<xsl:param name="loopFrom"/>
+		<xsl:param name="loopTo"/>
+		<xsl:param name="requestparameters"/>
+		
+		<xsl:variable name="typeName">
+			<xsl:text>storageType-</xsl:text>
+			<xsl:value-of select="$loopFrom"/>
+		</xsl:variable>
+		
+		<xsl:if test="$requestparameters/parameter[name=$typeName]">
+			<xsl:call-template name="StorageSettingTemplate">
+				<xsl:with-param name="counter" select="$loopFrom"/>
+				<xsl:with-param name="requestparameters" select="$requestparameters"/>
+			</xsl:call-template>
+		</xsl:if>
+		
+		<xsl:if test="$loopTo > $loopFrom">
+			<xsl:call-template name="LoopStorageSettingTemplate">
+				<xsl:with-param name="loopFrom" select="$loopFrom + 1"/>
+				<xsl:with-param name="requestparameters" select="$requestparameters"/>
+				<xsl:with-param name="loopTo" select="$loopTo"/>
+			</xsl:call-template>
+		</xsl:if>
+		
+	</xsl:template>
+	
+	<xsl:template match="StorageSetting">
+		
+		<xsl:call-template name="StorageSettingTemplate">
+			<xsl:with-param name="counter" select="position()"/>
+			<xsl:with-param name="element" select="."/>
+		</xsl:call-template>
+		
+	</xsl:template>
+	
+	<xsl:template name="StorageSettingTemplate">
+	
+		<xsl:param name="counter"/>
+		<xsl:param name="element" select="null"/>
+		<xsl:param name="requestparameters" select="null"/>
+		
+		<xsl:variable name="descriptionName">
+			<xsl:text>storageDescription-</xsl:text>
+			<xsl:value-of select="$counter"/>
+		</xsl:variable>
+		
+		<xsl:variable name="typeName">
+			<xsl:text>storageType-</xsl:text>
+			<xsl:value-of select="$counter"/>
+		</xsl:variable>
+		
+		<xsl:variable name="periodName">
+			<xsl:text>storagePeriod-</xsl:text>
+			<xsl:value-of select="$counter"/>
+		</xsl:variable>
+		
+		<div class="clearfix storage-setting">
+			<div class="floatleft forty">
+				<label for="{$descriptionName}" class="floatleft full">
+					<xsl:value-of select="$i18n.StorageDescription"/>
+				</label>
+				
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="name" select="$descriptionName"/>
+					<xsl:with-param name="id" select="$descriptionName"/>
+					<xsl:with-param name="class" select="'floatleft full'"/>
+					<xsl:with-param name="value">
+						<xsl:choose>
+							<xsl:when test="$requestparameters">
+								<xsl:value-of select="$requestparameters/parameter[name=$descriptionName]/value"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$element/description"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="width" select="null"/>
+				</xsl:call-template>
+			</div>
+			
+			<div class="floatleft ten">
+				<label for="{$typeName}" class="floatleft full">
+					<xsl:value-of select="$i18n.StorageType"/>
+				</label>
+				
+				<xsl:call-template name="createDropdown">
+					<xsl:with-param name="name" select="$typeName"/>
+					<xsl:with-param name="element" select="$storageOptions"/>
+					<xsl:with-param name="valueElementName" select="'value'" />
+					<xsl:with-param name="labelElementName" select="'name'" />
+					<xsl:with-param name="class" select="'floatleft bigmargintop full storagetype-selector'"/>
+					<xsl:with-param name="selectedValue">
+						<xsl:choose>
+							<xsl:when test="$requestparameters">
+								<xsl:value-of select="$requestparameters/parameter[name=$typeName]/value"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$element/storageType"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+				</xsl:call-template>
+			</div>
+			
+			<div class="floatleft bigmarginleft ten storagetype-period">
+				<xsl:if test="$requestparameters/parameter[name=$typeName]/value = 'INFINITY' or (not($requestparameters) and $element/storageType = 'INFINITY')">
+					<xsl:attribute name="class">
+						<xsl:text>floatleft bigmarginleft ten storagetype-period hidden</xsl:text>
+					</xsl:attribute>
+				</xsl:if>
+				
+				<label for="{$periodName}" class="floatleft full">
+					<xsl:value-of select="$i18n.StoragePeriod"/>
+				</label>
+				
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="name" select="$periodName"/>
+					<xsl:with-param name="id" select="$periodName"/>
+					<xsl:with-param name="class" select="'floatleft full'"/>
+					<xsl:with-param name="value">
+						<xsl:choose>
+							<xsl:when test="$requestparameters">
+								<xsl:value-of select="$requestparameters/parameter[name=$periodName]/value"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$element/period"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="width" select="null"/>
+				</xsl:call-template>
+			</div>
+			
+			<xsl:if test="$counter > 1">
+				<div class="floatleft bigmarginleft ten" style="padding-top: 48px">
+					<a href="#" class="remove-storage-setting icon" onclick="return confirm('{$i18n.RemoveStorageSettingConfirm}?');">
+						<i data-icon-before="x"></i>
+					</a>
+				</div>
+			</xsl:if>
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template match="InformerDataAlternative" mode="form">
@@ -657,6 +1016,18 @@
 					<xsl:when test="fieldName = 'reasonAlternatives'">
 						<xsl:value-of select="$i18n.Reasons"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'ownerName'">
+						<xsl:value-of select="$i18n.Name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'ownerEmail'">
+						<xsl:value-of select="$i18n.Email"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'storageDescription'">
+						<xsl:value-of select="$i18n.StorageDescription"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'storagePeriod'">
+						<xsl:value-of select="$i18n.StoragePeriod"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'complaintDescription'">
 						<xsl:value-of select="$i18n.ComplaintDescription"/>
 					</xsl:when>
@@ -669,7 +1040,17 @@
 		
 		<xsl:if test="messageKey">
 			<p class="error">
-				<xsl:value-of select="$i18n.validation.unknownFault" />
+				<xsl:choose>
+					<xsl:when test="messageKey='NoStorageCounter'">
+						<xsl:value-of select="$i18n.validation.NoStorageCounter"/>
+					</xsl:when>
+					<xsl:when test="messageKey = 'NoStorageSettings'">
+						<xsl:value-of select="$i18n.validation.NoStorageSettings"/>
+					</xsl:when>
+					<xsl:otherwise>
+							<xsl:value-of select="$i18n.validation.unknownFault" />
+					</xsl:otherwise>
+				</xsl:choose>
 			</p>
 		</xsl:if>
 		
