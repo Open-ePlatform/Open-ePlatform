@@ -19,22 +19,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
-import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -94,6 +78,22 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
 
@@ -295,7 +295,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
-		TextTagReplacer.replaceTextTags(informerSettings, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
+		if (informerSettings != null) {
+			
+			TextTagReplacer.replaceTextTags(informerSettings, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
+		}
 		
 		XMLUtils.append(doc, showViewElement, informerSettings);
 
