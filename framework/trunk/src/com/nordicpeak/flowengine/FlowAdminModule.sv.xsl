@@ -51,8 +51,8 @@
 	
 	<xsl:variable name="java.defaultLoginHelpLinkName">Så här skaffar du e-legitimation</xsl:variable>
 	<xsl:variable name="java.defaultFlowStartLoginQuestionText">
-		&lt;p&gt;Om du loggar in så kan vi förifylla frågor med uppgifter vi hämtar från andra system t.ex. skatteverket.&lt;/p&gt;
-		&lt;p&gt;Du kan även få återkoppling om ärendets status och notifiering om handläggaren behöver mer information.&lt;/p&gt;
+		<p>Om du loggar in så kan vi förifylla frågor med uppgifter vi hämtar från andra system t.ex. skatteverket.</p>
+		<p>Du kan även få återkoppling om ärendets status och notifiering om handläggaren behöver mer information.</p>
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>

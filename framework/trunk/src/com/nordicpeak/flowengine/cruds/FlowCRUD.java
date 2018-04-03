@@ -134,14 +134,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
 		
 		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), callback);
-		
-		boolean emptyLoginQuestionText = flow.getLoginQuestionText() == null;
 		TemplateUtils.setTemplatedFields(flow, callback);
-		
-		if (emptyLoginQuestionText && flow.getLoginQuestionText() != null) {
-			
-			flow.setLoginQuestionText(flow.getLoginQuestionText().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-		}
 		
 		super.appendBean(flow, targetElement, genDoc, user);
 	}
@@ -160,11 +153,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		dummyFlow.setFlowFamily(dummyFlowFamily);
 		TemplateUtils.setTemplatedFields(dummyFlow, callback);
 		
-		if (dummyFlow.getLoginQuestionText() != null) {
-			
-			dummyFlow.setLoginQuestionText(dummyFlow.getLoginQuestionText().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-		}
-
 		addTypeElement.appendChild(dummyFlow.toXML(doc));
 	}
 
