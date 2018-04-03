@@ -20,6 +20,10 @@
 				<xsl:if test="SignEvents">
 					<bookmark name="{$i18n.Signed.Title}" href="#signed"/>
 				</xsl:if>
+				
+				<xsl:if test="PaymentEvents">
+					<bookmark name="{$i18n.Payed.Title}" href="#payed"/>
+				</xsl:if>
 			</bookmarks>
 		</head>
 		
@@ -152,6 +156,7 @@
 				<xsl:call-template name="content"/>
 			
 				<xsl:apply-templates select="SignEvents"/>
+				<xsl:apply-templates select="PaymentEvents"/>
 				
 			</body>
 		</html>
@@ -349,6 +354,44 @@
 			<div>
 				<strong><xsl:value-of select="$i18n.Signed.Checksum"/>:&#160;</strong>
 				<xsl:value-of select="Attributes/Attribute[Name = 'signingChecksum']/Value"/>
+			</div>
+			
+		</div>
+	
+	</xsl:template>
+	
+	<xsl:template match="PaymentEvents">
+	
+		<div class="payed query">
+		
+			<a name="payed" />
+			
+			<h2>
+				<xsl:value-of select="$i18n.Payed.Title"/>
+			</h2>
+			
+			<xsl:apply-templates select="FlowInstanceEvent" mode="payed" />
+		
+		</div>
+	
+	</xsl:template>
+	
+	<xsl:template match="FlowInstanceEvent" mode="payed">
+	
+		<p><xsl:value-of select="details"/></p>
+		
+		<div class="bigmarginbottom">
+			
+<!-- 			<div> -->
+<!-- 				<strong><xsl:value-of select="$i18n.Payed.Amount"/>:&#160;</strong> -->
+<!-- 				<xsl:value-of select="Attributes/Attribute[Name = 'paymentAmount']/Value"/> -->
+<!-- 				<xsl:text>&#160;</xsl:text> -->
+<!-- 				<xsl:value-of select="Attributes/Attribute[Name = 'paymentCurrency']/Value"/> -->
+<!-- 			</div> -->
+			
+			<div>
+				<strong><xsl:value-of select="$i18n.Payed.Date"/>:&#160;</strong>
+				<xsl:value-of select="added"/>
 			</div>
 			
 		</div>

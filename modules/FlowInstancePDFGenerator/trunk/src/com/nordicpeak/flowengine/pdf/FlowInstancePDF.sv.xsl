@@ -17,5 +17,9 @@
 	<xsl:variable name="i18n.Signed.Date">Datum</xsl:variable>
 	<xsl:variable name="i18n.Signed.Checksum">Signerad checksumma</xsl:variable>
 	
+	<xsl:variable name="i18n.Payed.Title">Betalning</xsl:variable>
+	<xsl:variable name="i18n.Payed.Amount">Belopp</xsl:variable>
+	<xsl:variable name="i18n.Payed.Date">Datum</xsl:variable>
+	
 	<xsl:variable name="i18n.UnsubmittedExport">Ej inskickat ärende</xsl:variable>
 </xsl:stylesheet>

@@ -73,6 +73,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -316,11 +317,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 					documentElement.appendChild(event.toXML(doc));
 					
+					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
+					
 					String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
 					
 					if (!StringUtils.isEmpty(signChainID)) {
 						
-						List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance()), true);
+						List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
 						
 						if (!CollectionUtils.isEmpty(signEvents)) {
 							
@@ -342,6 +345,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							
 							XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
 						}
+					}
+					
+					ImmutableFlowInstanceEvent paymentEvent = FlowInstanceUtils.getLastestPaymentEvent(flowInstanceEvents, true);
+					
+					if (paymentEvent != null) {
+						
+						XMLUtils.append(doc, documentElement, "PaymentEvents", Collections.singletonList(paymentEvent));
 					}
 					
 				} else if (event.getEventType() == EventType.UPDATED) {
