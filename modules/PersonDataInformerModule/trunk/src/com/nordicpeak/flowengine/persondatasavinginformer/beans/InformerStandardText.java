@@ -25,7 +25,7 @@ public class InformerStandardText extends GeneratedElementable implements Serial
 	private String name;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 65535)
+	@WebPopulate(maxLength = 65535, required = true)
 	@XMLElement
 	private String value;
 
