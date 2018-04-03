@@ -9,6 +9,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
@@ -146,6 +147,42 @@ public class FlowInstanceUtils {
 			if (event.getEventType() == EventType.SUBMITTED) {
 				
 				return event;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static ImmutableFlowInstanceEvent getLastestPaymentEvent(ImmutableFlowInstance flowInstance, boolean skipImmediateSubmitEvent) {
+		
+		return getLastestPaymentEvent(flowInstance.getEvents(), skipImmediateSubmitEvent);
+	}
+	
+	public static ImmutableFlowInstanceEvent getLastestPaymentEvent(List<? extends ImmutableFlowInstanceEvent> events, boolean skipImmediateSubmitEvent) {
+		
+		if (events != null) {
+			
+			boolean firstSubmitEvent = true;
+			
+			for (ImmutableFlowInstanceEvent event : new ReverseListIterator<ImmutableFlowInstanceEvent>(events)) {
+				
+				if (event.getEventType() == EventType.SIGNED) {
+					
+					continue;
+					
+				} else if (event.getEventType() == EventType.PAYED) {
+					
+					return event;
+					
+				} else if (event.getEventType() == EventType.SUBMITTED && skipImmediateSubmitEvent && firstSubmitEvent) {
+					
+					firstSubmitEvent = false;
+					continue;
+					
+				} else { // Other event types, stop
+					
+					break;
+				}
 			}
 		}
 		
