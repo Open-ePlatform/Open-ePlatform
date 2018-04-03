@@ -2141,7 +2141,16 @@
 					<xsl:with-param name="id" select="'loginQuestionText'" />
 					<xsl:with-param name="name" select="'loginQuestionText'" />
 					<xsl:with-param name="class" select="'flow-ckeditor'" />
-					<xsl:with-param name="element" select="Flow" />
+					<xsl:with-param name="value" >
+						<xsl:choose>
+							<xsl:when test="Flow/loginQuestionText">
+								<xsl:value-of select="Flow/loginQuestionText" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$java.defaultFlowStartLoginQuestionText" disable-output-escaping="yes"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
 				</xsl:call-template>
 	    </div>
 	    

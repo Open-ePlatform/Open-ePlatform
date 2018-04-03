@@ -21,7 +21,6 @@ import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfNotSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
-import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.beans.Named;
@@ -202,7 +201,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate(maxLength = 65535)
 	@RequiredIfSet(paramNames = "showLoginQuestion", paramValues = "true")
-	@Templated(fieldName = "defaultFlowStartLoginQuestionText")
 	@XMLElement(cdata = true)
 	protected String loginQuestionText;
 	

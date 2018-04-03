@@ -134,7 +134,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
 		
 		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), callback);
-		TemplateUtils.setTemplatedFields(flow, callback);
 		
 		super.appendBean(flow, targetElement, genDoc, user);
 	}
@@ -151,8 +150,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		Flow dummyFlow = new Flow();
 		dummyFlow.setFlowFamily(dummyFlowFamily);
-		TemplateUtils.setTemplatedFields(dummyFlow, callback);
-		
+
 		addTypeElement.appendChild(dummyFlow.toXML(doc));
 	}
 

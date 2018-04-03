@@ -56,7 +56,6 @@ import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
@@ -459,11 +458,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Default login help url", description = "URL to redirect the user to for login help.", formatValidator = StringURLPopulator.class)
 	private String defaultLoginHelpLinkURL;
-	
-	@XSLVariable(prefix = "java.")
-	@ModuleSetting
-	@TextAreaSettingDescriptor(name = "Default login question text", description = "Description of the login question.")
-	private String defaultFlowStartLoginQuestionText;
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Check for expirint managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
