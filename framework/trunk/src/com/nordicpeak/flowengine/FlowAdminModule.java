@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -223,7 +221,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
-import com.nordicpeak.flowengine.runnables.UpdateExpiringFlowManagersRunnable;
+import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
@@ -233,6 +231,8 @@ import com.nordicpeak.flowengine.validationerrors.QueryExportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
 
@@ -2233,7 +2233,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public synchronized void processEvent(CRUDEvent<?> event, EventSource source) {
 
 		try {
-			log.debug("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
+			log.info("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
 
 			//Increment flow instance count for the given flow if the event is as an add or delete of a flow instance
 			if (FlowInstance.class.isAssignableFrom(event.getBeanClass())) {
@@ -4787,7 +4787,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 		
 		scheduler = new Scheduler();
-		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, new UpdateExpiringFlowManagersRunnable(this, daoFactory, eventFlowInstanceManagerExpired));
+		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, new ExpiredManagerRemover(this, daoFactory));
 		
 		scheduler.start();
 	}
@@ -4899,17 +4899,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 		return eventFunctionConfigured;
 	}
-
-	//TODO remove
-	@WebPublic(requireLogin = true)
-	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
-		
-		if (user.isAdmin()) {
-			
-			new UpdateExpiringFlowManagersRunnable(this, daoFactory, eventFlowInstanceManagerExpired).run();
-			return null;
-		}
-		
-		throw new URINotFoundException(uriParser);
+	
+	public String getEventFlowInstanceManagerExpired() {
+	
+		return eventFlowInstanceManagerExpired;
 	}
 }

@@ -898,7 +898,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			
 			AttachmentNamePrefixType prefixMode = query.getAttachmentNamePrefixMode();
 			
-			if (prefixMode == AttachmentNamePrefixType.QUERY_NAME) {
+			if (prefixMode == AttachmentNamePrefixType.QUERY_NAME || prefixMode == null) {
 				
 				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
 				
@@ -912,6 +912,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 				
 			} else {
 				
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
 				log.error("Unknown prefix mode " + prefixMode + " for query " + query);
 			}
 		}

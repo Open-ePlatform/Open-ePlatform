@@ -36,9 +36,9 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 
-public class UpdateExpiringFlowManagersRunnable implements Runnable {
+public class ExpiredManagerRemover implements Runnable {
 	
-	private static final Logger log = Logger.getLogger(UpdateExpiringFlowManagersRunnable.class);
+	private static final Logger log = Logger.getLogger(ExpiredManagerRemover.class);
 	private static final RelationQuery UPDATE_QUERY = new RelationQuery(FlowFamily.MANAGER_USERS_RELATION);
 	
 	private final FlowAdminModule flowAdminModule;
@@ -47,13 +47,10 @@ public class UpdateExpiringFlowManagersRunnable implements Runnable {
 	
 	private final QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
 	
-	private final String removedManager;
-	
-	public UpdateExpiringFlowManagersRunnable(FlowAdminModule flowAdminModule, FlowEngineDAOFactory daoFactory, String removedManager) {
+	public ExpiredManagerRemover(FlowAdminModule flowAdminModule, FlowEngineDAOFactory daoFactory) {
 		super();
 		
 		this.flowAdminModule = flowAdminModule;
-		this.removedManager = removedManager;
 		
 		flowFamilyDAO = daoFactory.getFlowFamilyDAO();
 		flowInstanceDAO = daoFactory.getFlowInstanceDAO();
@@ -154,7 +151,7 @@ public class UpdateExpiringFlowManagersRunnable implements Runnable {
 										updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
 										flowInstanceDAO.update(flowInstance, updateQuery);
 										
-										String detailString = removedManager + " " + manager.getFirstname() + " " + manager.getLastname();
+										String detailString = flowAdminModule.getEventFlowInstanceManagerExpired() + " " + manager.getFirstname() + " " + manager.getLastname();
 										FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 										
 										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
