@@ -39,7 +39,7 @@ public class MultiSignUtils {
 			
 			User poster = instanceManager.getFlowInstance().getPoster();
 			
-			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserSocialSecurityNumber(instanceManager))) {
+			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
 				
 				SigningParty posterSigningParty = new SigningParty(poster.getFirstname(), poster.getLastname(), poster.getEmail(), null, CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), false);
 				
@@ -61,7 +61,7 @@ public class MultiSignUtils {
 
 		if (multiSignQueryinstances != null) {
 
-			String instanceUserSocialSecurityNumber = getCurrentInstanceUserSocialSecurityNumber(instanceManager);
+			String instanceUserSocialSecurityNumber = getCurrentInstanceUserCitizenIdentifier(instanceManager);
 			
 			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 
@@ -87,7 +87,7 @@ public class MultiSignUtils {
 
 	private static boolean isSigningInitiator(SigningParty signingParty, FlowInstanceManager instanceManager) {
 	
-		if(signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserSocialSecurityNumber(instanceManager))) {
+		if(signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
 			
 			return true;
 		}
@@ -95,7 +95,7 @@ public class MultiSignUtils {
 		return false;
 	}
 	
-	private static String getCurrentInstanceUserSocialSecurityNumber(FlowInstanceManager instanceManager) {
+	private static String getCurrentInstanceUserCitizenIdentifier(FlowInstanceManager instanceManager) {
 		
 		User instanceUser = instanceManager.getFlowInstance().getEditor();
 		

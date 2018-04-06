@@ -18,6 +18,6 @@ public interface MultiSigningHandler {
 	
 	public String getSigningURL(ImmutableFlowInstance flowInstance, SigningParty signingParty);
 	
-	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty, Timestamp latestSubmittTimestamp) throws Exception;
+	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty, Timestamp latestSubmitTimestamp) throws Exception;
 	
 }
