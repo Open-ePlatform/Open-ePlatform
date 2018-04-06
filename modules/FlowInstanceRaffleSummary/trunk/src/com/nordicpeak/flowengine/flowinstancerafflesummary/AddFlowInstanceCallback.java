@@ -19,6 +19,9 @@ public class AddFlowInstanceCallback implements com.nordicpeak.flowengine.addflo
 	private static final long serialVersionUID = -1518909826970607855L;
 
 	@Override
+	public void createdFlowInstance(MutableFlowInstanceManager instanceManager) {}
+	
+	@Override
 	public void beforeSave(MutableFlowInstanceManager instanceManager, EventType eventType) {
 		
 		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
@@ -29,12 +32,11 @@ public class AddFlowInstanceCallback implements com.nordicpeak.flowengine.addflo
 	}
 
 	@Override
+	public void afterSave(FlowInstanceManager instanceManager, EventType eventType, HttpSession session, FlowInstanceEvent saveEvent, AddFlowInstanceModule addFlowInstanceModule) {}
+	
+	@Override
 	public String getCustomReturnURL(FlowInstanceManager instanceManager) {
 		return null;
 	}
 
-	@Override
-	public void afterSave(FlowInstanceManager instanceManager, EventType eventType, HttpSession session, FlowInstanceEvent saveEvent, AddFlowInstanceModule addFlowInstanceModule) {
-	}
-	
 }
