@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.multisigninghandlers;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -53,6 +54,7 @@ import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
+import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
@@ -136,6 +138,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	
 	protected QueryParameterFactory<Signature, Integer> flowInstanceIDParamFactory;
 	protected QueryParameterFactory<Signature, String> socialSecurityNumberParamFactory;
+	protected QueryParameterFactory<Signature, Timestamp> addedParamFactory;
 	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -200,6 +203,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		flowInstanceIDParamFactory = signatureDAO.getParamFactory("flowInstanceID", Integer.class);
 		socialSecurityNumberParamFactory = signatureDAO.getParamFactory("socialSecurityNumber", String.class);
+		addedParamFactory = signatureDAO.getParamFactory("added", Timestamp.class);
 		
 		FlowEngineDAOFactory daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
 		flowInstanceDAO = daoFactory.getFlowInstanceDAO();
@@ -353,7 +357,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			return null;
 		}
 		
-		Signature signature = getSignature(instanceManager.getFlowInstanceID(), citizenIdentifier);
+		Signature signature = getSignature(instanceManager.getFlowInstanceID(), citizenIdentifier, signingChainStartEvent.getAdded());
 		
 		if (signature != null && signature.getEventID() > signingChainStartEvent.getEventID()) {
 			
@@ -550,9 +554,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(instanceManager);
 		
+		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvents(instanceManager.getFlowInstance());
+		
 		for (SigningParty signingParty : signingParties) {
 			
-			if (getSignature(instanceManager.getFlowInstanceID(), signingParty.getSocialSecurityNumber()) == null) {
+			if (getSignature(instanceManager.getFlowInstanceID(), signingParty.getSocialSecurityNumber(), signingChainStartEvent.getAdded()) == null) {
 				
 				return false;
 			}
@@ -588,12 +594,13 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return null;
 	}
 	
-	private Signature getSignature(Integer flowInstanceID, String socialSecurityNumber) throws SQLException {
+	private Signature getSignature(Integer flowInstanceID, String socialSecurityNumber, Timestamp signingChainStartEventTimestamp) throws SQLException {
 		
 		HighLevelQuery<Signature> query = new HighLevelQuery<Signature>();
 		
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 		query.addParameter(socialSecurityNumberParamFactory.getParameter(socialSecurityNumber));
+		query.addParameter(addedParamFactory.getParameter(signingChainStartEventTimestamp, QueryOperators.BIGGER_THAN_OR_EQUALS));
 		
 		return signatureDAO.get(query);
 	}
@@ -767,9 +774,9 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	}
 
 	@Override
-	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty) throws SQLException {
+	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty, Timestamp signingChainStartEventTimestamp) throws SQLException {
 		
-		return getSignature(flowInstanceID, signingParty.getSocialSecurityNumber()) != null;
+		return getSignature(flowInstanceID, signingParty.getSocialSecurityNumber(), signingChainStartEventTimestamp) != null;
 	}
 	
 	@InstanceManagerDependency(required = true)

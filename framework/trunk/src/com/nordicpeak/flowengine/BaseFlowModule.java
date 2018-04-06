@@ -143,7 +143,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
-import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -161,6 +160,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanc
 import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.validationerrors.FileUploadValidationError;
 
@@ -781,7 +781,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							SiteProfile instanceProfile = getSiteProfile(instanceManager);
 							
-							if (requiresMultiSigning(instanceManager)) {
+							if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 
 								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, false);
 
@@ -2305,11 +2305,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
-		if (!requiresMultiSigning(instanceManager) && !requiresPayment(instanceManager)) {
+		if (!MultiSignUtils.requiresMultiSigning(instanceManager) && !requiresPayment(instanceManager)) {
 			
 			sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 			
-		} else if (requiresMultiSigning(instanceManager)) {
+		} else if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 			
 			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningInitiatedEvent(instanceManager, event), EventTarget.ALL);
 		}
@@ -2402,7 +2402,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	public String getSignSuccessURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		if (requiresMultiSigning(instanceManager)) {
+		if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 
 			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/multisign/" + instanceManager.getFlowInstanceID();
 
@@ -2419,24 +2419,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	public String getPaymentSuccessURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/submitted/" + instanceManager.getFlowInstanceID();
-	}
-
-	public boolean requiresMultiSigning(FlowInstanceManager instanceManager) {
-
-		List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
-
-		if (multiSignQueryinstances != null) {
-
-			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
-
-				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
-
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	public boolean requiresPayment(FlowInstanceManager instanceManager) {

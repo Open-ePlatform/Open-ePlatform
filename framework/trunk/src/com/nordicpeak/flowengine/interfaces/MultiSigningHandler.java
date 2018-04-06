@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.interfaces;
 
+import java.sql.Timestamp;
+
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
@@ -16,6 +18,6 @@ public interface MultiSigningHandler {
 	
 	public String getSigningURL(ImmutableFlowInstance flowInstance, SigningParty signingParty);
 	
-	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty) throws Exception;
+	public boolean partyHasSigned(Integer flowInstanceID, SigningParty signingParty, Timestamp latestSubmittTimestamp) throws Exception;
 	
 }
