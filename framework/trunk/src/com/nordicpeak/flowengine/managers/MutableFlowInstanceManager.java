@@ -519,6 +519,11 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		initEvaluators(evaluationHandler, user, resolvedPoster, instanceMetadata, requestMetadata, req);
 	}
 
+	public void initEvaluators(EvaluationHandler evaluationHandler, User user, InstanceMetadata metadata, RequestMetadata requestMetadata, HttpServletRequest req) throws EvaluationException, UnableToResetQueryInstanceException {
+		
+		initEvaluators(evaluationHandler, user, getPoster(null), metadata, requestMetadata, req);
+	}
+	
 	private void initEvaluators(EvaluationHandler evaluationHandler, User user, User resolvedPoster, InstanceMetadata metadata, RequestMetadata requestMetadata, HttpServletRequest req) throws EvaluationException, UnableToResetQueryInstanceException {
 
 		int initStepIndex = 0;
