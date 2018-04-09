@@ -722,7 +722,7 @@
   						
 	  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 	  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-	  						<textarea id="message" name="externalmessage" class="full"></textarea>
+	  						<textarea id="message" name="externalmessage" class="full" rows="10"/>
 	  						<div class="heading-wrapper">
 	  							<label class="required"><xsl:value-of select="$i18n.AttachFiles" /></label>
 	  						</div>

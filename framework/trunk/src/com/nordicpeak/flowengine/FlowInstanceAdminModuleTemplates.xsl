@@ -979,7 +979,7 @@
 	  						
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-		  						<textarea id="message" name="externalmessage" class="full" data-requiredmessage="{$i18n.ValidationError.ExternalMessageRequired}"></textarea>
+		  						<textarea id="message" name="externalmessage" class="full" data-requiredmessage="{$i18n.ValidationError.ExternalMessageRequired}" rows="10"/>
 		  						<div class="heading-wrapper">
 		  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
 		  						</div>
@@ -1085,7 +1085,7 @@
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.InternalMessage" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'internalmessage']" />
 		  						
-		  						<textarea id="message" name="internalmessage" class="full mentionable" data-mentionableendpoint="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getmentionusers/{flowInstanceID}" data-requiredmessage="{$i18n.ValidationError.InternalMessageRequired}"></textarea>
+		  						<textarea id="message" name="internalmessage" class="full mentionable" data-mentionableendpoint="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getmentionusers/{flowInstanceID}" data-requiredmessage="{$i18n.ValidationError.InternalMessageRequired}" rows="10"/>
 		  						
 		  						<div class="heading-wrapper">
 		  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
