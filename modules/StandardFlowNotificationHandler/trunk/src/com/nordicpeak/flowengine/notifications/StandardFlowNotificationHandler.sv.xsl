@@ -296,8 +296,8 @@
 	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från medborgare</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från medborgare (en adress per rad)</xsl:variable>
 	
-	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörande handläggarbehörighet</xsl:variable>
-	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörande handläggarbehörighet (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörd handläggarbehörighet</xsl:variable>
+	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörd handläggarbehörighet (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.StatusChangedUserEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedUserEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
