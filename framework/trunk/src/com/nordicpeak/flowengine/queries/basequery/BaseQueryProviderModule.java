@@ -196,7 +196,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 					parseQueryXSLStyleSheet(styleSheetURL);
 
-					log.info("Succesfully parsed query stylesheet " + queryStyleSheet);
+					log.debug("Succesfully parsed query stylesheet " + queryStyleSheet);
 
 				} catch (Exception e){
 
@@ -223,7 +223,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 				try {
 					pdfTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
 
-					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
+					log.debug("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
 
 				} catch (Exception e){
 
