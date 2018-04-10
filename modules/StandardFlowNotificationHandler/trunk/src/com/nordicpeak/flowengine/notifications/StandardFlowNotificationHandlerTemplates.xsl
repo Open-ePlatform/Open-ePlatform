@@ -142,8 +142,14 @@
 					<li>
 						<xsl:value-of select="$i18n.SendExternalMessageReceivedGlobalEmail"/>
 					</li>
-				</xsl:if>				
-			
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendManagerExpiredGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendManagerExpiredGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
 			</ul>
 		
 		</xsl:if>		
@@ -844,7 +850,39 @@
 					<xsl:with-param name="element" select="NotificationSettings/ExternalMessageReceivedGlobalEmailAddresses/address" />          
 				</xsl:call-template>
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendManagerExpiredGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendManagerExpiredGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />       
+				</xsl:call-template>
+				
+				<label for="sendManagerExpiredGlobalEmail">
+					<xsl:value-of select="$i18n.SendManagerExpiredGlobalEmail" />
+				</label>
+			</div>
 		</div>	
+	
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="managerExpiredGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'managerExpiredGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'managerExpiredGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/ManagerExpiredGlobalEmailAddresses/address" />          
+				</xsl:call-template>
+			</div>
+		</div>
 	
 		<xsl:call-template name="initializeFCKEditor">
 			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
@@ -984,7 +1022,10 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedGlobalEmailAddresses"/>
-					</xsl:when>									
+					</xsl:when>
+					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
+						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
 					</xsl:otherwise>

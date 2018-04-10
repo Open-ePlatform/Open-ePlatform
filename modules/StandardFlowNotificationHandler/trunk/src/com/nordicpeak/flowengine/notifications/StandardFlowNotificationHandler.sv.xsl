@@ -4,6 +4,8 @@
 
 	<xsl:include href="StandardFlowNotificationHandlerTemplates.xsl"/>
 	
+	<xsl:variable name="java.FlowInstance">Ärende</xsl:variable>
+	
 	<xsl:variable name="java.statusChangedUserSMS">Statusen för ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har ändrats till $status.name</xsl:variable>
 	<xsl:variable name="java.externalMessageReceivedUserSMS">Du har fått ett nytt meddelande kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	
@@ -225,6 +227,16 @@
 	
 	</xsl:variable>
 	
+	<xsl:variable name="java.managerExpiredGlobalEmailSubject">Handläggarbehörigheten för $manager.firstname $manager.lastname kopplat till e-tjänsten $flow.name har upphört</xsl:variable>
+	<xsl:variable name="java.managerExpiredGlobalEmailMessage">
+	
+		&lt;p&gt;Handläggarbehörigheten för $manager.firstname $manager.lastname kopplat till e-tjänsten $flow.name har upphört.&lt;/p&gt;
+
+		&lt;p&gt;Klicka på länkarna nedan för att visa ärendena som berörs (OBS detta förutsätter att du har rätt att handlägga ärenden för e-tjänsten $flow.name)&lt;/p&gt;
+		&lt;p&gt;$flowInstances&lt;/p&gt;
+		
+	</xsl:variable>
+	
 	<xsl:variable name="i18n.UserNotifications">Notifikationer till medborgare</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserSMS">SMS vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.SendExternalMessageReceivedUserSMS">SMS vid nytt meddelande från handläggare</xsl:variable>
@@ -283,6 +295,9 @@
 	
 	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från medborgare</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från medborgare (en adress per rad)</xsl:variable>
+	
+	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörande handläggarbehörighet</xsl:variable>
+	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörande handläggarbehörighet (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.StatusChangedUserEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedUserEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>

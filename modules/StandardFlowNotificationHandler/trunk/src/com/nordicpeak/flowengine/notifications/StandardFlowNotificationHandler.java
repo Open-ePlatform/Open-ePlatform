@@ -64,11 +64,14 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.MySQLRowLimiter;
+import se.unlogic.standardutils.dao.OrderByCriteria;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
@@ -105,6 +108,7 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
@@ -119,6 +123,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorExce
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
@@ -174,6 +179,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@CheckboxSettingDescriptor(name = "Send SMS to users on status change", description = "Controls if SMS messages are the sent to the users when the status of their flow instance changes.")
 	private boolean sendStatusChangedUserSMS;
 
+	@XSLVariable(name="java.FlowInstance")
+	private String flowInstanceTitle;
+	
 	@ModuleSetting
 	@TextAreaSettingDescriptor(name = "SMS to users on status change", description = "The SMS messages sent to the users when the status of their flow instance changes.", required = true)
 	@XSLVariable(prefix = "java.")
@@ -456,6 +464,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "New message received email address (global)", description = "Global address to be notified when new messages are received", formatValidator = EmailPopulator.class)
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Manager expired email subject (global)", description = "The subject of emails sent when a manager expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String managerExpiredGlobalEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Manager expired email message (global)", description = "The message of emails sent when a manager expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String managerExpiredGlobalEmailMessage;
+
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Manager expired email address (global)", description = "Global address to be notified when new messages are received", formatValidator = EmailPopulator.class)
+	private List<String> managerExpiredGlobalEmailAddresses;
 
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin group", description = "Groups that have access to the administrative functions in this module.")
@@ -479,10 +501,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private AnnotatedDAOWrapper<FlowFamililyNotificationSettings, Integer> notificationSettingsDAO;
 	private AnnotatedDAOWrapper<FlowFamily, Integer> flowFamilyDAO;
 
+	private AnnotatedDAO<Flow> flowDAO;
 	private AnnotatedDAO<FlowInstance> flowInstanceDAO;
 
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
+	protected QueryParameterFactory<Flow, FlowFamily> flowFlowFamilyIDParamFactory;
 	protected QueryParameterFactory<QueryInstanceDescriptor, Integer> queryInstanceDescriptorFlowInstanceIDParamFactory;
+	
+	protected OrderByCriteria<Flow> flowOrderByLatestVersionCriteria;
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
@@ -603,6 +629,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		flowFamilyDAO = flowEngineDAOFactory.getFlowFamilyDAO().getWrapper(Integer.class);
 		flowFamilyDAO.addRelations(FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
 		flowFamilyDAO.setUseRelationsOnGet(true);
+		
+		flowDAO = flowEngineDAOFactory.getFlowDAO();
+		flowFlowFamilyIDParamFactory = flowDAO.getParamFactory("flowFamily", FlowFamily.class);
+		flowOrderByLatestVersionCriteria = flowDAO.getOrderByCriteria("version", Order.DESC);
 	}
 
 	private String fixPosterTag(String message) {
@@ -769,8 +799,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	public FlowFamililyNotificationSettings getNotificationSettings(ImmutableFlow flow) throws SQLException {
+		
+		return getNotificationSettings(flow.getFlowFamily());
+	}
+	
+	public FlowFamililyNotificationSettings getNotificationSettings(ImmutableFlowFamily flowFamily) throws SQLException {
 
-		FlowFamililyNotificationSettings notificationSettings = notificationSettingsDAO.get(flow.getFlowFamily().getFlowFamilyID());
+		FlowFamililyNotificationSettings notificationSettings = notificationSettingsDAO.get(flowFamily.getFlowFamilyID());
 
 		if (notificationSettings != null) {
 
@@ -888,6 +923,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailAddresses(flowInstanceSubmittedGlobalEmailAddress);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailMessage(flowInstanceSubmittedGlobalEmailMessage);
+		
+		notificationSettings.setExternalMessageReceivedGlobalEmailAddresses(externalMessageReceivedGlobalEmailAddresses);;
+		notificationSettings.setManagerExpiredGlobalEmailAddresses(managerExpiredGlobalEmailAddresses);
 
 		return notificationSettings;
 	}
@@ -1618,15 +1656,68 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						log.info("Error generating/sending mentioned email " + email, e);
 					}
-
 				}
-
 			}
-
 		}
-
 	}
+	
+	@EventListener(channel = FlowFamily.class)
+	public void processEvent(ManagerExpiredEvent event, EventSource eventSource) throws SQLException {
 
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowFamily());
+
+		if (notificationSettings.isSendManagerExpiredGlobalEmail() && notificationSettings.getManagerExpiredGlobalEmailAddresses() != null) {
+
+			if (managerExpiredGlobalEmailSubject != null && managerExpiredGlobalEmailMessage != null) {
+				
+				Flow flow = getLatestFlow(event.getFlowFamily());
+				
+				StringBuilder flowInstanceLinks = new StringBuilder();
+				
+				if (!CollectionUtils.isEmpty(event.getFlowInstanceIDs())) {
+					for (int flowInstanceID : event.getFlowInstanceIDs()) {
+						
+						FlowInstance flowInstance = getFlowInstance(flowInstanceID);
+						
+						flowInstanceLinks.append("<a style=\"display: block;\" href=\"");
+						flowInstanceLinks.append(getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstanceID);
+						flowInstanceLinks.append("\">");
+						flowInstanceLinks.append(flowInstanceTitle + " " + flowInstanceID);
+						flowInstanceLinks.append("</a>");
+					}
+				}
+				
+				TagReplacer tagReplacer = new TagReplacer();
+				tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource(flow));
+				tagReplacer.addTagSource(MANAGER_TAG_SOURCE_FACTORY.getTagSource(event.getManager()));
+				tagReplacer.addTagSource(new SingleTagSource("$flowInstances", flowInstanceLinks.toString()));
+				
+				String subject = tagReplacer.replace(managerExpiredGlobalEmailSubject);
+				String message = tagReplacer.replace(managerExpiredGlobalEmailMessage);
+				
+				for (String address : notificationSettings.getManagerExpiredGlobalEmailAddresses()) {
+					
+					SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+					
+					try {
+						email.addRecipient(address);
+						email.setMessageContentType(SimpleEmail.HTML);
+						email.setSenderName(getEmailSenderName(null));
+						email.setSenderAddress(getEmailSenderAddress(null));
+						email.setSubject(subject);
+						email.setMessage(EmailUtils.addMessageBody(message));
+						
+						systemInterface.getEmailHandler().send(email);
+						
+					} catch (Exception e) {
+						
+						log.info("Error generating/sending email " + email, e);
+					}
+				}
+			}
+		}
+	}
+	
 	@Override
 	public ForegroundModuleDescriptor getModuleDescriptor() {
 
@@ -2068,6 +2159,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 
 		return flowInstanceDAO.get(query);
+	}
+	
+	public Flow getLatestFlow(FlowFamily flowFamily) throws SQLException {
+
+		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_INSTANCE_RELATIONS);
+
+		query.addParameter(flowFlowFamilyIDParamFactory.getParameter(flowFamily));
+		query.addOrderByCriteria(flowOrderByLatestVersionCriteria);
+		query.addRelationRowLimiter(Flow.class, new MySQLRowLimiter(1));
+
+		return flowDAO.get(query);
 	}
 
 	public Contact getContactForUser(User user) {

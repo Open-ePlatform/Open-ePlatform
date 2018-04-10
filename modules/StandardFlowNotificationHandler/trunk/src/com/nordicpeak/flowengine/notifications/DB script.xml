@@ -197,4 +197,24 @@
 		</Query>
 	</Script>
 	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_managerexpiredglobal` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`email` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `email`),
+					CONSTRAINT `FK_flow_familiy_notification_setting_managerexpiredglobal_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `sendManagerExpiredGlobalEmail` TINYINT(1) NOT NULL AFTER `sendExternalMessageReceivedGlobalEmail`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

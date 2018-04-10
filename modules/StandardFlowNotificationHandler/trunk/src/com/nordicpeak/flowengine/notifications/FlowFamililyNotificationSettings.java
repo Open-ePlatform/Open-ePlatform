@@ -206,6 +206,20 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@SplitOnLineBreak
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendManagerExpiredGlobalEmail;
+	
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flow_familiy_notification_setting_managerexpiredglobal", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
+	@RequiredIfSet(paramNames = "sendManagerExpiredGlobalEmail")
+	@SplitOnLineBreak
+	@XMLElement(fixCase=true, childName="address")
+	private List<String> managerExpiredGlobalEmailAddresses;
 
 	public Integer getFlowFamilyID() {
 
@@ -422,7 +436,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
 
-		if (sendFlowInstanceSubmittedGlobalEmail || sendExternalMessageReceivedGlobalEmail) {
+		if (sendFlowInstanceSubmittedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGlobalNotifications");
 		}
@@ -574,9 +588,30 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		
 		return externalMessageReceivedManagerMessage;
 	}
-
-	public void setExternalMessageReceivedManagerMessage(String externalMessageReceivedManagerMessage) {
 	
+	public void setExternalMessageReceivedManagerMessage(String externalMessageReceivedManagerMessage) {
+		
 		this.externalMessageReceivedManagerMessage = externalMessageReceivedManagerMessage;
 	}
+	
+	public boolean isSendManagerExpiredGlobalEmail() {
+		
+		return sendManagerExpiredGlobalEmail;
+	}
+	
+	public void setSendManagerExpiredGlobalEmail(boolean sendManagerExpiredGlobalEmail) {
+		
+		this.sendManagerExpiredGlobalEmail = sendManagerExpiredGlobalEmail;
+	}
+	
+	public List<String> getManagerExpiredGlobalEmailAddresses() {
+		
+		return managerExpiredGlobalEmailAddresses;
+	}
+	
+	public void setManagerExpiredGlobalEmailAddresses(List<String> managerExpiredGlobalEmailAddresses) {
+		
+		this.managerExpiredGlobalEmailAddresses = managerExpiredGlobalEmailAddresses;
+	}
+	
 }
