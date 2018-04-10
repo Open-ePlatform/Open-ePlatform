@@ -1380,7 +1380,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return false;
 	}
 
-	public synchronized boolean isPreviouslySaved() {
+	public boolean isPreviouslySaved() {
 
 		return this.flowInstance.getFlowInstanceID() != null;
 	}
