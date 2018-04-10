@@ -18,15 +18,26 @@ public class FlowFamilyManagerComparator implements Comparator<FlowFamilyManager
 	
 	@Override
 	public int compare(FlowFamilyManager o1, FlowFamilyManager o2) {
-
-		boolean a1 = o1.isActive();
-		boolean a2 = o2.isActive();
 		
-		if (a1 == a2) {
+		if (o1 != null && o2 != null) {
 			
-			return USER_NAME_COMPARATOR.compare(o1.getUser(), o2.getUser());
+			boolean a1 = o1.isActive();
+			boolean a2 = o2.isActive();
 			
-		} else if (a1) {
+			if (a1 == a2) {
+				
+				return USER_NAME_COMPARATOR.compare(o1.getUser(), o2.getUser());
+				
+			} else if (a1) {
+				
+				return -1;
+				
+			} else {
+				
+				return 1;
+			}
+			
+		} else if (o1 != null) {
 			
 			return -1;
 			
