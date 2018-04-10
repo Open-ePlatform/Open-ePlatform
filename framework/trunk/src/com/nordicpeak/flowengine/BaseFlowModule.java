@@ -1503,11 +1503,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		Flow flow = (Flow) instanceManager.getFlowInstance().getFlow();
 		
-		flow.setSubmittedMessage(AttributeTagUtils.replaceTags(flow.getSubmittedMessage(), instanceManager.getFlowInstance().getAttributeHandler()));
+		if(flow.getSubmittedMessage() != null) {
 		
-		TagReplacer tagReplacer = new TagReplacer();
-		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance)instanceManager.getFlowInstance()));
-		flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));
+			flow.setSubmittedMessage(AttributeTagUtils.replaceTags(flow.getSubmittedMessage(), instanceManager.getFlowInstance().getAttributeHandler()));
+			
+			TagReplacer tagReplacer = new TagReplacer();
+			tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance)instanceManager.getFlowInstance()));
+			flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));
+		}
 		
 		flowInstanceManagerElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
