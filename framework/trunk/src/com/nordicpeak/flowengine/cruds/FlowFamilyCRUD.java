@@ -238,6 +238,10 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			Collections.sort(flowFamily.getManagerUsers(), FlowFamilyManagerComparator.getComparator());
 			XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagerUsers());
 		}
+		
+		if (callback.isShowManagerModalOnAdd()) {
+			XMLUtils.appendNewElement(doc, updateTypeElement, "ShowManagerModalOnAdd");
+		}
 	}
 	
 	@Override

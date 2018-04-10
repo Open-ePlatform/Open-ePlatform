@@ -1123,7 +1123,7 @@
 								<xsl:value-of select="$i18n.allowedUsers"/>
 							</span>
 							
-							<xsl:apply-templates select="ManagerUsers/FlowFamilyManager" mode="list"/>
+							<xsl:apply-templates select="ManagerUsers/FlowFamilyManager[user]" mode="list"/>
 						</xsl:if>
 					
 					</xsl:when>
@@ -4784,9 +4784,31 @@
 						<xsl:text>/users</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="name" select="'manager'"/>
-					<xsl:with-param name="users" select="ManagerUsers/FlowFamilyManager" />
+					<xsl:with-param name="users" select="ManagerUsers/FlowFamilyManager[user]" />
 				</xsl:call-template>
 				
+				<xsl:if test="ShowManagerModalOnAdd">
+					
+					<script type="text/javascript">
+						$(document).ready(function() {
+							
+							// Overrides UserGroupList.js
+							var origFunction = addUserGroupEntry;
+							
+							addUserGroupEntry = function(item, list, prefix, template, showUserURL) {
+								
+								var newRow = origFunction.apply(null, arguments);
+								
+								if (newRow != null) {
+									if (prefix == "manager") {
+										newRow.find("a.open-manager-modal").click();
+									}
+								}
+							};
+						});
+					</script>
+					
+				</xsl:if>
 			</div>
 		
 			<div class="floatright">
@@ -4881,7 +4903,7 @@
 		<xsl:choose>
 			<xsl:when test="$listname = 'manager'">
 			
-				<a class="floatright marginright" href="#" onclick="openUpdateManagersModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
+				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagersModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
 					<img class="vertical-align-middle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
 				</a>
 			

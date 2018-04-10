@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -232,8 +234,6 @@ import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
 
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
@@ -385,6 +385,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
 	protected boolean requireManagers = false;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Show expiry settings modal when adding manager", description = "Controls if the expiry settings modal is show when adding new managers")
+	protected boolean showManagerModalOnAdd = false;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max flow icon width", description = "Max allowed flow icon width.")
@@ -4903,5 +4907,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public String getEventFlowInstanceManagerExpired() {
 	
 		return eventFlowInstanceManagerExpired;
+	}
+
+	public boolean isShowManagerModalOnAdd() {
+		return showManagerModalOnAdd;
 	}
 }

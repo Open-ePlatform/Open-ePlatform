@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.runnables;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 
 public class ExpiredManagerRemover implements Runnable {
@@ -112,12 +114,14 @@ public class ExpiredManagerRemover implements Runnable {
 					
 					if (!removedManagers.isEmpty()) {
 						
+						List<Serializable> managerExpiredEvents = new ArrayList<Serializable>();
+						
 						for (Entry<Integer, List<FlowFamily>> entry : removedManagers.entrySet()) {
 							
 							Integer managerID = entry.getKey();
 							User manager = flowAdminModule.getUserHandler().getUser(managerID, false, false);
 							
-							log.info("Removing expired manager " + manager + " from flow instances");
+							log.debug("Removing expired manager " + manager + " from flow instances");
 							
 							for (FlowFamily flowFamily : entry.getValue()) {
 								
@@ -158,10 +162,17 @@ public class ExpiredManagerRemover implements Runnable {
 										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, null), EventTarget.ALL);
 									}
 								}
+								
+								managerExpiredEvents.add(new ManagerExpiredEvent(manager, flowFamily, flowInstanceIDs));
 							}
 						}
 						
 						transactionHandler.commit();
+						
+						for (Serializable event : managerExpiredEvents) {
+							flowAdminModule.getEventHandler().sendEvent(FlowFamily.class, event, EventTarget.ALL);
+						}
+						
 						flowAdminModule.cacheFlows();
 					}
 				} finally {
