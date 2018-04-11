@@ -56,6 +56,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	private String name;
 
 	@DAOManaged
+	@StringTag
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String description;
