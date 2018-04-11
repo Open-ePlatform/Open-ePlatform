@@ -305,4 +305,5 @@
 	<xsl:variable name="i18n.ExternalMessageReceivedUserEmailMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
+	<xsl:variable name="i18n.StatusDescriptionTag">Beskrivning för ärendets status</xsl:variable>
 </xsl:stylesheet>

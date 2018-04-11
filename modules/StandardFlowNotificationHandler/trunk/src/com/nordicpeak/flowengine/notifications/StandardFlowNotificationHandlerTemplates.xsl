@@ -947,6 +947,14 @@
 				</tr>
 				<tr>
 					<td>
+						<xsl:text>$status.description</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.StatusDescriptionTag"/>
+					</td>
+				</tr>				
+				<tr>
+					<td>
 						<xsl:text>$contact.firstname</xsl:text>
 					</td>
 					<td>
