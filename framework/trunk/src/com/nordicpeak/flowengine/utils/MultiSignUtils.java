@@ -72,10 +72,6 @@ public class MultiSignUtils {
 						if(!isSigningInitiator(signer, instanceManager)) {
 
 							return true;
-							
-						} else if(signer.getSocialSecurityNumber().equals(instanceUserSocialSecurityNumber)) {
-							
-							return true;
 						}
 					}
 				}
