@@ -37,15 +37,18 @@ public class MultiSignUtils {
 				}
 			}
 			
-			User poster = instanceManager.getFlowInstance().getPoster();
+			//User poster = instanceManager.getFlowInstance().getPoster();
 			
 			//TODO: this code is trying to handle the scenario when multipart signer is editing the insteance and poster needs to be part of the multipart signing chain. This scenario is not handled in other places so this code does not solve the whole problem.
-			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
-				
-				SigningParty posterSigningParty = new SigningParty(poster.getFirstname(), poster.getLastname(), poster.getEmail(), null, CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), false);
-				
-				signingParties.add(posterSigningParty);
-			}
+			//TODO: If this logic is implemented then it also needs to look at the editor field not just the poster field
+			
+			//Line below contains potential NPE
+			//			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
+			//				
+			//				SigningParty posterSigningParty = new SigningParty(poster.getFirstname(), poster.getLastname(), poster.getEmail(), null, CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), false);
+			//				
+			//				signingParties.add(posterSigningParty);
+			//			}
 			
 			if(!signingParties.isEmpty()){
 				
@@ -62,8 +65,6 @@ public class MultiSignUtils {
 
 		if (multiSignQueryinstances != null) {
 
-			String instanceUserSocialSecurityNumber = getCurrentInstanceUserCitizenIdentifier(instanceManager);
-			
 			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 
 				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
