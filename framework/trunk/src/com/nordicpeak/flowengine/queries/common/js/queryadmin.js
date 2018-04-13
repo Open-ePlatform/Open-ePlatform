@@ -189,6 +189,7 @@ function openAlternativeModal(button, event) {
 	
 	var alternativesContainer = $(button).closest(".alternatives-container");
 	var modal = alternativesContainer.find(".alternatives-modal");
+	var modalParent = modal.parent();
 	var alternative = $(button).closest(".alternative");
 	
 	var config = {
@@ -223,7 +224,7 @@ function openAlternativeModal(button, event) {
 					alternative.find("input[name^='" + input.prop("name") + "_']").val(input.val());
 				});
 				
-				alternativesContainer.append(modal);
+				modalParent.append(modal);
 			},
 	};
 	
