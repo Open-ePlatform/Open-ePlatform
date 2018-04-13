@@ -265,4 +265,30 @@
 		</Query>
 	</Script>
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_data_alternatives` ADD COLUMN `autoSelect` TINYINT UNSIGNED NOT NULL AFTER `name`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` DROP COLUMN `usesPersonData`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `dataRecipient` TEXT NULL AFTER `extraInformationStorage`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_standardtexts` CHANGE COLUMN `value` `value` TEXT NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

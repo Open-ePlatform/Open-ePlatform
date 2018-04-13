@@ -74,23 +74,58 @@
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
-		<strong>
-			<xsl:value-of select="$i18n.Reason"/>
-		</strong>
-		
-		<xsl:choose>
-			<xsl:when test="reason">
-				<xsl:value-of select="reason" disable-output-escaping="yes"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="DefaultReasonDescription" disable-output-escaping="yes"/>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:if test="reason or DefaultReasonDescription">
+			<strong>
+				<xsl:value-of select="$i18n.Reason"/>
+			</strong>
+			
+			<xsl:choose>
+				<xsl:when test="reason">
+					<xsl:value-of select="reason" disable-output-escaping="yes"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="DefaultReasonDescription" disable-output-escaping="yes"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
 		
 		<xsl:value-of select="$i18n.Reasons"/>
 		<ul>
 			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 		</ul>
+		
+		<xsl:value-of select="$i18n.YearsSaved"/>
+		<xsl:text>: </xsl:text>
+		<ul>
+			<xsl:apply-templates select="StorageSettings" mode="list"/>
+		</ul>
+		
+		<xsl:if test="extraInformationStorage or DefaultStorageDescription">
+			<strong>
+				<xsl:value-of select="$i18n.ExtraInformationStorage"/>
+			</strong>
+			
+			<br/>
+			
+			<xsl:choose>
+				<xsl:when test="extraInformationStorage">
+					<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="DefaultStorageDescription" disable-output-escaping="yes"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
+		
+		<xsl:if test="dataRecipient">
+			<p>
+				<strong><xsl:value-of select="$i18n.DataRecipient"/></strong>
+				
+				<br/>
+				
+				<xsl:value-of select="dataRecipient" disable-output-escaping="yes"/>
+			</p>
+		</xsl:if>
 		
 		<xsl:if test="extraInformation">
 			<p>
@@ -99,37 +134,12 @@
 				<xsl:value-of select="extraInformation" disable-output-escaping="yes"/>
 			</p>
 		</xsl:if>
-		
-		<xsl:value-of select="$i18n.YearsSaved"/>
-		<xsl:text>: </xsl:text>
-		<ul>
-			<xsl:apply-templates select="StorageSettings" mode="list"/>
-		</ul>
-		
-		<strong>
-			<xsl:value-of select="$i18n.ExtraInformationStorage"/>
-		</strong>
-		
-		<br/>
-		
-		<xsl:choose>
-			<xsl:when test="extraInformationStorage">
-				<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="DefaultStorageDescription" disable-output-escaping="yes"/>
-			</xsl:otherwise>
-		</xsl:choose>
 	
 	</xsl:template>
 	
 	<xsl:template match="StorageSetting" mode="list">
 	
 		<li>
-			<xsl:value-of select="description"/>
-			
-			<xsl:text> - </xsl:text>
-			
 			<xsl:choose>
 				<xsl:when test="storageType = 'INFINITY'">
 					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
@@ -149,6 +159,10 @@
 					</xsl:choose>
 				</xsl:otherwise>
 			</xsl:choose>
+			
+			<xsl:text> - </xsl:text>
+			
+			<xsl:value-of select="description"/>
 		</li>
 		
 	</xsl:template>

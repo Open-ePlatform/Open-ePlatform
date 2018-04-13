@@ -27,4 +27,5 @@
 	<xsl:variable name="i18n.YearsSaved.Years">år</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Months">månader</xsl:variable>
 	
+	<xsl:variable name="i18n.DataRecipient">Mottagare av personuppgifter</xsl:variable>
 </xsl:stylesheet>

@@ -347,6 +347,17 @@
 			</xsl:call-template>
 		</div>
 		
+		<div class="full bigmarginbottom">
+			
+			<xsl:call-template name="createCheckbox">
+				<xsl:with-param name="id" select="'autoSelect'"/>
+				<xsl:with-param name="name" select="'autoSelect'"/>
+				<xsl:with-param name="element" select="InformerDataAlternative"/>
+			</xsl:call-template>
+			
+			<label for="autoSelect"><xsl:value-of select="$i18n.AutoSelect"/></label>
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template match="AddInformerReasonAlternative">

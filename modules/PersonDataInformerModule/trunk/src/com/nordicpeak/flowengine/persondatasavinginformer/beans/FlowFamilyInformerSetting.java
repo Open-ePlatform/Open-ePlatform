@@ -32,11 +32,6 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	@XMLElement
 	private Integer flowFamilyID;
 
-	@DAOManaged
-	@WebPopulate
-	@XMLElement
-	private boolean usesPersonData;
-
 	@WebPopulate
 	private boolean overrideReasonDescription;
 
@@ -68,10 +63,16 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 
 	@TextTagReplace
 	@DAOManaged
-	@PopulateOnlyIfSet(paramNames = "overrideReasonDescription", paramValues = "true")
+	@PopulateOnlyIfSet(paramNames = "overrideExtraInformationDescription", paramValues = "true")
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String extraInformationStorage;
+
+	@TextTagReplace
+	@DAOManaged
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String dataRecipient;
 
 	@DAOManaged
 	@OneToMany
@@ -96,16 +97,6 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	public void setFlowFamilyID(Integer flowFamilyID) {
 
 		this.flowFamilyID = flowFamilyID;
-	}
-
-	public boolean isUsesPersonData() {
-
-		return usesPersonData;
-	}
-
-	public void setUsesPersonData(boolean usesPersonData) {
-
-		this.usesPersonData = usesPersonData;
 	}
 
 	public String getReason() {
@@ -136,6 +127,16 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	public void setExtraInformationStorage(String extraInformationStorage) {
 
 		this.extraInformationStorage = extraInformationStorage;
+	}
+
+	public String getDataRecipient() {
+
+		return dataRecipient;
+	}
+
+	public void setDataRecipient(String dataRecipient) {
+
+		this.dataRecipient = dataRecipient;
 	}
 
 	public List<InformerDataAlternative> getDataAlternatives() {

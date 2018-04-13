@@ -47,7 +47,7 @@
 	
 	<xsl:variable name="i18n.ListFlows.title">Följande tjänster hanterar personuppgifter</xsl:variable>
 <!-- 	<xsl:variable name="i18n.ListFlows.description"></xsl:variable> -->
-	<xsl:variable name="i18n.Column.FlowName">E-tjänst</xsl:variable>
+	<xsl:variable name="i18n.Column.FlowName">Tjänst</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowType">Kategori</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowCategory">Underkategori</xsl:variable>
 	<xsl:variable name="i18n.Column.PersonData">Personuppgifter</xsl:variable>
@@ -73,6 +73,7 @@
 	<xsl:variable name="i18n.RemoveStorageSettingConfirm">Vill du ta bort lagringsobjektet</xsl:variable>
 	
 	<xsl:variable name="i18n.ComplaintTitle">Lämna klagomål på personuppgiftshantering</xsl:variable>
+	<xsl:variable name="i18n.DataRecipient">Mottagare av personuppgifter</xsl:variable>
 	
 	
 	
