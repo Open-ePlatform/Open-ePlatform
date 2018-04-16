@@ -171,6 +171,9 @@
 			<xsl:when test="$name = 'defaultStorageDescription'">
 				<xsl:value-of select="$i18n.DefaultStorageName"/>
 			</xsl:when>
+			<xsl:when test="$name = 'defaultExtraInformationDescription'">
+				<xsl:value-of select="$i18n.DefaultExtraInformationName"/>
+			</xsl:when>
 		</xsl:choose>
 		
 	</xsl:template>

@@ -170,6 +170,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	private String defaultComplaintDescription = "";
 	private String defaultReasonDescription = "";
 	private String defaultStorageDescription = "";
+	private String defaultExtraInformationDescription = "";
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -425,6 +426,14 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			}
 
 			if (req.getParameter("usesPersonData") != null) {
+				
+				if (!isNewSetting) { // Fix for blanking standard text fields before populate
+					informerSettings.setComplaintDescription(null);
+					informerSettings.setExtraInformation(null);
+					informerSettings.setExtraInformationStorage(null);
+					informerSettings.setReason(null);
+				}
+				
 				try {
 					POPULATOR.populate(informerSettings, req);
 					
@@ -476,6 +485,22 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 					else {
 						informerSettings.setStorageSettings(new ArrayList<InformerDataSettingStorage>());
 						
+						boolean requiresDescription = false;
+						int typeCount = 0;
+						
+						for (int i = 1; i <= storageCounter; i++) {
+							StorageType storageType = EnumUtils.toEnum(StorageType.class, req.getParameter("storageType-" + i));
+							
+							if (storageType != null) {
+								typeCount++;
+							}
+							
+							if (typeCount > 1) {
+								requiresDescription = true;
+								break;
+							}
+						}
+						
 						boolean storageValidationError = false;
 						
 						for (int i = 1; i <= storageCounter; i++) {
@@ -483,22 +508,25 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 							
 							if (storageType != null) {
 								String description = req.getParameter("storageDescription-" + i);
-								Integer period = NumberUtils.toInt(req.getParameter("storagePeriod-" + i));
 								
-								if (StringUtils.isEmpty(description)) {
-									validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.RequiredField));
-									
-									storageValidationError = true;
-									
-									break;
+								if (requiresDescription) {
+									if (StringUtils.isEmpty(description)) {
+										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.RequiredField));
+										
+										storageValidationError = true;
+										
+										break;
+									}
+									else if (description.length() > 255) {
+										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.TooLong));
+										
+										storageValidationError = true;
+										
+										break;
+									}
 								}
-								else if (description.length() > 255) {
-									validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.TooLong));
-									
-									storageValidationError = true;
-									
-									break;
-								}
+								
+								Integer period = NumberUtils.toInt(req.getParameter("storagePeriod-" + i));
 								
 								if (storageType != StorageType.INFINITY && period == null) {
 									validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.RequiredField));
@@ -517,7 +545,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 								}
 								
 								InformerDataSettingStorage storageSetting = new InformerDataSettingStorage();
-								storageSetting.setDescription(description);
+								
+								if (requiresDescription) {
+									storageSetting.setDescription(description);
+								}
+								
 								storageSetting.setPeriod(period);
 								storageSetting.setStorageType(storageType);
 								
@@ -597,6 +629,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		
 		if (defaultStorageDescription != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "DefaultStorageDescription", defaultStorageDescription);
+		}
+		
+		if (defaultExtraInformationDescription != null) {
+			XMLUtils.appendNewElement(doc, settingsElement, "DefaultExtraInformationDescription", defaultExtraInformationDescription);
 		}
 		
 		if (flow.getFlowFamily().getOwnerName() != null) {
@@ -857,6 +893,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			defaultReasonDescription = text.getValue();
 		} else if (text.getName().equals("defaultStorageDescription")) {
 			defaultStorageDescription = text.getValue();
+		} else if (text.getName().equals("defaultExtraInformationDescription")) {
+			defaultExtraInformationDescription = text.getValue();
 		}
 	}
 
@@ -878,20 +916,64 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			extensionElement.appendChild(setting.toXML(doc));
 			
 			if (defaultComplaintDescription != null) {
-				XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", TextTagReplacer.replaceTextTags(defaultComplaintDescription, profile.getSettingHandler()));
+				if (profile != null) {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", TextTagReplacer.replaceTextTags(defaultComplaintDescription, profile.getSettingHandler()));
+				}
+				else {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", defaultComplaintDescription);
+				}
 			}
 			
 			if (defaultReasonDescription != null) {
-				XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", TextTagReplacer.replaceTextTags(defaultReasonDescription, profile.getSettingHandler()));
+				if (profile != null) {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", TextTagReplacer.replaceTextTags(defaultReasonDescription, profile.getSettingHandler()));
+				}
+				else {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", defaultReasonDescription);
+				}
 			}
 			
 			if (defaultStorageDescription != null) {
-				XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", TextTagReplacer.replaceTextTags(defaultStorageDescription, profile.getSettingHandler()));
+				if (profile != null) {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", TextTagReplacer.replaceTextTags(defaultStorageDescription, profile.getSettingHandler()));
+				}
+				else {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", defaultStorageDescription);
+				}
+			}
+			
+			if (defaultExtraInformationDescription != null) {
+				if (profile != null) {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultExtraInformationDescription", TextTagReplacer.replaceTextTags(defaultExtraInformationDescription, profile.getSettingHandler()));
+				}
+				else {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultExtraInformationDescription", defaultExtraInformationDescription);
+				}
 			}
 
 			return new ExtensionView(browserExtensionViewTitle, viewFragmentTransformer.createViewFragment(doc), "left-owner");
 		}
 
 		return null;
+	}
+
+	public String getDefaultReason() {
+
+		return defaultReasonDescription;
+	}
+
+	public String getDefaultComplaintDescription() {
+
+		return defaultComplaintDescription;
+	}
+
+	public String getDefaultExtraInformation() {
+
+		return defaultExtraInformationDescription;
+	}
+
+	public String getDefaultExtraInformationStorage() {
+
+		return defaultStorageDescription;
 	}
 }

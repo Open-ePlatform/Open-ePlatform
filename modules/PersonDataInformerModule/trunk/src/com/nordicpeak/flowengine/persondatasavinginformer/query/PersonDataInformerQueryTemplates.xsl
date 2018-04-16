@@ -187,21 +187,14 @@
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
-		<xsl:if test="reason or DefaultReasonDescription">
+		<xsl:if test="reason">
 			<strong>
 				<xsl:value-of select="$i18n.Reason"/>
 			</strong>
 			
 			<br/>
 			
-			<xsl:choose>
-				<xsl:when test="reason">
-					<xsl:value-of select="reason" disable-output-escaping="yes"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="DefaultReasonDescription" disable-output-escaping="yes"/>
-				</xsl:otherwise>
-			</xsl:choose>
+			<xsl:value-of select="reason" disable-output-escaping="yes"/>
 		</xsl:if>
 		
 		<strong>
@@ -220,21 +213,14 @@
 			</ul>
 		</p>
 		
-		<xsl:if test="extraInformationStorage or DefaultStorageDescription">
+		<xsl:if test="extraInformationStorage">
 			<strong>
 				<xsl:value-of select="$i18n.ExtraInformationStorage"/>
 			</strong>
 			
 			<br/>
 			
-			<xsl:choose>
-				<xsl:when test="extraInformationStorage">
-					<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="DefaultStorageDescription" disable-output-escaping="yes"/>
-				</xsl:otherwise>
-			</xsl:choose>
+			<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
 		</xsl:if>
 		
 		<xsl:if test="dataRecipient">
@@ -252,6 +238,7 @@
 				<strong>
 					<xsl:value-of select="$i18n.ExtraInformation"/>
 				</strong>
+				
 				<br/>
 				
 				<xsl:value-of select="extraInformation" disable-output-escaping="yes"/>
@@ -283,9 +270,11 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			
-			<xsl:text> - </xsl:text>
-			
-			<xsl:value-of select="description"/>
+			<xsl:if test="description">
+				<xsl:text> - </xsl:text>
+				
+				<xsl:value-of select="description"/>
+			</xsl:if>
 		</li>
 		
 	</xsl:template>

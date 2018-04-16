@@ -41,9 +41,13 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String reason;
+	
+	@WebPopulate
+	private boolean overrideExtraInformation;
 
 	@TextTagReplace
 	@DAOManaged
+	@PopulateOnlyIfSet(paramNames = "overrideExtraInformation", paramValues = "true")
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String extraInformation;
@@ -59,11 +63,11 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	private String complaintDescription;
 
 	@WebPopulate
-	private boolean overrideExtraInformationDescription;
+	private boolean overrideExtraInformationStorage;
 
 	@TextTagReplace
 	@DAOManaged
-	@PopulateOnlyIfSet(paramNames = "overrideExtraInformationDescription", paramValues = "true")
+	@PopulateOnlyIfSet(paramNames = "overrideExtraInformationStorage", paramValues = "true")
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String extraInformationStorage;

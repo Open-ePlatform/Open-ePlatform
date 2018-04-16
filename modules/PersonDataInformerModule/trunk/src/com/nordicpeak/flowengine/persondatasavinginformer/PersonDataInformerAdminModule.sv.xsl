@@ -36,6 +36,7 @@
 	<xsl:variable name="i18n.DefaultComplaintName">Beskrivning för lämna klagomål på personuppgiftshantering</xsl:variable>
 	<xsl:variable name="i18n.DefaultReasonName">Ändamålet med behandlingen</xsl:variable>
 	<xsl:variable name="i18n.DefaultStorageName">Övrigt om lagringstid</xsl:variable>
+	<xsl:variable name="i18n.DefaultExtraInformationName">Övriga upplysningar</xsl:variable>
 	<xsl:variable name="i18n.UpdateInformerStandardText">Uppdatera standardtext</xsl:variable>
 	<xsl:variable name="i18n.StandardText">Standardtext</xsl:variable>
 	<xsl:variable name="i18n.AutoSelect">Förvald</xsl:variable>

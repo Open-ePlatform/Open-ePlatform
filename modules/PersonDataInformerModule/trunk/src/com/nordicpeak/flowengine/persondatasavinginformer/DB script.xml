@@ -206,12 +206,12 @@
 		</Query>
 		<Query>
 			<![CDATA[
-				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, yearsSaved, 'YEAR', 'Alla uppgifter' FROM `person_data_informer_settings` WHERE yearsSaved IS NOT NULL
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, yearsSaved, 'YEAR', null FROM `person_data_informer_settings` WHERE yearsSaved IS NOT NULL
  			]]>
 		</Query>
 		<Query>
 			<![CDATA[
-				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, null, 'INFINITY', 'Alla uppgifter' FROM `person_data_informer_settings` WHERE yearsSaved IS NULL
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, null, 'INFINITY', null FROM `person_data_informer_settings` WHERE yearsSaved IS NULL
  			]]>
 		</Query>
 		<Query>
@@ -290,5 +290,14 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultExtraInformationDescription', null);
+			]]>
+		</Query>
+	</Script>
+	
 	
 </DBScripts>
