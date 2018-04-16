@@ -224,6 +224,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
+import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
@@ -464,8 +465,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	private String defaultLoginHelpLinkURL;
 	
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Check for expirint managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
+	@TextFieldSettingDescriptor(name = "Check for expiring managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String managersUpdateInterval = "0 0 * * *";
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Check for stale flow instances interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
+	private String removeStaleFlowInstancesInterval = "0 0 * * *";
 
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
@@ -522,6 +527,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
+	private String removeStaleFlowInstancesScheduleID;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -559,6 +565,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		super.update(descriptor, dataSource);
 		
 		scheduler.reschedule(updateManagersScheduleID, managersUpdateInterval);
+		scheduler.reschedule(removeStaleFlowInstancesScheduleID, removeStaleFlowInstancesInterval);
 	}
 
 	@Override
@@ -4792,6 +4799,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		scheduler = new Scheduler();
 		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, new ExpiredManagerRemover(this, daoFactory));
+		removeStaleFlowInstancesScheduleID = scheduler.schedule(removeStaleFlowInstancesInterval, new StaleFlowInstancesRemover(this, daoFactory));
 		
 		scheduler.start();
 	}
@@ -4912,4 +4920,29 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public boolean isShowManagerModalOnAdd() {
 		return showManagerModalOnAdd;
 	}
+	
+	@WebPublic(requireLogin = true)
+	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
+		
+		if (user.isAdmin()) {
+			
+			new ExpiredManagerRemover(this, daoFactory).run();
+			return new SimpleForegroundModuleResponse("See log", getDefaultBreadcrumb());
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
+	
+	@WebPublic(requireLogin = true)
+	public ForegroundModuleResponse checkForStaleFlowInstances(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
+		
+		if (user.isAdmin()) {
+			
+			new StaleFlowInstancesRemover(this, daoFactory).run();
+			return new SimpleForegroundModuleResponse("See log", getDefaultBreadcrumb());
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
+	
 }
