@@ -1,11 +1,11 @@
 package com.nordicpeak.flowengine.runnables;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -74,6 +74,7 @@ public class ExpiredManagerRemover implements Runnable {
 				
 				try {
 					HashMap<Integer, List<FlowFamily>> removedManagers = new HashMap<Integer, List<FlowFamily>>();
+					HashSet<FlowFamily> updatedFlowFamilies = new HashSet<FlowFamily>(flowFamilies.size());
 					Timestamp startOfToday = DateUtils.setTimeToMidnight(TimeUtils.getCurrentTimestamp());
 					
 					for (FlowFamily flowFamily : flowFamilies) {
@@ -82,15 +83,16 @@ public class ExpiredManagerRemover implements Runnable {
 							
 							boolean managerRemoved = false;
 							
-							Iterator<FlowFamilyManager> it = flowFamily.getManagerUsers().iterator();
-							while (it.hasNext()) {
+							Iterator<FlowFamilyManager> iterator = flowFamily.getManagerUsers().iterator();
+							
+							while (iterator.hasNext()) {
 								
-								FlowFamilyManager manager = it.next();
+								FlowFamilyManager manager = iterator.next();
 								
 								if (manager.getValidToDate() != null && startOfToday.compareTo(manager.getValidToDate()) > 0) {
 									
 									log.info("Removing expired manager " + manager.getUserID() + " from flow family " + flowFamily);
-									it.remove();
+									iterator.remove();
 									managerRemoved = true;
 									
 									List<FlowFamily> managerRemovedFlowFamily = removedManagers.get(manager.getUserID());
@@ -108,13 +110,14 @@ public class ExpiredManagerRemover implements Runnable {
 							if (managerRemoved) {
 								
 								flowFamilyDAO.update(flowFamily, transactionHandler, UPDATE_QUERY);
+								updatedFlowFamilies.add(flowFamily);
 							}
 						}
 					}
 					
 					if (!removedManagers.isEmpty()) {
 						
-						List<Serializable> managerExpiredEvents = new ArrayList<Serializable>();
+						List<ManagerExpiredEvent> managerExpiredEvents = new ArrayList<ManagerExpiredEvent>();
 						
 						for (Entry<Integer, List<FlowFamily>> entry : removedManagers.entrySet()) {
 							
@@ -141,12 +144,15 @@ public class ExpiredManagerRemover implements Runnable {
 										
 										List<User> previousManagers = new ArrayList<User>(flowInstance.getManagers());
 										
-										Iterator<User> it = flowInstance.getManagers().iterator();
-										while (it.hasNext()) {
-											User flowInstanceManager = it.next();
+										Iterator<User> iterator = flowInstance.getManagers().iterator();
+										
+										while (iterator.hasNext()) {
+										
+											User flowInstanceManager = iterator.next();
 											
 											if (flowInstanceManager.equals(manager)) {
-												it.remove();
+												
+												iterator.remove();
 												break;
 											}
 										}
@@ -169,9 +175,12 @@ public class ExpiredManagerRemover implements Runnable {
 						
 						transactionHandler.commit();
 						
-						for (Serializable event : managerExpiredEvents) {
+						for (ManagerExpiredEvent event : managerExpiredEvents) {
+							
 							flowAdminModule.getEventHandler().sendEvent(FlowFamily.class, event, EventTarget.ALL);
 						}
+						
+						flowAdminModule.getEventHandler().sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(FlowFamily.class, CRUDAction.UPDATE, new ArrayList<FlowFamily>(updatedFlowFamilies)), EventTarget.ALL);
 						
 						flowAdminModule.cacheFlows();
 					}
