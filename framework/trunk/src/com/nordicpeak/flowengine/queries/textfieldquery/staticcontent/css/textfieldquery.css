@@ -9,8 +9,8 @@
 	max-width: 200px;
 }
 
-.textfieldquery div.split.input-error.color i::after {
-	margin-left: -64px;
+.textfieldquery div.split.input-error.color i {
+	right: 80px;
 }
 
 .textfieldquery input.color {
