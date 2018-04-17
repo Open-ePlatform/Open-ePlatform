@@ -143,13 +143,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	private static final AnnotatedRequestPopulator<FlowFamililyNotificationSettings> POPULATOR = new AnnotatedRequestPopulator<FlowFamililyNotificationSettings>(FlowFamililyNotificationSettings.class);
 
-	private static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Flow>(Flow.class, "$flow.");
-	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
-	private static final AnnotatedBeanTagSourceFactory<Status> STATUS_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Status>(Status.class, "$status.");
-	private static final AnnotatedBeanTagSourceFactory<Contact> CONTACT_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Contact>(Contact.class, "$contact.");
-	private static final AnnotatedBeanTagSourceFactory<User> MANAGER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$manager.");
-	private static final AnnotatedBeanTagSourceFactory<SigningParty> SIGNING_PARTY_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<SigningParty>(SigningParty.class, "$signingParty.");
-	private static final AnnotatedBeanTagSourceFactory<User> POSTER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$poster.");
+	public static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Flow>(Flow.class, "$flow.");
+	public static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
+	public static final AnnotatedBeanTagSourceFactory<Status> STATUS_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Status>(Status.class, "$status.");
+	public static final AnnotatedBeanTagSourceFactory<Contact> CONTACT_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Contact>(Contact.class, "$contact.");
+	public static final AnnotatedBeanTagSourceFactory<User> MANAGER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$manager.");
+	public static final AnnotatedBeanTagSourceFactory<SigningParty> SIGNING_PARTY_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<SigningParty>(SigningParty.class, "$signingParty.");
+	public static final AnnotatedBeanTagSourceFactory<User> POSTER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$poster.");
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
