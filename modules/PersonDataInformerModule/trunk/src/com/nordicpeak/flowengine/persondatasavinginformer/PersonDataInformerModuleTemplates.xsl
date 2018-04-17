@@ -315,25 +315,9 @@
 				</ul>
 			</td>
 			<td data-title="{$i18n.YearsSaved}">
-				<xsl:choose>
-					<xsl:when test="storageType = 'INFINITY'">
-						<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="period"/>
-						
-						<xsl:text> </xsl:text>
-						
-						<xsl:choose>
-							<xsl:when test="storageType = 'YEAR'">
-								<xsl:value-of select="$i18n.YearsSaved.Years"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$i18n.YearsSaved.Months"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:otherwise>
-				</xsl:choose>
+				<ul>
+					<xsl:apply-templates select="FlowFamilyInformerSetting/StorageSettings/StorageSetting" mode="list"/>
+				</ul>
 			</td>
 		</tr>
 	

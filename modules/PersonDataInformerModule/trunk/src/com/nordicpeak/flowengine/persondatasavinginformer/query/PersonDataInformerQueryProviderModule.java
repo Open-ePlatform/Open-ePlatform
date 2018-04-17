@@ -202,15 +202,15 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		FlowFamilyInformerSetting informerSetting = personDataInformerModule.getInformerSetting(descriptor.getQueryDescriptor().getStep().getFlow().getFlowFamily());
 		
 		if (informerSetting != null) {
-			if (informerSetting.getReason() == null) {
+			if (informerSetting.getReason() == null && personDataInformerModule.getDefaultReason() != null) {
 				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason()));
 			}
 			
-			if (informerSetting.getExtraInformation() == null) {
+			if (informerSetting.getExtraInformation() == null && personDataInformerModule.getDefaultExtraInformation() != null) {
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation()));
 			}
 			
-			if (informerSetting.getExtraInformationStorage() == null) {
+			if (informerSetting.getExtraInformationStorage() == null && personDataInformerModule.getDefaultExtraInformationStorage() != null) {
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage()));
 			}
 			

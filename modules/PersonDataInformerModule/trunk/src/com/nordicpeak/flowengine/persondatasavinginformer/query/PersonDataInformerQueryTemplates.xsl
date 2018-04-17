@@ -8,10 +8,6 @@
 		/jquery/jquery.js
 	</xsl:variable>
 	
-	<xsl:variable name="links">
-		/css/persondatainformerquery.css
-	</xsl:variable>
-
 	<xsl:variable name="scripts">
 		/js/persondataquery.js
 	</xsl:variable>
@@ -145,7 +141,7 @@
 					</p>
 				</xsl:if>
 				
-				<div class="alternative" >
+				<div class="alternative description-text" >
 					<xsl:variable name="fieldName">
 						<xsl:value-of select="'q'"/>
 						<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/queryID"/>
@@ -183,7 +179,8 @@
 		<strong>
 			<xsl:value-of select="$i18n.SavedPersonData"/>
 		</strong>
-		<ul>
+		
+		<ul class="description-text">
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
@@ -194,13 +191,16 @@
 			
 			<br/>
 			
-			<xsl:value-of select="reason" disable-output-escaping="yes"/>
+			<span class="description-text">
+				<xsl:value-of select="reason" disable-output-escaping="yes"/>
+			</span>
 		</xsl:if>
 		
 		<strong>
 			<xsl:value-of select="$i18n.Reasons"/>
 		</strong>
-		<ul>
+		
+		<ul class="description-text">
 			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 		</ul>
 		
@@ -208,7 +208,8 @@
 			<strong>
 				<xsl:value-of select="$i18n.YearsSaved"/>
 			</strong>
-			<ul>
+			
+			<ul class="description-text">
 				<xsl:apply-templates select="StorageSettings" mode="list"/>
 			</ul>
 		</p>
@@ -220,7 +221,9 @@
 			
 			<br/>
 			
-			<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
+			<span class="description-text">
+				<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
+			</span>
 		</xsl:if>
 		
 		<xsl:if test="dataRecipient">
@@ -229,7 +232,9 @@
 				
 				<br/>
 				
-				<xsl:value-of select="dataRecipient" disable-output-escaping="yes"/>
+				<span class="description-text">
+					<xsl:value-of select="dataRecipient" disable-output-escaping="yes"/>
+				</span>
 			</p>
 		</xsl:if>
 		
@@ -241,7 +246,9 @@
 				
 				<br/>
 				
-				<xsl:value-of select="extraInformation" disable-output-escaping="yes"/>
+				<span class="description-text">
+					<xsl:value-of select="extraInformation" disable-output-escaping="yes"/>
+				</span>
 			</p>
 		</xsl:if>
 	
