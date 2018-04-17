@@ -11,6 +11,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -92,6 +93,7 @@ public class FileDescriptor extends GeneratedElementable implements Serializable
 		Element fileElement = super.toXML(doc);
 
 		XMLUtils.appendNewElement(doc, fileElement, "FormatedSize", BinarySizeFormater.getFormatedSize(size));
+		XMLUtils.appendNewElement(doc, fileElement, "FileExtension", FileUtils.getFileExtension(name));
 
 		return fileElement;
 	}

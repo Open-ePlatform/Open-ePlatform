@@ -57,7 +57,7 @@
 	<xsl:template match="FileDescriptor" mode="show">
 
 		<li>
-			<img src="query://{../../QueryInstanceDescriptor/QueryDescriptor/queryID}/fileicon/{name}" class="alignmiddle"/>
+			<img src="query://{../../QueryInstanceDescriptor/QueryDescriptor/queryID}/fileicon/.{FileExtension}" class="alignmiddle"/>
 			
 			<xsl:text>&#160;&#160;</xsl:text> 
 			
