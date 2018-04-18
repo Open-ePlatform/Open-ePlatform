@@ -6,6 +6,8 @@ public class SimpleChild extends BasePerson implements Child {
 
 	private static final long serialVersionUID = 5461893983752333815L;
 
+	private String municipalityCode;
+	
 	private List<Guardian> guardians;
 
 	public SimpleChild(){};
@@ -29,5 +31,14 @@ public class SimpleChild extends BasePerson implements Child {
 
 		this.guardians = guardians;
 	}
+	
+	public String getMunicipalityCode() {
+	
+		return municipalityCode;
+	}
 
+	public void setMunicipalityCode(String municipalityCode) {
+	
+		this.municipalityCode = municipalityCode;
+	}
 }
