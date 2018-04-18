@@ -74,6 +74,9 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	private String postalAddress;
 	
 	@DAOManaged
+	private String municipalityCode;
+	
+	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
@@ -433,5 +436,17 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		}
 		
 		return values;
+	}
+
+	
+	public String getMunicipalityCode() {
+	
+		return municipalityCode;
+	}
+
+	
+	public void setMunicipalityCode(String municipalityCode) {
+	
+		this.municipalityCode = municipalityCode;
 	}
 }

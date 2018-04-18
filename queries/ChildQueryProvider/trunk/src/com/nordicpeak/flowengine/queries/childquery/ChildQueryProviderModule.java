@@ -490,6 +490,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.setAddress(selectedChild.getAddress());
 			queryInstance.setZipcode(selectedChild.getZipcode());
 			queryInstance.setPostalAddress(selectedChild.getPostalAddress());
+			queryInstance.setMunicipalityCode(selectedChild.getMunicipalityCode());
 
 			if (queryInstance.getQuery().isUseMultipartSigning() || queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
 

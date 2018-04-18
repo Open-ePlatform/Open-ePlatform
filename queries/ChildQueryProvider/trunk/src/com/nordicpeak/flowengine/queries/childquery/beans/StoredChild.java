@@ -42,6 +42,8 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	@XMLElement
 	private String postalAddress;
 	
+	private String municipalityCode;
+	
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
 	
@@ -54,6 +56,7 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 		address = child.getAddress();
 		zipcode = child.getZipCode();
 		postalAddress = child.getPostalAddress();
+		municipalityCode = child.getMunicipalityCode();
 		
 		if (!CollectionUtils.isEmpty(child.getGuardians())) {
 			
@@ -157,5 +160,17 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	public String toString() {
 		
 		return firstname + " " + lastname + " (" + citizenIdentifier + ")";
+	}
+
+	
+	public String getMunicipalityCode() {
+	
+		return municipalityCode;
+	}
+
+	
+	public void setMunicipalityCode(String municipalityCode) {
+	
+		this.municipalityCode = municipalityCode;
 	}
 }

@@ -177,4 +177,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances` ADD COLUMN `municipalityCode` VARCHAR(10) AFTER `postalAddress`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
