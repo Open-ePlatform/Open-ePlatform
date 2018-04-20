@@ -94,7 +94,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 		daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
 	}
 
-	@EventListener(channel=FlowInstanceManager.class, priority = 50)
+	@EventListener(channel=FlowInstanceManager.class, priority = 40)
 	public void processEvent(SubmitEvent event, EventSource eventSource) throws SQLException{
 
 		if(this.supportedActionIDs == null || xmlDir == null){
