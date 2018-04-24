@@ -31,91 +31,94 @@
 	
 		<div id="attachments-container" data-flowinstanceid="{FlowInstance/flowInstanceID}">
 	
-			<xsl:if test="Manager">
-				<div id="new-attachment" class="tabs-content" style="display: none">
-				
-					<script type="text/javascript">
-						AttachmentsModule = {
-							"URL": "<xsl:value-of select="ModuleURL"/>",
-							"TabTitle": "<xsl:value-of select="TabTitle"/>",
-							"PicPending": "<xsl:value-of select="$imagePath"/>/ajax-loader.gif",
-						};
-					</script>
-		 						
-					<div class="heading-wrapper">
-						<h2><xsl:value-of select="$i18n.NewAttachment" /></h2>
-						<a href="#" class="btn btn-light btn-right close_attachment"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
-					</div>
+			<div id="attachments">
+			
+				<xsl:if test="Manager">
+					<div id="new-attachment" class="tabs-content" style="display: none">
 					
-					<form id="new-attachments-form" action="">
-					
-						<div class="mask"/>
-						<div class="validationerrors"/>
-						
+						<script type="text/javascript">
+							AttachmentsModule = {
+								"URL": "<xsl:value-of select="ModuleURL"/>",
+								"TabTitle": "<xsl:value-of select="TabTitle"/>",
+								"PicPending": "<xsl:value-of select="$imagePath"/>/ajax-loader.gif",
+							};
+						</script>
+			 						
 						<div class="heading-wrapper">
-							<label class="required" ><xsl:value-of select="$i18n.AttachFiles" /></label>
+							<h2><xsl:value-of select="$i18n.NewAttachment" /></h2>
+							<a href="#" class="btn btn-light btn-right close_attachment"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
 						</div>
 						
-						<script>
-							imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
-							deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-						</script>
+						<form id="new-attachments-form" action="">
 						
-						<xsl:apply-templates select="validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
-						
-						<div class="full">
+							<div class="mask"/>
+							<div class="validationerrors"/>
 							
-							<div class="upload clearboth">
-								<span class="btn btn-upload btn-blue">
-									<xsl:value-of select="$i18n.ChooseFiles" />
-									<input id="external-attachment" type="file" name="attachments" multiple="multiple" size="55" class="qloader bigmarginbottom" />
-								</span>
-								<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="FormatedMaxFileSize" /></span>
+							<div class="heading-wrapper">
+								<label class="required" ><xsl:value-of select="$i18n.AttachFiles" /></label>
 							</div>
 							
-							<ul id="external-attachment-qloader-filelist" class="files" />
+							<script>
+								imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
+								deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
+							</script>
 							
-						</div>
-				
-						<a href="#" class="btn btn-green btn-inline submit" onclick="$(this).closest('form').submit(); return false;">
-							<xsl:value-of select="$i18n.SubmitAttachment" />
-							<img class="pending marginleft" src="{$imagePath}/ajax-loader.gif" />
-						</a>
-						
-						<a href="#" class="btn btn-light btn-inline close_attachment"><xsl:value-of select="$i18n.Cancel" /></a>
-						
-					</form>
+							<xsl:apply-templates select="validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
+							
+							<div class="full">
+								
+								<div class="upload clearboth">
+									<span class="btn btn-upload btn-blue">
+										<xsl:value-of select="$i18n.ChooseFiles" />
+										<input id="external-attachment" type="file" name="attachments" multiple="multiple" size="55" class="qloader bigmarginbottom" />
+									</span>
+									<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="FormatedMaxFileSize" /></span>
+								</div>
+								
+								<ul id="external-attachment-qloader-filelist" class="files" />
+								
+							</div>
 					
-					<!-- Preload images -->
-					<div style="display: none;">
-						<img src="{$imagePath}/ajax-loader.gif"/>
+							<a href="#" class="btn btn-green btn-inline submit" onclick="$(this).closest('form').submit(); return false;">
+								<xsl:value-of select="$i18n.SubmitAttachment" />
+								<img class="pending marginleft" src="{$imagePath}/ajax-loader.gif" />
+							</a>
+							
+							<a href="#" class="btn btn-light btn-inline close_attachment"><xsl:value-of select="$i18n.Cancel" /></a>
+							
+						</form>
+						
+						<!-- Preload images -->
+						<div style="display: none;">
+							<img src="{$imagePath}/ajax-loader.gif"/>
+						</div>
+						
+					</div>
+				</xsl:if>
+			
+				<div class="tabs-content">
+					<div class="heading-wrapper">
+						<h2><xsl:value-of select="$i18n.Attachments" /></h2>
+						
+						<xsl:if test="Manager">
+							<a href="#" class="btn btn-blue btn-right open_attachment"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewAttachment" /></a>
+						</xsl:if>
 					</div>
 					
-				</div>
-			</xsl:if>
-			
-			<div id="attachments" class="tabs-content">
-			
-				<div class="heading-wrapper">
-					<h2><xsl:value-of select="$i18n.Attachments" /></h2>
+					<p><xsl:value-of select="$i18n.Description"></xsl:value-of></p>
 					
-					<xsl:if test="Manager">
-						<a href="#" class="btn btn-blue btn-right open_attachment"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewAttachment" /></a>
-					</xsl:if>
+					<xsl:choose>
+						<xsl:when test="Attachments/Attachment">
+							<ul class="attachments messages">
+								<xsl:apply-templates select="Attachments/Attachment" />
+							</ul>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.NoAttachments" />
+						</xsl:otherwise>	  					
+					</xsl:choose>
+					
 				</div>
-				
-				<p><xsl:value-of select="$i18n.Description"></xsl:value-of></p>
-				
-				<xsl:choose>
-					<xsl:when test="Attachments/Attachment">
-						<ul class="attachments messages">
-							<xsl:apply-templates select="Attachments/Attachment" />
-						</ul>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$i18n.NoAttachments" />
-					</xsl:otherwise>	  					
-				</xsl:choose>
 				
 				<script type="text/javascript">
 					initAttachments();
