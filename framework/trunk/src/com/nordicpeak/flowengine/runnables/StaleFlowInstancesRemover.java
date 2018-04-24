@@ -7,17 +7,16 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import se.unlogic.standardutils.dao.AnnotatedDAO;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+
+import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.populators.IntegerPopulator;
 
 public class StaleFlowInstancesRemover implements Runnable {
 	
@@ -55,8 +54,6 @@ public class StaleFlowInstancesRemover implements Runnable {
 			
 			ArrayListQuery<Integer> idQuery = new ArrayListQuery<Integer>(flowInstanceDAO.getDataSource(), sql, IntegerPopulator.getPopulator());
 			idQuery.setTimestamp(1, yesterday);
-			
-			System.out.println(DateUtils.DATE_TIME_FORMATTER.format(yesterday));
 			
 			Collection<Integer> flowInstanceIDs = idQuery.executeQuery();
 			
