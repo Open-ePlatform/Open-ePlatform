@@ -3,6 +3,7 @@
 	<name>BaseMapQuery</name>
 	<comment></comment>
 	<projects>
+		<project>JTS</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
