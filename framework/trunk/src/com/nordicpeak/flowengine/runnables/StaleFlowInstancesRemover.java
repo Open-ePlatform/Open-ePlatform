@@ -7,22 +7,22 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+
 public class StaleFlowInstancesRemover implements Runnable {
 	
 	private static final Logger log = Logger.getLogger(StaleFlowInstancesRemover.class);
 	
-	private final FlowAdminModule flowAdminModule;
+	//private final FlowAdminModule flowAdminModule;
 	private final AnnotatedDAO<FlowInstance> flowInstanceDAO;
 	
 	private final QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
@@ -30,7 +30,7 @@ public class StaleFlowInstancesRemover implements Runnable {
 	public StaleFlowInstancesRemover(FlowAdminModule flowAdminModule, FlowEngineDAOFactory daoFactory) {
 		super();
 		
-		this.flowAdminModule = flowAdminModule;
+		//this.flowAdminModule = flowAdminModule;
 		
 		flowInstanceDAO = daoFactory.getFlowInstanceDAO();
 		
