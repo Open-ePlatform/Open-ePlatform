@@ -697,7 +697,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		long startTime = System.currentTimeMillis();
 
-		List<FlowType> flowTypes = daoFactory.getFlowTypeDAO().getAll(new HighLevelQuery<FlowType>(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.CATEGORIES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION));
+		HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.CATEGORIES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION);
+		query.addCachedRelation(FlowType.CATEGORIES_RELATION);
+		
+		List<FlowType> flowTypes = daoFactory.getFlowTypeDAO().getAll(query);
 
 		if (flowTypes == null) {
 
@@ -729,6 +732,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			long startTime = System.currentTimeMillis();
 
 			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_FORMS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
+			query.addCachedRelations(Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
 
@@ -2398,13 +2402,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			} else if (FlowForm.class.isAssignableFrom(event.getBeanClass())) {
 
 				cacheFlows();
-
-				//TODO only re-cache affected flows
-				//				for (FlowForm flowForm : (List<FlowForm>) event.getBeans()) {
-				//
-				//					Integer flowID = flowForm.getFlow().getFlowID();
-				//
-				//				}
+				return;
 			}
 
 			cacheFlows();
