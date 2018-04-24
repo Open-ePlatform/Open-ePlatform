@@ -62,4 +62,14 @@
 	<xsl:variable name="i18n.AllProfiles">Visa driftmeddelandet för alla profiler</xsl:variable>
 	<xsl:variable name="i18n.ChooseProfiles">Visa driftmeddelandet för specifika profiler</xsl:variable>
 	
+	<xsl:variable name="i18n.LocalOperatingMessages">Lokala meddelanden</xsl:variable>
+	<xsl:variable name="i18n.ExternalOperatingMessages">Externa meddelanden</xsl:variable>
+	<xsl:variable name="i18n.ExternalOperatingMessageSources">Externa källor</xsl:variable>
+	<xsl:variable name="i18n.NoExternalOperatingMessageSourcesFound">Inga external källor är inställda</xsl:variable>
+	<xsl:variable name="i18n.ExternalSourceName">Namn</xsl:variable>
+	<xsl:variable name="i18n.ExternalSourceEnabled">Status</xsl:variable>
+	<xsl:variable name="i18n.ExternalSourceEnabled.Yes">Aktiverad</xsl:variable>
+	<xsl:variable name="i18n.ExternalSourceEnabled.No">Inaktiverad</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageFrom">Källa</xsl:variable>
+	
 </xsl:stylesheet>

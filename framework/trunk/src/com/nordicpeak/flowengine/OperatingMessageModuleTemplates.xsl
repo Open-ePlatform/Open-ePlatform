@@ -43,6 +43,8 @@
 	
 		<h1><xsl:value-of select="/Document/module/name" /></h1>
 	
+		<h2 class="clearboth"><xsl:value-of select="$i18n.LocalOperatingMessages" /></h2>
+	
 		<table id="messageList" class="full coloredtable oep-table" cellspacing="0">
 			<thead>	
 				<tr>
@@ -56,7 +58,7 @@
 					</xsl:if>
 					<th width="110"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowFamilies" /></span></th>
 					<th width="130"><span data-icon-after="_"><xsl:value-of select="$i18n.DisableFlows" /></span></th>
-					<th width="32" class="no-sort" />
+					<th width="37" class="no-sort" />
 				</tr>
 			</thead>
 			<tbody>
@@ -81,10 +83,78 @@
 		<div class="floatright">
 			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/add" title="{$i18n.AddOperatingMessage}">
 				<xsl:value-of select="$i18n.AddOperatingMessage"/>
-				<img class="vertical-align-middle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+				<img class="marginleft" style="vertical-align: sub;" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 			</a>			
 		</div>
-	
+		
+		<h2 class="clearboth"><xsl:value-of select="$i18n.ExternalOperatingMessages" /></h2>
+		
+		<table id="exernalMessageList" class="full coloredtable oep-table" cellspacing="0">
+			<thead>	
+				<tr>
+					<th width="16" class="no-sort"></th>
+					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
+					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.MessageType" /></span></th>
+					<th>
+						<xsl:attribute name="width">
+							<xsl:choose>
+								<xsl:when test="/Document/enableSiteProfileSupport = 'true'">430</xsl:when>
+								<xsl:otherwise>320</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						<span data-icon-after="_"><xsl:value-of select="$i18n.ExternalMessageFrom" /></span>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<xsl:choose>
+					<xsl:when test="not(ExternalOperatingMessages/OperatingMessage)">
+						<tr>
+							<td class="icon"></td>
+							<td colspan="3">
+								<xsl:value-of select="$i18n.NoOperatingMessagesFound" />
+							</td>
+						</tr>
+					</xsl:when>
+					<xsl:otherwise>
+						
+						<xsl:apply-templates select="ExternalOperatingMessages/OperatingMessage" mode="list-external" />
+						
+					</xsl:otherwise>
+				</xsl:choose>			
+			</tbody>
+		</table>
+		
+		<h2 class="bigmargintop"><xsl:value-of select="$i18n.ExternalOperatingMessageSources" /></h2>
+		
+		<table id="exernalMessageSources" class="full coloredtable oep-table" cellspacing="0">
+			<thead>	
+				<tr>
+					<th width="16" class="no-sort"></th>
+					<th><span data-icon-after="_"><xsl:value-of select="$i18n.ExternalSourceName" /></span></th>
+					<th width="80"><span data-icon-after="_"><xsl:value-of select="$i18n.ExternalSourceEnabled" /></span></th>
+					<th width="37" class="no-sort" />
+				</tr>
+			</thead>
+			<tbody>
+				<xsl:choose>
+					<xsl:when test="not(ExternalOperatingMessageSources/ExternalOperatingMessageSource)">
+						<tr>
+							<td class="icon"></td>
+							<td colspan="3">
+								<xsl:value-of select="$i18n.NoExternalOperatingMessageSourcesFound" />
+							</td>
+						</tr>
+					</xsl:when>
+					<xsl:otherwise>
+						
+						<xsl:apply-templates select="ExternalOperatingMessageSources/ExternalOperatingMessageSource" />
+						
+					</xsl:otherwise>
+				</xsl:choose>			
+			</tbody>
+		</table>
+		
 	</xsl:template>
 
 	<xsl:template match="OperatingMessage" mode="list">
@@ -174,12 +244,75 @@
 				</a>
 			</td>										
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}" class="marginright">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 				</a>
+			</td>
+		</tr>
+		
+	</xsl:template>
+	
+	<xsl:template match="OperatingMessage" mode="list-external">
+		
+		<tr>
+			<td class="icon">
+				<xsl:if test="ExternalOperatingMessageSource/enabled = 'true'">
+					<i data-icon-after="!"></i>
+				</xsl:if>
+			</td>
+			<td data-title="{$i18n.Message}">
+				<xsl:value-of select="message" />
+			</td>
+			<td data-title="{$i18n.MessageType}">
+				<xsl:choose>
+					<xsl:when test="messageType = 'WARNING'">
+						<xsl:value-of select="$i18n.MessageTypeWarning" />
+					</xsl:when>
+					<xsl:when test="messageType = 'INFO'">
+						<xsl:value-of select="$i18n.MessageTypeInfo" />
+					</xsl:when>
+				</xsl:choose>
+			</td>
+			<td data-title="{$i18n.ExternalMessageFrom}">
+				<xsl:value-of select="ExternalOperatingMessageSource/name" />
+			</td>
+		</tr>
+		
+	</xsl:template>
+	
+	<xsl:template match="ExternalOperatingMessageSource">
+		
+		<tr>
+			<td class="icon"/>
+			<td data-title="{$i18n.ExternalSourceName}">
+				<xsl:value-of select="name" />
+			</td>
+			<td data-title="{$i18n.ExternalSourceEnabled}">
+				<xsl:choose>
+					<xsl:when test="enabled = 'true'">
+						<xsl:value-of select="$i18n.ExternalSourceEnabled.Yes" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.ExternalSourceEnabled.No" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="enabled = 'true'">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/disableExternalSource/{name}">
+							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/check.png" alt="" />
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/enableExternalSource/{name}">
+							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/disabled.png" alt="" />
+						</a>
+					</xsl:otherwise>
+				</xsl:choose>
 			</td>
 		</tr>
 		
@@ -224,109 +357,109 @@
 	</xsl:template>
 	
 	<xsl:template name="operatingMessageForm">
-       
-        <xsl:param name="operatingMessage" select="null" />
-       
-        <script type="text/javascript">
-       
-            $(function() {
-                if (!Modernizr.inputtypes.date) {
-               
-                    $( "#startDate" ).datepicker({
-                        showOn: "button",
-                        buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
-                        buttonImageOnly: true,
-                        buttonText: '<xsl:value-of select="$i18n.StartDate"/>',
-                        changeMonth: true,
-                        changeYear: true,
-                        showWeek: true,
-                    });
-                   
-                    $( "#endDate" ).datepicker({
-                        showOn: "button",
-                        buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
-                        buttonImageOnly: true,
-                        buttonText: '<xsl:value-of select="$i18n.EndDate"/>',
-                        changeMonth: true,
-                        changeYear: true,
-                        showWeek: true,
-                    });
-                }
-            });   
-           
-        </script>
-       
-        <div class="floatleft full bigmarginbottom">
-           
-            <label for="message" class="floatleft full">
-                <xsl:value-of select="$i18n.Message" />
-            </label>
-           
-            <div class="floatleft full">
+		
+		<xsl:param name="operatingMessage" select="null" />
+		
+		<script type="text/javascript">
+		
+			$(function() {
+				if (!Modernizr.inputtypes.date) {
+				
+					$( "#startDate" ).datepicker({
+						showOn: "button",
+						buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
+						buttonImageOnly: true,
+						buttonText: '<xsl:value-of select="$i18n.StartDate"/>',
+						changeMonth: true,
+						changeYear: true,
+						showWeek: true,
+					});
+					
+					$( "#endDate" ).datepicker({
+						showOn: "button",
+						buttonImage: '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics/calendar_grid.png',
+						buttonImageOnly: true,
+						buttonText: '<xsl:value-of select="$i18n.EndDate"/>',
+						changeMonth: true,
+						changeYear: true,
+						showWeek: true,
+					});
+				}
+			});	
+			
+		</script>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="message" class="floatleft full">
+				<xsl:value-of select="$i18n.Message" />
+			</label>
+			
+			<div class="floatleft full">
 
-                <xsl:call-template name="createTextField">
-                    <xsl:with-param name="name" select="'message'"/>
-                    <xsl:with-param name="class" select="'full'"/>
-                    <xsl:with-param name="element" select="$operatingMessage" />       
-                </xsl:call-template>                                   
-                                       
-            </div>
-        </div>
-       
-        <div class="floatleft full bigmarginbottom">
-           
-            <div class="floatleft marginright">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="name" select="'message'"/>
+					<xsl:with-param name="class" select="'full'"/>
+					<xsl:with-param name="element" select="$operatingMessage" />		
+				</xsl:call-template>									
+										
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft marginright">
 
-                <label for="startDate" class="floatleft clearboth">
-                    <xsl:value-of select="$i18n.StartDate" />
-                </label>
+				<label for="startDate" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.StartDate" />
+				</label>
 
-                <div class="floatleft clearboth">
-                    <xsl:call-template name="createTextField">
-                        <xsl:with-param name="id" select="'startDate'"/>
-                        <xsl:with-param name="name" select="'startDate'"/>
-                        <xsl:with-param name="element" select="$operatingMessage" />
-                        <xsl:with-param name="type" select="'date'" />
-                        <xsl:with-param name="size" select="'15'" />
-                    </xsl:call-template>                                   
-                </div>                       
-           
-            </div>
-                       
-            <div class="floatleft bigmarginright">
+				<div class="floatleft clearboth">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'startDate'"/>
+						<xsl:with-param name="name" select="'startDate'"/>
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="type" select="'date'" />
+						<xsl:with-param name="size" select="'15'" />
+					</xsl:call-template>									
+				</div>						
+			
+			</div>
+						
+			<div class="floatleft bigmarginright">
 
-                <label for="startTime" class="floatleft clearboth">
-                    <xsl:value-of select="$i18n.StartTime" />
-                </label>
+				<label for="startTime" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.StartTime" />
+				</label>
 
-                <div class="floatleft clearboth">
-                    <xsl:call-template name="createTextField">
-                        <xsl:with-param name="id" select="'startTime'"/>
-                        <xsl:with-param name="name" select="'startTime'"/>
-                        <xsl:with-param name="size" select="'10'"/>
-                        <xsl:with-param name="element" select="$operatingMessage" />
-                    </xsl:call-template>                                   
-                </div>
-                               
-            </div>
-           
-            <div class="floatleft bigmarginleft marginright">
+				<div class="floatleft clearboth">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'startTime'"/>
+						<xsl:with-param name="name" select="'startTime'"/>
+						<xsl:with-param name="size" select="'10'"/>
+						<xsl:with-param name="element" select="$operatingMessage" />
+					</xsl:call-template>									
+				</div>
+								
+			</div>
+			
+			<div class="floatleft bigmarginleft marginright">
 
-                <label for="endDate" class="floatleft clearboth">
-                    <xsl:value-of select="$i18n.EndDate" />
-                </label>
+				<label for="endDate" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.EndDate" />
+				</label>
 
-                <div class="floatleft clearboth">
-                    <xsl:call-template name="createTextField">
-                        <xsl:with-param name="id" select="'endDate'"/>
-                        <xsl:with-param name="name" select="'endDate'"/>
-                        <xsl:with-param name="element" select="$operatingMessage" />
-                        <xsl:with-param name="type" select="'date'" />
-                        <xsl:with-param name="size" select="'15'" />
-                    </xsl:call-template>
-                </div>                                   
-                                       
-            </div>
+				<div class="floatleft clearboth">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'endDate'"/>
+						<xsl:with-param name="name" select="'endDate'"/>
+						<xsl:with-param name="element" select="$operatingMessage" />
+						<xsl:with-param name="type" select="'date'" />
+						<xsl:with-param name="size" select="'15'" />
+					</xsl:call-template>
+				</div>									
+										
+			</div>
 			
 			<div class="floatleft">
 

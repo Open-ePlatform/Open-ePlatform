@@ -63,7 +63,7 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean allowManagingOfInstances;	
+	private boolean allowManagingOfInstances;
 	
 	@DAOManaged
 	@WebPopulate
@@ -84,19 +84,19 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	
 	@DAOManaged
 	@XMLElement(childName="editor")
-	private User editor; 
+	private User editor;
 
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean profileFilter;	
+	private boolean profileFilter;
 	
 	@DAOManaged
 	@WebPopulate(paramName = "profileID")
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowengine_operating_message_profiles", remoteValueColumnName = "profileID")
 	@XMLElement(childName = "profileID")
-	private List<Integer> profileIDs;	
+	private List<Integer> profileIDs;
 
 	public Integer getMessageID() {
 
