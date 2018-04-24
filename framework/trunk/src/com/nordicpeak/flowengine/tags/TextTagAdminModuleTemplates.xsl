@@ -196,6 +196,10 @@
 				<a class="open-help btn btn-blue vertical-align-middle" data-help-box="tag-preview-{textTagID}" href="#"><xsl:value-of select="$i18n.Preview" /></a>
 				<a class="btn btn-green vertical-align-middle" style="margin-left: 2px" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{name}"><xsl:value-of select="$i18n.Update" /></a>
 				<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" data-icon-before="x" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{name}" onclick="return confirm('{$i18n.DeleteTextTagConfirm}: {name}?');"></a>
+			
+				<div class="hidden">
+					<xsl:value-of select="defaultValue" disable-output-escaping="yes"/>			
+				</div>
 			</td>
 		</tr>
 	
