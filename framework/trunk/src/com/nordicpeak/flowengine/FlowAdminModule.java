@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -234,6 +232,8 @@ import com.nordicpeak.flowengine.validationerrors.QueryExportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
 
@@ -1459,7 +1459,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 								return null;
 							}
 
-						} catch (IOException e) {
+						} catch (Exception e) {
 
 							validationError = new ValidationError("UnableToParseIcon");
 						}
