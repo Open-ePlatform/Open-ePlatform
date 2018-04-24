@@ -615,6 +615,7 @@ public class FlowInstanceIndexer {
 	public Flow getFlow(Integer flowID) throws SQLException {
 
 		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 
 		query.addParameter(flowEnabledParamFactory.getParameter(true));
 		query.addParameter(flowIDParamFactory.getParameter(flowID));
@@ -625,7 +626,8 @@ public class FlowInstanceIndexer {
 	public FlowFamily getFlowFamily(Integer flowFamilyID) throws SQLException {
 
 		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
-
+		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
+		
 		query.addParameter(flowFamilyIDParamFactory.getParameter(flowFamilyID));
 		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
 
@@ -635,6 +637,7 @@ public class FlowInstanceIndexer {
 	private List<FlowFamily> getFlowFamilies() throws SQLException {
 
 		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 
 		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
 
