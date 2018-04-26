@@ -6,6 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
@@ -23,11 +28,6 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.random.RandomUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
 
 
 public class FlowInstanceDeleterModule extends AnnotatedForegroundModule {
@@ -182,7 +182,7 @@ public class FlowInstanceDeleterModule extends AnnotatedForegroundModule {
 						}
 					}
 					
-					log.info("Deteing " + flowInstance);
+					log.info("Deleting " + flowInstance);
 					daoFactory.getFlowInstanceDAO().delete(flowInstance, transactionHandler);
 				}
 			
