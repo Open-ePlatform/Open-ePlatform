@@ -1,0 +1,15 @@
+@CHARSET "ISO-8859-1";
+
+@media screen and (min-width: 767.1px) and (max-width: 1004px) {
+	
+	.radiobuttonquery .alternative.thirty {
+		width: 50%;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	
+	.radiobuttonquery .alternative.thirty, .radiobuttonquery .alternative.fifty {
+		width: 100%;
+	}
+}
