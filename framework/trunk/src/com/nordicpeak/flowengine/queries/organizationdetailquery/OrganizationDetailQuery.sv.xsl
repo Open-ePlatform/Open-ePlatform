@@ -32,10 +32,10 @@
 	<xsl:variable name="i18n.OrganizationDescription">Välj en av dina befintliga organisationer eller registrera en ny</xsl:variable>
 	<xsl:variable name="i18n.NewOrganization">Ny organisation</xsl:variable>
 	
-	<xsl:variable name="i18n.AddToMyOrganizations">Lägg till den här organisationens uppgifter under mina engagemang</xsl:variable>
-	<xsl:variable name="i18n.UpdateToMyOrganizations">Uppdatera organisationens uppgifter under mina engagemang</xsl:variable>
+	<xsl:variable name="i18n.AddToMyOrganizations">Lägg till den här organisationens uppgifter under mina organisationer</xsl:variable>
+	<xsl:variable name="i18n.UpdateToMyOrganizations">Uppdatera organisationens uppgifter under mina organisationer</xsl:variable>
 	
-	<xsl:variable name="i18n.UnableToPersistOrganization">Det gick inte att spara organisationens uppgifter till mina engagemang. Försök igen</xsl:variable>
+	<xsl:variable name="i18n.UnableToPersistOrganization">Det gick inte att spara organisationens uppgifter till mina organisationer. Försök igen</xsl:variable>
 	
 	<xsl:variable name="i18n.NameExists">Du har redan registrerat en organisation med det angivna namnet</xsl:variable>
 	<xsl:variable name="i18n.OrganizationNumberExists">Du har redan registrerat en organisation med det angivna organisationsnumret</xsl:variable>
