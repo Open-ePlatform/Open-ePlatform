@@ -159,14 +159,14 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflow" title="{$i18n.addFlow}">
 					<xsl:value-of select="$i18n.addFlow"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+					<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 				</a>			
 			</div>
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow" title="{$i18n.importFlow}">
 					<xsl:value-of select="$i18n.importFlow"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+					<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 				</a>			
 			</div>			
 		</xsl:if>
@@ -176,14 +176,14 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.administrateStandardStatuses}">
 					<xsl:value-of select="$i18n.administrateStandardStatuses"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>			
 			</div>
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtypes" title="{$i18n.administrateFlowTypes}">
 					<xsl:value-of select="$i18n.administrateFlowTypes"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt=""/>
+					<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt=""/>
 				</a>			
 			</div>
 		</xsl:if>		
@@ -278,14 +278,14 @@
 							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 						</a>
 
-					</xsl:when>										
+					</xsl:when>
 					<xsl:otherwise>
 
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowfamily/{FlowFamily/flowFamilyID}" onclick="return confirm('{$i18n.deleteFlowFamilyConfirm}: {name}?');" title="{$i18n.deleteFlowFamily.title}: {name}">
 							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 						</a>
 
-					</xsl:otherwise>					
+					</xsl:otherwise>
 				</xsl:choose>
 			</td>
 		</tr>
@@ -295,7 +295,7 @@
 	<xsl:template match="ExtensionLink" mode="top-right">
 		<xsl:param name="flowID"/>
 	
-		<a class="extensionlink" href="{url}/{$flowID}" title="{name}">
+		<a class="extensionlink marginleft" href="{url}/{$flowID}" title="{name}">
 			<img class="alignbottom" src="{icon}" alt=""/>
 		</a>
 	
@@ -331,7 +331,7 @@
 					
 						<xsl:if test="/Document/user/admin = 'true'">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/recacheflow/{Flow/flowID}" title="{$i18n.ReCacheFlow}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/reload.png" alt="" />
+								<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/reload.png" alt="" />
 							</a>
 						</xsl:if>
 					
@@ -344,28 +344,28 @@
 						</xsl:if>
 					
 						<xsl:if test="$isInternal = 'true'">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xsd.png" alt="" />
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
+								<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xsd.png" alt="" />
 							</a>
 						</xsl:if>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt="" />
 						</a>
 						
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/photo_edit.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/photo_edit.png" alt="" />
 						</a>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}" title="{$i18n.updateFlowBaseInfo.title}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}" title="{$i18n.updateFlowBaseInfo.title}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 						</a>
 					
 						<xsl:choose>
 							<xsl:when test="$disableStructureManipulation = false()">
 							
-								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
-									<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+								<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
+									<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 								</a>				
 							
 							</xsl:when>
@@ -374,15 +374,15 @@
 								<xsl:choose>
 									<xsl:when test="Flow/flowInstanceCount > 0">
 				
-										<a href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
-											<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
+											<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 										</a>
 				
 									</xsl:when>
 									<xsl:when test="Flow/published = 'true'">
 				
-										<a href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
-											<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
+											<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 										</a>
 				
 									</xsl:when>						
@@ -954,7 +954,7 @@
 					<div class="floatright marginright">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstep/{Flow/flowID}" title="{$i18n.addStep}">
 							<xsl:value-of select="$i18n.addStep"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+							<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 						</a>
 					</div>
 					
@@ -962,21 +962,21 @@
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addquery/{Flow/flowID}" title="{$i18n.addQuery}">
 								<xsl:value-of select="$i18n.addQuery"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+								<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 							</a>
 						</div>
 						
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importqueries/{Flow/flowID}" title="{$i18n.ImportQueries}">
 								<xsl:value-of select="$i18n.ImportQueries"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+								<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 							</a>
-						</div>						
+						</div>
 						
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortflow/{Flow/flowID}" title="{$i18n.sortStepsAndQueries}">
 								<xsl:value-of select="$i18n.sortStepsAndQueries"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
+								<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
 							</a>
 						</div>
 					</xsl:if>
@@ -989,7 +989,7 @@
 					<div class="floatright marginright clearboth">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
 							<xsl:value-of select="$i18n.testFlow"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
+							<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
 						</a>
 					</div>
 				</xsl:if>
@@ -1067,7 +1067,7 @@
 									<th><xsl:value-of select="$i18n.name" /></th>
 									<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
 									<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
-									<th width="32" />
+									<th width="37" />
 								</tr>
 							</thead>
 							<tbody>
@@ -1086,7 +1086,7 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstatus/{Flow/flowID}" title="{$i18n.addStatus}">
 						<xsl:value-of select="$i18n.addStatus"/>
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
 					</a>
 				</div>
 				
@@ -1094,11 +1094,11 @@
 					<div class="floatright marginright clearboth">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstatuses/{Flow/flowID}" title="{$i18n.sortStatuses}">
 							<xsl:value-of select="$i18n.sortStatuses"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
+							<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
 						</a>
-					</div>				
-				</xsl:if>				
-			</fieldset>		
+					</div>
+				</xsl:if>
+			</fieldset>
 		
 			<a name="managers"/>
 		
@@ -1139,9 +1139,9 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagers/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateFlowFamilyManagers}">
 						<xsl:value-of select="$i18n.UpdateFlowFamilyManagers"/>
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 					</a>
-				</div>				
+				</div>
 				
 			</fieldset>
 	
@@ -1157,7 +1157,7 @@
 					<div class="floatright marginright">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatenotifications/{Flow/flowID}" title="{$i18n.UpdateNotificationSettings}">
 							<xsl:value-of select="$i18n.UpdateNotificationSettings"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+							<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 						</a>
 					</div>
 					
@@ -1214,7 +1214,7 @@
 									</xsl:if>
 									
 									<th width="75"><xsl:value-of select="$i18n.status" /></th>
-									<th width="32" >
+									<th width="37" >
 										<xsl:if test="PublishAccess">
 											<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
 												<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/disabled.png" alt="" />
@@ -1568,27 +1568,27 @@
 			</td>								
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportflow/{flowID}" title="{$i18n.exportFlow.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xml.png" alt="" />
+					<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xml.png" alt="" />
 				</a>
 			
 				<xsl:choose>
 					<xsl:when test="flowInstanceCount > 0">
 
-						<a href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 						</a>
 
 					</xsl:when>
 					<xsl:when test="published = 'true' and enabled = 'true'">
 
-						<a href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 						</a>
 
-					</xsl:when>										
+					</xsl:when>
 					<xsl:otherwise>
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 						</a>
 
 					</xsl:otherwise>					
@@ -1608,11 +1608,11 @@
 			<span class="bigmarginleft">
 				<xsl:if test="$disableStructureManipulation = false()">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestep/{stepID}" title="{$i18n.updateStep.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 					</a>
 
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 					</a>
 				</xsl:if>
 			</span>		
@@ -1657,20 +1657,20 @@
 			<span class="bigmarginleft">
 			
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/download.png" alt="" />
+					<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/download.png" alt="" />
 				</a>			
 			
 				<xsl:if test="$disableStructureManipulation = false()">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/cog_add.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/cog_add.png" alt="" />
 					</a>				
 				
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 					</a>
 					
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 					</a>
 				</xsl:if>			
 			</span>
@@ -1717,11 +1717,11 @@
 			<span class="bigmarginleft">
 				<xsl:if test="$disableStructureManipulation = false()">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateevaluator/{evaluatorID}" title="{$i18n.updateEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 					</a>
 					
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
+						<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 					</a>
 				</xsl:if>			
 			</span>
@@ -1751,21 +1751,21 @@
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestatus/{statusID}" title="{$i18n.updateStatus.link.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>
 		
 				<xsl:choose>
 					<xsl:when test="flowInstanceCount > 0">
 
-						<a href="#" onclick="alert('{$i18n.deleteStatusDisabledHasInstances}'); return false;" title="{$i18n.deleteStatusDisabledHasInstances}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteStatusDisabledHasInstances}'); return false;" title="{$i18n.deleteStatusDisabledHasInstances}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
 						</a>
 
 					</xsl:when>
 					<xsl:otherwise>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
+							<img src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 						</a>					
 					
 					</xsl:otherwise>					
