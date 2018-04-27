@@ -33,7 +33,7 @@
 	<xsl:variable name="i18n.UpdateInformerReasonAlternative">Uppdatera laglig grund</xsl:variable>
 	<xsl:variable name="i18n.NoStandardTexts">Det finns inga standardtexter ännu</xsl:variable>
 	<xsl:variable name="i18n.StandardTexts">Standardtexter</xsl:variable>
-	<xsl:variable name="i18n.DefaultComplaintName">Beskrivning för lämna klagomål på personuppgiftshantering</xsl:variable>
+	<xsl:variable name="i18n.DefaultComplaintName">Beskrivning för att lämna klagomål på personuppgiftshantering</xsl:variable>
 	<xsl:variable name="i18n.DefaultReasonName">Ändamålet med behandlingen</xsl:variable>
 	<xsl:variable name="i18n.DefaultStorageName">Övrigt om lagringstid</xsl:variable>
 	<xsl:variable name="i18n.DefaultExtraInformationName">Övriga upplysningar</xsl:variable>
