@@ -1,8 +1,5 @@
 package com.nordicpeak.flowengine.statistics;
 
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.Task;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
@@ -76,6 +73,7 @@ import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -84,6 +82,9 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+
+import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.Task;
 
 public class StatisticsModule extends AnnotatedForegroundModule implements Runnable, SystemStartupListener {
 
@@ -104,8 +105,6 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	private static final String STEP_UNSUBMITTED_COUNT_QUERY = "SELECT DISTINCT(stepID) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE statusID IN (SELECT statusID FROM flowengine_flow_statuses WHERE flowID = ? AND contentType = ?) AND ((updated IS NOT NULL AND updated BETWEEN ? AND ?) OR (updated IS NULL AND added BETWEEN ? AND ?)) GROUP BY id;";
 
 	private static final String FLOW_INSTANCE_QUERY = "SELECT * FROM flowengine_flow_instances INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_flow_instances.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_flow_instances.firstSubmitted BETWEEN ? AND ?);";
-
-	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 
 	@ModuleSetting
 	@GroupMultiListSettingDescriptor(name = "Internal groups", description = "Groups containing users allowed to view internal statistics")
@@ -325,6 +324,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		log.info("Generating statistics for perdiod: " + DateUtils.DATE_TIME_FORMATTER.format(startDate) + " - " + DateUtils.DATE_TIME_FORMATTER.format(endDate));
 
 		HighLevelQuery<FlowFamily> flowFamiliesQuery = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION);
+		flowFamiliesQuery.addCachedRelation(Flow.FLOW_TYPE_RELATION);
 
 		flowFamiliesQuery.addParameter(statsModeParamFactory.getIsNotNullParameter());
 		flowFamiliesQuery.addRelationOrderByCriteria(Flow.class, flowVersionOrderCriteria);
@@ -400,7 +400,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 									
 									String citizenIdentifier;
 
-									if (flowInstance.getPoster() == null || flowInstance.getPoster().getAttributeHandler() == null || (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(CITIZEN_IDENTIFIER)) == null) {
+									if (flowInstance.getPoster() == null || flowInstance.getPoster().getAttributeHandler() == null || (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) == null) {
 										unkownCount++;
 										continue;
 									}

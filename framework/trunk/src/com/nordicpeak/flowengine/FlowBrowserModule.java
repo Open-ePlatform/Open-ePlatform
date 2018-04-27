@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -134,6 +132,8 @@ import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -841,7 +841,9 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			}
 
 			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
-
+			
+			query.addCachedRelations(Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
+			
 			if (isListAllFlowTypes()) {
 
 				log.info("Caching flows for all flowTypes");
