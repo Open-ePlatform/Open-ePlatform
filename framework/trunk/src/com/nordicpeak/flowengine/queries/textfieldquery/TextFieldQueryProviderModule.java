@@ -357,7 +357,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 			Integer maxLength = textField.getMaxContentLength();
 
-			if (maxLength == null) {
+			if (maxLength == null || maxLength > 255) {
 
 				maxLength = 255;
 			}

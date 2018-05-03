@@ -21,6 +21,8 @@ import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
@@ -150,5 +152,25 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 		}
 
 		return sortIndex;
+	}
+
+	@Override
+	protected void validateAddPopulation(TextField bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
+		validatePopulation(bean);
+	}
+
+	@Override
+	protected void validateUpdatePopulation(TextField bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
+		validatePopulation(bean);
+	}
+	
+	protected void validatePopulation(TextField bean) throws ValidationException {
+		
+		if(bean.getMaxContentLength() != null && bean.getMaxContentLength() > 255) {
+			
+			throw new ValidationException(new ValidationError("maxContentLength", ValidationErrorType.TooLong));
+		}
 	}
 }
