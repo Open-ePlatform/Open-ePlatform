@@ -77,6 +77,7 @@ import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
@@ -583,7 +584,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		
 		if (poster != null) {
 			
-			String citizenIdentifier = poster.getAttributeHandler().getString(citizenIdentifierAttribute);
+			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 			
 			if (citizenIdentifier != null) {
 				
