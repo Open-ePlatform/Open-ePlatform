@@ -1599,7 +1599,7 @@
 				<figure>
 					<img class="picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/profile-standard.png" alt="" />
 				</figure>
-				<span class="text"><xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /></span><a class="delete" data-icon-after="t"><xsl:value-of select="$i18n.DeleteManager" /></a>
+				<span class="text"><xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /><xsl:text>&#160;</xsl:text>(<xsl:value-of select="username" />)</span><a class="delete" data-icon-after="t"><xsl:value-of select="$i18n.DeleteManager" /></a>
 			</div>
 		</li>
 		
@@ -1609,7 +1609,7 @@
 		
 		<li id="user_{userID}">
 			<a href="#">
-				<span class="text"><xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /></span>
+				<span class="text"><xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" /><xsl:text>&#160;</xsl:text>(<xsl:value-of select="username" />)</span>
 			</a>
 		</li>
 	
