@@ -302,7 +302,7 @@
 	<Script version="15">
 		<Query>
 			<![CDATA[
-				UPDATE `person_data_informer_standardtexts` SET value = '<p>Klagom&aring;l r&ouml;rande personuppgiftshanteringen i tj&auml;nsten kan l&auml;mnas till tillsynsmyndigheten, Datainspektionen. Bes&ouml;k Datainspektionens hemsida (<a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/">http://www.datainspektionen.se/om-oss/arbetssatt/klagomal</a>) f&ouml;r mer information om hur du l&auml;mnar klagom&aring;l.</p>' WHERE name = 'defaultComplaintDescription' AND value = '<p><strong>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</strong><br />Klagom&aring;l r&ouml;rande personuppgiftshanteringen i e-tj&auml;nsten kan l&auml;mnas till tillsynsmyndigheten, Datainspektionen. Bes&ouml;k Datainspektionens hemsida ( <a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/">http://www.datainspektionen.se/om-oss/arbetssatt/klagomal</a> ) f&ouml;r mer information om hur du l&auml;mnar klagom&aring;l.</p>';
+				UPDATE `person_data_informer_standardtexts` SET value = REPLACE(value, '<strong>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</strong><br />', '') WHERE name = 'defaultComplaintDescription' AND value LIKE '<p><strong>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</strong><br />%';
 			]]>
 		</Query>
 	</Script>
