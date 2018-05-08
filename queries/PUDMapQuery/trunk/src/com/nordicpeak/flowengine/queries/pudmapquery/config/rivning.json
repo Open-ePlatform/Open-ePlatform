@@ -3,8 +3,8 @@
     "maxExtent": [
         487000,
         6803000,
-        733000,
-        7110000
+        773720,
+        7376440
     ],
     "autoClearDrawLayer": true,
     "extent": [
@@ -17,7 +17,7 @@
     "layers": [
         {
             "name": "Flygfoto",
-            "url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
             "params": {
                 "layers": "Lantmateriet:Ortofoto50_25cm",
                 "format": "image/jpeg"
@@ -29,7 +29,7 @@
         },
         {
             "name": "Karta",
-            "url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
             "params": {
                 "layers": "Lantmateriet:topowebbkartan_nedtonad",
                 "format": "image/png"
@@ -42,7 +42,7 @@
 		{
             "name": "Fastighetsgränser",
 			"wms": {
-				"url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+				"url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
 				"params": {
 					"layers": "Lantmateriet:fastighet_granser",
 					"format": "image/png",

@@ -3,8 +3,8 @@
     "maxExtent": [
         487000,
         6803000,
-        733000,
-        7110000
+        773720,
+        7376440
     ],
     "resolutions": [ 280, 140, 70, 28, 14, 7, 4.2, 2.8, 1.4, 0.56, 0.28, 0.14, 0.112, 0.056 ],
     "autoClearDrawLayer": true,
@@ -60,7 +60,7 @@
     "layers": [
         {
             "name": "Karta",
-            "url": "http://extmaptest.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "http://karta.sundsvall.se/geoserver/gwc/service/wms",
             "params": {
                 "layers": "Lantmateriet:topowebbkartan_nedtonad",
                 "format": "image/png"
@@ -73,7 +73,7 @@
 		{
             "name": "Fastighetsgränser",
 			"wms": {
-				"url": "http://extmaptest.sundsvall.se/geoserver/gwc/service/wms",
+				"url": "http://karta.sundsvall.se/geoserver/gwc/service/wms",
 				"params": {
 					"layers": "Lantmateriet:fastighet_granser",
 					"format": "image/png",
@@ -89,7 +89,7 @@
 		{
             "name": "Markbestämmelser",
 			"wms": {
-				"url": "http://extmaptest.sundsvall.se/geoserver/gwc/service/wms",
+				"url": "http://karta.sundsvall.se/geoserver/gwc/service/wms",
 				"params": {
 					"layers": "RIGES:EgenskapsBestammelser_yta",
 					"format": "image/png",

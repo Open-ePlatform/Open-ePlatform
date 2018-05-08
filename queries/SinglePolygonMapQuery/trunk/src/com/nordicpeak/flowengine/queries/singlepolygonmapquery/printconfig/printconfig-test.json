@@ -7,7 +7,7 @@
    "attribution": "Kartan har ingen rättsverkan du kan alltså INTE se exakta gränser i denna karttjänst ©Lantmäteriet Geodatasamverkan",
    "layers":[
       {
-         "baseURL":"http://extmaptest.sundsvall.se:8080/geoserver/wms",
+         "baseURL":"https://karta.sundsvall.se/geoserver/wms",
          "opacity":1,
          "singleTile":true,
          "type":"WMS",
@@ -20,7 +20,7 @@
          ]
       },
       {
-         "baseURL":"http://extmaptest.sundsvall.se:8080/geoserver/wms",
+         "baseURL":"https://karta.sundsvall.se/geoserver/wms",
          "opacity":1,
          "singleTile":true,
          "type":"WMS",
@@ -36,7 +36,7 @@
          }
       },
       {
-         "baseURL":"http://extmaptest.sundsvall.se:8080/geoserver/wms",
+         "baseURL":"https://karta.sundsvall.se/geoserver/wms",
          "opacity":1,
          "singleTile":true,
          "type":"WMS",
