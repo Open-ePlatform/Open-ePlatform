@@ -912,6 +912,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			XMLUtils.appendNewElement(doc, listFlowsElement, "AdminAccess");
 		}
 
+		appendAdditionalInformation(doc, listFlowsElement);
+		
 		if (validationErrors != null) {
 
 			XMLUtils.append(doc, listFlowsElement, validationErrors);
@@ -920,6 +922,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		ExtensionLinkUtils.appendExtensionLinks(this.flowListExtensionLinkProviders, user, req, doc, listFlowsElement);
 
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+	}
+
+	protected void appendAdditionalInformation(Document doc, Element listFlowsElement) {
+		
+		return;
 	}
 
 	public void appendFamilyInformation(Document doc, Element flowElement, Flow lastestFlow, Collection<Flow> flows) {
