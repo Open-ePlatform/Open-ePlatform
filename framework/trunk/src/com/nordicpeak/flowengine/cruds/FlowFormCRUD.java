@@ -47,7 +47,7 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 	
 	public FlowFormCRUD(CRUDDAO<FlowForm, Integer> crudDAO, FlowAdminModule callback) {
 		
-		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowForm>(FlowForm.class), "FlowForm", "flowForm", "", callback);
+		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowForm>(FlowForm.class), "FlowForm", "flow form", "", callback);
 		
 		flowFormElementableListener = new FlowFormElementableListener(callback);
 	}
