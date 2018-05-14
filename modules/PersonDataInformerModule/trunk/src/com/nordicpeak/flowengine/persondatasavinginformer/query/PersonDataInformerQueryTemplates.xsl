@@ -175,34 +175,40 @@
 	</xsl:template>
 	
 	<xsl:template match="FlowFamilyInformerSetting">
-	
-		<strong>
-			<xsl:value-of select="$i18n.SavedPersonData"/>
-		</strong>
 		
-		<ul class="description-text">
-			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
-		</ul>
-		
-		<xsl:if test="reason">
+		<p>
 			<strong>
-				<xsl:value-of select="$i18n.Reason"/>
+				<xsl:value-of select="$i18n.SavedPersonData"/>
 			</strong>
 			
-			<br/>
-			
-			<span class="description-text">
-				<xsl:value-of select="reason" disable-output-escaping="yes"/>
-			</span>
+			<ul class="description-text">
+				<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
+			</ul>
+		</p>
+		
+		<xsl:if test="reason != ''">
+			<p>
+				<strong>
+					<xsl:value-of select="$i18n.Reason"/>
+				</strong>
+				
+				<br/>
+				
+				<span class="description-text">
+					<xsl:value-of select="reason" disable-output-escaping="yes"/>
+				</span>
+			</p>
 		</xsl:if>
 		
-		<strong>
-			<xsl:value-of select="$i18n.Reasons"/>
-		</strong>
-		
-		<ul class="description-text">
-			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
-		</ul>
+		<p>
+			<strong>
+				<xsl:value-of select="$i18n.Reasons"/>
+			</strong>
+			
+			<ul class="description-text">
+				<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
+			</ul>
+		</p>
 		
 		<p>
 			<strong>
@@ -214,19 +220,21 @@
 			</ul>
 		</p>
 		
-		<xsl:if test="extraInformationStorage">
-			<strong>
-				<xsl:value-of select="$i18n.ExtraInformationStorage"/>
-			</strong>
-			
-			<br/>
-			
-			<span class="description-text">
-				<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
-			</span>
+		<xsl:if test="extraInformationStorage != ''">
+			<p>
+				<strong>
+					<xsl:value-of select="$i18n.ExtraInformationStorage"/>
+				</strong>
+				
+				<br/>
+				
+				<span class="description-text">
+					<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
+				</span>
+			</p>
 		</xsl:if>
 		
-		<xsl:if test="dataRecipient">
+		<xsl:if test="dataRecipient != ''">
 			<p>
 				<strong><xsl:value-of select="$i18n.DataRecipient"/></strong>
 				
@@ -238,7 +246,7 @@
 			</p>
 		</xsl:if>
 		
-		<xsl:if test="extraInformation">
+		<xsl:if test="extraInformation != ''">
 			<p>
 				<strong>
 					<xsl:value-of select="$i18n.ExtraInformation"/>

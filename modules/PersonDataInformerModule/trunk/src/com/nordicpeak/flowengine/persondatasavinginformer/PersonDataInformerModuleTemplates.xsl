@@ -62,7 +62,7 @@
 			<xsl:apply-templates select="FlowFamilyInformerSetting/DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
-		<xsl:if test="FlowFamilyInformerSetting/reason or DefaultReasonDescription">
+		<xsl:if test="FlowFamilyInformerSetting/reason != '' or DefaultReasonDescription != ''">
 			<strong>
 				<xsl:value-of select="$i18n.Reason"/>
 			</strong>
@@ -99,7 +99,7 @@
 			</ul>
 		</p>
 		
-		<xsl:if test="DefaultStorageDescription or FlowFamilyInformerSetting/extraInformationStorage">
+		<xsl:if test="DefaultStorageDescription != '' or FlowFamilyInformerSetting/extraInformationStorage != ''">
 			<strong>
 				<xsl:value-of select="$i18n.ExtraInformationStorage"/>
 			</strong>
@@ -116,7 +116,7 @@
 			</xsl:choose>
 		</xsl:if>
 		
-		<xsl:if test="FlowFamilyInformerSetting/dataRecipient">
+		<xsl:if test="FlowFamilyInformerSetting/dataRecipient != ''">
 			<p>
 				<strong><xsl:value-of select="$i18n.DataRecipient"/></strong>
 				
@@ -126,7 +126,7 @@
 			</p>
 		</xsl:if>
 		
-		<xsl:if test="DefaultExtraInformationDescription or FlowFamilyInformerSetting/extraInformation">
+		<xsl:if test="DefaultExtraInformationDescription != '' or FlowFamilyInformerSetting/extraInformation != ''">
 			<p>
 				<strong><xsl:value-of select="$i18n.ExtraInformation"/></strong>
 				
@@ -143,7 +143,7 @@
 			</p>
 		</xsl:if>
 		
-		<xsl:if test="DefaultComplaintDescription or FlowFamilyInformerSetting/complaintDescription">
+		<xsl:if test="DefaultComplaintDescription != '' or FlowFamilyInformerSetting/complaintDescription != ''">
 			<strong><xsl:value-of select="$i18n.ComplaintTitle"/></strong>
 			
 			<br/>

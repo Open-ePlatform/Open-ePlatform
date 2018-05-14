@@ -73,7 +73,7 @@
 			<xsl:apply-templates select="DataAlternatives/InformerDataAlternative" mode="show"/>
 		</ul>
 		
-		<xsl:if test="reason">
+		<xsl:if test="reason != ''">
 			<strong>
 				<xsl:value-of select="$i18n.Reason"/>
 			</strong>
@@ -94,7 +94,7 @@
 			<xsl:apply-templates select="StorageSettings" mode="list"/>
 		</ul>
 		
-		<xsl:if test="extraInformationStorage">
+		<xsl:if test="extraInformationStorage != ''">
 			<strong>
 				<xsl:value-of select="$i18n.ExtraInformationStorage"/>
 			</strong>
@@ -104,7 +104,7 @@
 			<xsl:value-of select="extraInformationStorage" disable-output-escaping="yes"/>
 		</xsl:if>
 		
-		<xsl:if test="dataRecipient">
+		<xsl:if test="dataRecipient != ''">
 			<p>
 				<strong><xsl:value-of select="$i18n.DataRecipient"/></strong>
 				
@@ -114,7 +114,7 @@
 			</p>
 		</xsl:if>
 		
-		<xsl:if test="extraInformation">
+		<xsl:if test="extraInformation != ''">
 			<p>
 				<strong><xsl:value-of select="$i18n.ExtraInformation"/></strong>
 				<br/>
