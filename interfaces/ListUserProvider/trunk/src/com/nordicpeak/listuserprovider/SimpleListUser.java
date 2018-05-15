@@ -5,7 +5,6 @@ import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.string.StringUtils;
 
-
 public class SimpleListUser implements ListUser {
 
 	private static final long serialVersionUID = -4237891998934109535L;
@@ -24,8 +23,10 @@ public class SimpleListUser implements ListUser {
 
 	private String phone;
 
-	public SimpleListUser(){}
-	
+	private Boolean enabled;
+
+	public SimpleListUser() {}
+
 	public SimpleListUser(User user) {
 
 		providerUserID = user.getUserID().toString();
@@ -33,11 +34,12 @@ public class SimpleListUser implements ListUser {
 		lastname = user.getLastname();
 		email = user.getEmail();
 		username = user.getUsername();
+		enabled = user.isEnabled();
 
 		AttributeHandler attributeHandler = user.getAttributeHandler();
 
 		if (attributeHandler != null) {
-			
+
 			citizenIdentifier = UserUtils.getAttribute("citizenIdentifier", user);
 
 			if (StringUtils.isEmpty(citizenIdentifier)) {
@@ -124,5 +126,16 @@ public class SimpleListUser implements ListUser {
 	public void setPhone(String phone) {
 
 		this.phone = phone;
+	}
+
+	@Override
+	public Boolean isEnabled() {
+
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+
+		this.enabled = enabled;
 	}
 }

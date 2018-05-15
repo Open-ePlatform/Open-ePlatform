@@ -17,4 +17,6 @@ public interface ListUser extends Serializable {
 	public String getPhone();
 
 	public String getUsername();
+	
+	public Boolean isEnabled();
 }
