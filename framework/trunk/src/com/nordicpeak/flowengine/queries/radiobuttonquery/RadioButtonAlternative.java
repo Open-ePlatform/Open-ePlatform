@@ -207,7 +207,7 @@ public class RadioButtonAlternative extends GeneratedElementable implements Muta
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		alternativeID = XMLValidationUtils.validateParameter("alternativeID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
-		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 1024, StringPopulator.getPopulator(), errors);
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, 1, 255, IntegerPopulator.getPopulator(), errors);
 		attributeValue = XMLValidationUtils.validateParameter("attributeValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		price = XMLValidationUtils.validateParameter("price", xmlParser, false, 1, 255, IntegerPopulator.getPopulator(), errors);
