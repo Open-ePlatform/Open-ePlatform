@@ -12,6 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowInstanceAdminModule;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
+
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
@@ -27,7 +37,6 @@ import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -36,24 +45,11 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowInstanceAdminModule;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAction;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
-
 
 public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 
 	private static final String FLOW_FLOWFAMILY_SQL = "SELECT flowFamilyID FROM flowengine_flows WHERE flowID = ?";
 	private static final String STATUS_FLOWFAMILY_SQL = "SELECT flowFamilyID FROM flowengine_flows WHERE flowID = (SELECT flowID FROM flowengine_flow_statuses WHERE statusID = ?)";
-	private static final String ACTIVE_FLOWINSTANCE_MANAGERS_SQL = "SELECT DISTINCT userID FROM flowengine_flow_instance_managers WHERE flowInstanceID IN(" +
-			"SELECT ffi.flowInstanceID FROM flowengine_flow_instances AS ffi LEFT JOIN flowengine_flow_statuses AS ffs ON ffi.statusID = ffs.statusID WHERE ffi.flowID IN(" +
-			"SELECT flowID FROM flowengine_flows WHERE flowFamilyID = ? AND enabled = true) AND ffs.contentType != 'ARCHIVED')";
 	
 	private QueryParameterFactory<FlowAction, String> flowActionIDParamFactory;
 	private QueryParameterFactory<DefaultStatusMapping, String> defaultStatusMappingActionIDParamFactory;
@@ -202,55 +198,45 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		if (bean.isUseAccessCheck()) {
 			
-			List<Integer> flowInstanceManagerUserIDs = getAllowedFlowFamilyManagerUserIDs(flowFamily);
+			List<ValidationError> errors = new ArrayList<ValidationError>();
 			
-			if (flowInstanceManagerUserIDs != null) {
+			List<Integer> selectedUserIDs = bean.getManagerUserIDs();
+			
+			if (!CollectionUtils.isEmpty(selectedUserIDs)) {
 				
-				List<User> managers = callback.getUserHandler().getUsers(flowInstanceManagerUserIDs, true, false);
-				
-				if (managers != null) {
+				outer: for (Integer userID : selectedUserIDs) {
 					
-					List<ValidationError> errors = new ArrayList<ValidationError>();
+					User selectedUser = callback.getUserHandler().getUser(userID, true, false);
 					
-					List<Integer> selectedUserIDs = bean.getManagerUserIDs();
-					
-					if (!CollectionUtils.isEmpty(selectedUserIDs)) {
+					if (selectedUser == null) {
 						
-						outer: for (Integer userID : selectedUserIDs) {
+						errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
+						continue;
+					}
+					
+					if (flowFamily.getManagerUserIDs() != null && flowFamily.getManagerUserIDs().contains(userID)) {
+						continue;
+					}
+					
+					if (flowFamily.getManagerGroupIDs() != null) {
+						
+						if (!CollectionUtils.isEmpty(selectedUser.getGroups())) {
 							
-							User selectedUser = callback.getUserHandler().getUser(userID, true, false);
-							
-							if (selectedUser == null) {
+							for (Group group : selectedUser.getGroups()) {
 								
-								errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
-								continue;
-							}
-							
-							if (flowFamily.getAllowedUserIDs() != null && flowFamily.getAllowedUserIDs().contains(userID)) {
-								continue;
-							}
-							
-							if (flowFamily.getAllowedGroupIDs() != null) {
-								
-								if (!CollectionUtils.isEmpty(selectedUser.getGroups())) {
-									
-									for (Group group : selectedUser.getGroups()) {
-										
-										if (flowFamily.getAllowedGroupIDs().contains(group.getGroupID())) {
-											continue outer;
-										}
-									}
+								if (flowFamily.getManagerGroupIDs().contains(group.getGroupID())) {
+									continue outer;
 								}
 							}
-							
-							errors.add(new UnauthorizedUserNotManagerValidationError(selectedUser));
 						}
 					}
 					
-					if (!errors.isEmpty()) {
-						throw new ValidationException(errors);
-					}
+					errors.add(new UnauthorizedUserNotManagerValidationError(selectedUser));
 				}
+			}
+			
+			if (!errors.isEmpty()) {
+				throw new ValidationException(errors);
 			}
 			
 		} else {
@@ -258,14 +244,6 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 			bean.setManagerUserIDs(null);
 			bean.setManagerGroupIDs(null);
 		}
-	}
-	
-	private List<Integer> getAllowedFlowFamilyManagerUserIDs(FlowFamily flowFamily) throws SQLException {
-		
-		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(callback.getDataSource(), ACTIVE_FLOWINSTANCE_MANAGERS_SQL, IntegerPopulator.getPopulator());
-		query.setInt(1, flowFamily.getFlowFamilyID());
-		
-		return query.executeQuery();
 	}
 	
 	private FlowFamily getFlowFamily(Status status) throws SQLException {
