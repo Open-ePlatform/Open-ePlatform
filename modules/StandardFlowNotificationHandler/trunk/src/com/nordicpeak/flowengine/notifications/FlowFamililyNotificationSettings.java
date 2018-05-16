@@ -5,7 +5,8 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import se.unlogic.emailutils.populators.EmailPopulator;
+import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
+import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
@@ -171,9 +172,10 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_submitglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceSubmittedGlobalEmail")
 	@SplitOnLineBreak
+	@NoDuplicates
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> flowInstanceSubmittedGlobalEmailAddresses;
 
@@ -201,9 +203,10 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_extmessageglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendExternalMessageReceivedGlobalEmail")
 	@SplitOnLineBreak
+	@NoDuplicates
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
 	
@@ -215,9 +218,10 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_managerexpiredglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = EmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendManagerExpiredGlobalEmail")
 	@SplitOnLineBreak
+	@NoDuplicates
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> managerExpiredGlobalEmailAddresses;
 
