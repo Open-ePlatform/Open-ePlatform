@@ -55,7 +55,7 @@
 	
 	<xsl:variable name="i18n.Export">Exportera</xsl:variable>
 	
-	<xsl:variable name="i18n.ComplaintDescription">Beskrivning för lämna klagomål på personuppgiftshantering</xsl:variable>
+	<xsl:variable name="i18n.ComplaintDescription">Beskrivning för att lämna klagomål på personuppgiftshantering</xsl:variable>
 	<xsl:variable name="i18n.OverrideTextDescription">Ange annan beskrivning än standard</xsl:variable>
 	<xsl:variable name="i18n.StorageDescription">Beskrivning av lagringsobjekt</xsl:variable>
 	<xsl:variable name="i18n.StorageType">Lagringstid</xsl:variable>
