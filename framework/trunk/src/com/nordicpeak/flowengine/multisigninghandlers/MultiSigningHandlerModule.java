@@ -527,7 +527,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	
 	private SigningParty getMatchingSigningParty(User user, ImmutableFlowInstanceManager instanceManager) {
 		
-		String socialSecurityNumber = user.getAttributeHandler().getString("citizenIdentifier");
+		String socialSecurityNumber = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 		
 		if (socialSecurityNumber == null) {
 			
