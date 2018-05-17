@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -165,9 +166,18 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@SuppressWarnings("rawtypes")
 	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class };
 	
+	//@formatter:off
+	
 	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ? AND (ffu.validFromDate IS NULL OR ffu.validFromDate <= ?)";
-	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID WHERE ffib.userID = ? AND ffi.flowID IN (";
-	protected static final String ACTIVE_FLOWS = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_statuses ffs ON ffi.statusID = ffs.statusID WHERE ffi.firstSubmitted IS NOT NULL AND ffi.flowID IN ($flowIDs) AND ffs.contentType NOT IN ('" + ContentType.NEW + "', '" + ContentType.ARCHIVED + "') ORDER BY lastStatusChange DESC";
+	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi"
+	                                                          + " INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID"
+	                                                          + " WHERE ffib.userID = ? AND ffi.flowID IN (";
+	protected static final String ACTIVE_FLOWS = "SELECT ffi.* FROM flowengine_flow_instances ffi"
+	                                           + " INNER JOIN flowengine_flow_statuses ffs ON ffi.statusID = ffs.statusID"
+	                                           + " WHERE ffi.firstSubmitted IS NOT NULL AND ffi.flowID IN ($flowIDs) AND ffs.contentType NOT IN ('" + ContentType.NEW + "', '" + ContentType.ARCHIVED + "')"
+	                                           + " ORDER BY lastStatusChange DESC";
+	
+	//@formatter:on
 	
 	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false);
 	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true);
@@ -392,6 +402,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			bookmarkedFlows = getFlowInstanceBookmarks(user, profile, flowIDs);
 			activeFlowInstances = getActiveFlowInstances(user, profile, flowIDs);
+			
+			filterRestrictedFlowInstances(bookmarkedFlows, user);
+			filterRestrictedFlowInstances(activeFlowInstances, user);
 		}
 		
 		if (!adminFlowInstanceProviders.isEmpty()) {
@@ -415,7 +428,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 		
-		if (CollectionUtils.isEmpty(activeFlowInstances) && bookmarkedFlows == null) {
+		if (CollectionUtils.isEmpty(activeFlowInstances) && CollectionUtils.isEmpty(bookmarkedFlows)) {
 			
 			Document doc = createDocument(req, uriParser, user);
 			
@@ -1412,7 +1425,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		query.addParameter(user.getUserID());
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
@@ -1425,7 +1439,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
@@ -2018,5 +2033,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public String getFlowInstancePreviewURL(Integer flowInstanceID) {
 
 		return this.getFullAlias() + "/preview/" + flowInstanceID;
+	}
+	
+	protected void filterRestrictedFlowInstances(List<FlowInstance> flowInstances, User user) {
+
+		if (flowInstances != null) {
+
+			Iterator<FlowInstance> it = flowInstances.iterator();
+
+			while (it.hasNext()) {
+
+				FlowInstance flowInstance = it.next();
+
+				if (flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user) && !flowInstance.isManager(user)) {
+					it.remove();
+				}
+			}
+		}
 	}
 }

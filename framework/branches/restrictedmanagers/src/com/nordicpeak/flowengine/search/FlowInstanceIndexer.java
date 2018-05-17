@@ -39,6 +39,24 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import com.nordicpeak.flowengine.Constants;
+import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.InternalMessage;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.search.events.AddFlowEvent;
+import com.nordicpeak.flowengine.search.events.AddFlowFamilyEvent;
+import com.nordicpeak.flowengine.search.events.AddUpdateFlowInstanceEvent;
+import com.nordicpeak.flowengine.search.events.DeleteFlowEvent;
+import com.nordicpeak.flowengine.search.events.DeleteFlowFamilyEvent;
+import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
+import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
+
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.SystemStatus;
@@ -53,22 +71,6 @@ import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 
-import com.nordicpeak.flowengine.Constants;
-import com.nordicpeak.flowengine.beans.ExternalMessage;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.InternalMessage;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.search.events.AddFlowEvent;
-import com.nordicpeak.flowengine.search.events.AddFlowFamilyEvent;
-import com.nordicpeak.flowengine.search.events.AddUpdateFlowInstanceEvent;
-import com.nordicpeak.flowengine.search.events.DeleteFlowEvent;
-import com.nordicpeak.flowengine.search.events.DeleteFlowFamilyEvent;
-import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
-import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
-
 public class FlowInstanceIndexer {
 
 	private static final String ID_FIELD = "id";
@@ -80,13 +82,16 @@ public class FlowInstanceIndexer {
 	private static final String POSTER_FIELD = "poster";
 	private static final String OWNERS_FIELD = "owners";
 	private static final String MANAGER_FIELD = "manager";
+	private static final String MANAGER_USER_FIELD = "managerUser";
 	private static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	private static final String CHILD_CITIZEN_IDENTIFIER = "childCitizenIdentifier";
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
 	private static final String INTERNAL_MESSAGES = "internalMessages";
 	private static final String EXTERNAL_MESSAGES = "externalMessages";
-	protected static final String ALLOWED_USER_FIELD = "allowedUser";
-	protected static final String ALLOWED_GROUP_FIELD = "allowedGroup";
+	protected static final String ALLOWED_FULL_USER_FIELD = "allowedUser";
+	protected static final String ALLOWED_FULL_GROUP_FIELD = "allowedGroup";
+	protected static final String ALLOWED_RESTRICTED_USER_FIELD = "allowedRestrictedUser";
+	protected static final String ALLOWED_RESTRICTED_GROUP_FIELD = "allowedRestricedGroup";
 	
 	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
 
@@ -501,6 +506,7 @@ public class FlowInstanceIndexer {
 				
 				for (User manager : flowInstance.getManagers()) {
 					
+					doc.add(new IntField(MANAGER_USER_FIELD, manager.getUserID(), Field.Store.YES));
 					doc.add(new TextField(MANAGER_FIELD, manager.getFirstname() + " " + manager.getLastname(), Field.Store.NO));
 				}
 			}
@@ -521,19 +527,29 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
-			if (flowFamily.getManagerGroupIDs() != null) {
+			if (flowFamily.getManagerGroups() != null) {
 				
-				for (Integer groupID : flowFamily.getManagerGroupIDs()) {
+				for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
 					
-					doc.add(new IntField(ALLOWED_GROUP_FIELD, groupID, Field.Store.YES));
+					if (managerGroup.isRestricted()) {
+						doc.add(new IntField(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+						
+					} else {
+						doc.add(new IntField(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+					}
 				}
 			}
 			
-			if (flowFamily.getManagerUserIDs() != null) {
+			if (flowFamily.getManagerUsers() != null) {
 				
-				for (Integer userID : flowFamily.getManagerUserIDs()) {
+				for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
 					
-					doc.add(new IntField(ALLOWED_USER_FIELD, userID, Field.Store.YES));
+					if (manager.isRestricted()) {
+						doc.add(new IntField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID(), Field.Store.YES));
+						
+					} else {
+						doc.add(new IntField(ALLOWED_FULL_USER_FIELD, manager.getUserID(), Field.Store.YES));
+					}
 				}
 			}
 			
@@ -657,25 +673,35 @@ public class FlowInstanceIndexer {
 	}
 	
 	protected Filter getFilter(User user) {
-
-		BooleanQuery booleanQuery = new BooleanQuery();
-
-		if(user.getUserID() != null){
-
-			booleanQuery.add(NumericRangeQuery.newIntRange(ALLOWED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+		
+		BooleanQuery fullManagerQuery = new BooleanQuery();
+		BooleanQuery restrictedManagerQuery = new BooleanQuery();
+		restrictedManagerQuery.setMinimumNumberShouldMatch(1);
+		
+		if (user.getUserID() != null) {
+			
+			fullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+			restrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
 		}
-
-		if(user.getGroups() != null){
-
-			for(Group group : user.getGroups()){
-
-				if(group.getGroupID() != null){
-
-					booleanQuery.add(NumericRangeQuery.newIntRange(ALLOWED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+		
+		if (user.getGroups() != null) {
+			
+			for (Group group : user.getGroups()) {
+				
+				if (group.getGroupID() != null) {
+					
+					fullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					restrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
 				}
 			}
 		}
-
-		return new QueryWrapperFilter(booleanQuery);
+		
+		restrictedManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.MUST);
+		
+		BooleanQuery mainQuery = new BooleanQuery();
+		mainQuery.add(fullManagerQuery, Occur.SHOULD);
+		mainQuery.add(restrictedManagerQuery, Occur.SHOULD);
+		
+		return new QueryWrapperFilter(mainQuery);
 	}
 }

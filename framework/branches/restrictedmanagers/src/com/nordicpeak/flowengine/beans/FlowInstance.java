@@ -8,6 +8,9 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.enums.Priority;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
@@ -33,9 +36,6 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
-
-import com.nordicpeak.flowengine.enums.Priority;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 @Table(name = "flowengine_flow_instances")
 @XMLElement
@@ -363,6 +363,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		this.managers = managers;
 	}
 	
+	@Override
 	public List<Group> getManagerGroups() {
 		return managerGroups;
 	}
@@ -505,5 +506,38 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public void setRemote(boolean remote) {
 	
 		this.remote = remote;
+	}
+	
+	public boolean isManager(User user) {
+		
+		if (!CollectionUtils.isEmpty(managers)) {
+			
+			for (User manager : managers) {
+				
+				if (manager.getUserID().equals(user.getUserID())) {
+					
+					return true;
+				}
+			}
+		}
+		
+		if (!CollectionUtils.isEmpty(managerGroups) && !CollectionUtils.isEmpty(user.getGroups())) {
+
+			for (Group group : user.getGroups()) {
+
+				if (group.isEnabled()) {
+					
+					for (Group managerGroup : managerGroups) {
+						
+						if (managerGroup.getGroupID().equals(group.getGroupID())) {
+						
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 }

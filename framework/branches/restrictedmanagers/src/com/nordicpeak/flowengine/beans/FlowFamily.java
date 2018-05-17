@@ -9,8 +9,15 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.enums.ManagerAccess;
+import com.nordicpeak.flowengine.enums.StatisticsMode;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
 import se.unlogic.emailutils.populators.EmailPopulator;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -33,14 +40,9 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.enums.StatisticsMode;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 @Table(name = "flowengine_flow_families")
 @XMLElement
-public class FlowFamily extends GeneratedElementable implements Serializable, ImmutableFlowFamily, AccessInterface {
+public class FlowFamily extends GeneratedElementable implements Serializable, ImmutableFlowFamily {
 
 	private static final long serialVersionUID = 6716050201654571775L;
 
@@ -310,6 +312,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		managerUserIDs = null;
 	}
 	
+	@Override
 	public List<Integer> getManagerUserIDs() {
 		
 		if (managerUserIDs == null && !CollectionUtils.isEmpty(managerUsers)) {
@@ -332,6 +335,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		return managerUserIDs;
 	}
 	
+	@Override
 	public List<Integer> getManagerGroupIDs() {
 		
 		if (managerGroupIDs == null && !CollectionUtils.isEmpty(managerGroups)) {
@@ -350,33 +354,69 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	}
 
 	@Override
-	public boolean allowsAdminAccess() {
+	public ManagerAccess getManagerAccess(User user) {
+		
+		ManagerAccess access = null;
+		
+		if (!CollectionUtils.isEmpty(managerUsers)) {
+			
+			Timestamp startOfToday = DateUtils.setTimeToMidnight(TimeUtils.getCurrentTimestamp());
+			
+			for (FlowFamilyManager manager : managerUsers) {
+				
+				if (manager.getUserID().equals(user.getUserID())) {
+					
+					if (manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
+						break;
+					}
+					
+					if (manager.isRestricted()) {
+						access = ManagerAccess.RESTRICTED;
+						
+					} else {
+						return ManagerAccess.FULL;
+					}
+					
+					break;
+				}
+			}
+		}
+		
+		if ((access == null || access == ManagerAccess.RESTRICTED) && !CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
 
-		return false;
+			for (Group group : user.getGroups()) {
+
+				if (group.isEnabled()) {
+					
+					for (FlowFamilyManagerGroup managerGroup : managerGroups) {
+						
+						if (managerGroup.getGroupID().equals(group.getGroupID())) {
+						
+							if (managerGroup.isRestricted()) {
+								access = ManagerAccess.RESTRICTED;
+								
+							} else {
+								return ManagerAccess.FULL;
+							}
+							
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		return access;
 	}
-
-	@Override
-	public boolean allowsUserAccess() {
-
-		return false;
+	
+	public boolean checkManagerFullAccess(User user) {
+		
+		return getManagerAccess(user) == ManagerAccess.FULL;
 	}
-
-	@Override
-	public boolean allowsAnonymousAccess() {
-
-		return false;
-	}
-
-	@Override
-	public List<Integer> getAllowedGroupIDs() {
-
-		return getManagerGroupIDs();
-	}
-
-	@Override
-	public List<Integer> getAllowedUserIDs() {
-
-		return getManagerUserIDs();
+	
+	public boolean checkManagerRestrictedAccess(User user) {
+		
+		return getManagerAccess(user) == ManagerAccess.RESTRICTED;
 	}
 
 	@Override

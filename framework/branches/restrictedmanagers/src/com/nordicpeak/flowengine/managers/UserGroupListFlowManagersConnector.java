@@ -7,6 +7,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
 import se.unlogic.hierarchy.core.handlers.UserHandler;
@@ -15,10 +19,6 @@ import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 
 public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 	
@@ -126,8 +126,8 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 		
 		List<User> managingUsers = new ArrayList<User>();
 		
-		Collection<Integer> managerIDs = flowFamily.getAllowedUserIDs();
-		List<Integer> managerGroupIDs = (List<Integer>) flowFamily.getAllowedGroupIDs();
+		Collection<Integer> managerIDs = flowFamily.getManagerUserIDs();
+		List<Integer> managerGroupIDs = flowFamily.getManagerGroupIDs();
 		
 		if (!CollectionUtils.isEmpty(managerIDs)) {
 			
