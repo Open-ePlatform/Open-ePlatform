@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nordicpeak.flowengine.interfaces.MutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
+
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -21,9 +24,6 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
-
-import com.nordicpeak.flowengine.interfaces.MutableAlternative;
-import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 
 @Table(name = "checkbox_query_alternatives")
 @XMLElement
@@ -207,7 +207,7 @@ public class CheckboxAlternative extends GeneratedElementable implements Mutable
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		alternativeID = XMLValidationUtils.validateParameter("alternativeID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
-		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 1024, StringPopulator.getPopulator(), errors);
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, 1, 255, IntegerPopulator.getPopulator(), errors);
 		attributeValue = XMLValidationUtils.validateParameter("attributeValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		price = XMLValidationUtils.validateParameter("price", xmlParser, false, 1, 255, IntegerPopulator.getPopulator(), errors);

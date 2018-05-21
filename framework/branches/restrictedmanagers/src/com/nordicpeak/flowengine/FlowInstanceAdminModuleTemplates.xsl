@@ -1644,6 +1644,12 @@
 					<xsl:value-of select="firstname" />
 					<xsl:text>&#160;</xsl:text>
 					<xsl:value-of select="lastname" />
+					
+					<xsl:if test="username">
+						<xsl:text>&#160;(</xsl:text>
+						<xsl:value-of select="username" />
+						<xsl:text>)</xsl:text>
+					</xsl:if>
 				</span>
 				<a class="delete" data-icon-after="t">
 					<xsl:value-of select="$i18n.DeleteManager" />
@@ -1683,6 +1689,12 @@
 					<xsl:value-of select="firstname" />
 					<xsl:text>&#160;</xsl:text>
 					<xsl:value-of select="lastname" />
+					
+					<xsl:if test="username">
+						<xsl:text>&#160;(</xsl:text>
+						<xsl:value-of select="username" />
+						<xsl:text>)</xsl:text>
+					</xsl:if>
 				</span>
 			</a>
 		</li>

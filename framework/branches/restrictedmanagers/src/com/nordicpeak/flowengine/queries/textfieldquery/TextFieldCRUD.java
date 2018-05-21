@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -21,12 +23,12 @@ import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
 
 public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryProviderModule> {
 
@@ -150,5 +152,25 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 		}
 
 		return sortIndex;
+	}
+	
+	@Override
+	protected void validateAddPopulation(TextField bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+		
+		validatePopulation(bean);
+	}
+	
+	@Override
+	protected void validateUpdatePopulation(TextField bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+		
+		validatePopulation(bean);
+	}
+	
+	protected void validatePopulation(TextField bean) throws ValidationException {
+		
+		if (bean.getMaxContentLength() != null && bean.getMaxContentLength() > 255) {
+			
+			throw new ValidationException(new ValidationError("maxContentLength", ValidationErrorType.TooLong));
+		}
 	}
 }

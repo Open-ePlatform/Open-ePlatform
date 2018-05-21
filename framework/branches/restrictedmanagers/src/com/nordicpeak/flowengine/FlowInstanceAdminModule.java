@@ -40,6 +40,7 @@ import com.nordicpeak.flowengine.beans.SimpleSigningRequest;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.beans.UserBookmark;
+import com.nordicpeak.flowengine.comparators.GroupNameComparator;
 import com.nordicpeak.flowengine.cruds.ExternalMessageCRUD;
 import com.nordicpeak.flowengine.cruds.InternalMessageCRUD;
 import com.nordicpeak.flowengine.enums.ContentType;
@@ -127,6 +128,7 @@ import se.unlogic.hierarchy.core.utils.crud.FragmentLinkScriptFilter;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
+import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -585,31 +587,33 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							Collection<User> availableManagers = getAllowedManagers(flowInstance);
 							
-							List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
-							
-							for (Integer userID : mentionedUserIDs) {
+							if (availableManagers != null) {
 								
-								User mentionedUser = systemInterface.getUserHandler().getUser(userID, false, false);
+								List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
 								
-								if (mentionedUser != null && availableManagers.contains(mentionedUser)) {
+								for (Integer userID : mentionedUserIDs) {
 									
-									try {
+									User mentionedUser = systemInterface.getUserHandler().getUser(userID, false, false);
+									
+									if (mentionedUser != null && availableManagers.contains(mentionedUser)) {
 										
-										notificationHandler.addNotification(flowInstance.getFlowInstanceID(), mentionedUser.getUserID(), moduleDescriptor.getModuleID(), "mention", user.getUserID(), mentionedInFlowInstance, null);
+										try {
+											
+											notificationHandler.addNotification(flowInstance.getFlowInstanceID(), mentionedUser.getUserID(), moduleDescriptor.getModuleID(), "mention", user.getUserID(), mentionedInFlowInstance, null);
+											
+										} catch (SQLException e) {
+											
+											log.error("Error sending notification to mentioned user " + user + " of " + flowInstance, e);
+										}
 										
-									} catch (SQLException e) {
+										mentionedUsers.add(mentionedUser);
 										
-										log.error("Error sending notification to mentioned user " + user + " of " + flowInstance, e);
 									}
-									
-									mentionedUsers.add(mentionedUser);
 									
 								}
 								
+								eventHandler.sendEvent(FlowInstance.class, new ManagerMentionedEvent(flowInstance, mentionedUsers, user), EventTarget.ALL);
 							}
-							
-							eventHandler.sendEvent(FlowInstance.class, new ManagerMentionedEvent(flowInstance, mentionedUsers, user), EventTarget.ALL);
-							
 						}
 						
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#notes");
@@ -1004,13 +1008,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							List<User> selectedManagers = new ArrayList<User>();
 							
-							for (User manager : allowedManagers) {
-								for (Integer userID : userIDs) {
-									
-									if (manager.getUserID().equals(userID)) {
+							if (allowedManagers != null) {
+								for (User manager : allowedManagers) {
+									for (Integer userID : userIDs) {
 										
-										selectedManagers.add(manager);
-										break;
+										if (manager.getUserID().equals(userID)) {
+											
+											selectedManagers.add(manager);
+											break;
+										}
 									}
 								}
 							}
@@ -1031,13 +1037,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							List<Group> selectedManagerGroups = new ArrayList<Group>();
 							
-							for (Group managerGroup : allowedManagerGroups) {
-								for (Integer groupID : groupIDs) {
-									
-									if (managerGroup.getGroupID().equals(groupID)) {
+							if (allowedManagerGroups != null) {
+								for (Group managerGroup : allowedManagerGroups) {
+									for (Integer groupID : groupIDs) {
 										
-										selectedManagerGroups.add(managerGroup);
-										break;
+										if (managerGroup.getGroupID().equals(groupID)) {
+											
+											selectedManagerGroups.add(managerGroup);
+											break;
+										}
 									}
 								}
 							}
@@ -1084,6 +1092,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					
 					XMLUtils.append(doc, updateInstanceManagersElement, e.getErrors());
 				}
+			}
+			
+			if (flowInstance.getManagers() != null) {
+				
+				Collections.sort(flowInstance.getManagers(), UserNameComparator.getInstance());
+			}
+			
+			if (flowInstance.getManagerGroups() != null) {
+				
+				Collections.sort(flowInstance.getManagerGroups(), GroupNameComparator.getInstance());
 			}
 			
 			updateInstanceManagersElement.appendChild(flowInstance.toXML(doc));
@@ -1271,7 +1289,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return daoFactory.getUserBookmarkDAO().get(query);
 	}
 	
-	protected Collection<User> getAllowedManagers(FlowInstance flowInstance) {
+	protected List<User> getAllowedManagers(FlowInstance flowInstance) {
 		
 		HashSet<User> availableManagers = new HashSet<User>();
 		
@@ -1281,7 +1299,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			if (!CollectionUtils.isEmpty(flowFamily.getManagerUserIDs())) {
 				
-				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, false);
+				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, true);
 				
 				if (users != null) {
 					
@@ -1291,7 +1309,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			if (!CollectionUtils.isEmpty(flowFamily.getManagerGroupIDs())) {
 				
-				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowFamily.getManagerGroupIDs(), false);
+				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowFamily.getManagerGroupIDs(), true);
 				
 				if (users != null) {
 					
@@ -1300,7 +1318,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 		
-		return availableManagers;
+		if (!availableManagers.isEmpty()) {
+			
+			List<User> availableManagerList = new ArrayList<User>(availableManagers);
+			Collections.sort(availableManagerList, UserNameComparator.getInstance());
+			
+			return availableManagerList;
+		}
+		
+		return null;
 	}
 	
 	protected Collection<Group> getAllowedManagerGroups(FlowInstance flowInstance) {
@@ -1320,7 +1346,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 			
 			if (!groupIDs.isEmpty()) {
-				return systemInterface.getGroupHandler().getGroups(groupIDs, false);
+				
+				List<Group> groups = systemInterface.getGroupHandler().getGroups(groupIDs, false);
+				
+				if (groups != null) {
+					
+					Collections.sort(groups, GroupNameComparator.getInstance());
+					return groups;
+				}
 			}
 		}
 		
