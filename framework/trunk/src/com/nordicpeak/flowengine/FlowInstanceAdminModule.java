@@ -1211,7 +1211,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerUserIDs())) {
 				
-				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, false);
+				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, true);
 				
 				if (users != null) {
 					
@@ -1221,7 +1221,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs())) {
 				
-				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs(), false);
+				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs(), true);
 				
 				if (users != null) {
 					
