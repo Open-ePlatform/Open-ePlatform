@@ -295,6 +295,27 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		return managerUsers;
 	}
 	
+	public List<FlowFamilyManager> getActiveManagerUsers() {
+
+		if (CollectionUtils.isEmpty(managerUsers)) {
+			return null;
+		}
+		
+		Timestamp startOfToday = DateUtils.setTimeToMidnight(TimeUtils.getCurrentTimestamp());
+		List<FlowFamilyManager> activeManagers = new ArrayList<FlowFamilyManager>(managerUsers.size());
+		
+		for (FlowFamilyManager manager : managerUsers) {
+			
+			if (manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
+				continue;
+			}
+			
+			activeManagers.add(manager);
+		}
+		
+		return activeManagers;
+	}
+	
 	public List<FlowFamilyManagerGroup> getManagerGroups() {
 
 		return managerGroups;

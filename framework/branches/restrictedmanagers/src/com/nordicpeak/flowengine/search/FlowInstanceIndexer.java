@@ -540,9 +540,11 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
-			if (flowFamily.getManagerUsers() != null) {
+			List<FlowFamilyManager> activeManagers = flowFamily.getActiveManagerUsers();
+			
+			if (activeManagers != null) {
 				
-				for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
+				for (FlowFamilyManager manager : activeManagers) {
 					
 					if (manager.isRestricted()) {
 						doc.add(new IntField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID(), Field.Store.YES));
