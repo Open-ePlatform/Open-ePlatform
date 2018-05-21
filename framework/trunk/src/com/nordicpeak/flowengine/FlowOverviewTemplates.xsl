@@ -521,8 +521,6 @@
 					<div class="bigpaddingleft bigpaddingright bigmarginleft bigmarginright" style="display: none">
 					
 						<p>
-							<strong><xsl:value-of select="$i18n.QuestionsContact"/></strong>
-							<br/>
 							<xsl:value-of select="FlowFamily/contactName" />
 							
 							<xsl:if test="FlowFamily/contactEmail">
