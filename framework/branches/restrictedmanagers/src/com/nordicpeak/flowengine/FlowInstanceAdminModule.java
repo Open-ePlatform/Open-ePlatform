@@ -1100,9 +1100,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 	
-	protected String getManagersString(List<User> managers, List<Group> managerGroups) {
-		
-		StringBuilder stringBuilder = new StringBuilder();
+	protected StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
 		
 		if (managers != null) {
 			for (User selectedManager : managers) {
@@ -1130,7 +1128,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 		
-		return stringBuilder.toString();
+		return stringBuilder;
+	}
+	
+	protected String getManagersString(List<User> managers, List<Group> managerGroups) {
+		
+		return getManagersString(new StringBuilder(), managers, managerGroups).toString();
 	}
 	
 	protected Field[] getUpdateManagerRelations() {
@@ -1512,8 +1515,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		query.addParameter(user.getUserID());
 		
-		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
-		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
@@ -1526,8 +1529,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 		
-		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
-		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
