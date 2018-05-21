@@ -148,6 +148,8 @@
 	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerUserError.part1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerUserError.part2">har inte behörighet att handlägga detta ärende.</xsl:variable>
+	<xsl:variable name="i18n.UnauthorizedManagerGroupError.part1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.UnauthorizedManagerGroupError.part2">har inte behörighet att handlägga detta ärende.</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>

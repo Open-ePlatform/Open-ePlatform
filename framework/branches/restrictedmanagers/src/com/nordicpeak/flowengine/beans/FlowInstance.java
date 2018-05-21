@@ -50,6 +50,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowInstance.class, "events");
 	public static final Field OWNERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "owners");
 	public static final Field MANAGERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managers");
+	public static final Field MANAGER_GROUPS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managerGroups");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstance.class,"attributes");
 	
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstance.class,"poster");
@@ -508,6 +509,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		this.remote = remote;
 	}
 	
+	@Override
 	public boolean isManager(User user) {
 		
 		if (!CollectionUtils.isEmpty(managers)) {
