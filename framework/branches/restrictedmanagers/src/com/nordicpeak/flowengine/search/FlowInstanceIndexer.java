@@ -83,6 +83,7 @@ public class FlowInstanceIndexer {
 	private static final String OWNERS_FIELD = "owners";
 	private static final String MANAGER_FIELD = "manager";
 	private static final String MANAGER_USER_FIELD = "managerUser";
+	private static final String MANAGER_GROUP_FIELD = "managerGroup";
 	private static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	private static final String CHILD_CITIZEN_IDENTIFIER = "childCitizenIdentifier";
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
@@ -511,6 +512,14 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
+			if (flowInstance.getManagerGroups() != null) {
+				
+				for (Group managerGroup : flowInstance.getManagerGroups()) {
+					
+					doc.add(new IntField(MANAGER_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+				}
+			}
+			
 			if (flowInstance.getInternalMessages() != null) {
 				
 				for (InternalMessage message : flowInstance.getInternalMessages()) {
@@ -623,7 +632,7 @@ public class FlowInstanceIndexer {
 
 	public FlowInstance getFlowInstance(Integer flowInstanceID) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 
@@ -632,7 +641,7 @@ public class FlowInstanceIndexer {
 
 	public Flow getFlow(Integer flowID) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 
 		query.addParameter(flowEnabledParamFactory.getParameter(true));
@@ -643,7 +652,7 @@ public class FlowInstanceIndexer {
 
 	public FlowFamily getFlowFamily(Integer flowFamilyID) throws SQLException {
 
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 		
 		query.addParameter(flowFamilyIDParamFactory.getParameter(flowFamilyID));
@@ -654,7 +663,7 @@ public class FlowInstanceIndexer {
 
 	private List<FlowFamily> getFlowFamilies() throws SQLException {
 
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 
 		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
@@ -676,33 +685,47 @@ public class FlowInstanceIndexer {
 	
 	protected Filter getFilter(User user) {
 		
-		BooleanQuery fullManagerQuery = new BooleanQuery();
-		BooleanQuery restrictedManagerQuery = new BooleanQuery();
-		restrictedManagerQuery.setMinimumNumberShouldMatch(1);
+		BooleanQuery familyFullManagerQuery = new BooleanQuery();
+		BooleanQuery familyRestrictedManagerQuery = new BooleanQuery();
+		familyRestrictedManagerQuery.setMinimumNumberShouldMatch(1);
 		
 		if (user.getUserID() != null) {
 			
-			fullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
-			restrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+			familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+			familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
 		}
 		
 		if (user.getGroups() != null) {
 			
 			for (Group group : user.getGroups()) {
 				
-				if (group.getGroupID() != null) {
+				if (group.isEnabled() && group.getGroupID() != null) {
 					
-					fullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
-					restrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
 				}
 			}
 		}
 		
-		restrictedManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.MUST);
+		BooleanQuery instanceManagerQuery = new BooleanQuery();
+		instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+		
+		if (user.getGroups() != null) {
+			
+			for (Group group : user.getGroups()) {
+				
+				if (group.isEnabled() && group.getGroupID() != null) {
+					
+					instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+				}
+			}
+		}
+		
+		familyRestrictedManagerQuery.add(instanceManagerQuery, Occur.MUST);
 		
 		BooleanQuery mainQuery = new BooleanQuery();
-		mainQuery.add(fullManagerQuery, Occur.SHOULD);
-		mainQuery.add(restrictedManagerQuery, Occur.SHOULD);
+		mainQuery.add(familyFullManagerQuery, Occur.SHOULD);
+		mainQuery.add(familyRestrictedManagerQuery, Occur.SHOULD);
 		
 		return new QueryWrapperFilter(mainQuery);
 	}
