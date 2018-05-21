@@ -1588,7 +1588,7 @@
 							</xsl:call-template>
 							<div class="wrap">
 								<figure>
-									<img class="picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+									<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
 								</figure>
 								<span class="text"/>
 								<a class="delete" data-icon-after="t">
@@ -1662,7 +1662,7 @@
 			</xsl:call-template>
 			<div class="wrap">
 				<figure>
-					<img class="picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+					<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
 				</figure>
 				<span class="text">
 					<xsl:value-of select="name" />
@@ -1752,7 +1752,15 @@
 			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"></xsl:with-param>
 		</xsl:call-template>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
+	
+		<xsl:call-template name="printValidationError">
+			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError"></xsl:with-param>
+		</xsl:call-template>
+	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UnauthorizedManagerUserError']">
 	

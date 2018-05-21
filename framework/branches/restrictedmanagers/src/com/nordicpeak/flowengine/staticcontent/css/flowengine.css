@@ -170,6 +170,10 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	display: inline-block;
 }
 
+#FlowInstanceAdminModule ul.manager-list img.group-picture {
+	margin: 9.5px 9.5px;
+}
+
 #FlowInstanceAdminModule .errands-wrapper .oep-table.flowinstance-table tbody tr:hover td {
 	background: #dddddd !important;
 	cursor: pointer;
