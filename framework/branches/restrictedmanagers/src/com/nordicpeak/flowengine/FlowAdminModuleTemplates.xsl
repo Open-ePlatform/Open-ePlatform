@@ -87,7 +87,8 @@
 			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
 			<xsl:apply-templates select="ChangeFlowType"/>
 			<xsl:apply-templates select="AddFlowForm" />
-			<xsl:apply-templates select="UpdateFlowForm" />	
+			<xsl:apply-templates select="UpdateFlowForm" />
+			<xsl:apply-templates select="AutoManagerAssignment" />		
 		</div>
 		
 	</xsl:template>
@@ -1145,6 +1146,13 @@
 						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 					</a>
 				</div>
+				
+<!-- 				<div class="floatright marginright clearboth"> -->
+<!-- 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateautomanagerassignment/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateAutoManagerAssignment}"> -->
+<!-- 						<xsl:value-of select="$i18n.UpdateAutoManagerAssignment"/> -->
+<!-- 						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" /> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
 				
 			</fieldset>
 	
@@ -5404,7 +5412,113 @@
 		</form>
 	
 	</xsl:template>
+	
+	<xsl:template match="AutoManagerAssignment">
+	
+		<h1>
+			<xsl:value-of select="$i18n.AutoManagerAssignment.title"/>
+			<xsl:text>:&#x20;</xsl:text>
+			<xsl:value-of select="Flow/name"/>
+		</h1>
+		
+		<p><xsl:value-of select="$i18n.AutoManagerAssignment.description"/></p>
 
+		<xsl:apply-templates select="validationError" />
+
+		<form method="post" action="{/Document/requestinfo/uri}">
+			
+			<h2><xsl:value-of select="$i18n.AutoManagerAssignment.NoMatch" /></h2>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+				</label>
+				
+				<xsl:call-template name="UserList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/managerusers/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'auto-manager-nomatch'"/>
+					<xsl:with-param name="users" select="AutoManagerAssignmentNoMatchUsers/FlowFamilyManager[user]" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+				</label>
+								
+				<xsl:call-template name="GroupList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/managergroups/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'auto-manager-nomatch'"/>
+					<xsl:with-param name="groups" select="AutoManagerAssignmentNoMatchGroups/FlowFamilyManagerGroup[group]" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<h2><xsl:value-of select="$i18n.AutoManagerAssignment.Always" /></h2>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+				</label>
+				
+				<xsl:call-template name="UserList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/managerusers/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'auto-manager-nomatch'"/>
+					<xsl:with-param name="users" select="AutoManagerAssignmentNoMatchUsers/FlowFamilyManager[user]" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label class="floatleft full">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+				</label>
+								
+				<xsl:call-template name="GroupList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/managergroups/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'auto-manager-nomatch'"/>
+					<xsl:with-param name="groups" select="AutoManagerAssignmentNoMatchGroups/FlowFamilyManagerGroup[group]" />
+				</xsl:call-template>
+				
+			</div>
+					
+			<div class="floatright">
+				<input type="submit" value="{$i18n.AutoManagerAssignment.submit}" />
+			</div>
+		
+		</form>
+	
+	</xsl:template>
+	
 	<xsl:template name="ExtraFlowListColumnsHeader" />
 
 	<xsl:template name="ExtraFlowListColumns" />

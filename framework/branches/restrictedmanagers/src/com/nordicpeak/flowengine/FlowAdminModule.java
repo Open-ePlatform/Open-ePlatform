@@ -351,6 +351,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	@XSLVariable(prefix = "java.")
 	private String eventFlowInstanceManagerExpired = "eventFlowInstanceManagerExpired";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventUpdateAutoManagerAssignment = "eventUpdateAutoManagerAssignment";
 
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows= "List flows";
@@ -731,7 +734,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			long startTime = System.currentTimeMillis();
 
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_FORMS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION, Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
+			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_FORMS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION, Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION);
 			query.addCachedRelations(Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
@@ -4926,6 +4929,82 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return showManagerModalOnAdd;
 	}
 	
+	
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateAutoManagerAssignment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+		
+		Integer flowFamilyID;
+		Integer flowID;
+		FlowFamily flowFamily;
+		Flow flow;
+
+		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = flowFamilyCacheMap.get(flowFamilyID)) != null && (flow = flowCacheMap.get(flowID)) != null) {
+
+			if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
+
+				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+			}
+
+			List<ValidationError> validationErrors = null;
+			
+			if (req.getMethod().equalsIgnoreCase("POST")) {
+				
+				validationErrors = new ArrayList<ValidationError>();
+				
+//				Integer flowTypeID = ValidationUtils.validateParameter("flowTypeID", req, true, IntegerPopulator.getPopulator(), validationErrors);
+//						validationErrors.add(new ValidationError("flowTypeID", ValidationErrorType.InvalidFormat));
+				
+				if (validationErrors.isEmpty()) {
+					
+					log.info("User " + user + " updating auto manager assignment settings for " + flow);
+					
+					TransactionHandler transactionHandler = null;
+					
+					try {
+						transactionHandler = daoFactory.getFlowFamilyDAO().createTransaction();
+						
+						RelationQuery updateQuery = new RelationQuery(FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION);
+//						updateQuery.addExcludedFields(FlowFamily.);
+						updateQuery.disableAutoRelations(true);
+						
+						daoFactory.getFlowFamilyDAO().update(flowFamily, transactionHandler, updateQuery);
+						
+//						transactionHandler.commit();
+						
+						eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(FlowFamily.class, CRUDAction.UPDATE, flowFamily), EventTarget.ALL);
+						
+						addFlowFamilyEvent(eventUpdateAutoManagerAssignment, flow, user);
+						
+						redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+						return null;
+						
+					} finally {
+						TransactionHandler.autoClose(transactionHandler);
+					}
+				}
+			}
+			
+			log.info("User " + user + " requesting auto manager assignment form for flow " + flow);
+			
+			Document doc = createDocument(req, uriParser, user);
+			
+			Element autoManagerAssignmentElement = doc.createElement("AutoManagerAssignment");
+			doc.getDocumentElement().appendChild(autoManagerAssignmentElement);
+			
+			autoManagerAssignmentElement.appendChild(flow.toXML(doc));
+			
+			if (validationErrors != null) {
+				
+				XMLUtils.append(doc, autoManagerAssignmentElement, validationErrors);
+			}
+			
+			return new SimpleForegroundModuleResponse(doc);
+		}
+
+		throw new URINotFoundException(uriParser);
+	}
+
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
 		

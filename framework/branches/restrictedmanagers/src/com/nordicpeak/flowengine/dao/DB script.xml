@@ -1835,4 +1835,136 @@
 		</Query>
 	</Script>
 	
+	<Script version="98">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_families`
+					ADD COLUMN `autoManagerAssignmentNoMatch` INT UNSIGNED NULL DEFAULT NULL AFTER `loginHelpLinkURL`,
+					ADD COLUMN `autoManagerAssignmentAlways` INT UNSIGNED NULL DEFAULT NULL AFTER `autoManagerAssignmentNoMatch`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_rules` (
+					`ruleID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					`attributeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`ruleID`),
+					INDEX `FK_flowengine_flow_family_automanager_rules_1` (`flowFamilyID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_rules_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_rule_values` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`value` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`ruleID`, `value`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_rule_values_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="99">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_automanager_rules` DROP COLUMN `userID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_rule_users` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`ruleID`, `userID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_rule_users_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_rule_groups` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`ruleID`, `groupID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_rule_groups_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_always_users` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `userID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_always_users_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_always_groups` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `groupID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_always_groups_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_nomatch_users` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `userID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_nomatch_users_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_nomatch_groups` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `groupID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_nomatch_groups_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_automanager_rules` ADD COLUMN `invert` TINYINT UNSIGNED NOT NULL AFTER `attributeName`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

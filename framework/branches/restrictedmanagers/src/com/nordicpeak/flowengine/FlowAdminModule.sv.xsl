@@ -40,8 +40,8 @@
 	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowInstanceManagerExpired">Handläggare automatiskt borttagen:</xsl:variable>
-	
 	<xsl:variable name="java.eventFunctionConfigured">Ändrande konfigurationen av funktionen</xsl:variable>
+	<xsl:variable name="java.eventUpdateAutoManagerAssignment">Ändrade inställningar för automatisk tilldelning av handläggare</xsl:variable>
 	
 	<xsl:variable name="java.bundleListFlows">Lista e-tjänster</xsl:variable>
 	<xsl:variable name="java.bundleAddFlow">Lägg till e-tjänst</xsl:variable>
@@ -322,6 +322,7 @@
 	<xsl:variable name="i18n.Managers">Handläggare</xsl:variable>
 	<xsl:variable name="i18n.ManagersDescription">Följande grupper och användare får handlägga ärenden för denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowFamilyManagers">Välj handläggare</xsl:variable>
+	<xsl:variable name="i18n.UpdateAutoManagerAssignment">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.NoManagers">Inga handläggare har åtkomst till ärenden för den här e-tjänsten.</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.title">Uppdatera handläggare för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.submit">Spara ändringar</xsl:variable>
@@ -533,5 +534,14 @@
 	
 	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens familje ID</xsl:variable>
 	<xsl:variable name="i18n.FlowID">Versionens ID</xsl:variable>
+	
+	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Always">Alltid tilldelad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelad om ingen regel ovan matchar</xsl:variable>
+	
 	
 </xsl:stylesheet>

@@ -52,6 +52,12 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field ALIASES_RELATION = ReflectionUtils.getField(FlowFamily.class, "aliases");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowFamily.class, "events");
 	
+	public static final Field AUTO_MANAGER_ASSIGNMENT_RULES_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentRules");
+	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysUserIDs");
+	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysGroupIDs");
+	public static final Field AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentNoMatchUserIDs");
+	public static final Field AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentNoMatchGroupIDs");
+	
 	public static final Field LOGIN_HELP_LINK_NAME_FIELD = ReflectionUtils.getField(FlowFamily.class, "loginHelpLinkName");
 	public static final Field LOGIN_HELP_LINK_URL_FIELD = ReflectionUtils.getField(FlowFamily.class, "loginHelpLinkURL");
 
@@ -157,7 +163,36 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@WebPopulate(maxLength = 24)
 	@XMLElement
 	private String startButtonText;
-
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement(fixCase = true)
+	private List<AutoManagerAssignmentRule> autoManagerAssignmentRules;
+	
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_always_users", remoteValueColumnName = "userID")
+	@XMLElement(fixCase = true)
+	private List<Integer> autoManagerAssignmentAlwaysUserIDs;
+	
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_always_groups", remoteValueColumnName = "groupID")
+	@XMLElement(fixCase = true)
+	private List<Integer> autoManagerAssignmentAlwaysGroupIDs;
+	
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_users", remoteValueColumnName = "userID")
+	@XMLElement(fixCase = true)
+	private List<Integer> autoManagerAssignmentNoMatchUserIDs;
+	
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_groups", remoteValueColumnName = "groupID")
+	@XMLElement(fixCase = true)
+	private List<Integer> autoManagerAssignmentNoMatchGroupIDs;
+	
 	private boolean hasTextTags;
 	
 	@Override
@@ -511,6 +546,14 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public void setHasTextTags(boolean hasTextTags) {
 		
 		this.hasTextTags = hasTextTags;
+	}
+	
+	public List<AutoManagerAssignmentRule> getAutoManagerAssignmentRules() {
+		return autoManagerAssignmentRules;
+	}
+	
+	public void setAutoManagerAssignmentRules(List<AutoManagerAssignmentRule> autoManagerAssignmentRules) {
+		this.autoManagerAssignmentRules = autoManagerAssignmentRules;
 	}
 	
 	public Element toXML(Document doc, SiteProfile siteProfile) {
