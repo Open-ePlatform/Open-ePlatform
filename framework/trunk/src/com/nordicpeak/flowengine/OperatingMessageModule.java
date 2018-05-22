@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -61,6 +59,8 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.OperatingMessageType;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidator;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, SystemStartupListener {
 	
@@ -402,8 +402,6 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	
 	private void cacheExternalOperatingMessages() {
 		
-//		log.info("Caching external operating messages..");
-		
 		List<ExternalOperatingMessage> operatingMessages = new ArrayList<ExternalOperatingMessage>();
 		
 		for (ExternalOperatingMessageSource source : externalMessageSources) {
@@ -442,9 +440,9 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			}
 		}
 		
-		if (operatingMessages.size() > 0) {
+		if (operatingMessages.size() > 0 && log.isDebugEnabled()) {
 			
-			log.info("Cached " + operatingMessages.size() + " external operating messages");
+			log.debug("Cached " + operatingMessages.size() + " external operating messages");
 		}
 		
 		externalOperatingMessageCache = new CopyOnWriteArrayList<ExternalOperatingMessage>(operatingMessages);
