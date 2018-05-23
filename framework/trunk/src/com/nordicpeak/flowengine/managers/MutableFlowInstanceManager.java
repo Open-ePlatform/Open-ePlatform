@@ -1112,7 +1112,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return getCurrentStepFormHTML(queryHandler, req, user, poster, baseQueryRequestURL, requestMetadata);
 	}
 
-	public synchronized Timestamp saveInstance(FlowEngineInterface flowEngineInterface, User user, User poster, EventType eventType) throws SQLException, UnableToSaveQueryInstanceException, FlowInstanceManagerClosedException {
+	public synchronized Timestamp saveInstance(FlowEngineInterface flowEngineInterface, User user, User poster, EventType eventType, Timestamp saveTimestamp) throws SQLException, UnableToSaveQueryInstanceException, FlowInstanceManagerClosedException {
 
 		checkState();
 
@@ -1127,12 +1127,9 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			transactionHandler = daoFactory.getTransactionHandler();
 
-			Timestamp saveTimestamp = flowInstance.getLastStatusChange();
-			
 			if(saveTimestamp == null) {
 				
 				saveTimestamp = TimeUtils.getCurrentTimestamp(false);
-				
 			}
 			
 			if(flowInstance.getFirstSubmitted() == null && eventType == EventType.SUBMITTED){

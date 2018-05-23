@@ -60,6 +60,7 @@ import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
@@ -1162,9 +1163,22 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		log.info("User " + user + " saving flow instance " + instanceManager.getFlowInstance());
 
+		Timestamp previousStatusChange = instanceManager.getFlowInstance().getLastStatusChange();
+		
 		setFlowStatus(instanceManager, actionID);
 
-		Timestamp savedTimestamp = instanceManager.saveInstance(this, user, poster, eventType);
+		Timestamp saveTimestamp = null;
+		
+		if(ObjectUtils.compare(previousStatusChange, instanceManager.getFlowInstance().getLastStatusChange())) {
+			
+			saveTimestamp = TimeUtils.getCurrentTimestamp(false);
+			
+		} else {
+			
+			saveTimestamp = instanceManager.getFlowInstance().getLastStatusChange();
+		}
+		
+		Timestamp savedTimestamp = instanceManager.saveInstance(this, user, poster, eventType, saveTimestamp);
 
 		CRUDAction crudAction;
 

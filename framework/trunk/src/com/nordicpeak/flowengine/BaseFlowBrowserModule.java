@@ -8,17 +8,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.webutils.http.URIParser;
-
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.webutils.http.URIParser;
 
 
 public abstract class BaseFlowBrowserModule extends BaseFlowModule {
@@ -45,7 +45,7 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 				if(instanceManager.getFlowInstance().getStepID() != null){
 				
 					//TODO add flow instance event
-					instanceManager.saveInstance(this, user, poster, EventType.UPDATED);
+					instanceManager.saveInstance(this, user, poster, EventType.UPDATED, instanceManager.getFlowInstance().getLastStatusChange());
 					
 					rebindFlowInstance(req.getSession(), instanceManager);
 					
