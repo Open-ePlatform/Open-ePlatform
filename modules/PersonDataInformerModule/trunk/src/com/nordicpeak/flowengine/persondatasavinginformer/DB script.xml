@@ -313,6 +313,11 @@
 				UPDATE person_data_informer_standardtexts SET value = REPLACE(value, 'http://www.datainspektionen.se/om-oss/arbetssatt/klagomal', 'https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips');
 			]]>
 		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE person_data_informer_settings SET complaintDescription = REPLACE(complaintDescription, 'http://www.datainspektionen.se/om-oss/arbetssatt/klagomal', 'https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips')
+			]]>
+		</Query>
 	</Script>
 	
 </DBScripts>
