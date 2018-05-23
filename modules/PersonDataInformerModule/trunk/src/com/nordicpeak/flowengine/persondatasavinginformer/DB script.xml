@@ -307,4 +307,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				UPDATE person_data_informer_standardtexts SET value = REPLACE(value, 'http://www.datainspektionen.se/om-oss/arbetssatt/klagomal', 'https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips');
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
