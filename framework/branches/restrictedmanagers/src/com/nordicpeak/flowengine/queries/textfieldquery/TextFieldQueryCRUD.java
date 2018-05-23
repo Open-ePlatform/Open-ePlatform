@@ -13,11 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUD;
+
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -28,9 +32,6 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUD;
 
 public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQueryProviderModule> {
 
@@ -158,5 +159,12 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 			XMLUtils.appendNewElement(doc, fieldLayoutElement, "name", callback.getFieldLayoutName(layout));
 			XMLUtils.appendNewElement(doc, fieldLayoutElement, "value", layout);
 		}
+	}
+	
+	@Override
+	protected void checkShowAccess(TextFieldQuery query, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+		super.checkShowAccess(query, user, req, uriParser);
+		
+		callback.checkUpdateQueryAccess(user, query);
 	}
 }
