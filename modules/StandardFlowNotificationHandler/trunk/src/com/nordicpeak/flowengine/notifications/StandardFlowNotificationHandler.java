@@ -20,6 +20,56 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.Constants;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.UserFlowInstanceModule;
+import com.nordicpeak.flowengine.beans.Contact;
+import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
+import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.SenderType;
+import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
+import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
+import com.nordicpeak.flowengine.events.ManagersChangedEvent;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
+import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
+import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.XMLProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.utils.AttributeTagUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.MultiSignUtils;
+import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+
 import se.unlogic.emailutils.framework.ByteArrayAttachment;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.FileAttachment;
@@ -86,56 +136,6 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
-
-import com.nordicpeak.flowengine.Constants;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.UserFlowInstanceModule;
-import com.nordicpeak.flowengine.beans.Contact;
-import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
-import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.ContentType;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.SenderType;
-import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
-import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
-import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
-import com.nordicpeak.flowengine.events.ManagersChangedEvent;
-import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
-import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
-import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.XMLProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.utils.AttributeTagUtils;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
-import com.nordicpeak.flowengine.utils.MultiSignUtils;
-import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 
 public class StandardFlowNotificationHandler extends AnnotatedForegroundModule implements FlowNotificationHandler, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -2058,7 +2058,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 
-	protected List<User> getFlowFamilyManagers(ImmutableFlowInstance flowInstance) throws SQLException {
+	public List<User> getFlowFamilyManagers(ImmutableFlowInstance flowInstance) throws SQLException {
 
 		FlowFamily flowFamily = flowFamilyDAO.get(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
 
