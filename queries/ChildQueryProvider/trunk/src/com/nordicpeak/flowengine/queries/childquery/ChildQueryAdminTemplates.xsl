@@ -12,7 +12,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/childqueryadmin.js
+		/js/childqueryadmin.js?v=1
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -97,6 +97,32 @@
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
+
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'alwaysShowOtherGuardians'" />
+					<xsl:with-param name="name" select="'alwaysShowOtherGuardians'" />
+					<xsl:with-param name="element" select="ChildQuery" />
+				</xsl:call-template>
+				
+				<label for="alwaysShowOtherGuardians">
+					<xsl:value-of select="$i18n.AlwaysShowOtherGuardians" />
+				</label>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'hideSSNForOtherGuardians'" />
+					<xsl:with-param name="name" select="'hideSSNForOtherGuardians'" />
+					<xsl:with-param name="element" select="ChildQuery" />
+				</xsl:call-template>
+				
+				<label for="hideSSNForOtherGuardians">
+					<xsl:value-of select="$i18n.HideSSNForOtherGuardians" />
+				</label>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
 			
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="id" select="'setMultipartsAsOwners'" />
@@ -119,19 +145,6 @@
 				
 				<label for="requireGuardianContactInfoVerification">
 					<xsl:value-of select="$i18n.RequiredContactWayVerification" />
-				</label>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom">
-
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'alwaysShowOtherGuardians'" />
-					<xsl:with-param name="name" select="'alwaysShowOtherGuardians'" />
-					<xsl:with-param name="element" select="ChildQuery" />
-				</xsl:call-template>
-				
-				<label for="alwaysShowOtherGuardians">
-					<xsl:value-of select="$i18n.AlwaysShowOtherGuardians" />
 				</label>
 			</div>
 			
