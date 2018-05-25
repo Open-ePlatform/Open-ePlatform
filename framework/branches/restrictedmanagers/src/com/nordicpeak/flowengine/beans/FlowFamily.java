@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
+import com.nordicpeak.flowengine.comparators.FlowFamilyManagerGroupComparator;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
@@ -18,6 +22,9 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.handlers.GroupHandler;
+import se.unlogic.hierarchy.core.handlers.UserHandler;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -172,25 +179,21 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_always_users", remoteValueColumnName = "userID")
-	@XMLElement(fixCase = true)
 	private List<Integer> autoManagerAssignmentAlwaysUserIDs;
 	
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_always_groups", remoteValueColumnName = "groupID")
-	@XMLElement(fixCase = true)
 	private List<Integer> autoManagerAssignmentAlwaysGroupIDs;
 	
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_users", remoteValueColumnName = "userID")
-	@XMLElement(fixCase = true)
 	private List<Integer> autoManagerAssignmentNoMatchUserIDs;
 	
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_groups", remoteValueColumnName = "groupID")
-	@XMLElement(fixCase = true)
 	private List<Integer> autoManagerAssignmentNoMatchGroupIDs;
 	
 	private boolean hasTextTags;
@@ -408,6 +411,47 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		
 		return managerGroupIDs;
 	}
+	
+	public void setManagerUsersAndGroups(UserHandler userHandler, GroupHandler groupHandler) {
+		
+		if (managerUsers != null) {
+			
+			List<Integer> userIDs = new ArrayList<Integer>();
+			
+			for (FlowFamilyManager manager : managerUsers) {
+				
+				userIDs.add(manager.getUserID());
+			}
+			
+			Map<Integer, User> userMap = UserUtils.getUserIDMap(userHandler.getUsers(userIDs, false, true));
+			
+			for (FlowFamilyManager manager : managerUsers) {
+				
+				manager.setUser(userMap.get(manager.getUserID()));
+			}
+			
+			Collections.sort(getManagerUsers(), FlowFamilyManagerComparator.getInstance());
+		}
+		
+		if (managerGroups != null) {
+
+			List<Integer> groupIDs = new ArrayList<Integer>();
+			
+			for (FlowFamilyManagerGroup managerGroup : managerGroups) {
+				
+				groupIDs.add(managerGroup.getGroupID());
+			}
+			
+			Map<Integer, Group> groupMap = UserUtils.getGroupIDMap(groupHandler.getGroups(groupIDs, false));
+			
+			for (FlowFamilyManagerGroup managerGroup : managerGroups) {
+				
+				managerGroup.setGroup(groupMap.get(managerGroup.getGroupID()));
+			}
+			
+			Collections.sort(managerGroups, FlowFamilyManagerGroupComparator.getComparator());
+		}
+	}
 
 	@Override
 	public ManagerAccess getManagerAccess(User user) {
@@ -556,6 +600,38 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		this.autoManagerAssignmentRules = autoManagerAssignmentRules;
 	}
 	
+	public List<Integer> getAutoManagerAssignmentAlwaysUserIDs() {
+		return autoManagerAssignmentAlwaysUserIDs;
+	}
+	
+	public void setAutoManagerAssignmentAlwaysUserIDs(List<Integer> autoManagerAssignmentAlwaysUserIDs) {
+		this.autoManagerAssignmentAlwaysUserIDs = autoManagerAssignmentAlwaysUserIDs;
+	}
+	
+	public List<Integer> getAutoManagerAssignmentAlwaysGroupIDs() {
+		return autoManagerAssignmentAlwaysGroupIDs;
+	}
+	
+	public void setAutoManagerAssignmentAlwaysGroupIDs(List<Integer> autoManagerAssignmentAlwaysGroupIDs) {
+		this.autoManagerAssignmentAlwaysGroupIDs = autoManagerAssignmentAlwaysGroupIDs;
+	}
+	
+	public List<Integer> getAutoManagerAssignmentNoMatchUserIDs() {
+		return autoManagerAssignmentNoMatchUserIDs;
+	}
+	
+	public void setAutoManagerAssignmentNoMatchUserIDs(List<Integer> autoManagerAssignmentNoMatchUserIDs) {
+		this.autoManagerAssignmentNoMatchUserIDs = autoManagerAssignmentNoMatchUserIDs;
+	}
+	
+	public List<Integer> getAutoManagerAssignmentNoMatchGroupIDs() {
+		return autoManagerAssignmentNoMatchGroupIDs;
+	}
+	
+	public void setAutoManagerAssignmentNoMatchGroupIDs(List<Integer> autoManagerAssignmentNoMatchGroupIDs) {
+		this.autoManagerAssignmentNoMatchGroupIDs = autoManagerAssignmentNoMatchGroupIDs;
+	}
+	
 	public Element toXML(Document doc, SiteProfile siteProfile) {
 		
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
@@ -585,4 +661,5 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		return flowElement;
 		
 	}
+	
 }

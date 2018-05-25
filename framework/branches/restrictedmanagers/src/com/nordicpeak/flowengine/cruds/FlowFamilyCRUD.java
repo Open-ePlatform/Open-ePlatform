@@ -3,10 +3,8 @@ package com.nordicpeak.flowengine.cruds;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +17,6 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerGroupComparator;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
@@ -33,7 +29,6 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedIntegerBasedCRUD;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -250,45 +245,9 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 		XMLUtils.append(doc, updateTypeElement, (Flow) req.getAttribute("flow"));
 		
-		if (flowFamily.getManagerGroupIDs() != null) {
-			
-			List<Integer> groupIDs = new ArrayList<Integer>();
-			
-			for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
-				
-				groupIDs.add(managerGroup.getGroupID());
-			}
-			
-			Map<Integer, Group> groupMap = UserUtils.getGroupIDMap(callback.getGroupHandler().getGroups(groupIDs, false));
-			
-			for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
-				
-				managerGroup.setGroup(groupMap.get(managerGroup.getGroupID()));
-			}
-			
-			Collections.sort(flowFamily.getManagerGroups(), FlowFamilyManagerGroupComparator.getComparator());
-			XMLUtils.append(doc, updateTypeElement, "ManagerGroups", flowFamily.getManagerGroups());
-		}
-		
-		if (flowFamily.getManagerUsers() != null) {
-
-			List<Integer> userIDs = new ArrayList<Integer>();
-			
-			for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
-				
-				userIDs.add(manager.getUserID());
-			}
-			
-			Map<Integer, User> userMap = UserUtils.getUserIDMap(callback.getUserHandler().getUsers(userIDs, false, true));
-			
-			for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
-				
-				manager.setUser(userMap.get(manager.getUserID()));
-			}
-			
-			Collections.sort(flowFamily.getManagerUsers(), FlowFamilyManagerComparator.getComparator());
-			XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagerUsers());
-		}
+		flowFamily.setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
+		XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagerUsers());
+		XMLUtils.append(doc, updateTypeElement, "ManagerGroups", flowFamily.getManagerGroups());
 		
 		if (callback.isShowManagerModalOnAdd()) {
 			XMLUtils.appendNewElement(doc, updateTypeElement, "ShowManagerModalOnAdd");

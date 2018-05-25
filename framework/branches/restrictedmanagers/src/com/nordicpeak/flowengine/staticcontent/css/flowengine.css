@@ -292,3 +292,38 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 .preview .query.mergedquery > article {
 	border-bottom: none;
 }
+
+.flowadmin .automanagerassignment .usergrouplist-split > div, .featherlight-content .usergrouplist-split > div {
+	width: calc(50% - 5px)
+}
+
+.flowadmin .automanagerassignment .usergrouplist-split input.full[type = "text"], .featherlight-content .usergrouplist-split input.full[type = "text"] {
+	width: 100%;
+}
+
+/* fix for interface.css setting width:100% on small displays */ 
+.featherlight-content input {
+	width: auto;
+}
+
+.featherlight-content input[type='checkbox'] {
+	display: inline;
+	position: static;
+	opacity: 1;
+}
+
+.featherlight-content input[type="checkbox"]:checked + label::before {
+	font-family: unset;
+	content: unset;
+	font-size: unset;
+	line-height: unset;
+	padding: unset;
+	text-align: unset;
+	color: unset;
+	border-color: unset;
+}
+
+.featherlight.ui-front > .ui-autocomplete {
+	text-align: initial;
+	white-space: normal;
+}

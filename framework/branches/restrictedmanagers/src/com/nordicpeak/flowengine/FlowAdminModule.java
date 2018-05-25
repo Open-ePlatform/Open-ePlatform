@@ -50,6 +50,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
@@ -179,6 +180,7 @@ import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.GenericCRUD;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
 import se.unlogic.hierarchy.core.utils.crud.MultipartRequestFilter;
@@ -215,6 +217,7 @@ import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.populators.StringURLPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.streams.StreamUtils;
@@ -4035,6 +4038,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return userGroupListFlowManagersConnector.getUsers(req, res, user, uriParser);
 	}
 	
+	@WebPublic(alias = "managergroups")
+	public ForegroundModuleResponse getManagerGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		return userGroupListFlowManagersConnector.getGroups(req, res, user, uriParser);
+	}
+	
 	public FlowNotificationHandler getNotificationHandler() {
 
 		return notificationHandler;
@@ -4929,56 +4938,159 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return showManagerModalOnAdd;
 	}
 	
-	
-	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateAutoManagerAssignment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
 		
 		Integer flowFamilyID;
 		Integer flowID;
 		FlowFamily flowFamily;
-		Flow flow;
+		ImmutableFlow flow;
 
-		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = flowFamilyCacheMap.get(flowFamilyID)) != null && (flow = flowCacheMap.get(flowID)) != null) {
+		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = getFlowFamily(flowFamilyID)) != null && (flow = flowCacheMap.get(flowID)) != null) {
 
 			if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
 
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
 
+			List<User> allowedManagers = FlowInstanceAdminModule.getAllowedManagers(flowFamily, systemInterface.getUserHandler());
+			List<Group> allowedManagerGroups = FlowInstanceAdminModule.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
+			
 			List<ValidationError> validationErrors = null;
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
 				validationErrors = new ArrayList<ValidationError>();
 				
-//				Integer flowTypeID = ValidationUtils.validateParameter("flowTypeID", req, true, IntegerPopulator.getPopulator(), validationErrors);
-//						validationErrors.add(new ValidationError("flowTypeID", ValidationErrorType.InvalidFormat));
+				List<Integer> noMatchUserIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-user"));
+				List<Integer> noMatchGroupIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-group"));
+				List<Integer> alwaysUserIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-user"));
+				List<Integer> alwaysGroupIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-group"));
+				
+				List<User> noMatchUsers = null;
+				List<Group> noMatchGroups = null;
+				List<User> alwaysUsers = null;
+				List<Group> alwaysGroups = null;
+				
+				noMatchUsers = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, noMatchUserIDs, validationErrors);
+				noMatchGroups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, noMatchGroupIDs, validationErrors);
+				alwaysUsers = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, alwaysUserIDs, validationErrors);
+				alwaysGroups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, alwaysGroupIDs, validationErrors);
+				
+				String[] ruleIDs = req.getParameterValues("auto-manager-rule");
+				List<AutoManagerAssignmentRule> rules = null;
+				
+				if (ruleIDs != null) {
+					
+					rules = new ArrayList<AutoManagerAssignmentRule>();
+					
+					for (String ruleID : ruleIDs) {
+						
+						AutoManagerAssignmentRule rule = new AutoManagerAssignmentRule();
+						rule.setGeneratedRuleID(ruleID);
+						
+						rules.add(rule);
+						
+						String attributeName = ValidationUtils.validateParameter("auto-manager-rule-attribute-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
+						String attributeValues = ValidationUtils.validateParameter("auto-manager-rule-values-" + ruleID, req, true, StringPopulator.getPopulator(), validationErrors);
+						boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-rule-invert-" + ruleID));
+						
+						rule.setAttributeName(attributeName);
+						rule.setInvert(invert);
+						
+						if (!StringUtils.isEmpty(attributeValues)) {
+							
+							List<String> splitValues = StringUtils.splitOnLineBreak(attributeValues, true);
+							
+							for (String value : splitValues) {
+								
+								if (value.length() > 255) {
+									
+									validationErrors.add(new ValidationError("auto-manager-rule-values-" + ruleID, ValidationErrorType.TooLong));
+								}
+							}
+							
+							rule.setValues(splitValues);
+						}
+						
+						String usersIDsString = ValidationUtils.validateParameter("auto-manager-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
+						String groupIDsString = ValidationUtils.validateParameter("auto-manager-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
+						
+						List<Integer> userIDs = new ArrayList<Integer>();
+						List<Integer> groupIDs = new ArrayList<Integer>();
+						
+						if (!StringUtils.isEmpty(usersIDsString)) {
+							
+							String[] splitUsersIDs = usersIDsString.split(",");
+							
+							for (String userIDS : splitUsersIDs) {
+								
+								Integer userID = NumberUtils.toInt(userIDS);
+								
+								if (userID != null) {
+									
+									userIDs.add(userID);
+									
+								} else {
+									
+									validationErrors.add(new ValidationError("auto-manager-rule-users-" + ruleID, ValidationErrorType.InvalidFormat));
+								}
+							}
+						}
+						
+						if (!StringUtils.isEmpty(groupIDsString)) {
+							
+							String[] splitGroupIDs = groupIDsString.split(",");
+							
+							for (String groupIDS : splitGroupIDs) {
+								
+								Integer groupID = NumberUtils.toInt(groupIDS);
+								
+								if (groupID != null) {
+									
+									groupIDs.add(groupID);
+									
+								} else {
+									
+									validationErrors.add(new ValidationError("auto-manager-rule-groups-" + ruleID, ValidationErrorType.InvalidFormat));
+								}
+							}
+						}
+						
+						List<User> users = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, userIDs, validationErrors);
+						List<Group> groups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, groupIDs, validationErrors);
+						
+						rule.setUsers(users);
+						rule.setGroups(groups);
+					}
+				}
+				
+				flowFamily.setAutoManagerAssignmentRules(rules);
+				flowFamily.setAutoManagerAssignmentNoMatchUserIDs(UserUtils.getUserIDs(noMatchUsers));
+				flowFamily.setAutoManagerAssignmentNoMatchGroupIDs(UserUtils.getGroupIDs(noMatchGroups));
+				flowFamily.setAutoManagerAssignmentAlwaysUserIDs(UserUtils.getUserIDs(alwaysUsers));
+				flowFamily.setAutoManagerAssignmentAlwaysGroupIDs(UserUtils.getGroupIDs(alwaysGroups));
 				
 				if (validationErrors.isEmpty()) {
-					
+
 					log.info("User " + user + " updating auto manager assignment settings for " + flow);
-					
+
 					TransactionHandler transactionHandler = null;
-					
+
 					try {
 						transactionHandler = daoFactory.getFlowFamilyDAO().createTransaction();
-						
+
 						RelationQuery updateQuery = new RelationQuery(FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION);
-//						updateQuery.addExcludedFields(FlowFamily.);
-						updateQuery.disableAutoRelations(true);
-						
 						daoFactory.getFlowFamilyDAO().update(flowFamily, transactionHandler, updateQuery);
 						
-//						transactionHandler.commit();
-						
+						transactionHandler.commit();
+
 						eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(FlowFamily.class, CRUDAction.UPDATE, flowFamily), EventTarget.ALL);
-						
 						addFlowFamilyEvent(eventUpdateAutoManagerAssignment, flow, user);
-						
-						redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+
+						redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#managers");
 						return null;
-						
+
 					} finally {
 						TransactionHandler.autoClose(transactionHandler);
 					}
@@ -4992,11 +5104,38 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			Element autoManagerAssignmentElement = doc.createElement("AutoManagerAssignment");
 			doc.getDocumentElement().appendChild(autoManagerAssignmentElement);
 			
-			autoManagerAssignmentElement.appendChild(flow.toXML(doc));
+			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+			genDoc.addIgnoredFields(Flow.FLOW_FAMILY_RELATION);
+			
+			if (flowFamily.getAutoManagerAssignmentRules() != null) {
+			
+				for(AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
+					
+					rule.setUsersAndGroups(systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+				}
+			}
+			
+			autoManagerAssignmentElement.appendChild(flow.toXML(genDoc));
+			autoManagerAssignmentElement.appendChild(flowFamily.toXML(doc));
+			
+			flowFamily.setManagerUsersAndGroups(systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+			
+			if (allowedManagers != null) {
+				
+				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchUsers", FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null));
+				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysUsers", FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null));
+			}
+			
+			if (allowedManagerGroups != null) {
+				
+				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchGroups", FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null));
+				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysGroups", FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null));
+			}
 			
 			if (validationErrors != null) {
 				
-				XMLUtils.append(doc, autoManagerAssignmentElement, validationErrors);
+				XMLUtils.append(doc, autoManagerAssignmentElement, "ValidationErrors", validationErrors);
+				autoManagerAssignmentElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 			}
 			
 			return new SimpleForegroundModuleResponse(doc);

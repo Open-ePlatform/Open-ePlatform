@@ -3,6 +3,8 @@ package com.nordicpeak.flowengine.interfaces;
 import java.util.List;
 
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 
 import se.unlogic.hierarchy.core.beans.User;
@@ -19,6 +21,10 @@ public interface ImmutableFlowFamily extends Elementable {
 	public List<Integer> getManagerUserIDs();
 		
 	public List<Integer> getManagerGroupIDs();
+	
+	public List<FlowFamilyManager> getManagerUsers();
+	
+	public List<FlowFamilyManagerGroup> getManagerGroups();
 
 	public ManagerAccess getManagerAccess(User user);
 }

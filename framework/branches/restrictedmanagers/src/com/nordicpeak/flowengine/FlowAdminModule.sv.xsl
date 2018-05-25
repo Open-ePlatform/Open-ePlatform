@@ -329,7 +329,8 @@
 	<xsl:variable name="i18n.UpdateManagers.openModal">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validFromDate">Giltig från och med</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validToDate">Giltig till och med</xsl:variable>
-	<xsl:variable name="i18n.UpdateManagers.Modal.restricted">Begränsad (Kan endast se ärenden hen blivit tilldelade)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (Kan endast se ärenden användaren blivit tilldelad)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (Kan endast se ärenden gruppen blivit tilldelad)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>
@@ -538,10 +539,25 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specifierat värde</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeName">Attribut</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeValues">Värden</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Inverted">Inverterad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Users">Användare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Groups">Grupper</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Row">Rad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Update">Ändra regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Save">Spara</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Delete">Ta bort regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.DeleteConfirm">Är du säker på att du vill ta bort regeln</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeName">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeValues">Värden (ett per rad)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Always">Alltid tilldelad</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelad om ingen regel ovan matchar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Always">Alltid tilldelade handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel ovan matchar</xsl:variable>
 	
 	
 </xsl:stylesheet>

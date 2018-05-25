@@ -1,8 +1,17 @@
 package com.nordicpeak.flowengine.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.nordicpeak.flowengine.comparators.GroupNameComparator;
+
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.handlers.GroupHandler;
+import se.unlogic.hierarchy.core.handlers.UserHandler;
+import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -22,6 +31,9 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	@Key
 	@XMLElement
 	private Integer ruleID;
+	
+	@XMLElement
+	private String generatedRuleID;
 	
 	@DAOManaged(columnName = "flowFamilyID")
 	@ManyToOne
@@ -53,12 +65,26 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	@XMLElement(fixCase = true)
 	private List<Integer> groupIDs;
 	
+	@XMLElement(fixCase = true)
+	private List<User> users;
+	
+	@XMLElement(fixCase = true)
+	private List<Group> groups;
+	
 	public Integer getRuleID() {
 		return ruleID;
 	}
 	
 	public void setRuleID(Integer ruleID) {
 		this.ruleID = ruleID;
+	}
+	
+	public String getGeneratedRuleID() {
+		return generatedRuleID;
+	}
+	
+	public void setGeneratedRuleID(String generatedRuleID) {
+		this.generatedRuleID = generatedRuleID;
 	}
 	
 	public boolean isInvert() {
@@ -83,6 +109,7 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	
 	public void setUserIDs(List<Integer> userIDs) {
 		this.userIDs = userIDs;
+		users = null;
 	}
 	
 	public List<Integer> getGroupIDs() {
@@ -91,6 +118,7 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	
 	public void setGroupIDs(List<Integer> groupIDs) {
 		this.groupIDs = groupIDs;
+		groups = null;
 	}
 	
 	public String getAttributeName() {
@@ -107,6 +135,65 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	
 	public void setValues(List<String> values) {
 		this.values = values;
+	}
+	
+	public void setUsers(List<User> users) {
+		
+		this.users = users;
+		
+		if (users == null) {
+			
+			userIDs = null;
+			
+		} else {
+			
+			userIDs = new ArrayList<Integer>(users.size());
+			
+			for (User user : users) {
+				
+				userIDs.add(user.getUserID());
+			}
+		}
+	}
+	
+	public void setGroups(List<Group> groups) {
+		
+		this.groups = groups;
+		
+		if (groups == null) {
+			
+			groupIDs = null;
+			
+		} else {
+			
+			groupIDs = new ArrayList<Integer>(groups.size());
+			
+			for (Group group : groups) {
+				
+				groupIDs.add(group.getGroupID());
+			}
+		}
+	}
+	
+	public void setUsersAndGroups(UserHandler userHandler, GroupHandler groupHandler) {
+		
+		if (userIDs != null && users == null) {
+			
+			users = userHandler.getUsers(userIDs, false, true);
+			
+			if (users != null) {
+				Collections.sort(users, UserNameComparator.getInstance());
+			}
+		}
+		
+		if (groupIDs != null && groups == null) {
+			
+			groups = groupHandler.getGroups(groupIDs, false);
+			
+			if (groups != null) {
+				Collections.sort(groups, GroupNameComparator.getInstance());
+			}
+		}
 	}
 	
 }

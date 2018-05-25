@@ -2,18 +2,16 @@ package com.nordicpeak.flowengine.comparators;
 
 import java.util.Comparator;
 
-import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
-
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+
+import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 
 public class FlowFamilyManagerComparator implements Comparator<FlowFamilyManager> {
 	
-	private static final UserNameComparator USER_NAME_COMPARATOR = new UserNameComparator();
+	private static final FlowFamilyManagerComparator INSTANCE = new FlowFamilyManagerComparator();
 	
-	private static final FlowFamilyManagerComparator COMPARATOR = new FlowFamilyManagerComparator();
-	
-	public static FlowFamilyManagerComparator getComparator() {
-		return COMPARATOR;
+	public static FlowFamilyManagerComparator getInstance() {
+		return INSTANCE;
 	}
 	
 	@Override
@@ -26,7 +24,7 @@ public class FlowFamilyManagerComparator implements Comparator<FlowFamilyManager
 			
 			if (o1.getUser() != null && o2.getUser() != null) {
 				
-				return USER_NAME_COMPARATOR.compare(o1.getUser(), o2.getUser());
+				return UserNameComparator.getInstance().compare(o1.getUser(), o2.getUser());
 				
 			} else if (o1.getUser() != null) {
 				
