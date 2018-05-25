@@ -111,36 +111,42 @@
 			<xsl:value-of select="firstname" />
 			<xsl:text>&#160;</xsl:text>
 			<xsl:value-of select="lastname" />
-		
-			<div class="bigmarginleft">
 			
-				<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
-				<xsl:text>:&#160;</xsl:text>
-				<xsl:value-of select="citizenIdentifier" />
-				
-				<xsl:if test="../../ChildQuery/showGuardianAddress = 'true'">
+			<xsl:variable name="showAddress" select="../../ChildQuery/showGuardianAddress"/>
+			<xsl:variable name="hideSSN" select="../../ChildQuery/hideSSNForOtherGuardians"/>
+			
+			<xsl:if test="$showAddress = 'true' or $hideSSN = 'false'">
+				<div class="bigmarginleft">
+					<xsl:if test="$hideSSN = 'false'">
+						<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="citizenIdentifier" />
+					</xsl:if>
 					
-					<br/>
-					<xsl:value-of select="$i18n.Column.Address" />
-					<xsl:text>:&#160;</xsl:text>
-					
-					<xsl:if test="address">
-						<xsl:value-of select="address" />
+					<xsl:if test="$hideSSN = 'false' and $showAddress = 'true'">
 						<br/>
 					</xsl:if>
 					
-					<xsl:if test="zipcode or postalAddress">
-						<xsl:if test="zipcode">
-							<xsl:value-of select="zipcode" />
-							<xsl:text>&#160;</xsl:text>
+					<xsl:if test="$showAddress = 'true'">
+						<xsl:value-of select="$i18n.Column.Address" />
+						<xsl:text>:&#160;</xsl:text>
+						
+						<xsl:if test="address">
+							<xsl:value-of select="address" />
+							<br/>
 						</xsl:if>
 						
-						<xsl:value-of select="postalAddress" />
+						<xsl:if test="zipcode or postalAddress">
+							<xsl:if test="zipcode">
+								<xsl:value-of select="zipcode" />
+								<xsl:text>&#160;</xsl:text>
+							</xsl:if>
+							
+							<xsl:value-of select="postalAddress" />
+						</xsl:if>
 					</xsl:if>
-					
-				</xsl:if>
-				
-			</div>
+				</div>
+			</xsl:if>
 		</div>
 	
 	</xsl:template>

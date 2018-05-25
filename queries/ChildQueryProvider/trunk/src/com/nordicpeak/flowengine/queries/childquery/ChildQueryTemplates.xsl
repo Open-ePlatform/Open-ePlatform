@@ -124,9 +124,12 @@
 									<th>
 										<xsl:value-of select="$i18n.Column.Lastname"/>
 									</th>
-									<th>
-										<xsl:value-of select="$i18n.Column.SocialSecurityNumber"/>
-									</th>
+									
+									<xsl:if test="ChildQueryInstance/ChildQuery/hideSSNForOtherGuardians = 'false'">
+										<th>
+											<xsl:value-of select="$i18n.Column.SocialSecurityNumber"/>
+										</th>
+									</xsl:if>
 									
 									<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true'">
 										<th>
@@ -180,10 +183,13 @@
 			</td>
 			<td>
 				<xsl:value-of select="lastname"/>
-			</td>			
-			<td>
-				<xsl:value-of select="citizenIdentifier"/>
 			</td>
+			
+			<xsl:if test="../../ChildQuery/hideSSNForOtherGuardians = 'false'">
+				<td>
+					<xsl:value-of select="citizenIdentifier"/>
+				</td>
+			</xsl:if>
 			
 			<xsl:if test="../../ChildQuery/useMultipartSigning = 'true'">
 				<td>
@@ -557,15 +563,22 @@
 								<xsl:value-of select="lastname" />
 							</strong>
 							
-							<p class="tiny">
-								
-									<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
-									<xsl:text>:&#160;</xsl:text>
-									<xsl:value-of select="citizenIdentifier" />
+							<xsl:variable name="showAddress" select="../../../../ChildQuery/showGuardianAddress"></xsl:variable>
+							<xsl:variable name="hideSSN" select="../../../../ChildQuery/hideSSNForOtherGuardians"></xsl:variable>
+							
+							<xsl:if test="$showAddress = 'true' or $hideSSN = 'false'">
+								<p class="tiny">
+									<xsl:if test="$hideSSN = 'false'">
+										<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
+										<xsl:text>:&#160;</xsl:text>
+										<xsl:value-of select="citizenIdentifier" />
+									</xsl:if>
 									
-									<xsl:if test="../../../../ChildQuery/showGuardianAddress = 'true'">
-										
+									<xsl:if test="$hideSSN = 'false' and $showAddress = 'true'">
 										<br/>
+									</xsl:if>
+									
+									<xsl:if test="$showAddress = 'true'">
 										<xsl:value-of select="$i18n.Column.Address" />
 										<xsl:text>:&#160;</xsl:text>
 										
@@ -584,8 +597,8 @@
 										</xsl:if>
 										
 									</xsl:if>
-									
 								</p>
+							</xsl:if>
 						</div>
 						
 						<xsl:if test="../../../../ChildQuery/useMultipartSigning = 'true'">
@@ -819,15 +832,22 @@
 								<xsl:value-of select="lastname" />
 							</strong>
 							
-							<p class="tiny">
-								
-									<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
-									<xsl:text>:&#160;</xsl:text>
-									<xsl:value-of select="citizenIdentifier" />
+							<xsl:variable name="showAddress" select="../../ChildQuery/showGuardianAddress"></xsl:variable>
+							<xsl:variable name="hideSSN" select="../../ChildQuery/hideSSNForOtherGuardians"></xsl:variable>
+							
+							<xsl:if test="$showAddress = 'true' or $hideSSN = 'false'">
+								<p class="tiny">
+									<xsl:if test="$hideSSN = 'false'">
+										<xsl:value-of select="$i18n.Column.SocialSecurityNumber" />
+										<xsl:text>:&#160;</xsl:text>
+										<xsl:value-of select="citizenIdentifier" />
+									</xsl:if>
 									
-									<xsl:if test="../../ChildQuery/showGuardianAddress = 'true'">
-										
+									<xsl:if test="$hideSSN = 'false' and $showAddress = 'true'">
 										<br/>
+									</xsl:if>
+									
+									<xsl:if test="$showAddress = 'true'">
 										<xsl:value-of select="$i18n.Column.Address" />
 										<xsl:text>:&#160;</xsl:text>
 										
@@ -848,6 +868,7 @@
 									</xsl:if>
 									
 								</p>
+							</xsl:if>
 						</div>
 						
 						<xsl:if test="../../ChildQuery/useMultipartSigning = 'true'">

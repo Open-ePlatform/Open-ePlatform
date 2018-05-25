@@ -7,6 +7,13 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
+import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
+import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
+
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -23,13 +30,6 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 import se.unlogic.webutils.annotations.URLRewrite;
-
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
-import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
-import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
-import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
-import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
 
 @Table(name = "child_queries")
 @XMLElement
@@ -68,13 +68,18 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean hideSSNForOtherGuardians;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean useMultipartSigning;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean setMultipartsAsOwners;
-	
+
 	@DAOManaged
 	@XMLElement
 	private boolean requireGuardianEmail;
@@ -104,9 +109,9 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	private List<ChildQueryInstance> instances;
 
 	private ChildAlternative childSelectedAlternative;
-	
+
 	private ChildAlternative singleGuardianAlternative;
-	
+
 	private ChildAlternative multiGuardianAlternative;
 
 	public boolean isShowAddress() {
@@ -137,6 +142,16 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	public void setAlwaysShowOtherGuardians(boolean alwaysShowOtherGuardians) {
 
 		this.alwaysShowOtherGuardians = alwaysShowOtherGuardians;
+	}
+
+	public boolean isHideSSNForOtherGuardians() {
+
+		return hideSSNForOtherGuardians;
+	}
+
+	public void setHideSSNForOtherGuardians(boolean hideSSNForOtherGuardians) {
+
+		this.hideSSNForOtherGuardians = hideSSNForOtherGuardians;
 	}
 
 	public boolean isRequireGuardianEmail() {
@@ -234,12 +249,14 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 
 		this.otherGuardiansDescription = otherGuardiansDescription;
 	}
-	
+
 	public boolean isSetMultipartsAsOwners() {
+
 		return setMultipartsAsOwners;
 	}
 
 	public void setSetMultipartsAsOwners(boolean setMultipartsAsOwners) {
+
 		this.setMultipartsAsOwners = setMultipartsAsOwners;
 	}
 
@@ -435,39 +452,33 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		return this.useMultipartSigning;
 	}
 
-	
 	public ChildAlternative getChildSelectedAlternative() {
-	
+
 		return childSelectedAlternative;
 	}
 
-	
 	public void setChildSelectedAlternative(ChildAlternative childSelectedAlternative) {
-	
+
 		this.childSelectedAlternative = childSelectedAlternative;
 	}
 
-	
 	public ChildAlternative getSingleGuardianAlternative() {
-	
+
 		return singleGuardianAlternative;
 	}
 
-	
 	public void setSingleGuardianAlternative(ChildAlternative singleGuardianAlternative) {
-	
+
 		this.singleGuardianAlternative = singleGuardianAlternative;
 	}
 
-	
 	public ChildAlternative getMultiGuardianAlternative() {
-	
+
 		return multiGuardianAlternative;
 	}
 
-	
 	public void setMultiGuardianAlternative(ChildAlternative multiGuardianAlternative) {
-	
+
 		this.multiGuardianAlternative = multiGuardianAlternative;
 	}
 

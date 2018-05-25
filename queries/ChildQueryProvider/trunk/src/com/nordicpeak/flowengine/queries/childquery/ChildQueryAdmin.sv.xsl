@@ -45,4 +45,5 @@
 	<xsl:variable name="i18n.ContactWays.Email">E-post</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Phone">Mobiltelefon</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Both">Både e-post och mobiltelefon</xsl:variable>
+	<xsl:variable name="i18n.HideSSNForOtherGuardians">Dölj personnummer på andra vårdnadshavaren</xsl:variable>
 </xsl:stylesheet>

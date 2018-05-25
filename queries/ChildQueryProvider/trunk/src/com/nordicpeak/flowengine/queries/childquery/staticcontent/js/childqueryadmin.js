@@ -1,31 +1,35 @@
-$(document).ready(function() {
-
-	$("#useMultipartSigning").change(function() {
-		showHideGuardianOptions();
+$(function() {
+	
+	var $alwaysShowOtherGuardians = $("#alwaysShowOtherGuardians");
+	var $useMultipartSigning = $("#useMultipartSigning");
+	
+	var toggleCommonFields = (function(checked) {
+		
+		$("#otherGuardiansDescription").prop("disabled", !checked).parent().parent().toggle(checked);
+		$("#showGuardianAddress").prop("disabled", !checked).parent().toggle(checked);
 	});
 	
-	$("#alwaysShowOtherGuardians").change(function() {
-		showHideGuardiansDescription();
-	});
+	$useMultipartSigning.change(function() {
+		
+		var checked = $useMultipartSigning.prop("checked");
+		
+		$alwaysShowOtherGuardians.prop("disabled", checked);
 
-	showHideGuardianOptions();
-	showHideGuardiansDescription();
+		$("#contactWays, #requireGuardianContactInfoVerification, #setMultipartsAsOwners").prop("disabled", !checked).parent().toggle(checked);
+		
+		toggleCommonFields(checked);
+		
+	}).change();
+	
+	$alwaysShowOtherGuardians.change(function() {
+		
+		var checked = $alwaysShowOtherGuardians.prop("checked");
+		
+		$useMultipartSigning.prop("disabled", checked);
+		
+		$("#hideSSNForOtherGuardians").prop("disabled", !checked).parent().toggle(checked);
+		
+		toggleCommonFields(checked);
+		
+	}).change();
 });
-
-function showHideGuardianOptions() {
-
-	var checked = $("#useMultipartSigning").prop("checked");
-
-	$("#contactWays, #requireGuardianContactInfoVerification, #setMultipartsAsOwners").parent().toggle(checked);
-	$("#alwaysShowOtherGuardians").prop("disabled", checked).parent().toggle(!checked);
-	
-	showHideGuardiansDescription();
-}
-
-function showHideGuardiansDescription() {
-
-	var checked = $("#useMultipartSigning, #alwaysShowOtherGuardians").prop("checked");
-
-	$("#otherGuardiansDescription").parent().parent().toggle(checked);
-	$("#showGuardianAddress").parent().toggle(checked);
-}

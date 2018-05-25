@@ -185,4 +185,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `hideSSNForOtherGuardians` TINYINT(1) UNSIGNED NOT NULL AFTER `alwaysShowOtherGuardians`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
