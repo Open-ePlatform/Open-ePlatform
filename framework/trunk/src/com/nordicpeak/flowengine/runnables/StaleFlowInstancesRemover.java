@@ -59,7 +59,7 @@ public class StaleFlowInstancesRemover implements Runnable {
 			
 			if (flowInstanceIDs != null) {
 				
-				log.error("Found " + flowInstanceIDs.size() + " stale flow instances");
+				log.warn("Found " + flowInstanceIDs.size() + " stale flow instances");
 				
 				for (Integer flowInstanceID : flowInstanceIDs) {
 					
