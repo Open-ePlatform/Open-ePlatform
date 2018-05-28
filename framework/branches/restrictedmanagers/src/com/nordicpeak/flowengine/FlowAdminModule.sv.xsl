@@ -173,6 +173,11 @@
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
 	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.SelectedManagerUserNotFoundError.1">Användaren</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.SelectedManagerUserNotFoundError.2">är inte handläggare för denna e-tjänst.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.SelectedManagerGroupNotFoundError.1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.SelectedManagerGroupNotFoundError.2">är inte begränsad handläggare för denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.2">är inte handläggare för den här e-tjänsten!</xsl:variable>
 	
@@ -553,11 +558,12 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.DeleteConfirm">Är du säker på att du vill ta bort regeln</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeValues">Värden (ett per rad)</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera (Om inget av värderna på regeln matchar attributets värde så aktiveras regeln)</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Always">Alltid tilldelade handläggare</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel ovan matchar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel matchar</xsl:variable>
 	
+	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständing handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
 	
 </xsl:stylesheet>

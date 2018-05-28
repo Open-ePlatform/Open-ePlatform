@@ -79,11 +79,11 @@ public class ExpiredManagerRemover implements Runnable {
 					
 					for (FlowFamily flowFamily : flowFamilies) {
 						
-						if (!CollectionUtils.isEmpty(flowFamily.getManagerUsers())) {
+						if (!CollectionUtils.isEmpty(flowFamily.getManagers())) {
 							
 							boolean managerRemoved = false;
 							
-							Iterator<FlowFamilyManager> iterator = flowFamily.getManagerUsers().iterator();
+							Iterator<FlowFamilyManager> iterator = flowFamily.getManagers().iterator();
 							
 							while (iterator.hasNext()) {
 								

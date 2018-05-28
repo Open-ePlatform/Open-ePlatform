@@ -17,6 +17,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
@@ -212,6 +213,11 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			}
 		}
 		
+		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler(), callback.getGroupHandler())) {
+			
+			validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
+		}
+		
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
@@ -246,7 +252,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 		XMLUtils.append(doc, updateTypeElement, (Flow) req.getAttribute("flow"));
 		
 		flowFamily.setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
-		XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagerUsers());
+		XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagers());
 		XMLUtils.append(doc, updateTypeElement, "ManagerGroups", flowFamily.getManagerGroups());
 		
 		if (callback.isShowManagerModalOnAdd()) {

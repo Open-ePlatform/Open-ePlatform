@@ -5,12 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.collections.ReverseListIterator;
-
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -20,6 +14,13 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class FlowInstanceUtils {
 	
@@ -282,5 +283,41 @@ public class FlowInstanceUtils {
 				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 			}
 		}
+	}
+	
+	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
+		
+		if (managers != null) {
+			for (User selectedManager : managers) {
+				
+				if (stringBuilder.length() > 0) {
+					
+					stringBuilder.append(", ");
+				}
+				
+				stringBuilder.append(selectedManager.getFirstname());
+				stringBuilder.append(" ");
+				stringBuilder.append(selectedManager.getLastname());
+			}
+		}
+		
+		if (managerGroups != null) {
+			for (Group selectedManagerGroup : managerGroups) {
+				
+				if (stringBuilder.length() > 0) {
+					
+					stringBuilder.append(", ");
+				}
+				
+				stringBuilder.append(selectedManagerGroup.getName());
+			}
+		}
+		
+		return stringBuilder;
+	}
+	
+	public static String getManagersString(List<User> managers, List<Group> managerGroups) {
+		
+		return getManagersString(new StringBuilder(), managers, managerGroups).toString();
 	}
 }

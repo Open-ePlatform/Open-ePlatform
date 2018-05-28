@@ -145,8 +145,8 @@
 	<xsl:variable name="i18n.FlowInstanceManagerClosedError">Den kopia av ärendet som du hade öppen har stängts.</xsl:variable>
 	<xsl:variable name="i18n.StatusNotFoundValidationError">Den valda statusen hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.InvalidStatusValidationError">Du har valt en ogiltig status.</xsl:variable>
-	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda handläggarna hittades inte.</xsl:variable>
-	<xsl:variable name="i18n.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda handläggargrupperna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerUserError.part1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerUserError.part2">har inte behörighet att handlägga detta ärende.</xsl:variable>
 	<xsl:variable name="i18n.UnauthorizedManagerGroupError.part1">Gruppen</xsl:variable>

@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -134,7 +134,7 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 			
 			ImmutableFlowFamily flowFamily = flow.getFlowFamily();
 			
-			List<Group> managingGroups = FlowInstanceAdminModule.getAllowedManagerGroups(flowFamily, groupHandler);
+			List<Group> managingGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, groupHandler);
 			
 			if (CollectionUtils.isEmpty(managingGroups)) {
 				

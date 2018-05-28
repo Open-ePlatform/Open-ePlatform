@@ -652,7 +652,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		flow.getFlowFamily().setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
 		XMLUtils.append(doc, showTypeElement, "ManagerGroups", flow.getFlowFamily().getManagerGroups());
-		XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagerUsers());
+		XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagers());
 
 		FlowSubmitSurveyProvider submitSurveyProvider = callback.getSystemInterface().getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
 

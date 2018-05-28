@@ -1,16 +1,15 @@
 package com.nordicpeak.flowengine.beans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.nordicpeak.flowengine.comparators.GroupNameComparator;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.handlers.GroupHandler;
-import se.unlogic.hierarchy.core.handlers.UserHandler;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -79,20 +78,16 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 		this.ruleID = ruleID;
 	}
 	
-	public String getGeneratedRuleID() {
-		return generatedRuleID;
-	}
-	
 	public void setGeneratedRuleID(String generatedRuleID) {
 		this.generatedRuleID = generatedRuleID;
 	}
 	
-	public boolean isInvert() {
+	public boolean isInverted() {
 		return invert;
 	}
 	
-	public void setInvert(boolean invert) {
-		this.invert = invert;
+	public void setInverted(boolean inverted) {
+		this.invert = inverted;
 	}
 	
 	public FlowFamily getFlowFamily() {
@@ -147,12 +142,7 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 			
 		} else {
 			
-			userIDs = new ArrayList<Integer>(users.size());
-			
-			for (User user : users) {
-				
-				userIDs.add(user.getUserID());
-			}
+			userIDs = UserUtils.getUserIDs(users);
 		}
 	}
 	
@@ -166,32 +156,37 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 			
 		} else {
 			
-			groupIDs = new ArrayList<Integer>(groups.size());
-			
-			for (Group group : groups) {
-				
-				groupIDs.add(group.getGroupID());
-			}
+			groupIDs = UserUtils.getGroupIDs(groups);
 		}
 	}
 	
-	public void setUsersAndGroups(UserHandler userHandler, GroupHandler groupHandler) {
+	public void setUsersAndGroups(List<User> allowedManagers, List<Group> allowedManagerGroups, boolean removeMissingIDs) {
 		
 		if (userIDs != null && users == null) {
 			
-			users = userHandler.getUsers(userIDs, false, true);
+			users = FlowFamilyUtils.filterSelectedManagers(allowedManagers, userIDs, null);
 			
 			if (users != null) {
 				Collections.sort(users, UserNameComparator.getInstance());
+			}
+			
+			if (removeMissingIDs) {
+				
+				userIDs = UserUtils.getUserIDs(users);
 			}
 		}
 		
 		if (groupIDs != null && groups == null) {
 			
-			groups = groupHandler.getGroups(groupIDs, false);
+			groups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, groupIDs, null);
 			
 			if (groups != null) {
 				Collections.sort(groups, GroupNameComparator.getInstance());
+			}
+			
+			if (removeMissingIDs) {
+				
+				groupIDs = UserUtils.getGroupIDs(groups);
 			}
 		}
 	}

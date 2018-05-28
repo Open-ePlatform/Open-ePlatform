@@ -549,7 +549,7 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
-			List<FlowFamilyManager> activeManagers = flowFamily.getActiveManagerUsers();
+			List<FlowFamilyManager> activeManagers = flowFamily.getActiveManagers();
 			
 			if (activeManagers != null) {
 				

@@ -9,6 +9,9 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
@@ -24,9 +27,6 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
-
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 
 @Table(name = "flowengine_flow_instance_events")
 @XMLElement
@@ -245,7 +245,33 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 			return 1;
 		}
-
+		
 		return a1.compareTo(a2);
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((eventID == null) ? 0 : eventID.hashCode());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FlowInstanceEvent other = (FlowInstanceEvent) obj;
+		if (eventID == null) {
+			if (other.eventID != null)
+				return false;
+		} else if (!eventID.equals(other.eventID))
+			return false;
+		return true;
+	}
+	
 }

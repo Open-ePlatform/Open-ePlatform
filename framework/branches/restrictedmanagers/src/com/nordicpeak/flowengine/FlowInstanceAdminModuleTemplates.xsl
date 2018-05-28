@@ -1761,7 +1761,7 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
 	
 		<xsl:call-template name="printValidationError">
-			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"></xsl:with-param>
+			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError" />
 		</xsl:call-template>
 	
 	</xsl:template>
@@ -1769,7 +1769,7 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
 	
 		<xsl:call-template name="printValidationError">
-			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError"></xsl:with-param>
+			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError" />
 		</xsl:call-template>
 	
 	</xsl:template>

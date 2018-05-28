@@ -125,6 +125,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanc
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
 import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
@@ -2424,7 +2425,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			log.error("Error reloading cache", e);
 		}
 	}
-
+	
 	private Status getCachedStatus(Flow flow, Status status) {
 
 		if (status == null || flow.getStatuses() == null) {
@@ -4953,8 +4954,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
 
-			List<User> allowedManagers = FlowInstanceAdminModule.getAllowedManagers(flowFamily, systemInterface.getUserHandler());
-			List<Group> allowedManagerGroups = FlowInstanceAdminModule.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
+			List<User> allowedManagers = FlowFamilyUtils.getAllowedManagers(flowFamily, systemInterface.getUserHandler());
+			List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
+			
+			List<User> noMatchUsers = FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null);
+			List<Group> noMatchGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null);
+			List<User> alwaysUsers = FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null);
+			List<Group> alwaysGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null);
+			
+			if (flowFamily.getAutoManagerAssignmentRules() != null) {
+				
+				for (AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
+					
+					rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
+				}
+			}
 			
 			List<ValidationError> validationErrors = null;
 			
@@ -4967,15 +4981,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				List<Integer> alwaysUserIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-user"));
 				List<Integer> alwaysGroupIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-group"));
 				
-				List<User> noMatchUsers = null;
-				List<Group> noMatchGroups = null;
-				List<User> alwaysUsers = null;
-				List<Group> alwaysGroups = null;
+				noMatchUsers = noMatchUserIDs == null ? null : systemInterface.getUserHandler().getUsers(noMatchUserIDs, false, true);
+				noMatchGroups = noMatchGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(noMatchGroupIDs, false);
+				alwaysUsers = alwaysUserIDs == null ? null : systemInterface.getUserHandler().getUsers(alwaysUserIDs, false, true);
+				alwaysGroups = alwaysGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(alwaysGroupIDs, false);
 				
-				noMatchUsers = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, noMatchUserIDs, validationErrors);
-				noMatchGroups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, noMatchGroupIDs, validationErrors);
-				alwaysUsers = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, alwaysUserIDs, validationErrors);
-				alwaysGroups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, alwaysGroupIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagers(allowedManagers, noMatchUsers, noMatchUserIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, noMatchGroups, noMatchGroupIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagers(allowedManagers, alwaysUsers, alwaysUserIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, alwaysGroups, alwaysGroupIDs, validationErrors);
 				
 				String[] ruleIDs = req.getParameterValues("auto-manager-rule");
 				List<AutoManagerAssignmentRule> rules = null;
@@ -4996,7 +5010,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-rule-invert-" + ruleID));
 						
 						rule.setAttributeName(attributeName);
-						rule.setInvert(invert);
+						rule.setInverted(invert);
 						
 						if (!StringUtils.isEmpty(attributeValues)) {
 							
@@ -5057,8 +5071,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 							}
 						}
 						
-						List<User> users = FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, userIDs, validationErrors);
-						List<Group> groups = FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, groupIDs, validationErrors);
+						List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
+						List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
+						
+						FlowFamilyUtils.validateSelectedManagers(allowedManagers, users, userIDs, validationErrors);
+						FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, groups, groupIDs, validationErrors);
 						
 						rule.setUsers(users);
 						rule.setGroups(groups);
@@ -5070,6 +5087,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flowFamily.setAutoManagerAssignmentNoMatchGroupIDs(UserUtils.getGroupIDs(noMatchGroups));
 				flowFamily.setAutoManagerAssignmentAlwaysUserIDs(UserUtils.getUserIDs(alwaysUsers));
 				flowFamily.setAutoManagerAssignmentAlwaysGroupIDs(UserUtils.getGroupIDs(alwaysGroups));
+				
+				if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, systemInterface.getUserHandler(), systemInterface.getGroupHandler())) {
+					
+					validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
+				}
 				
 				if (validationErrors.isEmpty()) {
 
@@ -5107,30 +5129,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 			genDoc.addIgnoredFields(Flow.FLOW_FAMILY_RELATION);
 			
-			if (flowFamily.getAutoManagerAssignmentRules() != null) {
-			
-				for(AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
-					
-					rule.setUsersAndGroups(systemInterface.getUserHandler(), systemInterface.getGroupHandler());
-				}
-			}
-			
 			autoManagerAssignmentElement.appendChild(flow.toXML(genDoc));
 			autoManagerAssignmentElement.appendChild(flowFamily.toXML(doc));
 			
-			flowFamily.setManagerUsersAndGroups(systemInterface.getUserHandler(), systemInterface.getGroupHandler());
-			
-			if (allowedManagers != null) {
-				
-				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchUsers", FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null));
-				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysUsers", FlowInstanceAdminModule.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null));
-			}
-			
-			if (allowedManagerGroups != null) {
-				
-				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchGroups", FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null));
-				XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysGroups", FlowInstanceAdminModule.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null));
-			}
+			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchUsers", noMatchUsers);
+			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchGroups", noMatchGroups);
+			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysUsers", alwaysUsers);
+			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysGroups", alwaysGroups);
 			
 			if (validationErrors != null) {
 				
@@ -5143,7 +5148,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		throw new URINotFoundException(uriParser);
 	}
-
+	
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
 		

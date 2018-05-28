@@ -6384,7 +6384,39 @@
 			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"/>
 		</p>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError"/>
+		</p>
+	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='SelectedManagerUserNotFoundError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.SelectedManagerUserNotFoundError.1"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="displayName"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.SelectedManagerUserNotFoundError.2"/>
+		</p>
+	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='SelectedManagerGroupNotFoundError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.SelectedManagerGroupNotFoundError.1"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="displayName"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.SelectedManagerGroupNotFoundError.2"/>
+		</p>
+	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowFamilyAliasCollision']">
 			
@@ -6459,6 +6491,15 @@
 			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
 		</p>
 	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='FullManagerOrFallbackManagerRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.FullManagerOrFallbackManagerRequired" />
+		</p>
+	</xsl:template>
+	
+	
 	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
