@@ -779,7 +779,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user);
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-						
 						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousStatus, user), EventTarget.ALL);
 					}
 					
@@ -846,6 +845,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	private ForegroundModuleResponse showUpdateStatusSignForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstance flowInstance, Status status, List<ValidationError> validationErrors) throws Exception {
 		
+		if (genericSigningProvider == null) {
+			throw new ModuleConfigurationException("genericSigningProvider is null");
+		}
+		
 		Document doc = createDocument(req, uriParser, user);
 		
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateStatusSigning");
@@ -910,6 +913,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				List<ValidationError> validationErrors = null;
 				
 				try {
+					if (genericSigningProvider == null) {
+						throw new ModuleConfigurationException("genericSigningProvider is null");
+					}
+					
 					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, signingRequest);
 					
 					if (res.isCommitted()) {
@@ -1010,7 +1017,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				if (userIDs != null || groupIDs != null) {
 					
-					flowInstance.setManagers(FlowFamilyUtils.filterSelectedManagers(allowedManagers, userIDs, validationErrors));
+					flowInstance.setManagers(FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, userIDs, validationErrors));
 					flowInstance.setManagerGroups(FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, groupIDs, validationErrors));
 					
 					detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
@@ -1208,7 +1215,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected List<User> getAllowedManagers(FlowInstance flowInstance) {
 		
-		return FlowFamilyUtils.getAllowedManagers(flowInstance.getFlow().getFlowFamily(), systemInterface.getUserHandler());
+		return FlowFamilyUtils.getAllowedManagerUsers(flowInstance.getFlow().getFlowFamily(), systemInterface.getUserHandler());
 	}
 	
 	protected List<Group> getAllowedManagerGroups(FlowInstance flowInstance) {
@@ -1968,7 +1975,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					
 					if (!ObjectUtils.isNull(flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), flowFamily.getAutoManagerAssignmentRules())) {
 						
-						List<User> allowedManagers = FlowFamilyUtils.getAllowedManagers(flowFamily, systemInterface.getUserHandler());
+						List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, systemInterface.getUserHandler());
 						List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
 						
 						List<User> newManagers = null;
@@ -1976,7 +1983,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						
 						if (flowFamily.getAutoManagerAssignmentAlwaysUserIDs() != null) {
 							
-							newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null));
+							newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null));
 						}
 						
 						if (flowFamily.getAutoManagerAssignmentAlwaysGroupIDs() != null) {
@@ -2023,7 +2030,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 												
 												if (rule.getUserIDs() != null) {
 													
-													ruleManagers = FlowFamilyUtils.filterSelectedManagers(allowedManagers, rule.getUserIDs(), null);
+													ruleManagers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, rule.getUserIDs(), null);
 												}
 												
 												if (rule.getGroupIDs() != null) {
@@ -2049,7 +2056,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							if (flowFamily.getAutoManagerAssignmentNoMatchUserIDs() != null) {
 								
-								newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null));
+								newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null));
 							}
 							
 							if (flowFamily.getAutoManagerAssignmentNoMatchGroupIDs() != null) {

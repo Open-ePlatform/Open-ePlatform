@@ -20,6 +20,8 @@ import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedGroupNotManagerValidationError;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
@@ -201,10 +203,14 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 			List<ValidationError> errors = new ArrayList<ValidationError>();
 			
 			List<Integer> selectedUserIDs = bean.getManagerUserIDs();
+			List<Integer> selectedGroupIDs = bean.getManagerGroupIDs();
+			
+			List<User> allowedManagerUsers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, callback.getUserHandler());
+			List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, callback.getGroupHandler());
 			
 			if (!CollectionUtils.isEmpty(selectedUserIDs)) {
 				
-				outer: for (Integer userID : selectedUserIDs) {
+				for (Integer userID : selectedUserIDs) {
 					
 					User selectedUser = callback.getUserHandler().getUser(userID, true, false);
 					
@@ -214,24 +220,31 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 						continue;
 					}
 					
-					if (flowFamily.getManagerUserIDs() != null && flowFamily.getManagerUserIDs().contains(userID)) {
+					if (allowedManagerUsers != null && allowedManagerUsers.contains(selectedUser)) {
 						continue;
 					}
 					
-					if (flowFamily.getManagerGroupIDs() != null) {
+					errors.add(new UnauthorizedUserNotManagerValidationError(selectedUser));
+				}
+			}
+			
+			if (!CollectionUtils.isEmpty(selectedGroupIDs)) {
+				
+				for (Integer groupID : selectedGroupIDs) {
+					
+					Group selectedGroup = callback.getGroupHandler().getGroup(groupID, false);
+					
+					if (selectedGroup == null) {
 						
-						if (!CollectionUtils.isEmpty(selectedUser.getGroups())) {
-							
-							for (Group group : selectedUser.getGroups()) {
-								
-								if (flowFamily.getManagerGroupIDs().contains(group.getGroupID())) {
-									continue outer;
-								}
-							}
-						}
+						errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR);
+						continue;
 					}
 					
-					errors.add(new UnauthorizedUserNotManagerValidationError(selectedUser));
+					if (allowedManagerGroups != null && allowedManagerGroups.contains(selectedGroup)) {
+						continue;
+					}
+					
+					errors.add(new UnauthorizedGroupNotManagerValidationError(selectedGroup));
 				}
 			}
 			

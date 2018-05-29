@@ -3182,7 +3182,7 @@
 			</div>
 		</div>
 		
-		<div id="allowedManagers">
+		<div id="allowedManagers" class="floatleft full">
 			<div class="floatleft full bigmarginbottom">
 				
 				<label class="floatleft full">
@@ -3194,7 +3194,8 @@
 						<xsl:value-of select="/Document/requestinfo/currentURI"/>
 						<xsl:text>/</xsl:text>
 						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/groups</xsl:text>
+						<xsl:text>/managergroups/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
 					</xsl:with-param>
 					<xsl:with-param name="name" select="'group'"/>
 					<xsl:with-param name="groups" select="ManagerGroups" />
@@ -3222,7 +3223,7 @@
 			</div>
 		</div>
 	
-		<h2><xsl:value-of select="$i18n.statusContentType.title"/></h2>
+		<h2 class="clearboth"><xsl:value-of select="$i18n.statusContentType.title"/></h2>
 		
 		<p><xsl:value-of select="$i18n.statusContentType.description"/></p>
 		
@@ -6381,7 +6382,7 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"/>
+			<xsl:value-of select="$i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError"/>
 		</p>
 	
 	</xsl:template>
@@ -6389,33 +6390,81 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError"/>
+			<xsl:value-of select="$i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError"/>
 		</p>
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='SelectedManagerUserNotFoundError']">
-	
+	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
 		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.SelectedManagerUserNotFoundError.1"/>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.1" />
 			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="displayName"/>
+			<xsl:value-of select="user/firstname" />
 			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="$i18n.ValidationError.SelectedManagerUserNotFoundError.2"/>
+			<xsl:value-of select="user/lastname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
 		</p>
-	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='SelectedManagerGroupNotFoundError']">
+	<xsl:template match="validationError[messageKey='UnauthorizedGroupNotManager']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="group/name" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='InUseManagerUserError']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.SelectedManagerGroupNotFoundError.1"/>
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.Part1" />
 			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="displayName"/>
+			<xsl:value-of select="user/firstname" />
 			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="$i18n.ValidationError.SelectedManagerGroupNotFoundError.2"/>
+			<xsl:value-of select="user/lastname" />
+			<xsl:text>&#160;</xsl:text>
+			
+			<xsl:if test="user/groups">
+			
+				<xsl:text>(</xsl:text>
+				<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.MemberOfGroups" />
+				<xsl:text>&#160;</xsl:text>
+				
+				<xsl:for-each select="user/groups/group">
+				
+					<xsl:if test="position() != 1">
+						<xsl:text>,&#160;</xsl:text>
+					</xsl:if>
+				
+					<xsl:value-of select="name"/>
+					
+				</xsl:for-each>
+				
+				<xsl:text>)&#160;</xsl:text>
+				
+			</xsl:if>
+			
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.Part2" />!
 		</p>
+	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='InUseManagerGroupError']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerGroupError.Part1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="group/name" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerGroupError.Part2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='FullManagerOrFallbackManagerRequired']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.FullManagerOrFallbackManagerRequired" />
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowFamilyAliasCollision']">
@@ -6444,62 +6493,6 @@
 		</p>
 		
 	</xsl:template>
-	
-	<xsl:template match="validationError[messageKey='UnauthorizedManagerUserError']">
-	
-		<p class="error">
-			<xsl:value-of select="$i18n.UnauthorizedManagerUserError.Part1" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/firstname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/lastname" />
-			<xsl:text>&#160;</xsl:text>
-			
-			<xsl:if test="user/groups">
-			
-				<xsl:text>(</xsl:text>
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.MemberOfGroups" />
-				<xsl:text>&#160;</xsl:text>
-				
-				<xsl:for-each select="user/groups/group">
-				
-					<xsl:if test="position() != 1">
-						<xsl:text>,&#160;</xsl:text>
-					</xsl:if>
-				
-					<xsl:value-of select="name"/>
-					
-				</xsl:for-each>
-				
-				<xsl:text>)&#160;</xsl:text>
-				
-			</xsl:if>
-			
-			<xsl:value-of select="$i18n.UnauthorizedManagerUserError.Part2" />!
-		</p>
-	</xsl:template>
-	
-	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
-	
-		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.1" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/firstname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/lastname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
-		</p>
-	</xsl:template>
-	
-	<xsl:template match="validationError[messageKey='FullManagerOrFallbackManagerRequired']">
-	
-		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.FullManagerOrFallbackManagerRequired" />
-		</p>
-	</xsl:template>
-	
-	
 	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">

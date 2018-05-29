@@ -374,7 +374,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	}
 	
 	@Override
-	public List<Integer> getManagerUserIDs() {
+	public List<Integer> getActiveManagerUserIDs() {
 		
 		if (managerUserIDs == null && !CollectionUtils.isEmpty(managerUsers)) {
 			

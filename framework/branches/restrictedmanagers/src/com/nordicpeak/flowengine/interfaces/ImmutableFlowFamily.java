@@ -19,7 +19,7 @@ public interface ImmutableFlowFamily extends Elementable {
 
 	public List<Flow> getFlows();
 	
-	public List<Integer> getManagerUserIDs();
+	public List<Integer> getActiveManagerUserIDs();
 		
 	public List<Integer> getManagerGroupIDs();
 	

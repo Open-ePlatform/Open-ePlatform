@@ -18,7 +18,7 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
+import com.nordicpeak.flowengine.validationerrors.InUseManagerUserValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -207,11 +207,12 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 						}
 					}
 					
-					validationErrors.add(new UnauthorizedManagerUserValidationError(currentManager));
+					validationErrors.add(new InUseManagerUserValidationError(currentManager));
 				}
-				
 			}
 		}
+		
+		//TODO check for still in use restricted groups InUseManagerGroupError
 		
 		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler())) {
 			

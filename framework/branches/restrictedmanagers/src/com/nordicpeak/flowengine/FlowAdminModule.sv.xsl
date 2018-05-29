@@ -172,14 +172,12 @@
 	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
-	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
-	<xsl:variable name="i18n.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.SelectedManagerUserNotFoundError.1">Användaren</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.SelectedManagerUserNotFoundError.2">är inte handläggare för denna e-tjänst.</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.SelectedManagerGroupNotFoundError.1">Gruppen</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.SelectedManagerGroupNotFoundError.2">är inte begränsad handläggare för denna e-tjänst.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.2">är inte handläggare för den här e-tjänsten!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedGroupNotManager.1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedGroupNotManager.2">är inte begränsad handläggare för den här e-tjänsten!</xsl:variable>
 	
 	<xsl:variable name="i18n.deleteStatusDisabledHasInstances">Den här statusen kan inte tas bort eftersom det finns en eller flera ärenden kopplade till den.</xsl:variable>
 	<xsl:variable name="i18n.updateStatus.link.title">Uppdatera statusen</xsl:variable>
@@ -368,8 +366,11 @@
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.Part1">Användaren</xsl:variable>
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.Part1">Användaren</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.MemberOfGroups">medlem i</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerGroupError.Part1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerGroupError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
 	
 	<xsl:variable name="i18n.exportFlow.title">Exportera e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.EvaluatorExportException.Part1">Ett fel uppstod när regelen</xsl:variable>
@@ -412,7 +413,6 @@
 	
 	<xsl:variable name="i18n.UnableToParseFile.part1">Den gick inte att tolka innehållet i filen </xsl:variable>
 	<xsl:variable name="i18n.UnableToParseFile.part2">.</xsl:variable>
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.MemberOfGroups">medlem i</xsl:variable>
 	
 	<xsl:variable name="i18n.showSubmitSurvey">Visa användarundersökning</xsl:variable>
 	<xsl:variable name="i18n.hideSubmitStepText">Göm steget "Skicka in" i stegöverblicken</xsl:variable>

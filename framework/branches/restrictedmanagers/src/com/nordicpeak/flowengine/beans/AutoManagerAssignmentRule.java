@@ -164,7 +164,7 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 		
 		if (userIDs != null && users == null) {
 			
-			users = FlowFamilyUtils.filterSelectedManagers(allowedManagers, userIDs, null);
+			users = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, userIDs, null);
 			
 			if (users != null) {
 				Collections.sort(users, UserNameComparator.getInstance());

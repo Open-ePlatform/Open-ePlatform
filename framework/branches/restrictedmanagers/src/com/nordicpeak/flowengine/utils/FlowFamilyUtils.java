@@ -12,6 +12,8 @@ import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.comparators.GroupNameComparator;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedGroupNotManagerValidationError;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -25,15 +27,15 @@ import se.unlogic.standardutils.validation.ValidationError;
 
 public class FlowFamilyUtils {
 	
-	public static List<User> getAllowedManagers(ImmutableFlowFamily flowFamily, UserHandler userHandler) {
+	public static List<User> getAllowedManagerUsers(ImmutableFlowFamily flowFamily, UserHandler userHandler) {
 		
 		HashSet<User> availableManagers = new HashSet<User>();
 		
 		if (flowFamily != null) {
 			
-			if (!CollectionUtils.isEmpty(flowFamily.getManagerUserIDs())) {
+			if (!CollectionUtils.isEmpty(flowFamily.getActiveManagerUserIDs())) {
 				
-				List<User> users = userHandler.getUsers(flowFamily.getManagerUserIDs(), false, true);
+				List<User> users = userHandler.getUsers(flowFamily.getActiveManagerUserIDs(), false, true);
 				
 				if (users != null) {
 					
@@ -92,7 +94,7 @@ public class FlowFamilyUtils {
 		return null;
 	}
 	
-	public static List<User> filterSelectedManagers(List<User> allowedManagers, List<Integer> selectedUserIDs, List<ValidationError> validationErrors) {
+	public static List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Integer> selectedUserIDs, List<ValidationError> validationErrors) {
 		
 		if (!CollectionUtils.isEmpty(selectedUserIDs)) {
 			
@@ -156,7 +158,7 @@ public class FlowFamilyUtils {
 		}
 	}
 	
-	public static void validateSelectedManagers(List<User> allowedUsers, List<User> selectedUsers, List<Integer> userIDs, List<ValidationError> validationErrors) {
+	public static void validateSelectedManagerUsers(List<User> allowedUsers, List<User> selectedUsers, List<Integer> userIDs, List<ValidationError> validationErrors) {
 		
 		if (!CollectionUtils.isEmpty(userIDs)) {
 			
@@ -184,7 +186,7 @@ public class FlowFamilyUtils {
 				}
 				
 				if (!found) {
-					validationErrors.add(new ValidationError("SelectedManagerUserNotFoundError", user.getFirstname() + " " + user.getLastname()));
+					validationErrors.add(new UnauthorizedUserNotManagerValidationError(user));
 				}
 			}
 		}
@@ -218,7 +220,7 @@ public class FlowFamilyUtils {
 				}
 				
 				if (!found) {
-					validationErrors.add(new ValidationError("SelectedManagerGroupNotFoundError", group.getName()));
+					validationErrors.add(new UnauthorizedGroupNotManagerValidationError(group));
 				}
 			}
 		}

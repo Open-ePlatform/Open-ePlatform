@@ -1464,9 +1464,13 @@
 					</div>
   				</div>
   			</div>
-  			<div class="divider errands"></div>
+  			<div class="divider errands" />
   			
-  			<xsl:apply-templates select="validationError"/>
+  			<xsl:if test="validationError">
+  				<div class="section-full">
+	  				<xsl:apply-templates select="validationError"/>
+	  			</div>
+  			</xsl:if>
   			
   			<form method="post" action="{/Document/requestinfo/uri}">
   			
@@ -1761,7 +1765,7 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
 	
 		<xsl:call-template name="printValidationError">
-			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError" />
+			<xsl:with-param name="message" select="$i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError" />
 		</xsl:call-template>
 	
 	</xsl:template>
@@ -1769,39 +1773,39 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
 	
 		<xsl:call-template name="printValidationError">
-			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerGroupsNotFoundError" />
+			<xsl:with-param name="message" select="$i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError" />
 		</xsl:call-template>
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='UnauthorizedManagerUserError']">
+	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
 	
 		<xsl:call-template name="printValidationError">
 			<xsl:with-param name="message">
 			
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.part1"/>
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.part1"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="user/firstname" />
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="user/lastname" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.part2"/>	
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.part2"/>	
 					
 			</xsl:with-param>
 		</xsl:call-template>
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='UnauthorizedManagerGroupError']">
+	<xsl:template match="validationError[messageKey='UnauthorizedGroupNotManager']">
 	
 		<xsl:call-template name="printValidationError">
 			<xsl:with-param name="message">
 			
-				<xsl:value-of select="$i18n.UnauthorizedManagerGroupError.part1"/>
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.part1"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="group/name" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="$i18n.UnauthorizedManagerGroupError.part2"/>	
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.part2"/>	
 					
 			</xsl:with-param>
 		</xsl:call-template>

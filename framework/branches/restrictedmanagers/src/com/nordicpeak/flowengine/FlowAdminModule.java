@@ -4954,12 +4954,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
 
-			List<User> allowedManagers = FlowFamilyUtils.getAllowedManagers(flowFamily, systemInterface.getUserHandler());
+			List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, systemInterface.getUserHandler());
 			List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
 			
-			List<User> noMatchUsers = FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null);
+			List<User> noMatchUsers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null);
 			List<Group> noMatchGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null);
-			List<User> alwaysUsers = FlowFamilyUtils.filterSelectedManagers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null);
+			List<User> alwaysUsers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null);
 			List<Group> alwaysGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null);
 			
 			if (flowFamily.getAutoManagerAssignmentRules() != null) {
@@ -4986,9 +4986,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				alwaysUsers = alwaysUserIDs == null ? null : systemInterface.getUserHandler().getUsers(alwaysUserIDs, false, true);
 				alwaysGroups = alwaysGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(alwaysGroupIDs, false);
 				
-				FlowFamilyUtils.validateSelectedManagers(allowedManagers, noMatchUsers, noMatchUserIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, noMatchUsers, noMatchUserIDs, validationErrors);
 				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, noMatchGroups, noMatchGroupIDs, validationErrors);
-				FlowFamilyUtils.validateSelectedManagers(allowedManagers, alwaysUsers, alwaysUserIDs, validationErrors);
+				FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, alwaysUsers, alwaysUserIDs, validationErrors);
 				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, alwaysGroups, alwaysGroupIDs, validationErrors);
 				
 				String[] ruleIDs = req.getParameterValues("auto-manager-rule");
@@ -5074,7 +5074,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 						List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
 						List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
 						
-						FlowFamilyUtils.validateSelectedManagers(allowedManagers, users, userIDs, validationErrors);
+						FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, users, userIDs, validationErrors);
 						FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, groups, groupIDs, validationErrors);
 						
 						rule.setUsers(users);

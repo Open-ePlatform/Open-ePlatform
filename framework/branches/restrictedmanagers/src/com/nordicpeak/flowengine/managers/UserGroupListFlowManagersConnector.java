@@ -205,7 +205,7 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 		
 		List<User> managingUsers = new ArrayList<User>();
 		
-		Collection<Integer> managerIDs = flowFamily.getManagerUserIDs();
+		Collection<Integer> managerIDs = flowFamily.getActiveManagerUserIDs();
 		List<Integer> managerGroupIDs = flowFamily.getManagerGroupIDs();
 		
 		if (!CollectionUtils.isEmpty(managerIDs)) {

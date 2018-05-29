@@ -6,14 +6,14 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 //TODO fix case...
 @XMLElement(name = "validationError")
-public class UnauthorizedManagerGroupValidationError extends ValidationError {
+public class InUseManagerGroupValidationError extends ValidationError {
 
 	@XMLElement
 	private final Group group;
 
-	public UnauthorizedManagerGroupValidationError(Group group) {
+	public InUseManagerGroupValidationError(Group group) {
 
-		super("UnauthorizedManagerGroupError");
+		super("InUseManagerGroupError");
 		this.group = group;
 	}
 
