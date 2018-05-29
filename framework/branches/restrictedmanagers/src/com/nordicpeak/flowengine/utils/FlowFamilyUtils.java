@@ -224,9 +224,9 @@ public class FlowFamilyUtils {
 		}
 	}
 	
-	public static List<User> getActiveFullManagerUsers(FlowFamily flowFamily, UserHandler userHandler, GroupHandler groupHandler) {
+	public static List<User> getActiveManagerUsers(boolean fullManagersOnly, FlowFamily flowFamily, UserHandler userHandler) {
 		
-		flowFamily.setManagerUsersAndGroups(userHandler, groupHandler);
+		flowFamily.setManagerUsersAndGroups(userHandler, null);
 		
 		List<User> users = null;
 		
@@ -236,7 +236,7 @@ public class FlowFamilyUtils {
 			
 			for (FlowFamilyManager manager : flowFamily.getManagers()) {
 				
-				if (manager.isRestricted() || manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
+				if ((fullManagersOnly && manager.isRestricted()) || manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
 					continue;
 				}
 				
@@ -246,12 +246,20 @@ public class FlowFamilyUtils {
 		
 		if (!CollectionUtils.isEmpty(flowFamily.getManagerGroups())) {
 			
+			List<Integer> groupIDs = new ArrayList<Integer>();
+			
 			for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
 				
-				if (!managerGroup.isRestricted()) {
-					
-					users = CollectionUtils.addAndInstantiateIfNeeded(users, userHandler.getUsersByGroup(managerGroup.getGroupID(), false, true));
+				if (fullManagersOnly && managerGroup.isRestricted()) {
+					continue;
 				}
+				
+				groupIDs.add(managerGroup.getGroupID());
+			}
+			
+			if (!groupIDs.isEmpty()) {
+				
+				users = CollectionUtils.addAndInstantiateIfNeeded(users, userHandler.getUsersByGroups(groupIDs, true));
 			}
 		}
 		
@@ -259,9 +267,9 @@ public class FlowFamilyUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static boolean isAutoManagerRulesValid(FlowFamily flowFamily, UserHandler userHandler, GroupHandler groupHandler) {
+	public static boolean isAutoManagerRulesValid(FlowFamily flowFamily, UserHandler userHandler) {
 		
-		if (!CollectionUtils.isEmpty(flowFamily.getAutoManagerAssignmentRules()) && getActiveFullManagerUsers(flowFamily, userHandler, groupHandler) == null) {
+		if (!CollectionUtils.isEmpty(flowFamily.getAutoManagerAssignmentRules()) && getActiveManagerUsers(true, flowFamily, userHandler) == null) {
 			
 			List<User> users = null;
 			

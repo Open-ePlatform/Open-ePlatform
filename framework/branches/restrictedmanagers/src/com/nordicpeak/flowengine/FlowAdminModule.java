@@ -5088,7 +5088,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flowFamily.setAutoManagerAssignmentAlwaysUserIDs(UserUtils.getUserIDs(alwaysUsers));
 				flowFamily.setAutoManagerAssignmentAlwaysGroupIDs(UserUtils.getGroupIDs(alwaysGroups));
 				
-				if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, systemInterface.getUserHandler(), systemInterface.getGroupHandler())) {
+				if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, systemInterface.getUserHandler())) {
 					
 					validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
 				}

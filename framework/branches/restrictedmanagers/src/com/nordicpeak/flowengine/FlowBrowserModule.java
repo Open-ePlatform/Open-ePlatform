@@ -1710,4 +1710,30 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 	}
 	
+	@WebPublic(alias = "getlatestflowform")
+	public ForegroundModuleResponse getLatestPublishedFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, AccessDeniedException, URINotFoundException {
+
+		Flow flow;
+
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flow = getLatestPublishedFlowVersion(Integer.valueOf(uriParser.get(2)))) != null) {
+
+			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+			
+			checkFlowAccess(user, flow, profile);
+			
+			if (CollectionUtils.isEmpty(flow.getFlowForms())) {
+				
+				log.warn("User " + user + " requested PDF form for flow " + flow + " which has no PDF form available.");
+				
+			} else {
+				
+				FlowForm flowForm = flow.getFlowForms().get(0);
+				flowForm.setFlow(flow);
+				
+				return flowAdminModule.sendFlowForm(flowForm, req, res, user, uriParser, profile, false);
+			}
+		}
+
+		throw new URINotFoundException(uriParser);
+	}
 }

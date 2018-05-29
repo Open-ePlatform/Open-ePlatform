@@ -416,7 +416,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	
 	public void setManagerUsersAndGroups(UserHandler userHandler, GroupHandler groupHandler) {
 		
-		if (managerUsers != null) {
+		if (managerUsers != null && userHandler != null) {
 			
 			List<Integer> missingUserIDs = null;
 			
@@ -447,7 +447,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 			}
 		}
 		
-		if (managerGroups != null) {
+		if (managerGroups != null && groupHandler != null) {
 			
 			List<Integer> missingGroupIDs = null;
 			

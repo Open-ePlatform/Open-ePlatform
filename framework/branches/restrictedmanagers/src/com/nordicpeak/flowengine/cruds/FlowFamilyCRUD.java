@@ -213,7 +213,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			}
 		}
 		
-		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler(), callback.getGroupHandler())) {
+		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler())) {
 			
 			validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
 		}

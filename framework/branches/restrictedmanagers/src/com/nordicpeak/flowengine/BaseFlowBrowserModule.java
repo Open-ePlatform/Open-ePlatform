@@ -45,7 +45,7 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 				if(instanceManager.getFlowInstance().getStepID() != null){
 				
 					//TODO add flow instance event
-					instanceManager.saveInstance(this, user, poster, EventType.UPDATED);
+					instanceManager.saveInstance(this, user, poster, EventType.UPDATED, instanceManager.getFlowInstance().getLastStatusChange());
 					
 					rebindFlowInstance(req.getSession(), instanceManager);
 					
