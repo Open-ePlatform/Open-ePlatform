@@ -413,6 +413,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		useMultipartSigning = xmlParser.getPrimitiveBoolean("useMultipartSigning");
 		alwaysShowOtherGuardians = xmlParser.getPrimitiveBoolean("alwaysShowOtherGuardians");
+		hideSSNForOtherGuardians = xmlParser.getPrimitiveBoolean("hideSSNForOtherGuardians");
 		showAddress = xmlParser.getPrimitiveBoolean("showAddress");
 		showGuardianAddress = xmlParser.getPrimitiveBoolean("showGuardianAddress");
 		requireGuardianEmail = xmlParser.getPrimitiveBoolean("requireGuardianEmail");
