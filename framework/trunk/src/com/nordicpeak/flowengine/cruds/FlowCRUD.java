@@ -264,7 +264,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	public void checkAccess(User user, Flow bean) throws AccessDeniedException {
 
-		if (!AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
+		if (!callback.hasFlowTypeAccess(user, bean)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + bean.getFlowType());
 		}
