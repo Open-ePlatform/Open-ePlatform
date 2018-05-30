@@ -1436,9 +1436,9 @@
 			</div>
 	  		
 			<div class="navigator-buttons centered">
-				<xsl:if test="FlowInstance/Status/isUserMutable = 'true'">
-	  				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{FlowInstance/Flow/flowID}/{FlowInstance/flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
- 				</xsl:if>
+				<xsl:if test="FlowInstance/Status/isAdminMutable = 'true'">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{FlowInstance/Flow/flowID}/{FlowInstance/flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
+				</xsl:if>
 			</div>
 			
 		</section>
