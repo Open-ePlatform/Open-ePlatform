@@ -325,13 +325,20 @@
 				
 			<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true' or ChildQueryInstance/ChildQuery/alwaysShowOtherGuardians = 'true'">
 				
-				<xsl:variable name="guardianValidationErrors" select="ValidationErrors/validationError[messageKey = 'EmailOrPhoneRequired']"/>
+				<xsl:variable name="guardianValidationErrors" select="ValidationErrors/validationError[fieldName or messageKey = 'EmailOrPhoneRequired']"/>
 				
 				<xsl:if test="$guardianValidationErrors">
 					<div id="{$queryID}-validationerrors" class="validationerrors">
 						<div class="info-box error">
 						
-								<xsl:apply-templates select="$guardianValidationErrors"/>
+							<xsl:choose>
+								<xsl:when test="ValidationErrors/validationError[messageKey = 'EmailOrPhoneRequired']">
+									<xsl:apply-templates select="ValidationErrors/validationError[messageKey = 'EmailOrPhoneRequired']"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<span/>
+								</xsl:otherwise>
+							</xsl:choose>
 							
 							<div class="marker"/>
 						</div>
@@ -340,7 +347,7 @@
 				
 				<article class="childquery otherguardians">
 	
-					<xsl:if test="ValidationErrors/validationError[fieldName or messageKey = 'EmailOrPhoneRequired']">
+					<xsl:if test="$guardianValidationErrors">
 						<xsl:attribute name="class">childquery otherguardians error</xsl:attribute>
 					</xsl:if>
 	
@@ -358,7 +365,7 @@
 							
 								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
 									<xsl:with-param name="useMultipartSigning" select="ChildQueryInstance/ChildQuery/useMultipartSigning"/>
-								</xsl:apply-templates>							
+								</xsl:apply-templates>
 	
 							</xsl:when>
 							<xsl:when test="ChildQueryInstance/citizenIdentifier">

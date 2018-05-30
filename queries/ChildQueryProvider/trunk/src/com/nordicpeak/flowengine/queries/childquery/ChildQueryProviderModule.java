@@ -458,7 +458,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 							validationErrors.add(new ValidationError("EmailOrPhoneRequired"));
 
-						} else if (queryInstance.getQuery().isRequireGuardianContactInfoVerification()) {
+						} else if (queryInstance.getQuery().isRequireGuardianContactInfoVerification() && !requestMetadata.isManager()) {
 
 							String emailID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email2";
 							String phoneID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone2";
