@@ -564,6 +564,14 @@
 								<xsl:attribute name="data-icon-after">e</xsl:attribute>
 							</xsl:if>							
 							
+							<xsl:if test="$flow/FlowForms/FlowForm/name">
+								<xsl:attribute name="title"><xsl:value-of select="$flow/FlowForms/FlowForm/name" /></xsl:attribute>
+							</xsl:if>
+							
+							<xsl:if test="../setNoFollowOnFlowForms = 'true'">
+								<xsl:attribute name="rel">nofollow</xsl:attribute>
+							</xsl:if>
+							
 							<xsl:value-of select="$i18n.DownloadFlowForm" />
 						</a>
 						
@@ -571,9 +579,11 @@
 					<xsl:otherwise>
 					
 						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
+							
 							<xsl:value-of select="$i18n.DownloadFlowForms" />
 							<span class="bigmarginleft" data-icon-before="^" style="display: none;" />
 							<span class="bigmarginleft" data-icon-before="_" />
+							
 						</a>
 						
 						<div id="flowforms-list" class="bigpadding border" style="display: none">
@@ -591,7 +601,15 @@
 	<xsl:template match="FlowForm" mode="link">
 	
 		<a class="display-block text-align-left padding" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
+
+			<xsl:if test="name">
+				<xsl:attribute name="title"><xsl:value-of select="name" /></xsl:attribute>
+			</xsl:if>
 		
+			<xsl:if test="../../../setNoFollowOnFlowForms = 'true'">
+				<xsl:attribute name="rel">nofollow</xsl:attribute>
+			</xsl:if>
+
 			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
 		
 			<xsl:choose>

@@ -212,6 +212,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@CheckboxSettingDescriptor(name = "Enable direct search", description = "Enable searching via request parameter on main page")
 	private boolean enableDirectSearch = false;
 	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Set nofollow attribute on flow forms", description = "Controls whether nofollow attribute should be set on flow form links or not")
+	private boolean setNoFollowOnFlowForms = false;
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -576,6 +580,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "showRelatedFlows", showRelatedFlows);
+		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "setNoFollowOnFlowForms", setNoFollowOnFlowForms);
 
 		if (operatingMessageModule != null) {
 
