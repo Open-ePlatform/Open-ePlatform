@@ -549,7 +549,7 @@
 	
 		<div class="section no-border">
 			<div class="btn-wrapper no-border">
-				<xsl:if test="not($flow/Checks/check)"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
+				<xsl:if test="not($flow/Checks/check) and $flow/FlowFamily/useLoginHelpLink != 'true'"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
 				<xsl:choose>
 					<xsl:when test="$isDisabled">
 					
