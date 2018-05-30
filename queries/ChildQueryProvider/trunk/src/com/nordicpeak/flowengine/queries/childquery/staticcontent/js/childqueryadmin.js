@@ -3,9 +3,11 @@ $(function() {
 	var $alwaysShowOtherGuardians = $("#alwaysShowOtherGuardians");
 	var $useMultipartSigning = $("#useMultipartSigning");
 	
-	var toggleCommonFields = (function(checked) {
+	var toggleCommonFields = (function() {
 		
-		$("#otherGuardiansDescription").prop("disabled", !checked).parent().parent().toggle(checked);
+		var checked = $useMultipartSigning.prop("checked") || $alwaysShowOtherGuardians.prop("checked");
+		
+		$("#otherGuardiansDescription").parent().parent().toggle(checked);
 		$("#showGuardianAddress").prop("disabled", !checked).parent().toggle(checked);
 	});
 	
@@ -17,7 +19,7 @@ $(function() {
 
 		$("#contactWays, #requireGuardianContactInfoVerification, #setMultipartsAsOwners").prop("disabled", !checked).parent().toggle(checked);
 		
-		toggleCommonFields(checked);
+		toggleCommonFields();
 		
 	}).change();
 	
@@ -29,7 +31,8 @@ $(function() {
 		
 		$("#hideSSNForOtherGuardians").prop("disabled", !checked).parent().toggle(checked);
 		
-		toggleCommonFields(checked);
+		toggleCommonFields();
 		
 	}).change();
+	
 });
