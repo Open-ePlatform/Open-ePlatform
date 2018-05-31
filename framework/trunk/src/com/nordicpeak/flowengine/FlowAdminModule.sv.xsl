@@ -199,8 +199,8 @@
 	
 	<xsl:variable name="i18n.UpdateFlowIcon.title">Uppdatera ikon för e-tjänsten:</xsl:variable>
 	<xsl:variable name="i18n.currentIcon">Aktuell ikon</xsl:variable>
-	<xsl:variable name="i18n.defaultIcon">(standard ikon)</xsl:variable>
-	<xsl:variable name="i18n.restoreDefaultIcon">Återställ standard ikon</xsl:variable>
+	<xsl:variable name="i18n.defaultIcon">(standardikon)</xsl:variable>
+	<xsl:variable name="i18n.restoreDefaultIcon">Återställ standardikon</xsl:variable>
 	<xsl:variable name="i18n.uploadNewIcon">Ladda upp ny ikon (png, jpg, gif eller bmp format)</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowIcon.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UnableToParseRequest">Det gick inte att tolka informationen från din webbläsare.</xsl:variable>
