@@ -150,20 +150,17 @@
 		
 					<div class="divider"></div>
 					
-					<div class="section-full">
-						<div class="heading-wrapper">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}" class="btn btn-right btn-light xl hide-mobile">
-								<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
-							</a>
-							<div class="heading">
-								<h2><xsl:value-of select="$i18n.Description" /></h2>
-							</div>
-							<div>
-									<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
-							</div>
+					<div class="heading-wrapper">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}" class="btn btn-right btn-light xl hide-mobile">
+							<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
+						</a>
+						<div class="heading">
+							<h2><xsl:value-of select="$i18n.Description" /></h2>
+						</div>
+						<div>
+								<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
 						</div>
 					</div>
-				
 	
 					<div class="service">
 				  		<div class="queries">
