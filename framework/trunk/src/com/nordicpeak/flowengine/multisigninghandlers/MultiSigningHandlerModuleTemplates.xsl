@@ -132,41 +132,108 @@
 	<xsl:template match="SignFlowInstance">
 	
 		<div class="contentitem">
-			
-			<h1>
-				<xsl:value-of select="$i18n.SignFlowInstance"/>
-				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="FlowInstance/Flow/name"/>
-				<xsl:text>&#160;#</xsl:text>
-				<xsl:value-of select="FlowInstance/flowInstanceID"/>
-			</h1>
-			
-			<xsl:value-of select="Message" disable-output-escaping="yes"/>
-			
-			<p>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}">
-					<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" />
-					<xsl:text>&#160;</xsl:text>
-					<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
-				</a>
-			</p>
-			
-			<xsl:if test="not(Signature)">
-				<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
+
+			<section>
+				
+				<div class="section-full">
 					
-					<span class="only-mobile">
-						<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-					</span>
+					<h1>
+						<xsl:value-of select="$i18n.SignFlowInstance"/>
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="FlowInstance/Flow/name"/>
+						<xsl:text>&#160;#</xsl:text>
+						<xsl:value-of select="FlowInstance/flowInstanceID"/>
+					</h1>
 					
-					<span class="hide-mobile">
-						<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-					</span>
-				</a>
-			</xsl:if>
-			
+					<xsl:value-of select="Message" disable-output-escaping="yes"/>
+					
+		
+					<div class="divider"></div>
+					
+					<div class="section-full">
+						<div class="heading-wrapper">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}" class="btn btn-right btn-light xl hide-mobile">
+								<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
+							</a>
+							<div class="heading">
+								<h2><xsl:value-of select="$i18n.Description" /></h2>
+							</div>
+							<div>
+									<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
+							</div>
+						</div>
+					</div>
+				
+	
+					<div class="service">
+				  		<div class="queries">
+							<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
+						</div>
+		
+					
+						<xsl:if test="not(Signature)">
+							<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
+								
+								<span class="only-mobile">
+									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+								</span>
+								
+								<span class="hide-mobile">
+									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+								</span>
+							</a>
+						</xsl:if>
+						
+					</div>
+					
+				</div>
+				
+			</section>
 		</div>
 	
 	</xsl:template>
+
+	<xsl:template match="ManagerResponse">
+
+		<xsl:variable name="stepID" select="currentStepID"/>
+	
+		<div class="section-full preview" style="padding-left: 0; padding-right: 0;">
+			
+			<h2 data-icon-before="c" class="h1">
+				<xsl:value-of select="currentStepIndex + 1"/>
+				<xsl:text>. </xsl:text>
+				<xsl:value-of select="../../FlowInstance/Flow/Steps/Step[stepID = $stepID]/name"/>				
+			</h2>
+			
+			<xsl:choose>
+				<xsl:when test="QueryResponses">
+					<xsl:apply-templates select="QueryResponses/QueryResponse"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<p><xsl:value-of select="$i18n.noAnsweredQueriesInThisStep"/></p>
+				</xsl:otherwise>
+			</xsl:choose>
+		</div>
+	
+		<xsl:if test="position() != last()">
+			<div class="divider preview" />
+		</xsl:if>
+	
+	</xsl:template>
+	
+	<xsl:template match="QueryResponse">
+	
+		<xsl:choose>
+			<xsl:when test="HTML">
+				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<div id="query_{QueryDescriptor/queryID}" class="hidden" />
+			</xsl:otherwise>
+		</xsl:choose>
+	
+	</xsl:template>
+
 	
 	<xsl:template match="ListFlowInstancesExtension">
 	

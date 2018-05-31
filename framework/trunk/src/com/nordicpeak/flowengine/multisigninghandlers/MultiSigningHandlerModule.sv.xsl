@@ -36,6 +36,8 @@
 	<xsl:variable name="i18n.MayNotCancelSubmittedFlowInstance.title">Du kan ej avbyta flerpartssigneringen</xsl:variable>
 	<xsl:variable name="i18n.MayNotCancelSubmittedFlowInstance.message">Detta ärende har redan skickats in och kräver därför att handläggaren är den som avbryter flerpartsigneringen. Kontakta handläggaren för att avbryta flerpartssigneringen.</xsl:variable>
 	
+	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
+	<xsl:variable name="i18n.noAnsweredQueriesInThisStep">Det finns inga besvarade frågor i detta steg.</xsl:variable>
 	
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	<xsl:variable name="i18n.FlowName">E-tjänst</xsl:variable>
