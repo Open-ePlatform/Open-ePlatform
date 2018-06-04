@@ -60,11 +60,8 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler2;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.SigningSession;
-import com.nordicpeak.flowengine.interfaces.SigningSessionParty;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
@@ -113,7 +110,6 @@ import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -240,11 +236,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private String flowInstanceMultiSignCanceledUserSMS;
 	
 	@ModuleSetting
-	@TextAreaSettingDescriptor(name = "Flow instance multi sign cancel SMS message (owners)", description = "The SMS sent to the users when a flow instance they wanted to be signed is canceled", required = true)
-	@XSLVariable(prefix = "java.")
-	private String flowInstanceMultiSignCanceledOwnerSMS;
-
-	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to users on status change", description = "Controls if email messages are the sent to the users when the status of their flow instances changes.")
 	private boolean sendStatusChangedUserEmail;
 
@@ -348,16 +339,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignCanceledUserEmailMessage;
 	
-	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Flow instance multi sign cancel email subject (owners)", description = "The subject of emails sent to the users when a flow instance they wanted to be signed is canceled", required = true)
-	@XSLVariable(prefix = "java.")
-	private String flowInstanceMultiSignCanceledOwnerEmailSubject;
-
-	@ModuleSetting
-	@HTMLEditorSettingDescriptor(name = "Flow instance multi sign cancel email message (owners)", description = "The message of emails sent to the users when a flow instance they wanted to be signed is canceled", required = true)
-	@XSLVariable(prefix = "java.")
-	private String flowInstanceMultiSignCanceledOwnerEmailMessage;
-
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when new messages are received from users", description = "Controls if email messages are sent to the managers when they receive new messages from users.")
 	private boolean sendExternalMessageReceivedManagerEmail;
@@ -512,18 +493,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
 	
-	@InstanceManagerDependency
-	protected MultiSigningHandler2 multiSigningHandler2;
-
 	@InstanceManagerDependency(required = true)
 	protected QueryHandler queryHandler;
 	
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
 	
-	@InstanceManagerDependency
-	protected SiteProfileHandler siteProfileHandler;
-
 	private AnnotatedDAOWrapper<FlowFamililyNotificationSettings, Integer> notificationSettingsDAO;
 	private AnnotatedDAOWrapper<FlowFamily, Integer> flowFamilyDAO;
 
@@ -1624,8 +1599,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
 
-		//TODO if sequentialSigning skip
-		
 		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
 
 		if (signingParties != null) {
@@ -1641,68 +1614,22 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	@EventListener(channel = FlowInstance.class)
-	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
+	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException {
 
-		if (event.getSigningSession() != null) {
-			
-			Contact contact = null;
-			
-			if (event.getSigningParty() != null) { // One of the signers cancelled
-				
-				for (Contact ownerContact : getContacts(event.getFlowInstance())) {
-					
-					sendSigningSessionPartyEmail(event.getFlowInstance(), event.getSigningSession(), event.getSigningParty(), event.getFullContextPath(), ownerContact, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-					sendSigningSessionPartySMS(event.getFlowInstance(), event.getSigningSession(), event.getSigningParty(), event.getFullContextPath(), ownerContact, flowInstanceMultiSignCanceledOwnerSMS);
-				}
-				
-				if (event.getUser() != null) {
-					
-					contact = getContactForUser(event.getUser());
-					
-				} else { // They were not logged in
-					
-					contact = new Contact();
+		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
 
-					contact.setFirstname(event.getSigningParty().getFirstname());
-					contact.setLastname(event.getSigningParty().getLastname());
-					contact.setEmail(event.getSigningParty().getEmail());
-					contact.setMobilePhone(event.getSigningParty().getMobilePhone());
-				}
-				
-			} else { // One of the owners cancelled
-				
-				getPosterContact(event.getFlowInstance());
-			}
-			
-			for (SigningSessionParty signingParty : event.getSigningSession().getSigningParties()) {
-				
-				if (signingParty.equals(event.getSigningParty())) {
-					continue;
-				}
-				
-				sendSigningSessionPartyEmail(event.getFlowInstance(), event.getSigningSession(), signingParty, event.getFullContextPath(), contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-				sendSigningSessionPartySMS(event.getFlowInstance(), event.getSigningSession(), signingParty, event.getFullContextPath(), contact, flowInstanceMultiSignCanceledUserSMS);
-			}
-			
-		} else {
-			
-			SiteProfile profile = siteProfileHandler.getProfile(event.getFlowInstance().getProfileID());
-			ImmutableFlowInstanceManager flowInstanceManager = getImmutableFlowInstanceManager(getFlowInstance(event.getFlowInstance().getFlowInstanceID()), profile);
-			
-			Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(flowInstanceManager);
-			
-			if (signingParties != null) {
-				
-				Contact contact = getPosterContact(event.getFlowInstance());
-				
-				for (SigningParty signingParty : signingParties) {
-					
-					sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-					sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserSMS);
-				}
+		if (signingParties != null) {
+
+			Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
+
+			for (SigningParty signingParty : signingParties) {
+
+				sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignCanceledUserEmailSubject, this.flowInstanceMultiSignCanceledUserEmailMessage);
+				sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignCanceledUserSMS);
 			}
 		}
 	}
+
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagerMentionedEvent event, EventSource eventSource) throws SQLException {
@@ -1896,85 +1823,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 	
-	private void sendSigningSessionPartyEmail(ImmutableFlowInstance flowInstance, SigningSession signingSession, SigningSessionParty signingParty, String fullContextPath, Contact contact, String subject, String message) {
-
-		if (signingParty.getEmail() == null || subject == null || message == null || multiSigningHandler == null) {
-
-			return;
-		}
-
-		TagReplacer tagReplacer = new TagReplacer();
-
-		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
-		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
-		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-
-		if (contact != null) {
-
-			tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		}
-
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.firstname", signingParty.getFirstname()));
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.lastname", signingParty.getLastname()));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler2.getSigningURL(flowInstance, signingSession, signingParty, fullContextPath)));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
-
-		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-
-		try {
-			email.addRecipient(signingParty.getEmail());
-			email.setMessageContentType(SimpleEmail.HTML);
-			email.setSenderName(this.getEmailSenderName(flowInstance));
-			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
-			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
-
-			systemInterface.getEmailHandler().send(email);
-
-		} catch (Exception e) {
-
-			log.info("Error generating/sending email " + email, e);
-		}
-	}
-
-	private void sendSigningSessionPartySMS(ImmutableFlowInstance flowInstance, SigningSession signingSession, SigningSessionParty signingParty, String fullContextPath, Contact contact, String message) {
-
-		if (signingParty.getMobilePhone() == null || smsSender == null || message == null || multiSigningHandler == null) {
-
-			return;
-		}
-
-		TagReplacer tagReplacer = new TagReplacer();
-
-		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
-		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
-		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-
-		if (contact != null) {
-
-			tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		}
-
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.firstname", signingParty.getFirstname()));
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.lastname", signingParty.getLastname()));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler2.getSigningURL(flowInstance, signingSession, signingParty, fullContextPath)));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
-
-		SimpleSMS sms = new SimpleSMS();
-
-		try {
-			sms.setSenderName(this.getSmsSenderName(flowInstance));
-			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
-			sms.addRecipient(signingParty.getMobilePhone());
-
-			smsSender.send(sms);
-
-		} catch (Exception e) {
-
-			log.info("Error generating/sending sms " + sms, e);
-		}
-	}
-
 	public boolean sendContactEmail(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, File pdfFile) {
 
 		if (!contact.isContactByEmail() || contact.getEmail() == null || subject == null || message == null) {
