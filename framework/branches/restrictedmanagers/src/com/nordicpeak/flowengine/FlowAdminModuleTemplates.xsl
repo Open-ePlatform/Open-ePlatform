@@ -1114,7 +1114,13 @@
 				<xsl:choose>
 					<xsl:when test="ManagerGroups or ManagerUsers">
 					
-						<p class="nomargin"><xsl:value-of select="$i18n.ManagersDescription"/></p>
+						<p class="nomargin">
+							<xsl:value-of select="$i18n.ManagersDescription"/>
+							
+							<xsl:if test="UsesAutoManagerAssignment">
+								<xsl:value-of select="$i18n.FlowFamily.UsesAutoManagerAssignment"/>
+							</xsl:if>
+						</p>
 						
 						<xsl:if test="ManagerGroups">
 							<span class="floatleft bold">

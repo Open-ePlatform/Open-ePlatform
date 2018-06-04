@@ -643,48 +643,46 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	@Override
 	protected void appendShowFormData(Flow flow, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
-
+		
 		XMLUtils.append(doc, showTypeElement, "FlowVersions", callback.getFlowVersions(flow.getFlowFamily()));
-
+		
 		XMLUtils.append(doc, showTypeElement, "EvaluatorTypes", callback.getEvaluationHandler().getAvailableEvaluatorTypes());
-
+		
 		XMLUtils.append(doc, showTypeElement, "QueryTypes", callback.getQueryHandler().getAvailableQueryTypes());
 		
 		flow.getFlowFamily().setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
 		XMLUtils.append(doc, showTypeElement, "ManagerGroups", flow.getFlowFamily().getManagerGroups());
 		XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagers());
-
+		
 		FlowSubmitSurveyProvider submitSurveyProvider = callback.getSystemInterface().getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
-
+		
 		if (submitSurveyProvider != null) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "SubmitSurveyEnabled");
-
+			
 			ViewFragment viewFragment = submitSurveyProvider.getShowFlowSurveysFragment(flow.getFlowID());
-
+			
 			if (viewFragment != null) {
-
+				
 				req.setAttribute("ShowFlowSurveysFragment", viewFragment);
-
+				
 				XMLUtils.appendNewElement(doc, showTypeElement, "ShowFlowSurveysHTML", viewFragment.getHTML());
-
 			}
-
 		}
-
+		
 		List<FlowAdminExtensionViewProvider> extensionProviders = callback.getExtensionViewProviders();
-
+		
 		if (extensionProviders != null) {
-
+			
 			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(extensionProviders.size());
-
+			
 			for (FlowAdminExtensionViewProvider extensionProvider : extensionProviders) {
-
+				
 				try {
 					ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
-
+					
 					if (viewFragment != null) {
-
+						
 						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
@@ -701,13 +699,13 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 							}
 						}
 					}
-
+					
 				} catch (Exception e) {
-
+					
 					log.error("Error while getting show view fragment for extension provider " + extensionProvider, e);
 				}
 			}
-
+			
 			if (!viewFragments.isEmpty()) {
 				
 				req.setAttribute("ExtensionProviderFragments", viewFragments);
@@ -715,25 +713,25 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		}
 		
 		List<FlowAdminShowFlowExtensionLinkProvider> showExtensionLinkProviders = callback.getFlowShowExtensionLinkProviders();
-
+		
 		if (!CollectionUtils.isEmpty(showExtensionLinkProviders)) {
-
+			
 			List<ExtensionLink> extensionLinks = new ArrayList<ExtensionLink>(showExtensionLinkProviders.size());
-
+			
 			for (FlowAdminShowFlowExtensionLinkProvider linkProvider : showExtensionLinkProviders) {
-
+				
 				if (linkProvider.getAccessInterface() == null || AccessUtils.checkAccess(user, linkProvider.getAccessInterface())) {
-
+					
 					try {
 						ExtensionLink link = linkProvider.getShowFlowExtensionLink(user);
-
+						
 						if (link != null) {
-
+							
 							extensionLinks.add(link);
 						}
-
+						
 					} catch (Exception e) {
-
+						
 						log.error("Error getting extension link from provider " + linkProvider, e);
 					}
 				}
@@ -741,20 +739,25 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			
 			XMLUtils.append(doc, showTypeElement, extensionLinks);
 		}
-
+		
 		if (flow.isEnabled() && flow.getSteps() == null && !CollectionUtils.isEmpty(flow.getFlowForms()) && flow.isInternal()) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "MayNotRemoveFlowFormIfNoSteps");
 		}
-
+		
 		if (callback.allowSkipOverviewForFlowForms()) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 		
 		if (callback.hasPublishAccess(user)) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "PublishAccess", "true");
+		}
+		
+		if (flow.getFlowFamily().usesAutoManagerAssignment()) {
+			
+			XMLUtils.appendNewElement(doc, showTypeElement, "UsesAutoManagerAssignment");
 		}
 		
 		XMLUtils.append(doc, showTypeElement, "FlowFamilyEvents", callback.getRecentFlowFamilyEvents(flow.getFlowFamily()));

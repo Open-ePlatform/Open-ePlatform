@@ -38,6 +38,7 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringURLAliasPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
@@ -659,6 +660,11 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	
 	public void setAutoManagerAssignmentNoMatchGroupIDs(List<Integer> autoManagerAssignmentNoMatchGroupIDs) {
 		this.autoManagerAssignmentNoMatchGroupIDs = autoManagerAssignmentNoMatchGroupIDs;
+	}
+	
+	public boolean usesAutoManagerAssignment() {
+		
+		return !ObjectUtils.isNull(autoManagerAssignmentRules, autoManagerAssignmentAlwaysUserIDs, autoManagerAssignmentAlwaysGroupIDs, autoManagerAssignmentNoMatchUserIDs, autoManagerAssignmentNoMatchGroupIDs);
 	}
 	
 	public Element toXML(Document doc, SiteProfile siteProfile) {

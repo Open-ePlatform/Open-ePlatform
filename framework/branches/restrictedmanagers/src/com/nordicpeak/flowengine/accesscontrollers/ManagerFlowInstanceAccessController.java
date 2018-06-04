@@ -13,12 +13,14 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 	
 	protected final boolean requireMutableState;
 	protected final boolean requireDeletableState;
+	protected final boolean requireFullManager;
 	
-	public ManagerFlowInstanceAccessController(boolean requireMutableState, boolean requireDeletableState) {
+	public ManagerFlowInstanceAccessController(boolean requireMutableState, boolean requireDeletableState, boolean requireFullManager) {
 		
 		super();
 		this.requireMutableState = requireMutableState;
 		this.requireDeletableState = requireDeletableState;
+		this.requireFullManager = requireFullManager;
 	}
 	
 	@Override
@@ -59,9 +61,16 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 			throw new AccessDeniedException("User is not manager for flow family " + flowInstance.getFlow().getFlowFamily());
 		}
 		
-		if (access == ManagerAccess.RESTRICTED && !flowInstance.isManager(user)) {
+		if (access == ManagerAccess.RESTRICTED) {
 			
-			throw new AccessDeniedException("User is restricted manager for flow family " + flowInstance.getFlow().getFlowFamily() + " but not manager for flow instace " + flowInstance);
+			if (requireFullManager) {
+				
+				throw new AccessDeniedException("User is restricted manager for flow family " + flowInstance.getFlow().getFlowFamily() + " but full manager access is required for the requested operation");
+				
+			} else if (!flowInstance.isManager(user)) {
+				
+				throw new AccessDeniedException("User is restricted manager for flow family " + flowInstance.getFlow().getFlowFamily() + " but not manager for flow instace " + flowInstance);
+			}
 		}
 	}
 }

@@ -540,6 +540,7 @@
 	
 	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens familje ID</xsl:variable>
 	<xsl:variable name="i18n.FlowID">Versionens ID</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.UsesAutoManagerAssignment">E-tjänsten använder automatisk tilldelning av handläggare.</xsl:variable>
 	
 	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>

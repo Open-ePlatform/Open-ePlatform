@@ -186,9 +186,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	//@formatter:on
 	
-	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false);
-	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true);
-	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false);
+	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false);
+	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_FULL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, true);
 	
 	public static final ValidationError STATUS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("StatusNotFoundValidationError");
 	public static final ValidationError INVALID_STATUS_VALIDATION_ERROR = new ValidationError("InvalidStatusValidationError");
@@ -981,7 +982,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 			
-			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
+			getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 				
@@ -1831,6 +1832,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected FlowInstanceAccessController getGeneralAccessController() {
 		return GENERAL_ACCESS_CONTROLLER;
+	}
+	
+	protected FlowInstanceAccessController getGeneralFullAccessController() {
+		return GENERAL_FULL_ACCESS_CONTROLLER;
 	}
 	
 	@WebPublic(alias = "signature")
