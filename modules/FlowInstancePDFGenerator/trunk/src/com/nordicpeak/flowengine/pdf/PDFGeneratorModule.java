@@ -33,6 +33,33 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfFileSpecification;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.RandomAccessFileOrArray;
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.PDFQueryResponse;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
+import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.PDFAttachment;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.PDFManagerResponse;
+import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+import com.nordicpeak.flowengine.utils.SigningUtils;
+
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
@@ -66,34 +93,6 @@ import se.unlogic.standardutils.xml.ClassPathURIResolver;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.URIXSLTransformer;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfFileSpecification;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
-
-import com.nordicpeak.flowengine.BaseFlowModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.PDFQueryResponse;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
-import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.PDFAttachment;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.PDFManagerResponse;
-import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
-import com.nordicpeak.flowengine.utils.PDFByteAttachment;
-import com.nordicpeak.flowengine.utils.SigningUtils;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
@@ -692,7 +691,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return event.getEventID().toString();
 	}
 	
-	private File getTempDir() {
+	@Override
+	public File getTempDir() {
 		
 		if (tempDir != null) {
 			
@@ -916,5 +916,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	public byte[] removePDFAttachments(File pdfFile) throws Exception {
 		
 		return PDFUtils.removeAttachments(pdfFile);
+	}
+
+	@Override
+	public List<String> getIncludedFonts() {
+
+		return this.includedFonts;
 	}
 }
