@@ -24,18 +24,26 @@ import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
@@ -46,7 +54,9 @@ import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
@@ -69,6 +79,7 @@ import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
@@ -110,7 +121,7 @@ import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
-public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider {
+public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider, ImmutableFlowEngineInterface, FlowInstanceAccessController {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
@@ -321,9 +332,30 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			XMLUtils.append(doc, signFlowInstanceElement, signature);
 		}
 		
+		FlowInstance flowInstance = userFlowInstanceModule.getFlowInstance(flowInstanceID);
+
+		if (flowInstance != null) {
+
+			signFlowInstanceElement.appendChild(flowInstance.toXML(doc));
+
+			List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), new RequestMetadata(false));
+			XMLUtils.append(doc, signFlowInstanceElement, "ManagerResponses", managerResponses);
+		}
+		
 		signFlowInstanceElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 		
 		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
+	}
+	
+	protected String getImmutableQueryRequestBaseURL(HttpServletRequest req, FlowInstanceManager instanceManager) {
+
+		return req.getContextPath() + getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
+	}
+
+	@WebPublic(alias = "iquery")
+	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+
+		return browserModule.processImmutableQueryRequest(req, res, user, uriParser, this, true, false);
 	}
 	
 	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
@@ -961,5 +993,21 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				}
 			}
 		}
+	}
+	
+	@Override
+	public QueryHandler getQueryHandler() {
+		return queryHandler;
+	}
+
+	@Override
+	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {}
+
+	@Override
+	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {}
+
+	@Override
+	public boolean isMutable(ImmutableFlowInstance flowInstance, User user) {
+		return false;
 	}
 }

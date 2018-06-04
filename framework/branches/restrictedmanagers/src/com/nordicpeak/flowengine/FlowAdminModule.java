@@ -1386,7 +1386,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -1530,7 +1530,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -1581,7 +1581,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -1640,7 +1640,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -1700,7 +1700,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -2540,7 +2540,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			throw new AccessDeniedException("Requested flow is external and cannot be structure manipulated");
 
-		} else if (!AccessUtils.checkAccess(user, this) && !AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -3061,7 +3061,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -3125,7 +3125,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -3680,7 +3680,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		} else if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -3923,7 +3923,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Flow flow = queryDescriptor.getStep().getFlow();
 
-		if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface())) {
+		if (!hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + queryDescriptor.getStep().getFlow().getFlowType());
 
@@ -4370,7 +4370,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				flow = getLatestFlowVersion(flowFamily);
 			}
 
-			if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
+			if (!hasFlowTypeAccess(user, flow)) {
 
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
@@ -5171,6 +5171,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 		
 		throw new URINotFoundException(uriParser);
+	}
+	
+	public boolean hasFlowTypeAccess(User user, Flow bean) {
+		
+		return AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
 	}
 	
 }

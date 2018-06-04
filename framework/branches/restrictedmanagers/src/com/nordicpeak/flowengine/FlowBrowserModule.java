@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -23,56 +25,6 @@ import javax.sql.DataSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.SettingDescriptor;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.beans.ValueDescriptor;
-import se.unlogic.hierarchy.core.comparators.PriorityComparator;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.events.EventListener;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.utils.AccessUtils;
-import se.unlogic.hierarchy.core.utils.FCKUtils;
-import se.unlogic.hierarchy.core.utils.ModuleUtils;
-import se.unlogic.log4jutils.thread.LoggingReflectedRunnable;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.collections.MethodComparator;
-import se.unlogic.standardutils.collections.NameComparator;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.time.TimeUtils;
-import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.HTTPUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.SessionUtils;
-import se.unlogic.webutils.http.URIParser;
-import se.unlogic.webutils.url.URLRewriter;
 
 import com.nordicpeak.flowengine.accesscontrollers.FlowBrowserAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
@@ -133,7 +85,55 @@ import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
-import it.sauronsoftware.cron4j.Scheduler;
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.SettingDescriptor;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.beans.ValueDescriptor;
+import se.unlogic.hierarchy.core.comparators.PriorityComparator;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.events.EventListener;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.log4jutils.thread.LoggingReflectedRunnable;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.MethodComparator;
+import se.unlogic.standardutils.collections.NameComparator;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.SessionUtils;
+import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.url.URLRewriter;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -211,6 +211,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable direct search", description = "Enable searching via request parameter on main page")
 	private boolean enableDirectSearch = false;
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Set nofollow attribute on flow forms", description = "Controls whether nofollow attribute should be set on flow form links or not")
+	private boolean setNoFollowOnFlowForms = false;
 	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -576,6 +580,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "showRelatedFlows", showRelatedFlows);
+		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "setNoFollowOnFlowForms", setNoFollowOnFlowForms);
 
 		if (operatingMessageModule != null) {
 

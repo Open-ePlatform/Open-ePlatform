@@ -549,7 +549,7 @@
 	
 		<div class="section no-border">
 			<div class="btn-wrapper no-border">
-				<xsl:if test="not($flow/Checks/check)"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
+				<xsl:if test="not($flow/Checks/check) and $flow/FlowFamily/useLoginHelpLink != 'true'"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
 				<xsl:choose>
 					<xsl:when test="$isDisabled">
 					
@@ -562,7 +562,15 @@
 							
 							<xsl:if test="$flow/FlowForms/FlowForm/showExternalLinkIcon = 'true'">
 								<xsl:attribute name="data-icon-after">e</xsl:attribute>
-							</xsl:if>							
+							</xsl:if>
+							
+							<xsl:if test="$flow/FlowForms/FlowForm/name">
+								<xsl:attribute name="title"><xsl:value-of select="$flow/FlowForms/FlowForm/name" /></xsl:attribute>
+							</xsl:if>
+							
+							<xsl:if test="../setNoFollowOnFlowForms = 'true'">
+								<xsl:attribute name="rel">nofollow</xsl:attribute>
+							</xsl:if>
 							
 							<xsl:value-of select="$i18n.DownloadFlowForm" />
 						</a>
@@ -591,6 +599,14 @@
 	<xsl:template match="FlowForm" mode="link">
 	
 		<a class="display-block text-align-left padding" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
+		
+			<xsl:if test="name">
+				<xsl:attribute name="title"><xsl:value-of select="name" /></xsl:attribute>
+			</xsl:if>
+		
+			<xsl:if test="../../../setNoFollowOnFlowForms = 'true'">
+				<xsl:attribute name="rel">nofollow</xsl:attribute>
+			</xsl:if>
 		
 			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
 		
