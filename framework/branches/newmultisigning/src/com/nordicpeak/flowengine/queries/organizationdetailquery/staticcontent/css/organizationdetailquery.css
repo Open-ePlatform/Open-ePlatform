@@ -1,0 +1,15 @@
+@CHARSET "ISO-8859-1";
+
+select.organization {
+	float: left;
+	width: 250px;
+	margin-right: 5px;
+}
+
+a.btn-newOrganization {
+	padding: 8px 20px 9px;
+}
+
+a.btn-newOrganization:hover {
+	padding-top: 7px !important;
+}

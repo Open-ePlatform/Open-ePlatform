@@ -1,0 +1,46 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `feedback_flow_submit_surveys` (
+				  `feedbackSurveyID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `flowID` INTEGER UNSIGNED NOT NULL,
+				  `added` DATETIME NOT NULL,
+				  `answer` VARCHAR(45) NOT NULL,
+				  `comment` MEDIUMTEXT,
+				  PRIMARY KEY (`feedbackSurveyID`),
+				  CONSTRAINT `FK_feedback_flow_submit_surveys_1` FOREIGN KEY `FK_feedback_flow_submit_surveys_1` (`flowID`)
+				    REFERENCES `flowengine_flows` (`flowID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `feedback_flow_submit_surveys` ADD COLUMN `flowInstanceID` INT(10) UNSIGNED NOT NULL AFTER `flowID`,
+ 				ADD UNIQUE INDEX `Index_3`(`flowID`, `flowInstanceID`);
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `feedback_flow_submit_surveys` MODIFY COLUMN `feedbackSurveyID` INT(10) UNSIGNED NOT NULL,
+				 DROP PRIMARY KEY,
+				 ADD PRIMARY KEY (`flowID`, `flowInstanceID`);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `feedback_flow_submit_surveys` DROP COLUMN `feedbackSurveyID`
+				, DROP INDEX `Index_3`;
+			]]>
+		</Query>		
+	</Script>	
+</DBScripts>
