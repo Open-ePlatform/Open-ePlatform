@@ -1,10 +1,10 @@
 package com.nordicpeak.flowengine.events;
 
 import java.io.Serializable;
+import java.util.Collection;
 
+import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.SigningSession;
-import com.nordicpeak.flowengine.interfaces.SigningSessionParty;
 
 import se.unlogic.hierarchy.core.beans.User;
 
@@ -13,19 +13,17 @@ public class MultiSigningCanceledEvent implements Serializable {
 	private static final long serialVersionUID = -4738711597966694402L;
 	
 	private final ImmutableFlowInstance flowInstance;
-	private final SigningSession signingSession;
-	private final String fullContextPath;
-	private final SigningSessionParty signingParty;
+	private final SigningParty cancellingSigningParty;
+	private final Collection<SigningParty> signingParties;
 	private final User user;
 	
-	public MultiSigningCanceledEvent(ImmutableFlowInstance flowInstance, SigningSession signingSession, SigningSessionParty signingParty, User user, String fullContextPath) {
+	public MultiSigningCanceledEvent(ImmutableFlowInstance flowInstance, Collection<SigningParty> allSigningParties, SigningParty cancellingSigningParty, User user) {
 		
 		super();
 		this.flowInstance = flowInstance;
-		this.signingSession = signingSession;
-		this.fullContextPath = fullContextPath;
-		this.signingParty = signingParty;
+		this.cancellingSigningParty = cancellingSigningParty;
 		this.user = user;
+		this.signingParties = allSigningParties;
 	}
 	
 	public ImmutableFlowInstance getFlowInstance() {
@@ -33,27 +31,19 @@ public class MultiSigningCanceledEvent implements Serializable {
 		return flowInstance;
 	}
 	
-	/**
-	 * Set if one of the signers cancelled.
-	 * If null it was one of the owners who cancelled.
-	 */
-	public SigningSession getSigningSession() {
-		return signingSession;
+	/** Set if one of the signers cancelled.
+	 * If null it was one of the owners who cancelled. */
+	public SigningParty getCancellingSigningParty() {
+		return cancellingSigningParty;
 	}
 	
-	public String getFullContextPath() {
-		return fullContextPath;
-	}
-	
-	public SigningSessionParty getSigningParty() {
-		return signingParty;
-	}
-	
-	/**
-	 * The user who cancelled the signing, if logged in.
-	 */
+	/** The user who cancelled the signing, if logged in. */
 	public User getUser() {
 		return user;
+	}
+	
+	public Collection<SigningParty> getSigningParties() {
+		return signingParties;
 	}
 	
 }

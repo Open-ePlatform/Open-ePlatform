@@ -97,7 +97,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler2;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.PaymentQuery;
@@ -105,7 +104,6 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
-import com.nordicpeak.flowengine.interfaces.SigningSession;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
@@ -1027,11 +1025,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 	
-	protected MultiSigningHandler2 getMultiSigningHandler2() {
-
-		return null;
-	}
-
 	protected abstract void redirectToSubmitMethod(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res) throws IOException;
 
 	protected abstract void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException;
@@ -1972,16 +1965,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
 
-				if (getMultiSigningHandler2() != null) {
-					
-					SigningSession signingSession = getMultiSigningHandler2().getSigningSession(flowInstanceID);
-					
-					if (signingSession != null) {
-						
-						return showMultiSignMessage2(flowInstanceID, signingSession, callback, req, res, user, uriParser);
-					}
-				}
-				
 				//Get saved instance from DB or session
 				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, mananger);
 
@@ -2026,7 +2009,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ViewFragment viewFragment;
 
 		try {
-			viewFragment = multiSigningHandler.getSigningStatus(req, user, uriParser, instanceManager);
+			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, instanceManager);
 		} catch (Exception e) {
 			viewFragment = null;
 			log.error("Error getting view fragment from multi signing provider " + multiSigningHandler, e);
@@ -2059,61 +2042,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 	
-	public ForegroundModuleResponse showMultiSignMessage2(Integer flowInstanceID, SigningSession signingSession, FlowProcessCallback callback, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
-
-		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
-
-		if (flowInstance.getStatus().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
-
-			//TODO show correct view
-			
-			log.warn("User " + user + " attempted to view multi sign message for flow instance " + flowInstance + " not in WAITING_FOR_MULTISIGN state");
-			throw new URINotFoundException(uriParser);
-		}
-
-		MultiSigningHandler2 multiSigningHandler = getMultiSigningHandler2();
-
-		if (multiSigningHandler == null) {
-
-			return callback.list(req, res, user, uriParser, Collections.singletonList(MULTI_SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR));
-		}
-
-		ViewFragment viewFragment;
-
-		try {
-			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, flowInstance);
-			
-		} catch (Exception e) {
-			viewFragment = null;
-			log.error("Error getting view fragment from multi signing provider " + multiSigningHandler, e);
-		}
-
-		if (viewFragment == null) {
-
-			log.warn("No viewfragement returned from multi signing provider " + multiSigningHandler);
-		}
-
-		log.info("User " + user + " requested multi signing status for flow instance " + flowInstance);
-
-		Document doc = createDocument(req, uriParser, user);
-		Element multiSigningStatusElement = doc.createElement("MultiSigningStatusForm");
-		doc.getDocumentElement().appendChild(multiSigningStatusElement);
-
-		multiSigningStatusElement.appendChild(flowInstance.toXML(doc));
-
-		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
-
-		if (viewFragment != null) {
-
-			multiSigningStatusElement.appendChild(viewFragment.toXML(doc));
-			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
-		}
-
-		//TODO fix add breadcrumbs
-
-		return moduleResponse;
-	}
-
 	//TODO show inline payment form?
 
 	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException {
@@ -2402,7 +2330,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			
 		} else if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 			
-			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningInitiatedEvent(instanceManager, event, RequestUtils.getFullContextPathURL(req)), EventTarget.ALL);
+			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningInitiatedEvent(instanceManager, event), EventTarget.ALL);
 		}
 
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);

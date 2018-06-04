@@ -799,6 +799,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.requireSigning = requireSigning;
 	}
 	
+	public boolean usesSequentialSigning() {
+		return useSequentialSigning;
+	}
+	
+	public void setUseSequentialSigning(boolean useSequentialSigning) {
+		this.useSequentialSigning = useSequentialSigning;
+	}
+	
 	@Override
 	public boolean showsSubmitSurvey() {
 		

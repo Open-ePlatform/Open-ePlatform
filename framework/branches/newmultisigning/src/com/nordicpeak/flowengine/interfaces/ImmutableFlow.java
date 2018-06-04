@@ -26,7 +26,7 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public ImmutableStatus getDefaultState(String actionID);
 
 	public ImmutableCategory getCategory();
-
+	
 	public List<? extends ImmutableStep> getSteps();
 
 	public ImmutableFlowFamily getFlowFamily();
@@ -40,6 +40,8 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public boolean requiresAuthentication();
 	
 	public boolean requiresSigning();
+	
+	public boolean usesSequentialSigning();
 	
 	public boolean showsSubmitSurvey();
 

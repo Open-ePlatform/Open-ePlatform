@@ -11,14 +11,12 @@ public class MultiSigningInitiatedEvent implements Serializable {
 
 	private final FlowInstanceManager flowInstanceManager;
 	private final FlowInstanceEvent event;
-	private final String fullContextPath;
 
-	public MultiSigningInitiatedEvent(FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, String fullContextPath) {
+	public MultiSigningInitiatedEvent(FlowInstanceManager flowInstanceManager, FlowInstanceEvent event) {
 
 		super();
 		this.flowInstanceManager = flowInstanceManager;
 		this.event = event;
-		this.fullContextPath = fullContextPath;
 	}
 
 	public FlowInstanceManager getFlowInstanceManager() {
@@ -29,9 +27,5 @@ public class MultiSigningInitiatedEvent implements Serializable {
 	public FlowInstanceEvent getEvent() {
 
 		return event;
-	}
-	
-	public String getFullContextPath() {
-		return fullContextPath;
 	}
 }

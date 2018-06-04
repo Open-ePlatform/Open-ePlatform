@@ -63,10 +63,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
@@ -77,11 +74,9 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler2;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
-import com.nordicpeak.flowengine.interfaces.SigningSession;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -226,9 +221,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
 	
-	@InstanceManagerDependency
-	protected MultiSigningHandler2 multiSigningHandler2;
-
 	@InstanceManagerDependency
 	protected FlowPaymentProvider paymentProvider;
 
@@ -1431,125 +1423,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return multiSigningHandler;
 	}
 	
-	@Override
-	protected MultiSigningHandler2 getMultiSigningHandler2() {
+	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Map<String, String> eventAttributes) {
 
-		return multiSigningHandler2;
-	}
-
-	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, String signingChainID) {
-
-		boolean requiresPayment = requiresPayment(instanceManager);
-
-		EventType eventType;
-		String actionID;
-		
-		Map<String,String> eventAttributes = new HashMap<String, String>();
-		eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingChainID);
-		
-		if (requiresPayment) {
-			
-			actionID = FlowBrowserModule.PAYMENT_ACTION_ID;
-			eventType = EventType.STATUS_UPDATED;
-			
-		} else if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
-			
-			actionID = UserFlowInstanceModule.SUBMIT_COMPLETION_ACTION_ID;
-			eventType = EventType.SUBMITTED;
-			
-		} else {
-			
-			actionID = FlowBrowserModule.SUBMIT_ACTION_ID;
-			eventType = EventType.SUBMITTED;
-		}
-
-		Status nextStatus = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(actionID);
-
-		if (nextStatus == null) {
-
-			log.error("Unable to find status for actionID " + actionID + " for flow instance " + instanceManager + ", flow instance will be left with wrong status.");
-			return;
-		}
-
-		try {
-			FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
-
-			Timestamp currentTimestamp = TimeUtils.getCurrentTimestamp();
-
-			flowInstance.setStatus(nextStatus);
-			flowInstance.setLastStatusChange(currentTimestamp);
-
-			if (flowInstance.getFirstSubmitted() == null && !requiresPayment) {
-
-				flowInstance.setFirstSubmitted(currentTimestamp);
-			}
-			
-			List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
-
-			if (multiSignQueryinstances != null) {
-
-				for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
-
-					if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
-
-						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
-							
-							if (signingParty.isAddAsOwner()) {
-							
-								User signer = null;
-								
-								if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
-								
-									signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
-								}
-																
-								if (signer != null) {
-									
-									if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
-										
-										if (flowInstance.getOwners() == null) {
-											flowInstance.setOwners(new ArrayList<User>());
-										}
-										
-										flowInstance.getOwners().add(signer);
-									}
-									
-								} else {
-									
-									log.error("User for signing party " + signingParty + " not found");
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
-			
-			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
-			daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
-			
-			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvents(flowInstance);
-
-			FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, eventType, null, posterSignEvent.getPoster(), currentTimestamp, eventAttributes);
-
-			eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-
-			if (!requiresPayment) {
-
-				sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
-			}
-
-		} catch (SQLException e) {
-
-			log.error("Error changing status and adding event for flow instance " + instanceManager + ", flow instance will be left with wrong status.", e);
-		}
-	}
-	
-	public void multiSigningComplete(Integer flowInstanceID, SiteProfile siteProfile, SigningSession signingSession, Map<String, String> eventAttributes) throws MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, SQLException {
-
-		FlowInstanceManager instanceManager = getImmutableFlowInstanceManager(flowInstanceID);
-		
 		boolean requiresPayment = requiresPayment(instanceManager);
 
 		EventType eventType;

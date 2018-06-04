@@ -71,7 +71,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler2;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
@@ -213,9 +212,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
 	
-	@InstanceManagerDependency
-	protected MultiSigningHandler2 multiSigningHandler2;
-
 	@InstanceManagerDependency
 	protected FlowPaymentProvider paymentProvider;
 
@@ -1053,12 +1049,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return multiSigningHandler;
 	}
 	
-	@Override
-	protected MultiSigningHandler2 getMultiSigningHandler2() {
-
-		return multiSigningHandler2;
-	}
-
 	@Override
 	protected FlowPaymentProvider getFlowPaymentProvider() {
 

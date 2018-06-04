@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -210,7 +212,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
-	public ViewFragment getSigningStatus(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager) throws Exception {
+	public ViewFragment getSigningStatusViewFragment(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager) throws Exception {
 		
 		//TODO any checks necessary here?
 		
@@ -682,7 +684,10 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			
 			log.info("Multi-party signing of flowinstance " + instanceManager + " complete");
 			
-			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), getSigningChainID(instanceManager));
+			Map<String, String> eventAttributes = new HashMap<String, String>();
+			eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, getSigningChainID(instanceManager));
+			
+			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), eventAttributes);
 		}
 		
 		SessionUtils.setAttribute(this.getClass().getName() + "." + instanceManager.getFlowInstanceID(), signature, req);
@@ -851,8 +856,6 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 					
 					ArrayList<Integer> flowInstanceIDs = query.executeQuery();
 					
-					//TODO skip flow instances handled by MultiSigningHandler2Module
-					
 					if (flowInstanceIDs != null) {
 						
 						Element waitingMultiSignFlowInstancesElement = XMLUtils.appendNewElement(doc, listFlowInstancesExtensionElement, "WaitingMultiSignFlowInstances");
@@ -941,7 +944,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		flowInstanceDAO.update(flowInstance);
 		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager.getFlowInstance(), null, null, user, uriParser.getFullContextPath()), EventTarget.ALL);
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager.getFlowInstance(), MultiSignUtils.getSigningParties(instanceManager), null, user), EventTarget.ALL);
 		
 		String preview = flowInstance.getFlow().usesPreview() ? "?preview=1" : "";
 		
@@ -968,5 +971,10 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean supportsSequentialSigning() {
+		return false;
 	}
 }
