@@ -1947,6 +1947,7 @@
 	
 		<section class="service">
 
+			<!-- TODO remove form? --> 
 			<form id="paymentForm" method="POST" action="{/Document/ModuleURL}/processsignstatus/{FlowInstance/flowInstanceID}/{Status/statusID}">
 
 				<div class="section-full push">

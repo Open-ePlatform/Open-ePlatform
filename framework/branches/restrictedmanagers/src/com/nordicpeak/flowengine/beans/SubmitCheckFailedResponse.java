@@ -4,7 +4,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 
 public class SubmitCheckFailedResponse {
 	
-	
 	private final ImmutableQueryInstance queryInstance;
 	private String redirectURL;
 	

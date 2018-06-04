@@ -721,7 +721,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 					
-					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(user, poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
+					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
 					
 					if (submitCheckResponse != null) {
 						

@@ -48,6 +48,7 @@ public class FlowInstanceUtils {
 			builder.append(" (");
 		}
 		
+		//TODO order does not match StandardFlowNotificationHandler.getPosterContact
 		ImmutableFlowInstanceEvent submitEvent = getLatestSubmitEvent(flowInstance);
 		
 		if (submitEvent != null && submitEvent.getPoster() != null) {

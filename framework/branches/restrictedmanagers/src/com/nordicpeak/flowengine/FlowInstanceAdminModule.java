@@ -853,14 +853,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateStatusSigning");
 		
-		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
-		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
-		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
-		
-		GenericSigningRequest signingRequest = new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
-		
-		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, signingRequest, validationErrors);
+		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser), validationErrors);
 		
 		signingFormElement.appendChild(flowInstance.toXML(doc));
 		signingFormElement.appendChild(status.toXML(doc));
@@ -871,6 +864,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		ViewFragmentUtils.appendLinksAndScripts(response, viewFragment);
 		
 		return response;
+	}
+	
+	private GenericSigningRequest getUpdateStatusSigningRequest(FlowInstance flowInstance, Status status, URIParser uriParser) {
+		
+		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
+		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
+		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
+		
+		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
 	}
 	
 	@WebPublic(alias = "processsignstatus")
@@ -903,13 +906,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				log.info("User " + user + " processing singing for changing status of instance " + flowInstance + " from " + previousStatus + " to " + status);
 				
-				String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
-				String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
-				String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-				String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
-				
-				GenericSigningRequest signingRequest = new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
-				
 				List<ValidationError> validationErrors = null;
 				
 				try {
@@ -917,7 +913,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						throw new ModuleConfigurationException("genericSigningProvider is null");
 					}
 					
-					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, signingRequest);
+					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser));
 					
 					if (res.isCommitted()) {
 						return null;

@@ -544,7 +544,7 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specifierat värde</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specificerat värde</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeName">Attribut</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeValues">Värden</xsl:variable>
@@ -560,10 +560,10 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera (Om inget av värderna på regeln matchar attributets värde så aktiveras regeln)</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper med begränsad behörighet</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Always">Alltid tilldelade handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel matchar</xsl:variable>
 	
-	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständing handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständig handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
 	
 </xsl:stylesheet>
