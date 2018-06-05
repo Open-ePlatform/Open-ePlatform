@@ -84,7 +84,7 @@ public class MultiSignUtils {
 	
 	private static boolean isSigningInitiator(SigningParty signingParty, FlowInstanceManager instanceManager) {
 		
-		if (signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
+		if (!signingParty.isUnsecure() && signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
 			
 			return true;
 		}
