@@ -1811,4 +1811,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="97">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `useSequentialSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `requireSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

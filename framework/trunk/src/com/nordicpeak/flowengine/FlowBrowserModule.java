@@ -1428,15 +1428,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return multiSigningHandler;
 	}
 
-	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, String signingChainID) {
+	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Map<String, String> eventAttributes) {
 
 		boolean requiresPayment = requiresPayment(instanceManager);
 
 		EventType eventType;
 		String actionID;
-		
-		Map<String,String> eventAttributes = new HashMap<String, String>();
-		eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingChainID);
 		
 		if (requiresPayment) {
 			

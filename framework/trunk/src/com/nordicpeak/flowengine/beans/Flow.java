@@ -184,6 +184,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean useSequentialSigning;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean showSubmitSurvey;
 	
 	@DAOManaged
@@ -794,6 +799,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.requireSigning = requireSigning;
 	}
 	
+	public boolean usesSequentialSigning() {
+		return useSequentialSigning;
+	}
+	
+	public void setUseSequentialSigning(boolean useSequentialSigning) {
+		this.useSequentialSigning = useSequentialSigning;
+	}
+	
 	@Override
 	public boolean showsSubmitSurvey() {
 		
@@ -859,6 +872,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		showLoginQuestion = xmlParser.getPrimitiveBoolean("showLoginQuestion");
 		loginQuestionText = XMLValidationUtils.validateParameter("loginQuestionText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
+		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.checks = XMLValidationUtils.validateParameters("Checks/check", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);

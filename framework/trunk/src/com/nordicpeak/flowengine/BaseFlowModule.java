@@ -2007,7 +2007,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ViewFragment viewFragment;
 
 		try {
-			viewFragment = multiSigningHandler.getSigningStatus(req, user, uriParser, instanceManager);
+			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, instanceManager);
 		} catch (Exception e) {
 			viewFragment = null;
 			log.error("Error getting view fragment from multi signing provider " + multiSigningHandler, e);

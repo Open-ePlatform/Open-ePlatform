@@ -132,7 +132,7 @@
 	<xsl:template match="SignFlowInstance">
 	
 		<div class="contentitem">
-
+			
 			<section>
 				
 				<div class="section-full">
@@ -147,42 +147,45 @@
 					
 					<xsl:value-of select="Message" disable-output-escaping="yes"/>
 					
-		
-					<div class="divider"></div>
-					
+					<div class="divider" />
+						
 					<div class="heading-wrapper">
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}" class="btn btn-right btn-light xl hide-mobile">
+						
+						<a class="btn btn-right btn-light xl hide-mobile" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{FlowInstance/flowInstanceID}">
 							<xsl:value-of select="$i18n.DownloadFlowInstancePDF"/>
 						</a>
+						
 						<div class="heading">
 							<h2><xsl:value-of select="$i18n.Description" /></h2>
 						</div>
+						
 						<div>
 								<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
 						</div>
 					</div>
-	
+				
 					<div class="service">
-				  		<div class="queries">
+			  		<div class="queries bigpaddingbottom">
 							<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 						</div>
-		
 					
 						<xsl:if test="not(Signature)">
-							<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
-								
-								<span class="only-mobile">
-									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-								</span>
-								
-								<span class="hide-mobile">
-									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-								</span>
-							</a>
+							<div class="bigmargintop">
+								<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
+									
+									<span class="only-mobile">
+										<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+									</span>
+									
+									<span class="hide-mobile">
+										<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+									</span>
+								</a>
+							</div>
 						</xsl:if>
 						
 					</div>
-					
+	
 				</div>
 				
 			</section>
@@ -230,7 +233,6 @@
 		</xsl:choose>
 	
 	</xsl:template>
-
 	
 	<xsl:template match="ListFlowInstancesExtension">
 	
