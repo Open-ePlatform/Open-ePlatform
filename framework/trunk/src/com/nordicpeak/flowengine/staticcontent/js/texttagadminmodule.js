@@ -51,6 +51,17 @@ $(document).ready(function() {
 		});
 	});
 	
+	$("#tag-filter-input").keyup(function() {
+		
+		$.cookie("oep.textTagSearch", $(this).val());
+	});
+
+	var tagSearch = $.cookie("oep.textTagSearch");
+	
+	if (tagSearch) {
+		var $input = $("#tag-filter-input").val(tagSearch).keyup();
+	}
+	
 });
 
 function setCKEditorReadOnly(id, readOnly) {
