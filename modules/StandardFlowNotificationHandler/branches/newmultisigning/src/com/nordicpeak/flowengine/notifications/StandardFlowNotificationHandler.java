@@ -60,11 +60,8 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler2;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.SigningSession;
-import com.nordicpeak.flowengine.interfaces.SigningSessionParty;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
@@ -512,9 +509,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
 	
-	@InstanceManagerDependency
-	protected MultiSigningHandler2 multiSigningHandler2;
-
 	@InstanceManagerDependency(required = true)
 	protected QueryHandler queryHandler;
 	
@@ -1620,87 +1614,75 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			sendManagerEmails(flowInstance, getPosterContact(flowInstance), flowInstanceAssignedManagerEmailSubject, flowInstanceAssignedManagerEmailMessage, excludedManagers, false);
 		}
 	}
-
+	
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
-
-		//TODO if sequentialSigning skip
 		
-		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
-
-		if (signingParties != null) {
-
-			Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
-
-			for (SigningParty signingParty : signingParties) {
-
-				sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignInitiatedUserEmailSubject, this.flowInstanceMultiSignInitiatedUserEmailMessage);
-				sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, this.flowInstanceMultiSignInitiatedUserSMS);
+		if (!event.getFlowInstanceManager().getFlowInstance().getFlow().usesSequentialSigning()) {
+			
+			Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
+			
+			if (signingParties != null) {
+				
+				Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
+				
+				for (SigningParty signingParty : signingParties) {
+					
+					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
+					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserSMS);
+				}
 			}
 		}
+	}
+	
+	public void sendSigningPartyNotifications(ImmutableFlowInstance flowInstance, SigningParty signingParty) {
+		
+		Contact contact = getPosterContact(flowInstance);
+		
+		sendSigningPartyEmail(flowInstance, signingParty, contact, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
+		sendSigningPartySMS(flowInstance, signingParty, contact, flowInstanceMultiSignInitiatedUserSMS);
 	}
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
-		if (event.getSigningSession() != null) {
+		Contact contact = null;
+		
+		if (event.getCancellingSigningParty() == null) { // One of the owners cancelled
 			
-			Contact contact = null;
+			contact = getPosterContact(event.getFlowInstance());
 			
-			if (event.getSigningParty() != null) { // One of the signers cancelled
+		} else { // One of the signers cancelled
+			
+			for (Contact ownerContact : getContacts(event.getFlowInstance())) {
 				
-				for (Contact ownerContact : getContacts(event.getFlowInstance())) {
-					
-					sendSigningSessionPartyEmail(event.getFlowInstance(), event.getSigningSession(), event.getSigningParty(), event.getFullContextPath(), ownerContact, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-					sendSigningSessionPartySMS(event.getFlowInstance(), event.getSigningSession(), event.getSigningParty(), event.getFullContextPath(), ownerContact, flowInstanceMultiSignCanceledOwnerSMS);
-				}
-				
-				if (event.getUser() != null) {
-					
-					contact = getContactForUser(event.getUser());
-					
-				} else { // They were not logged in
-					
-					contact = new Contact();
-
-					contact.setFirstname(event.getSigningParty().getFirstname());
-					contact.setLastname(event.getSigningParty().getLastname());
-					contact.setEmail(event.getSigningParty().getEmail());
-					contact.setMobilePhone(event.getSigningParty().getMobilePhone());
-				}
-				
-			} else { // One of the owners cancelled
-				
-				getPosterContact(event.getFlowInstance());
+				sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
+				sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, flowInstanceMultiSignCanceledOwnerSMS);
 			}
 			
-			for (SigningSessionParty signingParty : event.getSigningSession().getSigningParties()) {
+			if (event.getUser() != null) {
 				
-				if (signingParty.equals(event.getSigningParty())) {
-					continue;
-				}
+				contact = getContactForUser(event.getUser());
 				
-				sendSigningSessionPartyEmail(event.getFlowInstance(), event.getSigningSession(), signingParty, event.getFullContextPath(), contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-				sendSigningSessionPartySMS(event.getFlowInstance(), event.getSigningSession(), signingParty, event.getFullContextPath(), contact, flowInstanceMultiSignCanceledUserSMS);
+			} else { // They were not logged in
+				
+				contact = new Contact();
+				
+				contact.setFirstname(event.getCancellingSigningParty().getFirstname());
+				contact.setLastname(event.getCancellingSigningParty().getLastname());
+				contact.setEmail(event.getCancellingSigningParty().getEmail());
+				contact.setMobilePhone(event.getCancellingSigningParty().getMobilePhone());
+			}
+		}
+		
+		for (SigningParty signingParty : event.getSigningParties()) {
+			
+			if (signingParty.equals(event.getCancellingSigningParty())) {
+				continue;
 			}
 			
-		} else {
-			
-			SiteProfile profile = siteProfileHandler.getProfile(event.getFlowInstance().getProfileID());
-			ImmutableFlowInstanceManager flowInstanceManager = getImmutableFlowInstanceManager(getFlowInstance(event.getFlowInstance().getFlowInstanceID()), profile);
-			
-			Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(flowInstanceManager);
-			
-			if (signingParties != null) {
-				
-				Contact contact = getPosterContact(event.getFlowInstance());
-				
-				for (SigningParty signingParty : signingParties) {
-					
-					sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-					sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserSMS);
-				}
-			}
+			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
+			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserSMS);
 		}
 	}
 
@@ -1841,6 +1823,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		tagReplacer.addTagSource(SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagSource(signingParty));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler.getSigningURL(flowInstance, signingParty)));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -1880,6 +1863,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		tagReplacer.addTagSource(SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagSource(signingParty));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler.getSigningURL(flowInstance, signingParty)));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 
@@ -1896,85 +1880,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 	
-	private void sendSigningSessionPartyEmail(ImmutableFlowInstance flowInstance, SigningSession signingSession, SigningSessionParty signingParty, String fullContextPath, Contact contact, String subject, String message) {
-
-		if (signingParty.getEmail() == null || subject == null || message == null || multiSigningHandler == null) {
-
-			return;
-		}
-
-		TagReplacer tagReplacer = new TagReplacer();
-
-		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
-		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
-		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-
-		if (contact != null) {
-
-			tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		}
-
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.firstname", signingParty.getFirstname()));
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.lastname", signingParty.getLastname()));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler2.getSigningURL(flowInstance, signingSession, signingParty, fullContextPath)));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
-
-		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-
-		try {
-			email.addRecipient(signingParty.getEmail());
-			email.setMessageContentType(SimpleEmail.HTML);
-			email.setSenderName(this.getEmailSenderName(flowInstance));
-			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
-			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
-
-			systemInterface.getEmailHandler().send(email);
-
-		} catch (Exception e) {
-
-			log.info("Error generating/sending email " + email, e);
-		}
-	}
-
-	private void sendSigningSessionPartySMS(ImmutableFlowInstance flowInstance, SigningSession signingSession, SigningSessionParty signingParty, String fullContextPath, Contact contact, String message) {
-
-		if (signingParty.getMobilePhone() == null || smsSender == null || message == null || multiSigningHandler == null) {
-
-			return;
-		}
-
-		TagReplacer tagReplacer = new TagReplacer();
-
-		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
-		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
-		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
-
-		if (contact != null) {
-
-			tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
-		}
-
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.firstname", signingParty.getFirstname()));
-		tagReplacer.addTagSource(new SingleTagSource("$signingParty.lastname", signingParty.getLastname()));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", multiSigningHandler2.getSigningURL(flowInstance, signingSession, signingParty, fullContextPath)));
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
-
-		SimpleSMS sms = new SimpleSMS();
-
-		try {
-			sms.setSenderName(this.getSmsSenderName(flowInstance));
-			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
-			sms.addRecipient(signingParty.getMobilePhone());
-
-			smsSender.send(sms);
-
-		} catch (Exception e) {
-
-			log.info("Error generating/sending sms " + sms, e);
-		}
-	}
-
 	public boolean sendContactEmail(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, File pdfFile) {
 
 		if (!contact.isContactByEmail() || contact.getEmail() == null || subject == null || message == null) {
