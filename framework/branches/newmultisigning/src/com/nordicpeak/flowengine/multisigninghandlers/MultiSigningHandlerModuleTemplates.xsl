@@ -165,25 +165,27 @@
 					</div>
 				
 					<div class="service">
-			  		<div class="queries">
+			  		<div class="queries bigpaddingbottom">
 							<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 						</div>
-					
+						
 						<xsl:if test="not(Signature)">
-							<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
-								
-								<span class="only-mobile">
-									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-								</span>
-								
-								<span class="hide-mobile">
-									<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
-								</span>
-							</a>
+							<div class="bigmargintop">
+								<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
+									
+									<span class="only-mobile">
+										<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+									</span>
+									
+									<span class="hide-mobile">
+										<xsl:value-of select="$i18n.SignFlowInstanceButton"/>
+									</span>
+								</a>
+							</div>
 						</xsl:if>
 						
 					</div>
-	
+					
 				</div>
 				
 			</section>

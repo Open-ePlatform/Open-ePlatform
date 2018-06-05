@@ -14,6 +14,23 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.SimpleViewFragmentTransformer;
+import se.unlogic.hierarchy.core.utils.UserUtils;
+import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.standardutils.dao.RelationQuery;
+import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashUtils;
+import se.unlogic.standardutils.time.TimeUtils;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.XMLUtils;
+
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.SigningConfirmedResponse;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -35,25 +52,7 @@ import com.nordicpeak.flowengine.interfaces.SigningResponse;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.utils.SimpleViewFragmentTransformer;
-import se.unlogic.hierarchy.core.utils.UserUtils;
-import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
-import se.unlogic.standardutils.dao.RelationQuery;
-import se.unlogic.standardutils.hash.HashAlgorithms;
-import se.unlogic.standardutils.hash.HashUtils;
-import se.unlogic.standardutils.time.TimeUtils;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.validation.ValidationException;
-import se.unlogic.standardutils.xml.XMLUtils;
-
 public class DummySigningProvider extends AnnotatedForegroundModule implements SigningProvider, GenericSigningProvider {
-	
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
