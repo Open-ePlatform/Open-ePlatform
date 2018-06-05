@@ -193,6 +193,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	
 	private static final String SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.sign.modificationcount";
 	private static final String PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.payment.modificationcount";
+	
+	@Deprecated
 	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
 
 	protected static final URL DEFAULT_FLOW_ICON = BaseFlowModule.class.getResource("staticcontent/pics/flow_default.png");
@@ -2007,7 +2009,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ViewFragment viewFragment;
 
 		try {
-			viewFragment = multiSigningHandler.getSigningStatus(req, user, uriParser, instanceManager);
+			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, instanceManager);
 		} catch (Exception e) {
 			viewFragment = null;
 			log.error("Error getting view fragment from multi signing provider " + multiSigningHandler, e);

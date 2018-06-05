@@ -2,7 +2,9 @@ package com.nordicpeak.flowengine.signingproviders;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,8 @@ import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.hash.HashAlgorithms;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.time.TimeUtils;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.BaseFlowModule;
@@ -32,20 +36,23 @@ import com.nordicpeak.flowengine.SigningConfirmedResponse;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.beans.SimpleSigningResponse;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
+import com.nordicpeak.flowengine.interfaces.GenericSigningProvider;
+import com.nordicpeak.flowengine.interfaces.GenericSigningRequest;
 import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.interfaces.SigningResponse;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
-public class DummySigningProvider extends AnnotatedForegroundModule implements SigningProvider {
-	
+public class DummySigningProvider extends AnnotatedForegroundModule implements SigningProvider, GenericSigningProvider {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
@@ -95,12 +102,18 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			
 			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + SigningProvider.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+		
+		if (!systemInterface.getInstanceHandler().addInstance(GenericSigningProvider.class, this)) {
+
+			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + GenericSigningProvider.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
 	}
 	
 	@Override
 	public void unload() throws Exception {
 		
 		systemInterface.getInstanceHandler().removeInstance(SigningProvider.class, this);
+		systemInterface.getInstanceHandler().removeInstance(GenericSigningProvider.class, this);
 		
 		super.unload();
 	}
@@ -310,6 +323,67 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 		if (user != null) {
 			
 			return UserUtils.getAttribute(CITIZEN_IDENTIFIER, user);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public ViewFragment showSignForm(HttpServletRequest req, HttpServletResponse res, User user, GenericSigningRequest signingRequest, List<ValidationError> validationErrors) throws Exception {
+
+		log.info("User " + user + " requested sign form for signing request " + signingRequest);
+		
+		if (fragmentTransformer != null) {
+			
+			Document doc = XMLUtils.createDomDocument();
+			Element document = doc.createElement("Document");
+			doc.appendChild(document);
+			
+			Element signElement = doc.createElement("SignForm");
+			document.appendChild(signElement);
+			
+			XMLUtils.appendNewElement(doc, signElement, "signingURL", signingRequest.getProcessSigningURL(req));
+			
+			return fragmentTransformer.createViewFragment(doc);
+		}
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append("<div>");
+		stringBuilder.append("<h1>Dummy signer</h1>");
+		stringBuilder.append("<p><a href=\"" + signingRequest.getProcessSigningURL(req) + "&idp=1\">Click here to sign signing request " + signingRequest.getDescription() + "</a></p>");
+		stringBuilder.append("<p><a href=\"" + signingRequest.getProcessSigningURL(req) + "&fail=1\">Click here to simulate a failed signing</a></p>");
+		stringBuilder.append("</div>");
+		
+		return new SimpleViewFragment(stringBuilder.toString());
+	}
+
+	@Override
+	public SigningResponse processSigning(HttpServletRequest req, HttpServletResponse res, User user, GenericSigningRequest signingRequest) throws ValidationException, Exception {
+
+		List<ValidationError> errors = new ArrayList<ValidationError>();
+		
+		if (req.getParameter("idp") != null) {
+			
+			log.info("User " + user + " signed signing request " + signingRequest);
+			
+			Map<String, String> signingAttributes = new HashMap<String, String>();
+			
+			signingAttributes.put("signingProvider", getClass().getName());
+			signingAttributes.put("signingChecksum", HashUtils.hash(signingRequest.getDataToSign(), HashAlgorithms.SHA1));
+
+			return new SimpleSigningResponse(signingAttributes);
+			
+		} else if (req.getParameter("fail") != null) {
+			
+			log.info("Signing of signed signing request " + signingRequest + " by user " + user + " failed.");
+			
+			errors.add(new ValidationError("SigningFailed"));
+		}
+		
+		if (!errors.isEmpty()) {
+			
+			throw new ValidationException(errors);
 		}
 		
 		return null;

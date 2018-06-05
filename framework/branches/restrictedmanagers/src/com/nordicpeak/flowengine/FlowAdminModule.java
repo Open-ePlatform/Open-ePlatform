@@ -113,6 +113,7 @@ import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
@@ -484,6 +485,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@InstanceManagerDependency
 	protected FlowNotificationHandler notificationHandler;
+
+	@InstanceManagerDependency
+	protected MultiSigningHandler multiSigningHandler;
 
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
@@ -5176,6 +5180,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public boolean hasFlowTypeAccess(User user, Flow bean) {
 		
 		return AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
+	}
+	
+	@Override
+	public MultiSigningHandler getMultiSigningHandler() {
+		
+		return multiSigningHandler;
 	}
 	
 }

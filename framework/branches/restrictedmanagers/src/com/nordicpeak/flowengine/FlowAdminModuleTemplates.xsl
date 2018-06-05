@@ -578,7 +578,7 @@
 						<xsl:with-param name="disabled" select="'true'" />
 					</xsl:call-template>
 					
-					<label for="usePreview">
+					<label for="requireAuthentication">
 						<xsl:value-of select="$i18n.requirersAuthentication" />
 					</label>
 				</div>
@@ -596,11 +596,29 @@
 							<xsl:with-param name="disabled" select="'true'" />
 						</xsl:call-template>
 						
-						<label for="usePreview">
+						<label for="requireSigning">
 							<xsl:value-of select="$i18n.requiresSigning" />
 						</label>
 					</div>
 				</div>
+				
+				<xsl:if test="SupportsSequentialSigning">
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'useSequentialSigning'" />
+							<xsl:with-param name="id" select="'useSequentialSigning'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="useSequentialSigning">
+							<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
+						</label>
+						</div>
+					</div>
+				</xsl:if>
 				
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 				
@@ -628,7 +646,7 @@
 							<xsl:with-param name="disabled" select="'true'" />
 						</xsl:call-template>
 						
-						<label for="hideManagerDetails">
+						<label for="hideFromOverview">
 							<xsl:value-of select="$i18n.hideFromOverview" />
 						</label>
 					</div>
@@ -2257,6 +2275,23 @@
 					</label>
 				</div>
 			</div>
+			
+			<xsl:if test="SupportsSequentialSigning">
+				<div class="floatleft full bigmarginbottom margintop internal">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'useSequentialSigning'" />
+							<xsl:with-param name="id" select="'useSequentialSigning'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="useSequentialSigning">
+							<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
+						</label>
+					</div>
+				</div>
+			</xsl:if>
 			
 			<div class="floatleft full bigmarginbottom margintop internal">
 			

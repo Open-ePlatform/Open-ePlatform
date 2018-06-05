@@ -184,6 +184,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean useSequentialSigning;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean showSubmitSurvey;
 	
 	@DAOManaged
@@ -792,6 +797,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setRequireSigning(boolean requireSigning) {
 		
 		this.requireSigning = requireSigning;
+	}
+	
+	public boolean usesSequentialSigning() {
+		return useSequentialSigning;
+	}
+	
+	public void setUseSequentialSigning(boolean useSequentialSigning) {
+		this.useSequentialSigning = useSequentialSigning;
 	}
 	
 	@Override

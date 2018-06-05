@@ -175,6 +175,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		XMLUtils.appendNewElement(doc, typeElement, "DefaultStatisticsMode", callback.getDefaultStatisticsMode());
 		XMLUtils.appendNewElement(doc, typeElement, "RequiresTags", callback.requiresTags());
+		
+		if (callback.getMultiSigningHandler() != null && callback.getMultiSigningHandler().supportsSequentialSigning()) {
+
+			XMLUtils.appendNewElement(doc, typeElement, "SupportsSequentialSigning");
+		}
 	}
 
 	@Override
@@ -761,6 +766,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		}
 		
 		XMLUtils.append(doc, showTypeElement, "FlowFamilyEvents", callback.getRecentFlowFamilyEvents(flow.getFlowFamily()));
+		
+		if (callback.getMultiSigningHandler() != null && callback.getMultiSigningHandler().supportsSequentialSigning()) {
+
+			XMLUtils.appendNewElement(doc, showTypeElement, "SupportsSequentialSigning");
+		}
 	}
 
 	@SuppressWarnings("unchecked")

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -221,7 +223,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
-	public ViewFragment getSigningStatus(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager) throws Exception {
+	public ViewFragment getSigningStatusViewFragment(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager) throws Exception {
 		
 		//TODO any checks necessary here?
 		
@@ -345,17 +347,6 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		signFlowInstanceElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 		
 		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
-	}
-	
-	protected String getImmutableQueryRequestBaseURL(HttpServletRequest req, FlowInstanceManager instanceManager) {
-
-		return req.getContextPath() + getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
-	}
-
-	@WebPublic(alias = "iquery")
-	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
-
-		return browserModule.processImmutableQueryRequest(req, res, user, uriParser, this, true, false);
 	}
 	
 	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
@@ -714,7 +705,10 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			
 			log.info("Multi-party signing of flowinstance " + instanceManager + " complete");
 			
-			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), getSigningChainID(instanceManager));
+			Map<String, String> eventAttributes = new HashMap<String, String>();
+			eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, getSigningChainID(instanceManager));
+			
+			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), eventAttributes);
 		}
 		
 		SessionUtils.setAttribute(this.getClass().getName() + "." + instanceManager.getFlowInstanceID(), signature, req);
@@ -869,7 +863,12 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 					XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 					genDoc.addIgnoredFields(UserFlowInstanceModule.LIST_EXCLUDED_FIELDS);
 					
-					ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getDataSource(), "SELECT DISTINCT flowInstanceID FROM " + browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getTableName() + " WHERE queryInstanceID IN (? " + StringUtils.repeatString(",?", queryInstanceIDs.size() - 1) + ")", IntegerPopulator.getPopulator());
+					//@formatter:off
+					ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getDataSource(),
+							"SELECT DISTINCT flowInstanceID FROM " + browserModule.getDAOFactory().getQueryInstanceDescriptorDAO().getTableName()
+							+ " WHERE queryInstanceID IN (? " + StringUtils.repeatString(",?", queryInstanceIDs.size() - 1) + ")"
+							, IntegerPopulator.getPopulator());
+					//@formatter:on
 					
 					for (int i = 0; i < queryInstanceIDs.size(); i++) {
 						
@@ -966,7 +965,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		flowInstanceDAO.update(flowInstance);
 		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager), EventTarget.ALL);
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(instanceManager.getFlowInstance(), MultiSignUtils.getSigningParties(instanceManager), null, user), EventTarget.ALL);
 		
 		String preview = flowInstance.getFlow().usesPreview() ? "?preview=1" : "";
 		
@@ -996,7 +995,24 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	}
 	
 	@Override
+	public boolean supportsSequentialSigning() {
+		return false;
+	}
+	
+	protected String getImmutableQueryRequestBaseURL(HttpServletRequest req, FlowInstanceManager instanceManager) {
+
+		return req.getContextPath() + getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
+	}
+	
+	@WebPublic(alias = "iquery")
+	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+
+		return browserModule.processImmutableQueryRequest(req, res, user, uriParser, this, true, false);
+	}
+	
+	@Override
 	public QueryHandler getQueryHandler() {
+
 		return queryHandler;
 	}
 
@@ -1008,6 +1024,8 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 
 	@Override
 	public boolean isMutable(ImmutableFlowInstance flowInstance, User user) {
+
 		return false;
 	}
+
 }

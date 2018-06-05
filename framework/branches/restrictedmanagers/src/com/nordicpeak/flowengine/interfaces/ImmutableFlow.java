@@ -41,6 +41,8 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	
 	public boolean requiresSigning();
 	
+	public boolean usesSequentialSigning();
+	
 	public boolean showsSubmitSurvey();
 
 	public abstract Blob getIcon();
