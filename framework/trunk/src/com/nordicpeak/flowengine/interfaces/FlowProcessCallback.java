@@ -35,5 +35,4 @@ public interface FlowProcessCallback {
 
 	public void appendShowFlowInstanceData(Document doc, Element baseElement, FlowInstanceManager instanceManager, HttpServletRequest req, User user);
 
-	//TODO add methods for breadcrumbs
 }
