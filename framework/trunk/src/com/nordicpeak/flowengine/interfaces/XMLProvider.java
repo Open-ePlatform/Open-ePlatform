@@ -12,5 +12,7 @@ public interface XMLProvider {
 
 	public File getXML(Integer flowInstanceID, Integer eventID);
 	
+	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted) throws Exception;
+	
 	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted, File outputFile) throws Exception;
 }
