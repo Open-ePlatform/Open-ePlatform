@@ -1657,6 +1657,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				pdfProvider.saveTemporaryPDF(instanceManager, event);
 				
+				this.xmlProvider.generateXML(instanceManager.getFlowInstance(), instanceManager, event, event.getAdded());
+				
 			} catch (Exception e) {
 				
 				log.error("Error creating PDF for event " + event + " belonging to flow instance " + instanceManager.getFlowInstance() + " saved and close by " + user, e);
