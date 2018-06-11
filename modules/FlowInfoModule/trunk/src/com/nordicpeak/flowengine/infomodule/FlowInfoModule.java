@@ -19,12 +19,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowType;
-
-import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -47,6 +41,13 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowType;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowInfoModule extends AnnotatedRESTModule implements EventListener<CRUDEvent<Flow>>, Runnable {
 
@@ -453,6 +454,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		doc.appendChild(flowsElement);
 
 		if (!CollectionUtils.isEmpty(flows)) {
+			
 			for (Flow flow : flows) {
 
 				Element flowElement = XMLUtils.appendNewElement(doc, flowsElement, "Flow");
@@ -469,6 +471,17 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				XMLUtils.appendNewElement(doc, flowElement, "RequiresAuthentication", flow.requiresAuthentication());
 				XMLUtils.appendNewElement(doc, flowElement, "RequiresSigning", flow.requiresSigning());
 
+				if(flow.getFlowFamily().getAliases() != null) {
+					
+					Element aliasesElement = doc.createElement("Aliases");
+					flowElement.appendChild(aliasesElement);
+					
+					for(String alias : flow.getFlowFamily().getAliases()) {
+						
+						XMLUtils.appendNewElement(doc, aliasesElement, "Alias", RequestUtils.getFullContextPathURL(req) + "/" + alias);
+					}
+				}
+				
 				flowsElement.appendChild(flowElement);
 			}
 		}
@@ -499,6 +512,18 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				flowsJson.putField("RequiresAuthentication", flow.requiresAuthentication());
 				flowsJson.putField("RequiresSigning", flow.requiresSigning());
 
+				if(flow.getFlowFamily().getAliases() != null) {
+					
+					JsonArray aliases = new JsonArray();
+					
+					for(String alias : flow.getFlowFamily().getAliases()) {
+						
+						aliases.addNode(RequestUtils.getFullContextPathURL(req) + "/" + alias);
+					}
+					
+					flowsJson.putField("Aliases", aliases);
+				}				
+				
 				array.addNode(flowsJson);
 			}
 		}
