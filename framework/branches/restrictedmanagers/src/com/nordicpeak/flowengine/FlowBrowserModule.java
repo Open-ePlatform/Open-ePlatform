@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -25,65 +23,6 @@ import javax.sql.DataSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.nordicpeak.flowengine.accesscontrollers.FlowBrowserAccessController;
-import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
-import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowForm;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.enums.ShowMode;
-import com.nordicpeak.flowengine.events.FlowBrowserCacheEvent;
-import com.nordicpeak.flowengine.exceptions.FlowEngineException;
-import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
-import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowLimitExceededException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
-import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.QueryInstanceHTMLException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
-import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
-import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
-import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.OperatingStatus;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.SigningProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
-import com.nordicpeak.flowengine.search.FlowIndexer;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
-import com.nordicpeak.flowengine.utils.SigningUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
@@ -134,6 +73,65 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
+
+import com.nordicpeak.flowengine.accesscontrollers.FlowBrowserAccessController;
+import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
+import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.ShowMode;
+import com.nordicpeak.flowengine.events.FlowBrowserCacheEvent;
+import com.nordicpeak.flowengine.exceptions.FlowEngineException;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowLimitExceededException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
+import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryInstanceHTMLException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserFilter;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
+import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.OperatingStatus;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.search.FlowIndexer;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.SigningUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProcessCallback, FlowInstanceAccessController, EventListener<CRUDEvent<?>>, Runnable {
 
@@ -1428,7 +1426,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return multiSigningHandler;
 	}
 
-	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Map<String, String> eventAttributes) {
+	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Collection<SigningParty> signingParties, Map<String, String> eventAttributes) {
 
 		boolean requiresPayment = requiresPayment(instanceManager);
 
@@ -1472,42 +1470,31 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				flowInstance.setFirstSubmitted(currentTimestamp);
 			}
 			
-			List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
-
-			if (multiSignQueryinstances != null) {
-
-				for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
-
-					if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
-
-						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
+			for (SigningParty signingParty : signingParties) {
+				
+				if (signingParty.isAddAsOwner()) {
+					
+					User signer = null;
+					
+					if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
+						
+						signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
+					}
+					
+					if (signer != null) {
+						
+						if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
 							
-							if (signingParty.isAddAsOwner()) {
-							
-								User signer = null;
-								
-								if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
-								
-									signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
-								}
-																
-								if (signer != null) {
-									
-									if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
-										
-										if (flowInstance.getOwners() == null) {
-											flowInstance.setOwners(new ArrayList<User>());
-										}
-										
-										flowInstance.getOwners().add(signer);
-									}
-									
-								} else {
-									
-									log.error("User for signing party " + signingParty + " not found");
-								}
+							if (flowInstance.getOwners() == null) {
+								flowInstance.setOwners(new ArrayList<User>());
 							}
+							
+							flowInstance.getOwners().add(signer);
 						}
+						
+					} else {
+						
+						log.error("User for signing party " + signingParty + " not found");
 					}
 				}
 			}

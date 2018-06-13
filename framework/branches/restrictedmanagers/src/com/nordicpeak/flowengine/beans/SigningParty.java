@@ -46,16 +46,28 @@ public final class SigningParty extends GeneratedElementable {
 		unsecure = false;
 	}
 	
-	public SigningParty(String firstname, String lastname, String email, String mobilePhone) {
+	public SigningParty(String firstname, String lastname, String email, String mobilePhone, String socialSecurityNumber, boolean addAsOwner, boolean unsecure) {
 		
 		super();
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.email = email;
 		this.mobilePhone = mobilePhone;
+		this.socialSecurityNumber = socialSecurityNumber;
+		this.addAsOwner = addAsOwner;
+		this.unsecure = unsecure;
+	}
+	
+	public SigningParty(String firstname, String lastname, String email, String mobilePhone, boolean addAsOwner) {
+		
+		super();
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.email = email;
+		this.mobilePhone = mobilePhone;
+		this.addAsOwner = addAsOwner;
 		
 		socialSecurityNumber = null;
-		addAsOwner = false;
 		unsecure = true;
 	}
 	

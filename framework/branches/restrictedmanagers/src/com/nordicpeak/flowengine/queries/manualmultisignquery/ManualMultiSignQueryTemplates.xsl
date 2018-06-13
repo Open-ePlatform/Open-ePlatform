@@ -308,7 +308,7 @@
 	
 	<xsl:template match="validationError[messageKey = 'RequiredField']">
 		
-		<i data-icon-after="!" title="{$i18n.RequiredField}">AAAAAAAAAAAAAAAA</i>
+		<i data-icon-after="!" title="{$i18n.RequiredField}"></i>
 		
 	</xsl:template>
 	
