@@ -475,7 +475,7 @@
 									var $storageSettings = $("#storage-settings-wrapper");
 									
 									var toggleDescriptions = (function() {
-										var $visibleSettings = $("#storage-settings-wrapper .storage-setting:visible");
+										var $visibleSettings = $("#storage-settings-wrapper .storage-setting").slice(1);
 										var settingCount = $visibleSettings.length;
 										
 										if (settingCount === 1) {
