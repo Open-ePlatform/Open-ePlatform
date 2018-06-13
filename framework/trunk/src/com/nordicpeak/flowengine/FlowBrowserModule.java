@@ -1428,7 +1428,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return multiSigningHandler;
 	}
 
-	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Map<String, String> eventAttributes) {
+	public void multiSigningComplete(FlowInstanceManager instanceManager, SiteProfile siteProfile, Collection<SigningParty> signingParties, Map<String, String> eventAttributes) {
 
 		boolean requiresPayment = requiresPayment(instanceManager);
 
@@ -1472,42 +1472,31 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				flowInstance.setFirstSubmitted(currentTimestamp);
 			}
 			
-			List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
-
-			if (multiSignQueryinstances != null) {
-
-				for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
-
-					if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
-
-						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
+			for (SigningParty signingParty : signingParties) {
+				
+				if (signingParty.isAddAsOwner()) {
+					
+					User signer = null;
+					
+					if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
+						
+						signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
+					}
+					
+					if (signer != null) {
+						
+						if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
 							
-							if (signingParty.isAddAsOwner()) {
-							
-								User signer = null;
-								
-								if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
-								
-									signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
-								}
-																
-								if (signer != null) {
-									
-									if (flowInstance.getOwners() == null || !flowInstance.getOwners().contains(signer)) {
-										
-										if (flowInstance.getOwners() == null) {
-											flowInstance.setOwners(new ArrayList<User>());
-										}
-										
-										flowInstance.getOwners().add(signer);
-									}
-									
-								} else {
-									
-									log.error("User for signing party " + signingParty + " not found");
-								}
+							if (flowInstance.getOwners() == null) {
+								flowInstance.setOwners(new ArrayList<User>());
 							}
+							
+							flowInstance.getOwners().add(signer);
 						}
+						
+					} else {
+						
+						log.error("User for signing party " + signingParty + " not found");
 					}
 				}
 			}

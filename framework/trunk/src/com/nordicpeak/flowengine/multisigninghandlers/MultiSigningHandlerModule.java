@@ -708,7 +708,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			Map<String, String> eventAttributes = new HashMap<String, String>();
 			eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, getSigningChainID(instanceManager));
 			
-			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), eventAttributes);
+			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), MultiSignUtils.getSigningParties(instanceManager), eventAttributes);
 		}
 		
 		SessionUtils.setAttribute(this.getClass().getName() + "." + instanceManager.getFlowInstanceID(), signature, req);

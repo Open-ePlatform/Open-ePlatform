@@ -54,7 +54,6 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 public class DummySigningProvider extends AnnotatedForegroundModule implements SigningProvider, GenericSigningProvider {
 	
-	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
 	public static final RelationQuery EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);

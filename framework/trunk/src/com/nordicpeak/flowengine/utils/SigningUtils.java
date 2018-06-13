@@ -17,7 +17,6 @@ public class SigningUtils {
 	}
 	
 	/** @return Returned list order is newest event first */
-	
 	public static List<ImmutableFlowInstanceEvent> getLastestSignEvents(List<? extends ImmutableFlowInstanceEvent> events, boolean skipImmediateSubmitEvent) {
 		
 		List<ImmutableFlowInstanceEvent> signEvents = null;

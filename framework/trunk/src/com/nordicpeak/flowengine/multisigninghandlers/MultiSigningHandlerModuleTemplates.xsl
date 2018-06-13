@@ -163,12 +163,12 @@
 								<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
 						</div>
 					</div>
-				
+					
 					<div class="service">
-			  		<div class="queries bigpaddingbottom">
+					<div class="queries bigpaddingbottom">
 							<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 						</div>
-					
+						
 						<xsl:if test="not(Signature)">
 							<div class="bigmargintop">
 								<a href="{/Document/requestinfo/uri}?sign=true" class="btn btn-green xl next arrow-mobile">
@@ -185,7 +185,7 @@
 						</xsl:if>
 						
 					</div>
-	
+					
 				</div>
 				
 			</section>
