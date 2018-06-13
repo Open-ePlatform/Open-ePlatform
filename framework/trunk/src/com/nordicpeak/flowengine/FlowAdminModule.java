@@ -4072,7 +4072,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				
 				log.info("User " + user + " requested flow " + flow.getFlowID() + " which is not availiable in the requested format.");
 				
-				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
+				throw new URINotFoundException(uriParser);
 			}
 			
 			boolean raw = req.getParameter("raw") != null;
