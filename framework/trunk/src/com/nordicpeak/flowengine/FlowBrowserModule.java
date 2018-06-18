@@ -88,7 +88,6 @@ import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.FlowBrowserCacheEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
@@ -120,7 +119,6 @@ import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -1496,7 +1494,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 						
 					} else {
 						
-						log.error("User for signing party " + signingParty + " not found");
+						log.error("User for signing party " + signingParty + " not found for flow instance " + instanceManager);
 					}
 				}
 			}
