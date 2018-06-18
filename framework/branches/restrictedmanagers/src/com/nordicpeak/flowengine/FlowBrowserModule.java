@@ -1494,7 +1494,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 						
 					} else {
 						
-						log.error("User for signing party " + signingParty + " not found");
+						log.error("User for signing party " + signingParty + " not found for flow instance " + instanceManager);
 					}
 				}
 			}

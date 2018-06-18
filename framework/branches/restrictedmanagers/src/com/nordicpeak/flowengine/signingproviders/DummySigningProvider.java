@@ -372,7 +372,7 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			signingAttributes.put("signingProvider", getClass().getName());
 			signingAttributes.put("signingChecksum", HashUtils.hash(signingRequest.getDataToSign(), HashAlgorithms.SHA1));
 
-			return new SimpleSigningResponse(signingAttributes);
+			return new SimpleSigningResponse(user, signingAttributes);
 			
 		} else if (req.getParameter("fail") != null) {
 			
