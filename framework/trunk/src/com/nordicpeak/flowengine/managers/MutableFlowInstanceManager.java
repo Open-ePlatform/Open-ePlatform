@@ -1138,7 +1138,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				setFirstSubmitted = true;
 			}
 			
-			if (eventType == EventType.SUBMITTED) {
+			if (eventType == EventType.SUBMITTED || eventType == EventType.UPDATED) {
 				
 				FlowInstanceUtils.setContactAttributes(this, flowInstance.getAttributeHandler());
 			}
