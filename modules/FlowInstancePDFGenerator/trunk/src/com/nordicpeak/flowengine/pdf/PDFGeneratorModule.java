@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -318,31 +319,57 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
 					
-					String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+					String signingSessionID = event.getAttributeHandler().getString("signingSessionID");
 					
-					if (!StringUtils.isEmpty(signChainID)) {
+					if (!StringUtils.isEmpty(signingSessionID)) {
 						
-						List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
+						List<ImmutableFlowInstanceEvent> signEvents = new ArrayList<ImmutableFlowInstanceEvent>(flowInstanceEvents.size());
 						
-						if (!CollectionUtils.isEmpty(signEvents)) {
+						for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 							
-							for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+							if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString("signingSessionID")) && !"signedPDF".equals(flowInstanceEvent.getAttributeHandler().getString("signingSessionEvent"))) {
 								
-								if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
-									
-									log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + instanceManager.getFlowInstance());
-									signEvents.remove(signEvent);
-								}
+								signEvents.add(flowInstanceEvent);
 							}
 						}
 						
 						if (CollectionUtils.isEmpty(signEvents)) {
 							
-							log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + instanceManager.getFlowInstance());
+							log.warn("Signing session ID set on " + event + " but no matching sign events found for " + instanceManager.getFlowInstance());
 							
 						} else {
 							
 							XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
+						}
+						
+					} else {
+					
+						String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+						
+						if (!StringUtils.isEmpty(signChainID)) {
+							
+							List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
+							
+							if (!CollectionUtils.isEmpty(signEvents)) {
+								
+								for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+									
+									if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
+										
+										log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + instanceManager.getFlowInstance());
+										signEvents.remove(signEvent);
+									}
+								}
+							}
+							
+							if (CollectionUtils.isEmpty(signEvents)) {
+								
+								log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + instanceManager.getFlowInstance());
+								
+							} else {
+								
+								XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
+							}
 						}
 					}
 					
