@@ -124,6 +124,15 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 	}
 
 	@Override
+	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted) throws Exception {
+		
+		generateXML(flowInstance, flowInstanceManager, event, lastSubmitted, getFile(flowInstance.getFlowInstanceID(), event.getEventID()));
+		
+		event.getAttributeHandler().setAttribute("xml", "true");
+		daoFactory.getFlowInstanceEventDAO().update(event, EVENT_ATTRIBUTE_RELATION_QUERY);
+	}
+	
+	@Override
 	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted, File outputFile) throws Exception {
 
 		Document doc = XMLUtils.createDomDocument();

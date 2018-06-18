@@ -15,6 +15,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
+		/js/jquery.cookie.js
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.helpdialog.js
@@ -51,7 +52,7 @@
 				
 					<div class="floatright bigmarginright" style="margin-top: 15px; margin-right: 35px;">
 						<label for="tag-filter-input" class="bigmarginright" style="margin-top: 15px;"><xsl:value-of select="$i18n.Filter" />:</label>
-						<input type="text" size="20" name="tag-filter-input" class="filter-input" data-tableid="taglist" />
+						<input type="text" size="20" name="tag-filter-input" id="tag-filter-input" class="filter-input" data-tableid="taglist" autofocus="autofocus"/>
 					</div>			
 				
 					<h1>
@@ -64,7 +65,21 @@
 				
 				<xsl:variable name="textTagCount" select="count(TextTags/TextTag)" />
 				
-				<div class="errands-wrapper draft">
+				<xsl:if test="$textTagCount >= 10">
+					<article class="buttons">
+				
+						<a class="btn btn-green btn-right" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/add"><xsl:value-of select="$i18n.AddTextTag" /></a>
+						
+						<xsl:if test="TagSharingTargets and TextTags">
+						
+							<a class="btn btn-blue btn-right disabled open-help" id="share-button" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
+						
+						</xsl:if>
+				
+					</article>
+				</xsl:if>
+				
+				<div class="errands-wrapper draft clearboth">
 					
 					<div class="heading-wrapper">
 						<h3>
