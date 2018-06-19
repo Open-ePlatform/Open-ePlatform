@@ -117,6 +117,7 @@ import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -451,9 +452,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
 
-					List<FlowInstanceEvent> events = getNewFlowInstanceEvents(flowInstance, user);
+					@SuppressWarnings("unchecked")
+					List<FlowInstanceEvent> events = CollectionUtils.combine(getNewFlowInstanceEvents(flowInstance, user), getNewSubmittedFlowInstanceEvents(flowInstance, user));
 
 					if (events != null) {
+						
+						Collections.sort(events);
 
 						for (FlowInstanceEvent event : events) {
 							event.setShortDate(DateUtils.getDateWithMonthString(event.getAdded(), systemLocale));
@@ -893,6 +897,32 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			query.addParameter(flowInstanceEventAddedParamFactory.getParameter(user.getLastLogin(), QueryOperators.BIGGER_THAN));
 		}
 
+		return daoFactory.getFlowInstanceEventDAO().getAll(query);
+	}
+	
+	public List<FlowInstanceEvent> getNewSubmittedFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
+		
+		//@formatter:off
+		StringBuilder sql = new StringBuilder(
+			  "SELECT * FROM " + daoFactory.getFlowInstanceEventDAO().getTableName() + " e "
+			+ "WHERE e.flowInstanceID = ? AND e.poster = ? AND e.eventType = '" + ContentType.SUBMITTED + "'");
+		//@formatter:on
+		
+		if (user.getLastLogin() != null) {
+			sql.append(" AND e.added >= ?");
+		}
+		
+		sql.append(" AND EXISTS (SELECT 1 FROM flowengine_flow_instance_event_attributes WHERE eventID = e.eventID AND name = '" + BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION + "')");
+		
+		LowLevelQuery<FlowInstanceEvent> query = new LowLevelQuery<FlowInstanceEvent>(sql.toString());
+		
+		query.addParameter(flowInstance.getFlowInstanceID());
+		query.addParameter(user.getUserID());
+		
+		if (user.getLastLogin() != null) {
+			query.addParameter(user.getLastLogin());
+		}
+		
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
 	}
 
