@@ -603,19 +603,19 @@
 				</div>
 				
 				<xsl:if test="SupportsSequentialSigning">
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'useSequentialSigning'" />
-							<xsl:with-param name="id" select="'useSequentialSigning'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
+					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 						
-						<label for="useSequentialSigning">
-							<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
-						</label>
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'useSequentialSigning'" />
+								<xsl:with-param name="id" select="'useSequentialSigning'" />
+								<xsl:with-param name="element" select="Flow" />
+								<xsl:with-param name="disabled" select="'true'" />
+							</xsl:call-template>
+							
+							<label for="useSequentialSigning">
+								<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
+							</label>
 						</div>
 					</div>
 				</xsl:if>

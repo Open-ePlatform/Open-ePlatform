@@ -1842,7 +1842,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		try {
 			instanceManager = this.getImmutableFlowInstanceManager(flowInstanceID, accessController, user, checkEnabled, req, uriParser, manager);
 
-			if (instanceManager == null || queryID == null) {
+			if (instanceManager == null) {
 
 				throw new URINotFoundException(uriParser);
 			}

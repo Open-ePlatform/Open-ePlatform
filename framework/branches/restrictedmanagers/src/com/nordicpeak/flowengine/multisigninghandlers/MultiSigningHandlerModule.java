@@ -18,6 +18,51 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.OperatingMessageModule;
+import com.nordicpeak.flowengine.UserFlowInstanceModule;
+import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
+import com.nordicpeak.flowengine.interfaces.OperatingStatus;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ManagerResponse;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
+import com.nordicpeak.flowengine.utils.MultiSignUtils;
+import com.nordicpeak.flowengine.utils.SigningUtils;
+
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
@@ -66,6 +111,7 @@ import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
@@ -78,52 +124,7 @@ import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
-import com.nordicpeak.flowengine.BaseFlowModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.OperatingMessageModule;
-import com.nordicpeak.flowengine.UserFlowInstanceModule;
-import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.ContentType;
-import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
-import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
-import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
-import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
-import com.nordicpeak.flowengine.interfaces.OperatingStatus;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.SigningProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ManagerResponse;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
-import com.nordicpeak.flowengine.utils.MultiSignUtils;
-import com.nordicpeak.flowengine.utils.SigningUtils;
-
-public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider, ImmutableFlowEngineInterface, FlowInstanceAccessController {
+public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider, ImmutableFlowEngineInterface {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
@@ -349,7 +350,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
 	}
 	
-	private Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
+	protected Signature getValidSignatureForCurrentSigningChain(ImmutableFlowInstanceManager instanceManager, User user) throws SQLException {
 		
 		String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 		
@@ -548,7 +549,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return null;
 	}
 	
-	private SigningParty getMatchingSigningParty(User user, ImmutableFlowInstanceManager instanceManager) {
+	protected SigningParty getMatchingSigningParty(User user, ImmutableFlowInstanceManager instanceManager) {
 		
 		String socialSecurityNumber = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 		
@@ -628,7 +629,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return signatureDAO.get(query);
 	}
 	
-	@Override
+@Override
 	public ForegroundModuleDescriptor getModuleDescriptor() {
 		
 		return moduleDescriptor;
@@ -1007,7 +1008,35 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return browserModule.processImmutableQueryRequest(req, res, user, uriParser, this, true, false);
+		Integer flowInstanceID = null;
+
+		if (uriParser.size() < 5 || (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) == null || !uriParser.get(4).equals("q")) {
+
+			throw new URINotFoundException(uriParser);
+		}
+
+		ImmutableFlowInstanceManager instanceManager = null;
+
+		try {
+			instanceManager = browserModule.getImmutableFlowInstanceManager(flowInstanceID, null, user, true, req, uriParser, false);
+
+			if (instanceManager == null) {
+
+				throw new URINotFoundException(uriParser);
+			}
+			
+			return browserModule.processImmutableQueryRequest(req, res, user, uriParser, new MultiSigningFlowInstanceAccessController(this, instanceManager), true, false);
+
+		} catch (FlowException e) {
+
+			throw new URINotFoundException(uriParser);
+
+		} catch (QueryRequestException e) {
+
+			log.error("Error processing query request for query " + e.getQueryInstanceDescriptor() + " in flow instance " + instanceManager.getFlowInstance() + " requested by user " + user, e);
+
+			throw e;
+		}
 	}
 	
 	@Override
@@ -1015,17 +1044,4 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 
 		return queryHandler;
 	}
-
-	@Override
-	public void checkNewFlowInstanceAccess(Flow flow, User user, SiteProfile profile) throws AccessDeniedException {}
-
-	@Override
-	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {}
-
-	@Override
-	public boolean isMutable(ImmutableFlowInstance flowInstance, User user) {
-
-		return false;
-	}
-
 }
