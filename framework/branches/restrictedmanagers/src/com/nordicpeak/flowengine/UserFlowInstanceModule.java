@@ -912,7 +912,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			sql.append(" AND e.added >= ?");
 		}
 		
-		sql.append(" AND EXISTS (SELECT 1 FROM flowengine_flow_instance_event_attributes WHERE eventID = e.eventID AND name = '" + BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION + "')");
+		sql.append(" AND EXISTS (SELECT 1 FROM flowengine_flow_instance_event_attributes WHERE eventID = e.eventID AND name IN ('" + BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION + "', '" + BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE + "'))");
 		
 		LowLevelQuery<FlowInstanceEvent> query = new LowLevelQuery<FlowInstanceEvent>(sql.toString());
 		
