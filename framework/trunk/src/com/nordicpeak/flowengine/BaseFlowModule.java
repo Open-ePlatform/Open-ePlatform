@@ -194,7 +194,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	private static final String SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.sign.modificationcount";
 	private static final String PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.payment.modificationcount";
 	
-	@Deprecated
+	//TODO @Deprecated
 	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
 	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION = "signingSessionID";
 	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT = "signingSessionEvent";
