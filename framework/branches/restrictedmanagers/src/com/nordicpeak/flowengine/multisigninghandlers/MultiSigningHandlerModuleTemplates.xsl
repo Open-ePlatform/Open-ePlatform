@@ -137,7 +137,7 @@
 				
 				<div class="section-full">
 					
-					<h1>
+					<h1 style="padding-left: 0;">
 						<xsl:value-of select="$i18n.SignFlowInstance"/>
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="FlowInstance/Flow/name"/>
