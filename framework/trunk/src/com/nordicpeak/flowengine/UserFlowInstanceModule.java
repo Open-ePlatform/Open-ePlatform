@@ -19,54 +19,6 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
-import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
-import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryOperators;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.io.BinarySizeFormater;
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
-import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.xml.XMLGeneratorDocument;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.URIParser;
-
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -134,6 +86,55 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowIconUtils;
+
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.LowLevelQuery;
+import se.unlogic.standardutils.dao.QueryOperators;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.URIParser;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
@@ -451,9 +452,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
 
-					List<FlowInstanceEvent> events = getNewFlowInstanceEvents(flowInstance, user);
+					@SuppressWarnings("unchecked")
+					List<FlowInstanceEvent> events = CollectionUtils.combine(getNewFlowInstanceEvents(flowInstance, user), getNewSubmittedFlowInstanceEvents(flowInstance, user));
 
 					if (events != null) {
+
+						Collections.sort(events);
 
 						for (FlowInstanceEvent event : events) {
 							event.setShortDate(DateUtils.getDateWithMonthString(event.getAdded(), systemLocale));
@@ -893,6 +897,32 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			query.addParameter(flowInstanceEventAddedParamFactory.getParameter(user.getLastLogin(), QueryOperators.BIGGER_THAN));
 		}
 
+		return daoFactory.getFlowInstanceEventDAO().getAll(query);
+	}
+
+	public List<FlowInstanceEvent> getNewSubmittedFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
+		
+		//@formatter:off
+		StringBuilder sql = new StringBuilder(
+			  "SELECT * FROM " + daoFactory.getFlowInstanceEventDAO().getTableName() + " e "
+			+ "WHERE e.flowInstanceID = ? AND e.poster = ? AND e.eventType = '" + ContentType.SUBMITTED + "'");
+		//@formatter:on
+		
+		if (user.getLastLogin() != null) {
+			sql.append(" AND e.added >= ?");
+		}
+		
+		sql.append(" AND EXISTS (SELECT 1 FROM flowengine_flow_instance_event_attributes WHERE eventID = e.eventID AND name = '" + BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION + "')");
+		
+		LowLevelQuery<FlowInstanceEvent> query = new LowLevelQuery<FlowInstanceEvent>(sql.toString());
+		
+		query.addParameter(flowInstance.getFlowInstanceID());
+		query.addParameter(user.getUserID());
+		
+		if (user.getLastLogin() != null) {
+			query.addParameter(user.getLastLogin());
+		}
+		
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
 	}
 
