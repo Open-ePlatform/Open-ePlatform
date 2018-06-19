@@ -79,6 +79,15 @@ $(document).ready(function() {
 	
 	$("#typeOfFlow").trigger("change");
 	
+	$("#requireSigning").change(function(e) {
+		
+		var checked = $(this).prop("checked");
+		var useSequentialSigning = $("#useSequentialSigning");
+		
+		useSequentialSigning.parent().parent().toggle(checked);
+	});
+	
+	$("#requireSigning").trigger("change");
 	
 	$("#checkall").click(function() {
 		
