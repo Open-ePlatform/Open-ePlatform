@@ -53,5 +53,6 @@
 	<xsl:variable name="i18n.FieldUpdate.Always">Alltid</xsl:variable>
 	<xsl:variable name="i18n.FieldUpdate.Ask">Valfritt</xsl:variable>
 	<xsl:variable name="i18n.FieldUpdate.Never">Aldrig</xsl:variable>
+	<xsl:variable name="i18n.ManagerUpdateAccess">Handläggares ändringar i kontaktuppgiftsfrågan uppdaterar användarens kontaktinformation i mina sidor</xsl:variable>
 	
 </xsl:stylesheet>
