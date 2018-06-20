@@ -117,7 +117,6 @@ import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -191,6 +190,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Hide manager email address in flow instance overview", description = "Controls if manager email address is shown in flow instance overview")
 	protected boolean hideManagerEmailInOverview;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Show new flow instance events in list", description = "Controls if new since last login events are shown in the list view")
+	protected boolean showNewEventsInList = false;
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -452,21 +455,21 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
 
-					@SuppressWarnings("unchecked")
-					List<FlowInstanceEvent> events = CollectionUtils.combine(getNewFlowInstanceEvents(flowInstance, user), getNewSubmittedFlowInstanceEvents(flowInstance, user));
-
-					if (events != null) {
-
-						Collections.sort(events);
-
-						for (FlowInstanceEvent event : events) {
-							event.setShortDate(DateUtils.getDateWithMonthString(event.getAdded(), systemLocale));
+					if (showNewEventsInList) {
+						
+						List<FlowInstanceEvent> events = getNewFlowInstanceEvents(flowInstance, user);
+	
+						if (events != null) {
+	
+							for (FlowInstanceEvent event : events) {
+								event.setShortDate(DateUtils.getDateWithMonthString(event.getAdded(), systemLocale));
+							}
+	
+							XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
 						}
-
-						XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
+	
+						submittedFlowInstancesElement.appendChild(flowInstanceElement);
 					}
-
-					submittedFlowInstancesElement.appendChild(flowInstanceElement);
 
 				} else if (status.getContentType() == ContentType.ARCHIVED) {
 
@@ -897,32 +900,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			query.addParameter(flowInstanceEventAddedParamFactory.getParameter(user.getLastLogin(), QueryOperators.BIGGER_THAN));
 		}
 
-		return daoFactory.getFlowInstanceEventDAO().getAll(query);
-	}
-
-	public List<FlowInstanceEvent> getNewSubmittedFlowInstanceEvents(FlowInstance flowInstance, User user) throws SQLException {
-		
-		//@formatter:off
-		StringBuilder sql = new StringBuilder(
-			  "SELECT * FROM " + daoFactory.getFlowInstanceEventDAO().getTableName() + " e "
-			+ "WHERE e.flowInstanceID = ? AND e.poster = ? AND e.eventType = '" + ContentType.SUBMITTED + "'");
-		//@formatter:on
-		
-		if (user.getLastLogin() != null) {
-			sql.append(" AND e.added >= ?");
-		}
-		
-		sql.append(" AND EXISTS (SELECT 1 FROM flowengine_flow_instance_event_attributes WHERE eventID = e.eventID AND name IN ('" + BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION + "', '" + BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE + "'))");
-		
-		LowLevelQuery<FlowInstanceEvent> query = new LowLevelQuery<FlowInstanceEvent>(sql.toString());
-		
-		query.addParameter(flowInstance.getFlowInstanceID());
-		query.addParameter(user.getUserID());
-		
-		if (user.getLastLogin() != null) {
-			query.addParameter(user.getLastLogin());
-		}
-		
 		return daoFactory.getFlowInstanceEventDAO().getAll(query);
 	}
 
