@@ -547,7 +547,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		queryInstance.setCitizenID(citizenID);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(queryInstance.isPopulated());
 		
-		if (poster != null && poster instanceof MutableUser && persistUserProfile && (poster.equals(user) && !requestMetadata.isManager() || requestMetadata.isManager() && query.isManagerUpdateAccess())) {
+		if (hasUpdateUserProfileAccess(poster, user, persistUserProfile, requestMetadata, query)) {
 			
 			MutableUser mutableUser = (MutableUser) poster;
 			
@@ -604,6 +604,26 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		}
 	}
 	
+	private boolean hasUpdateUserProfileAccess(User poster, User user, boolean persistUserProfile, RequestMetadata requestMetadata, ContactDetailQuery query) {
+
+		if(poster != null && poster instanceof MutableUser && persistUserProfile && poster.equals(user) && !requestMetadata.isManager()) {
+			
+			return true;
+			
+		} else if(poster != null && poster instanceof MutableUser && persistUserProfile && requestMetadata.getAttributeHandler().getPrimitiveBoolean("AddFlowInstanceAsManager") && query.isManagerUpdateAccess()) {
+			
+			//Manager adding instance when query isManagerUpdateAccess
+			return true;
+			
+		} else if(poster != null && poster instanceof MutableUser && persistUserProfile && requestMetadata.isManager() && query.isManagerUpdateAccess()) {
+			
+			//Manager is editing existing instance when isManagerUpdateAccess
+			return true;
+		}
+				
+		return false;
+	}
+
 	private void setAttributeValue(String name, Object value, MutableAttributeHandler attributeHandler) {
 		
 		if (value != null) {
