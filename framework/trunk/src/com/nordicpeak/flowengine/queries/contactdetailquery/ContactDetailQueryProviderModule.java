@@ -782,7 +782,6 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		
 		ContactDetailQuery query = queryInstance.getQuery();
 		
-		//TODO: should this info also be updated when managerUpdateAccess = true?
 		if (poster != null && poster.equals(user) && !requestMetadata.isManager()) { // Poster is editing
 			
 			// Update official address when editing saved query instance. No need to update Name and CitizenID as they are overridden in the show XSL and populate code.
