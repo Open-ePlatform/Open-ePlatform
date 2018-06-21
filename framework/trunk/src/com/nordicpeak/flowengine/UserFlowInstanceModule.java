@@ -19,6 +19,54 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryOperators;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.URIParser;
+
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -86,54 +134,6 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowIconUtils;
-
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
-import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
-import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryOperators;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.io.BinarySizeFormater;
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
-import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.xml.XMLGeneratorDocument;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.URIParser;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
@@ -467,9 +467,9 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	
 							XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
 						}
-	
-						submittedFlowInstancesElement.appendChild(flowInstanceElement);
 					}
+					
+					submittedFlowInstancesElement.appendChild(flowInstanceElement);
 
 				} else if (status.getContentType() == ContentType.ARCHIVED) {
 
