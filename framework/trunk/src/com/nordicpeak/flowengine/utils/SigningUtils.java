@@ -3,11 +3,11 @@ package com.nordicpeak.flowengine.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.unlogic.standardutils.collections.ReverseListIterator;
-
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+
+import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class SigningUtils {
 	
@@ -73,12 +73,10 @@ public class SigningUtils {
 			
 			for (ImmutableFlowInstanceEvent event : new ReverseListIterator<ImmutableFlowInstanceEvent>(events)) {
 				
-				if (event.getEventType() == EventType.SIGNED) {
+				//TODO replace with BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION and FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF
+				if (event.getEventType() == EventType.SIGNED && event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
 					
-					if (event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
-						
-						return event;
-					}
+					return event;
 				}
 			}
 		}
