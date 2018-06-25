@@ -2329,11 +2329,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
-		if (!MultiSignUtils.requiresMultiSigning(instanceManager) && !requiresPayment(instanceManager)) {
+		boolean requiresMultiSigning = MultiSignUtils.requiresMultiSigning(instanceManager);
+		
+		if (!requiresMultiSigning && !requiresPayment(instanceManager)) {
 			
 			sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 			
-		} else if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
+		} else if (requiresMultiSigning) {
 			
 			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningInitiatedEvent(instanceManager, event), EventTarget.ALL);
 		}
