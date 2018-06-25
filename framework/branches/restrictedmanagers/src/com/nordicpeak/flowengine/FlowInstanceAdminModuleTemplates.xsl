@@ -871,6 +871,8 @@
 							
 						</p>
 						
+						<!-- TODO Always show owner if different from submitter -->
+						
 						<xsl:if test="count(owners/user) > 1">
 							<p>
 								<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
@@ -878,33 +880,31 @@
 							</p>
 						</xsl:if>
 
-						<!-- Show poster if different from submitter -->
-  					
-  					<xsl:if test="count($submittedEvents) > 1">
-  						<p>
-  							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
-  							
-  							<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-  							
-  							<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
-	  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-	  						
-	  						<xsl:call-template name="printUser">
-	  							<xsl:with-param name="user" select="$lastSubmit/poster/user" />
-	  						</xsl:call-template>
-  						</p>
-  					</xsl:if>
-  					<xsl:if test="updated">
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
-	  						
-	  						<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
-	  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-	  						
-	  						<xsl:call-template name="printUser">
-	  							<xsl:with-param name="user" select="editor/user" />
-	  						</xsl:call-template>
-	  					</p>
+						<xsl:if test="count($submittedEvents) > 1">
+							<p>
+								<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
+								
+								<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
+								
+								<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
+								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+								
+								<xsl:call-template name="printUser">
+									<xsl:with-param name="user" select="$lastSubmit/poster/user" />
+								</xsl:call-template>
+							</p>
+						</xsl:if>
+						<xsl:if test="updated">
+							<p>
+								<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
+								
+								<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
+								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+								
+								<xsl:call-template name="printUser">
+									<xsl:with-param name="user" select="editor/user" />
+								</xsl:call-template>
+							</p>
   					</xsl:if>
   					<p>
   						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
