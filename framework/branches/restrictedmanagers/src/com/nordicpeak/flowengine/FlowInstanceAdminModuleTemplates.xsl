@@ -849,6 +849,11 @@
 							<xsl:value-of select="firstSubmitted" /><xsl:text>&#160;</xsl:text>
 							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 							
+							<!-- TODO Submitter does not match code submitter 
+								FlowInstanceUtils.getSubmitterName event.poster, flowInstance.poster, flowInstance attribute.
+								BaseFlowModuleTemplates.PrintPostedBy flowInstance attribute, event.poster. Should probably do as above.
+							-->
+							
 							<xsl:call-template name="PrintPostedBy">
 								<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
 								<xsl:with-param name="flowInstanceAttributes" select="Attributes"/>
