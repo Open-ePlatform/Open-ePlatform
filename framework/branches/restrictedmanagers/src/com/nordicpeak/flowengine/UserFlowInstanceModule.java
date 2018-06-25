@@ -467,9 +467,9 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	
 							XMLUtils.append(genDoc, flowInstanceElement, "newEvents", events);
 						}
-	
-						submittedFlowInstancesElement.appendChild(flowInstanceElement);
 					}
+					
+					submittedFlowInstancesElement.appendChild(flowInstanceElement);
 
 				} else if (status.getContentType() == ContentType.ARCHIVED) {
 
