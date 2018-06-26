@@ -116,8 +116,6 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 			managedSteps.add(new ImmutableManagedStep(step, queryInstances));
 		}
-		
-		//TODO init
 	}
 
 	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
