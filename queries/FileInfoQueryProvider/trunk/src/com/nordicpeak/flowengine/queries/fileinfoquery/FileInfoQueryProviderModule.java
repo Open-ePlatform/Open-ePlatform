@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -349,7 +351,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 		this.queryDAO.delete(query, transactionHandler);
 
-		FileUtils.deleteDirectory(getQueryFilestorePath(query));
+		deleteFiles(query);
 
 		return true;
 	}
@@ -445,13 +447,41 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 	}
 
 	@Override
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws SQLException {
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws SQLException, IOException {
 
 		FileInfoQuery query = getQuery(sourceQueryDescriptor.getQueryID(), transactionHandler);
 
 		query.setQueryID(copyQueryDescriptor.getQueryID());
 
+		List<FileDescriptor> fileDescriptors = query.getFiles();
+
+		Map<File, FileDescriptor> fileMap = new HashMap<File, FileDescriptor>(fileDescriptors.size());
+		
+		if(fileDescriptors != null) {
+			
+			for(FileDescriptor fileDescriptor : fileDescriptors) {
+				
+				File existingFile = new File(getFileDescriptorFilestorePath(getQuery(sourceQueryDescriptor.getQueryID(), transactionHandler), fileDescriptor));
+				
+				//Reset file descriptor
+				fileDescriptor.setFileID(null);
+				fileDescriptor.setQuery(query);
+				
+				fileMap.put(existingFile, fileDescriptor);
+			}
+		}				
+
+		//Write to database and get new file ID's for file descriptors, then copy files on disc
 		queryDAO.add(query, transactionHandler, null);
+		
+		for(File existingFile : fileMap.keySet()) {
+			
+			FileDescriptor resetFileDescriptor = fileMap.get(existingFile);
+			
+			File destinationFile = new File(getFileDescriptorFilestorePath(query, resetFileDescriptor));
+			
+			FileUtils.copyFile(existingFile, destinationFile);
+		}
 	}
 
 	@Override
@@ -528,7 +558,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 		if (!CollectionUtils.isEmpty(query.getFiles())) {
 
-			FileUtils.deleteFiles(filestore, new StartsWithFileFilter(getQueryFilestorePath(query), false), false);
+			FileUtils.deleteFiles(filestore, new StartsWithFileFilter("query-" + query.getQueryID() + "-", false), false);
 		}
 	}
 

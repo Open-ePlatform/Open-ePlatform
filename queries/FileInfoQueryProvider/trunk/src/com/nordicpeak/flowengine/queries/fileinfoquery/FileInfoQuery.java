@@ -51,7 +51,7 @@ public class FileInfoQuery extends BaseQuery {
 	private boolean dontSetPopulated;
 
 	@DAOManaged
-	@OneToMany(autoGet = true)
+	@OneToMany(autoGet = true, autoAdd = true)
 	@XMLElement(fixCase = true)
 	private List<FileDescriptor> files;
 
