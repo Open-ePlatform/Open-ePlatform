@@ -1136,6 +1136,7 @@
 							<xsl:value-of select="$i18n.ManagersDescription"/>
 							
 							<xsl:if test="UsesAutoManagerAssignment">
+								<xsl:text> </xsl:text>
 								<xsl:value-of select="$i18n.FlowFamily.UsesAutoManagerAssignment"/>
 							</xsl:if>
 						</p>
