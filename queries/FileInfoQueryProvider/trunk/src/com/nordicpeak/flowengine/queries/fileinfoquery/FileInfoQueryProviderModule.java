@@ -59,6 +59,8 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
@@ -422,6 +424,10 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 		if (uriParser.size() == 4 && (queryID = uriParser.getInt(2)) != null && (fileDescriptorID = uriParser.getInt(3)) != null && (fileDescriptor = fileDescriptorDAOWrapper.get(fileDescriptorID)) != null && (query = getQuery(queryID)) != null) {
 
+			QueryDescriptor queryDescriptor = getFlowAdminModule().getQueryDescriptor(query.getQueryID());
+			
+			getFlowAdminModule().checkFlowStructureManipulationAccess(user, (Flow) queryDescriptor.getStep().getFlow());
+			
 			File file = new File(getFileDescriptorFilestorePath(query, fileDescriptor));
 
 			if (file.exists()) {
