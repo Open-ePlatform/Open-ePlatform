@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.interfaces;
 
-import java.sql.SQLException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
@@ -50,5 +48,5 @@ public interface QueryProvider {
 
 	public boolean deleteQueryInstance(ImmutableQueryInstanceDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws SQLException;
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws Exception;
 }
