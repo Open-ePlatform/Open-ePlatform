@@ -140,6 +140,12 @@ public class BaseQueryCRUD<BeanType extends BaseQuery, CallbackType extends Base
 	}
 
 	@Override
+	protected void checkAddAccess(User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+
+		throw new RuntimeException("Add is not supported via this CRUD");
+	}
+	
+	@Override
 	protected void checkUpdateAccess(BeanType bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
 		callback.getFlowAdminModule().checkFlowStructureManipulationAccess(user, (Flow) bean.getQueryDescriptor().getStep().getFlow());
