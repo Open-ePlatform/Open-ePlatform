@@ -13,16 +13,34 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.QueryResponse;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
+import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
+import com.nordicpeak.flowengine.utils.JTidyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.MutableUser;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.exceptions.UnableToUpdateUserException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.hierarchy.foregroundmodules.userprofile.events.UserUpdatedEvent;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -45,22 +63,6 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
-import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.QueryInstance;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
-import com.nordicpeak.flowengine.utils.JTidyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<ContactDetailQueryInstance> implements BaseQueryCRUDCallback {
 	
@@ -595,6 +597,8 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					req.getSession(true).setAttribute("user", user);
 					
 					this.systemInterface.getUserHandler().updateUser(mutableUser, false, false, userAttributeHandler != null);
+					
+					systemInterface.getEventHandler().sendEvent(User.class, new UserUpdatedEvent(mutableUser), EventTarget.ALL);
 					
 				} catch (UnableToUpdateUserException e) {
 					
