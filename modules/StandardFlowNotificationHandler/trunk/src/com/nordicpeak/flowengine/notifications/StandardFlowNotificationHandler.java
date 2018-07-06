@@ -463,7 +463,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	protected String xmlFilename = "$flow.name, $flowInstance.flowInstanceID";
 	
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are submitted", description = "Controls if email messages are the sent to specified address when new flow instances are submitted.")
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when new messages are received", description = "Controls if email messages are the sent to specified address when new messages are received.")
 	private boolean sendExternalMessageReceivedGlobalEmail;
 
 	@ModuleSetting
