@@ -4148,7 +4148,7 @@
 					</xsl:if>
 					
 					<th><xsl:value-of select="$i18n.flowFamilies" /></th>
-					<th width="32" />
+					<th width="37" />
 				</tr>
 			</thead>
 			<tbody>
@@ -4159,26 +4159,26 @@
 							<td colspan="4">
 								<xsl:value-of select="$i18n.noFlowTypesFound" />
 							</td>
-						</tr>					
+						</tr>
 					</xsl:when>
 					<xsl:otherwise>
 						
 						<xsl:apply-templates select="FlowTypes/FlowType" mode="list"/>
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
-		</table>		
+		</table>
 		
 		<xsl:if test="AdminAccess">
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowtype" title="{$i18n.addFlowType}">
 					<xsl:value-of select="$i18n.addFlowType"/>
-					<img class="alignbottom" src="{$imgPath}/add.png" alt="" />
-				</a>			
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+				</a>
 			</div>
-		</xsl:if>		
+		</xsl:if>
 	
 	</xsl:template>
 	
@@ -4210,30 +4210,30 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtype/{flowTypeID}" title="{$i18n.showFlowType}: {name}">
 					<xsl:value-of select="flowFamilyCount"/>
 				</a>
-			</td>					
+			</td>
 			<td>
 				<xsl:if test="../../AdminAccess">
 					
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowtype/{flowTypeID}" title="{$i18n.updateFlowType}: {name}">
-						<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
+						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
 					<xsl:choose>
 						<xsl:when test="flowFamilyCount > 0">
 	
 							<a href="#" onclick="alert('{$i18n.deleteFlowTypeDisabledHasFlows}'); return false;" title="{$i18n.deleteFlowTypeDisabledHasFlows}">
-								<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/delete_gray.png" alt="" />
 							</a>
 	
-						</xsl:when>									
+						</xsl:when>
 						<xsl:otherwise>
 	
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {name}?');" title="{$i18n.deleteFlowType}: {name}">
-								<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
 							</a>
 	
-						</xsl:otherwise>					
-					</xsl:choose>					
+						</xsl:otherwise>
+					</xsl:choose>
 					
 				</xsl:if>
 			</td>
@@ -4257,16 +4257,16 @@
 							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 	
-					</xsl:when>									
+					</xsl:when>
 					<xsl:otherwise>
 	
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{FlowType/flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {FlowType/name}?');" title="{$i18n.deleteFlowType}: {FlowType/name}">
 							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 						</a>
 	
-					</xsl:otherwise>					
-				</xsl:choose>			
-			</div>				
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
 	
 		</xsl:if>
 	
@@ -4307,7 +4307,7 @@
 					<xsl:value-of select="$i18n.onlyModuleAdminAccess"/>
 				</span>
 			
-			</xsl:if>						
+			</xsl:if>
 		</fieldset>
 
 		<fieldset>
@@ -4341,7 +4341,7 @@
 					<span class="floatleft">
 						<xsl:value-of select="$i18n.noUserAccess"/>
 					</span>
-				</xsl:if>					
+				</xsl:if>
 				
 				</xsl:when>
 				<xsl:otherwise>
@@ -4350,7 +4350,7 @@
 				
 				</xsl:otherwise>
 			</xsl:choose>
-								
+			
 		</fieldset>
 
 		<fieldset>
@@ -4368,7 +4368,7 @@
 				
 					<span class="floatleft">
 						<xsl:value-of select="$i18n.noAllowedQueryTypes"/>
-					</span>					
+					</span>
 				
 				</xsl:otherwise>
 			</xsl:choose>
@@ -4390,7 +4390,7 @@
 					
 						<span class="floatleft">
 							<xsl:value-of select="$i18n.noCategories"/>
-						</span>					
+						</span>
 					
 					</xsl:otherwise>
 				</xsl:choose>
@@ -4402,7 +4402,7 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addcategory/{FlowType/flowTypeID}" title="{$i18n.addCategory}">
 					<xsl:value-of select="$i18n.addCategory"/>
 					<img class="alignbottom" src="{$imgPath}/folder_add.png" alt="" />
-				</a>			
+				</a>
 			</div>
 		</xsl:if>
 
@@ -4470,9 +4470,9 @@
 			<xsl:text>&#x20;</xsl:text>
 			
 			<xsl:value-of select="name"/>
-		</div>	
+		</div>
 		
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="Category" mode="list">
 		
@@ -4537,7 +4537,7 @@
 		
 		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template name="flowTypeForm">
 	
@@ -4551,7 +4551,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'name'"/>
 					<xsl:with-param name="name" select="'name'"/>
-					<xsl:with-param name="element" select="FlowType" />          
+					<xsl:with-param name="element" select="FlowType" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4600,7 +4600,7 @@
 							<xsl:with-param name="id" select="'iconColor'"/>
 							<xsl:with-param name="name" select="'iconColor'"/>
 							<xsl:with-param name="class" select="'color-input'"/>
-							<xsl:with-param name="element" select="FlowType" />		
+							<xsl:with-param name="element" select="FlowType" />
 						</xsl:call-template>
 					</div>
 							
@@ -4627,11 +4627,11 @@
 			<p class="margin">
 				<xsl:value-of select="$i18n.FlowType.AdminAccess.Description" />
 			</p>
-		
+			
 			<label class="floatleft full">
 				<xsl:value-of select="$i18n.allowedGroups" />
 			</label>
-							
+			
 			<xsl:call-template name="GroupList">
 				<xsl:with-param name="connectorURL">
 					<xsl:value-of select="/Document/requestinfo/currentURI"/>
