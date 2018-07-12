@@ -6,6 +6,6 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 
 public interface PDFRequestFilter {
 	
-	public File processPDFRequest(File inputPDF, SiteProfile siteProfile);
+	public File processPDFRequest(File inputPDF, SiteProfile siteProfile, ImmutableFlow flow);
 
 }

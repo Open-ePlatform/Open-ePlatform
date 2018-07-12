@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -136,6 +134,8 @@ import com.nordicpeak.flowengine.validationerrors.QueryExportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.fileuploadutils.MultipartRequest;
@@ -4145,7 +4145,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			for (PDFRequestFilter filter : pdfRequestFilters) {
 
 				try {
-					sentFile = filter.processPDFRequest(sentFile, siteProfile);
+					sentFile = filter.processPDFRequest(sentFile, siteProfile, flowForm.getFlow());
 
 				} catch (Throwable t) {
 
