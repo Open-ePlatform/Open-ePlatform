@@ -4132,7 +4132,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			for (PDFRequestFilter filter : pdfRequestFilters) {
 				
 				try {
-					sentFile = filter.processPDFRequest(sentFile, siteProfile);
+					sentFile = filter.processPDFRequest(sentFile, siteProfile, flowForm.getFlow());
 					
 				} catch (Throwable t) {
 					
