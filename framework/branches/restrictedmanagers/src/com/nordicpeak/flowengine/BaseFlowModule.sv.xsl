@@ -84,4 +84,10 @@
 	<xsl:variable name="i18n.RemovedUser">Borttagen användare</xsl:variable>
 	<xsl:variable name="i18n.Payment">Betala</xsl:variable>
 	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
+	
+	<xsl:variable name="i18n.InlineValidationError.RequiredField">Det här fältet är obligatoriskt</xsl:variable>
+	<xsl:variable name="i18n.InlineValidationError.InvalidFormat">Innehållet i det här fältet har felaktigt format</xsl:variable>
+	<xsl:variable name="i18n.InlineValidationError.TooLong">Innehållet i det här fältet är för långt</xsl:variable>
+	<xsl:variable name="i18n.InlineValidationError.TooShort">Innehållet i det här fältet är för kort</xsl:variable>
+	<xsl:variable name="i18n.InlineValidationError.Other">Ett okänt valideringsfel har uppstått</xsl:variable>
 </xsl:stylesheet>
