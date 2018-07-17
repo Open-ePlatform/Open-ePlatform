@@ -177,23 +177,7 @@ function setTextFieldValidationError(queryID, validationErrors) {
 		
 		$input.parent().addClass("invalid input-error");
 		
-		var message;
-		
-		//TODO handle normal error types
-		
-		if(error.displayName) {
-		
-			message = error.displayName;
-		
-		} else if(error.messageKey) {
-		
-			message = error.messageKey;
-	
-		} else {
-			
-			message = "Unkown validation error";
-			
-		}
+		var message = getValidationErrorMessage(error);
 		
 		$input.parent().append($("<i data-icon-after='!'' title='" + message + "' />"));
 		

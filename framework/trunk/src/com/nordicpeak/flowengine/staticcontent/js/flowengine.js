@@ -7,6 +7,14 @@ var initQueryFunctions = {};
 var hideQueryFunctions = new Array();
 var flowEngineDOMListeners = new Array();
 
+var i18nFlowEngine = {
+	ValidationError_RequiredField: "Required field",
+	ValidationError_InvalidFormat: "Invalid format",
+	ValidationError_TooLong: "Too long",
+	ValidationError_TooShort: "Too short",
+	ValidationError_Other: "Unkown validation error",
+};
+
 $(document).ready(function() {
 	
 	var queryAnchorName = $(".validationerrors").first().attr("id");
@@ -698,4 +706,34 @@ function askForLoginOrContinue(aLink, event) {
     helpBox.find("a.btn.continue").click(function(){
     	window.location = $(aLink).attr("href");
     });
+}
+
+function getValidationErrorMessage(error) {
+	
+	if (error.displayName) {
+		
+		return error.displayName;
+	
+	} else if (error.messageKey) {
+	
+		return error.messageKey;
+
+	} else if (error.errorType == "RequiredField") {
+	
+		return i18nFlowEngine.ValidationError_RequiredField;
+		
+	} else if (error.errorType == "InvalidFormat") {
+	
+		return i18nFlowEngine.ValidationError_InvalidFormat;
+		
+	} else if (error.errorType == "TooLong") {
+	
+		return i18nFlowEngine.ValidationError_TooLong;
+		
+	} else if (error.errorType == "TooShort") {
+	
+		return i18nFlowEngine.ValidationError_TooShort;
+	}
+	
+	return i18nFlowEngine.ValidationError_Other;
 }
