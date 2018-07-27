@@ -40,6 +40,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -319,7 +320,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
 					
-					String signingSessionID = event.getAttributeHandler().getString("signingSessionID");
+					String signingSessionID = event.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
 					
 					if (!StringUtils.isEmpty(signingSessionID)) {
 						
@@ -327,7 +328,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						
 						for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 							
-							if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString("signingSessionID")) && !"signedPDF".equals(flowInstanceEvent.getAttributeHandler().getString("signingSessionEvent"))) {
+							if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION)) && !BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
 								
 								signEvents.add(flowInstanceEvent);
 							}
