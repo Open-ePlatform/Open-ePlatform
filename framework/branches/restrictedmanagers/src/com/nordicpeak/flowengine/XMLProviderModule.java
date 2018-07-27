@@ -3,12 +3,25 @@ package com.nordicpeak.flowengine;
 import java.io.File;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.XMLProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.utils.SigningUtils;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -29,18 +42,6 @@ import se.unlogic.standardutils.date.PooledSimpleDateFormat;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
-
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.XMLProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.utils.SigningUtils;
 
 
 public class XMLProviderModule extends AnnotatedForegroundModule implements XMLProvider {
@@ -134,30 +135,30 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 	
 	@Override
 	public void generateXML(ImmutableFlowInstance flowInstance, FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, Timestamp lastSubmitted, File outputFile) throws Exception {
-
+		
 		Document doc = XMLUtils.createDomDocument();
-
+		
 		Element flowInstanceElement = doc.createElement("FlowInstance");
 		doc.appendChild(flowInstanceElement);
-
+		
 		flowInstanceElement.setAttribute("xmlns", "http://www.oeplatform.org/version/2.0/schemas/flowinstance");
 		flowInstanceElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		flowInstanceElement.setAttribute("xsi:schemaLocation", "http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-" + flowInstanceManager.getFlowID() + ".xsd");
-
+		
 		Element headerElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Header");
-
+		
 		Element flowElement = XMLUtils.appendNewElement(doc, headerElement, "Flow");
 		XMLUtils.appendNewElement(doc, flowElement, "FamilyID", flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
 		XMLUtils.appendNewElement(doc, flowElement, "Version", flowInstance.getFlow().getVersion());
 		XMLUtils.appendNewElement(doc, flowElement, "FlowID", flowInstance.getFlow().getFlowID());
 		XMLUtils.appendNewCDATAElement(doc, flowElement, "Name", flowInstance.getFlow().getName());
-
+		
 		XMLUtils.appendNewElement(doc, headerElement, "FlowInstanceID", flowInstance.getFlowInstanceID());
-
+		
 		Element statusElement = XMLUtils.appendNewElement(doc, headerElement, "Status");
 		XMLUtils.appendNewElement(doc, statusElement, "ID", flowInstance.getStatus().getStatusID());
 		XMLUtils.appendNewCDATAElement(doc, statusElement, "Name", flowInstance.getStatus().getName());
-
+		
 		appendUser(flowInstance.getPoster(), "Poster", doc, headerElement);
 		
 		if (flowInstance.getOwners() != null) {
@@ -167,91 +168,116 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 				appendUser(owner, "Owner", doc, headerElement);
 			}
 		}
-
+		
 		XMLUtils.appendNewElement(doc, headerElement, "Posted", DATE_TIME_FORMATTER.format(flowInstance.getAdded()));
-
-		if(flowInstance.getUpdated() != null){
-
+		
+		if (flowInstance.getUpdated() != null) {
+			
 			appendUser(flowInstance.getEditor(), "Editor", doc, headerElement);
-
+			
 			XMLUtils.appendNewElement(doc, headerElement, "Updated", DATE_TIME_FORMATTER.format(flowInstance.getUpdated()));
 		}
-
+		
 		XMLUtils.appendNewElement(doc, headerElement, "FirstSubmitted", DATE_TIME_FORMATTER.format(flowInstance.getFirstSubmitted()));
 		
 		XMLUtils.appendNewElement(doc, headerElement, "LastSubmitted", DATE_TIME_FORMATTER.format(lastSubmitted));
 		
 		Element valuesElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "Values");
-
+		
 		List<Element> queryElements = flowInstanceManager.getExportXMLElements(doc, queryHandler);
-
-		if(queryElements != null){
-
-			for(Element queryElement : queryElements){
-
+		
+		if (queryElements != null) {
+			
+			for (Element queryElement : queryElements) {
+				
 				valuesElement.appendChild(queryElement);
 			}
 		}
 		
-		if(event != null){
-		
-			String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+		if (event != null) {
 			
-			if (!StringUtils.isEmpty(signChainID)) {
+			List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) flowInstance);
+			List<ImmutableFlowInstanceEvent> signEvents = null;
+			
+			String signingSessionID = event.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
+			
+			if (!StringUtils.isEmpty(signingSessionID)) {
 				
-				List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(browserModule.getFlowInstanceEvents((FlowInstance) flowInstance), true);
+				signEvents = new ArrayList<ImmutableFlowInstanceEvent>(flowInstanceEvents.size());
 				
-				if (!CollectionUtils.isEmpty(signEvents)) {
+				for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 					
-					for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+					if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION)) && !BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
 						
-						if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
-							
-							log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + flowInstance);
-							signEvents.remove(signEvent);
-						}
+						signEvents.add(flowInstanceEvent);
 					}
 				}
 				
 				if (CollectionUtils.isEmpty(signEvents)) {
 					
-					log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + flowInstance);
+					log.warn("Signing session ID set on " + event + " but no matching sign events found for " + flowInstance);
+				}
+				
+			} else {
+				
+				String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+				
+				if (!StringUtils.isEmpty(signChainID)) {
 					
-				} else {
+					signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
 					
-					Element signEventsElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "SigningEvents");
-					
-					for (ImmutableFlowInstanceEvent signEvent : signEvents) {
-
-						Element signElement = XMLUtils.appendNewElement(doc, signEventsElement, "SignEvent");
+					if (!CollectionUtils.isEmpty(signEvents)) {
 						
-						XMLUtils.appendNewElement(doc, signElement, "SignedChecksum", signEvent.getAttributeHandler().getString("signingChecksum"));
-						XMLUtils.appendNewElement(doc, signElement, "Date", DATE_TIME_FORMATTER.format(signEvent.getAdded()));
-						
-						if(signEvent.getPoster() != null){
+						for (ImmutableFlowInstanceEvent signEvent : signEvents) {
 							
-							appendUser(signEvent.getPoster(), "Signer", doc, signElement);
-							
-						}else{
-							
-							appendUserFromAttributes(signEvent, "Signer", doc, signElement);
+							if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
+								
+								log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + flowInstance);
+								signEvents.remove(signEvent);
+							}
 						}
+					}
+					
+					if (CollectionUtils.isEmpty(signEvents)) {
 						
+						log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + flowInstance);
 					}
 				}
-			}			
+			}
+			
+			if (!CollectionUtils.isEmpty(signEvents)) {
+				
+				Element signEventsElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "SigningEvents");
+				
+				for (ImmutableFlowInstanceEvent signEvent : signEvents) {
+					
+					Element signElement = XMLUtils.appendNewElement(doc, signEventsElement, "SignEvent");
+					
+					XMLUtils.appendNewElement(doc, signElement, "SignedChecksum", signEvent.getAttributeHandler().getString("signingChecksum"));
+					XMLUtils.appendNewElement(doc, signElement, "Date", DATE_TIME_FORMATTER.format(signEvent.getAdded()));
+					
+					if (signEvent.getPoster() != null) {
+						
+						appendUser(signEvent.getPoster(), "Signer", doc, signElement);
+						
+					} else {
+						
+						appendUserFromAttributes(signEvent, "Signer", doc, signElement);
+					}
+				}
+			}
 		}
-
+		
 		outputFile.getParentFile().mkdirs();
-
-		if(forceUTF){
+		
+		if (forceUTF) {
 			
 			XMLUtils.writeXMLFile(doc, outputFile, true, "UTF-8", "1.1");
 			
-		}else{
+		} else {
 			
 			XMLUtils.writeXMLFile(doc, outputFile, true, systemInterface.getEncoding());
-		}		
+		}
 	}
 
 	@EventListener(channel=FlowInstance.class)
