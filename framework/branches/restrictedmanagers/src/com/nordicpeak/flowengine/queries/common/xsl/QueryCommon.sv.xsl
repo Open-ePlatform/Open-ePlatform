@@ -12,4 +12,10 @@
 	
 	<xsl:variable name="i18n.Currency">SEK</xsl:variable>
 	
+	<xsl:variable name="i18n.AjaxValidationError.RequiredField">Det här fältet är obligatoriskt</xsl:variable>
+	<xsl:variable name="i18n.AjaxValidationError.InvalidFormat">Innehållet i det här fältet har felaktigt format</xsl:variable>
+	<xsl:variable name="i18n.AjaxValidationError.TooLong">Innehållet i det här fältet är för långt</xsl:variable>
+	<xsl:variable name="i18n.AjaxValidationError.TooShort">Innehållet i det här fältet är för kort</xsl:variable>
+	<xsl:variable name="i18n.AjaxValidationError.Other">Ett okänt valideringsfel har uppstått</xsl:variable>
+	
 </xsl:stylesheet>

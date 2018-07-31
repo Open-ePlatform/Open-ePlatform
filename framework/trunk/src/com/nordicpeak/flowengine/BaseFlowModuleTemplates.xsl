@@ -580,16 +580,6 @@
 					
 					<div class="queries">
 					
-						<script type="text/javascript">
-							i18nFlowEngine = {
-								ValidationError_RequiredField: "<xsl:value-of select="$i18n.InlineValidationError.RequiredField"/>",
-								ValidationError_InvalidFormat: "<xsl:value-of select="$i18n.InlineValidationError.InvalidFormat"/>",
-								ValidationError_TooLong: "<xsl:value-of select="$i18n.InlineValidationError.TooLong"/>",
-								ValidationError_TooShort: "<xsl:value-of select="$i18n.InlineValidationError.TooShort"/>",
-								ValidationError_Other: "<xsl:value-of select="$i18n.InlineValidationError.Other"/>",
-							};
-						</script>
-					
 						<xsl:apply-templates select="ManagerResponse/QueryResponses/QueryResponse"/>
 						
 						<xsl:if test="not(ManagerResponse/QueryResponses/QueryResponse/HTML)">

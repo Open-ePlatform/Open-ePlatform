@@ -22,6 +22,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
+		/common/js/query.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/spectrum.js
 		/js/textfieldquery.js
@@ -33,7 +34,7 @@
 		<xsl:apply-templates select="ShowQueryForm"/>
 		
 	</xsl:template>
-		
+	
 	<xsl:template match="ShowQueryValues">
 		
 		<div class="query">
@@ -94,6 +95,10 @@
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
 				<xsl:if test="TextFieldQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
+			
+			<xsl:if test="EnableAjaxPosting">
+				<xsl:call-template name="loadAjaxValidationErrors"/>
+			</xsl:if>
 			
 			<xsl:if test="ValidationErrors/validationError">
 			

@@ -33,7 +33,28 @@
 		</xsl:if>
 		
 	</xsl:template>
-					
+	
+	<xsl:template name="loadAjaxValidationErrors">
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+			
+				if (!i18nFlowEngineQueries.localized) {
+				
+					i18nFlowEngineQueries = {
+						ValidationError_RequiredField: "<xsl:value-of select="$i18n.AjaxValidationError.RequiredField"/>",
+						ValidationError_InvalidFormat: "<xsl:value-of select="$i18n.AjaxValidationError.InvalidFormat"/>",
+						ValidationError_TooLong: "<xsl:value-of select="$i18n.AjaxValidationError.TooLong"/>",
+						ValidationError_TooShort: "<xsl:value-of select="$i18n.AjaxValidationError.TooShort"/>",
+						ValidationError_Other: "<xsl:value-of select="$i18n.AjaxValidationError.Other"/>",
+						localized: true
+					};
+				}
+			});
+		</script>
+		
+	</xsl:template>
+	
 	<xsl:template match="validationError[messageKey = 'FreeTextAlternativeValueToLong']">
 		
 		<span>
