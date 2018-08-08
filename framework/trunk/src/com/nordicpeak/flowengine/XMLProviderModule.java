@@ -344,4 +344,10 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 
 		return new File(xmlDir + File.separator + flowInstanceID + File.separator + eventID + ".xml");
 	}
+	
+	@Override
+	public String getEncoding() {
+		
+		return forceUTF ? "UTF-8" : systemInterface.getEncoding(); 
+	}
 }
