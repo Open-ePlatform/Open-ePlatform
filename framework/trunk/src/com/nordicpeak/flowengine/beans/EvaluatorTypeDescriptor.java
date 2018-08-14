@@ -1,11 +1,12 @@
 package com.nordicpeak.flowengine.beans;
 
+import se.unlogic.standardutils.beans.Named;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
 @XMLElement
-public final class EvaluatorTypeDescriptor extends GeneratedElementable {
+public final class EvaluatorTypeDescriptor extends GeneratedElementable implements Named {
 
 	@XMLElement
 	private String evaluatorTypeID;

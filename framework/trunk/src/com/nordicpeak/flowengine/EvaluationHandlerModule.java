@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.standardutils.collections.NameComparator;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.webutils.http.URIParser;
 
@@ -33,6 +35,8 @@ import com.nordicpeak.flowengine.interfaces.Query;
 
 public class EvaluationHandlerModule extends AnnotatedForegroundModule implements EvaluationHandler {
 
+	private static final NameComparator NAME_COMPARATOR = new NameComparator();
+	
 	private ConcurrentHashMap<String, EvaluationProvider> evaluationProviderMap = new ConcurrentHashMap<String, EvaluationProvider>();
 
 	@Override
@@ -82,6 +86,8 @@ public class EvaluationHandlerModule extends AnnotatedForegroundModule implement
 			}
 		}
 
+		Collections.sort(evaluatorTypes, NAME_COMPARATOR);
+		
 		return evaluatorTypes;
 	}
 
