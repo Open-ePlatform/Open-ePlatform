@@ -33,6 +33,7 @@ public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery {
 	@XMLElement
 	private Integer queryID;
 	
+	//TODO remove?
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
