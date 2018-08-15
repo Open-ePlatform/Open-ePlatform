@@ -8,7 +8,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.Elementable;
 
-public interface ImmutableFlowInstance extends Elementable, Serializable{
+public interface ImmutableFlowInstance extends Elementable, Serializable {
 
 	public Integer getFlowInstanceID();
 	
