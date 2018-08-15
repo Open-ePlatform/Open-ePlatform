@@ -5,12 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.collections.ReverseListIterator;
-
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -20,6 +14,12 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class FlowInstanceUtils {
 	
@@ -75,7 +75,7 @@ public class FlowInstanceUtils {
 	}
 	
 	public static String getSubmitterCitizenID(ImmutableFlowInstance flowInstance) {
-
+		
 		AttributeHandler attributeHandler = null;
 		ImmutableFlowInstanceEvent submitEvent = getLatestSubmitEvent(flowInstance);
 		
@@ -93,7 +93,7 @@ public class FlowInstanceUtils {
 		}
 		
 		if (attributeHandler != null && attributeHandler.isSet("citizenIdentifier")) {
-		
+			
 			return attributeHandler.getString("citizenIdentifier");
 		}
 		
@@ -133,7 +133,7 @@ public class FlowInstanceUtils {
 		return null;
 	}
 	
-	public static ImmutableFlowInstanceEvent getLatestSubmitEvent(ImmutableFlowInstance flowInstance){
+	public static ImmutableFlowInstanceEvent getLatestSubmitEvent(ImmutableFlowInstance flowInstance) {
 		
 		if (CollectionUtils.isEmpty(flowInstance.getEvents())) {
 			
@@ -252,8 +252,8 @@ public class FlowInstanceUtils {
 		
 		boolean descriptionAttributeSet = attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
 		
-		if(!descriptionAttributeSet || (descriptionAttributeSet && attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE))){
-		
+		if (!descriptionAttributeSet || (descriptionAttributeSet && attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE))) {
+			
 			Map<String, String> attributeMap = attributeHandler.getAttributeMap();
 			
 			if (!CollectionUtils.isEmpty(attributeMap)) {
@@ -268,11 +268,11 @@ public class FlowInstanceUtils {
 					}
 				}
 				
-				if(!descriptionAttributes.isEmpty()){
+				if (!descriptionAttributes.isEmpty()) {
 					
 					Collections.sort(descriptionAttributes);
 					
-					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size()-1)));
+					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size() - 1)));
 					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
 					
 					return;
@@ -282,5 +282,171 @@ public class FlowInstanceUtils {
 				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
 			}
 		}
+	}
+	
+	public static List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
+		
+		List<Contact> contacts = new ArrayList<Contact>(2);
+		
+		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
+		
+		if (flowInstanceContact != null) {
+			
+			contacts.add(flowInstanceContact);
+		}
+		
+		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
+			
+			for (User owner : flowInstance.getOwners()) {
+				
+				Contact ownerContact = getContactForUser(owner);
+				addUniqueContact(contacts, ownerContact);
+			}
+		}
+		
+		if (contacts.isEmpty()) {
+			return null;
+		}
+		
+		return contacts;
+	}
+	
+	public static Contact getContactFromFlowInstanceAttributes(AttributeHandler attributeHandler) {
+		
+		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
+			
+			Contact contact = new Contact();
+			
+			contact.setFirstname(attributeHandler.getString("firstname"));
+			contact.setLastname(attributeHandler.getString("lastname"));
+			contact.setEmail(attributeHandler.getString("email"));
+			contact.setPhone(attributeHandler.getString("phone"));
+			contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
+			contact.setAddress(attributeHandler.getString("address"));
+			contact.setZipCode(attributeHandler.getString("zipCode"));
+			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
+			contact.setCareOf(attributeHandler.getString("careOf"));
+			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
+			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
+			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
+			
+			if (attributeHandler.isSet("contactByEmail")) {
+				
+				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
+				
+			} else {
+				
+				contact.setContactByEmail(true);
+			}
+			
+			return contact;
+		}
+		
+		return null;
+	}
+	
+	public static Contact getContactForUser(User user) {
+		
+		if (user != null) {
+			
+			Contact contact = new Contact();
+			
+			contact.setFirstname(user.getFirstname());
+			contact.setLastname(user.getLastname());
+			contact.setEmail(user.getEmail());
+			
+			AttributeHandler attributeHandler = user.getAttributeHandler();
+			
+			if (attributeHandler != null) {
+				
+				contact.setPhone(attributeHandler.getString("phone"));
+				contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
+				contact.setAddress(attributeHandler.getString("address"));
+				contact.setZipCode(attributeHandler.getString("zipCode"));
+				contact.setPostalAddress(attributeHandler.getString("postalAddress"));
+				contact.setCareOf(attributeHandler.getString("careOf"));
+				contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
+			}
+			
+			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
+			
+			if (attributeHandler.isSet("contactByEmail")) {
+				
+				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
+				
+			} else {
+				
+				contact.setContactByEmail(true);
+			}
+			
+			return contact;
+		}
+		
+		return null;
+	}
+	
+	public static Contact getPosterContact(ImmutableFlowInstance flowInstance) {
+		
+		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
+		
+		if (flowInstanceContact != null) {
+			
+			return flowInstanceContact;
+		}
+		
+		ImmutableFlowInstanceEvent latestSubmitEvent = FlowInstanceUtils.getLatestSubmitEvent(flowInstance);
+		
+		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null) {
+			
+			Contact posterContact = getContactForUser(latestSubmitEvent.getPoster());
+			
+			if (posterContact != null) {
+				
+				return posterContact;
+			}
+		}
+		
+		return getContactForUser(flowInstance.getPoster());
+	}
+	
+	public static void addUniqueContact(List<Contact> contacts, Contact contact) {
+		
+		for (Contact existingContact : contacts) {
+			
+			if (existingContact.getCitizenIdentifier() != null && contact.getCitizenIdentifier() != null) {
+				
+				if (existingContact.getCitizenIdentifier().equals(contact.getCitizenIdentifier())) {
+					
+					return;
+				}
+				
+				continue;
+			}
+			
+			if (existingContact.getEmail() != null && contact.getEmail() != null) {
+				
+				if (existingContact.getEmail().equalsIgnoreCase(contact.getEmail())) {
+					
+					return;
+				}
+				
+				continue;
+			}
+			
+			if (existingContact.getMobilePhone() != null && contact.getMobilePhone() != null) {
+				
+				String phone1 = existingContact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
+				String phone2 = contact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
+				
+				if (phone1.equals(phone2)) {
+					
+					return;
+				}
+				
+				continue;
+			}
+		}
+		
+		contacts.add(contact);
 	}
 }

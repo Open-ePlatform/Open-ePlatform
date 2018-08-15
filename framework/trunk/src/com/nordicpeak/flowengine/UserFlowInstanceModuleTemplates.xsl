@@ -692,90 +692,95 @@
   				<ul class="tabs">
   					<li class="active" data-tabid="#history">
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
-  					</li>  				
-  					<li data-tabid="#messages">
-  						<a data-icon-before="m" href="#messages">
-  							<xsl:value-of select="$i18n.ExternalMessages" />
-  							<xsl:text>&#160;(</xsl:text>
-  							<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
-  							<xsl:text>)</xsl:text>
-  							
-  							<!-- TODO count how many unread messages since last login -->
-  							<xsl:if test="false()">
-  								<span class="count">0</span>
-  							</xsl:if>
-  						</a>
   					</li>
+  					<xsl:if test="not(Flow/hideExternalMessages = 'true')">
+	  					<li data-tabid="#messages">
+	  						<a data-icon-before="m" href="#messages">
+	  							<xsl:value-of select="$i18n.ExternalMessages" />
+	  							<xsl:text>&#160;(</xsl:text>
+	  							<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
+	  							<xsl:text>)</xsl:text>
+	  							
+	  							<!-- TODO count how many unread messages since last login -->
+	  							<xsl:if test="false()">
+	  								<span class="count">0</span>
+	  							</xsl:if>
+	  						</a>
+	  					</li>
+  					</xsl:if>
   					
   					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
   				</ul>
-  				<div id="messages">
-  					
-  					<div id="new-message" class="tabs-content">
-  						
-  						<div class="heading-wrapper">
-  							<h2><xsl:value-of select="$i18n.NewMessage" /></h2>
-  							<a href="#" class="btn btn-light btn-right close_message"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
-  						</div>
-  						
-  						<form action="{/Document/requestinfo/uri}#messages" method="post" enctype="multipart/form-data">
-  						
-	  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
-	  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-	  						<textarea id="message" name="externalmessage" class="full" rows="10"/>
+  				
+  				<xsl:if test="not(Flow/hideExternalMessages = 'true')">
+	  				<div id="messages">
+	  					
+	  					<div id="new-message" class="tabs-content">
+	  						
 	  						<div class="heading-wrapper">
-	  							<label class="required"><xsl:value-of select="$i18n.AttachFiles" /></label>
+	  							<h2><xsl:value-of select="$i18n.NewMessage" /></h2>
+	  							<a href="#" class="btn btn-light btn-right close_message"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
 	  						</div>
 	  						
-	  						<script>
-								imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
-								deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-							</script>				
-							
-							<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
-							
-							<div class="full">
+	  						<form action="{/Document/requestinfo/uri}#messages" method="post" enctype="multipart/form-data">
+	  						
+		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
+		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
+		  						<textarea id="message" name="externalmessage" class="full" rows="10"/>
+		  						<div class="heading-wrapper">
+		  							<label class="required"><xsl:value-of select="$i18n.AttachFiles" /></label>
+		  						</div>
+		  						
+		  						<script>
+									imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
+									deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
+								</script>				
 								
-								<div class="upload clearboth">
-									<span class="btn btn-upload btn-blue">
-										<xsl:value-of select="$i18n.ChooseFiles" />
-										<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
-									</span>
-									<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormatedMaxFileSize" /></span>
+								<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
+								
+								<div class="full">
+									
+									<div class="upload clearboth">
+										<span class="btn btn-upload btn-blue">
+											<xsl:value-of select="$i18n.ChooseFiles" />
+											<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
+										</span>
+										<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormatedMaxFileSize" /></span>
+									</div>
+									
+									<ul id="external-message-qloader-filelist" class="files" />
+									
 								</div>
 								
-								<ul id="external-message-qloader-filelist" class="files" />
-								
-							</div>
-							
-	  						<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
-	  						<a href="#" class="btn btn-light btn-inline close_message"><xsl:value-of select="$i18n.Cancel" /></a>
+		  						<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
+		  						<a href="#" class="btn btn-light btn-inline close_message"><xsl:value-of select="$i18n.Cancel" /></a>
+		  						
+	  						</form>
 	  						
-  						</form>
-  						
-  					</div>
-  					
-  					<div class="tabs-content">
-	  					
-	  					<div class="heading-wrapper">
-	  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-	  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
 	  					</div>
 	  					
-	  					<xsl:choose>
-	  						<xsl:when test="externalMessages/ExternalMessage">
-	  							<ul class="messages">
-	  								<xsl:apply-templates select="externalMessages/ExternalMessage" />
-	  							</ul>
-	  						</xsl:when>
-	  						<xsl:otherwise>
-	  							<xsl:value-of select="$i18n.NoExternalMessages" />
-	  						</xsl:otherwise>	  					
-	  					</xsl:choose>
-	  					
+	  					<div class="tabs-content">
+		  					
+		  					<div class="heading-wrapper">
+		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
+		  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+		  					</div>
+		  					
+		  					<xsl:choose>
+		  						<xsl:when test="externalMessages/ExternalMessage">
+		  							<ul class="messages">
+		  								<xsl:apply-templates select="externalMessages/ExternalMessage" />
+		  							</ul>
+		  						</xsl:when>
+		  						<xsl:otherwise>
+		  							<xsl:value-of select="$i18n.NoExternalMessages" />
+		  						</xsl:otherwise>	  					
+		  					</xsl:choose>
+		  					
+		  				</div>
+		  				
 	  				</div>
-	  				
-  				</div>
+  				</xsl:if>
   				
   				<div id="history" class="tabs-content nopadding" >
   					

@@ -22,6 +22,17 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.notifications.beans.StoredNotification;
+import com.nordicpeak.flowengine.notifications.beans.StoredNotificationAttribute;
+import com.nordicpeak.flowengine.notifications.interfaces.Notification;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
+
+import it.sauronsoftware.cron4j.Scheduler;
+
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -55,21 +66,10 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.notifications.beans.StoredNotification;
-import com.nordicpeak.flowengine.notifications.beans.StoredNotificationAttribute;
-import com.nordicpeak.flowengine.notifications.interfaces.Notification;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
-
-import it.sauronsoftware.cron4j.Scheduler;
-
 public class NotificationHandlerModule extends AnnotatedForegroundModule implements NotificationHandler, Runnable, ViewFragmentModule<ForegroundModuleDescriptor> {
 	
 	
-	protected static final List<Field> FLOW_INSTANCE_EXCLUDED_FIELDS = Arrays.asList(new Field[] { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD });
+	protected static final List<Field> FLOW_INSTANCE_EXCLUDED_FIELDS = Arrays.asList(new Field[] { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD });
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Notification lifetime in days", description = "How many days notifications should be stored before being deleted", required = true, formatValidator = PositiveStringIntegerValidator.class)
@@ -640,7 +640,7 @@ public class NotificationHandlerModule extends AnnotatedForegroundModule impleme
 		}else{
 			
 			log.error("NotificationCreator " + notificationSource + " is already registered");
-		}	
+		}
 	}
 	
 	@Override

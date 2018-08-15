@@ -1819,4 +1819,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="98">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideExternalMessages` TINYINT(1) UNSIGNED NOT NULL AFTER `hideInternalMessages`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -98,6 +98,7 @@
 	<xsl:variable name="i18n.FlowInstanceEvents">Ärendehistorik</xsl:variable>
 	<xsl:variable name="i18n.NoExternalMessages">Inga meddelanden</xsl:variable>
 	<xsl:variable name="i18n.NewMessage">Nytt meddelande</xsl:variable>
+	<xsl:variable name="i18n.NewMessageWarningNoContactWay">Mottagarna har varken e-post eller telefon satt och kommer därför inte få någon notifikation om ditt meddelande.</xsl:variable>
 	<xsl:variable name="i18n.Action">Händelse</xsl:variable>
 	<xsl:variable name="i18n.Person">Person</xsl:variable>
 	<xsl:variable name="i18n.NoEvents">Ingen ärendehistorik</xsl:variable>
