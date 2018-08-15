@@ -1257,8 +1257,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
-	//TODO remove user
-	public SubmitCheckFailedResponse checkValidForSubmit(User user, User poster, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) throws SubmitCheckException {
+	public SubmitCheckFailedResponse checkValidForSubmit(User poster, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) throws SubmitCheckException {
 		
 		User resolvedPoster = getPoster(poster);
 		

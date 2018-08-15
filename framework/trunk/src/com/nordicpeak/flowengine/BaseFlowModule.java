@@ -728,7 +728,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 					
-					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(user, poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
+					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
 					
 					if (submitCheckResponse != null) {
 						
@@ -1176,7 +1176,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		Timestamp saveTimestamp = null;
 		
-		if(ObjectUtils.compare(previousStatusChange, instanceManager.getFlowInstance().getLastStatusChange())) {
+		if (ObjectUtils.compare(previousStatusChange, instanceManager.getFlowInstance().getLastStatusChange())) {
 			
 			saveTimestamp = TimeUtils.getCurrentTimestamp(false);
 			
@@ -2329,11 +2329,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		instanceManager.getSessionAttributeHandler().removeAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
-		if (!MultiSignUtils.requiresMultiSigning(instanceManager) && !requiresPayment(instanceManager)) {
+		boolean requiresMultiSigning = MultiSignUtils.requiresMultiSigning(instanceManager);
+		
+		if (!requiresMultiSigning && !requiresPayment(instanceManager)) {
 			
 			sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
 			
-		} else if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
+		} else if (requiresMultiSigning) {
 			
 			systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningInitiatedEvent(instanceManager, event), EventTarget.ALL);
 		}
