@@ -76,7 +76,7 @@
 						<xsl:with-param name="element" select="exsl:node-set($fieldUpdateOptions)/option" />
 						<xsl:with-param name="selectedValue" select="ContactDetailQuery/fieldUpdate" />
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
 
 			<div class="floatleft full marginbottom">
@@ -90,7 +90,6 @@
 					<xsl:value-of select="$i18n.ManagerUpdateAccess" />
 				</label>
 			</div>
-
 			
 			<div class="floatleft clearboth">
 				<label class="floatleft clearboth"><xsl:value-of select="$i18n.Fields" /></label>
