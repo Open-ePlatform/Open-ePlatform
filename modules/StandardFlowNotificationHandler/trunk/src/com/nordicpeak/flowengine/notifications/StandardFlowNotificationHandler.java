@@ -1602,17 +1602,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
-
+		
 		if (!event.getFlowInstanceManager().getFlowInstance().getFlow().usesSequentialSigning()) {
 			
-		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
-
-		if (signingParties != null) {
-
-			Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
-
-			for (SigningParty signingParty : signingParties) {
-
+			Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(event.getFlowInstanceManager());
+			
+			if (signingParties != null) {
+				
+				Contact contact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
+				
+				for (SigningParty signingParty : signingParties) {
+					
 					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
 					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserSMS);
 				}
@@ -1647,7 +1647,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			if (event.getUser() != null) {
 				
-				contact = getContactForUser(event.getUser());
+				contact = FlowInstanceUtils.getContactForUser(event.getUser());
 				
 			} else { // They were not logged in
 				
@@ -1660,6 +1660,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 		
+		//TODO don't send to not yet requested parties if sequential
 		for (SigningParty signingParty : event.getSigningParties()) {
 			
 			if (signingParty.equals(event.getCancellingSigningParty())) {
@@ -2189,6 +2190,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return null;
 	}
+	
+	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
+		
+		return FlowInstanceUtils.getContacts(flowInstance);
+	}
+	
+	
+	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
+		
+		return FlowInstanceUtils.getPosterContact(flowInstance);
+	}
 
 	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(FlowInstance flowInstance, SiteProfile siteProfile) throws DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
@@ -2225,173 +2237,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowDAO.get(query);
 	}
-
-	public Contact getContactForUser(User user) {
-
-		if (user != null) {
-
-			Contact contact = new Contact();
-
-			contact.setFirstname(user.getFirstname());
-			contact.setLastname(user.getLastname());
-			contact.setEmail(user.getEmail());
-
-			AttributeHandler attributeHandler = user.getAttributeHandler();
-
-			if (attributeHandler != null) {
-
-				contact.setPhone(attributeHandler.getString("phone"));
-				contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
-				contact.setAddress(attributeHandler.getString("address"));
-				contact.setZipCode(attributeHandler.getString("zipCode"));
-				contact.setPostalAddress(attributeHandler.getString("postalAddress"));
-				contact.setCareOf(attributeHandler.getString("careOf"));
-				contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
-			}
-
-			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-
-			if (attributeHandler.isSet("contactByEmail")) {
-
-				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-
-			} else {
-
-				contact.setContactByEmail(true);
-			}
-
-			return contact;
-		}
-
-		return null;
-	}
-
-	private Contact getContactFromFlowInstanceAttributes(AttributeHandler attributeHandler) {
-
-		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
-
-			Contact contact = new Contact();
-
-			contact.setFirstname(attributeHandler.getString("firstname"));
-			contact.setLastname(attributeHandler.getString("lastname"));
-			contact.setEmail(attributeHandler.getString("email"));
-			contact.setPhone(attributeHandler.getString("phone"));
-			contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
-			contact.setAddress(attributeHandler.getString("address"));
-			contact.setZipCode(attributeHandler.getString("zipCode"));
-			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
-			contact.setCareOf(attributeHandler.getString("careOf"));
-			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
-			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
-			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-
-			if (attributeHandler.isSet("contactByEmail")) {
-
-				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-
-			} else {
-
-				contact.setContactByEmail(true);
-			}
-
-			return contact;
-		}
-
-		return null;
-	}
-
-	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
-
-		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-
-		if (flowInstanceContact != null) {
-
-			return flowInstanceContact;
-		}
-
-		ImmutableFlowInstanceEvent latestSubmitEvent = FlowInstanceUtils.getLatestSubmitEvent(flowInstance);
-
-		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null) {
-
-			Contact posterContact = getContactForUser(latestSubmitEvent.getPoster());
-
-			if (posterContact != null) {
-
-				return posterContact;
-			}
-		}
-
-		return getContactForUser(flowInstance.getPoster());
-	}
-
-	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
-
-		List<Contact> contacts = new ArrayList<Contact>(2);
-
-		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-
-		if (flowInstanceContact != null) {
-
-			contacts.add(flowInstanceContact);
-		}
-
-		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
-
-			for (User owner : flowInstance.getOwners()) {
-
-				Contact ownerContact = getContactForUser(owner);
-				addUniqueContact(contacts, ownerContact);
-			}
-		}
-
-		if (contacts.isEmpty()) {
-			return null;
-		}
-
-		return contacts;
-	}
-
-	public static void addUniqueContact(List<Contact> contacts, Contact contact) {
-
-		for (Contact existingContact : contacts) {
-
-			if (existingContact.getCitizenIdentifier() != null && contact.getCitizenIdentifier() != null) {
-
-				if (existingContact.getCitizenIdentifier().equals(contact.getCitizenIdentifier())) {
-
-					return;
-				}
-
-				continue;
-			}
-
-			if (existingContact.getEmail() != null && contact.getEmail() != null) {
-
-				if (existingContact.getEmail().equalsIgnoreCase(contact.getEmail())) {
-
-					return;
-				}
-
-				continue;
-			}
-
-			if (existingContact.getMobilePhone() != null && contact.getMobilePhone() != null) {
-
-				String phone1 = existingContact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
-				String phone2 = contact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
-
-				if (phone1.equals(phone2)) {
-
-					return;
-				}
-
-				continue;
-			}
-		}
-
-		contacts.add(contact);
-	}
-
+	
 	private String getFlowInstaceSubmittedUserEmailMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
 
 		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
