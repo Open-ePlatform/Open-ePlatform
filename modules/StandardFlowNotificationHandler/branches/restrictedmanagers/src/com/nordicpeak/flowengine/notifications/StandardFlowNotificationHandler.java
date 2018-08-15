@@ -2191,7 +2191,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return FlowInstanceUtils.getContacts(flowInstance);
 	}
 	
-	
 	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
 		
 		return FlowInstanceUtils.getPosterContact(flowInstance);
