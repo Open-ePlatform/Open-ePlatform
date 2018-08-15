@@ -35,8 +35,6 @@ import com.nordicpeak.flowengine.interfaces.Query;
 
 public class EvaluationHandlerModule extends AnnotatedForegroundModule implements EvaluationHandler {
 
-	private static final NameComparator NAME_COMPARATOR = new NameComparator();
-	
 	private ConcurrentHashMap<String, EvaluationProvider> evaluationProviderMap = new ConcurrentHashMap<String, EvaluationProvider>();
 
 	@Override
@@ -86,7 +84,7 @@ public class EvaluationHandlerModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		Collections.sort(evaluatorTypes, NAME_COMPARATOR);
+		Collections.sort(evaluatorTypes, NameComparator.getInstance());
 		
 		return evaluatorTypes;
 	}
