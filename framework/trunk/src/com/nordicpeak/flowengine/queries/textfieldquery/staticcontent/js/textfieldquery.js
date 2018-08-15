@@ -147,7 +147,7 @@ function runTextFieldEvaluators($this, queryID) {
 		
 		var $wrapper = $textField.parent();
 		
-		if($wrapper.hasClass("input-error")) {
+		if ($wrapper.hasClass("input-error")) {
 			
 //			$textField.tooltip("destroy");
 			$wrapper.removeClass("invalid input-error").find("i[title]").remove();

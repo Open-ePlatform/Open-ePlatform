@@ -14,22 +14,22 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
 
 public class MultiSignUtils {
-
-	public static Set<SigningParty> getSigningParties(FlowInstanceManager instanceManager){
+	
+	public static Set<SigningParty> getSigningParties(FlowInstanceManager instanceManager) {
 		
 		List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
 		
-		if(multiSignQueryinstances != null) {
+		if (multiSignQueryinstances != null) {
 			
 			LinkedHashSet<SigningParty> signingParties = new LinkedHashSet<SigningParty>();
 			
-			for(MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
+			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 				
-				if(multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
+				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
 					
-					for(SigningParty signer : multiSignQueryinstance.getSigningParties()) {
+					for (SigningParty signer : multiSignQueryinstance.getSigningParties()) {
 						
-						if(!isSigningInitiator(signer, instanceManager)) {
+						if (!isSigningInitiator(signer, instanceManager)) {
 							
 							signingParties.add(signer);
 						}
@@ -50,7 +50,7 @@ public class MultiSignUtils {
 			//				signingParties.add(posterSigningParty);
 			//			}
 			
-			if(!signingParties.isEmpty()){
+			if (!signingParties.isEmpty()) {
 				
 				return signingParties;
 			}
@@ -60,31 +60,31 @@ public class MultiSignUtils {
 	}
 	
 	public static boolean requiresMultiSigning(FlowInstanceManager instanceManager) {
-
+		
 		List<MultiSignQueryinstance> multiSignQueryinstances = instanceManager.getQueries(MultiSignQueryinstance.class);
-
+		
 		if (multiSignQueryinstances != null) {
-
+			
 			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
-
+				
 				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
-
-					for(SigningParty signer : multiSignQueryinstance.getSigningParties()) {
+					
+					for (SigningParty signer : multiSignQueryinstance.getSigningParties()) {
 						
-						if(!isSigningInitiator(signer, instanceManager)) {
-
+						if (!isSigningInitiator(signer, instanceManager)) {
+							
 							return true;
 						}
 					}
 				}
 			}
 		}
-
+		
 		return false;
 	}
-
-	private static boolean isSigningInitiator(SigningParty signingParty, FlowInstanceManager instanceManager) {
 	
+	private static boolean isSigningInitiator(SigningParty signingParty, FlowInstanceManager instanceManager) {
+		
 		if (!signingParty.isUnsecure() && signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
 			
 			return true;
@@ -97,7 +97,7 @@ public class MultiSignUtils {
 		
 		User instanceUser = instanceManager.getFlowInstance().getEditor();
 		
-		if(instanceUser == null) {
+		if (instanceUser == null) {
 			
 			instanceUser = instanceManager.getFlowInstance().getPoster();
 		}

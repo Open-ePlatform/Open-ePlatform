@@ -65,7 +65,7 @@ $(document).ready(function() {
 			
 			e.stopPropagation();
 			
-			if($selectBox.hasClass("active")) {
+			if ($selectBox.hasClass("active")) {
 				$selectBox.removeClass("active");
 				$selectBox.find("> span.arrow").text("_");
 			} else {
@@ -83,7 +83,7 @@ $(document).ready(function() {
 			
 			var $user = $(this);
 			
-			if($("#manager_" + $user.attr("id")).length > 0) {
+			if ($("#manager_" + $user.attr("id")).length > 0) {
 				$user.addClass("disabled").hide();
 			}
 			
@@ -97,9 +97,7 @@ $(document).ready(function() {
 				$selectBox.find("> span.text").text($(this).find(".text").text());
 				$selectBox.find("> span.arrow").text("_");
 				$searchInput.val("").keyup();
-				
 			});
-			
 		});
 		
 		$searchInput.click(function(e) {
@@ -114,7 +112,7 @@ $(document).ready(function() {
 			
 			$items.hide();
 			
-			if(searchStr != "") {
+			if (searchStr != "") {
 				
 				$items.each(function () {
 		            if ($(this).find("span.text").text().search(new RegExp(searchStr, "i")) < 0) {
@@ -127,7 +125,6 @@ $(document).ready(function() {
 		    } else {
 		    	
 		    	$items.show();
-		 
 		    }
 			
 	    });
@@ -138,7 +135,7 @@ $(document).ready(function() {
 			
 			var $manager = $selectBox.find(".options ul li.selected");
 			
-			if($manager.length > 0) {
+			if ($manager.length > 0) {
 				
 				var $clone = $("#manager_template").clone();
 				
@@ -155,9 +152,8 @@ $(document).ready(function() {
 				$clone.show();
 				
 				updateListRowColors($managerList);
-				
 			}
-						
+			
 		});
 		
 	});

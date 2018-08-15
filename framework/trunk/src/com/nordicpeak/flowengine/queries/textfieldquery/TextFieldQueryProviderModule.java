@@ -105,7 +105,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			
 			log.error("No format validation handler found in instance handler.");
 		}
-	}	
+	}
 	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {

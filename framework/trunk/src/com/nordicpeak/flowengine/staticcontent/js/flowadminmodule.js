@@ -78,7 +78,7 @@ $(document).ready(function() {
 	});
 	
 	$("#typeOfFlow").trigger("change");
-
+	
 	$("#requireSigning").change(function(e) {
 		
 		var checked = $(this).prop("checked");
