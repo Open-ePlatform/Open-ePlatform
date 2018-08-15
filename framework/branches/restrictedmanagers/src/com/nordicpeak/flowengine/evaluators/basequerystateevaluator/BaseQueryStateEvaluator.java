@@ -73,7 +73,7 @@ public class BaseQueryStateEvaluator extends BaseEvaluator {
 		
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
-		queryState = XMLValidationUtils.validateParameter("queryState", xmlParser, true, new EnumPopulator<QueryState>(QueryState.class), errors);
+		queryState = XMLValidationUtils.validateParameter("queryState", xmlParser, false, new EnumPopulator<QueryState>(QueryState.class), errors);
 		
 		doNotResetQueryState = xmlParser.getPrimitiveBoolean("doNotResetQueryState");
 		forceReload = xmlParser.getPrimitiveBoolean("forceReload");

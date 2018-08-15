@@ -76,7 +76,19 @@
 						<xsl:with-param name="element" select="exsl:node-set($fieldUpdateOptions)/option" />
 						<xsl:with-param name="selectedValue" select="ContactDetailQuery/fieldUpdate" />
 					</xsl:call-template>
-		    </div>
+				</div>
+			</div>
+
+			<div class="floatleft full marginbottom">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'managerUpdateAccess'" />
+					<xsl:with-param name="name" select="'managerUpdateAccess'" />
+					<xsl:with-param name="value" select="'true'" />
+					<xsl:with-param name="element" select="ContactDetailQuery" />
+				</xsl:call-template>
+				<label for="managerUpdateAccess">
+					<xsl:value-of select="$i18n.ManagerUpdateAccess" />
+				</label>
 			</div>
 			
 			<div class="floatleft clearboth">

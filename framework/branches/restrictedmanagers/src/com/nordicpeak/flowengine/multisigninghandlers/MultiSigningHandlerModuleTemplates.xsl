@@ -163,9 +163,9 @@
 								<xsl:value-of select="FlowInstance/Flow/shortDescription" disable-output-escaping="yes" />
 						</div>
 					</div>
-				
+					
 					<div class="service">
-			  		<div class="queries bigpaddingbottom">
+					<div class="queries bigpaddingbottom">
 							<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 						</div>
 						

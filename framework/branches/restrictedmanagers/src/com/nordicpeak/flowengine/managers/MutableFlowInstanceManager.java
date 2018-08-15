@@ -1130,7 +1130,6 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			if(saveTimestamp == null) {
 				
 				saveTimestamp = TimeUtils.getCurrentTimestamp(false);
-				
 			}
 			
 			if(flowInstance.getFirstSubmitted() == null && eventType == EventType.SUBMITTED){

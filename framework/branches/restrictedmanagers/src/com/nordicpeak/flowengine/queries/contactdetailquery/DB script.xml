@@ -269,5 +269,13 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="24">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `managerUpdateAccess` BOOLEAN NOT NULL AFTER `fieldUpdate`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

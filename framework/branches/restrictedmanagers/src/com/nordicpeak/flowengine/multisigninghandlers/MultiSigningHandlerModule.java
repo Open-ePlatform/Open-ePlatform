@@ -629,7 +629,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return signatureDAO.get(query);
 	}
 	
-@Override
+	@Override
 	public ForegroundModuleDescriptor getModuleDescriptor() {
 		
 		return moduleDescriptor;
@@ -1044,4 +1044,5 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 
 		return queryHandler;
 	}
+
 }

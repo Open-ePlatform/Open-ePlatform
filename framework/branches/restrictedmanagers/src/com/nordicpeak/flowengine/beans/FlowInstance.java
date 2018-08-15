@@ -480,7 +480,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 				
 				Element userElement = owner.toXML(doc);
 				
-				if(!skipUserAttributes){
+				if (!skipUserAttributes){
 					
 					AttributeHandler attributeHandler = owner.getAttributeHandler();
 					

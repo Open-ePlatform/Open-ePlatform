@@ -97,10 +97,10 @@
 	<xsl:variable name="i18n.unPublishDate">Avpubliceringsdatum</xsl:variable>
 	<xsl:variable name="i18n.usePreview">Aktivera förhandsgranskning</xsl:variable>
 
-	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställingar gäller för alla versioner</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställningar gäller för alla versioner</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk i "Krav för e-tjänsten" (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.Name">Länknamn</xsl:variable>
-	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Address</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress</xsl:variable>
 	<xsl:variable name="i18n.contact.title">Kontaktuppgifter - Frågor om e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.contact.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.contact.email">E-post</xsl:variable>
@@ -515,6 +515,7 @@
 	
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Dölj interna noteringar i handläggargränssnittet</xsl:variable>
+	<xsl:variable name="i18n.hideExternalMessages">Dölj meddelanden på ärenden</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>

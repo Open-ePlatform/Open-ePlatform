@@ -939,9 +939,9 @@
   				
   					<li class="active" data-tabid="#history">
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
-  					</li>  				
+  					</li>
   				
-  					<xsl:if test="owners/user">
+  					<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true')">
 	  					<li data-tabid="#messages">
 	  						<a data-icon-before="m" href="#messages">
 	  							<xsl:value-of select="$i18n.ExternalMessages" />
@@ -971,7 +971,7 @@
   					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
   				</ul>
   				
-  				<xsl:if test="owners/user">
+  				<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true')">
 	  				<div id="messages">
 	  					
 	  					<div id="new-message" class="tabs-content">
@@ -982,7 +982,13 @@
 	  						</div>
 	  						
 	  						<form action="{/Document/requestinfo/uri}?externalmessage" method="post" enctype="multipart/form-data">
-	  						
+	  							
+	  							<xsl:if test="../NoContactWay">
+	  								<span class="italic">
+	  									<xsl:value-of select="$i18n.NewMessageWarningNoContactWay"/>
+	  								</span>
+	  							</xsl:if>
+	  							
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
 		  						<textarea id="message" name="externalmessage" class="full" data-requiredmessage="{$i18n.ValidationError.ExternalMessageRequired}" rows="10"/>
@@ -1022,7 +1028,7 @@
 		  					
 		  					<div class="heading-wrapper">
 		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-		  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+  								<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
 		  					</div>
 		  					
 		  					<xsl:choose>
@@ -1631,10 +1637,10 @@
  						<input type="submit" value="{$i18n.SaveChanges}" class="btn btn-green btn-inline"/>
 	 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{FlowInstance/flowInstanceID}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Cancel"/></a>
 	 				</article>
-	  		</div>
-	  			
-  			</form>
- 		</section>	
+				</div>
+ 				
+			</form>
+		</section>	
 	
 	</xsl:template>		
 	

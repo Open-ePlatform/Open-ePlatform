@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 
 import com.nordicpeak.flowengine.accesscontrollers.ManagerFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
+import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -555,7 +556,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
-				if (req.getParameter("externalmessage") != null) {
+				if (req.getParameter("externalmessage") != null && !flowInstance.getFlow().isHideExternalMessages()) {
 					
 					if (flowInstance.getOwners() != null) {
 						
@@ -572,7 +573,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 							
 							return null;
-							
 						}
 						
 					} else {
@@ -613,9 +613,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 										}
 										
 										mentionedUsers.add(mentionedUser);
-										
 									}
-									
 								}
 								
 								eventHandler.sendEvent(FlowInstance.class, new ManagerMentionedEvent(flowInstance, mentionedUsers, user), EventTarget.ALL);
@@ -627,7 +625,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
 						
 						return null;
-						
 					}
 				}
 			}
@@ -656,6 +653,28 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			if (enableExternalID) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
+			}
+			
+			if (flowInstance.getOwners() != null) {
+				
+				boolean contactable = false;
+				List<Contact> contacts = FlowInstanceUtils.getContacts(flowInstance);
+				
+				if (contacts != null) {
+					for (Contact contact : contacts) {
+						
+						if ((contact.getEmail() != null && contact.isContactByEmail()) || (contact.getMobilePhone() != null && contact.isContactBySMS())) {
+							
+							contactable = true;
+							break;
+						}
+					}
+				}
+
+				if (!contactable) {
+					
+					XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "NoContactWay");
+				}
 			}
 			
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
@@ -1636,6 +1655,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user, extraElements, event);
 				
 				pdfProvider.saveTemporaryPDF(instanceManager, event);
+				
+				xmlProvider.generateXML(instanceManager.getFlowInstance(), instanceManager, event, event.getAdded());
 				
 			} catch (Exception e) {
 				

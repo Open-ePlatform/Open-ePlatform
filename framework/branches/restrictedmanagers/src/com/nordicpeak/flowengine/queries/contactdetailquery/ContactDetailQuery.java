@@ -95,6 +95,11 @@ public class ContactDetailQuery extends BaseQuery {
 	@XMLElement
 	private List<ContactDetailQueryInstance> instances;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean managerUpdateAccess;
+
 	public static long getSerialversionuid() {
 		
 		return serialVersionUID;
@@ -255,6 +260,7 @@ public class ContactDetailQuery extends BaseQuery {
 		fieldCareOf = XMLValidationUtils.validateParameter("fieldCareOf", xmlParser, false, 1, 8, CONTACT_FIELD_POPULATOR, errors);
 		
 		fieldUpdate = XMLValidationUtils.validateParameter("fieldUpdate", xmlParser, false, 1, 8, CONTACT_FIELD_UPDATE_POPULATOR, errors);
+		managerUpdateAccess = xmlParser.getPrimitiveBoolean("managerUpdateAccess");
 		
 		// Fallbacks for importing old versions
 		
@@ -427,4 +433,11 @@ public class ContactDetailQuery extends BaseQuery {
 		this.fieldCareOf = fieldCareOf;
 	}
 	
+	public boolean isManagerUpdateAccess() {
+		return managerUpdateAccess;
+	}
+	
+	public void setManagerUpdateAccess(boolean managerUpdateAccess) {
+		this.managerUpdateAccess = managerUpdateAccess;
+	}
 }

@@ -653,7 +653,23 @@
 				</div>
 				
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideExternalMessages'" />
+							<xsl:with-param name="id" select="'hideExternalMessages'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="hideExternalMessages">
+							<xsl:value-of select="$i18n.hideExternalMessages" />
+						</label>
+					</div>
+				</div>
 				
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="name" select="'hideInternalMessages'" />
@@ -2320,6 +2336,21 @@
 					
 					<label for="hideFromOverview">
 						<xsl:value-of select="$i18n.hideFromOverview" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+				
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideExternalMessages'" />
+						<xsl:with-param name="id" select="'hideExternalMessages'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="hideExternalMessages">
+						<xsl:value-of select="$i18n.hideExternalMessages" />
 					</label>
 				</div>
 			</div>
