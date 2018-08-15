@@ -562,7 +562,7 @@
 							
 							<xsl:if test="$flow/FlowForms/FlowForm/showExternalLinkIcon = 'true'">
 								<xsl:attribute name="data-icon-after">e</xsl:attribute>
-							</xsl:if>							
+							</xsl:if>
 							
 							<xsl:if test="$flow/FlowForms/FlowForm/name">
 								<xsl:attribute name="title"><xsl:value-of select="$flow/FlowForms/FlowForm/name" /></xsl:attribute>
@@ -579,11 +579,9 @@
 					<xsl:otherwise>
 					
 						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-							
 							<xsl:value-of select="$i18n.DownloadFlowForms" />
 							<span class="bigmarginleft" data-icon-before="^" style="display: none;" />
 							<span class="bigmarginleft" data-icon-before="_" />
-							
 						</a>
 						
 						<div id="flowforms-list" class="bigpadding border" style="display: none">
