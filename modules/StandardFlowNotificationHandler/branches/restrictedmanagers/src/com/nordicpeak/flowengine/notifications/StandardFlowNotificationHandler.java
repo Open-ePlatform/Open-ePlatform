@@ -20,73 +20,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import se.unlogic.emailutils.framework.ByteArrayAttachment;
-import se.unlogic.emailutils.framework.EmailUtils;
-import se.unlogic.emailutils.framework.FileAttachment;
-import se.unlogic.emailutils.framework.SimpleEmail;
-import se.unlogic.emailutils.populators.EmailPopulator;
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.EventListener;
-import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.LinkTag;
-import se.unlogic.hierarchy.core.beans.ScriptTag;
-import se.unlogic.hierarchy.core.beans.SimpleAccessInterface;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.SimpleSMS;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.settings.MutableSettingHandler;
-import se.unlogic.hierarchy.core.interfaces.sms.SMSSender;
-import se.unlogic.hierarchy.core.utils.AccessUtils;
-import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
-import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
-import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.arrays.ArrayUtils;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.AnnotatedDAO;
-import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.MySQLRowLimiter;
-import se.unlogic.standardutils.dao.OrderByCriteria;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
-import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
-import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
-import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.io.BinarySizeFormater;
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.io.FileUtils;
-import se.unlogic.standardutils.mime.MimeUtils;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
-import se.unlogic.standardutils.string.SingleTagSource;
-import se.unlogic.standardutils.string.TagReplacer;
-import se.unlogic.standardutils.string.TagSource;
-import se.unlogic.standardutils.validation.ValidationException;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.URIParser;
-import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
-
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.UserFlowInstanceModule;
@@ -125,7 +58,6 @@ import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -137,6 +69,72 @@ import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+
+import se.unlogic.emailutils.framework.ByteArrayAttachment;
+import se.unlogic.emailutils.framework.EmailUtils;
+import se.unlogic.emailutils.framework.FileAttachment;
+import se.unlogic.emailutils.framework.SimpleEmail;
+import se.unlogic.emailutils.populators.EmailPopulator;
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EventListener;
+import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.LinkTag;
+import se.unlogic.hierarchy.core.beans.ScriptTag;
+import se.unlogic.hierarchy.core.beans.SimpleAccessInterface;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleSMS;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.settings.MutableSettingHandler;
+import se.unlogic.hierarchy.core.interfaces.sms.SMSSender;
+import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
+import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
+import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.arrays.ArrayUtils;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.MySQLRowLimiter;
+import se.unlogic.standardutils.dao.OrderByCriteria;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
+import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
+import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
+import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.FileUtils;
+import se.unlogic.standardutils.mime.MimeUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
+import se.unlogic.standardutils.string.SingleTagSource;
+import se.unlogic.standardutils.string.TagReplacer;
+import se.unlogic.standardutils.string.TagSource;
+import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 public class StandardFlowNotificationHandler extends AnnotatedForegroundModule implements FlowNotificationHandler, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -234,7 +232,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@TextAreaSettingDescriptor(name = "Flow instance multi sign cancel SMS message (users)", description = "The SMS sent to the users when a flow instance they had to sign is canceled", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignCanceledUserSMS;
-	
+
 	@ModuleSetting
 	@TextAreaSettingDescriptor(name = "Flow instance multi sign cancel SMS message (owners)", description = "The SMS sent to the users when a flow instance they wanted to be signed is canceled", required = true)
 	@XSLVariable(prefix = "java.")
@@ -343,7 +341,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance multi sign cancel email message (users)", description = "The message of emails sent to the users when a flow instance they had to sign is canceled", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceMultiSignCanceledUserEmailMessage;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow instance multi sign cancel email subject (owners)", description = "The subject of emails sent to the users when a flow instance they wanted to be signed is canceled", required = true)
 	@XSLVariable(prefix = "java.")
@@ -464,7 +462,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	protected String xmlFilename = "$flow.name, $flowInstance.flowInstanceID";
 	
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are submitted", description = "Controls if email messages are the sent to specified address when new flow instances are submitted.")
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when new messages are received", description = "Controls if email messages are the sent to specified address when new messages are received.")
 	private boolean sendExternalMessageReceivedGlobalEmail;
 
 	@ModuleSetting
@@ -507,13 +505,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
-	
+
 	@InstanceManagerDependency(required = true)
 	protected QueryHandler queryHandler;
 	
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
-	
+
 	private AnnotatedDAOWrapper<FlowFamililyNotificationSettings, Integer> notificationSettingsDAO;
 	private AnnotatedDAOWrapper<FlowFamily, Integer> flowFamilyDAO;
 
@@ -1630,7 +1628,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
-	
+
 	public void sendSigningPartyNotifications(ImmutableFlowInstance flowInstance, SigningParty signingParty) {
 		
 		Contact contact = getPosterContact(flowInstance);
@@ -1658,7 +1656,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			if (event.getUser() != null) {
 				
-				contact = getContactForUser(event.getUser());
+				contact = FlowInstanceUtils.getContactForUser(event.getUser());
 				
 			} else { // They were not logged in
 				
@@ -1682,7 +1680,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserSMS);
 		}
 	}
-
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagerMentionedEvent event, EventSource eventSource) throws SQLException {
@@ -1877,7 +1874,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.info("Error generating/sending sms " + sms, e);
 		}
 	}
-	
+
 	public boolean sendContactEmail(ImmutableFlowInstance flowInstance, Contact contact, String subject, String message, File pdfFile) {
 
 		if (!contact.isContactByEmail() || contact.getEmail() == null || subject == null || message == null) {
@@ -2188,6 +2185,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return null;
 	}
+	
+	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
+		
+		return FlowInstanceUtils.getContacts(flowInstance);
+	}
+	
+	
+	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
+		
+		return FlowInstanceUtils.getPosterContact(flowInstance);
+	}
 
 	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(FlowInstance flowInstance, SiteProfile siteProfile) throws DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
@@ -2224,173 +2232,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowDAO.get(query);
 	}
-
-	public Contact getContactForUser(User user) {
-
-		if (user != null) {
-
-			Contact contact = new Contact();
-
-			contact.setFirstname(user.getFirstname());
-			contact.setLastname(user.getLastname());
-			contact.setEmail(user.getEmail());
-
-			AttributeHandler attributeHandler = user.getAttributeHandler();
-
-			if (attributeHandler != null) {
-
-				contact.setPhone(attributeHandler.getString("phone"));
-				contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
-				contact.setAddress(attributeHandler.getString("address"));
-				contact.setZipCode(attributeHandler.getString("zipCode"));
-				contact.setPostalAddress(attributeHandler.getString("postalAddress"));
-				contact.setCareOf(attributeHandler.getString("careOf"));
-				contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
-			}
-
-			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-
-			if (attributeHandler.isSet("contactByEmail")) {
-
-				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-
-			} else {
-
-				contact.setContactByEmail(true);
-			}
-
-			return contact;
-		}
-
-		return null;
-	}
-
-	private Contact getContactFromFlowInstanceAttributes(AttributeHandler attributeHandler) {
-
-		if (attributeHandler.isSet("contactInfoAttributes") || attributeHandler.isSet("email") || attributeHandler.isSet("mobilePhone")) {
-
-			Contact contact = new Contact();
-
-			contact.setFirstname(attributeHandler.getString("firstname"));
-			contact.setLastname(attributeHandler.getString("lastname"));
-			contact.setEmail(attributeHandler.getString("email"));
-			contact.setPhone(attributeHandler.getString("phone"));
-			contact.setMobilePhone(attributeHandler.getString("mobilePhone"));
-			contact.setAddress(attributeHandler.getString("address"));
-			contact.setZipCode(attributeHandler.getString("zipCode"));
-			contact.setPostalAddress(attributeHandler.getString("postalAddress"));
-			contact.setCareOf(attributeHandler.getString("careOf"));
-			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
-			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
-			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
-
-			if (attributeHandler.isSet("contactByEmail")) {
-
-				contact.setContactByEmail(attributeHandler.getPrimitiveBoolean("contactByEmail"));
-
-			} else {
-
-				contact.setContactByEmail(true);
-			}
-
-			return contact;
-		}
-
-		return null;
-	}
-
-	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
-
-		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-
-		if (flowInstanceContact != null) {
-
-			return flowInstanceContact;
-		}
-
-		ImmutableFlowInstanceEvent latestSubmitEvent = FlowInstanceUtils.getLatestSubmitEvent(flowInstance);
-
-		if (latestSubmitEvent != null && latestSubmitEvent.getPoster() != null) {
-
-			Contact posterContact = getContactForUser(latestSubmitEvent.getPoster());
-
-			if (posterContact != null) {
-
-				return posterContact;
-			}
-		}
-
-		return getContactForUser(flowInstance.getPoster());
-	}
-
-	public List<Contact> getContacts(ImmutableFlowInstance flowInstance) {
-
-		List<Contact> contacts = new ArrayList<Contact>(2);
-
-		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
-
-		if (flowInstanceContact != null) {
-
-			contacts.add(flowInstanceContact);
-		}
-
-		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
-
-			for (User owner : flowInstance.getOwners()) {
-
-				Contact ownerContact = getContactForUser(owner);
-				addUniqueContact(contacts, ownerContact);
-			}
-		}
-
-		if (contacts.isEmpty()) {
-			return null;
-		}
-
-		return contacts;
-	}
-
-	public static void addUniqueContact(List<Contact> contacts, Contact contact) {
-
-		for (Contact existingContact : contacts) {
-
-			if (existingContact.getCitizenIdentifier() != null && contact.getCitizenIdentifier() != null) {
-
-				if (existingContact.getCitizenIdentifier().equals(contact.getCitizenIdentifier())) {
-
-					return;
-				}
-
-				continue;
-			}
-
-			if (existingContact.getEmail() != null && contact.getEmail() != null) {
-
-				if (existingContact.getEmail().equalsIgnoreCase(contact.getEmail())) {
-
-					return;
-				}
-
-				continue;
-			}
-
-			if (existingContact.getMobilePhone() != null && contact.getMobilePhone() != null) {
-
-				String phone1 = existingContact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
-				String phone2 = contact.getMobilePhone().replaceAll("\\+", "00").replaceAll("[^0-9]+", "");
-
-				if (phone1.equals(phone2)) {
-
-					return;
-				}
-
-				continue;
-			}
-		}
-
-		contacts.add(contact);
-	}
-
+	
 	private String getFlowInstaceSubmittedUserEmailMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
 
 		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
