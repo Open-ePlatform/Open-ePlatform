@@ -88,8 +88,7 @@
 			<xsl:apply-templates select="ReasonAlternatives/InformerReasonAlternative" mode="show"/>
 		</ul>
 		
-		<xsl:value-of select="$i18n.YearsSaved"/>
-		<xsl:text>: </xsl:text>
+		<strong><xsl:value-of select="$i18n.YearsSaved"/></strong>
 		<ul>
 			<xsl:apply-templates select="StorageSettings" mode="list"/>
 		</ul>
