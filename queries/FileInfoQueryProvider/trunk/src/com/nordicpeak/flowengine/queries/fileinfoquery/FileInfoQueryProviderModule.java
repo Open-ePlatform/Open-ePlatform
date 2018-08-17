@@ -461,9 +461,11 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 		List<FileDescriptor> fileDescriptors = query.getFiles();
 
-		Map<File, FileDescriptor> fileMap = new HashMap<File, FileDescriptor>(fileDescriptors.size());
+		Map<File, FileDescriptor> fileMap = null;
 		
 		if(fileDescriptors != null) {
+			
+			fileMap = new HashMap<File, FileDescriptor>(fileDescriptors.size());
 			
 			for(FileDescriptor fileDescriptor : fileDescriptors) {
 				
@@ -480,13 +482,17 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 		//Write to database and get new file ID's for file descriptors, then copy files on disc
 		queryDAO.add(query, transactionHandler, null);
 		
-		for(File existingFile : fileMap.keySet()) {
-			
-			FileDescriptor resetFileDescriptor = fileMap.get(existingFile);
-			
-			File destinationFile = new File(getFileDescriptorFilestorePath(query, resetFileDescriptor));
-			
-			FileUtils.copyFile(existingFile, destinationFile);
+		if(!CollectionUtils.isEmpty(fileMap)) {
+		
+			for(File existingFile : fileMap.keySet()) {
+				
+				FileDescriptor resetFileDescriptor = fileMap.get(existingFile);
+				
+				File destinationFile = new File(getFileDescriptorFilestorePath(query, resetFileDescriptor));
+				
+				FileUtils.copyFile(existingFile, destinationFile);
+			}
+		
 		}
 	}
 
