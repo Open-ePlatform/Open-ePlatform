@@ -11,6 +11,7 @@ public class PDFFileAttachment implements PDFAttachment {
 	private final File file;
 	private final String name;
 	private final String description;
+	private final boolean inlineAttachment;
 
 	public PDFFileAttachment(File file, String description) {
 
@@ -18,7 +19,7 @@ public class PDFFileAttachment implements PDFAttachment {
 		this.file = file;
 		this.description = description;
 		this.name = file.getName();
-
+		inlineAttachment = false;
 	}
 
 	public PDFFileAttachment(File file, String name, String description) {
@@ -27,7 +28,16 @@ public class PDFFileAttachment implements PDFAttachment {
 		this.file = file;
 		this.description = description;
 		this.name = name;
+		inlineAttachment = false;
+	}
+	
+	public PDFFileAttachment(File file, String name, String description, boolean inlineAttachment) {
 
+		super();
+		this.file = file;
+		this.description = description;
+		this.name = name;
+		this.inlineAttachment = inlineAttachment;
 	}
 
 	@Override
@@ -48,4 +58,8 @@ public class PDFFileAttachment implements PDFAttachment {
 		return new FileInputStream(file);
 	}
 
+	@Override
+	public boolean isInlineAttachment() {
+		return inlineAttachment;
+	}
 }

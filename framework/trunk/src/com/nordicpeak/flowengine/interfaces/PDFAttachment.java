@@ -10,4 +10,6 @@ public interface PDFAttachment {
 	public String getDescription();
 
 	public InputStream getInputStream() throws Exception;
+	
+	public boolean isInlineAttachment();
 }

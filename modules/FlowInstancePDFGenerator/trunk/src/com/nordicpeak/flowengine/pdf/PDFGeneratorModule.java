@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,38 +30,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.pdfbox.util.PDFMergerUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfFileSpecification;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
-
-import com.nordicpeak.flowengine.BaseFlowModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.PDFQueryResponse;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
-import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.PDFAttachment;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.PDFManagerResponse;
-import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
-import com.nordicpeak.flowengine.utils.PDFByteAttachment;
-import com.nordicpeak.flowengine.utils.SigningUtils;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -95,6 +69,33 @@ import se.unlogic.standardutils.xml.ClassPathURIResolver;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.URIXSLTransformer;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfFileSpecification;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.RandomAccessFileOrArray;
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.PDFQueryResponse;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
+import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.PDFAttachment;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.PDFManagerResponse;
+import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+import com.nordicpeak.flowengine.utils.SigningUtils;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
@@ -613,10 +614,51 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
 		
-		File pdfWithAttachments = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+		File pdfTempIn = basePDF;
+		File pdfTempOut;
+		
+		for (PDFManagerResponse managerResponse : managerResponses) {
+			
+			for (PDFQueryResponse queryResponse : managerResponse.getQueryResponses()) {
+				
+				if (queryResponse.getAttachments() != null) {
+					
+					Iterator<PDFAttachment> it = queryResponse.getAttachments().iterator();
+					while (it.hasNext()) {
+						PDFAttachment attachment = it.next();
+						
+						if (attachment.isInlineAttachment()) {
+							
+							InputStream stream = null;
+							
+							try {
+								stream = attachment.getInputStream();
+								PDFMergerUtility merger = new PDFMergerUtility();
+								merger.addSource(pdfTempIn);
+								merger.addSource(stream);
+								
+								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
+								merger.mergeDocuments();
+								
+								pdfTempIn = pdfTempOut;
+								it.remove();
+								
+							} catch (Exception e) {
+								log.warn("Error merging PDFs", e);
+								
+							} finally {
+								CloseUtils.close(stream);
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		OutputStream outputStream = null;
 		RandomAccessFileOrArray inputFileRandomAccess = null;
+		pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 		
 		try {
 			/** String filename, boolean forceRead, boolean plainRandomAccess
@@ -624,8 +666,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			 * plainRandomAccess if true, a regular RandomAccessFile is used to access the file contents.
 			 * If false, a memory mapped file will be used, unless the file cannot be mapped into memory, in which case regular RandomAccessFile will be
 			 * used. */
-			inputFileRandomAccess = new RandomAccessFileOrArray(basePDF.getAbsolutePath(), false, false);
-			outputStream = new BufferedOutputStream(new FileOutputStream(pdfWithAttachments));
+			inputFileRandomAccess = new RandomAccessFileOrArray(pdfTempIn.getAbsolutePath(), false, false);
+			outputStream = new BufferedOutputStream(new FileOutputStream(pdfTempOut));
 			
 			PdfReader reader = new PdfReader(inputFileRandomAccess, null);
 			PdfStamper stamper = new PdfStamper(reader, outputStream);
@@ -665,7 +707,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			}
 		}
 		
-		return pdfWithAttachments;
+		return pdfTempOut;
 	}
 	
 	protected static void addAttachment(PdfWriter writer, File file, String description) throws IOException {

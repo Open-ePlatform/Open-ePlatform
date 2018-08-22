@@ -115,6 +115,22 @@
 				</div>
 			</div>
 			
+			<div class="floatleft full marginbottom">
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'inlinePDFAttachments'"/>
+						<xsl:with-param name="name" select="'inlinePDFAttachments'"/>
+						<xsl:with-param name="value" select="'true'"/> 
+						<xsl:with-param name="element" select="FileUploadQuery" />
+					</xsl:call-template>
+					
+					<label for="inlinePDFAttachments">
+						<xsl:value-of select="$i18n.inlinePDFAttachments" />
+					</label>
+				</div>
+			</div>
+			
 			<div class="floatleft full bigmarginbottom">
 				<label for="attachmentNamePrefixMode" class="floatleft clearboth">
 					<xsl:value-of select="$i18n.AttachmentNamePrefixMode" />

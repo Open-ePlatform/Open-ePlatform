@@ -897,22 +897,23 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			}
 			
 			AttachmentNamePrefixType prefixMode = query.getAttachmentNamePrefixMode();
+			boolean inline = query.isInlinePDFAttachments() && file.getName().toLowerCase().endsWith(".pdf");
 			
 			if (prefixMode == AttachmentNamePrefixType.QUERY_NAME || prefixMode == null) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline));
 				
 			} else if (prefixMode == AttachmentNamePrefixType.CUSTOM) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), query.getAttachmentNameCustomPrefix() + " " + fileDescriptor.getName()));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), query.getAttachmentNameCustomPrefix() + " " + fileDescriptor.getName(), inline));
 				
 			} else if (prefixMode == AttachmentNamePrefixType.NO_PREFIX) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), fileDescriptor.getName()));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), fileDescriptor.getName(), inline));
 				
 			} else {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName()));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline));
 				log.error("Unknown prefix mode " + prefixMode + " for query " + query);
 			}
 		}

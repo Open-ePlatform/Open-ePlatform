@@ -94,4 +94,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `inlinePDFAttachments` TINYINT UNSIGNED NOT NULL AFTER `maxFileNameLength`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
