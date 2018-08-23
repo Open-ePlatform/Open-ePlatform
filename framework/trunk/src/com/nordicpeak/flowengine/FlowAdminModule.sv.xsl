@@ -336,6 +336,7 @@
 	<xsl:variable name="i18n.Manager.validFromToDate">till och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.restricted">Begränsad</xsl:variable>
 	
+	
 	<xsl:variable name="i18n.AddFlowCategoryNotFound">Den begärda underkategorin hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.AddCategoryFailedFlowTypeNotFound">Den begärda kategorin hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.UpdateFailedCategoryNotFound">Den begärda underkategorin hittades inte.</xsl:variable>
@@ -507,7 +508,8 @@
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
 	
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
-	<xsl:variable name="i18n.hideInternalMessages">Dölj interna noteringar i handläggargränssnittet</xsl:variable>
+	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
+	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>
