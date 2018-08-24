@@ -34,7 +34,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
@@ -137,6 +136,7 @@ import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.PooledXPathFactory;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -1706,7 +1706,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		
 		Document doc = XMLUtils.parseXML(FlowAdminModule.class.getResourceAsStream("xsd/base-schema.xsd"), false, false);
 		
-		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPath xPath = PooledXPathFactory.newXPath();
 		
 		Element flowSequenceElement = (Element) xPath.evaluate("complexType[@name='Flow']/sequence", doc.getDocumentElement(), XPathConstants.NODE);
 		
