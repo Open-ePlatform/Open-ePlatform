@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nordicpeak.flowengine.interfaces.MutableAlternative;
-import com.nordicpeak.flowengine.interfaces.PricedAlternative;
-
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -24,6 +21,9 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
+
+import com.nordicpeak.flowengine.interfaces.MutableAlternative;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 
 @Table(name = "checkbox_query_alternatives")
 @XMLElement
