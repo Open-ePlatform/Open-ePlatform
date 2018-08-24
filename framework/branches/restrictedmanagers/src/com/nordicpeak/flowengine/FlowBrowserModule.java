@@ -117,6 +117,7 @@ import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
@@ -213,6 +214,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set nofollow attribute on flow forms", description = "Controls whether nofollow attribute should be set on flow form links or not")
 	private boolean setNoFollowOnFlowForms = false;
+	
+	@XSLVariable(prefix = "java.")
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Foreign ID blocked message", description = "Message shown when a foreign ID is blocked")
+	private String foreignIDBlockedMessage;
 	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -485,7 +491,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
-
 	}
 
 	@WebPublic(alias = "overview")
@@ -669,7 +674,13 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				log.info("User " + user + " requested invalid URL, listing flows");
 				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
 			}
-
+			
+			if (foreignIDBlocked(instanceManager.getFlowInstance().getFlow(), user, flowAdminModule)) {
+				
+				removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
+				return showForeignIDBlockedMessage(instanceManager.getFlowInstance().getFlow(), req, res, user, uriParser);
+			}
+			
 		} catch (FlowNoLongerAvailableException e) {
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer available.");
@@ -735,6 +746,18 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
 		}
+	}
+	
+	private ForegroundModuleResponse showForeignIDBlockedMessage(ImmutableFlow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
+		
+		Document doc = createDocument(req, uriParser, user);
+		Element foreignIDBlockedElement = doc.createElement("ForeignIDBlocked");
+		doc.getDocumentElement().appendChild(foreignIDBlockedElement);
+		
+		XMLUtils.appendNewElement(doc, foreignIDBlockedElement, "Message", foreignIDBlockedMessage);
+		foreignIDBlockedElement.appendChild(flow.toXML(doc));
+		
+		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
 	}
 
 	@WebPublic(alias = "search")

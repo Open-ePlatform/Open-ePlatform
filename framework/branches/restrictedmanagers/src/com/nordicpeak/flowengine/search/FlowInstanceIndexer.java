@@ -39,6 +39,20 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.SystemStatus;
+import se.unlogic.hierarchy.core.interfaces.SystemInterface;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.json.JsonArray;
+import se.unlogic.standardutils.json.JsonObject;
+import se.unlogic.standardutils.json.JsonUtils;
+import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.webutils.http.HTTPUtils;
+
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -56,20 +70,6 @@ import com.nordicpeak.flowengine.search.events.DeleteFlowEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowFamilyEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
 import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
-
-import se.unlogic.hierarchy.core.beans.Group;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.SystemStatus;
-import se.unlogic.hierarchy.core.interfaces.SystemInterface;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.json.JsonArray;
-import se.unlogic.standardutils.json.JsonObject;
-import se.unlogic.standardutils.json.JsonUtils;
-import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.webutils.http.HTTPUtils;
 
 public class FlowInstanceIndexer {
 

@@ -14,34 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.Category;
-import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAction;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowForm;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
-import com.nordicpeak.flowengine.beans.StandardStatus;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
-import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableStep;
-import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
-import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
-import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
-
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
@@ -75,6 +47,34 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.populators.annotated.RequestMapping;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.Category;
+import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
+import com.nordicpeak.flowengine.beans.StandardStatus;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
+import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStep;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
+import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
 
 public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
@@ -179,6 +179,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (callback.getMultiSigningHandler() != null && callback.getMultiSigningHandler().supportsSequentialSigning()) {
 
 			XMLUtils.appendNewElement(doc, typeElement, "SupportsSequentialSigning");
+		}
+		
+		if (callback.isBlockForeignIDs()) {
+			
+			XMLUtils.appendNewElement(doc, typeElement, "ForeignIDsBlocked");
 		}
 	}
 
@@ -770,6 +775,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (callback.getMultiSigningHandler() != null && callback.getMultiSigningHandler().supportsSequentialSigning()) {
 
 			XMLUtils.appendNewElement(doc, showTypeElement, "SupportsSequentialSigning");
+		}
+		
+		if (callback.isBlockForeignIDs()) {
+			
+			XMLUtils.appendNewElement(doc, showTypeElement, "ForeignIDsBlocked");
 		}
 	}
 

@@ -11,14 +11,6 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerGroupComparator;
-import com.nordicpeak.flowengine.enums.ManagerAccess;
-import com.nordicpeak.flowengine.enums.StatisticsMode;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -47,6 +39,14 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
+import com.nordicpeak.flowengine.comparators.FlowFamilyManagerGroupComparator;
+import com.nordicpeak.flowengine.enums.ManagerAccess;
+import com.nordicpeak.flowengine.enums.StatisticsMode;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 @Table(name = "flowengine_flow_families")
 @XMLElement

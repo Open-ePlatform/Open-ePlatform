@@ -12,17 +12,6 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManager;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
-import com.nordicpeak.flowengine.events.ManagersChangedEvent;
-
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -37,6 +26,17 @@ import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
+import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 
 public class ExpiredManagerRemover implements Runnable {
 	

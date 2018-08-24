@@ -1830,6 +1830,14 @@
 	<Script version="99">
 		<Query>
 			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `allowForeignIDs` TINYINT(1) UNSIGNED NOT NULL AFTER `requireAuthentication`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="100">
+		<Query>
+			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_manager_users` ADD COLUMN `restricted` TINYINT UNSIGNED NOT NULL AFTER `userID`;
 			]]>
 		</Query>
@@ -1851,7 +1859,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="100">
+	<Script version="101">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_families`
@@ -1892,7 +1900,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="101">
+	<Script version="102">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_automanager_rules` DROP COLUMN `userID`;

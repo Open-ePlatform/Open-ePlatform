@@ -10,6 +10,16 @@
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 	
 	<xsl:variable name="java.searchHints">T.ex. bygglov hus, dagisplats, lämna synpunkt</xsl:variable>
+	<xsl:variable name="java.foreignIDBlockedMessage">
+		&lt;section class="modal warning"&gt;
+			&lt;i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);"&gt;!&lt;/i&gt;
+			eIDAS inloggning fungerar inte med den här e-tjänsten.
+		&lt;/section&gt;
+		&lt;p&gt;
+			Den här e-tjänsten har kopplingar till svenska myndigheter som inte stödjer eIDAS.
+			TODO mer text
+		&lt;/p&gt;
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.ShowFlow">Ansök</xsl:variable>
 	<xsl:variable name="i18n.UncategorizedFlows">Övriga e-tjänster</xsl:variable>

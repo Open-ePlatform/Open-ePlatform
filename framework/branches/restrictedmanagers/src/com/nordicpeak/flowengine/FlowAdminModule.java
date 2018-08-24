@@ -34,7 +34,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
@@ -46,6 +45,113 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import se.unlogic.cron4jutils.CronStringValidator;
+import se.unlogic.fileuploadutils.MultipartRequest;
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.SimpleBundleDescriptor;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleMenuItemDescriptor;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.comparators.PriorityComparator;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.enums.MenuItemType;
+import se.unlogic.hierarchy.core.enums.SystemStatus;
+import se.unlogic.hierarchy.core.enums.URLType;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.handlers.GroupHandler;
+import se.unlogic.hierarchy.core.handlers.UserHandler;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
+import se.unlogic.hierarchy.core.interfaces.events.EventListener;
+import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
+import se.unlogic.hierarchy.core.interfaces.menu.BundleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.settings.SettingHandler;
+import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
+import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.hierarchy.core.utils.GenericCRUD;
+import se.unlogic.hierarchy.core.utils.UserUtils;
+import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
+import se.unlogic.hierarchy.core.utils.crud.MultipartRequestFilter;
+import se.unlogic.hierarchy.core.utils.crud.TransactionRequestFilter;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
+import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
+import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
+import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
+import se.unlogic.standardutils.annotations.RequiredIfSet;
+import se.unlogic.standardutils.annotations.SplitOnLineBreak;
+import se.unlogic.standardutils.base64.Base64;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
+import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.LowLevelQuery;
+import se.unlogic.standardutils.dao.MySQLRowLimiter;
+import se.unlogic.standardutils.dao.OrderByCriteria;
+import se.unlogic.standardutils.dao.QueryOperators;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.RelationQuery;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.ObjectQuery;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.image.ImageUtils;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.CloseUtils;
+import se.unlogic.standardutils.io.FileUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
+import se.unlogic.standardutils.populators.StringURLPopulator;
+import se.unlogic.standardutils.serialization.SerializationUtils;
+import se.unlogic.standardutils.streams.StreamUtils;
+import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationErrorType;
+import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.PooledXPathFactory;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLParser;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.SessionUtils;
+import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.http.enums.ContentDisposition;
+import se.unlogic.webutils.url.URLRewriter;
+import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
@@ -136,109 +242,6 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeV
 import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
 
 import it.sauronsoftware.cron4j.Scheduler;
-
-import se.unlogic.cron4jutils.CronStringValidator;
-import se.unlogic.fileuploadutils.MultipartRequest;
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.Group;
-import se.unlogic.hierarchy.core.beans.SimpleBundleDescriptor;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.SimpleMenuItemDescriptor;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.comparators.PriorityComparator;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.enums.MenuItemType;
-import se.unlogic.hierarchy.core.enums.SystemStatus;
-import se.unlogic.hierarchy.core.enums.URLType;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.handlers.GroupHandler;
-import se.unlogic.hierarchy.core.handlers.UserHandler;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
-import se.unlogic.hierarchy.core.interfaces.events.EventListener;
-import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
-import se.unlogic.hierarchy.core.interfaces.menu.BundleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.settings.SettingHandler;
-import se.unlogic.hierarchy.core.utils.AccessUtils;
-import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
-import se.unlogic.hierarchy.core.utils.FCKUtils;
-import se.unlogic.hierarchy.core.utils.GenericCRUD;
-import se.unlogic.hierarchy.core.utils.UserUtils;
-import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
-import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
-import se.unlogic.hierarchy.core.utils.crud.MultipartRequestFilter;
-import se.unlogic.hierarchy.core.utils.crud.TransactionRequestFilter;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
-import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
-import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
-import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
-import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
-import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
-import se.unlogic.standardutils.base64.Base64;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
-import se.unlogic.standardutils.dao.AnnotatedDAO;
-import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.LowLevelQuery;
-import se.unlogic.standardutils.dao.MySQLRowLimiter;
-import se.unlogic.standardutils.dao.OrderByCriteria;
-import se.unlogic.standardutils.dao.QueryOperators;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.RelationQuery;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.ObjectQuery;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.image.ImageUtils;
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.io.CloseUtils;
-import se.unlogic.standardutils.io.FileUtils;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
-import se.unlogic.standardutils.populators.StringPopulator;
-import se.unlogic.standardutils.populators.StringURLPopulator;
-import se.unlogic.standardutils.serialization.SerializationUtils;
-import se.unlogic.standardutils.streams.StreamUtils;
-import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.time.TimeUtils;
-import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.validation.ValidationErrorType;
-import se.unlogic.standardutils.validation.ValidationException;
-import se.unlogic.standardutils.xml.XMLGeneratorDocument;
-import se.unlogic.standardutils.xml.XMLParser;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.HTTPUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.SessionUtils;
-import se.unlogic.webutils.http.URIParser;
-import se.unlogic.webutils.http.enums.ContentDisposition;
-import se.unlogic.webutils.url.URLRewriter;
-import se.unlogic.webutils.validation.ValidationUtils;
 
 public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
 
@@ -479,6 +482,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Check for stale flow instances interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String removeStaleFlowInstancesInterval = "0 0 * * *";
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Block foreign IDs", description = "Block users logged in with foreign IDs from using flows unless explicity allowed in the flow family")
+	protected boolean blockForeignIDs = false;
+	
+	@ModuleSetting
+	@RequiredIfSet(paramNames = "blockForeignIDs")
+	@SplitOnLineBreak
+	@TextAreaSettingDescriptor(name = "Foreign ID attribute", description = "Attribute that is set when user is logged in with a foreign ID")
+	protected List<String> foreignIDattributes;
 
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
@@ -1713,7 +1726,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		Document doc = XMLUtils.parseXML(FlowAdminModule.class.getResourceAsStream("xsd/base-schema.xsd"), false, false);
 
-		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPath xPath = PooledXPathFactory.newXPath();
 
 		Element flowSequenceElement = (Element) xPath.evaluate("complexType[@name='Flow']/sequence", doc.getDocumentElement(), XPathConstants.NODE);
 
@@ -5186,6 +5199,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public MultiSigningHandler getMultiSigningHandler() {
 		
 		return multiSigningHandler;
+	}
+	
+	public boolean isBlockForeignIDs() {
+		return blockForeignIDs;
+	}
+	
+	public List<String> getForeignIDattributes() {
+		return foreignIDattributes;
 	}
 	
 }
