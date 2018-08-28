@@ -1499,7 +1499,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 					
 					User signer = null;
 					
-					if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
+					if (signingParty.getSignerUserID() != null) {
+						
+						signer = systemInterface.getUserHandler().getUser(signingParty.getSignerUserID(), false, true);
+						
+					} else if (!StringUtils.isEmpty(signingParty.getSocialSecurityNumber())) {
 						
 						signer = systemInterface.getUserHandler().getUserByAttribute("citizenIdentifier", signingParty.getSocialSecurityNumber(), false, true);
 					}
