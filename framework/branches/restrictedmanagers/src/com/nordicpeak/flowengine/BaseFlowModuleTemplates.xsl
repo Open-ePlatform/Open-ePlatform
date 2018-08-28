@@ -1098,6 +1098,12 @@
 		
 		<xsl:value-of select="$user/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$user/lastname" />
 		
+		<xsl:if test="$user/username">
+			<xsl:text>&#160;(</xsl:text>
+			<xsl:value-of select="$user/username" />
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+		
 	</xsl:template>
 	
 </xsl:stylesheet>

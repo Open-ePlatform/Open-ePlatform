@@ -1256,6 +1256,12 @@
 		<xsl:text>&#160;</xsl:text>
 		<xsl:value-of select="lastname" />
 		
+		<xsl:if test="username">
+			<xsl:text>&#160;(</xsl:text>
+			<xsl:value-of select="username" />
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+		
 		<xsl:if test="position() != last() or ../../managerGroups/group">
 			<xsl:text>,&#160;</xsl:text>
 		</xsl:if>
@@ -1277,6 +1283,12 @@
 	<xsl:template match="user" mode="owner">
 		
 		<xsl:value-of select="firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="lastname" />
+		
+		<xsl:if test="username">
+			<xsl:text>&#160;(</xsl:text>
+			<xsl:value-of select="username" />
+			<xsl:text>)</xsl:text>
+		</xsl:if>
 		
 		<xsl:if test="position() != last()"><xsl:text>,&#160;</xsl:text></xsl:if>
 		
