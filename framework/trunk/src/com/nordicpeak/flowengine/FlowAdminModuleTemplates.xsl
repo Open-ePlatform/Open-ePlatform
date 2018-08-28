@@ -575,11 +575,29 @@
 						<xsl:with-param name="disabled" select="'true'" />
 					</xsl:call-template>
 					
-					<label for="usePreview">
+					<label for="requireAuthentication">
 						<xsl:value-of select="$i18n.requirersAuthentication" />
 					</label>
 				</div>
 			</div>
+				
+			<xsl:if test="ForeignIDsBlocked and Flow/requireAuthentication = 'true'">
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'allowForeignIDs'" />
+							<xsl:with-param name="id" select="'allowForeignIDs'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="allowForeignIDs">
+							<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
+						</label>
+					</div>
+				</div>
+			</xsl:if>
 				
 			<xsl:if test="$isInternal = 'true'">
 				
@@ -599,7 +617,7 @@
 					</div>
 				</div>
 				
-				<xsl:if test="SupportsSequentialSigning">
+				<xsl:if test="SupportsSequentialSigning and Flow/requireSigning = 'true'">
 					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 					
 						<div class="floatleft">
@@ -643,14 +661,30 @@
 							<xsl:with-param name="disabled" select="'true'" />
 						</xsl:call-template>
 						
-						<label for="hideManagerDetails">
+						<label for="hideFromOverview">
 							<xsl:value-of select="$i18n.hideFromOverview" />
 						</label>
 					</div>
 				</div>
 				
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideExternalMessages'" />
+							<xsl:with-param name="id" select="'hideExternalMessages'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="hideExternalMessages">
+							<xsl:value-of select="$i18n.hideExternalMessages" />
+						</label>
+					</div>
+				</div>
 				
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="name" select="'hideInternalMessages'" />
@@ -664,22 +698,6 @@
 						</label>
 					</div>
 				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideExternalMessages'" />
-							<xsl:with-param name="id" select="'hideExternalMessages'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideExternalMessages">
-							<xsl:value-of select="$i18n.hideExternalMessages" />
-						</label>
-					</div>
-				</div>				
 				
 				<xsl:if test="SubmitSurveyEnabled">
 					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
@@ -2221,6 +2239,23 @@
 				});
 			</script>
 		</div>
+		
+		<xsl:if test="ForeignIDsBlocked">
+			<div class="floatleft full bigmarginbottom margintop">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'allowForeignIDs'" />
+						<xsl:with-param name="id" select="'allowForeignIDs'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="allowForeignIDs">
+						<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
+					</label>
+				</div>
+			</div>
+		</xsl:if>
 			
 		<xsl:if test="$isInternal = 'true'">
 			
@@ -2287,6 +2322,21 @@
 			</div>
 			
 			<div class="floatleft full bigmarginbottom margintop internal">
+				
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideExternalMessages'" />
+						<xsl:with-param name="id" select="'hideExternalMessages'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="hideExternalMessages">
+						<xsl:value-of select="$i18n.hideExternalMessages" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom margintop internal">
 			
 				<div class="floatleft">
 					<xsl:call-template name="createCheckbox">
@@ -2297,21 +2347,6 @@
 					
 					<label for="hideInternalMessages">
 						<xsl:value-of select="$i18n.hideInternalMessages" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideExternalMessages'" />
-						<xsl:with-param name="id" select="'hideExternalMessages'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideExternalMessages">
-						<xsl:value-of select="$i18n.hideExternalMessages" />
 					</label>
 				</div>
 			</div>

@@ -79,6 +79,16 @@ $(document).ready(function() {
 	
 	$("#typeOfFlow").trigger("change");
 	
+	$("#requireAuthentication").change(function(e) {
+		
+		var checked = $(this).prop("checked");
+		var allowForeignIDs = $("#allowForeignIDs");
+		
+		allowForeignIDs.parent().parent().toggle(checked);
+	});
+	
+	$("#requireAuthentication").trigger("change");
+	
 	$("#requireSigning").change(function(e) {
 		
 		var checked = $(this).prop("checked");

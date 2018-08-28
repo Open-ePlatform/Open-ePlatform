@@ -34,6 +34,7 @@
 			<xsl:apply-templates select="MultiSigningStatusForm"/>
 			<xsl:apply-templates select="StandalonePaymentForm"/>
 			<xsl:apply-templates select="InlinePaymentForm"/>
+			<xsl:apply-templates select="ForeignIDBlocked"/>
 		</div>
 		
 	</xsl:template>
@@ -258,6 +259,36 @@
 			
 		</li>
 		
-	</xsl:template>		
-			
+	</xsl:template>
+
+	<xsl:template match="ForeignIDBlocked">
+	
+		<section class="child">
+			<div class="section-inside step full">
+				<div class="heading-wrapper">
+					<div class="inner inner-less-padding">
+						<figure>
+							<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}" alt="" />
+						</figure>
+	
+						<div class="heading">
+							<div>
+								<h1 class="xl">
+									<xsl:value-of select="Flow/name" />
+								</h1>
+							</div>
+						</div>
+					</div>
+	
+				</div>
+			</div>
+			<div class="section-full header-full no-pad-top">
+				<div class="description">
+					<xsl:value-of select="Message" disable-output-escaping="yes" />
+				</div>
+			</div>
+		</section>
+	
+	</xsl:template>
+	
 </xsl:stylesheet>

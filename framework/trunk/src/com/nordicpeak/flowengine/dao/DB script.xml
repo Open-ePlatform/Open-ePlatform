@@ -1827,4 +1827,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="99">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `allowForeignIDs` TINYINT(1) UNSIGNED NOT NULL AFTER `requireAuthentication`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

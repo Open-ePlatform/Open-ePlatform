@@ -53,6 +53,7 @@ import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
@@ -105,6 +106,8 @@ import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValida
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
+import se.unlogic.standardutils.annotations.RequiredIfSet;
+import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
@@ -473,6 +476,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@TextFieldSettingDescriptor(name = "Check for stale flow instances interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String removeStaleFlowInstancesInterval = "0 0 * * *";
 	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Block foreign IDs", description = "Block users logged in with foreign IDs from using flows unless explicity allowed in the flow family")
+	protected boolean blockForeignIDs = false;
+	
+	@ModuleSetting
+	@RequiredIfSet(paramNames = "blockForeignIDs")
+	@SplitOnLineBreak
+	@TextAreaSettingDescriptor(name = "Foreign ID attribute", description = "Attribute that is set when user is logged in with a foreign ID")
+	protected List<String> foreignIDattributes;
+
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
 	
@@ -4962,6 +4975,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public MultiSigningHandler getMultiSigningHandler() {
 		
 		return multiSigningHandler;
+	}
+	
+	public boolean isBlockForeignIDs() {
+		return blockForeignIDs;
+	}
+	
+	public List<String> getForeignIDattributes() {
+		return foreignIDattributes;
 	}
 	
 }

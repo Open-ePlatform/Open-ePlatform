@@ -186,6 +186,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 			XMLUtils.appendNewElement(doc, typeElement, "SupportsSequentialSigning");
 		}
+		
+		if (callback.isBlockForeignIDs()) {
+			
+			XMLUtils.appendNewElement(doc, typeElement, "ForeignIDsBlocked");
+		}
 	}
 
 	@Override
@@ -796,6 +801,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (callback.getMultiSigningHandler() != null && callback.getMultiSigningHandler().supportsSequentialSigning()) {
 
 			XMLUtils.appendNewElement(doc, showTypeElement, "SupportsSequentialSigning");
+		}
+		
+		if (callback.isBlockForeignIDs()) {
+			
+			XMLUtils.appendNewElement(doc, showTypeElement, "ForeignIDsBlocked");
 		}
 	}
 

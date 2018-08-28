@@ -33,6 +33,8 @@ public final class SigningParty extends GeneratedElementable {
 	@XMLElement
 	private final boolean unsecure;
 	
+	private Integer signerUserID;
+	
 	public SigningParty(String firstname, String lastname, String email, String mobilePhone, String socialSecurityNumber, boolean addAsOwner) {
 		
 		super();
@@ -103,6 +105,14 @@ public final class SigningParty extends GeneratedElementable {
 	
 	public boolean isUnsecure() {
 		return unsecure;
+	}
+	
+	public Integer getSignerUserID() {
+		return signerUserID;
+	}
+	
+	public void setSignerUserID(Integer signerUserID) {
+		this.signerUserID = signerUserID;
 	}
 	
 	@Override

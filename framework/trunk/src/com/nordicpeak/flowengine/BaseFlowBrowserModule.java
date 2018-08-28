@@ -8,17 +8,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
-
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 
 public abstract class BaseFlowBrowserModule extends BaseFlowModule {
@@ -86,7 +87,21 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 
 			return true;
 		}
-
+		
+		return false;
+	}
+	
+	protected boolean foreignIDBlocked(ImmutableFlow flow, User user, FlowAdminModule flowAdminModule) throws IOException {
+		
+		if (flow.requiresAuthentication() && flowAdminModule.isBlockForeignIDs() && !flow.isAllowForeignIDs() && flowAdminModule.getForeignIDattributes() != null) {
+			
+			for (String attribute : flowAdminModule.getForeignIDattributes()) {
+				if (user.getAttributeHandler().isSet(attribute)) {
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 	
