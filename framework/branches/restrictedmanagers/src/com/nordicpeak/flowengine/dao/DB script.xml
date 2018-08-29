@@ -1838,6 +1838,14 @@
 	<Script version="100">
 		<Query>
 			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_events` CHANGE COLUMN `message` `message` VARCHAR(1024) NOT NULL AFTER `poster`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="101">
+		<Query>
+			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_manager_users` ADD COLUMN `restricted` TINYINT UNSIGNED NOT NULL AFTER `userID`;
 			]]>
 		</Query>
@@ -1859,7 +1867,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="101">
+	<Script version="102">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_families`
@@ -1900,7 +1908,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="102">
+	<Script version="103">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_automanager_rules` DROP COLUMN `userID`;

@@ -58,38 +58,51 @@
 			<xsl:apply-templates select="ShowFlow" />
 			<xsl:apply-templates select="AddFlow" />
 			<xsl:apply-templates select="UpdateFlow" />
+			<xsl:apply-templates select="SortFlow" />
+			
+			<xsl:apply-templates select="UpdateFlowFamily"/>
+			<xsl:apply-templates select="ChangeFlowType"/>
+			
 			<xsl:apply-templates select="UpdateFlowIcon" />
-			<xsl:apply-templates select="UpdateNotifications"/>		
-			<xsl:apply-templates select="AddQueryDescriptor" />
-			<xsl:apply-templates select="AddEvaluatorDescriptor" />
+			<xsl:apply-templates select="UpdateNotifications"/>
+					
 			<xsl:apply-templates select="AddStep" />
 			<xsl:apply-templates select="UpdateStep" />
+			<xsl:apply-templates select="AddQueryDescriptor" />
+			<xsl:apply-templates select="AddEvaluatorDescriptor" />
+			
 			<xsl:apply-templates select="AddStatus" />
 			<xsl:apply-templates select="UpdateStatus" />
-			<xsl:apply-templates select="SortFlow" />
 			<xsl:apply-templates select="SortStatuses" />
+			
 			<xsl:apply-templates select="ListStandardStatuses" />
 			<xsl:apply-templates select="AddStandardStatus" />
 			<xsl:apply-templates select="UpdateStandardStatus" />
+			
 			<xsl:apply-templates select="FlowInstanceManagerForm"/>
 			<xsl:apply-templates select="FlowInstanceManagerPreview"/>
 			<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
+			
 			<xsl:apply-templates select="ListFlowTypes"/>
 			<xsl:apply-templates select="ShowFlowType"/>
 			<xsl:apply-templates select="AddFlowType"/>
 			<xsl:apply-templates select="UpdateFlowType"/>
+			
 			<xsl:apply-templates select="AddCategory"/>
 			<xsl:apply-templates select="UpdateCategory"/>
-			<xsl:apply-templates select="UpdateFlowFamily"/>
-			<xsl:apply-templates select="SigningForm"/>
+			
 			<xsl:apply-templates select="SelectImportTargetType"/>
 			<xsl:apply-templates select="ImportFlow"/>
 			<xsl:apply-templates select="ImportQueries"/>
-			<xsl:apply-templates select="ShowFlowOverview"/>
-			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
-			<xsl:apply-templates select="ChangeFlowType"/>
+			
 			<xsl:apply-templates select="AddFlowForm" />
 			<xsl:apply-templates select="UpdateFlowForm" />
+			
+			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
+			<xsl:apply-templates select="AddFlowFamilyEvent" />
+			
+			<xsl:apply-templates select="SigningForm"/>
+			<xsl:apply-templates select="ShowFlowOverview"/>
 			<xsl:apply-templates select="AutoManagerAssignment" />		
 		</div>
 		
@@ -1088,7 +1101,7 @@
 					
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowform/{Flow/flowID}" title="{$i18n.addFlowForm.link.title}">
 							<xsl:value-of select="$i18n.addFlowForm.link.title"/>
-							<img class="alignmiddle" src="{$imgPath}/add.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 						</a>
 						
 					</xsl:otherwise>
@@ -1097,14 +1110,14 @@
 			</div>
 			
 			<xsl:if test="Flow/FlowForms/FlowForm">
-			
+				
 				<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
 						<xsl:value-of select="$i18n.testFlow"/>
-						<img class="alignmiddle" src="{$imgPath}/play.png" alt="" />
+						<img class="marginleft" src="{$imgPath}/play.png" alt="" />
 					</a>
-			</div>
-			
+				</div>
+				
 			</xsl:if>
 			
 		</fieldset>
@@ -1301,7 +1314,7 @@
 									<xsl:with-param name="isInternal" select="$isInternal" />	
 								</xsl:apply-templates>
 							</tbody>
-						</table>				
+						</table>
 	
 					</xsl:when>
 					<xsl:otherwise>
@@ -1313,7 +1326,7 @@
 				
 				<div class="floatright marginright">
 					<input type="button" value="{$i18n.importNewFlowVersion}" title="{$i18n.importNewFlowVersion}" onclick="window.location = '{/Document/requestinfo/currentURI}/{/Document/module/alias}/importversion/{Flow/flowID}'"/>
-				</div>				
+				</div>
 				
 				<div class="floatright margintop marginright hidden clearboth" id="add_new_version">
 					<input type="submit" value="{$i18n.addNewVersion}"/>
@@ -1324,7 +1337,7 @@
 				</div>
 			
 			</form>
-														
+			
 		</fieldset>
 		
 		<a name="events"/>	
@@ -1360,11 +1373,17 @@
 				</xsl:choose>
 				
 				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflowfamilyevents/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.Events.ShowAll}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowfamilyevent/{Flow/flowID}" title="{$i18n.Events.Add}">
+						<xsl:value-of select="$i18n.Events.Add"/>
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+					</a>
+				</div>
+					
+				<div class="floatright marginright clearboth">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflowfamilyevents/{Flow/flowID}" title="{$i18n.Events.ShowAll}">
 						<xsl:value-of select="$i18n.Events.ShowAll"/>
 					</a>
 				</div>
-				
 		</fieldset>
 		
 	</xsl:template>	
@@ -1542,7 +1561,7 @@
 			<div class="floatright marginright">
 		
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowform/{flowFormID}" title="{$i18n.updateFlowForm.link.title}">
-					<img class="alignmiddle" src="{$imgPath}/pen.png" alt="" />
+					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>
 				
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}: {$name}" onclick="return confirm('{$i18n.deleteFlowForm.confirm}: {$name}?');" >
@@ -1569,7 +1588,7 @@
 						</xsl:choose>
 					</xsl:variable>
 					
-					<img class="alignmiddle" src="{$imgPath}/{$img}" alt="" />
+					<img class="marginleft" src="{$imgPath}/{$img}" alt="" />
 				</a>
 			
 			</div>
@@ -1851,7 +1870,9 @@
 		
 		<tr>
 			<td>
-				<xsl:value-of select="message" />
+				<xsl:call-template name="replaceLineBreak">
+					<xsl:with-param name="string" select="message"/>
+				</xsl:call-template>
 			</td>
 			<td>
 				<xsl:value-of select="flowVersion" />
@@ -5482,6 +5503,45 @@
 			
 	</xsl:template>
 	
+	<xsl:template match="AddFlowFamilyEvent">
+		
+		<h1>
+			<xsl:value-of select="$i18n.Events.Add.title"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="Flow/name"></xsl:value-of>
+			<xsl:text>&#x20;(</xsl:text>
+			<xsl:value-of select="$i18n.flowVersion"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="Flow/version"/>
+			<xsl:text>)</xsl:text>
+		</h1>
+		
+		<xsl:apply-templates select="ValidationErrors/validationError" />
+		
+		<form method="post" action="{/Document/requestinfo/uri}">
+				
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="name" class="floatleft full">
+					<xsl:value-of select="$i18n.Events.message" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'event-message'"/>
+						<xsl:with-param name="name" select="'event-message'"/>
+					</xsl:call-template>
+				</div>
+			</div>	
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.Events.Add.submit}" />
+			</div>
+			
+		</form>
+	
+	</xsl:template>
+	
 	<xsl:template match="ChangeFlowType">
 	
 		<h1>
@@ -6725,6 +6785,9 @@
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
 						<xsl:text>: </xsl:text>
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'event-message'">
+						<xsl:value-of select="$i18n.Events.message"/>
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
 						<xsl:variable name="id" select="substring(fieldName, 22)" />

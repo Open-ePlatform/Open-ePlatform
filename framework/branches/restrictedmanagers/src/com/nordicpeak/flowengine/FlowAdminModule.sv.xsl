@@ -472,6 +472,9 @@
 	<xsl:variable name="i18n.Events.added">Tidpunkt</xsl:variable>
 	<xsl:variable name="i18n.Events.FlowFamilyHasNoEvents">Inga ändringar hittades.</xsl:variable>
 	<xsl:variable name="i18n.Events.ShowAll">Visa alla ändringar</xsl:variable>
+	<xsl:variable name="i18n.Events.Add">Lägg till händelse i ändringslogg</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.title">Lägg till händelse i ändringslogg för</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.submit">Lägg till</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>
@@ -515,8 +518,8 @@
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
 	
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
-	<xsl:variable name="i18n.hideInternalMessages">Dölj interna noteringar i handläggargränssnittet</xsl:variable>
-	<xsl:variable name="i18n.hideExternalMessages">Dölj meddelanden på ärenden</xsl:variable>
+	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
+	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>

@@ -4362,42 +4362,78 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		return daoFactory.getFlowFamilyEventDAO().getAll(query);
 	}
-
+	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse showFlowFamilyEvents(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-
-		Integer flowFamilyID;
-		FlowFamily flowFamily;
-
-		if (uriParser.size() >= 3 && PositiveStringIntegerPopulator.getPopulator().validateFormat(uriParser.get(2)) && (flowFamilyID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flowFamily = flowFamilyCacheMap.get(flowFamilyID)) != null) {
-
-			Flow flow;
-
-			if (uriParser.size() >= 4) {
-
-				Integer flowID;
-
-				if (!(PositiveStringIntegerPopulator.getPopulator().validateFormat(uriParser.get(3)) && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(3))) != null && (flow = flowCacheMap.get(flowID)) != null)) {
-
-					throw new URINotFoundException(uriParser);
-				}
-
-			} else {
-
-				flow = getLatestFlowVersion(flowFamily);
+		
+		Integer flowID;
+		Flow flow;
+		
+		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCacheMap.get(flowID)) != null) {
+			
+			if (!hasFlowTypeAccess(user, flow)) {
+				
+				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
+			
+			Document doc = createDocument(req, uriParser, user);
+			Element showFlowFamilyEventsElement = doc.createElement("ShowFlowFamilyEvents");
+			doc.getDocumentElement().appendChild(showFlowFamilyEventsElement);
+			
+			showFlowFamilyEventsElement.appendChild(flow.toXML(doc));
+			XMLUtils.append(doc, showFlowFamilyEventsElement, "FlowFamilyEvents", getFlowFamilyEvents(flow.getFlowFamily()));
+			
+			return new SimpleForegroundModuleResponse(doc, getTitlePrefix(), getDefaultBreadcrumb(), new Breadcrumb(this, flow.getName(), "/showFlow/" + flow.getFlowID()));
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse addFlowFamilyEvent(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		Integer flowID;
+		Flow flow;
+		
+		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCacheMap.get(flowID)) != null) {
 
 			if (!hasFlowTypeAccess(user, flow)) {
 
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
+			
+			List<ValidationError> validationErrors = null;
+			
+			if (req.getMethod().equalsIgnoreCase("POST")) {
+				
+				validationErrors = new ArrayList<ValidationError>();
+				
+				String eventMessage = ValidationUtils.validateParameter("event-message", req, true, 0, 1024, StringPopulator.getPopulator(), validationErrors);
+				
+				if (validationErrors.isEmpty()) {
+					
+					log.info("User " + user + " adding flow family event to " + flow);
+					
+					addFlowFamilyEvent(eventMessage, flow, user);
+					
+					redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#events");
+					return null;
+				}
+			}
+			
+			log.info("User " + user + " requesting add flow family event form for flow " + flow);
 
 			Document doc = createDocument(req, uriParser, user);
-			Element showFlowFamilyEventsElement = doc.createElement("ShowFlowFamilyEvents");
-			doc.getDocumentElement().appendChild(showFlowFamilyEventsElement);
+			Element addFlowFamilyEventElement = doc.createElement("AddFlowFamilyEvent");
+			doc.getDocumentElement().appendChild(addFlowFamilyEventElement);
 
-			showFlowFamilyEventsElement.appendChild(flow.toXML(doc));
-			XMLUtils.append(doc, showFlowFamilyEventsElement, "FlowFamilyEvents", getFlowFamilyEvents(flowFamily));
+			addFlowFamilyEventElement.appendChild(flow.toXML(doc));
+			
+			if (validationErrors != null) {
+
+				addFlowFamilyEventElement.appendChild(RequestUtils.getRequestParameters(req, doc));
+				XMLUtils.append(doc, addFlowFamilyEventElement, "ValidationErrors", validationErrors);
+			}
 
 			return new SimpleForegroundModuleResponse(doc, getTitlePrefix(), getDefaultBreadcrumb(), new Breadcrumb(this, flow.getName(), "/showFlow/" + flow.getFlowID()));
 		}
@@ -4426,7 +4462,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	private void addFlowFamilyEvent(String message, FlowFamily flowFamily, Integer flowVersion, User user) {
 
-		message = StringUtils.substring(message, 255, "...");
+		if (message.length() > 1024) {
+			
+			log.warn("Too long message for FlowFamilyEvent, truncating. FlowFamily " + flowFamily + ", version " + flowVersion + ", user " + user);
+			message = StringUtils.substring(message, 1024, "...");
+		}
 
 		FlowFamilyEvent event = new FlowFamilyEvent(flowFamily, flowVersion, new Timestamp(System.currentTimeMillis()), user, message);
 
