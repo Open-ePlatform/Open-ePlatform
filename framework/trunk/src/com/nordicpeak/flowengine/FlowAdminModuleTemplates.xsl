@@ -85,6 +85,7 @@
 			<xsl:apply-templates select="ImportQueries"/>
 			<xsl:apply-templates select="ShowFlowOverview"/>
 			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
+			<xsl:apply-templates select="AddFlowFamilyEvent" />
 			<xsl:apply-templates select="ChangeFlowType"/>
 			<xsl:apply-templates select="AddFlowForm" />
 			<xsl:apply-templates select="UpdateFlowForm" />	
@@ -1343,11 +1344,17 @@
 				</xsl:choose>
 				
 				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflowfamilyevents/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.Events.ShowAll}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowfamilyevent/{Flow/flowID}" title="{$i18n.Events.Add}">
+						<xsl:value-of select="$i18n.Events.Add"/>
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+					</a>
+				</div>
+					
+				<div class="floatright marginright clearboth">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflowfamilyevents/{Flow/flowID}" title="{$i18n.Events.ShowAll}">
 						<xsl:value-of select="$i18n.Events.ShowAll"/>
 					</a>
-				</div>				
-				
+				</div>
 		</fieldset>
 		
 	</xsl:template>	
@@ -1797,7 +1804,9 @@
 		
 		<tr>
 			<td>
-				<xsl:value-of select="message" />
+				<xsl:call-template name="replaceLineBreak">
+					<xsl:with-param name="string" select="message"/>
+				</xsl:call-template>
 			</td>
 			<td>
 				<xsl:value-of select="flowVersion" />
@@ -5294,6 +5303,45 @@
 			
 	</xsl:template>
 	
+	<xsl:template match="AddFlowFamilyEvent">
+		
+		<h1>
+			<xsl:value-of select="$i18n.Events.Add.title"/>
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="Flow/name"></xsl:value-of>
+			<xsl:text>&#x20;(</xsl:text>
+			<xsl:value-of select="$i18n.flowVersion"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="Flow/version"/>
+			<xsl:text>)</xsl:text>
+		</h1>
+		
+		<xsl:apply-templates select="ValidationErrors/validationError" />
+		
+		<form method="post" action="{/Document/requestinfo/uri}">
+				
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="name" class="floatleft full">
+					<xsl:value-of select="$i18n.Events.message" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'event-message'"/>
+						<xsl:with-param name="name" select="'event-message'"/>
+					</xsl:call-template>
+				</div>
+			</div>	
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.Events.Add.submit}" />
+			</div>
+			
+		</form>
+	
+	</xsl:template>
+	
 	<xsl:template match="ChangeFlowType">
 	
 		<h1>
@@ -6059,6 +6107,9 @@
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
 						<xsl:text>: </xsl:text>
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'event-message'">
+						<xsl:value-of select="$i18n.Events.message"/>
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
 						

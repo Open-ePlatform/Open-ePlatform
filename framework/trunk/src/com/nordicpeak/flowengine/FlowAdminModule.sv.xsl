@@ -466,6 +466,9 @@
 	<xsl:variable name="i18n.Events.added">Tidpunkt</xsl:variable>
 	<xsl:variable name="i18n.Events.FlowFamilyHasNoEvents">Inga ändringar hittades.</xsl:variable>
 	<xsl:variable name="i18n.Events.ShowAll">Visa alla ändringar</xsl:variable>
+	<xsl:variable name="i18n.Events.Add">Lägg till händelse i ändringslogg</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.title">Lägg till händelse i ändringslogg för</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.submit">Lägg till</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>

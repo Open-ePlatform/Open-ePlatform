@@ -1835,4 +1835,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="100">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_events` CHANGE COLUMN `message` `message` VARCHAR(1024) NOT NULL AFTER `poster`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
