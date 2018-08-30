@@ -645,7 +645,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								it.remove();
 								
 							} catch (Exception e) {
-								log.warn("Error merging PDFs", e);
+								log.warn("Error merging PDF from attachment " + attachment + " event " + event + " from for flow instance " + flowInstanceID, e);
 								
 							} finally {
 								CloseUtils.close(stream);
@@ -661,11 +661,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 		
 		try {
-			/** String filename, boolean forceRead, boolean plainRandomAccess
-			 * forceRead if true, the entire file will be read into memory
-			 * plainRandomAccess if true, a regular RandomAccessFile is used to access the file contents.
-			 * If false, a memory mapped file will be used, unless the file cannot be mapped into memory, in which case regular RandomAccessFile will be
-			 * used. */
 			inputFileRandomAccess = new RandomAccessFileOrArray(pdfTempIn.getAbsolutePath(), false, false);
 			outputStream = new BufferedOutputStream(new FileOutputStream(pdfTempOut));
 			
