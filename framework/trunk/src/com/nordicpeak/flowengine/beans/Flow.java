@@ -895,6 +895,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		loginQuestionText = XMLValidationUtils.validateParameter("loginQuestionText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
+		allowForeignIDs = xmlParser.getPrimitiveBoolean("allowForeignIDs");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.checks = XMLValidationUtils.validateParameters("Checks/check", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
