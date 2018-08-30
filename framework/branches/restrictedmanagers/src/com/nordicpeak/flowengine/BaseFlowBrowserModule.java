@@ -18,7 +18,6 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 
@@ -45,7 +44,6 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 			try {
 				if(instanceManager.getFlowInstance().getStepID() != null){
 				
-					//TODO add flow instance event
 					instanceManager.saveInstance(this, user, poster, EventType.UPDATED, instanceManager.getFlowInstance().getLastStatusChange());
 					
 					rebindFlowInstance(req.getSession(), instanceManager);
@@ -90,19 +88,4 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 		
 		return false;
 	}
-	
-	protected boolean foreignIDBlocked(ImmutableFlow flow, User user, FlowAdminModule flowAdminModule) throws IOException {
-		
-		if (flow.requiresAuthentication() && flowAdminModule.isBlockForeignIDs() && !flow.isAllowForeignIDs() && flowAdminModule.getForeignIDattributes() != null) {
-			
-			for (String attribute : flowAdminModule.getForeignIDattributes()) {
-				if (user.getAttributeHandler().isSet(attribute)) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
 }

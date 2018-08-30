@@ -675,7 +675,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
 			}
 			
-			if (foreignIDBlocked(instanceManager.getFlowInstance().getFlow(), user, flowAdminModule)) {
+			if (foreignIDBlocked(instanceManager.getFlowInstance().getFlow(), user)) {
 				
 				removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
 				return showForeignIDBlockedMessage(instanceManager.getFlowInstance().getFlow(), req, res, user, uriParser);
@@ -1751,5 +1751,20 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 
 		throw new URINotFoundException(uriParser);
+	}
+	
+	protected boolean foreignIDBlocked(ImmutableFlow flow, User user) throws IOException {
+		
+		if (flow.requiresAuthentication() && flowAdminModule.isBlockForeignIDs() && !flow.isAllowForeignIDs() && flowAdminModule.getForeignIDattributes() != null) {
+			
+			for (String attribute : flowAdminModule.getForeignIDattributes()) {
+				
+				if (user.getAttributeHandler().isSet(attribute)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }

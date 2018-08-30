@@ -281,6 +281,16 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	private boolean hideInternalMessages;
 	
 	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String userDescriptionTemplate;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String managerDescriptionTemplate;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<Status> statuses;
@@ -921,6 +931,9 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		hideInternalMessages = xmlParser.getPrimitiveBoolean("hideInternalMessages");
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
 		
+		this.userDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.managerDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
 		if (!errors.isEmpty()) {
 			
 			throw new ValidationException(errors);
@@ -1013,12 +1026,12 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	@Override
 	public boolean isPaymentSupportEnabled() {
-	
+		
 		return paymentSupportEnabled;
 	}
-
-	public void setPaymentSupportEnabled(boolean paymentSupportEnabled) {
 	
+	public void setPaymentSupportEnabled(boolean paymentSupportEnabled) {
+		
 		this.paymentSupportEnabled = paymentSupportEnabled;
 	}
 
@@ -1059,6 +1072,28 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	public void setLoginQuestionText(String loginQuestionText) {
 		this.loginQuestionText = loginQuestionText;
+	}
+	
+	@Override
+	public String getUserDescriptionTemplate() {
+	
+		return userDescriptionTemplate;
+	}
+
+	public void setUserDescriptionTemplate(String userDescriptionTemplate) {
+	
+		this.userDescriptionTemplate = userDescriptionTemplate;
+	}
+
+	@Override
+	public String getManagerDescriptionTemplate() {
+	
+		return managerDescriptionTemplate;
+	}
+
+	public void setManagerDescriptionTemplate(String managerDescriptionTemplate) {
+	
+		this.managerDescriptionTemplate = managerDescriptionTemplate;
 	}
 	
 	@Override

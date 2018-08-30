@@ -56,6 +56,10 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public List<? extends ImmutableStatus> getStatuses();
 	
 	public boolean hidesManagerDetails();
-	
+
 	public boolean isAllowForeignIDs();
+	
+	public String getManagerDescriptionTemplate();
+
+	public String getUserDescriptionTemplate();
 }

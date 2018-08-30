@@ -599,7 +599,7 @@
 	<xsl:template match="FlowForm" mode="link">
 	
 		<a class="display-block text-align-left padding" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
-		
+
 			<xsl:if test="name">
 				<xsl:attribute name="title"><xsl:value-of select="name" /></xsl:attribute>
 			</xsl:if>
@@ -607,7 +607,7 @@
 			<xsl:if test="../../../setNoFollowOnFlowForms = 'true'">
 				<xsl:attribute name="rel">nofollow</xsl:attribute>
 			</xsl:if>
-		
+
 			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
 		
 			<xsl:choose>

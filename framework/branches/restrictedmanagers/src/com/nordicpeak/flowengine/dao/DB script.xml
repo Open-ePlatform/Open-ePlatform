@@ -21,7 +21,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -35,7 +35,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -49,7 +49,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -61,7 +61,7 @@
 				  PRIMARY KEY (`flowCategoryID`),
 				  KEY `FK_flowengine_flow_categories_1` (`flowTypeID`),
 				  CONSTRAINT `FK_flowengine_flow_categories_1` FOREIGN KEY (`flowTypeID`) REFERENCES `flowengine_flow_types` (`flowTypeID`) ON DELETE CASCADE ON UPDATE CASCADE
-				) ENGINE=InnoDB DEFAULT CHARSET=latin1;		
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 			]]>
 		</Query>
 		<Query>
@@ -82,7 +82,7 @@
 				  KEY `FK_flowengine_flows_1` (`flowTypeID`),
 				  CONSTRAINT `FK_flowengine_flows_1` FOREIGN KEY (`flowTypeID`) REFERENCES `flowengine_flow_types` (`flowTypeID`),
 				  CONSTRAINT `FK_flowengine_flows_2` FOREIGN KEY (`flowCategoryID`) REFERENCES `flowengine_flow_categories` (`flowCategoryID`)
-				) ENGINE=InnoDB DEFAULT CHARSET=latin1;					
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 			]]>
 		</Query>
 		<Query>
@@ -98,7 +98,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -127,7 +127,7 @@
 				    ON DELETE RESTRICT
 				    ON UPDATE RESTRICT
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -161,7 +161,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -196,7 +196,7 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `added` TIMESTAMP NULL;
 			]]>
-		</Query>						
+		</Query>
 	</Script>
 	
 	<Script version="2">
@@ -222,8 +222,8 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_query_descriptors` CHANGE COLUMN `index` `sortIndex` INT(10) UNSIGNED NOT NULL;
 			]]>
-		</Query>		
-	</Script>	
+		</Query>
+	</Script>
 	
 	<Script version="4">
 		<Query>
@@ -246,7 +246,7 @@
 				 ADD COLUMN `submittedMessage` LONGTEXT NOT NULL AFTER `longDescription`;				
 			]]>
 		</Query>
-	</Script>		
+	</Script>
 			
 	<Script version="6">
 		<Query>
@@ -255,10 +255,10 @@
 				 ADD CONSTRAINT `FK_flowengine_flow_instances_3` FOREIGN KEY `FK_flowengine_flow_instances_3` (`flowStateID`)
 				    REFERENCES `flowengine_flow_states` (`flowStateID`)
 				    ON DELETE RESTRICT
-				    ON UPDATE RESTRICT;					
+				    ON UPDATE RESTRICT;
 			]]>
 		</Query>
-	</Script>		
+	</Script>
 	
 	<Script version="7">
 		<Query>
@@ -276,7 +276,7 @@
 				  `name` VARCHAR(255) NOT NULL,
 				  PRIMARY KEY (`actionID`)
 				)
-				ENGINE = InnoDB;							
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -299,17 +299,17 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;							
+				ENGINE = InnoDB;
 			]]>
-		</Query>				
-	</Script>	
+		</Query>
+	</Script>
 	
 	<Script version="9">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `poster` INT(10) UNSIGNED DEFAULT NULL;							
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 	
 	<Script version="10">
@@ -317,7 +317,7 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` CHANGE COLUMN `disabled` `enabled` TINYINT(1) NOT NULL;							
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 			
 	<Script version="11">
@@ -329,7 +329,7 @@
 				 ADD COLUMN `isUserDeletable` BOOLEAN NOT NULL AFTER `flowID`,
 				 ADD COLUMN `isAdminDeletable` BOOLEAN NOT NULL AFTER `isUserDeletable`,
 				 DROP PRIMARY KEY,
-				 ADD PRIMARY KEY  USING BTREE(`flowStatusID`);						
+				 ADD PRIMARY KEY  USING BTREE(`flowStatusID`);
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -337,7 +337,7 @@
 				ALTER TABLE `flowengine_flow_instances` CHANGE COLUMN `flowStateID` `flowStatusID` INT(10) UNSIGNED DEFAULT NULL,
 				 DROP INDEX `FK_flowengine_flow_instances_3`,
 				 ADD INDEX `FK_flowengine_flow_instances_3` USING BTREE(`flowStatusID`),
-				 DROP FOREIGN KEY `FK_flowengine_flow_instances_3`;						
+				 DROP FOREIGN KEY `FK_flowengine_flow_instances_3`;
 			]]>
 		</Query>
 		
@@ -348,7 +348,7 @@
 				    ON DELETE RESTRICT
 				    ON UPDATE RESTRICT;
 			]]>
-		</Query>		
+		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
 				ALTER TABLE `flowengine_default_flow_states` CHANGE COLUMN `flowStateID` `flowStatusID` INT(10) UNSIGNED NOT NULL,
@@ -362,7 +362,7 @@
 				ALTER TABLE `flowengine_default_flow_states` ADD CONSTRAINT `FK_flowengine_default_flow_states_3` FOREIGN KEY `FK_flowengine_default_flow_states_3` (`flowStatusID`)
 				    REFERENCES `flowengine_flow_statuses` (`flowStatusID`)
 				    ON DELETE CASCADE
-				    ON UPDATE CASCADE;					
+				    ON UPDATE CASCADE;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -375,22 +375,22 @@
 				ALTER TABLE `flowengine_flows` CHANGE COLUMN `flowCategoryID` `categoryID` INT(10) UNSIGNED DEFAULT NULL,
 				 DROP INDEX `FK_flowengine_flows_2`,
 				 ADD INDEX `FK_flowengine_flows_2` USING BTREE(`categoryID`),
-				 DROP FOREIGN KEY `FK_flowengine_flows_2`;								
+				 DROP FOREIGN KEY `FK_flowengine_flows_2`;
 			]]>
 		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_categories` CHANGE COLUMN `flowCategoryID` `categoryID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 				 DROP PRIMARY KEY,
-				 ADD PRIMARY KEY  USING BTREE(`categoryID`);							
+				 ADD PRIMARY KEY  USING BTREE(`categoryID`);
 			]]>
-		</Query>		
+		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` ADD CONSTRAINT `FK_flowengine_flows_2` FOREIGN KEY `FK_flowengine_flows_2` (`categoryID`)
 				    REFERENCES `flowengine_flow_categories` (`categoryID`)
 				    ON DELETE SET NULL
-				    ON UPDATE SET NULL;							
+				    ON UPDATE SET NULL;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -403,7 +403,7 @@
 				ALTER TABLE `flowengine_flow_instances` CHANGE COLUMN `flowStatusID` `statusID` INT(10) UNSIGNED NOT NULL,
 				 DROP INDEX `FK_flowengine_flow_instances_3`,
 				 ADD INDEX `FK_flowengine_flow_instances_3` USING BTREE(`statusID`),
-				 DROP FOREIGN KEY `FK_flowengine_flow_instances_3`;									
+				 DROP FOREIGN KEY `FK_flowengine_flow_instances_3`;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -411,14 +411,14 @@
 				ALTER TABLE `flowengine_default_flow_statuses` CHANGE COLUMN `flowStatusID` `statusID` INT(10) UNSIGNED NOT NULL,
 				 DROP INDEX `FK_flowengine_default_flow_states_3`,
 				 ADD INDEX `FK_flowengine_default_flow_states_3` USING BTREE(`statusID`),
-				 DROP FOREIGN KEY `FK_flowengine_default_flow_states_3`;									
+				 DROP FOREIGN KEY `FK_flowengine_default_flow_states_3`;
 			]]>
 		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `flowStatusID` `statusID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 				 DROP PRIMARY KEY,
-				 ADD PRIMARY KEY  USING BTREE(`statusID`);										
+				 ADD PRIMARY KEY  USING BTREE(`statusID`);
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -426,7 +426,7 @@
 			ALTER TABLE `flowengine_flow_instances` ADD CONSTRAINT `FK_flowengine_flow_instances_3` FOREIGN KEY `FK_flowengine_flow_instances_3` (`statusID`)
 			    REFERENCES `flowengine_flow_statuses` (`statusID`)
 			    ON DELETE RESTRICT
-			    ON UPDATE RESTRICT;										
+			    ON UPDATE RESTRICT;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -434,10 +434,10 @@
 			ALTER TABLE `flowengine_default_flow_statuses` ADD CONSTRAINT `FK_flowengine_default_flow_statuses_3` FOREIGN KEY `FK_flowengine_default_flow_statuses_3` (`statusID`)
 			    REFERENCES `flowengine_flow_statuses` (`statusID`)
 			    ON DELETE CASCADE
-			    ON UPDATE CASCADE;										
+			    ON UPDATE CASCADE;
 			]]>
-		</Query>							
-	</Script>		
+		</Query>
+	</Script>
 	
  	<Script version="12">
 		<Query>
@@ -457,7 +457,7 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 	
  	<Script version="13">
@@ -474,8 +474,8 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>				
-	</Script>	
+		</Query>
+	</Script>
  	
  	<Script version="14">
 		<Query>
@@ -521,7 +521,7 @@
 				    ON DELETE RESTRICT
 				    ON UPDATE RESTRICT;
 			]]>
-		</Query>									
+		</Query>
 	</Script>
 	
  	<Script version="15">
@@ -537,7 +537,7 @@
 				  `contentType` VARCHAR(45) NOT NULL,
 				  PRIMARY KEY (`statusID`)
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -558,7 +558,7 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>						
+		</Query>
 	</Script>
 	
  	<Script version="16">
@@ -576,7 +576,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE;
 			]]>
-		</Query>						
+		</Query>
 	</Script>
 	
 	<Script version="17">
@@ -622,7 +622,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -672,7 +672,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -688,7 +688,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -707,7 +707,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -733,7 +733,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -749,7 +749,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -768,7 +768,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		
@@ -802,15 +802,15 @@
 			<![CDATA[
 				UPDATE `flowengine_flow_instances` SET `lastStatusChange` = NULL;
 			]]>
-		</Query>					
-	</Script>	
+		</Query>
+	</Script>
 	
 	<Script version="21">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_checks` CHANGE COLUMN `check` `value` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
 					DROP PRIMARY KEY,
-					ADD PRIMARY KEY  USING BTREE(`flowID`, `value`);		
+					ADD PRIMARY KEY  USING BTREE(`flowID`, `value`);
 			]]>
 		</Query>
 	</Script>	
@@ -909,7 +909,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -923,7 +923,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -937,10 +937,10 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="30">
 		<Query>
@@ -948,7 +948,7 @@
 				UPDATE flowengine_flow_actions SET actionID = REPLACE(actionID,'com.nordicpeak.flowengine.FlowInstanceBrowserModule','com.nordicpeak.flowengine.FlowBrowserModule');
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="31">
 		<Query>
@@ -963,7 +963,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="32">
@@ -987,7 +987,7 @@
 				  PRIMARY KEY (`organizationID`)
 				) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="33">
@@ -995,7 +995,7 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_user_organizations` ADD COLUMN `contactPerson` VARCHAR(255) AFTER `postalAddress`;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="34">
@@ -1011,10 +1011,10 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
-		</Query>		
-	</Script>	
+		</Query>
+	</Script>
 	
 	<Script version="35">
 	    <Query>
@@ -1055,7 +1055,7 @@
 	        	ALTER TABLE `flowengine_flow_instances` ADD COLUMN `profileID` INTEGER UNSIGNED AFTER `lastStatusChange`;
 	  		]]>
 	    </Query>
-	</Script>  
+	</Script>
 	  
 	<Script version="39">
 	    <Query>
@@ -1332,7 +1332,7 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_types` ADD COLUMN `useAccessFilter` BOOLEAN NOT NULL AFTER `name`;		
 			]]>
-		</Query>	    
+		</Query>
 		<Query>
 			<![CDATA[
 				CREATE TABLE `flowengine_flow_type_groups` (
@@ -1344,7 +1344,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -1358,10 +1358,10 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;		
+				ENGINE = InnoDB;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="61">
 		<Query>
@@ -1675,7 +1675,7 @@
 	        <![CDATA[
 				UPDATE flowengine_flow_types SET iconLastModified = CURRENT_TIMESTAMP();
 	        ]]>
-	    </Query>	    
+	    </Query>
 	</Script>	
 	
 	<Script version="85">
@@ -1846,6 +1846,21 @@
 	<Script version="101">
 		<Query>
 			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `userDescriptionTemplate` VARCHAR(255) AFTER `loginQuestionText`,
+				 ADD COLUMN `managerDescriptionTemplate` VARCHAR(255) AFTER `userDescriptionTemplate`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_instances` ADD COLUMN `userDescription` VARCHAR(255) AFTER `firstSubmitted`,
+				 ADD COLUMN `managerDescription` VARCHAR(255) AFTER `userDescription`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="102">
+		<Query>
+			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_manager_users` ADD COLUMN `restricted` TINYINT UNSIGNED NOT NULL AFTER `userID`;
 			]]>
 		</Query>
@@ -1867,7 +1882,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="102">
+	<Script version="103">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_families`
@@ -1908,7 +1923,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="103">
+	<Script version="104">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_family_automanager_rules` DROP COLUMN `userID`;

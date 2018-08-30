@@ -114,6 +114,20 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	private Timestamp lastStatusChange;
 
 	@DAOManaged
+	@XMLElement
+	private Integer profileID;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String userDescription;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String managerDescription;	
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<InternalMessage> internalMessages;
@@ -149,13 +163,6 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	@XMLElement
 	private List<UserBookmark> bookmarks;
 
-	@XMLElement
-	private Priority priority;
-
-	@DAOManaged
-	@XMLElement
-	private Integer profileID;
-
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase=true)
@@ -163,6 +170,9 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	@XMLElement
 	private boolean remote;
+
+	@XMLElement
+	private Priority priority;
 
 	private SourceAttributeHandler attributeHandler;
 
@@ -497,12 +507,10 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		return flowInstanceElement;
 	}
 
-	
 	public boolean isRemote() {
 	
 		return remote;
 	}
-
 	
 	public void setRemote(boolean remote) {
 	
@@ -541,5 +549,25 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		}
 		
 		return false;
+	}
+	
+		public String getUserDescription() {
+	
+		return userDescription;
+	}
+	
+	public void setUserDescription(String userDescription) {
+	
+		this.userDescription = userDescription;
+	}
+
+	public String getManagerDescription() {
+	
+		return managerDescription;
+	}
+	
+	public void setManagerDescription(String managerDescription) {
+	
+		this.managerDescription = managerDescription;
 	}
 }
