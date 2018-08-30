@@ -6109,7 +6109,7 @@
 						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'event-message'">
-						<xsl:value-of select="$i18n.Events.message"/>
+						<xsl:value-of select="$i18n.Event.message"/>
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
 						

@@ -51,6 +51,7 @@ import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.threads.PriorityThreadFactory;
 import se.unlogic.webutils.http.HTTPUtils;
 
 import com.nordicpeak.flowengine.Constants;
@@ -132,6 +133,7 @@ public class FlowInstanceIndexer {
 		int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
 
 		threadPoolExecutor = new CallbackThreadPoolExecutor(availableProcessors, availableProcessors, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), this);
+		threadPoolExecutor.setThreadFactory(new PriorityThreadFactory(Thread.MIN_PRIORITY, "Flow instance indexer pool"));
 	}
 
 	public void cacheFlowInstances() {
@@ -635,13 +637,8 @@ public class FlowInstanceIndexer {
 	}
 
 	private List<FlowFamily> getFlowFamilies() throws SQLException {
-
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
-		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
-
-		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
-
-		return daoFactory.getFlowFamilyDAO().getAll(query);
+		
+		return daoFactory.getFlowFamilyDAO().getAll();
 	}
 
 	

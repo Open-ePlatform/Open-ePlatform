@@ -462,12 +462,13 @@
 	<xsl:variable name="i18n.Events.Description">Tabellen nedan visar de senaste ändringarna för samtliga versioner av denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.Events.Full.Description">Tabellen nedan visar alla ändringarna för samtliga versioner av denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.Events.message">Händelse</xsl:variable>
+	<xsl:variable name="i18n.Event.message">Notering</xsl:variable>
 	<xsl:variable name="i18n.Events.poster">Användare</xsl:variable>
 	<xsl:variable name="i18n.Events.added">Tidpunkt</xsl:variable>
 	<xsl:variable name="i18n.Events.FlowFamilyHasNoEvents">Inga ändringar hittades.</xsl:variable>
 	<xsl:variable name="i18n.Events.ShowAll">Visa alla ändringar</xsl:variable>
-	<xsl:variable name="i18n.Events.Add">Lägg till händelse i ändringslogg</xsl:variable>
-	<xsl:variable name="i18n.Events.Add.title">Lägg till händelse i ändringslogg för</xsl:variable>
+	<xsl:variable name="i18n.Events.Add">Lägg till notering</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.title">Lägg till notering i ändringslogg för</xsl:variable>
 	<xsl:variable name="i18n.Events.Add.submit">Lägg till</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
