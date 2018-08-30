@@ -13,11 +13,10 @@
 	<xsl:variable name="java.foreignIDBlockedMessage">
 		&lt;section class="modal warning"&gt;
 			&lt;i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);"&gt;!&lt;/i&gt;
-			eIDAS inloggning fungerar inte med den här e-tjänsten.
+			eIDAS inloggning stöds inte av den här e-tjänsten
 		&lt;/section&gt;
 		&lt;p&gt;
-			Den här e-tjänsten har kopplingar till svenska myndigheter som inte stödjer eIDAS.
-			TODO mer text
+			Den här e-tjänsten fungerar inte med eIDAS inloggning, prova en annan inloggningsmetod.
 		&lt;/p&gt;
 	</xsl:variable>
 	
