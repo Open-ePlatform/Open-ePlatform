@@ -1346,7 +1346,7 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowfamilyevent/{Flow/flowID}" title="{$i18n.Events.Add}">
 						<xsl:value-of select="$i18n.Events.Add"/>
-						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/add.png" alt="" />
 					</a>
 				</div>
 					
