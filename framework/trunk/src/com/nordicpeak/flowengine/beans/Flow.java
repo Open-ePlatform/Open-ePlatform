@@ -13,11 +13,6 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -56,6 +51,11 @@ import se.unlogic.standardutils.xml.XMLValidationUtils;
 import se.unlogic.webutils.annotations.URLRewrite;
 import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 import se.unlogic.webutils.url.URLRewriter;
+
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 @Table(name = "flowengine_flows")
 @XMLElement
@@ -279,6 +279,16 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideInternalMessages;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String userDescriptionTemplate;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String managerDescriptionTemplate;
 	
 	@DAOManaged
 	@OneToMany
@@ -885,7 +895,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		loginQuestionText = XMLValidationUtils.validateParameter("loginQuestionText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
-		allowForeignIDs = xmlParser.getPrimitiveBoolean("allowForeignIDs");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.checks = XMLValidationUtils.validateParameters("Checks/check", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -920,6 +929,9 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.hideFromOverview = xmlParser.getPrimitiveBoolean("hideFromOverview");
 		hideInternalMessages = xmlParser.getPrimitiveBoolean("hideInternalMessages");
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
+		
+		this.userDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.managerDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
 		if (!errors.isEmpty()) {
 			
@@ -1059,6 +1071,32 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	public void setLoginQuestionText(String loginQuestionText) {
 		this.loginQuestionText = loginQuestionText;
+	}
+
+	
+	@Override
+	public String getUserDescriptionTemplate() {
+	
+		return userDescriptionTemplate;
+	}
+
+	
+	public void setUserDescriptionTemplate(String userDescriptionTemplate) {
+	
+		this.userDescriptionTemplate = userDescriptionTemplate;
+	}
+
+	
+	@Override
+	public String getManagerDescriptionTemplate() {
+	
+		return managerDescriptionTemplate;
+	}
+
+	
+	public void setManagerDescriptionTemplate(String managerDescriptionTemplate) {
+	
+		this.managerDescriptionTemplate = managerDescriptionTemplate;
 	}
 	
 	@Override

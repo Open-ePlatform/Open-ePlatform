@@ -1841,6 +1841,21 @@
 				ALTER TABLE `flowengine_flow_family_events` CHANGE COLUMN `message` `message` VARCHAR(1024) NOT NULL AFTER `poster`;
 			]]>
 		</Query>
-	</Script>
+	</Script>	
+	
+	<Script version="101">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `userDescriptionTemplate` VARCHAR(255) AFTER `loginQuestionText`,
+				 ADD COLUMN `managerDescriptionTemplate` VARCHAR(255) AFTER `userDescriptionTemplate`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_instances` ADD COLUMN `userDescription` VARCHAR(255) AFTER `firstSubmitted`,
+				 ADD COLUMN `managerDescription` VARCHAR(255) AFTER `userDescription`;		
+			]]>
+		</Query>
+	</Script>	
 	
 </DBScripts>
