@@ -1009,19 +1009,19 @@
 				
 				<xsl:choose>
 					
-					<xsl:when test="$flowInstanceAttributes/Attribute[Name = 'firstname']">
-						<xsl:text>&#160;(</xsl:text>
-						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'firstname']/Value" />
-						<xsl:text>&#160;</xsl:text>
-						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'lastname']/Value" />
-						<xsl:text>)</xsl:text>
-					</xsl:when>
-					
 					<xsl:when test="$poster">
 						<xsl:text>&#160;(</xsl:text>
 						<xsl:call-template name="printUser">
 							<xsl:with-param name="user" select="$poster" />
 						</xsl:call-template>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					
+					<xsl:when test="$flowInstanceAttributes/Attribute[Name = 'firstname']">
+						<xsl:text>&#160;(</xsl:text>
+						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'firstname']/Value" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'lastname']/Value" />
 						<xsl:text>)</xsl:text>
 					</xsl:when>
 					
@@ -1048,16 +1048,16 @@
 		
 		<xsl:choose>
 		
-			<xsl:when test="$flowInstanceAttributes and $flowInstanceAttributes/Attribute[Name = 'firstname']">
-				<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'firstname']/Value" />
-				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'lastname']/Value" />
-			</xsl:when>
-			
 			<xsl:when test="$poster">
 				<xsl:call-template name="printUser">
 					<xsl:with-param name="user" select="$poster" />
 				</xsl:call-template>
+			</xsl:when>
+			
+			<xsl:when test="$flowInstanceAttributes and $flowInstanceAttributes/Attribute[Name = 'firstname']">
+				<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'firstname']/Value" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$flowInstanceAttributes/Attribute[Name = 'lastname']/Value" />
 			</xsl:when>
 			
 			<xsl:when test="$fallbackAttributes and $fallbackAttributes/Attribute[Name = 'firstname']">
