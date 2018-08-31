@@ -689,30 +689,31 @@
   			</div>
 			 -->
 			<div id="tabs">
-  				<ul class="tabs">
-  					<li class="active" data-tabid="#history">
-  						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
-  					</li>
-  					<xsl:if test="not(Flow/hideExternalMessages = 'true')">
-	  					<li data-tabid="#messages">
-	  						<a data-icon-before="m" href="#messages">
-	  							<xsl:value-of select="$i18n.ExternalMessages" />
-	  							<xsl:text>&#160;(</xsl:text>
-	  							<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
-	  							<xsl:text>)</xsl:text>
-	  							
-	  							<!-- TODO count how many unread messages since last login -->
-	  							<xsl:if test="false()">
-	  								<span class="count">0</span>
-	  							</xsl:if>
-	  						</a>
-	  					</li>
-  					</xsl:if>
-  					
-  					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
-  				</ul>
-  				
-  				<xsl:if test="not(Flow/hideExternalMessages = 'true')">
+				<ul class="tabs">
+					<li class="active" data-tabid="#history">
+						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
+					</li>
+					
+					<xsl:if test="not(Flow/hideExternalMessages = 'true')">
+						<li data-tabid="#messages">
+							<a data-icon-before="m" href="#messages">
+								<xsl:value-of select="$i18n.ExternalMessages" />
+								<xsl:text>&#160;(</xsl:text>
+								<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
+								<xsl:text>)</xsl:text>
+								
+								<!-- TODO count how many unread messages since last login -->
+								<xsl:if test="false()">
+									<span class="count">0</span>
+								</xsl:if>
+							</a>
+						</li>
+					</xsl:if>
+					
+					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
+				</ul>
+				
+				<xsl:if test="not(Flow/hideExternalMessages = 'true')">
 	  				<div id="messages">
 	  					
 	  					<div id="new-message" class="tabs-content">
@@ -779,12 +780,12 @@
 		  					
 		  				</div>
 		  				
-	  				</div>
-  				</xsl:if>
-  				
-  				<div id="history" class="tabs-content nopadding" >
-  					
-  					<div class="errands-wrapper">
+					</div>
+				</xsl:if>
+				
+				<div id="history" class="tabs-content nopadding" >
+					
+					<div class="errands-wrapper">
 	  					
 	  					<div class="heading-wrapper">
 		  					<h2><xsl:value-of select="$i18n.FlowInstanceEvents" /></h2>

@@ -1073,7 +1073,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setLoginQuestionText(String loginQuestionText) {
 		this.loginQuestionText = loginQuestionText;
 	}
-
 	
 	@Override
 	public String getUserDescriptionTemplate() {
@@ -1081,20 +1080,17 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		return userDescriptionTemplate;
 	}
 
-	
 	public void setUserDescriptionTemplate(String userDescriptionTemplate) {
 	
 		this.userDescriptionTemplate = userDescriptionTemplate;
 	}
 
-	
 	@Override
 	public String getManagerDescriptionTemplate() {
 	
 		return managerDescriptionTemplate;
 	}
 
-	
 	public void setManagerDescriptionTemplate(String managerDescriptionTemplate) {
 	
 		this.managerDescriptionTemplate = managerDescriptionTemplate;

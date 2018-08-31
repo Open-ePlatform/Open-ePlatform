@@ -12,7 +12,6 @@ import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
-
 public class MultiSignUtils {
 	
 	public static Set<SigningParty> getSigningParties(FlowInstanceManager instanceManager) {

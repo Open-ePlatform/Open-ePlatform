@@ -784,7 +784,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user);
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-						
 						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousStatus, user), EventTarget.ALL);
 					}
 					
@@ -851,18 +850,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	private ForegroundModuleResponse showUpdateStatusSignForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstance flowInstance, Status status, List<ValidationError> validationErrors) throws Exception {
 		
+		if (genericSigningProvider == null) {
+			throw new ModuleConfigurationException("genericSigningProvider is null");
+		}
+		
 		Document doc = createDocument(req, uriParser, user);
 		
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateStatusSigning");
 		
-		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
-		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
-		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
-		
-		GenericSigningRequest signingRequest = new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
-		
-		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, signingRequest, validationErrors);
+		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser), validationErrors);
 		
 		signingFormElement.appendChild(flowInstance.toXML(doc));
 		signingFormElement.appendChild(status.toXML(doc));
@@ -873,6 +869,16 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		ViewFragmentUtils.appendLinksAndScripts(response, viewFragment);
 		
 		return response;
+	}
+	
+	private GenericSigningRequest getUpdateStatusSigningRequest(FlowInstance flowInstance, Status status, URIParser uriParser) {
+		
+		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
+		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
+		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
+		
+		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
 	}
 	
 	@WebPublic(alias = "processsignstatus")
@@ -905,17 +911,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				log.info("User " + user + " processing singing for changing status of instance " + flowInstance + " from " + previousStatus + " to " + status);
 				
-				String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
-				String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
-				String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-				String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
-				
-				GenericSigningRequest signingRequest = new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
-				
 				List<ValidationError> validationErrors = null;
 				
 				try {
-					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, signingRequest);
+					if (genericSigningProvider == null) {
+						throw new ModuleConfigurationException("genericSigningProvider is null");
+					}
+					
+					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser));
 					
 					if (res.isCommitted()) {
 						return null;
@@ -1454,7 +1457,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		query.addParameter(user.getUserID());
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION);
 		
 		addListRelations(query);
 		
@@ -1467,7 +1471,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 		
-		query.addRelations(FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION);
 		
 		addListRelations(query);
 		
@@ -1681,7 +1686,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				pdfProvider.saveTemporaryPDF(instanceManager, event);
 				
-				this.xmlProvider.generateXML(instanceManager.getFlowInstance(), instanceManager, event, event.getAdded());
+				xmlProvider.generateXML(instanceManager.getFlowInstance(), instanceManager, event, event.getAdded());
 				
 			} catch (Exception e) {
 				
@@ -1939,7 +1944,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					if (!manager.equals(event.getUser()) && (event.getPreviousManagers() == null || !event.getPreviousManagers().contains(manager))) {
 						
 						try {
-							notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", event.getUser().getUserID(), notificationNewManager, null);
+							Integer userID = null;
+							
+							if (event.getUser() != null) {
+								userID = event.getUser().getUserID();
+							}
+							
+							notificationHandler.addNotification(event.getFlowInstance().getFlowInstanceID(), manager.getUserID(), moduleDescriptor.getModuleID(), "newManager", userID, notificationNewManager, null);
 							
 						} catch (SQLException e) {
 							
@@ -2019,7 +2030,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		NotificationMetadata extra = new NotificationMetadata();
 		extra.setShowURL(fullContextPath + getFullAlias() + "/overview/" + notification.getFlowInstanceID());
 		
-		extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+		if (notification.getExternalNotificationID() != null) {
+			extra.setPoster(systemInterface.getUserHandler().getUser(notification.getExternalNotificationID(), false, true));
+		}
 		
 		if (type.equals("message")) {
 			

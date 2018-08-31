@@ -834,14 +834,14 @@
 						</xsl:if>
 						
 					</xsl:if>
-  					
-  					<xsl:if test="../Profile">
-  					
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
-	  						<xsl:value-of select="../Profile/name" />
-	  					</p>
- 					
+					
+					<xsl:if test="../Profile">
+					
+						<p>
+							<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
+							<xsl:value-of select="../Profile/name" />
+						</p>
+					
 					</xsl:if>
 					
 					<p>
@@ -875,37 +875,41 @@
 					
 					<xsl:if test="count(owners/user) > 1">
 						<p>
-								<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
+							<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
 							<xsl:apply-templates select="owners/user" mode="owner" />
 						</p>
-						</xsl:if>
-						<xsl:if test="count($submittedEvents) > 1">
+					</xsl:if>
+
+					<xsl:if test="count($submittedEvents) > 1">
 						<p>
 							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
-								
-								<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-								
-								<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
-								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-								
-								<xsl:call-template name="printUser">
-									<xsl:with-param name="user" select="$lastSubmit/poster/user" />
-								</xsl:call-template>
-							</p>
-						</xsl:if>
-						<xsl:if test="updated">
-							<p>
-								<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
-								
-								<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
-								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-								
-								<xsl:call-template name="printUser">
-									<xsl:with-param name="user" select="editor/user" />
-								</xsl:call-template>
-							</p>
-						</xsl:if>
-					<p>
+							
+							<strong class="overview">
+								<xsl:value-of select="$i18n.LastSubmitted" />
+								<xsl:text>:&#160;</xsl:text>
+							</strong>
+							
+							<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+							
+							<xsl:call-template name="printUser">
+								<xsl:with-param name="user" select="$lastSubmit/poster/user" />
+							</xsl:call-template>
+						</p>
+					</xsl:if>
+					<xsl:if test="updated">
+						<p>
+							<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
+							
+							<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+							
+							<xsl:call-template name="printUser">
+								<xsl:with-param name="user" select="editor/user" />
+							</xsl:call-template>
+						</p>
+  					</xsl:if>
+  					<p>
   						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
   						
   						<xsl:choose>
@@ -932,7 +936,7 @@
   				
   					<li class="active" data-tabid="#history">
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
-  					</li>  				
+  					</li>
   				
   					<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true')">
 	  					<li data-tabid="#messages">
@@ -1243,7 +1247,7 @@
 	
 	<xsl:template match="user" mode="manager">
 		
-		<i title="{email}" data-icon-before="p" class="sender"/>
+		<i title="{email}" data-icon-before="p" class="sender" />
 		
 		<xsl:value-of select="firstname" />
 		<xsl:text>&#160;</xsl:text>
@@ -1613,9 +1617,9 @@
 	 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{FlowInstance/flowInstanceID}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Cancel"/></a>
 	 				</article>
 				</div>
-	  			
-  			</form>
- 		</section>	
+ 				
+			</form>
+		</section>	
 	
 	</xsl:template>		
 	

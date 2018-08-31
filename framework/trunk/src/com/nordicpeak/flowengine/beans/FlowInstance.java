@@ -471,7 +471,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 				
 				Element userElement = owner.toXML(doc);
 				
-				if(!skipUserAttributes){
+				if (!skipUserAttributes) {
 					
 					AttributeHandler attributeHandler = owner.getAttributeHandler();
 					
@@ -487,37 +487,31 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		
 		return flowInstanceElement;
 	}
-
 	
 	public boolean isRemote() {
 	
 		return remote;
 	}
-
 	
 	public void setRemote(boolean remote) {
 	
 		this.remote = remote;
 	}
 
-	
 	public String getUserDescription() {
 	
 		return userDescription;
 	}
 
-	
 	public void setUserDescription(String userDescription) {
 	
 		this.userDescription = userDescription;
 	}
 
-	
 	public String getManagerDescription() {
 	
 		return managerDescription;
 	}
-
 	
 	public void setManagerDescription(String managerDescription) {
 	

@@ -248,4 +248,30 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 		return a1.compareTo(a2);
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((eventID == null) ? 0 : eventID.hashCode());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FlowInstanceEvent other = (FlowInstanceEvent) obj;
+		if (eventID == null) {
+			if (other.eventID != null)
+				return false;
+		} else if (!eventID.equals(other.eventID))
+			return false;
+		return true;
+	}
+	
 }
