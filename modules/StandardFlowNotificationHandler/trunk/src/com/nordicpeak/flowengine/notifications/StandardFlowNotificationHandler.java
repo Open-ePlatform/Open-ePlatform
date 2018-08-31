@@ -1598,7 +1598,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
-	@EventListener(channel = FlowInstance.class)
+	@EventListener(channel = FlowInstance.class, priority=100)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
 		
 		if (!event.getFlowInstanceManager().getFlowInstance().getFlow().usesSequentialSigning()) {
