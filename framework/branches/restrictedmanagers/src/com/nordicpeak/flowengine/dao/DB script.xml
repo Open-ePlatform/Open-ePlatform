@@ -184,7 +184,7 @@
 		</Query>
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flows` ADD COLUMN `disabled` BOOLEAN NOT NULL AFTER `flowCategoryID`;		
+				ALTER TABLE `flowengine_flows` ADD COLUMN `disabled` BOOLEAN NOT NULL AFTER `flowCategoryID`;
 			]]>
 		</Query>
 		<Query>
@@ -243,7 +243,7 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` ADD COLUMN `usePreview` BOOLEAN NOT NULL AFTER `disabled`,
-				 ADD COLUMN `submittedMessage` LONGTEXT NOT NULL AFTER `longDescription`;				
+				 ADD COLUMN `submittedMessage` LONGTEXT NOT NULL AFTER `longDescription`;
 			]]>
 		</Query>
 	</Script>
@@ -307,7 +307,7 @@
 	<Script version="9">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `poster` INT(10) UNSIGNED DEFAULT NULL;							
+				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `poster` INT(10) UNSIGNED DEFAULT NULL;
 			]]>
 		</Query>
 	</Script>
@@ -315,7 +315,7 @@
 	<Script version="10">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flows` CHANGE COLUMN `disabled` `enabled` TINYINT(1) NOT NULL;							
+				ALTER TABLE `flowengine_flows` CHANGE COLUMN `disabled` `enabled` TINYINT(1) NOT NULL;
 			]]>
 		</Query>
 	</Script>
@@ -367,7 +367,7 @@
 		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
-				ALTER TABLE `flowengine_default_flow_states` RENAME TO `flowengine_default_flow_statuses`;				
+				ALTER TABLE `flowengine_default_flow_states` RENAME TO `flowengine_default_flow_statuses`;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -395,7 +395,7 @@
 		</Query>
 		<Query forceCommit="true">
 			<![CDATA[
-				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `flowStatusID` INT(10) UNSIGNED NOT NULL;						
+				ALTER TABLE `flowengine_flow_instances` MODIFY COLUMN `flowStatusID` INT(10) UNSIGNED NOT NULL;
 			]]>
 		</Query>
 		<Query forceCommit="true">
@@ -1330,7 +1330,7 @@
 	<Script version="60">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flow_types` ADD COLUMN `useAccessFilter` BOOLEAN NOT NULL AFTER `name`;		
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `useAccessFilter` BOOLEAN NOT NULL AFTER `name`;
 			]]>
 		</Query>
 		<Query>
@@ -1368,7 +1368,7 @@
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_tags` MODIFY COLUMN `tag` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;
 			]]>
-		</Query>	    
+		</Query>
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flow_checks` MODIFY COLUMN `value` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;
@@ -1658,7 +1658,7 @@
 	<Script version="84">
 	    <Query>
 	        <![CDATA[
-				ALTER TABLE `flowengine_flows` ADD COLUMN `iconLastModified` DATETIME AFTER `icon`;				
+				ALTER TABLE `flowengine_flows` ADD COLUMN `iconLastModified` DATETIME AFTER `icon`;
 	        ]]>
 	    </Query>
 	    <Query>
@@ -1668,7 +1668,7 @@
 	    </Query>
 	    <Query>
 	        <![CDATA[
-				UPDATE flowengine_flows SET iconLastModified = CURRENT_TIMESTAMP();		
+				UPDATE flowengine_flows SET iconLastModified = CURRENT_TIMESTAMP();
 	        ]]>
 	    </Query>
 	    <Query>
@@ -1681,7 +1681,7 @@
 	<Script version="85">
 	    <Query>
 	        <![CDATA[
-				ALTER TABLE `flowengine_operating_messages` ADD COLUMN `messageType` VARCHAR(45) NOT NULL AFTER `endTime`;	
+				ALTER TABLE `flowengine_operating_messages` ADD COLUMN `messageType` VARCHAR(45) NOT NULL AFTER `endTime`;
 	        ]]>
 	    </Query>	    
 	</Script>	
@@ -1770,7 +1770,7 @@
 	<Script version="92">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flow_forms` ADD COLUMN `showExternalLinkIcon` BOOLEAN NOT NULL AFTER `externalURL`;				
+				ALTER TABLE `flowengine_flow_forms` ADD COLUMN `showExternalLinkIcon` BOOLEAN NOT NULL AFTER `externalURL`;
 			]]>
 		</Query>
 	</Script>
@@ -1778,7 +1778,7 @@
 	<Script version="93">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_flow_checks` ADD COLUMN `checkIndex` INTEGER UNSIGNED NOT NULL AFTER `value`;			
+				ALTER TABLE `flowengine_flow_checks` ADD COLUMN `checkIndex` INTEGER UNSIGNED NOT NULL AFTER `value`;
 			]]>
 		</Query>
 	</Script>
@@ -1786,7 +1786,7 @@
 	<Script version="94">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flowengine_notifications` MODIFY COLUMN `title` VARCHAR(1024) DEFAULT NULL;		
+				ALTER TABLE `flowengine_notifications` MODIFY COLUMN `title` VARCHAR(1024) DEFAULT NULL;
 			]]>
 		</Query>
 	</Script>	
