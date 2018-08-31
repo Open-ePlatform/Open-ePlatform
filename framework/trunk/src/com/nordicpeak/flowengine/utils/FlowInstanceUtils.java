@@ -254,7 +254,11 @@ public class FlowInstanceUtils {
 		}
 	}
 	
-	//TODO Add support for manager only attribute
+	public static void setDescriptions(MutableAttributeHandler attributeHandler) {
+		
+		
+	}
+	
 	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
 		
 		boolean descriptionAttributeSet = attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
@@ -294,6 +298,7 @@ public class FlowInstanceUtils {
 	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
 		
 		if (managers != null) {
+			
 			for (User selectedManager : managers) {
 				
 				if (stringBuilder.length() > 0) {
@@ -308,6 +313,7 @@ public class FlowInstanceUtils {
 		}
 		
 		if (managerGroups != null) {
+			
 			for (Group selectedManagerGroup : managerGroups) {
 				
 				if (stringBuilder.length() > 0) {
