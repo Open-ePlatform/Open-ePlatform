@@ -873,10 +873,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	private GenericSigningRequest getUpdateStatusSigningRequest(FlowInstance flowInstance, Status status, URIParser uriParser) {
 		
+		//TODO i18n!
 		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+		
+		//TODO checksum of latest available PDF
 		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
 		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?dummy=f";
+		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
 		
 		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
 	}
