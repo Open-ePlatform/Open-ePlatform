@@ -834,82 +834,80 @@
 						</xsl:if>
 						
 					</xsl:if>
-  					
-  					<xsl:if test="../Profile">
-  					
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
-	  						<xsl:value-of select="../Profile/name" />
-	  					</p>
-  					
-  					</xsl:if>
-  					
+					
+					<xsl:if test="../Profile">
+					
 						<p>
-							<strong class="overview"><xsl:value-of select="$i18n.FirstSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-							<xsl:value-of select="firstSubmitted" /><xsl:text>&#160;</xsl:text>
+							<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
+							<xsl:value-of select="../Profile/name" />
+						</p>
+					
+					</xsl:if>
+					
+					<p>
+						<strong class="overview"><xsl:value-of select="$i18n.FirstSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
+						<xsl:value-of select="firstSubmitted" /><xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+						
+						<xsl:call-template name="PrintPostedBy">
+							<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
+							<xsl:with-param name="flowInstanceAttributes" select="Attributes"/>
+						</xsl:call-template>
+						
+						<!-- TODO add social security number -->
+						
+						<xsl:choose>
+							<xsl:when test="Attributes/Attribute[Name = 'anonymized']/Value = 'true'">
+								<span class="overview">
+									<xsl:value-of select="$i18n.PosterAnonymized" />
+								</span>
+							</xsl:when>
+							<xsl:when test="not(poster)">
+								<span class="overview">
+									<xsl:value-of select="$i18n.PosterWasNotLoggedIn" />
+								</span>
+							</xsl:when>
+						</xsl:choose>
+						
+					</p>
+					
+					<!-- TODO Always show owner if different from submitter -->
+					
+					<xsl:if test="count(owners/user) > 1">
+						<p>
+							<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
+							<xsl:apply-templates select="owners/user" mode="owner" />
+						</p>
+					</xsl:if>
+
+					<xsl:if test="count($submittedEvents) > 1">
+						<p>
+							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
+							
+							<strong class="overview">
+								<xsl:value-of select="$i18n.LastSubmitted" />
+								<xsl:text>:&#160;</xsl:text>
+							</strong>
+							
+							<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
 							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 							
-							<!-- TODO Submitter does not match code submitter 
-								FlowInstanceUtils.getSubmitterName event.poster, flowInstance.poster, flowInstance attribute.
-								BaseFlowModuleTemplates.PrintPostedBy flowInstance attribute, event.poster. Should probably do as above.
-							-->
-							
-							<xsl:call-template name="PrintPostedBy">
-								<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
-								<xsl:with-param name="flowInstanceAttributes" select="Attributes"/>
+							<xsl:call-template name="printUser">
+								<xsl:with-param name="user" select="$lastSubmit/poster/user" />
 							</xsl:call-template>
-							
-							<!-- TODO add social security number -->
-							
-							<xsl:choose>
-								<xsl:when test="Attributes/Attribute[Name = 'anonymized']/Value = 'true'">
-									<span class="overview">
-										<xsl:value-of select="$i18n.PosterAnonymized" />
-									</span>
-								</xsl:when>
-								<xsl:when test="not(poster)">
-									<span class="overview">
-										<xsl:value-of select="$i18n.PosterWasNotLoggedIn" />
-									</span>
-								</xsl:when>
-							</xsl:choose>
-							
 						</p>
-						
-						<!-- TODO Always show owner if different from submitter -->
-						
-						<xsl:if test="count(owners/user) > 1">
-							<p>
-								<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
-								<xsl:apply-templates select="owners/user" mode="owner" />
-							</p>
-						</xsl:if>
-
-						<xsl:if test="count($submittedEvents) > 1">
-							<p>
-								<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
-								
-								<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-								
-								<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
-								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-								
-								<xsl:call-template name="printUser">
-									<xsl:with-param name="user" select="$lastSubmit/poster/user" />
-								</xsl:call-template>
-							</p>
-						</xsl:if>
-						<xsl:if test="updated">
-							<p>
-								<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
-								
-								<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
-								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-								
-								<xsl:call-template name="printUser">
-									<xsl:with-param name="user" select="editor/user" />
-								</xsl:call-template>
-							</p>
+					</xsl:if>
+					<xsl:if test="updated">
+						<p>
+							<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
+							
+							<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
+							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+							
+							<xsl:call-template name="printUser">
+								<xsl:with-param name="user" select="editor/user" />
+							</xsl:call-template>
+						</p>
   					</xsl:if>
   					<p>
   						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
@@ -982,7 +980,7 @@
 	  						</div>
 	  						
 	  						<form action="{/Document/requestinfo/uri}?externalmessage" method="post" enctype="multipart/form-data">
-	  							
+	  						
 	  							<xsl:if test="../NoContactWay">
 	  								<span class="italic">
 	  									<xsl:value-of select="$i18n.NewMessageWarningNoContactWay"/>
@@ -1028,7 +1026,7 @@
 		  					
 		  					<div class="heading-wrapper">
 		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-  								<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+								<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
 		  					</div>
 		  					
 		  					<xsl:choose>
@@ -1970,7 +1968,6 @@
 	
 		<section class="service">
 
-			<!-- TODO remove form? --> 
 			<form id="paymentForm" method="POST" action="{/Document/ModuleURL}/processsignstatus/{FlowInstance/flowInstanceID}/{Status/statusID}">
 
 				<div class="section-full push">

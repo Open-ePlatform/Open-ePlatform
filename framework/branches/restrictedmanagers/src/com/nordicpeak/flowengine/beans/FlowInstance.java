@@ -170,7 +170,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	@XMLElement
 	private boolean remote;
-
+	
 	@XMLElement
 	private Priority priority;
 
@@ -490,7 +490,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 				
 				Element userElement = owner.toXML(doc);
 				
-				if (!skipUserAttributes){
+				if (!skipUserAttributes) {
 					
 					AttributeHandler attributeHandler = owner.getAttributeHandler();
 					
@@ -551,7 +551,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		return false;
 	}
 	
-		public String getUserDescription() {
+	public String getUserDescription() {
 	
 		return userDescription;
 	}

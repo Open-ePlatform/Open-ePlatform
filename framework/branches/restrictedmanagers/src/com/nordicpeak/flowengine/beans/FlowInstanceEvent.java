@@ -9,9 +9,6 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
@@ -27,6 +24,9 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 
 @Table(name = "flowengine_flow_instance_events")
 @XMLElement
@@ -245,7 +245,7 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 			return 1;
 		}
-		
+
 		return a1.compareTo(a2);
 	}
 	

@@ -51,6 +51,7 @@ import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.threads.PriorityThreadFactory;
 import se.unlogic.webutils.http.HTTPUtils;
 
 import com.nordicpeak.flowengine.Constants;
@@ -138,6 +139,7 @@ public class FlowInstanceIndexer {
 		int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
 
 		threadPoolExecutor = new CallbackThreadPoolExecutor(availableProcessors, availableProcessors, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), this);
+		threadPoolExecutor.setThreadFactory(new PriorityThreadFactory(Thread.MIN_PRIORITY, "Flow instance indexer pool"));
 	}
 
 	public void cacheFlowInstances() {

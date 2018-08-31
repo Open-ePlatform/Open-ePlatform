@@ -1517,7 +1517,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void serverStarted() {
 		
-		Thread indexThreading = new Thread(this, "Flow instance indexer for " + moduleDescriptor);
+		Thread indexThreading = new Thread(this, "Flow instance indexer starter for " + moduleDescriptor);
 		
 		indexThreading.start();
 	}

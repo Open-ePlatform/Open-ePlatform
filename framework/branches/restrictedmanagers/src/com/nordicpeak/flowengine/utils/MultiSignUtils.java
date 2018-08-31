@@ -4,13 +4,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.standardutils.collections.CollectionUtils;
+
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.standardutils.collections.CollectionUtils;
 
 public class MultiSignUtils {
 	

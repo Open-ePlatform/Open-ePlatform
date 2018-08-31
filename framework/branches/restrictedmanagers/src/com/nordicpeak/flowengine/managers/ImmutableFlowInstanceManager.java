@@ -9,6 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.handlers.SimpleMutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.webutils.url.URLRewriter;
+
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
@@ -34,14 +42,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.handlers.SimpleMutableAttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
-import se.unlogic.hierarchy.core.utils.FCKUtils;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.webutils.url.URLRewriter;
 
 
 public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceManager {

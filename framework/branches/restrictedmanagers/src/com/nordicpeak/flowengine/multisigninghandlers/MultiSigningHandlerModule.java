@@ -18,51 +18,7 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.BaseFlowModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.OperatingMessageModule;
-import com.nordicpeak.flowengine.UserFlowInstanceModule;
-import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.ContentType;
-import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
-import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
-import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
-import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
-import com.nordicpeak.flowengine.interfaces.OperatingStatus;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.SigningProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ManagerResponse;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
-import com.nordicpeak.flowengine.utils.MultiSignUtils;
-import com.nordicpeak.flowengine.utils.SigningUtils;
-
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
@@ -124,6 +80,51 @@ import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.OperatingMessageModule;
+import com.nordicpeak.flowengine.UserFlowInstanceModule;
+import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
+import com.nordicpeak.flowengine.interfaces.OperatingStatus;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SigningProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ManagerResponse;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
+import com.nordicpeak.flowengine.utils.MultiSignUtils;
+import com.nordicpeak.flowengine.utils.SigningUtils;
+
 public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider, ImmutableFlowEngineInterface {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
@@ -141,6 +142,10 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Signed message", description = "The message displayed above the signed form (available tags: $poster, $flowInstanceID, $flow.name, $signed)", required = true)
 	protected String signedMessage = "Not set";
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Hide citizen indentifier", description = "If toggled the citizen identifier will not be displayed in the sign form for any flow types.")
+	protected boolean hideCitizenIdentifier = false;
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Flow types with hidden citizen indentifier", description = "Citizen identifier will not be displayed in the sign form for these flow types.", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -403,7 +408,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			
 			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(instanceManager.getFlowInstance().getPoster());
 			
-			if (citizenIdentifier != null && !CollectionUtils.contains(flowTypesWithHiddenCitizenIdentifier, instanceManager.getFlowInstance().getFlow().getFlowType().getFlowTypeID())) {
+			if (citizenIdentifier != null && !hideCitizenIdentifier && !CollectionUtils.contains(flowTypesWithHiddenCitizenIdentifier, instanceManager.getFlowInstance().getFlow().getFlowType().getFlowTypeID())) {
 				
 				userTag.append(" (");
 				userTag.append(citizenIdentifier);

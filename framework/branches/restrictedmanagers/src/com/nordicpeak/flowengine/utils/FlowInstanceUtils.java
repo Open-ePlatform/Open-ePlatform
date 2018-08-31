@@ -5,6 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
+
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -14,13 +21,6 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-
-import se.unlogic.hierarchy.core.beans.Group;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
-import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class FlowInstanceUtils {
 	
@@ -36,6 +36,12 @@ public class FlowInstanceUtils {
 		return submitterName;
 	}
 	
+	/**
+	 * Uses poster before attributes because if the poster was logged in then they can not change the attribute name anyway.
+	 * And we are only interested in name.
+	 * @param flowInstance
+	 * @return
+	 */
 	public static String getSubmitterName(ImmutableFlowInstance flowInstance) {
 		
 		StringBuilder builder = new StringBuilder();
@@ -422,6 +428,11 @@ public class FlowInstanceUtils {
 		return null;
 	}
 	
+	/**
+	 * Uses attributes first because address might be different.
+	 * @param flowInstance
+	 * @return
+	 */
 	public static Contact getPosterContact(ImmutableFlowInstance flowInstance) {
 		
 		Contact flowInstanceContact = getContactFromFlowInstanceAttributes(flowInstance.getAttributeHandler());
