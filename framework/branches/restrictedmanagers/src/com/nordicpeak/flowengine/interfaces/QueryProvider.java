@@ -2,11 +2,11 @@ package com.nordicpeak.flowengine.interfaces;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
-
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.dao.TransactionHandler;
+
+import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 public interface QueryProvider {
 
