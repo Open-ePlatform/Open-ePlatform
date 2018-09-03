@@ -5,6 +5,8 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 	
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/CKEditor.xsl"/>
+	
+	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
@@ -56,39 +58,50 @@
 			<xsl:apply-templates select="ShowFlow" />
 			<xsl:apply-templates select="AddFlow" />
 			<xsl:apply-templates select="UpdateFlow" />
+			<xsl:apply-templates select="SortFlow" />
+			
+			<xsl:apply-templates select="UpdateFlowFamily"/>
+			<xsl:apply-templates select="ChangeFlowType"/>
 			<xsl:apply-templates select="UpdateFlowIcon" />
-			<xsl:apply-templates select="UpdateNotifications"/>		
-			<xsl:apply-templates select="AddQueryDescriptor" />
-			<xsl:apply-templates select="AddEvaluatorDescriptor" />
+			<xsl:apply-templates select="UpdateNotifications"/>
+					
 			<xsl:apply-templates select="AddStep" />
 			<xsl:apply-templates select="UpdateStep" />
+			<xsl:apply-templates select="AddQueryDescriptor" />
+			<xsl:apply-templates select="AddEvaluatorDescriptor" />
+			
 			<xsl:apply-templates select="AddStatus" />
 			<xsl:apply-templates select="UpdateStatus" />
-			<xsl:apply-templates select="SortFlow" />
 			<xsl:apply-templates select="SortStatuses" />
 			<xsl:apply-templates select="ListStandardStatuses" />
 			<xsl:apply-templates select="AddStandardStatus" />
 			<xsl:apply-templates select="UpdateStandardStatus" />
+			
 			<xsl:apply-templates select="FlowInstanceManagerForm"/>
 			<xsl:apply-templates select="FlowInstanceManagerPreview"/>
 			<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
+			
 			<xsl:apply-templates select="ListFlowTypes"/>
 			<xsl:apply-templates select="ShowFlowType"/>
 			<xsl:apply-templates select="AddFlowType"/>
 			<xsl:apply-templates select="UpdateFlowType"/>
+			
 			<xsl:apply-templates select="AddCategory"/>
 			<xsl:apply-templates select="UpdateCategory"/>
-			<xsl:apply-templates select="UpdateFlowFamily"/>
-			<xsl:apply-templates select="SigningForm"/>
+			
 			<xsl:apply-templates select="SelectImportTargetType"/>
 			<xsl:apply-templates select="ImportFlow"/>
 			<xsl:apply-templates select="ImportQueries"/>
-			<xsl:apply-templates select="ShowFlowOverview"/>
+			
+			<xsl:apply-templates select="AddFlowForm" />
+			<xsl:apply-templates select="UpdateFlowForm" />
+			
 			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
 			<xsl:apply-templates select="AddFlowFamilyEvent" />
-			<xsl:apply-templates select="ChangeFlowType"/>
-			<xsl:apply-templates select="AddFlowForm" />
-			<xsl:apply-templates select="UpdateFlowForm" />	
+			
+			<xsl:apply-templates select="SigningForm"/>
+			<xsl:apply-templates select="ShowFlowOverview"/>
+			<xsl:apply-templates select="AutoManagerAssignment" />
 		</div>
 		
 	</xsl:template>
@@ -161,14 +174,14 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflow" title="{$i18n.addFlow}">
 					<xsl:value-of select="$i18n.addFlow"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 				</a>			
 			</div>
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow" title="{$i18n.importFlow}">
 					<xsl:value-of select="$i18n.importFlow"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 				</a>			
 			</div>			
 		</xsl:if>
@@ -178,14 +191,14 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.administrateStandardStatuses}">
 					<xsl:value-of select="$i18n.administrateStandardStatuses"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>			
 			</div>
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtypes" title="{$i18n.administrateFlowTypes}">
 					<xsl:value-of select="$i18n.administrateFlowTypes"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt=""/>
+					<img class="marginleft" src="{$imgPath}/folder_edit.png" alt=""/>
 				</a>			
 			</div>
 		</xsl:if>		
@@ -272,24 +285,24 @@
 					<xsl:when test="InstanceCount > 0">
 
 						<a href="#" onclick="alert('{$i18n.deleteFlowFamilyDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowFamilyDisabledHasInstances}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 
 					</xsl:when>
 					<xsl:when test="HasPublishedVersion">
 
 						<a href="#" onclick="alert('{$i18n.deleteFlowFamilyDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowFamilyDisabledIsPublished}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 
-					</xsl:when>										
+					</xsl:when>
 					<xsl:otherwise>
 
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowfamily/{FlowFamily/flowFamilyID}" onclick="return confirm('{$i18n.deleteFlowFamilyConfirm}: {name}?');" title="{$i18n.deleteFlowFamily.title}: {name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 						</a>
 
-					</xsl:otherwise>					
+					</xsl:otherwise>
 				</xsl:choose>
 			</td>
 		</tr>
@@ -299,7 +312,7 @@
 	<xsl:template match="ExtensionLink" mode="top-right">
 		<xsl:param name="flowID"/>
 	
-		<a class="extensionlink" href="{url}/{$flowID}" title="{name}">
+		<a class="extensionlink marginleft" href="{url}/{$flowID}" title="{name}">
 			<img class="alignbottom" src="{icon}" alt=""/>
 		</a>
 	
@@ -335,7 +348,7 @@
 					
 						<xsl:if test="/Document/user/admin = 'true'">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/recacheflow/{Flow/flowID}" title="{$i18n.ReCacheFlow}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/reload.png" alt="" />
+								<img src="{$imgPath}/reload.png" alt="" />
 							</a>
 						</xsl:if>
 					
@@ -348,28 +361,28 @@
 						</xsl:if>
 					
 						<xsl:if test="$isInternal = 'true'">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xsd.png" alt="" />
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
+								<img src="{$imgPath}/xsd.png" alt="" />
 							</a>
 						</xsl:if>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_edit.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
+							<img src="{$imgPath}/folder_edit.png" alt="" />
 						</a>
 						
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/photo_edit.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
+							<img src="{$imgPath}/photo_edit.png" alt="" />
 						</a>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}" title="{$i18n.updateFlowBaseInfo.title}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}" title="{$i18n.updateFlowBaseInfo.title}">
+							<img src="{$imgPath}/pen.png" alt="" />
 						</a>
 					
 						<xsl:choose>
 							<xsl:when test="$disableStructureManipulation = false()">
 							
-								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
-									<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+								<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
+									<img src="{$imgPath}/delete.png" alt="" />
 								</a>				
 							
 							</xsl:when>
@@ -378,15 +391,15 @@
 								<xsl:choose>
 									<xsl:when test="Flow/flowInstanceCount > 0">
 				
-										<a href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
-											<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
+											<img src="{$imgPath}/delete_gray.png" alt="" />
 										</a>
 				
 									</xsl:when>
 									<xsl:when test="Flow/published = 'true'">
 				
-										<a href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
-											<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
+											<img src="{$imgPath}/delete_gray.png" alt="" />
 										</a>
 				
 									</xsl:when>						
@@ -1010,7 +1023,7 @@
 					<div class="floatright marginright">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstep/{Flow/flowID}" title="{$i18n.addStep}">
 							<xsl:value-of select="$i18n.addStep"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 						</a>
 					</div>
 					
@@ -1018,21 +1031,21 @@
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addquery/{Flow/flowID}" title="{$i18n.addQuery}">
 								<xsl:value-of select="$i18n.addQuery"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 							</a>
 						</div>
 						
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importqueries/{Flow/flowID}" title="{$i18n.ImportQueries}">
 								<xsl:value-of select="$i18n.ImportQueries"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 							</a>
-						</div>						
+						</div>
 						
 						<div class="floatright marginright clearboth">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortflow/{Flow/flowID}" title="{$i18n.sortStepsAndQueries}">
 								<xsl:value-of select="$i18n.sortStepsAndQueries"/>
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 							</a>
 						</div>
 					</xsl:if>
@@ -1045,7 +1058,7 @@
 					<div class="floatright marginright clearboth">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
 							<xsl:value-of select="$i18n.testFlow"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/play.png" alt="" />
 						</a>
 					</div>
 				</xsl:if>
@@ -1086,7 +1099,7 @@
 					
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowform/{Flow/flowID}" title="{$i18n.addFlowForm.link.title}">
 							<xsl:value-of select="$i18n.addFlowForm.link.title"/>
-							<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 						</a>
 						
 					</xsl:otherwise>
@@ -1095,14 +1108,14 @@
 			</div>
 			
 			<xsl:if test="Flow/FlowForms/FlowForm">
-			
+				
 				<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
 						<xsl:value-of select="$i18n.testFlow"/>
-						<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/play.png" alt="" />
+						<img class="marginleft" src="{$imgPath}/play.png" alt="" />
 					</a>
-			</div>
-			
+				</div>
+				
 			</xsl:if>
 			
 		</fieldset>
@@ -1123,7 +1136,7 @@
 									<th><xsl:value-of select="$i18n.name" /></th>
 									<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
 									<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
-									<th width="32" />
+									<th width="37" />
 								</tr>
 							</thead>
 							<tbody>
@@ -1142,7 +1155,7 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstatus/{Flow/flowID}" title="{$i18n.addStatus}">
 						<xsl:value-of select="$i18n.addStatus"/>
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 					</a>
 				</div>
 				
@@ -1150,11 +1163,11 @@
 					<div class="floatright marginright clearboth">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstatuses/{Flow/flowID}" title="{$i18n.sortStatuses}">
 							<xsl:value-of select="$i18n.sortStatuses"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 						</a>
-					</div>				
-				</xsl:if>				
-			</fieldset>		
+					</div>
+				</xsl:if>
+			</fieldset>
 		
 			<a name="managers"/>
 		
@@ -1162,16 +1175,23 @@
 				<legend><xsl:value-of select="$i18n.Managers"/></legend>
 				
 				<xsl:choose>
-					<xsl:when test="AllowedGroups or ManagerUsers">
+					<xsl:when test="ManagerGroups or ManagerUsers">
 					
-						<p class="nomargin"><xsl:value-of select="$i18n.ManagersDescription"/></p>
+						<p class="nomargin">
+							<xsl:value-of select="$i18n.ManagersDescription"/>
+							
+							<xsl:if test="UsesAutoManagerAssignment">
+								<xsl:text> </xsl:text>
+								<xsl:value-of select="$i18n.FlowFamily.UsesAutoManagerAssignment"/>
+							</xsl:if>
+						</p>
 						
-						<xsl:if test="AllowedGroups">
+						<xsl:if test="ManagerGroups">
 							<span class="floatleft bold">
 								<xsl:value-of select="$i18n.allowedGroups"/>
 							</span>
 							
-							<xsl:apply-templates select="AllowedGroups/group" mode="list"/>
+							<xsl:apply-templates select="ManagerGroups/FlowFamilyManagerGroup[group]" mode="list"/>
 						</xsl:if>
 					
 						<xsl:if test="ManagerUsers">
@@ -1195,9 +1215,16 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagers/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateFlowFamilyManagers}">
 						<xsl:value-of select="$i18n.UpdateFlowFamilyManagers"/>
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 					</a>
-				</div>				
+				</div>
+				
+				<div class="floatright marginright clearboth">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateautomanagerassignment/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateAutoManagerAssignment}">
+						<xsl:value-of select="$i18n.UpdateAutoManagerAssignment"/>
+						<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
+					</a>
+				</div>
 				
 			</fieldset>
 	
@@ -1213,7 +1240,7 @@
 					<div class="floatright marginright">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatenotifications/{Flow/flowID}" title="{$i18n.UpdateNotificationSettings}">
 							<xsl:value-of select="$i18n.UpdateNotificationSettings"/>
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+							<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 						</a>
 					</div>
 					
@@ -1270,10 +1297,10 @@
 									</xsl:if>
 									
 									<th width="75"><xsl:value-of select="$i18n.status" /></th>
-									<th width="32" >
+									<th width="37" >
 										<xsl:if test="PublishAccess">
 											<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
-												<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/disabled.png" alt="" />
+												<img class="alignmiddle marginright" src="{$imgPath}/disabled.png" alt="" />
 											</a>
 										</xsl:if>
 									
@@ -1285,7 +1312,7 @@
 									<xsl:with-param name="isInternal" select="$isInternal" />	
 								</xsl:apply-templates>
 							</tbody>
-						</table>				
+						</table>
 	
 					</xsl:when>
 					<xsl:otherwise>
@@ -1297,7 +1324,7 @@
 				
 				<div class="floatright marginright">
 					<input type="button" value="{$i18n.importNewFlowVersion}" title="{$i18n.importNewFlowVersion}" onclick="window.location = '{/Document/requestinfo/currentURI}/{/Document/module/alias}/importversion/{Flow/flowID}'"/>
-				</div>				
+				</div>
 				
 				<div class="floatright margintop marginright hidden clearboth" id="add_new_version">
 					<input type="submit" value="{$i18n.addNewVersion}"/>
@@ -1308,7 +1335,7 @@
 				</div>
 			
 			</form>
-														
+			
 		</fieldset>
 		
 		<a name="events"/>	
@@ -1346,7 +1373,7 @@
 				<div class="floatright marginright">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowfamilyevent/{Flow/flowID}" title="{$i18n.Events.Add}">
 						<xsl:value-of select="$i18n.Events.Add"/>
-						<img class="marginleft" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/add.png" alt="" />
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 					</a>
 				</div>
 					
@@ -1377,10 +1404,10 @@
 
 			<xsl:choose>
 				<xsl:when test="user/enabled='true'">
-					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user.png" alt="" />
+					<img class="alignmiddle" src="{$imgPath}/user.png" alt="" />
 				</xsl:when>
 				<xsl:otherwise>
-					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user_disabled.png" alt="" />
+					<img class="alignmiddle" src="{$imgPath}/user_disabled.png" alt="" />
 				</xsl:otherwise>
 			</xsl:choose>
 			
@@ -1398,10 +1425,18 @@
 				<xsl:text>)</xsl:text>
 			</xsl:if>
 			
+			<xsl:if test="restricted = 'true'">
+			
+				<span class="bigmarginleft">
+					<xsl:value-of select="$i18n.Manager.restricted"/>
+				</span>
+			
+			</xsl:if>
+			
 			<xsl:choose>
 				<xsl:when test="validFromDate and not(Active = 'true') and validToDate">
 				
-					<xsl:text>&#x20;(</xsl:text>
+					<span class="bigmarginleft">
 						<xsl:value-of select="$i18n.Manager.validFromDate"/>
 						<xsl:text>&#x20;</xsl:text>
 						<xsl:value-of select="validFromDate"/>
@@ -1409,34 +1444,63 @@
 						<xsl:value-of select="$i18n.Manager.validFromToDate"/>
 						<xsl:text>&#x20;</xsl:text>
 						<xsl:value-of select="validToDate"/>
-					<xsl:text>)</xsl:text>
+					</span>
 				
 				</xsl:when>
 				<xsl:otherwise>
 				
 					<xsl:if test="validFromDate and not(Active = 'true')">
 					
-						<xsl:text>&#x20;(</xsl:text>
+						<span class="bigmarginleft">
 							<xsl:value-of select="$i18n.Manager.validFromDate"/>
 							<xsl:text>&#x20;</xsl:text>
 							<xsl:value-of select="validFromDate"/>
-						<xsl:text>)</xsl:text>
+						</span>
 						
 					</xsl:if>
 					
 					<xsl:if test="validToDate">
 					
-						<xsl:text>&#x20;(</xsl:text>
+						<span class="bigmarginleft">
 							<xsl:value-of select="$i18n.Manager.validToDate"/>
 							<xsl:text>&#x20;</xsl:text>
 							<xsl:value-of select="validToDate"/>
-						<xsl:text>)</xsl:text>
+						</span>
 					
 					</xsl:if>
 				
 				</xsl:otherwise>
 			</xsl:choose>
 			
+			
+		</div>	
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowFamilyManagerGroup" mode="list">
+		
+		<div class="floatleft full marginbottom border">
+
+			<xsl:choose>
+				<xsl:when test="group/enabled='true'">
+					<img class="alignmiddle" src="{$imgPath}/group.png" alt="" />
+				</xsl:when>
+				<xsl:otherwise>
+					<img class="alignmiddle" src="{$imgPath}/group_disabled.png" alt="" />
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:value-of select="group/name"/>
+			
+			<xsl:if test="restricted = 'true'">
+			
+				<span class="bigmarginleft">
+					<xsl:value-of select="$i18n.Manager.restricted"/>
+				</span>
+			
+			</xsl:if>
 			
 		</div>	
 		
@@ -1464,7 +1528,7 @@
 				<xsl:when test="externalURL">
 
 					<a href="{externalURL}" target="_blank">
-						<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
+						<img class="alignmiddle marginright" src="{$imgPath}/pdf.png" alt="" />
 						<xsl:value-of select="$i18n.DownloadFlowForm" />
 						<xsl:value-of select="'&#160;'" />
 						<xsl:text>(</xsl:text>
@@ -1477,7 +1541,7 @@
 				<xsl:otherwise>
 
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}?raw=t" target="_blank">
-						<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" alt="" />
+						<img class="alignmiddle marginright" src="{$imgPath}/pdf.png" alt="" />
 						<xsl:value-of select="$i18n.DownloadFlowForm" />
 						
 						<xsl:if test="formattedSize">
@@ -1495,7 +1559,7 @@
 			<div class="floatright marginright">
 		
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowform/{flowFormID}" title="{$i18n.updateFlowForm.link.title}">
-					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>
 				
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}: {$name}" onclick="return confirm('{$i18n.deleteFlowForm.confirm}: {$name}?');" >
@@ -1522,7 +1586,7 @@
 						</xsl:choose>
 					</xsl:variable>
 					
-					<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/{$img}" alt="" />
+					<img class="marginleft" src="{$imgPath}/{$img}" alt="" />
 				</a>
 			
 			</div>
@@ -1586,37 +1650,37 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:value-of select="$i18n.notPublished" />
-						</xsl:otherwise>					
+						</xsl:otherwise>
 					</xsl:choose>
 					
 				</a>
-			</td>								
+			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportflow/{flowID}" title="{$i18n.exportFlow.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xml.png" alt="" />
+					<img src="{$imgPath}/xml.png" alt="" />
 				</a>
 			
 				<xsl:choose>
 					<xsl:when test="flowInstanceCount > 0">
 
-						<a href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
+							<img src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 
 					</xsl:when>
 					<xsl:when test="published = 'true' and enabled = 'true'">
 
-						<a href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
+							<img src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 
-					</xsl:when>										
+					</xsl:when>
 					<xsl:otherwise>
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
+							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 
-					</xsl:otherwise>					
+					</xsl:otherwise>
 				</xsl:choose>
 			</td>
 		</tr>
@@ -1633,11 +1697,11 @@
 			<span class="bigmarginleft">
 				<xsl:if test="$disableStructureManipulation = false()">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestep/{stepID}" title="{$i18n.updateStep.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
+						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
 				</xsl:if>
 			</span>		
@@ -1682,20 +1746,20 @@
 			<span class="bigmarginleft">
 			
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/download.png" alt="" />
+					<img src="{$imgPath}/download.png" alt="" />
 				</a>			
 			
 				<xsl:if test="$disableStructureManipulation = false()">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/cog_add.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
+						<img src="{$imgPath}/cog_add.png" alt="" />
 					</a>				
 				
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
+						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
+						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
 				</xsl:if>			
 			</span>
@@ -1742,11 +1806,11 @@
 			<span class="bigmarginleft">
 				<xsl:if test="$disableStructureManipulation = false()">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateevaluator/{evaluatorID}" title="{$i18n.updateEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
+						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
 				</xsl:if>			
 			</span>
@@ -1776,21 +1840,21 @@
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestatus/{statusID}" title="{$i18n.updateStatus.link.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
 		
 				<xsl:choose>
 					<xsl:when test="flowInstanceCount > 0">
 
-						<a href="#" onclick="alert('{$i18n.deleteStatusDisabledHasInstances}'); return false;" title="{$i18n.deleteStatusDisabledHasInstances}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+						<a class="marginleft" href="#" onclick="alert('{$i18n.deleteStatusDisabledHasInstances}'); return false;" title="{$i18n.deleteStatusDisabledHasInstances}">
+							<img src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 
 					</xsl:when>
 					<xsl:otherwise>
 					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
+							<img src="{$imgPath}/delete.png" alt="" />
 						</a>					
 					
 					</xsl:otherwise>					
@@ -3245,7 +3309,7 @@
 			</div>
 		</div>
 		
-		<div id="allowedManagers">
+		<div id="allowedManagers" class="floatleft full">
 			<div class="floatleft full bigmarginbottom">
 				
 				<label class="floatleft full">
@@ -3257,7 +3321,8 @@
 						<xsl:value-of select="/Document/requestinfo/currentURI"/>
 						<xsl:text>/</xsl:text>
 						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/groups</xsl:text>
+						<xsl:text>/managergroups/</xsl:text>
+						<xsl:value-of select="Flow/flowID"/>
 					</xsl:with-param>
 					<xsl:with-param name="name" select="'group'"/>
 					<xsl:with-param name="groups" select="ManagerGroups" />
@@ -3285,7 +3350,7 @@
 			</div>
 		</div>
 	
-		<h2><xsl:value-of select="$i18n.statusContentType.title"/></h2>
+		<h2 class="clearboth"><xsl:value-of select="$i18n.statusContentType.title"/></h2>
 		
 		<p><xsl:value-of select="$i18n.statusContentType.description"/></p>
 		
@@ -3468,7 +3533,7 @@
 				<div class="floatleft clearboth">
 					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" id="icon" alt="" />							
 				</div>
-			</div>			
+			</div>
 			
 			<xsl:if test="Flow/iconFileName">
 				<div class="floatleft full bigmarginbottom margintop">
@@ -3478,14 +3543,14 @@
 							<xsl:with-param name="name" select="'clearicon'" />
 							<xsl:with-param name="value" select="'true'"/>
 							<xsl:with-param name="id" select="'clearicon'" />
-							<xsl:with-param name="onclick" select="'updateFileIconField(this.checked)'"/>			     
+							<xsl:with-param name="onclick" select="'updateFileIconField(this.checked)'"/>
 						</xsl:call-template>
 						
 						<label for="clearicon">
 							<xsl:value-of select="$i18n.restoreDefaultIcon" />
-						</label>				
+						</label>
 					</div>
-				</div>			
+				</div>
 			</xsl:if>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -3497,7 +3562,7 @@
 				<div class="floatleft full">
 					<input type="file" name="icon" id="iconfile"/>
 				</div>
-			</div>			
+			</div>
 			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateFlowIcon.submit}" />
@@ -3680,15 +3745,15 @@
 				<input type="submit" value="{$i18n.SortFlow.submit}" />
 			</div>
 
-		</form>	
+		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="Step" mode="sort">
 	
 		<div id="step_{stepID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			<div class="padding bold">
-				<img class="vertical-align-middle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" title="{$i18n.MoveStep}" alt="" />
+				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveStep}" alt="" />
 				<xsl:value-of select="name" />
 				<xsl:call-template name="createHiddenField">
 					<xsl:with-param name="name" select="concat('step', stepID)" />
@@ -3708,7 +3773,7 @@
 		<div id="query_{queryID}" class="query bigmarginleft floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			
 			<div class="padding">
-				<img class="vertical-align-middle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" title="{$i18n.MoveQuery}" alt="" />
+				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveQuery}" alt="" />
 				<xsl:value-of select="name" />
 				<xsl:call-template name="createHiddenField">
 					<xsl:with-param name="name" select="concat('query', queryID)" />
@@ -3763,7 +3828,7 @@
 	
 		<div id="status_{statusID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			<div class="padding">
-				<img class="vertical-align-middle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/move.png" title="{$i18n.MoveStatus}" alt="" />
+				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveStatus}" alt="" />
 				<xsl:value-of select="name" />
 				<xsl:call-template name="createHiddenField">
 					<xsl:with-param name="name" select="concat('sortorder_', statusID)" />
@@ -3813,7 +3878,7 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstandardstatus/{Flow/flowID}" title="{$i18n.addStandardStatus}">
 					<xsl:value-of select="$i18n.addStandardStatus"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/add.png" alt="" />
 				</a>
 			</div>	
 		
@@ -3829,11 +3894,11 @@
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatus/{statusID}" title="{$i18n.updateStandardStatus.link.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
 				</a>
 		
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirm('{$i18n.deleteStandardStatus.confirm}: {name}?');" title="{$i18n.deleteStandardStatus.link.title}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 				</a>							
 			</td>			
 		</tr>
@@ -4168,7 +4233,7 @@
 					</xsl:if>
 					
 					<th><xsl:value-of select="$i18n.flowFamilies" /></th>
-					<th width="32" />
+					<th width="37" />
 				</tr>
 			</thead>
 			<tbody>
@@ -4179,26 +4244,26 @@
 							<td colspan="4">
 								<xsl:value-of select="$i18n.noFlowTypesFound" />
 							</td>
-						</tr>					
+						</tr>
 					</xsl:when>
 					<xsl:otherwise>
 						
 						<xsl:apply-templates select="FlowTypes/FlowType" mode="list"/>
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
-		</table>		
+		</table>
 		
 		<xsl:if test="AdminAccess">
 			<br/>
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowtype" title="{$i18n.addFlowType}">
 					<xsl:value-of select="$i18n.addFlowType"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
-				</a>			
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+				</a>
 			</div>
-		</xsl:if>		
+		</xsl:if>
 	
 	</xsl:template>
 	
@@ -4230,30 +4295,30 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtype/{flowTypeID}" title="{$i18n.showFlowType}: {name}">
 					<xsl:value-of select="flowFamilyCount"/>
 				</a>
-			</td>					
+			</td>
 			<td>
 				<xsl:if test="../../AdminAccess">
 					
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowtype/{flowTypeID}" title="{$i18n.updateFlowType}: {name}">
-						<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
 					<xsl:choose>
 						<xsl:when test="flowFamilyCount > 0">
 	
 							<a href="#" onclick="alert('{$i18n.deleteFlowTypeDisabledHasFlows}'); return false;" title="{$i18n.deleteFlowTypeDisabledHasFlows}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/delete_gray.png" alt="" />
 							</a>
 	
-						</xsl:when>									
+						</xsl:when>
 						<xsl:otherwise>
 	
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {name}?');" title="{$i18n.deleteFlowType}: {name}">
-								<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+								<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
 							</a>
 	
-						</xsl:otherwise>					
-					</xsl:choose>					
+						</xsl:otherwise>
+					</xsl:choose>
 					
 				</xsl:if>
 			</td>
@@ -4267,26 +4332,26 @@
 
 			<div class="floatright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflowtype/{FlowType/flowTypeID}" title="{$i18n.updateFlowType}: {FlowType/name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
 				</a>
 				
 				<xsl:choose>
 					<xsl:when test="flowFamilyCount > 0">
 	
 						<a href="#" onclick="alert('{$i18n.deleteFlowTypeDisabledHasFlows}'); return false;" title="{$i18n.deleteFlowTypeDisabledHasFlows}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete_gray.png" alt="" />
+							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
 						</a>
 	
-					</xsl:when>									
+					</xsl:when>
 					<xsl:otherwise>
 	
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{FlowType/flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {FlowType/name}?');" title="{$i18n.deleteFlowType}: {FlowType/name}">
-							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 						</a>
 	
-					</xsl:otherwise>					
-				</xsl:choose>			
-			</div>				
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
 	
 		</xsl:if>
 	
@@ -4300,7 +4365,7 @@
 	
 		<fieldset>
 			<legend>
-				<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/lock.png" alt="" />
+				<img class="alignmiddle" src="{$imgPath}/lock.png" alt="" />
 				<xsl:text>&#x20;</xsl:text>
 				<xsl:value-of select="$i18n.FlowType.AdminAccess.Title"/>
 			</legend>
@@ -4327,12 +4392,12 @@
 					<xsl:value-of select="$i18n.onlyModuleAdminAccess"/>
 				</span>
 			
-			</xsl:if>						
+			</xsl:if>
 		</fieldset>
 
 		<fieldset>
 			<legend>
-				<img class="alignmiddle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/lock.png" alt="" />
+				<img class="alignmiddle" src="{$imgPath}/lock.png" alt="" />
 				<xsl:text>&#x20;</xsl:text>
 				<xsl:value-of select="$i18n.FlowType.UserAccess.Title"/>
 			</legend>
@@ -4361,7 +4426,7 @@
 					<span class="floatleft">
 						<xsl:value-of select="$i18n.noUserAccess"/>
 					</span>
-				</xsl:if>					
+				</xsl:if>
 				
 				</xsl:when>
 				<xsl:otherwise>
@@ -4370,7 +4435,7 @@
 				
 				</xsl:otherwise>
 			</xsl:choose>
-								
+			
 		</fieldset>
 
 		<fieldset>
@@ -4388,7 +4453,7 @@
 				
 					<span class="floatleft">
 						<xsl:value-of select="$i18n.noAllowedQueryTypes"/>
-					</span>					
+					</span>
 				
 				</xsl:otherwise>
 			</xsl:choose>
@@ -4410,7 +4475,7 @@
 					
 						<span class="floatleft">
 							<xsl:value-of select="$i18n.noCategories"/>
-						</span>					
+						</span>
 					
 					</xsl:otherwise>
 				</xsl:choose>
@@ -4421,8 +4486,8 @@
 			<div class="floatright marginright">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addcategory/{FlowType/flowTypeID}" title="{$i18n.addCategory}">
 					<xsl:value-of select="$i18n.addCategory"/>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder_add.png" alt="" />
-				</a>			
+					<img class="alignbottom" src="{$imgPath}/folder_add.png" alt="" />
+				</a>
 			</div>
 		</xsl:if>
 
@@ -4434,10 +4499,10 @@
 
 			<xsl:choose>
 				<xsl:when test="enabled='true'">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/user.png" alt="" />
 				</xsl:when>
 				<xsl:otherwise>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/user_disabled.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/user_disabled.png" alt="" />
 				</xsl:otherwise>
 			</xsl:choose>
 			
@@ -4467,10 +4532,10 @@
 
 			<xsl:choose>
 				<xsl:when test="enabled='true'">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/group.png" alt="" />
 				</xsl:when>
 				<xsl:otherwise>
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group_disabled.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/group_disabled.png" alt="" />
 				</xsl:otherwise>
 			</xsl:choose>
 			
@@ -4485,20 +4550,20 @@
 		
 		<div class="floatleft full marginbottom border">
 
-			<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/form.png" alt="" />
+			<img class="alignbottom" src="{$imgPath}/form.png" alt="" />
 			
 			<xsl:text>&#x20;</xsl:text>
 			
 			<xsl:value-of select="name"/>
-		</div>	
+		</div>
 		
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="Category" mode="list">
 		
 		<div class="floatleft full marginbottom border">
 
-			<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/folder.png" alt="" />
+			<img class="alignbottom" src="{$imgPath}/folder.png" alt="" />
 			
 			<xsl:text>&#x20;</xsl:text>
 			
@@ -4507,11 +4572,11 @@
 			<div class="floatright marginright">
 
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatecategory/{categoryID}" title="{$i18n.updateCategory}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
 				</a>
 
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletecategory/{categoryID}" onclick="return confirm('{$i18n.deleteCategory}: {name}?');" title="{$i18n.deleteCategory}: {name}">
-					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
+					<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 				</a>
 
 			</div>	
@@ -4557,7 +4622,7 @@
 		
 		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template name="flowTypeForm">
 	
@@ -4571,7 +4636,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'name'"/>
 					<xsl:with-param name="name" select="'name'"/>
-					<xsl:with-param name="element" select="FlowType" />          
+					<xsl:with-param name="element" select="FlowType" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4620,7 +4685,7 @@
 							<xsl:with-param name="id" select="'iconColor'"/>
 							<xsl:with-param name="name" select="'iconColor'"/>
 							<xsl:with-param name="class" select="'color-input'"/>
-							<xsl:with-param name="element" select="FlowType" />		
+							<xsl:with-param name="element" select="FlowType" />
 						</xsl:call-template>
 					</div>
 							
@@ -4647,11 +4712,11 @@
 			<p class="margin">
 				<xsl:value-of select="$i18n.FlowType.AdminAccess.Description" />
 			</p>
-		
+			
 			<label class="floatleft full">
 				<xsl:value-of select="$i18n.allowedGroups" />
 			</label>
-							
+			
 			<xsl:call-template name="GroupList">
 				<xsl:with-param name="connectorURL">
 					<xsl:value-of select="/Document/requestinfo/currentURI"/>
@@ -4764,7 +4829,7 @@
 	<xsl:template match="QueryTypeDescriptor" mode="scrolllist">
 		<div class="floatleft full border marginbottom">
 			<div class="floatleft">
-				<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/form.png" alt="" />
+				<img class="alignbottom" src="{$imgPath}/form.png" alt="" />
 				
 				<xsl:text>&#x20;</xsl:text>
 				
@@ -4877,9 +4942,9 @@
 						<xsl:value-of select="/Document/module/alias"/>
 						<xsl:text>/groups</xsl:text>
 					</xsl:with-param>
-					<xsl:with-param name="name" select="'group'"/>
-					<xsl:with-param name="groups" select="ManagerGroups" />
-				</xsl:call-template>				
+					<xsl:with-param name="name" select="'manager-group'"/>
+					<xsl:with-param name="groups" select="ManagerGroups/FlowFamilyManagerGroup[group]" />
+				</xsl:call-template>
 				
 			</div>
 			
@@ -4900,29 +4965,37 @@
 					<xsl:with-param name="users" select="ManagerUsers/FlowFamilyManager[user]" />
 				</xsl:call-template>
 				
-				<xsl:if test="ShowManagerModalOnAdd">
-					
-					<script type="text/javascript">
-						$(document).ready(function() {
-							
-							// Overrides UserGroupList.js
-							var origFunction = addUserGroupEntry;
-							
-							addUserGroupEntry = function(item, list, prefix, template, showUserURL) {
-								
-								var newRow = origFunction.apply(null, arguments);
-								
-								if (newRow != null) {
-									if (prefix == "manager") {
-										newRow.find("a.open-manager-modal").click();
-									}
-								}
-							};
-						});
-					</script>
-					
-				</xsl:if>
 			</div>
+					
+			<script type="text/javascript">
+				$(document).ready(function() {
+					
+					$("#manager-list").children("li.manager-list-entry").each(function(){
+						updateManagerShowHideRowExtra($(this));
+					});
+					
+					$("#manager-group-list").children("li.manager-group-list-entry").each(function(){
+						updateManagerGroupShowHideRowExtra($(this));
+					});
+					
+					<xsl:if test="ShowManagerModalOnAdd">
+					// Overrides UserGroupList.js
+					var origFunction = addUserGroupEntry;
+					
+					addUserGroupEntry = function(item, list, prefix, template, showUserURL) {
+						
+						var newRow = origFunction.apply(null, arguments);
+						
+						if (newRow != null) {
+							if (prefix == "manager" || prefix == "manager-group") {
+								newRow.find("a.open-manager-modal").click();
+							}
+						}
+					};
+					</xsl:if>
+					
+				});
+			</script>
 		
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateManagers.submit}" />
@@ -4930,9 +5003,9 @@
 		
 		</form>
 		
-		<div id="updateManagersModal" style="display: none;" >
+		<div id="updateManagerModal" style="display: none;" >
 			
-			<div class="manager-modal contentitem" data-calendaricon="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/calendar_grid.png">
+			<div class="manager-modal contentitem" data-calendaricon="{$imgPath}/calendar_grid.png">
 				<div class="modal-content">
 				
 					<div class="modal-header bigmarginbottom">
@@ -4969,6 +5042,46 @@
 									<xsl:with-param name="type" select="'date'"/>
 								</xsl:call-template>
 						  </div>
+						</div>
+						
+						<div class="floatleft full bigmarginbottom">
+						
+							<div class="floatleft">
+								<input type="checkbox" id="restricted1" name="restricted" value="true" />
+								<label class="marginleft" for="restricted1">
+									<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedUser" />
+								</label>
+							</div>
+						</div>
+						
+						<input class="close bigmargintop floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
+						
+					</div>
+					
+				</div>
+			</div>
+		
+		</div>
+		
+		<div id="updateManagerGroupModal" style="display: none;" >
+			
+			<div class="manager-modal contentitem" data-calendaricon="{$imgPath}/calendar_grid.png">
+				<div class="modal-content">
+				
+					<div class="modal-header bigmarginbottom">
+						<h1 data-title="{$i18n.UpdateManagers.Modal.Title}" />
+					</div>
+					
+					<div class="modal-body">
+					
+						<div class="floatleft full bigmarginbottom">
+						
+							<div class="floatleft">
+								<input type="checkbox" id="restricted2" name="restricted" value="true" />
+								<label class="marginleft" for="restricted2">
+									<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedGroup" />
+								</label>
+							</div>
 						</div>
 						
 						<input class="close bigmargintop floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
@@ -5015,9 +5128,45 @@
 		
 		<xsl:choose>
 			<xsl:when test="$listname = 'manager'">
+				
+				<span class="bigmarginleft restricted" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.restricted" />
+				</span>
+				
+				<span class="bigmarginleft validfrom" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.validFromDate"/>
+					<xsl:text>&#x20;</xsl:text>
+					<span/>
+				</span>
+				
+				<span class="bigmarginleft validto" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.validToDate"/>
+					<xsl:text>&#x20;</xsl:text>
+					<xsl:value-of select="validToDate"/>
+					<span/>
+				</span>
+				
+				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagerModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
+					<img class="vertical-align-middle" src="{$imgPath}/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
+				</a>
 			
-				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagersModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
-					<img class="vertical-align-middle" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template name="grouplist-extension-buttons">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager-group'">
+			
+				<div class="display-inline bigmarginleft restricted" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.restricted" />
+				</div>
+			
+				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagerGroupModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
+					<img class="vertical-align-middle" src="{$imgPath}/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
 				</a>
 			
 			</xsl:when>
@@ -5040,6 +5189,12 @@
 				<xsl:call-template name="userlist-extension-default">
 					<xsl:with-param name="listname" select="$listname" />
 					<xsl:with-param name="name" select="'validToDate'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'restricted'" />
 					<xsl:with-param name="value" select="''" />
 				</xsl:call-template>
 			
@@ -5067,6 +5222,49 @@
 					<xsl:with-param name="requestparameters" select="$requestparameters" />
 					<xsl:with-param name="name" select="'validToDate'" />
 					<xsl:with-param name="value" select="../validToDate" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'restricted'" />
+					<xsl:with-param name="value" select="../restricted" />
+				</xsl:call-template>
+			
+			</xsl:when>
+		</xsl:choose>
+		
+	</xsl:template>
+	
+	<xsl:template name="grouplist-extension-defaults">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager-group'">
+			
+				<xsl:call-template name="grouplist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'restricted'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template match="group" mode="grouplist-extension">
+		<xsl:param name="listname"/>
+		<xsl:param name="requestparameters" />
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'manager-group'">
+			
+				<xsl:call-template name="grouplist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'restricted'" />
+					<xsl:with-param name="value" select="../restricted" />
 				</xsl:call-template>
 			
 			</xsl:when>
@@ -5381,7 +5579,452 @@
 		</form>
 	
 	</xsl:template>
+	
+	<xsl:template match="AutoManagerAssignment">
+	
+		<h1>
+			<xsl:value-of select="$i18n.AutoManagerAssignment.title"/>
+			<xsl:text>:&#x20;</xsl:text>
+			<xsl:value-of select="Flow/name"/>
+		</h1>
+		
+		<p><xsl:value-of select="$i18n.AutoManagerAssignment.description"/></p>
 
+		<xsl:apply-templates select="ValidationErrors/validationError" />
+
+		<form class="automanagerassignment" method="post" action="{/Document/requestinfo/uri}">
+			
+			<fieldset id="auto-manager-rules" class="clearboth">
+				<legend><xsl:value-of select="$i18n.AutoManagerAssignment.Rules"/></legend>
+				
+				<table class="full oep-table">
+					<thead>
+						<tr>
+							<th class="twenty"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.AttributeName" /></th>
+							<th style="width: 75px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Inverted" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.AttributeValues" /></th>
+							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
+							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
+							<th style="width: 37px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						
+						<xsl:apply-templates select="FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule" />
+						
+						<tr id="auto-manager-rule-template" class="auto-manager-rule new_row" style="display: none;">
+				
+							<td class="auto-manager-attribute" />
+							<td class="auto-manager-invert">
+								<span>
+									<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Inverted" />
+								</span>
+							</td>
+							<td class="auto-manager-values" />
+							<td class="auto-manager-users">
+								<span />
+								<div style="display: none;" />
+							</td>
+							<td class="auto-manager-groups">
+								<span />
+								<div style="display: none;" />
+							</td>
+							
+							<td>
+								<input type="hidden" disabled="true" name="auto-manager-rule" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-attribute" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-values" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-invert" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-users" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-groups" value="" />
+							
+								<a class="marginright open-auto-manager-modal" href="#" onclick="openAutoManagerAssignmentRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
+									<img src="{$imgPath}/pen.png" alt="" />
+								</a>
+								<a class="" href="#" onclick="removeAutoManagerAssignmentRule(this, event, '{$i18n.AutoManagerAssignment.Rule.DeleteConfirm}?')" title="{$i18n.AutoManagerAssignment.Rule.Delete}">
+									<img src="{$imgPath}/delete.png"/>
+								</a>
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+				
+				<a class="floatright marginright" href="#" onclick="addAutoManagerAssignmentRule(this, event)" title="{$i18n.AutoManagerAssignment.Rules.Add}">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Add"/>
+					<img class="marginleft vertical-align-middle" src="{$imgPath}/add.png" alt="" />
+				</a>
+				
+			</fieldset>
+			
+			<div id="updateAutoManagerModal" style="display: none;" >
+				
+				<div class="auto-manager-modal contentitem">
+					<div class="modal-content">
+					
+						<div class="modal-header bigmarginbottom">
+							<h1>
+								<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Update" />
+							</h1>
+						</div>
+						
+						<div class="modal-body">
+						
+							<div class="floatleft full bigmarginbottom">
+							
+								<label for="attribute" class="floatleft full">
+									<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeName" />
+								</label>
+								
+								<div class="floatleft full">
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="id" select="'attribute'"/>
+										<xsl:with-param name="name" select="'attribute'"/>
+									</xsl:call-template>
+								</div>
+							</div>
+							
+							<div class="floatleft full bigmarginbottom">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'invert'" />
+										<xsl:with-param name="id" select="'invert'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="invert">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Invert" />
+									</label>
+								</div>
+							</div>
+							
+							<div class="floatleft full bigmarginbottom">
+							
+								<label for="values" class="floatleft">
+									<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeValues" />
+								</label>
+								
+								<div class="floatleft full">
+									<xsl:call-template name="createTextArea">
+										<xsl:with-param name="id" select="'values'"/>
+										<xsl:with-param name="name" select="'values'"/>
+									</xsl:call-template>
+								</div>
+							</div>
+							
+							<div class="floatleft full usergrouplist-split marginbottom">
+				
+								<div class="floatleft bigmarginright">
+									
+									<label class="">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+									</label>
+									
+									<xsl:call-template name="UserList">
+										<xsl:with-param name="connectorURL">
+											<xsl:value-of select="/Document/requestinfo/currentURI"/>
+											<xsl:text>/</xsl:text>
+											<xsl:value-of select="/Document/module/alias"/>
+											<xsl:text>/managerusers/</xsl:text>
+											<xsl:value-of select="Flow/flowID"/>
+										</xsl:with-param>
+										<xsl:with-param name="name" select="'template-user'"/>
+									</xsl:call-template>
+								
+								</div>
+								
+								<div class="floatleft">
+								
+									<label class="">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+									</label>
+													
+									<xsl:call-template name="GroupList">
+										<xsl:with-param name="connectorURL">
+											<xsl:value-of select="/Document/requestinfo/currentURI"/>
+											<xsl:text>/</xsl:text>
+											<xsl:value-of select="/Document/module/alias"/>
+											<xsl:text>/managergroups/</xsl:text>
+											<xsl:value-of select="Flow/flowID"/>
+										</xsl:with-param>
+										<xsl:with-param name="name" select="'template-group'"/>
+									</xsl:call-template>
+									
+								</div>
+								
+							</div>
+							
+							<input class="close bigmargintop floatright" type="button" value="{$i18n.AutoManagerAssignment.Rule.Save}" />
+							
+						</div>
+						
+					</div>
+				</div>
+			
+			</div>
+			
+			<fieldset class="clearboth">
+				<legend><xsl:value-of select="$i18n.AutoManagerAssignment.NoMatch"/></legend>
+			
+				<div class="floatleft full usergrouplist-split marginbottom">
+					
+					<div class="floatleft bigmarginright">
+					
+						<label class="">
+							<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+						</label>
+						
+						<xsl:call-template name="UserList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/managerusers/</xsl:text>
+								<xsl:value-of select="Flow/flowID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'auto-manager-nomatch-user'"/>
+							<xsl:with-param name="users" select="AutoManagerAssignmentNoMatchUsers" />
+						</xsl:call-template>
+					
+					</div>
+					
+					<div class="floatleft">
+					
+						<label class="">
+							<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+						</label>
+										
+						<xsl:call-template name="GroupList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/managergroups/</xsl:text>
+								<xsl:value-of select="Flow/flowID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'auto-manager-nomatch-group'"/>
+							<xsl:with-param name="groups" select="AutoManagerAssignmentNoMatchGroups" />
+						</xsl:call-template>
+						
+					</div>
+					
+				</div>
+			
+			</fieldset>
+			
+			<fieldset class="bigmarginbottom">
+				<legend><xsl:value-of select="$i18n.AutoManagerAssignment.Always"/></legend>
+			
+				<div class="floatleft full usergrouplist-split marginbottom">
+					
+					<div class="floatleft bigmarginright">
+					
+						<label class="">
+							<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+						</label>
+						
+						<xsl:call-template name="UserList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/managerusers/</xsl:text>
+								<xsl:value-of select="Flow/flowID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'auto-manager-always-user'"/>
+							<xsl:with-param name="users" select="AutoManagerAssignmentAlwaysUsers" />
+						</xsl:call-template>
+					
+					</div>
+					
+					<div class="floatleft">
+					
+						<label class="">
+							<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+						</label>
+										
+						<xsl:call-template name="GroupList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/managergroups/</xsl:text>
+								<xsl:value-of select="Flow/flowID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'auto-manager-always-group'"/>
+							<xsl:with-param name="groups" select="AutoManagerAssignmentAlwaysGroups" />
+						</xsl:call-template>
+						
+					</div>
+					
+				</div>
+			</fieldset>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.AutoManagerAssignment.submit}" />
+			</div>
+		
+		</form>
+	
+	</xsl:template>
+	
+	<xsl:template match="AutoManagerAssignmentRule">
+		<xsl:param name="requestparameters" select="../../../requestparameters"/>
+	
+		<tr class="auto-manager-rule">
+		
+			<xsl:variable name="ruleID">
+				<xsl:choose>
+					<xsl:when test="ruleID">
+						<xsl:value-of select="ruleID"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="generatedRuleID"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<xsl:variable name="attribute">
+				<xsl:choose>
+					<xsl:when test="$requestparameters">
+						<xsl:value-of select="$requestparameters/parameter[name = concat('auto-manager-rule-attribute-', $ruleID)]/value" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="attributeName" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<td class="auto-manager-attribute">
+				<xsl:value-of select="$attribute" />
+			</td>
+			<td class="auto-manager-invert">
+				<span>
+					<xsl:if test="not(invert = 'true')">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Inverted" />
+				</span>
+			</td>
+			<td class="auto-manager-values">
+				<xsl:choose>
+						<xsl:when test="$requestparameters">
+							<xsl:call-template name="replace-string">
+								<xsl:with-param name="text" select="$requestparameters/parameter[name = concat('auto-manager-rule-values-', $ruleID)]/value"/>
+								<xsl:with-param name="from" select="'&#13;'"/>
+								<xsl:with-param name="to" select="', '"/>
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+						
+							<xsl:for-each select="Values/*">
+								
+								<xsl:if test="position() > 1">
+									<xsl:text>, </xsl:text>
+								</xsl:if>
+								
+								<xsl:value-of select="."/>
+								
+							</xsl:for-each>
+							
+						</xsl:otherwise>
+					</xsl:choose>
+			</td>
+			<td class="auto-manager-users">
+				<span>
+					<xsl:value-of select="count(UserIDs/*)" />
+				</span>
+				<div style="display: none;">
+					<xsl:apply-templates select="Users/user" mode="userlist-fromXML">
+						<xsl:with-param name="prefix" select="'template-user'" />
+						<xsl:with-param name="showEmail" select="false()" />
+						<xsl:with-param name="showUsername" select="true()" />
+						<xsl:with-param name="document" select="/Document" />
+						<xsl:with-param name="showUserURL" select="null" />
+						<xsl:with-param name="useExternalIcons" select="null"/>
+					</xsl:apply-templates>
+				</div>
+			</td>
+			<td class="auto-manager-groups">
+				<span>
+					<xsl:value-of select="count(GroupIDs/*)" />
+				</span>
+				<div style="display: none;">
+					<xsl:apply-templates select="Groups/group" mode="grouplist-fromXML">
+						<xsl:with-param name="prefix" select="'template-group'" />
+						<xsl:with-param name="document" select="/Document" />
+						<xsl:with-param name="useExternalIcons" select="null"/>
+					</xsl:apply-templates>
+				</div>
+			</td>
+			
+			<td>
+				<xsl:variable name="userIDs">
+					<xsl:for-each select="UserIDs/*">
+						
+						<xsl:if test="position() > 1">
+							<xsl:text>,</xsl:text>
+						</xsl:if>
+						
+						<xsl:value-of select="."/>
+						
+					</xsl:for-each>
+				</xsl:variable>
+				
+				<xsl:variable name="groupIDs">
+					<xsl:for-each select="GroupIDs/*">
+					
+						<xsl:if test="position() > 1">
+							<xsl:text>,</xsl:text>
+						</xsl:if>
+						
+						<xsl:value-of select="."/>
+					
+					</xsl:for-each>
+				</xsl:variable>
+				
+				<xsl:variable name="values">
+					<xsl:choose>
+						<xsl:when test="$requestparameters">
+							
+							<xsl:value-of select="$requestparameters/parameter[name = concat('auto-manager-rule-values-', $ruleID)]/value"/>
+							
+						</xsl:when>
+						<xsl:otherwise>
+							
+							<xsl:for-each select="Values/*">
+								
+								<xsl:if test="position() > 1">
+									<xsl:text>&#13;</xsl:text>
+								</xsl:if>
+								
+								<xsl:value-of select="."/>
+								
+							</xsl:for-each>
+							
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				
+				<input type="hidden" name="auto-manager-rule" value="{$ruleID}" />
+				<input type="hidden" name="auto-manager-rule-attribute-{$ruleID}" value="{$attribute}" />
+				<input type="hidden" name="auto-manager-rule-values-{$ruleID}" value="{$values}" />
+				<input type="hidden" name="auto-manager-rule-invert-{$ruleID}" value="{invert}" />
+				<input type="hidden" name="auto-manager-rule-users-{$ruleID}" value="{$userIDs}" />
+				<input type="hidden" name="auto-manager-rule-groups-{$ruleID}" value="{$groupIDs}" />
+			
+				<a class="marginright open-auto-manager-modal" href="#" onclick="openAutoManagerAssignmentRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
+					<img src="{$imgPath}/pen.png" alt="" />
+				</a>
+				<a class="" href="#" onclick="removeAutoManagerAssignmentRule(this, event, '{$i18n.AutoManagerAssignment.Rule.DeleteConfirm}?')" title="{$i18n.AutoManagerAssignment.Rule.Delete}">
+					<img src="{$imgPath}/delete.png"/>
+				</a>
+			</td>
+			
+		</tr>
+	
+	</xsl:template>
+	
 	<xsl:template name="ExtraFlowListColumnsHeader" />
 
 	<xsl:template name="ExtraFlowListColumns" />
@@ -5905,10 +6548,90 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"/>
+			<xsl:value-of select="$i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError"/>
 		</p>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError"/>
+		</p>
+	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/firstname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/lastname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnauthorizedGroupNotManager']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="group/name" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='InUseManagerUserError']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.Part1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/firstname" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="user/lastname" />
+			<xsl:text>&#160;</xsl:text>
+			
+			<xsl:if test="user/groups">
+			
+				<xsl:text>(</xsl:text>
+				<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.MemberOfGroups" />
+				<xsl:text>&#160;</xsl:text>
+				
+				<xsl:for-each select="user/groups/group">
+				
+					<xsl:if test="position() != 1">
+						<xsl:text>,&#160;</xsl:text>
+					</xsl:if>
+				
+					<xsl:value-of select="name"/>
+					
+				</xsl:for-each>
+				
+				<xsl:text>)&#160;</xsl:text>
+				
+			</xsl:if>
+			
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.Part2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='InUseManagerGroupError']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerGroupError.Part1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="group/name" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.InUseManagerGroupError.Part2" />!
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='FullManagerOrFallbackManagerRequired']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.FullManagerOrFallbackManagerRequired" />
+		</p>
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowFamilyAliasCollision']">
 			
@@ -5935,53 +6658,6 @@
 			<xsl:value-of select="$i18n.FlowFamilyAliasAlreadyInUseBySystem"/>
 		</p>
 		
-	</xsl:template>
-	
-	<xsl:template match="validationError[messageKey='UnauthorizedManagerUserError']">
-	
-		<p class="error">
-			<xsl:value-of select="$i18n.UnauthorizedManagerUserError.Part1" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/firstname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/lastname" />
-			<xsl:text>&#160;</xsl:text>
-			
-			<xsl:if test="user/groups">
-			
-				<xsl:text>(</xsl:text>
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.MemberOfGroups" />
-				<xsl:text>&#160;</xsl:text>
-				
-				<xsl:for-each select="user/groups/group">
-				
-					<xsl:if test="position() != 1">
-						<xsl:text>,&#160;</xsl:text>
-					</xsl:if>
-				
-					<xsl:value-of select="name"/>
-					
-				</xsl:for-each>
-				
-				<xsl:text>)&#160;</xsl:text>
-				
-			</xsl:if>
-			
-			<xsl:value-of select="$i18n.UnauthorizedManagerUserError.Part2" />!
-		</p>
-	</xsl:template>
-	
-	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
-	
-		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.1" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/firstname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="user/lastname" />
-			<xsl:text>&#160;</xsl:text>
-			<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.2" />!
-		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError">
@@ -6112,19 +6788,67 @@
 						<xsl:value-of select="$i18n.Event.message"/>
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
-						
 						<xsl:variable name="id" select="substring(fieldName, 22)" />
+						
 						<xsl:value-of select="../../requestparameters/parameter[name = concat('manager-name', $id)]/value" />
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.UpdateManagers.Modal.validFromDate" />
 						
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'manager-validToDate')">
-						
 						<xsl:variable name="id" select="substring(fieldName, 20)" />
+						
 						<xsl:value-of select="../../requestparameters/parameter[name = concat('manager-name', $id)]/value" />
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.UpdateManagers.Modal.validToDate" />
+						
+					</xsl:when>
+					
+					<!-- Auto manager assignment-->
+					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-attribute-')">
+						<xsl:variable name="id" select="substring(fieldName, 29)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeName" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-values-')">
+						<xsl:variable name="id" select="substring(fieldName, 26)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>,&#160;</xsl:text>
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('auto-manager-rule-attribute-', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeValues" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-users-')">
+						<xsl:variable name="id" select="substring(fieldName, 25)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>,&#160;</xsl:text>
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('auto-manager-rule-attribute-', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-groups-')">
+						<xsl:variable name="id" select="substring(fieldName, 26)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>,&#160;</xsl:text>
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('auto-manager-rule-attribute-', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
 						
 					</xsl:when>
 					<xsl:otherwise>

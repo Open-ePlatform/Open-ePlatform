@@ -5,9 +5,7 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,38 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.Category;
-import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAction;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManager;
-import com.nordicpeak.flowengine.beans.FlowForm;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
-import com.nordicpeak.flowengine.beans.StandardStatus;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
-import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableStep;
-import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
-import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
-import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
-
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
@@ -60,7 +27,6 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedIntegerBasedCRUD;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -81,6 +47,34 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.populators.annotated.RequestMapping;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.Category;
+import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
+import com.nordicpeak.flowengine.beans.StandardStatus;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
+import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStep;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
+import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
+import com.nordicpeak.flowengine.validationerrors.FlowFamilyAliasCollisionValidationError;
 
 public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
@@ -659,71 +653,46 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	@Override
 	protected void appendShowFormData(Flow flow, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
-
+		
 		XMLUtils.append(doc, showTypeElement, "FlowVersions", callback.getFlowVersions(flow.getFlowFamily()));
-
+		
 		XMLUtils.append(doc, showTypeElement, "EvaluatorTypes", callback.getEvaluationHandler().getAvailableEvaluatorTypes());
-
+		
 		XMLUtils.append(doc, showTypeElement, "QueryTypes", callback.getQueryHandler().getAvailableQueryTypes());
 		
-		if (flow.getFlowFamily().getAllowedGroupIDs() != null) {
-
-			List<Group> groups = callback.getGroupHandler().getGroups(flow.getFlowFamily().getAllowedGroupIDs(), false);
-
-			XMLUtils.append(doc, showTypeElement, "AllowedGroups", groups);
-		}
-
-		if (flow.getFlowFamily().getAllowedUserIDs() != null) {
-
-			List<Integer> userIDs = new ArrayList<Integer>();
-			
-			for (FlowFamilyManager manager : flow.getFlowFamily().getManagerUsers()) {
-				
-				userIDs.add(manager.getUserID());
-			}
-			
-			Map<Integer, User> userMap = UserUtils.getUserIDMap(callback.getUserHandler().getUsers(userIDs, false, true));
-			
-			for (FlowFamilyManager manager : flow.getFlowFamily().getManagerUsers()) {
-				
-				manager.setUser(userMap.get(manager.getUserID()));
-			}
-			
-			Collections.sort(flow.getFlowFamily().getManagerUsers(), FlowFamilyManagerComparator.getInstance());
-			XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagerUsers());
-		}
-
+		flow.getFlowFamily().setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
+		XMLUtils.append(doc, showTypeElement, "ManagerGroups", flow.getFlowFamily().getManagerGroups());
+		XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagers());
+		
 		FlowSubmitSurveyProvider submitSurveyProvider = callback.getSystemInterface().getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
-
+		
 		if (submitSurveyProvider != null) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "SubmitSurveyEnabled");
-
+			
 			ViewFragment viewFragment = submitSurveyProvider.getShowFlowSurveysFragment(flow.getFlowID());
-
+			
 			if (viewFragment != null) {
-
+				
 				req.setAttribute("ShowFlowSurveysFragment", viewFragment);
-
+				
 				XMLUtils.appendNewElement(doc, showTypeElement, "ShowFlowSurveysHTML", viewFragment.getHTML());
-
 			}
-
 		}
-
+		
 		List<FlowAdminExtensionViewProvider> extensionProviders = callback.getExtensionViewProviders();
-
+		
 		if (extensionProviders != null) {
-
+			
 			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(extensionProviders.size());
-
+			
 			for (FlowAdminExtensionViewProvider extensionProvider : extensionProviders) {
-
+				
 				try {
 					ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
-
+					
 					if (viewFragment != null) {
-
+						
 						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
@@ -740,13 +709,13 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 							}
 						}
 					}
-
+					
 				} catch (Exception e) {
-
+					
 					log.error("Error while getting show view fragment for extension provider " + extensionProvider, e);
 				}
 			}
-
+			
 			if (!viewFragments.isEmpty()) {
 				
 				req.setAttribute("ExtensionProviderFragments", viewFragments);
@@ -754,25 +723,25 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		}
 		
 		List<FlowAdminShowFlowExtensionLinkProvider> showExtensionLinkProviders = callback.getFlowShowExtensionLinkProviders();
-
+		
 		if (!CollectionUtils.isEmpty(showExtensionLinkProviders)) {
-
+			
 			List<ExtensionLink> extensionLinks = new ArrayList<ExtensionLink>(showExtensionLinkProviders.size());
-
+			
 			for (FlowAdminShowFlowExtensionLinkProvider linkProvider : showExtensionLinkProviders) {
-
+				
 				if (linkProvider.getAccessInterface() == null || AccessUtils.checkAccess(user, linkProvider.getAccessInterface())) {
-
+					
 					try {
 						ExtensionLink link = linkProvider.getShowFlowExtensionLink(user);
-
+						
 						if (link != null) {
-
+							
 							extensionLinks.add(link);
 						}
-
+						
 					} catch (Exception e) {
-
+						
 						log.error("Error getting extension link from provider " + linkProvider, e);
 					}
 				}
@@ -780,20 +749,25 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			
 			XMLUtils.append(doc, showTypeElement, extensionLinks);
 		}
-
+		
 		if (flow.isEnabled() && flow.getSteps() == null && !CollectionUtils.isEmpty(flow.getFlowForms()) && flow.isInternal()) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "MayNotRemoveFlowFormIfNoSteps");
 		}
-
+		
 		if (callback.allowSkipOverviewForFlowForms()) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 		
 		if (callback.hasPublishAccess(user)) {
-
+			
 			XMLUtils.appendNewElement(doc, showTypeElement, "PublishAccess", "true");
+		}
+		
+		if (flow.getFlowFamily().usesAutoManagerAssignment()) {
+			
+			XMLUtils.appendNewElement(doc, showTypeElement, "UsesAutoManagerAssignment");
 		}
 		
 		XMLUtils.append(doc, showTypeElement, "FlowFamilyEvents", callback.getRecentFlowFamilyEvents(flow.getFlowFamily()));

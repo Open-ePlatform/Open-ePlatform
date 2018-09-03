@@ -40,8 +40,8 @@
 	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowInstanceManagerExpired">Handläggare automatiskt borttagen:</xsl:variable>
-	
 	<xsl:variable name="java.eventFunctionConfigured">Ändrande konfigurationen av funktionen</xsl:variable>
+	<xsl:variable name="java.eventUpdateAutoManagerAssignment">Ändrade inställningar för automatisk tilldelning av handläggare</xsl:variable>
 	
 	<xsl:variable name="java.bundleListFlows">Lista e-tjänster</xsl:variable>
 	<xsl:variable name="java.bundleAddFlow">Lägg till e-tjänst</xsl:variable>
@@ -172,9 +172,12 @@
 	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
-	<xsl:variable name="i18n.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.2">är inte handläggare för den här e-tjänsten!</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedGroupNotManager.1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.UnauthorizedGroupNotManager.2">är inte begränsad handläggare för den här e-tjänsten!</xsl:variable>
 	
 	<xsl:variable name="i18n.deleteStatusDisabledHasInstances">Den här statusen kan inte tas bort eftersom det finns en eller flera ärenden kopplade till den.</xsl:variable>
 	<xsl:variable name="i18n.updateStatus.link.title">Uppdatera statusen</xsl:variable>
@@ -322,20 +325,21 @@
 	<xsl:variable name="i18n.Managers">Handläggare</xsl:variable>
 	<xsl:variable name="i18n.ManagersDescription">Följande grupper och användare får handlägga ärenden för denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowFamilyManagers">Välj handläggare</xsl:variable>
+	<xsl:variable name="i18n.UpdateAutoManagerAssignment">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.NoManagers">Inga handläggare har åtkomst till ärenden för den här e-tjänsten.</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.title">Uppdatera handläggare för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.openModal">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validFromDate">Giltig från och med</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validToDate">Giltig till och med</xsl:variable>
-	<xsl:variable name="i18n.UpdateManagers.Modal.restricted">Begränsad (Kan endast se ärenden hen blivit tilldelade)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (Kan endast se ärenden hen blivit tilldelade)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (Kan endast se ärenden gruppen blivit tilldelad)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.validToDate">Giltig till och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromToDate">till och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.restricted">Begränsad</xsl:variable>
-	
 	
 	<xsl:variable name="i18n.AddFlowCategoryNotFound">Den begärda underkategorin hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.AddCategoryFailedFlowTypeNotFound">Den begärda kategorin hittades inte.</xsl:variable>
@@ -364,8 +368,11 @@
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.Part1">Användaren</xsl:variable>
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.Part1">Användaren</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.MemberOfGroups">medlem i</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerGroupError.Part1">Gruppen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.InUseManagerGroupError.Part2">handlägger aktiva ärenden för den här e-tjänsten och får därför inte plockas bort</xsl:variable>
 	
 	<xsl:variable name="i18n.exportFlow.title">Exportera e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.EvaluatorExportException.Part1">Ett fel uppstod när regelen</xsl:variable>
@@ -408,7 +415,6 @@
 	
 	<xsl:variable name="i18n.UnableToParseFile.part1">Den gick inte att tolka innehållet i filen </xsl:variable>
 	<xsl:variable name="i18n.UnableToParseFile.part2">.</xsl:variable>
-	<xsl:variable name="i18n.UnauthorizedManagerUserError.MemberOfGroups">medlem i</xsl:variable>
 	
 	<xsl:variable name="i18n.showSubmitSurvey">Visa användarundersökning</xsl:variable>
 	<xsl:variable name="i18n.hideSubmitStepText">Göm steget "Skicka in" i stegöverblicken</xsl:variable>
@@ -541,5 +547,31 @@
 	
 	<xsl:variable name="i18n.FlowFamilyID">E-tjänstens familje ID</xsl:variable>
 	<xsl:variable name="i18n.FlowID">Versionens ID</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.UsesAutoManagerAssignment">E-tjänsten använder automatisk tilldelning av handläggare.</xsl:variable>
+	
+	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specificerat värde</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeName">Attribut</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeValues">Värden</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Inverted">Inverterad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Users">Användare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Groups">Grupper</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Row">Rad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Update">Ändra regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Save">Spara</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Delete">Ta bort regel</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.DeleteConfirm">Är du säker på att du vill ta bort regeln</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeName">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeValues">Värden (ett per rad)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera (Om inget av värderna på regeln matchar attributets värde så aktiveras regeln)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper med begränsad behörighet</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Always">Handläggare som alltid tilldelas</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel matchar</xsl:variable>
+	
+	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständig handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
 	
 </xsl:stylesheet>

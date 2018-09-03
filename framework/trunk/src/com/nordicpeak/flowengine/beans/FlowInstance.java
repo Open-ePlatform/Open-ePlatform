@@ -8,6 +8,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
@@ -49,6 +50,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowInstance.class, "events");
 	public static final Field OWNERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "owners");
 	public static final Field MANAGERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managers");
+	public static final Field MANAGER_GROUPS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managerGroups");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstance.class,"attributes");
 	
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstance.class,"poster");
@@ -142,6 +144,14 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	@NoDuplicates
 	@XMLElement
 	private List<User> managers;
+	
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_instance_manager_groups", remoteValueColumnName = "groupID")
+	@WebPopulate
+	@NoDuplicates
+	@XMLElement
+	private List<Group> managerGroups;
 
 	@DAOManaged
 	@OneToMany
@@ -363,7 +373,16 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 
 		this.managers = managers;
 	}
-
+	
+	@Override
+	public List<Group> getManagerGroups() {
+		return managerGroups;
+	}
+	
+	public void setManagerGroups(List<Group> managerGroups) {
+		this.managerGroups = managerGroups;
+	}
+	
 	@Override
 	public List<FlowInstanceEvent> getEvents() {
 
@@ -487,7 +506,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		
 		return flowInstanceElement;
 	}
-	
+
 	public boolean isRemote() {
 	
 		return remote;
@@ -497,12 +516,46 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 		this.remote = remote;
 	}
+	
+	@Override
+	public boolean isManager(User user) {
+		
+		if (!CollectionUtils.isEmpty(managers)) {
+			
+			for (User manager : managers) {
+				
+				if (manager.getUserID().equals(user.getUserID())) {
+					
+					return true;
+				}
+			}
+		}
+		
+		if (!CollectionUtils.isEmpty(managerGroups) && !CollectionUtils.isEmpty(user.getGroups())) {
 
+			for (Group group : user.getGroups()) {
+
+				if (group.isEnabled()) {
+					
+					for (Group managerGroup : managerGroups) {
+						
+						if (managerGroup.getGroupID().equals(group.getGroupID())) {
+						
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public String getUserDescription() {
 	
 		return userDescription;
 	}
-
+	
 	public void setUserDescription(String userDescription) {
 	
 		this.userDescription = userDescription;

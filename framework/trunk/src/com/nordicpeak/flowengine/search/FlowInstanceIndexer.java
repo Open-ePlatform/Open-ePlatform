@@ -58,6 +58,8 @@ import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
@@ -81,13 +83,17 @@ public class FlowInstanceIndexer {
 	private static final String POSTER_FIELD = "poster";
 	private static final String OWNERS_FIELD = "owners";
 	private static final String MANAGER_FIELD = "manager";
+	private static final String MANAGER_USER_FIELD = "managerUser";
+	private static final String MANAGER_GROUP_FIELD = "managerGroup";
 	private static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	private static final String CHILD_CITIZEN_IDENTIFIER = "childCitizenIdentifier";
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
 	private static final String INTERNAL_MESSAGES = "internalMessages";
 	private static final String EXTERNAL_MESSAGES = "externalMessages";
-	protected static final String ALLOWED_USER_FIELD = "allowedUser";
-	protected static final String ALLOWED_GROUP_FIELD = "allowedGroup";
+	protected static final String ALLOWED_FULL_USER_FIELD = "allowedUser";
+	protected static final String ALLOWED_FULL_GROUP_FIELD = "allowedGroup";
+	protected static final String ALLOWED_RESTRICTED_USER_FIELD = "allowedRestrictedUser";
+	protected static final String ALLOWED_RESTRICTED_GROUP_FIELD = "allowedRestricedGroup";
 	
 	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
 
@@ -503,7 +509,16 @@ public class FlowInstanceIndexer {
 				
 				for (User manager : flowInstance.getManagers()) {
 					
+					doc.add(new IntField(MANAGER_USER_FIELD, manager.getUserID(), Field.Store.YES));
 					doc.add(new TextField(MANAGER_FIELD, manager.getFirstname() + " " + manager.getLastname(), Field.Store.NO));
+				}
+			}
+			
+			if (flowInstance.getManagerGroups() != null) {
+				
+				for (Group managerGroup : flowInstance.getManagerGroups()) {
+					
+					doc.add(new IntField(MANAGER_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
 				}
 			}
 			
@@ -523,19 +538,31 @@ public class FlowInstanceIndexer {
 				}
 			}
 			
-			if (flowFamily.getManagerGroupIDs() != null) {
+			if (flowFamily.getManagerGroups() != null) {
 				
-				for (Integer groupID : flowFamily.getManagerGroupIDs()) {
+				for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
 					
-					doc.add(new IntField(ALLOWED_GROUP_FIELD, groupID, Field.Store.YES));
+					if (managerGroup.isRestricted()) {
+						doc.add(new IntField(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+						
+					} else {
+						doc.add(new IntField(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+					}
 				}
 			}
 			
-			if (flowFamily.getManagerUserIDs() != null) {
+			List<FlowFamilyManager> activeManagers = flowFamily.getActiveManagers();
+			
+			if (activeManagers != null) {
 				
-				for (Integer userID : flowFamily.getManagerUserIDs()) {
+				for (FlowFamilyManager manager : activeManagers) {
 					
-					doc.add(new IntField(ALLOWED_USER_FIELD, userID, Field.Store.YES));
+					if (manager.isRestricted()) {
+						doc.add(new IntField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID(), Field.Store.YES));
+						
+					} else {
+						doc.add(new IntField(ALLOWED_FULL_USER_FIELD, manager.getUserID(), Field.Store.YES));
+					}
 				}
 			}
 			
@@ -607,7 +634,7 @@ public class FlowInstanceIndexer {
 
 	public FlowInstance getFlowInstance(Integer flowInstanceID) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 
@@ -616,7 +643,7 @@ public class FlowInstanceIndexer {
 
 	public Flow getFlow(Integer flowID) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 
 		query.addParameter(flowEnabledParamFactory.getParameter(true));
@@ -627,7 +654,7 @@ public class FlowInstanceIndexer {
 
 	public FlowFamily getFlowFamily(Integer flowFamilyID) throws SQLException {
 
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
 		
 		query.addParameter(flowFamilyIDParamFactory.getParameter(flowFamilyID));
@@ -637,8 +664,13 @@ public class FlowInstanceIndexer {
 	}
 
 	private List<FlowFamily> getFlowFamilies() throws SQLException {
-		
-		return daoFactory.getFlowFamilyDAO().getAll();
+
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
+
+		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
+
+		return daoFactory.getFlowFamilyDAO().getAll(query);
 	}
 
 	
@@ -654,25 +686,49 @@ public class FlowInstanceIndexer {
 	}
 	
 	protected Filter getFilter(User user) {
-
-		BooleanQuery booleanQuery = new BooleanQuery();
-
-		if(user.getUserID() != null){
-
-			booleanQuery.add(NumericRangeQuery.newIntRange(ALLOWED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+		
+		BooleanQuery familyFullManagerQuery = new BooleanQuery();
+		BooleanQuery familyRestrictedManagerQuery = new BooleanQuery();
+		familyRestrictedManagerQuery.setMinimumNumberShouldMatch(1);
+		
+		if (user.getUserID() != null) {
+			
+			familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+			familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
 		}
-
-		if(user.getGroups() != null){
-
-			for(Group group : user.getGroups()){
-
-				if(group.getGroupID() != null){
-
-					booleanQuery.add(NumericRangeQuery.newIntRange(ALLOWED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+		
+		if (user.getGroups() != null) {
+			
+			for (Group group : user.getGroups()) {
+				
+				if (group.isEnabled() && group.getGroupID() != null) {
+					
+					familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
 				}
 			}
 		}
-
-		return new QueryWrapperFilter(booleanQuery);
+		
+		BooleanQuery instanceManagerQuery = new BooleanQuery();
+		instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+		
+		if (user.getGroups() != null) {
+			
+			for (Group group : user.getGroups()) {
+				
+				if (group.isEnabled() && group.getGroupID() != null) {
+					
+					instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+				}
+			}
+		}
+		
+		familyRestrictedManagerQuery.add(instanceManagerQuery, Occur.MUST);
+		
+		BooleanQuery mainQuery = new BooleanQuery();
+		mainQuery.add(familyFullManagerQuery, Occur.SHOULD);
+		mainQuery.add(familyRestrictedManagerQuery, Occur.SHOULD);
+		
+		return new QueryWrapperFilter(mainQuery);
 	}
 }

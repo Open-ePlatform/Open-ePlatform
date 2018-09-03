@@ -913,8 +913,9 @@
   						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
   						
   						<xsl:choose>
-  							<xsl:when test="managers/user">
+  							<xsl:when test="managers/user or managerGroups/group">
   								<xsl:apply-templates select="managers/user" mode="manager" />
+  								<xsl:apply-templates select="managerGroups/group" mode="manager" />
   							</xsl:when>
   							<xsl:otherwise>
   								<xsl:value-of select="$i18n.NoManager" />
@@ -1025,7 +1026,7 @@
 		  					
 		  					<div class="heading-wrapper">
 		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-		  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+								<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
 		  					</div>
 		  					
 		  					<xsl:choose>
@@ -1258,6 +1259,18 @@
 			<xsl:value-of select="username" />
 			<xsl:text>)</xsl:text>
 		</xsl:if>
+		
+		<xsl:if test="position() != last() or ../../managerGroups/group">
+			<xsl:text>,&#160;</xsl:text>
+		</xsl:if>
+		
+	</xsl:template>
+	
+	<xsl:template match="group" mode="manager">
+
+		<img class="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+		
+		<xsl:value-of select="name" />
 		
 		<xsl:if test="position() != last()">
 			<xsl:text>,&#160;</xsl:text>
@@ -1575,6 +1588,7 @@
 					<ul class="manager-list list-table">
 						
 						<xsl:apply-templates select="FlowInstance/managers/user" mode="flowinstance-managers" />
+						<xsl:apply-templates select="FlowInstance/managerGroups/group" mode="flowinstance-managers" />
 						
 						<li id="manager_template" style="display: none">
 							<xsl:call-template name="createHiddenField">
@@ -1592,7 +1606,23 @@
 							</div>
 						</li>
 						
-	  				</ul>
+						<li id="manager_group_template" style="display: none">
+							<xsl:call-template name="createHiddenField">
+								<xsl:with-param name="name" select="'groupID'" />
+								<xsl:with-param name="disabled" select="'disabled'" />
+							</xsl:call-template>
+							<div class="wrap">
+								<figure>
+									<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+								</figure>
+								<span class="text"/>
+								<a class="delete" data-icon-after="t">
+									<xsl:value-of select="$i18n.DeleteManager" />
+								</a>
+							</div>
+						</li>
+						
+					</ul>
 	
 					<div class="select-box left with-search addmanagers">
 						<span class="text"><xsl:value-of select="$i18n.ChooseManager" /></span>
@@ -1603,6 +1633,7 @@
 						<div class="options with-search">
 							<ul>
 								<xsl:apply-templates select="AvailableManagers/user" mode="manager-list" />
+								<xsl:apply-templates select="AvailableManagerGroups/group" mode="manager-list" />
 							</ul>
 						</div>
 					</div>
@@ -1653,6 +1684,28 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="group" mode="flowinstance-managers">
+		
+		<li id="manager_group_{groupID}">
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="name" select="'groupID'" />
+				<xsl:with-param name="value" select="groupID" />
+			</xsl:call-template>
+			<div class="wrap">
+				<figure>
+					<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
+				</figure>
+				<span class="text">
+					<xsl:value-of select="name" />
+				</span>
+				<a class="delete" data-icon-after="t">
+					<xsl:value-of select="$i18n.DeleteManager" />
+				</a>
+			</div>
+		</li>
+		
+	</xsl:template>
+	
 	<xsl:template match="user" mode="manager-list">
 		
 		<li id="user_{userID}">
@@ -1667,6 +1720,18 @@
 						<xsl:value-of select="username" />
 						<xsl:text>)</xsl:text>
 					</xsl:if>
+				</span>
+			</a>
+		</li>
+	
+	</xsl:template>
+	
+	<xsl:template match="group" mode="manager-list">
+		
+		<li id="group_{groupID}">
+			<a href="#">
+				<span class="text">
+					<xsl:value-of select="name" />
 				</span>
 			</a>
 		</li>
@@ -1721,28 +1786,52 @@
 	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerUsersNotFoundError']">
 	
 		<xsl:call-template name="printValidationError">
-			<xsl:with-param name="message" select="$i18n.OneOrMoreSelectedManagerUsersNotFoundError"></xsl:with-param>
+			<xsl:with-param name="message" select="$i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError" />
 		</xsl:call-template>
 	
-	</xsl:template>		
+	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='UnauthorizedManagerUserError']">
+	<xsl:template match="validationError[messageKey='OneOrMoreSelectedManagerGroupsNotFoundError']">
+	
+		<xsl:call-template name="printValidationError">
+			<xsl:with-param name="message" select="$i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError" />
+		</xsl:call-template>
+	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnauthorizedUserNotManager']">
 	
 		<xsl:call-template name="printValidationError">
 			<xsl:with-param name="message">
 			
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.part1"/>
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.part1"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="user/firstname" />
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="user/lastname" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:value-of select="$i18n.UnauthorizedManagerUserError.part2"/>	
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedUserNotManager.part2"/>	
 					
 			</xsl:with-param>
 		</xsl:call-template>
 	
-	</xsl:template>		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnauthorizedGroupNotManager']">
+	
+		<xsl:call-template name="printValidationError">
+			<xsl:with-param name="message">
+			
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.part1"/>
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="group/name" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$i18n.ValidationError.UnauthorizedGroupNotManager.part2"/>	
+					
+			</xsl:with-param>
+		</xsl:call-template>
+	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
 	

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.Elementable;
@@ -43,6 +44,10 @@ public interface ImmutableFlowInstance extends Elementable, Serializable {
 	public List<? extends ImmutableFlowInstanceEvent> getEvents();
 
 	public List<User> getManagers();
+	
+	public List<Group> getManagerGroups();
+	
+	public boolean isManager(User user);
 
 	public AttributeHandler getAttributeHandler();
 }

@@ -137,7 +137,15 @@ $(document).ready(function() {
 			
 			if ($manager.length > 0) {
 				
-				var $clone = $("#manager_template").clone();
+				var user = $manager.attr("id").lastIndexOf("user", 0) === 0;
+				var $clone;
+				
+				if (user) {
+					$clone = $("#manager_template").clone();
+					
+				} else {
+					$clone = $("#manager_group_template").clone();
+				}
 				
 				$clone.find("span.text").text($manager.find("span.text").text());
 				$clone.find("input[type='hidden']").removeAttr("disabled").val($manager.attr("id").split("_")[1]);

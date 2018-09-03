@@ -79,11 +79,11 @@ public class ExpiredManagerRemover implements Runnable {
 					
 					for (FlowFamily flowFamily : flowFamilies) {
 						
-						if (!CollectionUtils.isEmpty(flowFamily.getManagerUsers())) {
+						if (!CollectionUtils.isEmpty(flowFamily.getManagers())) {
 							
 							boolean managerRemoved = false;
 							
-							Iterator<FlowFamilyManager> iterator = flowFamily.getManagerUsers().iterator();
+							Iterator<FlowFamilyManager> iterator = flowFamily.getManagers().iterator();
 							
 							while (iterator.hasNext()) {
 								
@@ -165,7 +165,7 @@ public class ExpiredManagerRemover implements Runnable {
 										FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 										
 										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, null), EventTarget.ALL);
+										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
 									}
 								}
 								

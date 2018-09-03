@@ -3,23 +3,14 @@ package com.nordicpeak.flowengine.cruds;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManager;
-import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -31,7 +22,6 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedIntegerBasedCRUD;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -46,6 +36,14 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.populators.annotated.RequestMapping;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.validationerrors.InUseManagerUserValidationError;
 
 public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdminModule> {
 
@@ -113,11 +111,13 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			
 				if (managerUser != null) {
 					
+					boolean restricted = "true".equals(req.getParameter("manager-restricted" + managerID));
 					Date validFromDate = ValidationUtils.validateParameter("manager-validFromDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					Date validToDate = ValidationUtils.validateParameter("manager-validToDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					
 					FlowFamilyManager manager = new FlowFamilyManager(managerUser);
-
+					manager.setRestricted(restricted);
+					
 					if (validFromDate != null) {
 						
 						manager.setValidFromDate(new java.sql.Date(validFromDate.getTime()));
@@ -139,6 +139,38 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			flowFamily.setManagerUsers(managers);
 		}
 		
+		List<Integer> managerGroupIDs = ValidationUtils.validateParameters("manager-group", req, false, IntegerPopulator.getPopulator(), validationErrors);
+		
+		if (managerGroupIDs == null) {
+			
+			flowFamily.setManagerGroups(null);
+			
+		} else {
+			
+			List<FlowFamilyManagerGroup> managerGroups = new ArrayList<FlowFamilyManagerGroup>(managerGroupIDs.size());
+			
+			for (Integer groupID : managerGroupIDs) {
+				
+				Group group = callback.getGroupHandler().getGroup(groupID, false);
+			
+				if (group != null) {
+					
+					boolean restricted = "true".equals(req.getParameter("manager-group-restricted" + groupID));
+					
+					FlowFamilyManagerGroup managerGroup = new FlowFamilyManagerGroup(group);
+					managerGroup.setRestricted(restricted);
+					
+					managerGroups.add(managerGroup);
+					
+				} else {
+					
+					validationErrors.add(new ValidationError("manager", ValidationErrorType.InvalidFormat));
+				}
+			}
+			
+			flowFamily.setManagerGroups(managerGroups);
+		}
+		
 		List<Integer> currentFlowInstanceManagerUserIDs = getCurrentFlowInstanceManagerUserIDs(flowFamily);
 		
 		if (currentFlowInstanceManagerUserIDs != null) {
@@ -150,12 +182,12 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			if (currentManagers != null) {
 				
 				List<Integer> allowedUserIDs = managerIDs;
-				List<Integer> allowedGroupIDs = flowFamily.getAllowedGroupIDs();
+				List<Integer> allowedGroupIDs = managerGroupIDs;
 				
 				outer: for (User currentManager : currentManagers) {
 					
 					//User did not have access before, skip check
-					if (!AccessUtils.checkAccess(currentManager, unchangedFlowFamily)) {
+					if (unchangedFlowFamily.getManagerAccess(currentManager) == null) {
 						continue;
 					}
 					
@@ -175,10 +207,16 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 						}
 					}
 					
-					validationErrors.add(new UnauthorizedManagerUserValidationError(currentManager));
+					validationErrors.add(new InUseManagerUserValidationError(currentManager));
 				}
-				
 			}
+		}
+		
+		//TODO check for still in use restricted groups InUseManagerGroupError
+		
+		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler())) {
+			
+			validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
 		}
 		
 		if (!validationErrors.isEmpty()) {
@@ -214,30 +252,9 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 		XMLUtils.append(doc, updateTypeElement, (Flow) req.getAttribute("flow"));
 		
-		if (flowFamily.getManagerGroupIDs() != null) {
-			
-			XMLUtils.append(doc, updateTypeElement, "ManagerGroups", callback.getGroupHandler().getGroups(flowFamily.getManagerGroupIDs(), false));
-		}
-		
-		if (flowFamily.getAllowedUserIDs() != null) {
-
-			List<Integer> userIDs = new ArrayList<Integer>();
-			
-			for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
-				
-				userIDs.add(manager.getUserID());
-			}
-			
-			Map<Integer, User> userMap = UserUtils.getUserIDMap(callback.getUserHandler().getUsers(userIDs, false, true));
-			
-			for (FlowFamilyManager manager : flowFamily.getManagerUsers()) {
-				
-				manager.setUser(userMap.get(manager.getUserID()));
-			}
-			
-			Collections.sort(flowFamily.getManagerUsers(), FlowFamilyManagerComparator.getInstance());
-			XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagerUsers());
-		}
+		flowFamily.setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
+		XMLUtils.append(doc, updateTypeElement, "ManagerUsers", flowFamily.getManagers());
+		XMLUtils.append(doc, updateTypeElement, "ManagerGroups", flowFamily.getManagerGroups());
 		
 		if (callback.isShowManagerModalOnAdd()) {
 			XMLUtils.appendNewElement(doc, updateTypeElement, "ShowManagerModalOnAdd");

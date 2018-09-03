@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,7 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.events.EventListener;
 import se.unlogic.hierarchy.core.interfaces.listeners.ServerStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
@@ -69,6 +71,7 @@ import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
@@ -82,6 +85,7 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.accesscontrollers.ManagerFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
@@ -98,6 +102,7 @@ import com.nordicpeak.flowengine.beans.SimpleSigningRequest;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.beans.UserBookmark;
+import com.nordicpeak.flowengine.comparators.GroupNameComparator;
 import com.nordicpeak.flowengine.cruds.ExternalMessageCRUD;
 import com.nordicpeak.flowengine.cruds.InternalMessageCRUD;
 import com.nordicpeak.flowengine.enums.ContentType;
@@ -136,6 +141,7 @@ import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.GenericSigningProvider;
 import com.nordicpeak.flowengine.interfaces.GenericSigningRequest;
 import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
@@ -152,30 +158,39 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowIconUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedManagerUserValidationError;
 
 public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, ServerStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 	
-	protected static final UserNameComparator USER_NAME_COMPARATOR = new UserNameComparator();
 	
-	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION };
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
 	
-	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, Flow.STATUSES_RELATION, FlowInstance.OWNERS_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION };
-	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.OWNERS_RELATION, FlowInstance.MANAGERS_RELATION };
+	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, Flow.STATUSES_RELATION, FlowInstance.OWNERS_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION};
+	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.OWNERS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
 	
 	@SuppressWarnings("rawtypes")
 	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, Flow.class, FlowInstance.class, InternalMessage.class, ExternalMessage.class };
 	
-	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ? AND (ffu.validFromDate IS NULL OR ffu.validFromDate <= ?)";
-	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID WHERE ffib.userID = ? AND ffi.flowID IN (";
-	protected static final String ACTIVE_FLOWS = "SELECT ffi.* FROM flowengine_flow_instances ffi INNER JOIN flowengine_flow_statuses ffs ON ffi.statusID = ffs.statusID WHERE ffi.firstSubmitted IS NOT NULL AND ffi.flowID IN ($flowIDs) AND ffs.contentType NOT IN ('" + ContentType.NEW + "', '" + ContentType.ARCHIVED + "') ORDER BY lastStatusChange DESC";
+	//@formatter:off
 	
-	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false);
-	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true);
-	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false);
+	protected static final String FLOW_MANAGER_SQL = "SELECT flowID FROM flowengine_flows WHERE enabled = true AND flowFamilyID IN (SELECT ff.flowFamilyID FROM flowengine_flow_families ff LEFT JOIN flowengine_flow_family_manager_users ffu on ff.flowFamilyID = ffu.flowFamilyID LEFT JOIN flowengine_flow_family_manager_groups ffg on ff.flowFamilyID = ffg.flowFamilyID WHERE ffu.userID = ? AND (ffu.validFromDate IS NULL OR ffu.validFromDate <= ?)";
+	protected static final String FLOW_INSTANCE_BOOKMARKS_SQL = "SELECT ffi.* FROM flowengine_flow_instances ffi"
+	                                                          + " INNER JOIN flowengine_flow_instance_bookmarks ffib ON ffi.flowInstanceID = ffib.flowInstanceID"
+	                                                          + " WHERE ffib.userID = ? AND ffi.flowID IN (";
+	protected static final String ACTIVE_FLOWS = "SELECT ffi.* FROM flowengine_flow_instances ffi"
+	                                           + " INNER JOIN flowengine_flow_statuses ffs ON ffi.statusID = ffs.statusID"
+	                                           + " WHERE ffi.firstSubmitted IS NOT NULL AND ffi.flowID IN ($flowIDs) AND ffs.contentType NOT IN ('" + ContentType.NEW + "', '" + ContentType.ARCHIVED + "')"
+	                                           + " ORDER BY lastStatusChange DESC";
+	
+	//@formatter:on
+	
+	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false);
+	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_FULL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, true);
 	
 	public static final ValidationError STATUS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("StatusNotFoundValidationError");
 	public static final ValidationError INVALID_STATUS_VALIDATION_ERROR = new ValidationError("InvalidStatusValidationError");
@@ -183,6 +198,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public static final ValidationError FLOW_INSTANCE_MANAGER_CLOSED_VALIDATION_ERROR = new ValidationError("FlowInstanceManagerClosedError");
 	
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerUsersNotFoundError");
+	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerGroupsNotFoundError");
 	
 	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
 	
@@ -396,6 +412,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			bookmarkedFlows = getFlowInstanceBookmarks(user, profile, flowIDs);
 			activeFlowInstances = getActiveFlowInstances(user, profile, flowIDs);
+			
+			filterRestrictedFlowInstances(bookmarkedFlows, user);
+			filterRestrictedFlowInstances(activeFlowInstances, user);
 		}
 		
 		if (!adminFlowInstanceProviders.isEmpty()) {
@@ -419,7 +438,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 		
-		if (CollectionUtils.isEmpty(activeFlowInstances) && bookmarkedFlows == null) {
+		if (CollectionUtils.isEmpty(activeFlowInstances) && CollectionUtils.isEmpty(bookmarkedFlows)) {
 			
 			Document doc = createDocument(req, uriParser, user);
 			
@@ -554,7 +573,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 							
 							return null;
-							
 						}
 						
 					} else {
@@ -575,8 +593,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							Collection<User> availableManagers = getAllowedManagers(flowInstance);
 							
-							if(availableManagers != null) {
-
+							if (availableManagers != null) {
+								
 								List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
 								
 								for (Integer userID : mentionedUserIDs) {
@@ -595,9 +613,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 										}
 										
 										mentionedUsers.add(mentionedUser);
-										
 									}
-									
 								}
 								
 								eventHandler.sendEvent(FlowInstance.class, new ManagerMentionedEvent(flowInstance, mentionedUsers, user), EventTarget.ALL);
@@ -609,7 +625,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
 						
 						return null;
-						
 					}
 				}
 			}
@@ -989,7 +1004,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 			
-			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
+			getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
 				
@@ -1004,91 +1019,75 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			doc.getDocumentElement().appendChild(updateInstanceManagersElement);
 			
-			Collection<User> allowedManagers = getAllowedManagers(flowInstance);
+			List<User> allowedManagers = getAllowedManagers(flowInstance);
+			List<Group> allowedManagerGroups = getAllowedManagerGroups(flowInstance);
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
+				List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+				
 				List<Integer> userIDs = NumberUtils.toInt(req.getParameterValues("userID"));
+				List<Integer> groupIDs = NumberUtils.toInt(req.getParameterValues("groupID"));
 				
 				String detailString;
 				
-				try {
+				List<User> previousManagers = flowInstance.getManagers();
+				List<Group> previousManagerGroups = flowInstance.getManagerGroups();
+				
+				if (userIDs != null || groupIDs != null) {
 					
-					List<User> previousManagers = flowInstance.getManagers();
+					flowInstance.setManagers(FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, userIDs, validationErrors));
+					flowInstance.setManagerGroups(FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, groupIDs, validationErrors));
 					
-					if (userIDs != null) {
-						
-						List<User> users = systemInterface.getUserHandler().getUsers(userIDs, false, false);
-						
-						if (CollectionUtils.getSize(users) < userIDs.size()) {
-							
-							throw new ValidationException(ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
-						}
-						
-						StringBuilder stringBuilder = new StringBuilder();
-						
-						for (User selectedManager : users) {
-							
-							if (allowedManagers != null && !allowedManagers.contains(selectedManager)) {
-								
-								throw new ValidationException(new UnauthorizedManagerUserValidationError(selectedManager));
-							}
-							
-							if (stringBuilder.length() > 0) {
-								
-								stringBuilder.append(", ");
-							}
-							
-							stringBuilder.append(selectedManager.getFirstname());
-							stringBuilder.append(" ");
-							stringBuilder.append(selectedManager.getLastname());
-							
-						}
-						
-						detailString = stringBuilder.toString();
-						flowInstance.setManagers(users);
-						
-					} else {
-						
-						detailString = noManagersSelected;
-						flowInstance.setManagers(null);
-					}
+					detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
 					
-					if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers())) {
+				} else {
+					
+					detailString = noManagersSelected;
+					flowInstance.setManagers(null);
+					flowInstance.setManagerGroups(null);
+				}
+				
+				if (validationErrors.isEmpty()) {
+					
+					if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers()) || !CollectionUtils.equals(previousManagerGroups, flowInstance.getManagerGroups())) {
 						
-						log.info("User " + user + " setting managers of instance " + flowInstance + " to " + flowInstance.getManagers());
+						log.info("User " + user + " setting managers of instance " + flowInstance + " to " + detailString);
 						
-						RelationQuery relationQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION);
-						
-						this.daoFactory.getFlowInstanceDAO().update(flowInstance, relationQuery);
+						RelationQuery relationQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
+						daoFactory.getFlowInstanceDAO().update(flowInstance, relationQuery);
 						
 						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, user);
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-						
-						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, user), EventTarget.ALL);
+						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, user), EventTarget.ALL);
 					}
 					
 					redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
 					
 					return null;
 					
-				} catch (ValidationException e) {
+				} else {
 					
-					XMLUtils.append(doc, updateInstanceManagersElement, e.getErrors());
+					XMLUtils.append(doc, updateInstanceManagersElement, validationErrors);
 				}
 			}
 			
-			if(flowInstance.getManagers() != null) {
+			if (flowInstance.getManagers() != null) {
 				
-				Collections.sort(flowInstance.getManagers(), USER_NAME_COMPARATOR);
+				Collections.sort(flowInstance.getManagers(), UserNameComparator.getInstance());
+			}
+			
+			if (flowInstance.getManagerGroups() != null) {
+				
+				Collections.sort(flowInstance.getManagerGroups(), GroupNameComparator.getInstance());
 			}
 			
 			updateInstanceManagersElement.appendChild(flowInstance.toXML(doc));
 			
 			XMLUtils.append(doc, updateInstanceManagersElement, user);
-			
 			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagers", allowedManagers);
+			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagerGroups", allowedManagerGroups);
 			
 			appendBookmark(doc, updateInstanceManagersElement, flowInstance, req, user);
 			
@@ -1235,41 +1234,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected List<User> getAllowedManagers(FlowInstance flowInstance) {
 		
-		HashSet<User> availableManagers = new HashSet<User>();
+		return FlowFamilyUtils.getAllowedManagerUsers(flowInstance.getFlow().getFlowFamily(), systemInterface.getUserHandler());
+	}
+	
+	protected List<Group> getAllowedManagerGroups(FlowInstance flowInstance) {
 		
-		if (flowInstance.getFlow().getFlowFamily() != null) {
-			
-			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerUserIDs())) {
-				
-				List<User> users = systemInterface.getUserHandler().getUsers(flowInstance.getFlow().getFlowFamily().getManagerUserIDs(), false, true);
-				
-				if (users != null) {
-					
-					availableManagers.addAll(users);
-				}
-			}
-			
-			if (!CollectionUtils.isEmpty(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs())) {
-				
-				List<User> users = systemInterface.getUserHandler().getUsersByGroups(flowInstance.getFlow().getFlowFamily().getManagerGroupIDs(), true);
-				
-				if (users != null) {
-					
-					availableManagers.addAll(users);
-				}
-			}
-		}
-		
-		if(!availableManagers.isEmpty()) {
-			
-			ArrayList<User> availableManagerList = new ArrayList<User>(availableManagers);
-			
-			Collections.sort(availableManagerList, USER_NAME_COMPARATOR);
-			
-			return availableManagerList;
-		}
-		
-		return null;
+		return FlowFamilyUtils.getAllowedManagerGroups(flowInstance.getFlow().getFlowFamily(), systemInterface.getGroupHandler());
 	}
 	
 	@WebPublic(alias = "getmentionusers")
@@ -1460,8 +1430,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		query.addParameter(user.getUserID());
 		
-		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION);
-		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
@@ -1474,8 +1444,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		LowLevelQuery<FlowInstance> query = new LowLevelQuery<FlowInstance>(sql);
 		
-		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION);
-		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION);
+		query.addRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
+		query.addCachedRelations(FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
 		addListRelations(query);
 		
@@ -1888,6 +1858,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return GENERAL_ACCESS_CONTROLLER;
 	}
 	
+	protected FlowInstanceAccessController getGeneralFullAccessController() {
+		return GENERAL_FULL_ACCESS_CONTROLLER;
+	}
+	
 	@WebPublic(alias = "signature")
 	public ForegroundModuleResponse getEventSignature(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 		
@@ -1986,25 +1960,29 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		log.debug("Received submit event regarding " + event.getFlowInstanceManager());
 		
-		if (source == EventSource.LOCAL && notificationHandler != null) {
+		if (source == EventSource.LOCAL) {
 			
 			try {
-				FlowInstance flowInstance = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.POSTER_FIELD);
+				FlowInstance flowInstance = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.POSTER_FIELD, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION);
+				ImmutableFlowFamily flowFamily = flowInstance.getFlow().getFlowFamily();
 				
-				if (!CollectionUtils.isEmpty(flowInstance.getEvents()) && !CollectionUtils.isEmpty(flowInstance.getManagers())) {
-					
-					boolean isPreviouslySubmitted = false;
+				boolean isPreviouslySubmitted = false;
+				
+				if (!CollectionUtils.isEmpty(flowInstance.getEvents())) {
 					
 					for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstance.getEvents()) {
 						
-						if (flowInstanceEvent.getEventType().equals(EventType.SUBMITTED) && !flowInstanceEvent.equals(event.getEvent())) {
+						if (flowInstanceEvent.getEventType() == EventType.SUBMITTED && !flowInstanceEvent.equals(event.getEvent())) {
 							
 							isPreviouslySubmitted = true;
 							break;
 						}
 					}
+				}
+				
+				if (isPreviouslySubmitted) {
 					
-					if (isPreviouslySubmitted) {
+					if (notificationHandler != null && !CollectionUtils.isEmpty(flowInstance.getManagers())) {
 						
 						for (User manager : flowInstance.getManagers()) {
 							
@@ -2015,6 +1993,145 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 								
 								log.error("Error sending completion notification to manager " + manager + " for " + flowInstance, e);
 							}
+						}
+					}
+					
+				} else {
+					
+					if (!ObjectUtils.isNull(flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), flowFamily.getAutoManagerAssignmentRules())) {
+						
+						List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, systemInterface.getUserHandler());
+						List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
+						
+						List<User> newManagers = null;
+						List<Group> newManagerGroups = null;
+						
+						if (flowFamily.getAutoManagerAssignmentAlwaysUserIDs() != null) {
+							
+							newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null));
+						}
+						
+						if (flowFamily.getAutoManagerAssignmentAlwaysGroupIDs() != null) {
+							
+							newManagerGroups = CollectionUtils.addAndInstantiateIfNeeded(newManagerGroups, FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null));
+						}
+						
+						boolean ruleMatched = false;
+						
+						if (flowFamily.getAutoManagerAssignmentRules() != null) {
+							
+							AttributeHandler attributeHandler = event.getFlowInstanceManager().getFlowInstance().getAttributeHandler();
+							
+							if (attributeHandler != null) {
+								
+								for (AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
+									
+									if (rule.getAttributeName() != null && rule.getValues() != null) {
+										
+										String value = attributeHandler.getString(rule.getAttributeName());
+										
+										if (value != null) {
+											   
+											boolean match = rule.getValues().contains(value);
+											
+											if (!match && value.contains(",")) {
+												
+												String[] values = value.split(", ?");
+												
+												for (String splitValue : values) {
+													
+													match = rule.getValues().contains(splitValue);
+													
+													if (match) {
+														break;
+													}
+												}
+											}
+											
+											if (match != rule.isInverted()) {
+												
+												List<User> ruleManagers = null;
+												List<Group> ruleManagerGroups = null;
+												
+												if (rule.getUserIDs() != null) {
+													
+													ruleManagers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, rule.getUserIDs(), null);
+												}
+												
+												if (rule.getGroupIDs() != null) {
+													
+													ruleManagerGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, rule.getGroupIDs(), null);
+												}
+												
+												if (ruleManagers != null || ruleManagerGroups != null) {
+
+													ruleMatched = true;
+													
+													newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, ruleManagers);
+													newManagerGroups = CollectionUtils.addAndInstantiateIfNeeded(newManagerGroups, ruleManagerGroups);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						
+						if (!ruleMatched) {
+							
+							if (flowFamily.getAutoManagerAssignmentNoMatchUserIDs() != null) {
+								
+								newManagers = CollectionUtils.addAndInstantiateIfNeeded(newManagers, FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null));
+							}
+							
+							if (flowFamily.getAutoManagerAssignmentNoMatchGroupIDs() != null) {
+								
+								newManagerGroups = CollectionUtils.addAndInstantiateIfNeeded(newManagerGroups, FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null));
+							}
+						}
+						
+						if (!ObjectUtils.isNull(newManagers, newManagerGroups)) {
+							
+							List<User> previousManagers = flowInstance.getManagers();
+							List<Group> previousManagerGroups = flowInstance.getManagerGroups();
+							
+							Set<User> managers = new HashSet<User>();
+							Set<Group> managerGroups = new HashSet<Group>();
+							
+							if (flowInstance.getManagers() != null) {
+								managers.addAll(flowInstance.getManagers());
+							}
+							
+							if (flowInstance.getManagerGroups() != null) {
+								managerGroups.addAll(flowInstance.getManagerGroups());
+							}
+							
+							if (newManagers != null) {
+								managers.addAll(newManagers);
+							}
+							
+							if (newManagerGroups != null) {
+								managerGroups.addAll(newManagerGroups);
+							}
+							
+							flowInstance.setManagers(new ArrayList<User>(managers));
+							flowInstance.setManagerGroups(new ArrayList<Group>(managerGroups));
+							
+							Collections.sort(flowInstance.getManagers(), UserNameComparator.getInstance());
+							Collections.sort(flowInstance.getManagerGroups(), GroupNameComparator.getInstance());
+							
+							String detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
+							
+							log.warn("Automatically setting managers of instance " + flowInstance + " to " + detailString);
+							
+							RelationQuery updateQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
+							updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
+							daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
+							
+							FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
+							
+							eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+							eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, null), EventTarget.ALL);
 						}
 					}
 				}
@@ -2078,5 +2195,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public String getFlowInstancePreviewURL(Integer flowInstanceID) {
 
 		return this.getFullAlias() + "/preview/" + flowInstanceID;
+	}
+	
+	protected void filterRestrictedFlowInstances(List<FlowInstance> flowInstances, User user) {
+
+		if (flowInstances != null) {
+
+			Iterator<FlowInstance> it = flowInstances.iterator();
+
+			while (it.hasNext()) {
+
+				FlowInstance flowInstance = it.next();
+
+				if (flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user) && !flowInstance.isManager(user)) {
+					it.remove();
+				}
+			}
+		}
 	}
 }

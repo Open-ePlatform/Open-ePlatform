@@ -41,6 +41,10 @@ public class FlowFamilyManager extends GeneratedElementable implements Serializa
 	@XMLElement(valueFormatter = DateStringyfier.class)
 	private Date validToDate;
 	
+	@DAOManaged
+	@XMLElement
+	private boolean restricted;
+	
 	/** Only for display */
 	@XMLElement
 	private User user;
@@ -113,7 +117,15 @@ public class FlowFamilyManager extends GeneratedElementable implements Serializa
 		
 		return true;
 	}
-
+	
+	public boolean isRestricted() {
+		return restricted;
+	}
+	
+	public void setRestricted(boolean restricted) {
+		this.restricted = restricted;
+	}
+	
 	@Override
 	public Element toXML(Document doc) {
 
