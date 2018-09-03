@@ -312,7 +312,7 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	opacity: 1;
 }
 
-.featherlight-content input[type="checkbox"]:checked + label::before {
+.featherlight-content input[type="checkbox"]:checked + label::before, .featherlight-content input[type="radio"]:checked + label::before {
 	font-family: unset;
 	content: unset;
 	font-size: unset;
