@@ -131,6 +131,7 @@ import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.utils.AttributeTagUtils;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
@@ -1593,8 +1594,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				excludedManagers.add(event.getUser());
 			}
+			
+			FlowInstance flowInstance = event.getFlowInstance();
+			
+			try { // Read from DB as event flow instance might not have all the fields we need
+				flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
+				
+			} catch (Exception e) {
+				
+				log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
+			}
 
-			sendManagerEmails(event.getFlowInstance(), getPosterContact(event.getFlowInstance(), event.getSiteProfile()), flowInstanceAssignedManagerEmailSubject, flowInstanceAssignedManagerEmailMessage, excludedManagers, false);
+			sendManagerEmails(flowInstance, getPosterContact(flowInstance), flowInstanceAssignedManagerEmailSubject, flowInstanceAssignedManagerEmailMessage, excludedManagers, false);
 		}
 	}
 
@@ -2127,21 +2138,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (flowFamily != null) {
 
-			List<User> managers = null;
-
-			if (flowFamily.getManagerUserIDs() != null) {
-
-				managers = systemInterface.getUserHandler().getUsers(flowFamily.getAllowedUserIDs(), false, true);
-			}
-
-			if (flowFamily.getManagerGroupIDs() != null) {
-
-				List<User> groupUsers = systemInterface.getUserHandler().getUsersByGroups(flowFamily.getManagerGroupIDs(), true);
-
-				managers = CollectionUtils.addAndInstantiateIfNeeded(managers, groupUsers);
-			}
-
-			return managers;
+			return FlowFamilyUtils.getActiveManagerUsers(true, flowFamily, systemInterface.getUserHandler());
 		}
 
 		return null;
@@ -2203,7 +2200,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		return FlowInstanceUtils.getContacts(flowInstance);
 	}
-	
 	
 	public Contact getPosterContact(ImmutableFlowInstance flowInstance) {
 		
