@@ -142,7 +142,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousStatus, principalUser), EventTarget.ALL);
 				
 				return flowInstanceEvent.getEventID();
-			}			
+			}
 			
 		} catch(RuntimeException e){
 			
@@ -169,7 +169,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, message, principalUser, TimeUtils.getTimeStamp(date));
 			
-			return flowInstanceEvent.getEventID();			
+			return flowInstanceEvent.getEventID();
 			
 		} catch(RuntimeException e){
 			
@@ -209,9 +209,9 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded());
 
-			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);		
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 		
-			return externalMessage.getMessageID();			
+			return externalMessage.getMessageID();
 			
 		} catch(RuntimeException e){
 			
@@ -289,7 +289,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 		
 		return externalMessage;
-	}	
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -340,7 +340,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				}
 			}
 			
-			callback.getSystemInterface().getEventHandler().sendEvent(IntegrationCallback.class, new DeliveryConfirmationEvent(flowInstance, delivered, logMessage), EventTarget.ALL);			
+			callback.getSystemInterface().getEventHandler().sendEvent(IntegrationCallback.class, new DeliveryConfirmationEvent(flowInstance, delivered, logMessage), EventTarget.ALL);
 			
 		} catch(RuntimeException e){
 			
@@ -364,8 +364,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	 */
 	@Override
 	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers) throws AccessDeniedException, FlowInstanceNotFoundException {
-
-		try{
+		
+		try {
 			checkDependencies();
 			
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
@@ -376,30 +376,30 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			String detailString;
 			
-			if(!CollectionUtils.isEmpty(managers)){
+			if (!CollectionUtils.isEmpty(managers)) {
 				
 				ArrayList<User> managerUsers = new ArrayList<>(managers.size());
 				
 				StringBuilder stringBuilder = new StringBuilder();
 				
-				for(Principal principal : managers){
+				for (Principal principal : managers) {
 					
 					User managerUser = getPrincipalUser(principal);
 					
-					if(managerUser != null){
+					if (managerUser != null) {
 						
 						managerUsers.add(managerUser);
 						
-						if(stringBuilder.length() > 0){
-
+						if (stringBuilder.length() > 0) {
+							
 							stringBuilder.append(", ");
 						}
-
+						
 						stringBuilder.append(managerUser.getFirstname());
 						stringBuilder.append(" ");
 						stringBuilder.append(managerUser.getLastname());
 						
-					}else{
+					} else {
 						
 						log.warn("Unable to find local user matching principal " + principal);
 					}
@@ -408,13 +408,13 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				detailString = stringBuilder.toString();
 				flowInstance.setManagers(managerUsers);
 				
-			}else{
+			} else {
 				
 				flowInstance.setManagers(null);
 				detailString = null;
 			}
 			
-			if(!CollectionUtils.equals(previousManagers, flowInstance.getManagers())){
+			if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers())) {
 				
 				log.info("User " + callback.getUser() + " setting managers of instance " + flowInstance + " to " + flowInstance.getManagers());
 				
@@ -422,26 +422,25 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					daoFactory.getFlowInstanceDAO().update(flowInstance, FLOW_INSTANCE_MANAGERS_RELATION_QUERY);
 					
 				} catch (SQLException e) {
-
+					
 					throw new RuntimeException(e);
 				}
 				
 				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null, null);
 				
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-				
-				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, null), EventTarget.ALL);			
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
 				
 				return flowInstanceEvent.getEventID();
 				
-			}else{
+			} else {
 				
 				log.info("No change in managers detected in request from user " + callback.getUser() + " for flow instance " + flowInstance + ", ignoring request.");
 				
 				return 0;
 			}
 			
-		} catch(RuntimeException e){
+		} catch (RuntimeException e) {
 			
 			log.error("Error setting managers", e);
 			
@@ -458,7 +457,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	@Override
 	public <InstanceType extends FlowAdminModule> void instanceRemoved(Class<FlowAdminModule> key, InstanceType instance) {
 
-		this.flowAdminModule = null;		
+		this.flowAdminModule = null;
 	}
 	
 	protected void checkDependencies(){
@@ -490,7 +489,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		
 		if(flowInstance == null){
 		
-			throw new FlowInstanceNotFoundException("The requested flow instance was not found", new FlowInstanceNotFound());	
+			throw new FlowInstanceNotFoundException("The requested flow instance was not found", new FlowInstanceNotFound());
 		}
 		
 		return flowInstance;
