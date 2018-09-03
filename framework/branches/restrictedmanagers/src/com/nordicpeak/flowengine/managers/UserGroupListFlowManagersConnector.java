@@ -7,11 +7,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
@@ -21,6 +16,11 @@ import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 
 public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 	

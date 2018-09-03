@@ -43,9 +43,9 @@ public class MultiSignUtils {
 			
 			//Line below contains potential NPE
 			//			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
-			//
+			//				
 			//				SigningParty posterSigningParty = new SigningParty(poster.getFirstname(), poster.getLastname(), poster.getEmail(), null, CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), false);
-			//
+			//				
 			//				signingParties.add(posterSigningParty);
 			//			}
 			

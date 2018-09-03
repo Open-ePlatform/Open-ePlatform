@@ -62,7 +62,6 @@
 			
 			<xsl:apply-templates select="UpdateFlowFamily"/>
 			<xsl:apply-templates select="ChangeFlowType"/>
-			
 			<xsl:apply-templates select="UpdateFlowIcon" />
 			<xsl:apply-templates select="UpdateNotifications"/>
 					
@@ -74,7 +73,6 @@
 			<xsl:apply-templates select="AddStatus" />
 			<xsl:apply-templates select="UpdateStatus" />
 			<xsl:apply-templates select="SortStatuses" />
-			
 			<xsl:apply-templates select="ListStandardStatuses" />
 			<xsl:apply-templates select="AddStandardStatus" />
 			<xsl:apply-templates select="UpdateStandardStatus" />
@@ -103,7 +101,7 @@
 			
 			<xsl:apply-templates select="SigningForm"/>
 			<xsl:apply-templates select="ShowFlowOverview"/>
-			<xsl:apply-templates select="AutoManagerAssignment" />		
+			<xsl:apply-templates select="AutoManagerAssignment" />
 		</div>
 		
 	</xsl:template>
@@ -216,7 +214,7 @@
 		</xsl:if>
 		
 	</xsl:template>
-	
+
 	<xsl:template name="AdditionalListFilters" />
 	
 	<xsl:template match="ExtensionLink">
@@ -596,7 +594,7 @@
 					</label>
 				</div>
 			</div>
-			
+				
 			<xsl:if test="ForeignIDsBlocked and Flow/requireAuthentication = 'true'">
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 				
@@ -635,7 +633,7 @@
 				
 				<xsl:if test="SupportsSequentialSigning and Flow/requireSigning = 'true'">
 					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-						
+					
 						<div class="floatleft">
 							<xsl:call-template name="createCheckbox">
 								<xsl:with-param name="name" select="'useSequentialSigning'" />
@@ -1652,11 +1650,11 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:value-of select="$i18n.notPublished" />
-						</xsl:otherwise>					
+						</xsl:otherwise>
 					</xsl:choose>
 					
 				</a>
-			</td>								
+			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportflow/{flowID}" title="{$i18n.exportFlow.title}: {name}">
 					<img src="{$imgPath}/xml.png" alt="" />
@@ -1682,7 +1680,7 @@
 							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 
-					</xsl:otherwise>					
+					</xsl:otherwise>
 				</xsl:choose>
 			</td>
 		</tr>
@@ -3535,7 +3533,7 @@
 				<div class="floatleft clearboth">
 					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" id="icon" alt="" />							
 				</div>
-			</div>			
+			</div>
 			
 			<xsl:if test="Flow/iconFileName">
 				<div class="floatleft full bigmarginbottom margintop">
@@ -3545,14 +3543,14 @@
 							<xsl:with-param name="name" select="'clearicon'" />
 							<xsl:with-param name="value" select="'true'"/>
 							<xsl:with-param name="id" select="'clearicon'" />
-							<xsl:with-param name="onclick" select="'updateFileIconField(this.checked)'"/>			     
+							<xsl:with-param name="onclick" select="'updateFileIconField(this.checked)'"/>
 						</xsl:call-template>
 						
 						<label for="clearicon">
 							<xsl:value-of select="$i18n.restoreDefaultIcon" />
-						</label>				
+						</label>
 					</div>
-				</div>			
+				</div>
 			</xsl:if>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -3564,7 +3562,7 @@
 				<div class="floatleft full">
 					<input type="file" name="icon" id="iconfile"/>
 				</div>
-			</div>			
+			</div>
 			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateFlowIcon.submit}" />
@@ -3747,9 +3745,9 @@
 				<input type="submit" value="{$i18n.SortFlow.submit}" />
 			</div>
 
-		</form>	
+		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="Step" mode="sort">
 	

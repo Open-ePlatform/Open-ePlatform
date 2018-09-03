@@ -2,9 +2,9 @@ package com.nordicpeak.flowengine.comparators;
 
 import java.util.Comparator;
 
-import com.nordicpeak.flowengine.beans.FlowFamilyManager;
-
 import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
+
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 
 public class FlowFamilyManagerComparator implements Comparator<FlowFamilyManager> {
 	

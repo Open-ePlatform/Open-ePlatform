@@ -1,13 +1,14 @@
 package com.nordicpeak.flowengine.accesscontrollers;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 public class ManagerFlowInstanceAccessController implements FlowInstanceAccessController {
 	

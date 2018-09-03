@@ -2,14 +2,15 @@ package com.nordicpeak.flowengine.interfaces;
 
 import java.util.List;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.standardutils.xml.Elementable;
+
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.standardutils.xml.Elementable;
 
 public interface ImmutableFlowFamily extends Elementable {
 

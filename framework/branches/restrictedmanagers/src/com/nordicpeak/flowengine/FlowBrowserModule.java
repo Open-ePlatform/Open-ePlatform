@@ -210,7 +210,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable direct search", description = "Enable searching via request parameter on main page")
 	private boolean enableDirectSearch = false;
-
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set nofollow attribute on flow forms", description = "Controls whether nofollow attribute should be set on flow form links or not")
 	private boolean setNoFollowOnFlowForms = false;

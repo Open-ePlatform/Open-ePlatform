@@ -8,9 +8,6 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.enums.Priority;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.SourceAttributeHandler;
@@ -36,6 +33,9 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.enums.Priority;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 @Table(name = "flowengine_flow_instances")
 @XMLElement
