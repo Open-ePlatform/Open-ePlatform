@@ -267,7 +267,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 						
 						for (Flow flow : flows) {
 							
-							if (!isAdminForFund && !AccessUtils.checkAccess(user, flow.getFlowFamily())) {
+							if (!isAdminForFund && !flow.getFlowFamily().checkManagerFullAccess(user)) {
 								continue roundsLoop;
 							}
 							
@@ -308,7 +308,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 				
 				for (Flow flow : flows) {
 					
-					if (!AccessUtils.checkAccess(user, flow.getFlowFamily())) {
+					if (!flow.getFlowFamily().checkManagerFullAccess(user)) {
 						
 						throw new AccessDeniedException("User does not have access to all flows in raffle round " + round);
 					}
@@ -685,7 +685,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 								
 								for (Flow flow : flows) {
 									
-									if (!AccessUtils.checkAccess(user, flow.getFlowFamily())) {
+									if (!flow.getFlowFamily().checkManagerFullAccess(user)) {
 										
 										continue roundsLoop;
 									}
