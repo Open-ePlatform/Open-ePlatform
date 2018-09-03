@@ -550,7 +550,7 @@
 	<xsl:variable name="i18n.FlowFamily.UsesAutoManagerAssignment">E-tjänsten använder automatisk tilldelning av handläggare.</xsl:variable>
 	
 	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.description">text här</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.description">Här väljer du vilka handläggare som ska tilldelas ärenden automatiskt och när det ska ske.</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specificerat värde</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
