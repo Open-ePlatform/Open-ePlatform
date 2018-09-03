@@ -306,7 +306,7 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	width: auto;
 }
 
-.featherlight-content input[type='checkbox'] {
+.featherlight-content input[type='checkbox'], .featherlight-content input[type='radio']  {
 	display: inline;
 	position: static;
 	opacity: 1;
