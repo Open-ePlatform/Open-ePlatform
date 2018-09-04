@@ -181,6 +181,7 @@
 		<xsl:param name="flowInstance" />
 		<xsl:param name="view" />
 		<xsl:param name="bookmarked" select="Bookmarked" />
+		<xsl:param name="restrictedManager" select="null" />
 		<xsl:param name="deleteAccessOverride" select="null" />
 		
 		<div class="panel-wrapper official">
@@ -248,12 +249,14 @@
 						</a>
 			  		</li>
 			  		
-			  		<li>
-			  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/managers/{$flowInstance/flowInstanceID}" class="btn btn-light">
-							<xsl:if test="$view = 'MANAGER'"><xsl:attribute name="class">btn btn-light active</xsl:attribute></xsl:if>
-							<span data-icon-before="u"><xsl:value-of select="$i18n.updateManagers"/></span>
-						</a>
-			  		</li>
+			  		<xsl:if test="not($restrictedManager)">
+				  		<li>
+				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/managers/{$flowInstance/flowInstanceID}" class="btn btn-light">
+								<xsl:if test="$view = 'MANAGER'"><xsl:attribute name="class">btn btn-light active</xsl:attribute></xsl:if>
+								<span data-icon-before="u"><xsl:value-of select="$i18n.updateManagers"/></span>
+							</a>
+				  		</li>
+			  		</xsl:if>
 			  		
 			  		<xsl:if test="$flowInstance/Status/isAdminDeletable = 'true' or $deleteAccessOverride">
 				  		<li>

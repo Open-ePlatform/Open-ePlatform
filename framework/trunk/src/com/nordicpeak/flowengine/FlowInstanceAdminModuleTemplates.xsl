@@ -52,6 +52,7 @@
 		<xsl:call-template name="showManagerFlowInstanceControlPanel">
 			<xsl:with-param name="flowInstance" select="FlowInstance" />
 			<xsl:with-param name="view" select="'FLOWINSTANCE'" />
+			<xsl:with-param name="restrictedManager" select="RestrictedManager"/>
 		</xsl:call-template>
 	
 		<section class="modal warning child modal-marginbottom">
@@ -732,6 +733,7 @@
 			<xsl:with-param name="flowInstance" select="." />
 			<xsl:with-param name="view" select="'OVERVIEW'" />
 			<xsl:with-param name="bookmarked" select="../Bookmarked" />
+			<xsl:with-param name="restrictedManager" select="../RestrictedManager"/>
 		</xsl:call-template>
 		
 		<section class="child">
@@ -1399,6 +1401,7 @@
 		<xsl:call-template name="showManagerFlowInstanceControlPanel">
 			<xsl:with-param name="flowInstance" select="FlowInstance" />
 			<xsl:with-param name="view" select="'PREVIEW'" />
+			<xsl:with-param name="restrictedManager" select="RestrictedManager"/>
 		</xsl:call-template>
 	
 		<section class="modal warning child modal-marginbottom">
@@ -1471,6 +1474,7 @@
 		<xsl:call-template name="showManagerFlowInstanceControlPanel">
 			<xsl:with-param name="flowInstance" select="FlowInstance" />
 			<xsl:with-param name="view" select="'STATUS'" />
+			<xsl:with-param name="restrictedManager" select="RestrictedManager"/>
 		</xsl:call-template>
 	
 		<section class="child">

@@ -661,6 +661,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				List<Contact> contacts = FlowInstanceUtils.getContacts(flowInstance);
 				
 				if (contacts != null) {
+					
 					for (Contact contact : contacts) {
 						
 						if ((contact.getEmail() != null && contact.isContactByEmail()) || (contact.getMobilePhone() != null && contact.isContactBySMS())) {
@@ -675,6 +676,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					
 					XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "NoContactWay");
 				}
+			}
+			
+			if(flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "RestrictedManager");
 			}
 			
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
@@ -806,6 +812,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					
 					return null;
 				}
+			}
+			
+			if(flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+				
+				XMLUtils.appendNewElement(doc, updateInstanceStatusElement, "RestrictedManager");
 			}
 			
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
@@ -1495,12 +1506,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public void appendFormData(Document doc, Element baseElement, MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user) {
 		
 		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
+		
+		if(instanceManager.getFlowInstance().getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+			
+			XMLUtils.appendNewElement(doc, baseElement, "RestrictedManager");
+		}
 	}
 	
 	@Override
 	public void appendShowFlowInstanceData(Document doc, Element baseElement, FlowInstanceManager instanceManager, HttpServletRequest req, User user) {
 		
 		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
+		
+		if(instanceManager.getFlowInstance().getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+			
+			XMLUtils.appendNewElement(doc, baseElement, "RestrictedManager");
+		}
 	}
 	
 	public void appendBookmark(Document doc, Element baseElement, FlowInstance flowInstance, HttpServletRequest req, User user) {

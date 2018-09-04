@@ -39,5 +39,9 @@ public interface ImmutableFlowFamily extends Elementable {
 	public List<Integer> getAutoManagerAssignmentNoMatchUserIDs();
 	
 	public List<Integer> getAutoManagerAssignmentNoMatchGroupIDs();
+
+	public boolean checkManagerRestrictedAccess(User user);
+	
+	public boolean checkManagerFullAccess(User user);
 	
 }
