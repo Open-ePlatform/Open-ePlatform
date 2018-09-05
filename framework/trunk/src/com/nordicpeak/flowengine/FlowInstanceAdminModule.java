@@ -905,7 +905,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		//TODO checksum of latest available PDF
 		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
 		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
-		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
+		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?signreq=1";
 		
 		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
 	}
