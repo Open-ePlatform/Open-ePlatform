@@ -615,7 +615,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
 		
 		File pdfTempIn = basePDF;
-		File pdfTempOut;
+		File pdfTempOut = null;
 		
 		for (PDFManagerResponse managerResponse : managerResponses) {
 			
@@ -641,11 +641,22 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
 								merger.mergeDocuments();
 								
+								if (pdfTempIn != basePDF && !FileUtils.deleteFile(pdfTempIn)) {
+									
+									log.warn("Unable to delete temp file: " + pdfTempIn);
+								}
+								
 								pdfTempIn = pdfTempOut;
+								pdfTempOut = null;
 								it.remove();
 								
 							} catch (Exception e) {
 								log.warn("Error merging PDF from attachment " + attachment + " event " + event + " from for flow instance " + flowInstanceID, e);
+								
+								if (pdfTempOut != null && !FileUtils.deleteFile(pdfTempOut)) {
+									
+									log.warn("Unable to delete temp file: " + pdfTempOut);
+								}
 								
 							} finally {
 								CloseUtils.close(stream);
@@ -699,6 +710,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				try {
 					inputFileRandomAccess.close();
 				} catch (IOException e) {}
+			}
+			
+			if (pdfTempIn != basePDF && !FileUtils.deleteFile(pdfTempIn)) {
+				
+				log.warn("Unable to delete temp file: " + pdfTempIn);
 			}
 		}
 		
