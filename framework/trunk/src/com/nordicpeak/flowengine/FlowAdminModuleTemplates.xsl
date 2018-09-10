@@ -171,14 +171,14 @@
 		
 		<xsl:if test="AddAccess">
 			<br/>
-			<div class="floatright marginright">
+			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflow" title="{$i18n.addFlow}">
 					<xsl:value-of select="$i18n.addFlow"/>
 					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 				</a>			
 			</div>
 			<br/>
-			<div class="floatright marginright">
+			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow" title="{$i18n.importFlow}">
 					<xsl:value-of select="$i18n.importFlow"/>
 					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
@@ -188,14 +188,14 @@
 		
 		<xsl:if test="AdminAccess">
 			<br/>
-			<div class="floatright marginright">
+			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.administrateStandardStatuses}">
 					<xsl:value-of select="$i18n.administrateStandardStatuses"/>
 					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>			
 			</div>
 			<br/>
-			<div class="floatright marginright">
+			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtypes" title="{$i18n.administrateFlowTypes}">
 					<xsl:value-of select="$i18n.administrateFlowTypes"/>
 					<img class="marginleft" src="{$imgPath}/folder_edit.png" alt=""/>
