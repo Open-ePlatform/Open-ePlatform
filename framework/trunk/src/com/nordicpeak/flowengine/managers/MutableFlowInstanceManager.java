@@ -1143,7 +1143,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				FlowInstanceUtils.setContactAttributes(this, flowInstance.getAttributeHandler());
 			}
 
-			FlowInstanceUtils.setDescriptionAttribute(flowInstance.getAttributeHandler());
+			FlowInstanceUtils.setDescriptions(flowInstance);
 			
 			if (flowInstance.getFlowInstanceID() == null) {
 				

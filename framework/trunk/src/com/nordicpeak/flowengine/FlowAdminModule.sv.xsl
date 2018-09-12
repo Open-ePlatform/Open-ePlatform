@@ -97,7 +97,7 @@
 	<xsl:variable name="i18n.unPublishDate">Avpubliceringsdatum</xsl:variable>
 	<xsl:variable name="i18n.usePreview">Aktivera förhandsgranskning</xsl:variable>
 
-	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställningar gäller för alla versioner</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställningar gäller för samtliga versioner av e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk i "Krav för e-tjänsten" (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.Name">Länknamn</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress</xsl:variable>
@@ -574,4 +574,8 @@
 	
 	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständig handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
 	
+	<xsl:variable name="i18n.DescriptionColumnSettings.Title">Inställningar för ärendebeskrivningar</xsl:variable>
+	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten.</xsl:variable>
+	<xsl:variable name="i18n.userDescriptionTemplate">Beskrivning på mina sidor</xsl:variable>
+	<xsl:variable name="i18n.managerDescriptionTemplate">Beskrivning i handläggargränssnittet</xsl:variable>
 </xsl:stylesheet>

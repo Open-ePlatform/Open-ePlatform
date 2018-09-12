@@ -558,7 +558,14 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	public void setUserDescription(String userDescription) {
 	
-		this.userDescription = userDescription;
+		if(userDescription != null) {
+			
+			this.userDescription = StringUtils.substring(userDescription, 255);
+
+		}else {
+
+			this.userDescription = null;
+		}
 	}
 
 	public String getManagerDescription() {
@@ -568,6 +575,13 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	public void setManagerDescription(String managerDescription) {
 	
-		this.managerDescription = managerDescription;
+		if(managerDescription != null) {
+			
+			this.managerDescription = StringUtils.substring(managerDescription, 255);
+			
+		}else {
+			
+			this.managerDescription = null;
+		}
 	}
 }

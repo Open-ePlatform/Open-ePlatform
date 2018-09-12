@@ -242,7 +242,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable the description column", description = "Controls if description column is visible")
-	protected boolean enableDescriptionColumn;
+	protected boolean enableDescriptionColumn = true;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable logging of flow instance indexing", description = "Enables logging of indexing of flow instances")
@@ -354,7 +354,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected List<String> getSelectedAttributes() {
 
-		if (enableExternalID || enableDescriptionColumn) {
+		if (enableExternalID) {
 			
 			ArrayList<String> attributes = new ArrayList<String>(2);
 			
@@ -363,13 +363,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				attributes.add(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE);
 			}
 			
-			if (enableDescriptionColumn) {
-				
-				attributes.add(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
-			}
-			
 			return attributes;
-			
 		}
 		
 		return null;
@@ -2143,7 +2137,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							
 							String detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
 							
-							log.warn("Automatically setting managers of instance " + flowInstance + " to " + detailString);
+							log.info("Automatically setting managers of instance " + flowInstance + " to " + detailString);
 							
 							RelationQuery updateQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
 							updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);

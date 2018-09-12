@@ -11,6 +11,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.ReverseListIterator;
+import se.unlogic.standardutils.string.StringUtils;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
@@ -254,47 +255,88 @@ public class FlowInstanceUtils {
 		}
 	}
 	
-	public static void setDescriptions(MutableAttributeHandler attributeHandler) {
+	public static void setDescriptions(FlowInstance flowInstance) {
 		
+		String genericDescription = null;
 		
-	}
-	
-	public static void setDescriptionAttribute(MutableAttributeHandler attributeHandler) {
-		
-		boolean descriptionAttributeSet = attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
-		
-		if (!descriptionAttributeSet || (descriptionAttributeSet && attributeHandler.isSet(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE))) {
+		if(flowInstance.getFlow().getUserDescriptionTemplate() != null) {
 			
-			Map<String, String> attributeMap = attributeHandler.getAttributeMap();
+			String userDescription = AttributeTagUtils.replaceTags(flowInstance.getFlow().getUserDescriptionTemplate(), flowInstance.getAttributeHandler());
 			
-			if (!CollectionUtils.isEmpty(attributeMap)) {
+			if(!StringUtils.isEmpty(userDescription)) {
 				
-				ArrayList<String> descriptionAttributes = new ArrayList<String>(attributeMap.size());
+				flowInstance.setUserDescription(userDescription);
 				
-				for (String attributeName : attributeMap.keySet()) {
-					
-					if (!attributeName.equals(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE) && attributeName.startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
-						
-						descriptionAttributes.add(attributeName);
-					}
-				}
-				
-				if (!descriptionAttributes.isEmpty()) {
-					
-					Collections.sort(descriptionAttributes);
-					
-					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE, attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size() - 1)));
-					attributeHandler.setAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE, true);
-					
-					return;
-				}
-				
-				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
-				attributeHandler.removeAttribute(Constants.FLOW_INSTANCE_DESCRIPTION_GENERATED_ATTRIBUTE);
+			}else {
+			
+				flowInstance.setUserDescription(null);
 			}
+		
+		}else {
+			
+			genericDescription = getGenericDescription(flowInstance.getAttributeHandler());
+			
+			flowInstance.setUserDescription(genericDescription);
+		}
+		
+		if(flowInstance.getFlow().getManagerDescriptionTemplate() != null) {
+			
+			String managerDescription = AttributeTagUtils.replaceTags(flowInstance.getFlow().getManagerDescriptionTemplate(), flowInstance.getAttributeHandler());
+			
+			if(!StringUtils.isEmpty(managerDescription)) {
+			
+				flowInstance.setManagerDescription(managerDescription);
+				
+			}else {
+				
+				flowInstance.setManagerDescription(null);
+			}
+		
+		}else {
+			
+			if(genericDescription == null) {
+				
+				genericDescription = getGenericDescription(flowInstance.getAttributeHandler());
+			}
+			
+			flowInstance.setManagerDescription(genericDescription);
 		}
 	}
 	
+	public static String getGenericDescription(AttributeHandler attributeHandler) {
+		
+		String description = attributeHandler.getString(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE);
+		
+		if(description != null) {
+			
+			return description;
+		}
+		
+		Map<String, String> attributeMap = attributeHandler.getAttributeMap();
+		
+		if (!CollectionUtils.isEmpty(attributeMap)) {
+			
+			ArrayList<String> descriptionAttributes = new ArrayList<String>(attributeMap.size());
+			
+			for (String attributeName : attributeMap.keySet()) {
+				
+				if (attributeName.startsWith(Constants.FLOW_INSTANCE_DESCRIPTION_ATTRIBUTE)) {
+					
+					descriptionAttributes.add(attributeName);
+				}
+			}
+			
+			if (!descriptionAttributes.isEmpty()) {
+				
+				Collections.sort(descriptionAttributes);
+				
+				return attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size() - 1));
+			}
+		}	
+		
+		return null;		
+	}
+		
 	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
 		
 		if (managers != null) {

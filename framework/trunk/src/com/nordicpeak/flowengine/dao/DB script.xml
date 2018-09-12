@@ -2014,4 +2014,17 @@
 		</Query>
 	</Script>
 	
+	<Script version="105">
+		<Query>
+			<![CDATA[
+				UPDATE flowengine_flow_instances SET userDescription = (SELECT SUBSTRING(value,1,255) FROM flowengine_flow_instance_attributes WHERE flowengine_flow_instance_attributes.flowInstanceID = flowengine_flow_instances.flowInstanceID AND name = "description"), managerDescription = userDescription;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				DELETE FROM flowengine_flow_instance_attributes WHERE name = "description" OR name = "descriptionGenerated" AND flowInstanceID IN (SELECT flowInstanceID FROM (SELECT flowInstanceID FROM flowengine_flow_instance_attributes WHERE name = "descriptionGenerated") nested);
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

@@ -2588,7 +2588,7 @@
 			
 		</xsl:call-template>
 		
-		<div class="floatleft full bigmarginbottom">
+		<div class="floatleft fifty bigmarginbottom paddingright border-box">
 			
 			<label for="tags" class="floatleft full">
 				<xsl:value-of select="$i18n.tags" />
@@ -2606,7 +2606,7 @@
 			</div>
 		</div>
 		
-		<div class="floatleft full bigmarginbottom">
+		<div class="paddingleft floatleft fifty bigmarginbottom border-box">
 			
 			<label for="checks" class="floatleft full">
 				<xsl:value-of select="$i18n.checks.title" />
@@ -2624,6 +2624,46 @@
 			</div>
 			
 		</div>
+		
+		<h2 class="floatleft bigmargintop">
+			<xsl:value-of select="$i18n.DescriptionColumnSettings.Title"/>
+		</h2>
+		
+		<div class="floatleft full">
+			<p>
+				<xsl:value-of select="$i18n.DescriptionColumnSettings.Description"/>
+			</p>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="userDescriptionTemplate" class="floatleft full">
+				<xsl:value-of select="$i18n.userDescriptionTemplate" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'userDescriptionTemplate'"/>
+					<xsl:with-param name="name" select="'userDescriptionTemplate'"/>
+					<xsl:with-param name="element" select="Flow" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="managerDescriptionTemplate" class="floatleft full">
+				<xsl:value-of select="$i18n.managerDescriptionTemplate" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'managerDescriptionTemplate'"/>
+					<xsl:with-param name="name" select="'managerDescriptionTemplate'"/>
+					<xsl:with-param name="element" select="Flow" />
+				</xsl:call-template>
+			</div>
+		</div>				
 		
 		<h2 class="floatleft bigmargintop">
 			<xsl:value-of select="$i18n.FlowFamily.SharedSettings"/>
@@ -6747,6 +6787,12 @@
 					<xsl:when test="fieldName = 'externalURL'">
 						<xsl:value-of select="$i18n.FlowForm.externalURL"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'userDescriptionTemplate'">
+						<xsl:value-of select="$i18n.userDescriptionTemplate"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'managerDescriptionTemplate'">
+						<xsl:value-of select="$i18n.managerDescriptionTemplate"/>
+					</xsl:when>										
 					<xsl:when test="fieldName = 'ownerName'">
 						<xsl:value-of select="$i18n.owner.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.owner.name"/>
 					</xsl:when>

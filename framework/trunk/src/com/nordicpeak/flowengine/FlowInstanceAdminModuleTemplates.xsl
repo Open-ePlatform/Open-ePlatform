@@ -665,7 +665,7 @@
 			
 			<td data-title="{$i18n.Description}" class="description">
 				
-				<xsl:value-of select="Attributes/Attribute[Name = 'description']/Value"/>			
+				<xsl:value-of select="managerDescription"/>			
 				
 			</td>
 					
@@ -766,26 +766,20 @@
 							
 							<br/>
 							
-							<xsl:if test="../ShowDescriptionColumn">
-								
-								<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
-								
-									<xsl:if test="$description">
+							<xsl:if test="../ShowDescriptionColumn and managerDescription">
 									
-									<span class="errandno hide-mobile">
+								<span class="errandno hide-mobile">
+									
+									<xsl:value-of select="$i18n.Description" />
+									
+									<xsl:text>:&#160;</xsl:text>
+								</span>
+						
+								<span class="hide-mobile">	
+									<xsl:value-of select="managerDescription"/>	
+								</span>
 										
-										<xsl:value-of select="$i18n.Description" />
-										
-										<xsl:text>:&#160;</xsl:text>
-									</span>
-							
-									<span class="hide-mobile">	
-										<xsl:value-of select="$description"/>	
-									</span>
-											
-									<br/>							
-								
-								</xsl:if>
+								<br/>							
 								
 							</xsl:if>							
 							
@@ -816,25 +810,17 @@
   						<xsl:call-template name="printExternalID"/>
   					</p>
   					
-					<xsl:if test="../ShowDescriptionColumn">
+					<xsl:if test="../ShowDescriptionColumn and managerDescription">
 						
-						<xsl:variable name="description" select="Attributes/Attribute[Name = 'description']/Value"/>
-						
-							<xsl:if test="$description">
-						
-							<p class="only-mobile">	
-								<strong class="overview">
+						<p class="only-mobile">	
+							<strong class="overview">
+								<xsl:value-of select="$i18n.Description" />
+								<xsl:text>:&#160;</xsl:text>
+							</strong>
+					
+							<xsl:value-of select="managerDescription"/>	
+						</p>
 									
-									<xsl:value-of select="$i18n.Description" />
-									
-									<xsl:text>:&#160;</xsl:text>
-								</strong>
-						
-								<xsl:value-of select="$description"/>	
-							</p>
-									
-						</xsl:if>
-						
 					</xsl:if>
 					
 					<xsl:if test="../Profile">
