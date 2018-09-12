@@ -12,7 +12,7 @@
 		<div id="MyPagesMenu" class="errand-menu buttons-in-desktop errand-page">
 
 		  	<a href="#" class="btn btn-dark">
-		  		<span data-icon-after="_" data-icon-before="L">Mina sidor</span>
+		  		<span data-icon-after="_" data-icon-before="L">Mina sidor / <xsl:value-of select="ExtensionLink[Active]/name"/></span>
 		  	</a>
 	
 		  	<ul>
