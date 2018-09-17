@@ -425,6 +425,7 @@ public class RaffleModule extends FlowInstanceSummaryModule implements CRUDCallb
 								
 								oldStatusMap.put(flowInstance, flowInstance.getStatus());
 								flowInstance.setStatus(getStatus(raffleFlow.getRaffledStatusID()));
+								flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 								break;
 							}
 						}
