@@ -226,8 +226,9 @@ $(document).ready(function() {
 
 	$('#hideExternalMessages').change(function() {
 
-		$('#hideExternalMessageAttachments').prop('disabled', this.checked);
-	});
+		$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
+	
+	}).trigger('change');
 });
 
 function updateSortOrder(obj) {

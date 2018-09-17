@@ -2434,7 +2434,6 @@
 						<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
 						<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
 						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="disabled" select="Flow/hideExternalMessages = 'true'" />
 					</xsl:call-template>
 					
 					<label for="hideExternalMessageAttachments">
