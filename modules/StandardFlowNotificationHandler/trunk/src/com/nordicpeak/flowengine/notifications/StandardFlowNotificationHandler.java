@@ -1695,7 +1695,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			for (User user : event.getMentionedUsers()) {
 
-				if (user.getEmail() != null) {
+				if (EmailUtils.isValidEmailAddress(user.getEmail())) {
 
 					TagReplacer tagReplacer = new TagReplacer();
 
@@ -1707,8 +1707,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					try {
 						email.addRecipient(user.getEmail());
 						email.setMessageContentType(SimpleEmail.HTML);
-						email.setSenderName(emailSenderName);
-						email.setSenderAddress(emailSenderAddress);
+						email.setSenderName(getEmailSenderName(event.getFlowInstance()));
+						email.setSenderAddress(getEmailSenderAddress(event.getFlowInstance()));
 						email.setSubject(tagReplacer.replace(managerMentionedEmailSubject));
 						email.setMessage(tagReplacer.replace(managerMentionedEmailMessage));
 
@@ -1716,8 +1716,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					} catch (Exception e) {
 
-						log.info("Error generating/sending mentioned email " + email, e);
+						log.error("Error generating/sending mentioned email " + email, e);
 					}
+					
+				} else {
+					
+					log.warn("Mentioned user " + user + " has invalid email");
 				}
 			}
 		}
@@ -1773,7 +1777,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 						
 					} catch (Exception e) {
 						
-						log.info("Error generating/sending email " + email, e);
+						log.error("Error generating/sending email " + email, e);
 					}
 				}
 			}
@@ -1798,16 +1802,22 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return scripts;
 	}
 
-	private void sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String subject, String message) {
+	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String subject, String message) {
 
 		if (signingParty.getEmail() == null || subject == null || message == null || multiSigningHandler == null) {
-			return;
+			return false;
+		}
+		
+		if (!EmailUtils.isValidEmailAddress(signingParty.getEmail())) {
+			
+			log.warn("Signing party " + signingParty + " from " + flowInstance + " has invalid email");
+			return false;
 		}
 		
 		String url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
 		
 		if (url == null) {
-			return;
+			return false;
 		}
 
 		TagReplacer tagReplacer = new TagReplacer();
@@ -1839,8 +1849,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending email " + email, e);
+			log.error("Error generating/sending email " + email, e);
+			return false;
 		}
+		
+		return true;
 	}
 
 	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String message) {
@@ -1873,7 +1886,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			sms.setSenderName(this.getSmsSenderName(flowInstance));
+			sms.setSenderName(getSmsSenderName(flowInstance));
 			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 			sms.addRecipient(signingParty.getMobilePhone());
 
@@ -1881,7 +1894,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending sms " + sms, e);
+			log.error("Error generating/sending sms " + sms, e);
 		}
 	}
 
@@ -1889,6 +1902,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (!contact.isContactByEmail() || contact.getEmail() == null || subject == null || message == null) {
 
+			return false;
+		}
+		
+		if (!EmailUtils.isValidEmailAddress(contact.getEmail())) {
+			
+			log.warn("Contact " + contact + " from " + flowInstance + " has invalid email");
 			return false;
 		}
 
@@ -1921,7 +1940,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending email " + email, e);
+			log.error("Error generating/sending email " + email, e);
 			return false;
 		}
 
@@ -1954,7 +1973,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending sms " + sms, e);
+			log.error("Error generating/sending sms " + sms, e);
 			return false;
 		}
 
@@ -2000,29 +2019,36 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			sharedTagSources.add(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		}
-
+		
 		for (User manager : managers) {
-
-			TagReplacer tagReplacer = new TagReplacer();
-
-			tagReplacer.addTagSource(MANAGER_TAG_SOURCE_FACTORY.getTagSource(manager));
-			tagReplacer.addTagSources(sharedTagSources);
-
-			SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-
-			try {
-				email.addRecipient(manager.getEmail());
-				email.setMessageContentType(SimpleEmail.HTML);
-				email.setSenderName(this.getEmailSenderName(flowInstance));
-				email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-				email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
-				email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
-
-				systemInterface.getEmailHandler().send(email);
-
-			} catch (Exception e) {
-
-				log.info("Error generating/sending email " + email, e);
+			
+			if (EmailUtils.isValidEmailAddress(manager.getEmail())) {
+				
+				TagReplacer tagReplacer = new TagReplacer();
+				
+				tagReplacer.addTagSource(MANAGER_TAG_SOURCE_FACTORY.getTagSource(manager));
+				tagReplacer.addTagSources(sharedTagSources);
+				
+				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+				
+				try {
+					email.addRecipient(manager.getEmail());
+					email.setMessageContentType(SimpleEmail.HTML);
+					email.setSenderName(this.getEmailSenderName(flowInstance));
+					email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
+					email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
+					
+					systemInterface.getEmailHandler().send(email);
+					
+				} catch (Exception e) {
+					
+					log.error("Error generating/sending email " + email, e);
+				}
+				
+			} else {
+				
+				log.warn("Manager " + manager + " has invalid email");
 			}
 		}
 	}
@@ -2122,7 +2148,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} catch (Exception e) {
 
-			log.info("Error generating/sending email " + email, e);
+			log.error("Error generating/sending email " + email, e);
 		}
 
 	}
