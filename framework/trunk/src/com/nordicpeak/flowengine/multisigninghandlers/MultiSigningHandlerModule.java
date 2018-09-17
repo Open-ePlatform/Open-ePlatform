@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.multisigninghandlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -967,6 +968,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
 		flowInstance.setStatus(flowInstance.getFlow().getDefaultState(FlowBrowserModule.SAVE_ACTION_ID));
+		flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 		
 		flowInstanceDAO.update(flowInstance);
 		
@@ -977,6 +979,38 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		res.sendRedirect(uriParser.getContextPath() + userFlowInstanceModule.getFullAlias() + "/flowinstance/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID() + preview);
 		return null;
+	}
+	
+	@Override
+	public void cancelSigning(FlowInstance flowInstance) throws Exception {
+		
+		if (flowInstance.getStatus().getContentType() != ContentType.WAITING_FOR_MULTISIGN ) {
+			throw new InvalidParameterException();
+		}
+		
+		if (flowInstance.getFirstSubmitted() != null) {
+			throw new UnsupportedOperationException("Unable to cancel signing of submitted flow instances");
+		}
+		
+		log.info("Cancelling multipart signing of flow instance " + flowInstance);
+		
+		flowInstance.setStatus(flowInstance.getFlow().getDefaultState(FlowBrowserModule.SAVE_ACTION_ID));
+		flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
+		
+		flowInstanceDAO.update(flowInstance);
+		
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+
+		SiteProfile profile = null;
+		
+		if (this.profileHandler != null && flowInstance.getProfileID() != null) {
+			
+			profile = profileHandler.getProfile(flowInstance.getProfileID());
+		}
+		
+		ImmutableFlowInstanceManager flowInstanceManager = new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(profile), null);
+		
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new MultiSigningCanceledEvent(flowInstance, MultiSignUtils.getSigningParties(flowInstanceManager), null, null), EventTarget.ALL);
 	}
 	
 	@EventListener(channel = FlowInstance.class)
