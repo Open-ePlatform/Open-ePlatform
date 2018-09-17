@@ -2027,4 +2027,12 @@
 		</Query>
 	</Script>	
 	
+	<Script version="106">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideExternalMessageAttachments` TINYINT(1) UNSIGNED NOT NULL AFTER `hideExternalMessages`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
+
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -21,11 +26,6 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.beans.ExternalMessage;
-import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 
 public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, ExternalMessageAttachment> {
 
@@ -44,6 +44,13 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 			String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), errors);
 
 			List<ExternalMessageAttachment> attachments = getAttachments(req, user, errors);
+			
+			if (attachments != null && flowInstance.getFlow().isHideExternalMessageAttachments()) {
+				
+				log.warn("User " + user + " tried adding an external message for flowinstance " + flowInstance + " with an attachment while attachments are disabled.");
+
+				errors.add(new ValidationError("UnableToParseRequest"));
+			} 
 
 			if (errors.isEmpty()) {
 

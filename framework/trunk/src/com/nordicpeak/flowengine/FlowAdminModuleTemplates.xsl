@@ -697,6 +697,24 @@
 					</div>
 				</div>
 				
+				<xsl:if test="not(Flow/hideExternalMessages = 'true')">
+					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+						
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
+								<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
+								<xsl:with-param name="element" select="Flow" />
+								<xsl:with-param name="disabled" select="'true'" />
+							</xsl:call-template>
+							
+							<label for="hideExternalMessageAttachments">
+								<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
+							</label>
+						</div>
+					</div>
+				</xsl:if>
+				
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 					
 					<div class="floatleft">
@@ -2405,6 +2423,22 @@
 					
 					<label for="hideExternalMessages">
 						<xsl:value-of select="$i18n.hideExternalMessages" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom margintop internal">
+				
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
+						<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
+						<xsl:with-param name="element" select="Flow" />
+						<xsl:with-param name="disabled" select="Flow/hideExternalMessages = 'true'" />
+					</xsl:call-template>
+					
+					<label for="hideExternalMessageAttachments">
+						<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
 					</label>
 				</div>
 			</div>

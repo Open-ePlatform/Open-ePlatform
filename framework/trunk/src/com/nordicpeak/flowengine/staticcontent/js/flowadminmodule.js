@@ -223,6 +223,11 @@ $(document).ready(function() {
 		
 		$("#allowedManagers").toggle(checked).find("input").not(".usergroup-list input").prop("disabled", !checked);
 	}).trigger("change");
+
+	$('#hideExternalMessages').change(function() {
+
+		$('#hideExternalMessageAttachments').prop('disabled', this.checked);
+	});
 });
 
 function updateSortOrder(obj) {

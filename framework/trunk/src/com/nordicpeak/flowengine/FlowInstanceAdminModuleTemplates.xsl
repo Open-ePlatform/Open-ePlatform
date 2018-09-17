@@ -978,30 +978,35 @@
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
 		  						<textarea id="message" name="externalmessage" class="full" data-requiredmessage="{$i18n.ValidationError.ExternalMessageRequired}" rows="10"/>
-		  						<div class="heading-wrapper">
-		  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
-		  						</div>
 		  						
-		  						<script>
-									imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
-									deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-								</script>				
-								
-								<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
-								
-								<div class="full">
+		  						<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
+		  						
+			  						<div class="heading-wrapper">
+			  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
+			  						</div>
+			  						
+			  						<script>
+										imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
+										deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
+									</script>				
 									
-									<div class="upload clearboth">
-										<span class="btn btn-upload btn-blue">
-											<xsl:value-of select="$i18n.ChooseFiles" />
-											<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
-										</span>
-										<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormatedMaxFileSize" /></span>
+									<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
+									
+									<div class="full">
+										
+										<div class="upload clearboth">
+											<span class="btn btn-upload btn-blue">
+												<xsl:value-of select="$i18n.ChooseFiles" />
+												<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
+											</span>
+											<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormatedMaxFileSize" /></span>
+										</div>
+										
+										<ul id="external-message-qloader-filelist" class="files" />
+										
 									</div>
 									
-									<ul id="external-message-qloader-filelist" class="files" />
-									
-								</div>
+								</xsl:if>
 								
 		  						<input type="submit" value="{$i18n.SubmitMessage}" name="externalmessage" class="btn btn-green btn-inline" />
 		  						<a href="#" class="btn btn-light btn-inline close_message"><xsl:value-of select="$i18n.Cancel" /></a>

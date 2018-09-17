@@ -521,6 +521,7 @@
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
+	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av bifogning av filer i meddelandefunktionen</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>
