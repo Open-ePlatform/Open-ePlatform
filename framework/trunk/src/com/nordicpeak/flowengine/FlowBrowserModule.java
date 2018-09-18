@@ -302,6 +302,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		this.eventHandler.removeEventListener(FlowType.class, CRUDEvent.class, this);
 		this.eventHandler.removeEventListener(Flow.class, CRUDEvent.class, this);
+		this.eventHandler.removeEventListener(FlowFamily.class, CRUDEvent.class, this);
 
 		systemInterface.getInstanceHandler().removeInstance(FlowBrowserModule.class, this);
 	}
