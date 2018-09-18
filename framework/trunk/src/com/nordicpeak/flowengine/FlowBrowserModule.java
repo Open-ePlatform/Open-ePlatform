@@ -262,6 +262,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		this.eventHandler.addEventListener(FlowType.class, CRUDEvent.class, this);
 		this.eventHandler.addEventListener(Flow.class, CRUDEvent.class, this);
+		this.eventHandler.addEventListener(FlowFamily.class, CRUDEvent.class, this);
 
 		scheduler = new Scheduler();
 		scheduler.schedule("0 0 * * *", this);
