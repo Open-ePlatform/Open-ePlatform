@@ -78,6 +78,8 @@
  			
   			<div class="aside-inside start-flow-panel">
   			
+  				<xsl:if test="Steps"><xsl:attribute name="class">aside-inside start-flow-panel has-steps</xsl:attribute></xsl:if>
+  			
   				<div class="section noborder">
   					<xsl:if test="Checks/check or FlowFamily/useLoginHelpLink = 'true'">
 	  					<xsl:attribute name="class">section yellow</xsl:attribute>
