@@ -30,7 +30,6 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 import se.unlogic.standardutils.collections.MethodComparator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.LowLevelQuery;
-import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.enums.Order;
@@ -42,6 +41,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 import it.sauronsoftware.cron4j.Scheduler;
@@ -109,8 +109,8 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
-		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
-		flowDAO = daoFactory.getDAO(Flow.class);
+		FlowEngineDAOFactory daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		flowDAO = daoFactory.getFlowDAO();
 	}
 
 	@Override
