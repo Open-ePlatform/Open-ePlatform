@@ -57,7 +57,7 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/description" disable-output-escaping="yes" />
-					</span>		
+					</span>
 				</xsl:if>
 				
 				<div class="clearboth"/>
@@ -70,7 +70,7 @@
 				
 			</article>
 		
-		</div>	
+		</div>
 	
 	</xsl:template>
 		
@@ -86,7 +86,7 @@
 				<xsl:if test="CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 	
-			<xsl:if test="CheckboxQueryInstance/CheckboxQuery/maxChecked">
+			<xsl:if test="CheckboxQueryInstance/CheckboxQuery/maxChecked and not(Locked)">
 				<xsl:attribute name="data-maxchecked">
 					<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/maxChecked"/>
 				</xsl:attribute>
@@ -194,24 +194,59 @@
 						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="id" select="$freeTextAlternativeName" />
 							<xsl:with-param name="name" select="$freeTextAlternativeName" />
-							<xsl:with-param name="class" select="'vertical-align-bottom freeTextAlternative'" />
+							<xsl:with-param name="class" >
+								<xsl:choose>
+									<xsl:when test="Locked">
+										<xsl:text>vertical-align-bottom</xsl:text>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text>vertical-align-bottom freeTextAlternative</xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:with-param>
 							<xsl:with-param name="checked">
 								<xsl:if test="CheckboxQueryInstance/freeTextAlternativeValue">true</xsl:if>
 							</xsl:with-param>
+							<xsl:with-param name="disabled" select="Locked"/>
 						</xsl:call-template>
 						
-						<label for="{$freeTextAlternativeName}" class="checkbox"><xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/freeTextAlternative" /></label>
+						<label for="{$freeTextAlternativeName}" class="checkbox">
+							<xsl:if test="Locked">
+								<xsl:attribute name="class">checkbox disabled</xsl:attribute>
+							</xsl:if>
+							
+							<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/freeTextAlternative" />
+						</label>
 						
 					</div>
-				
-					<div class="freeTextAlternativeValue hidden">
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="concat($freeTextAlternativeName,'Value')" />
-							<xsl:with-param name="name" select="concat($freeTextAlternativeName,'Value')" />
-							<xsl:with-param name="disabled" select="disabled" />
-							<xsl:with-param name="value" select="CheckboxQueryInstance/freeTextAlternativeValue" />
-						</xsl:call-template>
-					</div>
+					
+					<xsl:choose>
+						<xsl:when test="Locked">
+							
+							<xsl:if test="CheckboxQueryInstance/CheckboxQuery/freeTextAlternative">
+								<div class="freeTextAlternativeValue">
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="name" select="concat($freeTextAlternativeName,'Value')" />
+										<xsl:with-param name="disabled" select="Locked" />
+										<xsl:with-param name="value" select="CheckboxQueryInstance/freeTextAlternativeValue" />
+									</xsl:call-template>
+								</div>
+							</xsl:if>
+							
+						</xsl:when>
+						<xsl:otherwise>
+							
+							<div class="freeTextAlternativeValue hidden">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="concat($freeTextAlternativeName,'Value')" />
+									<xsl:with-param name="name" select="concat($freeTextAlternativeName,'Value')" />
+									<xsl:with-param name="disabled" select="Locked" />
+									<xsl:with-param name="value" select="CheckboxQueryInstance/freeTextAlternativeValue" />
+								</xsl:call-template>
+							</div>
+							
+						</xsl:otherwise>
+					</xsl:choose>
 					
 				</xsl:if>
 				
@@ -252,9 +287,13 @@
 				<xsl:with-param name="elementName" select="'alternativeID'" />
 				<xsl:with-param name="element" select="../../../Alternatives/CheckboxAlternative[alternativeID = $alternativeID]" />
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
+				<xsl:with-param name="disabled" select="../../../../Locked"/>
 			</xsl:call-template>
 			
 			<label for="{$checkboxID}" class="checkbox">
+				<xsl:if test="../../../../Locked">
+					<xsl:attribute name="class">checkbox disabled</xsl:attribute>
+				</xsl:if>
 			
 				<xsl:value-of select="name" />
 				

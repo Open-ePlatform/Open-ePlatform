@@ -54,10 +54,9 @@ function initCheckBoxQuery(queryID) {
 	
 	var maxChecked = $query.data("maxchecked");
 	
-	if(maxChecked != "") {
+	if (maxChecked != undefined) {
 		
 		var checkboxes = $query.find("input[type='checkbox']");
-		
 		
 		runCheckBoxMaxAlternatives(checkboxes, maxChecked);
 		
@@ -65,27 +64,26 @@ function initCheckBoxQuery(queryID) {
 			runCheckBoxMaxAlternatives(checkboxes, maxChecked);
 		});
 	}
-	
 }
 
 function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
 	
 	var checked = 0;
 	
-	$checkboxes.each(function(index){
+	$checkboxes.each(function(index) {
 		
-		if($(this).prop("checked")){
+		if ($(this).prop("checked")) {
 			checked += 1;
 		}
 	});
 	
-	if(checked >= maxChecked){
+	if (checked >= maxChecked) {
 		
-		$checkboxes.each(function(index){
+		$checkboxes.each(function(index) {
 			
 			var checkbox = $(this); 
 			
-			if(!checkbox.prop("checked")){
+			if (!checkbox.prop("checked")) {
 				checkbox.prop("disabled", true);
 				checkbox.siblings("label").addClass("disabled");
 			}

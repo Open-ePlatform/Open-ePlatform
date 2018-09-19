@@ -81,6 +81,11 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 	private boolean hideTitle;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockOnOwnershipTransfer;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<CheckboxQueryInstance> instances;
@@ -215,6 +220,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
+		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		
 		minChecked = XMLValidationUtils.validateParameter("minChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxChecked = XMLValidationUtils.validateParameter("maxChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
@@ -244,34 +250,39 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 		}
 		
 	}
-
+	
+	public boolean isLockOnOwnershipTransfer() {
+		
+		return lockOnOwnershipTransfer;
+	}
+	
+	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
+		
+		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
 	
 	public boolean isSetAsAttribute() {
-	
+		
 		return setAsAttribute;
 	}
-
 	
 	public void setSetAsAttribute(boolean setAsAttribute) {
-	
+		
 		this.setAsAttribute = setAsAttribute;
 	}
-
 	
 	public String getAttributeName() {
-	
+		
 		return attributeName;
 	}
-
 	
 	public void setAttributeName(String attributeName) {
-	
+		
 		this.attributeName = attributeName;
 	}
-
 	
 	public void setQueryID(Integer queryID) {
-	
+		
 		this.queryID = queryID;
 	}
 }

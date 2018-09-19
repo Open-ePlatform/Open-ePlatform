@@ -253,9 +253,27 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, SAVE_QUERY_INSTANCE_RELATION_QUERY);
 		}
 	}
+	
+	@Override
+	protected void appendQueryInstance(CheckboxQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			
+			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
+		}
+	}
 
 	@Override
 	public void populate(CheckboxQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+		
+		CheckboxQuery query = queryInstance.getQuery();
+		Integer queryID = query.getQueryID();
+		
+		if (query.isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			return;
+		}
 		
 		List<CheckboxAlternative> availableAlternatives = queryInstance.getQuery().getAlternatives();
 		
@@ -270,7 +288,7 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 		
 		for (CheckboxAlternative alternative : availableAlternatives) {
 			
-			if (req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_alternative" + alternative.getAlternativeID()) != null) {
+			if (req.getParameter("q" + queryID + "_alternative" + alternative.getAlternativeID()) != null) {
 				
 				selectedAlternatives.add(alternative);
 			}
@@ -284,7 +302,7 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 		
 		if (queryInstance.getQuery().getFreeTextAlternative() != null) {
 			
-			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryInstance.getQuery().getQueryID(), "_freeTextAlternative", req, validationErrors);
+			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryID, "_freeTextAlternative", req, validationErrors);
 		}
 		
 		if (freeTextAlternativeValue != null) {

@@ -17,6 +17,7 @@
 	<xsl:variable name="i18n.MinCheckedBiggerThanMaxChecked">Minst antal valda alternativ får inte vara större än max!</xsl:variable>
 	<xsl:variable name="i18n.MaxCheckedToBig">Max antal valda alternativ får inte överstiga antalet alternativ!</xsl:variable>
 	<xsl:variable name="i18n.MinCheckedToBig">Minst antal valda alternativ får inte överstiga antalet alternativ!</xsl:variable>
+	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 	
 	<xsl:variable name="i18n.TooFewAlternatives1Min">Du måste skapa minst 1 alternativ för frågan!</xsl:variable>
 	

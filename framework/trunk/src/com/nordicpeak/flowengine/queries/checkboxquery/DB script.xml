@@ -160,7 +160,9 @@
 	<Script version="13">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `checkbox_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `hideTitle`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
+				ALTER TABLE `checkbox_queries`
+					ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `hideTitle`,
+					ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
 			]]>
 		</Query>	
 	</Script>
@@ -171,6 +173,14 @@
 				ALTER TABLE `checkbox_query_alternatives`
 					CHANGE COLUMN `value` `xmlValue` VARCHAR(255) NULL DEFAULT NULL AFTER `name`,
 					ADD COLUMN `attributeValue` VARCHAR(255) NULL DEFAULT NULL AFTER `xmlValue`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `attributeName`;
 			]]>
 		</Query>
 	</Script>
