@@ -65,6 +65,11 @@ public class DropDownQuery extends FixedAlternativesBaseQuery {
 	private String attributeName;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockOnOwnershipTransfer;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<DropDownQueryInstance> instances;
@@ -157,6 +162,7 @@ public class DropDownQuery extends FixedAlternativesBaseQuery {
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
@@ -173,28 +179,34 @@ public class DropDownQuery extends FixedAlternativesBaseQuery {
 		}
 		
 	}
-
+	
+	public boolean isLockOnOwnershipTransfer() {
+		
+		return lockOnOwnershipTransfer;
+	}
+	
+	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
+		
+		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
 	
 	public boolean isSetAsAttribute() {
-	
+		
 		return setAsAttribute;
 	}
-
 	
 	public void setSetAsAttribute(boolean setAsAttribute) {
-	
+		
 		this.setAsAttribute = setAsAttribute;
 	}
-
 	
 	public String getAttributeName() {
-	
+		
 		return attributeName;
 	}
-
 	
 	public void setAttributeName(String attributeName) {
-	
+		
 		this.attributeName = attributeName;
 	}
 }

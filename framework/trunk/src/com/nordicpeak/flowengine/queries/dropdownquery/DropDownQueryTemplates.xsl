@@ -50,7 +50,7 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="DropDownQueryInstance/DropDownQuery/description" disable-output-escaping="yes" />
-					</span>		
+					</span>
 				</xsl:if>
 				
 				<div class="clearboth"/>
@@ -75,9 +75,9 @@
 				
 			</article>
 		
-		</div>	
+		</div>
 	
-	</xsl:template>		
+	</xsl:template>
 		
 	<xsl:template match="ShowQueryForm">
 	
@@ -130,7 +130,7 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="DropDownQueryInstance/DropDownQuery/description" disable-output-escaping="yes" />
-					</span>		
+					</span>
 				</xsl:if>
 				
 				<fieldset>
@@ -146,6 +146,9 @@
 						<xsl:variable name="selectedAlternativeID" select="DropDownQueryInstance/DropDownAlternative/alternativeID" />
 					
 						<select name="{$dropDownName}" style="width: 100%;">
+							<xsl:if test="Locked">
+								<xsl:attribute name="disabled">disabled</xsl:attribute>
+							</xsl:if>
 							
 							<option value=""><xsl:value-of select="DropDownQueryInstance/DropDownQuery/shortDescription"/></option>
 							
@@ -193,25 +196,46 @@
 											</xsl:if>
 										</xsl:otherwise>
 									</xsl:choose>	
-										
+									
 									<xsl:value-of select="DropDownQueryInstance/DropDownQuery/freeTextAlternative" />
-																
+									
 								</option>
 							
 							</xsl:if>
 							
 						</select>
-			
+						
 					</div>
-			
-					<div class="freeTextAlternativeValue hidden">
-						<xsl:call-template name="createTextField">
-							<xsl:with-param name="id" select="concat($dropDownName,'Value')" />
-							<xsl:with-param name="name" select="concat($dropDownName,'Value')" />
-							<xsl:with-param name="value" select="DropDownQueryInstance/freeTextAlternativeValue" />
-							<xsl:with-param name="disabled" select="disabled" />
-						</xsl:call-template>
-					</div>
+					
+					<xsl:if test="DropDownQueryInstance/DropDownQuery/freeTextAlternative">
+						<xsl:choose>
+							<xsl:when test="Locked">
+								
+								<xsl:if test="DropDownQueryInstance/freeTextAlternativeValue">
+									<div class="freeTextAlternativeValue">
+										<xsl:call-template name="createTextField">
+											<xsl:with-param name="name" select="concat($dropDownName,'Value')" />
+											<xsl:with-param name="disabled" select="Locked" />
+											<xsl:with-param name="value" select="DropDownQueryInstance/freeTextAlternativeValue" />
+										</xsl:call-template>
+									</div>
+								</xsl:if>
+								
+							</xsl:when>
+							<xsl:otherwise>
+								
+								<div class="freeTextAlternativeValue hidden">
+								<xsl:call-template name="createTextField">
+									<xsl:with-param name="id" select="concat($dropDownName,'Value')" />
+									<xsl:with-param name="name" select="concat($dropDownName,'Value')" />
+									<xsl:with-param name="disabled" select="disabled" />
+									<xsl:with-param name="value" select="DropDownQueryInstance/freeTextAlternativeValue" />
+								</xsl:call-template>
+							</div>
+								
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:if>
 				
 				</fieldset>
 				

@@ -58,6 +58,20 @@
 			<div class="floatleft full bigmarginbottom">
 				<div class="floatleft full">
 					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'lockOnOwnershipTransfer'" />
+						<xsl:with-param name="name" select="'lockOnOwnershipTransfer'" />
+						<xsl:with-param name="element" select="DropDownQuery" /> 
+					</xsl:call-template>
+					
+					<label for="lockOnOwnershipTransfer">
+						<xsl:value-of select="$i18n.lockOnOwnershipTransfer" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="id" select="'setAsAttribute'" />
 						<xsl:with-param name="name" select="'setAsAttribute'" />
 						<xsl:with-param name="element" select="DropDownQuery" /> 

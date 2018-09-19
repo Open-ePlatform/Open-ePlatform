@@ -247,49 +247,67 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
+	
+	@Override
+	protected void appendQueryInstance(DropDownQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			
+			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
+		}
+	}
 
 	@Override
 	public void populate(DropDownQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
-
+		
+		DropDownQuery query = queryInstance.getQuery();
+		Integer queryID = query.getQueryID();
+		
+		if (query.isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			return;
+		}
+		
 		List<DropDownAlternative> availableAlternatives = queryInstance.getQuery().getAlternatives();
-
+		
 		if (CollectionUtils.isEmpty(availableAlternatives)) {
-
+			
 			//If the parent query doesn't have any alternatives then there is no population to do
 			queryInstance.reset(attributeHandler);
 			return;
 		}
-
-		Integer alternativeID = NumberUtils.toInt(req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_alternative"));
-
+		
+		Integer alternativeID = NumberUtils.toInt(req.getParameter("q" + queryID + "_alternative"));
+		
 		boolean alternativeSelected = false;
-
+		
 		DropDownAlternative selectedAlternative = null;
-
+		
 		if (alternativeID != null) {
-
+			
 			for (DropDownAlternative alternative : availableAlternatives) {
-
+				
 				if (alternative.getAlternativeID().equals(alternativeID)) {
-
+					
 					selectedAlternative = alternative;
 					alternativeSelected = true;
 					break;
 				}
 			}
 		}
-
+		
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-
+		
 		String freeTextAlternativeValue = null;
 		
-		if(queryInstance.getQuery().getFreeTextAlternative() != null && !alternativeSelected){
+		if (queryInstance.getQuery().getFreeTextAlternative() != null && !alternativeSelected) {
+			
+			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryID, "_alternative", req, validationErrors);
+			
+			if (freeTextAlternativeValue != null) {
 				
-			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryInstance.getQuery().getQueryID(), "_alternative", req, validationErrors);
-
-			if(freeTextAlternativeValue != null){
-				
-				if(!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)){
+				if (!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)) {
 					
 					allowPartialPopulation = false;
 				}
@@ -297,15 +315,15 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 				alternativeSelected = true;
 			}
 		}
-
+		
 		//If partial population is allowed, skip validation
 		if (allowPartialPopulation) {
-
+			
 			queryInstance.setAlternative(selectedAlternative);
 			queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
-			queryInstance.getQueryInstanceDescriptor().setPopulated(selectedAlternative != null);
+			queryInstance.getQueryInstanceDescriptor().setPopulated(alternativeSelected);
 			
-			if(queryInstance.getQuery().isSetAsAttribute()){
+			if (queryInstance.getQuery().isSetAsAttribute()) {
 				
 				queryInstance.resetAttribute(attributeHandler);
 				queryInstance.setAttribute(attributeHandler);
@@ -313,22 +331,22 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 			
 			return;
 		}
-
+		
 		//Check if this query is required and if the user has selected any alternative
 		if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && !alternativeSelected) {
-
+			
 			validationErrors.add(new ValidationError("RequiredQuery"));
 		}
-
-		if(!validationErrors.isEmpty()) {
+		
+		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
-
+		
 		queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 		queryInstance.setAlternative(selectedAlternative);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(alternativeSelected);
 		
-		if(queryInstance.getQuery().isSetAsAttribute()){
+		if (queryInstance.getQuery().isSetAsAttribute()) {
 			
 			queryInstance.resetAttribute(attributeHandler);
 			queryInstance.setAttribute(attributeHandler);

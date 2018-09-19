@@ -126,4 +126,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `drop_down_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `attributeName`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
