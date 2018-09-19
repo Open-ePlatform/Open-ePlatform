@@ -95,6 +95,11 @@ public class FileUploadQuery extends BaseQuery {
 	@XMLElement
 	private String attributeName;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockOnOwnershipTransfer;
+	
 	public static long getSerialversionuid() {
 		
 		return serialVersionUID;
@@ -273,6 +278,7 @@ public class FileUploadQuery extends BaseQuery {
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
 		
 		inlinePDFAttachments = xmlParser.getPrimitiveBoolean("inlinePDFAttachments");
+		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 		
@@ -343,6 +349,16 @@ public class FileUploadQuery extends BaseQuery {
 	
 	public void setInlinePDFAttachments(boolean inlinePDFAttachments) {
 		this.inlinePDFAttachments = inlinePDFAttachments;
+	}
+	
+	public boolean isLockOnOwnershipTransfer() {
+		
+		return lockOnOwnershipTransfer;
+	}
+	
+	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
+		
+		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
 	}
 	
 }

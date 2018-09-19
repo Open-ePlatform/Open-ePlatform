@@ -110,7 +110,7 @@
 						<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
 					</h2>
 					
-					<xsl:if test="FileUploadQueryInstance/FileUploadQuery/helpText">		
+					<xsl:if test="FileUploadQueryInstance/FileUploadQuery/helpText">
 						<xsl:apply-templates select="FileUploadQueryInstance/FileUploadQuery/helpText" />
 					</xsl:if>
 					
@@ -120,8 +120,8 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/description" disable-output-escaping="yes" />
-					</span>		
-				</xsl:if>				
+					</span>
+				</xsl:if>
 				
 				<script type="text/javascript">
 					fileuploader.imagePath='<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
@@ -130,77 +130,79 @@
 				
 				<div class="full">
 					
-					<div class="upload clearboth">
-						<span class="btn btn-upload btn-blue">
-							<xsl:value-of select="$i18n.ChooseFiles" />
-							
-							<xsl:variable name="allowedFileExtensionsRegex">
-								<xsl:choose>
-									<xsl:when test="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions">
-									
-										<xsl:text>^.*\.(</xsl:text>
-										<xsl:for-each select="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value">
-											<xsl:value-of select="."/>
+					<xsl:if test="not(Locked)">
+						<div class="upload clearboth">
+							<span class="btn btn-upload btn-blue">
+								<xsl:value-of select="$i18n.ChooseFiles" />
+								
+								<xsl:variable name="allowedFileExtensionsRegex">
+									<xsl:choose>
+										<xsl:when test="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions">
+										
+											<xsl:text>^.*\.(</xsl:text>
+											<xsl:for-each select="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value">
+												<xsl:value-of select="."/>
+												
+												<xsl:if test="position() != last()">
+													<xsl:text>|</xsl:text>
+												</xsl:if>
+											</xsl:for-each>
+											<xsl:text>)$</xsl:text>
+										
+										</xsl:when>
+										<xsl:otherwise>
+										
+											<xsl:text>^.*$</xsl:text>
 											
-											<xsl:if test="position() != last()">
-												<xsl:text>|</xsl:text>
-											</xsl:if>
-										</xsl:for-each>
-										<xsl:text>)$</xsl:text>
-									
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:variable>
+								
+								<xsl:variable name="fileCountLimit">
+									<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount"/>
+								</xsl:variable>
+								
+								<input id="{$queryID}_fileuploader" type="file" name="{concat('q', FileUploadQueryInstance/FileUploadQuery/queryID,'_newfile')}" multiple="multiple" size="55" class="fileuploader bigmarginbottom hidden" data-allowedfilesregex="{$allowedFileExtensionsRegex}" data-filecountlimit="{$fileCountLimit}"/>
+							</span>
+							
+							<span>
+								<xsl:value-of select="$i18n.MaximumFileSize" /><xsl:text>:&#x20;</xsl:text>
+								<xsl:choose>
+									<xsl:when test="FileUploadQueryInstance/FileUploadQuery/FormatedMaxSize">
+										 <xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/FormatedMaxSize" />
 									</xsl:when>
 									<xsl:otherwise>
-									
-										<xsl:text>^.*$</xsl:text>
-										
+										<xsl:value-of select="/Document/FormatedMaxAllowedFileSize" />
 									</xsl:otherwise>
 								</xsl:choose>
-							</xsl:variable>
+							</span>
 							
-							<xsl:variable name="fileCountLimit">
-								<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount"/>
-							</xsl:variable>
+							<xsl:if test="FileUploadQueryInstance/FileUploadQuery/maxFileCount">
+								<span>
+									<xsl:value-of select="$i18n.MaximumFileCount" />
+									<xsl:text>: </xsl:text>
+									<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount" />
+								</span>
+							</xsl:if>
+	
+							<xsl:if test="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength">
+								<span>
+									<xsl:value-of select="$i18n.MaximumFileNameLength" />
+									<xsl:text>: </xsl:text>
+									<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength" />
+								</span>
+							</xsl:if>
 							
-							<input id="{$queryID}_fileuploader" type="file" name="{concat('q', FileUploadQueryInstance/FileUploadQuery/queryID,'_newfile')}" multiple="multiple" size="55" class="fileuploader bigmarginbottom hidden" data-allowedfilesregex="{$allowedFileExtensionsRegex}" data-filecountlimit="{$fileCountLimit}"/>
-						</span>
-						
-						<span>
-							<xsl:value-of select="$i18n.MaximumFileSize" /><xsl:text>:&#x20;</xsl:text>
-							<xsl:choose>
-								<xsl:when test="FileUploadQueryInstance/FileUploadQuery/FormatedMaxSize">
-									 <xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/FormatedMaxSize" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of select="/Document/FormatedMaxAllowedFileSize" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</span>
-						
-						<xsl:if test="FileUploadQueryInstance/FileUploadQuery/maxFileCount">
-							<span>
-								<xsl:value-of select="$i18n.MaximumFileCount" />
-								<xsl:text>: </xsl:text>
-								<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount" />
-							</span>
-						</xsl:if>
-
-						<xsl:if test="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength">
-							<span>
-								<xsl:value-of select="$i18n.MaximumFileNameLength" />
-								<xsl:text>: </xsl:text>
-								<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileNameLength" />
-							</span>
-						</xsl:if>
-						
-						<xsl:if test="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value">
-							<span>
-								<xsl:value-of select="$i18n.AllowedFilextentions" />
-								<xsl:text>: </xsl:text>
-								<xsl:apply-templates select="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value" mode="file-extension"/>
-							</span>
-						</xsl:if>
-						
-					</div>
+							<xsl:if test="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value">
+								<span>
+									<xsl:value-of select="$i18n.AllowedFilextentions" />
+									<xsl:text>: </xsl:text>
+									<xsl:apply-templates select="FileUploadQueryInstance/FileUploadQuery/allowedFileExtensions/value" mode="file-extension"/>
+								</span>
+							</xsl:if>
+							
+						</div>
+					</xsl:if>
 					
 					<ul class="files">
 					
@@ -268,7 +270,9 @@
 				
 				<span class="italic"><xsl:text>(</xsl:text><xsl:value-of select="FormatedSize" /><xsl:text>)</xsl:text></span>
 				
-				<a data-icon-after="t" href="#" onclick="removeFile(event, 'q{../../FileUploadQuery/queryID}_file{temporaryFileID}', '{$i18n.ConfirmDeleteFile} {$file-name}?', this)" class="progress"><xsl:value-of select="$i18n.DeleteFile" /></a>
+				<xsl:if test="not(../../../Locked)">
+					<a data-icon-after="t" href="#" onclick="removeFile(event, 'q{../../FileUploadQuery/queryID}_file{temporaryFileID}', '{$i18n.ConfirmDeleteFile} {$file-name}?', this)" class="progress"><xsl:value-of select="$i18n.DeleteFile" /></a>
+				</xsl:if>
 			
 			</div>
 			<div class="progressbar">

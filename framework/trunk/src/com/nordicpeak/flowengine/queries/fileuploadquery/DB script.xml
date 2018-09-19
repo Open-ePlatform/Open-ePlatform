@@ -102,4 +102,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `inlinePDFAttachments`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -474,11 +474,29 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			}
 		}
 	}
+	
+	@Override
+	protected void appendQueryInstance(FileUploadQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			
+			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
+		}
+	}
 
 	@Override
 	public void populate(FileUploadQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
 		checkConfiguration();
+		
+		FileUploadQuery query = queryInstance.getQuery();
+		Integer queryID = query.getQueryID();
+		
+		if (query.isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			return;
+		}
 
 		if (!(req instanceof MultipartRequest)) {
 
@@ -497,7 +515,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 				FileDescriptor fileDescriptor = iterator.next();
 
 				//Check if the file should be deleted
-				if (req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_file" + fileDescriptor.getTemporaryFileID()) != null) {
+				if (req.getParameter("q" + queryID + "_file" + fileDescriptor.getTemporaryFileID()) != null) {
 
 					iterator.remove();
 
@@ -509,7 +527,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 
 		//Get any new files
-		List<FileItem> fileItems = multipartReq.getFiles("q" + queryInstance.getQuery().getQueryID() + "_newfile");
+		List<FileItem> fileItems = multipartReq.getFiles("q" + queryID + "_newfile");
 
 		if (fileItems != null) {
 
