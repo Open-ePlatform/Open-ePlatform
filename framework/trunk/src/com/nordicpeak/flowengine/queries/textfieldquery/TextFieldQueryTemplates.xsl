@@ -241,9 +241,8 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:with-param>
-				
 				<xsl:with-param name="disabled">
-					<xsl:if test="disabled = 'true'">
+					<xsl:if test="disabled = 'true' or ../../../../Locked">
 						<xsl:text>true</xsl:text>
 					</xsl:if>
 				</xsl:with-param>

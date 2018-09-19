@@ -59,7 +59,7 @@
 						<xsl:when test="TextFieldQuery/QueryDescriptor/mergeWithPreviousQuery = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
 					</xsl:choose>
-			  </div>
+				</div>
 			</div>
 			
 			<xsl:variable name="layout" select="TextFieldQuery/layout" />
@@ -68,7 +68,7 @@
 				<label class="floatleft clearboth"><xsl:value-of select="$i18n.Layout" /></label>
 				<div class="floatleft full">
 					<xsl:value-of select="FieldLayout[value = $layout]/name" />
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -78,7 +78,17 @@
 						<xsl:when test="TextFieldQuery/hideTitle = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
 					</xsl:choose>
-			  </div>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label class="floatleft clearboth"><xsl:value-of select="$i18n.lockOnOwnershipTransfer" /></label>
+				<div class="floatleft full">
+					<xsl:choose>
+						<xsl:when test="TextFieldQuery/lockOnOwnershipTransfer = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
+						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
+					</xsl:choose>
+				</div>
 			</div>
 			
 		</fieldset>
@@ -430,6 +440,20 @@
 					</label>
 				</div>
 
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'lockOnOwnershipTransfer'" />
+						<xsl:with-param name="name" select="'lockOnOwnershipTransfer'" />
+						<xsl:with-param name="element" select="TextFieldQuery" /> 
+					</xsl:call-template>
+					
+					<label for="lockOnOwnershipTransfer">
+						<xsl:value-of select="$i18n.lockOnOwnershipTransfer" />
+					</label>
+				</div>
 			</div>
 			
 			<div class="floatright margintop clearboth">

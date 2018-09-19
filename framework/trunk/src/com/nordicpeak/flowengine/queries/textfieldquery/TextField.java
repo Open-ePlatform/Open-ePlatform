@@ -227,10 +227,10 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	
 		this.invalidFormatMessage = invalidFormatMessage;
 	}
-
+	
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
-
+		
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		textFieldID = XMLValidationUtils.validateParameter("textFieldID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
@@ -251,83 +251,77 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		
 		disabled = xmlParser.getPrimitiveBoolean("disabled");
 		
-		if(attributeName != null){
+		if (attributeName != null) {
 			
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
 		
 		xsdElementName = XMLValidationUtils.validateParameter("xsdElementName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
-		if(!errors.isEmpty()){
-
+		if (!errors.isEmpty()) {
+			
 			throw new ValidationException(errors);
 		}
 		
 	}
 	
 	public boolean isSetAsAttribute() {
-	
+		
 		return setAsAttribute;
 	}
 	
 	public void setSetAsAttribute(boolean setAsAttribute) {
-	
+		
 		this.setAsAttribute = setAsAttribute;
 	}
 	
 	public String getAttributeName() {
-	
+		
 		return attributeName;
 	}
 	
 	public void setAttributeName(String attributeName) {
-	
+		
 		this.attributeName = attributeName;
 	}
 	
 	public String getPlaceholderText() {
-	
+		
 		return placeholderText;
 	}
 	
 	public void setPlaceholderText(String placeholderText) {
-	
+		
 		this.placeholderText = placeholderText;
 	}
-
 	
 	public boolean isDisabled() {
-	
+		
 		return disabled;
 	}
-
 	
 	public void setDisabled(boolean disabled) {
-	
+		
 		this.disabled = disabled;
 	}
-
 	
 	public String getDefaultValue() {
-	
+		
 		return defaultValue;
 	}
-
 	
 	public void setDefaultValue(String defaultValue) {
-	
+		
 		this.defaultValue = defaultValue;
 	}
-
 	
 	public String getXSDElementName() {
-	
+		
 		return xsdElementName;
 	}
-
 	
 	public void setXSDElementName(String xsdElementName) {
-	
+		
 		this.xsdElementName = xsdElementName;
 	}
 	

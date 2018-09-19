@@ -309,10 +309,27 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, SAVE_QUERY_INSTANCE_RELATION_QUERY);
 		}
 	}
+	
+	@Override
+	protected void appendQueryInstance(TextFieldQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		if (queryInstance.getQuery().isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			
+			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
+		}
+	}
 
 	@Override
 	public void populate(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
+		TextFieldQuery query = queryInstance.getQuery();
+		
+		if (query.isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
+			return;
+		}
+		
 		List<TextField> textFields = queryInstance.getQuery().getFields();
 
 		if (CollectionUtils.isEmpty(textFields)) {

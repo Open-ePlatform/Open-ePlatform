@@ -126,6 +126,14 @@
 				ALTER TABLE `text_fields` ADD COLUMN `xsdElementName` VARCHAR(255) AFTER `defaultValue`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_field_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

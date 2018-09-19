@@ -48,6 +48,11 @@ public class TextFieldQuery extends BaseQuery {
 	@XMLElement
 	private boolean hideTitle;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockOnOwnershipTransfer;
+	
 	@DAOManaged(dontUpdateIfNull=true)
 	@OneToMany(autoUpdate=true, autoAdd=true)
 	@XMLElement(fixCase=true)
@@ -234,23 +239,24 @@ public class TextFieldQuery extends BaseQuery {
 
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		layout = XMLValidationUtils.validateParameter("layout", xmlParser, true, TextFieldCRUD.LAYOUT_POPULATOR, errors);
-
+		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
+		
 		List<XMLParser> xmlParsers = xmlParser.getNodes("Fields/TextField");
-
-		if(xmlParsers != null) {
-
+		
+		if (xmlParsers != null) {
+			
 			fields = new ArrayList<TextField>(xmlParsers.size());
-
-			for(XMLParser parser : xmlParsers) {
-
+			
+			for (XMLParser parser : xmlParsers) {
+				
 				TextField textField = new TextField();
-
+				
 				textField.populate(parser);
-
+				
 				textField.setQuery(this);
-
+				
 				fields.add(textField);
-
+				
 			}
 
 		}
@@ -260,11 +266,20 @@ public class TextFieldQuery extends BaseQuery {
 //
 //		}
 
-		if(!errors.isEmpty()){
-
+		if (!errors.isEmpty()) {
+			
 			throw new ValidationException(errors);
 		}
-
 	}
-
+	
+	public boolean isLockOnOwnershipTransfer() {
+		
+		return lockOnOwnershipTransfer;
+	}
+	
+	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
+		
+		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
+	
 }

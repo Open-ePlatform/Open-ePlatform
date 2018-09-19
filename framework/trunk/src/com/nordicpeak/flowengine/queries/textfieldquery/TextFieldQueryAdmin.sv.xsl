@@ -33,6 +33,7 @@
 	<xsl:variable name="i18n.invalidFormatMessage">valideringsmeddelande</xsl:variable>
 	<xsl:variable name="i18n.SortTextFields">Sortera textfält för fråga</xsl:variable>
 	<xsl:variable name="i18n.PlaceHolderText">Placeholder text</xsl:variable>
+	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 	
 	<xsl:variable name="i18n.DeleteTextField.Confirm">Ta bort textfältet</xsl:variable>
 	<xsl:variable name="i18n.DeleteTextField">Ta bort textfältet</xsl:variable>	
