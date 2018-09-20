@@ -17,33 +17,6 @@ import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.childrelationprovider.Child;
-import com.nordicpeak.childrelationprovider.ChildRelationProvider;
-import com.nordicpeak.childrelationprovider.ChildrenResponse;
-import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
-import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
-import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
-import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
-import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.QueryInstance;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.queries.childquery.beans.ChildAlternative;
-import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
-import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
-import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
-import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
-import com.nordicpeak.flowengine.utils.JTidyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -80,6 +53,33 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.childrelationprovider.Child;
+import com.nordicpeak.childrelationprovider.ChildRelationProvider;
+import com.nordicpeak.childrelationprovider.ChildrenResponse;
+import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
+import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
+import com.nordicpeak.flowengine.beans.QueryResponse;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
+import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
+import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.queries.childquery.beans.ChildAlternative;
+import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
+import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
+import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
+import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
+import com.nordicpeak.flowengine.utils.JTidyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider {
 
@@ -647,7 +647,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			if (poster.getAttributeHandler() != null) {
 
-				XMLUtils.appendNewElement(doc, userElement, "SocialSecurityNumber", poster.getAttributeHandler().getString("citizenIdentifier"));
+				XMLUtils.appendNewElement(doc, userElement, "SocialSecurityNumber", CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster));
 			}
 		}
 
