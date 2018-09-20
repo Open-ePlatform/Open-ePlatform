@@ -363,6 +363,7 @@
 						<xsl:choose>
 							<xsl:when test="ChildQueryInstance/Children">
 							
+								<!-- TODO Do the filtering server side instead and don't append unnecessary information to the XML document  -->
 								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
 									<xsl:with-param name="useMultipartSigning" select="ChildQueryInstance/ChildQuery/useMultipartSigning"/>
 								</xsl:apply-templates>
