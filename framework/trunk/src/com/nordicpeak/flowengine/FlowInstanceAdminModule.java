@@ -623,7 +623,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 			}
 			
-			if (flowInstanceEventSortOrder == Order.DESC) {
+			if (flowInstanceEventSortOrder == Order.DESC && flowInstance.getEvents() != null) {
 				
 				Collections.reverse(flowInstance.getEvents());
 			}
