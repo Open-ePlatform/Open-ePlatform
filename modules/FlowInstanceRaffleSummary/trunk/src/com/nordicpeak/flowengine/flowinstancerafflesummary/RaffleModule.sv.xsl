@@ -7,7 +7,7 @@
 	
 	<xsl:variable name="java.cellValueYes">Ja</xsl:variable>
 	<xsl:variable name="java.cellValueNo">Nej</xsl:variable>
-	<xsl:variable name="java.numberAssignedMessage">Lottning utförd. Du fick nummer $nummer</xsl:variable>
+	<xsl:variable name="java.numberAssignedMessage">Lottning utförd. Du fick nummer $number</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidationError.RequiredField">Du måste fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
