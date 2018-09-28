@@ -11,11 +11,11 @@ import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
 
 import se.unlogic.hierarchy.core.annotations.EventListener;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.interfaces.FilterChain;
 import se.unlogic.hierarchy.core.interfaces.SystemInterface;
+import se.unlogic.hierarchy.core.interfaces.instances.InstanceListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.FilterModuleDescriptor;
 import se.unlogic.hierarchy.filtermodules.AnnotatedFilterModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -25,7 +25,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.events.FlowBrowserCacheEvent;
 
-public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule {
+public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implements InstanceListener<FlowBrowserModule>{
 
 	protected FlowBrowserModule flowBrowserModule;
 
@@ -35,59 +35,17 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule {
 	public void init(FilterModuleDescriptor moduleDescriptor, SystemInterface systemInterface, DataSource dataSource) throws Exception {
 
 		super.init(moduleDescriptor, systemInterface, dataSource);
+		
+		systemInterface.getInstanceHandler().addInstanceListener(FlowBrowserModule.class, this);
 	}
 
 	@Override
 	public void unload() throws Exception {
 
+		systemInterface.getInstanceHandler().removeInstanceListener(FlowBrowserModule.class, this);
+		
 		super.unload();
 	}
-
-	@InstanceManagerDependency(required = true)
-	public void setSiteProfileHandler(FlowBrowserModule flowBrowserModule) {
-
-		this.flowBrowserModule = flowBrowserModule;
-
-		if (flowBrowserModule != null) {
-
-			processEvent((FlowBrowserCacheEvent) null, null);
-
-		}
-	}
-
-	@EventListener(channel=FlowBrowserModule.class)
-	public void processEvent(FlowBrowserCacheEvent event, EventSource eventSource) {
-
-		if (flowBrowserModule != null) {
-
-			Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
-
-			ConcurrentHashMap<String, Integer> newAliasMap = new ConcurrentHashMap<String, Integer>();
-
-			if (!CollectionUtils.isEmpty(flows)) {
-
-				HashSet<FlowFamily> flowFamilies = new HashSet<FlowFamily>();
-
-				for (Flow flow : flows) {
-					flowFamilies.add(flow.getFlowFamily());
-				}
-
-				for (FlowFamily flowFamily : flowFamilies) {
-
-					if (!CollectionUtils.isEmpty(flowFamily.getAliases())) {
-
-						for (String alias : flowFamily.getAliases()) {
-
-							newAliasMap.put(alias, flowFamily.getFlowFamilyID());
-						}
-					}
-				}
-			}
-			
-			aliasMap = newAliasMap;
-		}
-	}
-
 
 	@Override
 	public void processFilterRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FilterChain filterChain) throws TransformerException, IOException {
@@ -123,5 +81,54 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule {
 		}
 
 		filterChain.doFilter(req, res, user, uriParser);
+	}
+
+	@EventListener(channel=FlowBrowserModule.class)
+	public void processEvent(FlowBrowserCacheEvent event, EventSource eventSource) {
+
+		if (flowBrowserModule != null) {
+
+			Collection<Flow> flows = flowBrowserModule.getLatestPublishedFlowVersions();
+
+			ConcurrentHashMap<String, Integer> newAliasMap = new ConcurrentHashMap<String, Integer>();
+
+			if (!CollectionUtils.isEmpty(flows)) {
+
+				HashSet<FlowFamily> flowFamilies = new HashSet<FlowFamily>();
+
+				for (Flow flow : flows) {
+					flowFamilies.add(flow.getFlowFamily());
+				}
+
+				for (FlowFamily flowFamily : flowFamilies) {
+
+					if (!CollectionUtils.isEmpty(flowFamily.getAliases())) {
+
+						for (String alias : flowFamily.getAliases()) {
+
+							newAliasMap.put(alias, flowFamily.getFlowFamilyID());
+						}
+					}
+				}
+			}
+			
+			aliasMap = newAliasMap;
+		}
+	}
+	
+	
+	@Override
+	public <InstanceType extends FlowBrowserModule> void instanceAdded(Class<FlowBrowserModule> key, InstanceType instance) {
+
+		this.flowBrowserModule = instance;
+		
+		processEvent((FlowBrowserCacheEvent) null, null);
+	}
+
+	@Override
+	public <InstanceType extends FlowBrowserModule> void instanceRemoved(Class<FlowBrowserModule> key, InstanceType instance) {
+
+		this.flowBrowserModule = null;
+		this.aliasMap.clear();
 	}
 }
