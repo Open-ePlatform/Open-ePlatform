@@ -21,7 +21,6 @@ import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.crud.IntegerBeanIDParser;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -37,15 +36,15 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowForm;
-import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
 import com.nordicpeak.flowengine.listeners.FlowFormElementableListener;
 
-public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdminModule> {
+public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdminCRUDCallback> {
 	
 	
 	protected final FlowFormElementableListener flowFormElementableListener;
 	
-	public FlowFormCRUD(CRUDDAO<FlowForm, Integer> crudDAO, FlowAdminModule callback) {
+	public FlowFormCRUD(CRUDDAO<FlowForm, Integer> crudDAO, FlowAdminCRUDCallback callback) {
 		
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowForm>(FlowForm.class), "FlowForm", "flow form", "", callback);
 		
@@ -87,13 +86,13 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 	@Override
 	protected void checkUpdateAccess(FlowForm flowForm, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 		
-		checkFlowTypeAccess(user, flowForm.getFlow().getFlowType());
+		checkFlowTypeAccess(user, flowForm.getFlow());
 	}
 	
 	@Override
 	protected void checkDeleteAccess(FlowForm flowForm, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 		
-		checkFlowTypeAccess(user, flowForm.getFlow().getFlowType());
+		checkFlowTypeAccess(user, flowForm.getFlow());
 		
 		if (flowForm.getFlow().isEnabled() && flowForm.getFlow().getSteps() == null && flowForm.getFlow().isInternal() && CollectionUtils.getSize(flowForm.getFlow().getFlowForms()) == 1) {
 			
@@ -101,11 +100,11 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		}
 	}
 	
-	public void checkFlowTypeAccess(User user, FlowType flowType) throws AccessDeniedException {
+	public void checkFlowTypeAccess(User user, Flow flow) throws AccessDeniedException {
 		
-		if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
+		if (!callback.hasFlowTypeAccess(user, flow)) {
 			
-			throw new AccessDeniedException("User does not have access to flow type " + flowType);
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
 	}
 	

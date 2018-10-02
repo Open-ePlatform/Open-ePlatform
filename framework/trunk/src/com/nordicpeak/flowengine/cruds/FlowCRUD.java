@@ -65,6 +65,7 @@ import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
@@ -237,7 +238,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void checkAddAccess(User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
-		if (!callback.hasFlowTypeAccess(user)) {
+		if (!callback.hasAnyFlowTypeAccess(user)) {
 
 			throw new AccessDeniedException("Add flow access denied, user does not have access to any flow types.");
 		}
@@ -722,6 +723,48 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			}
 		}
 		
+		List<FlowAdminFragmentExtensionViewProvider> fragmentExtensionProviders = callback.getFragmentExtensionViewProviders();
+		
+		if (fragmentExtensionProviders != null) {
+			
+			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(fragmentExtensionProviders.size());
+			
+			for (FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider : fragmentExtensionProviders) {
+				
+				try {
+					ViewFragment viewFragment = fragmentExtensionProvider.getShowView(callback.getFragmentExtensionViewProviderURL(fragmentExtensionProvider, flow), flow, req, user, uriParser);
+					
+					if (viewFragment != null) {
+						
+						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", fragmentExtensionProvider.getExtensionViewTitle());
+						viewFragments.add(viewFragment);
+						
+						if (viewFragment instanceof SimpleViewFragment) {
+							
+							SimpleViewFragment simpleViewFragment = (SimpleViewFragment) viewFragment;
+							
+							if (simpleViewFragment.getDebugXML() != null) {
+								
+								Element debugXMLElement = XMLUtils.appendNewElement(doc, extensionProviderElement, "DebugXML");
+								debugXMLElement.appendChild(doc.adoptNode(simpleViewFragment.getDebugXML().getDocumentElement()));
+							}
+						}
+					}
+					
+				} catch (Exception e) {
+					
+					log.error("Error while getting show view fragment for fragment extension provider " + fragmentExtensionProvider, e);
+				}
+			}
+			
+			if (!viewFragments.isEmpty()) {
+				
+				req.setAttribute("FragmentExtensionProviderFragments", viewFragments);
+			}
+		}
+		
 		List<FlowAdminShowFlowExtensionLinkProvider> showExtensionLinkProviders = callback.getFlowShowExtensionLinkProviders();
 		
 		if (!CollectionUtils.isEmpty(showExtensionLinkProviders)) {
@@ -801,6 +844,16 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (extensionViewFragments != null) {
 
 			for (ViewFragment fragment : extensionViewFragments) {
+
+				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, fragment);
+			}
+		}
+		
+		List<ViewFragment> fragmentExtensionViewFragments = (List<ViewFragment>) req.getAttribute("FragmentExtensionProviderFragments");
+
+		if (fragmentExtensionViewFragments != null) {
+
+			for (ViewFragment fragment : fragmentExtensionViewFragments) {
 
 				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, fragment);
 			}

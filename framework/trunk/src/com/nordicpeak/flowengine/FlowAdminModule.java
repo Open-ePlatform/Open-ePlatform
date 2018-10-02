@@ -206,13 +206,16 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorExce
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
+import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowFamilyEventHandler;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.FlowTypeExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -243,7 +246,7 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationErr
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener {
+public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
 
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
@@ -253,12 +256,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
 
 	@SuppressWarnings("rawtypes")
-	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class, FlowForm.class };
+	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class };
 
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
 
-	protected static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
+	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
 
 	private static final StepSortIndexComparator STEP_COMPARATOR = new StepSortIndexComparator();
 	private static final QueryDescriptorSortIndexComparator QUERY_DESCRIPTOR_COMPARATOR = new QueryDescriptorSortIndexComparator();
@@ -501,7 +504,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
-
+	
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
 	private StepCRUD stepCRUD;
@@ -543,6 +546,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected CopyOnWriteArrayList<PDFRequestFilter> pdfRequestFilters = new CopyOnWriteArrayList<PDFRequestFilter>();
 
 	protected CopyOnWriteArrayList<FlowAdminExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>();
+	protected CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider> fragmentExtensionViewProviders = new CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider>();
+	protected CopyOnWriteArrayList<FlowTypeExtensionProvider> flowTypeExtensionProviders = new CopyOnWriteArrayList<FlowTypeExtensionProvider>();
 
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider>();
@@ -602,6 +607,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		systemInterface.getInstanceHandler().removeInstance(FlowAdminModule.class, this);
 
 		extensionViewProviders.clear();
+		fragmentExtensionViewProviders.clear();
+		flowTypeExtensionProviders.clear();
 		flowBrowserExtensionViewProviders.clear();
 
 		flowListExtensionLinkProviders.clear();
@@ -721,7 +728,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		long startTime = System.currentTimeMillis();
 
-		HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.CATEGORIES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION);
+		HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(
+		//@formatter:off
+				FlowType.CATEGORIES_RELATION,
+				FlowType.ALLOWED_USERS_RELATION,
+				FlowType.ALLOWED_GROUPS_RELATION,
+				FlowType.ALLOWED_ADMIN_USERS_RELATION,
+				FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
+				FlowType.ALLOWED_QUERIES_RELATION
+		//@formatter:on
+		);
 		query.addCachedRelation(FlowType.CATEGORIES_RELATION);
 		
 		List<FlowType> flowTypes = daoFactory.getFlowTypeDAO().getAll(query);
@@ -754,8 +770,43 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			transactionHandler = new TransactionHandler(dataSource);
 
 			long startTime = System.currentTimeMillis();
-
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_FORMS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.STEPS_RELATION, Flow.STATUSES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION, Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION);
+			
+			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(
+			//@formatter:off
+					Flow.CHECKS_RELATION,
+					Flow.CATEGORY_RELATION,
+					Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION,
+					Flow.FLOW_FORMS_RELATION,
+					Flow.FLOW_TYPE_RELATION,
+					Flow.FLOW_FAMILY_RELATION,
+					Flow.STEPS_RELATION,
+					Flow.STATUSES_RELATION,
+					Flow.TAGS_RELATION,
+					
+					Status.MANAGER_GROUPS_RELATION,
+					Status.MANAGER_USERS_RELATION,
+					
+					Step.QUERY_DESCRIPTORS_RELATION,
+					
+					QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION,
+					
+					DefaultStatusMapping.FLOW_STATE_RELATION,
+					
+					FlowFamily.ALIASES_RELATION,
+					FlowFamily.MANAGER_USERS_RELATION,
+					FlowFamily.MANAGER_GROUPS_RELATION,
+					FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION,
+					FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION,
+					FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
+					FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
+					FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+					
+					FlowType.CATEGORIES_RELATION,
+					FlowType.ALLOWED_ADMIN_USERS_RELATION,
+					FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
+					FlowType.ALLOWED_QUERIES_RELATION
+			//@formatter:on
+			);
 			query.addCachedRelations(Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
@@ -894,7 +945,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		doc.getDocumentElement().appendChild(listFlowsElement);
 
-		if (hasFlowTypeAccess(user)) {
+		if (hasAnyFlowTypeAccess(user)) {
 
 			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
 			generatorDocument.setIgnoredFields(LIST_FLOWS_IGNORED_FIELDS);
@@ -998,7 +1049,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 	}
 
-	public boolean hasFlowTypeAccess(User user) {
+	public boolean hasAnyFlowTypeAccess(User user) {
 
 		if (AccessUtils.checkAccess(user, this) && !this.flowTypeCacheMap.isEmpty()) {
 
@@ -1990,7 +2041,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			throw new URINotFoundException(uriParser);
 		}
 		
-		flowFormCRUD.checkFlowTypeAccess(user, flow.getFlowType());
+		flowFormCRUD.checkFlowTypeAccess(user, flow);
 		
 		req.setAttribute("flow", flow);
 		
@@ -2429,11 +2480,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 					closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
 				}
-
-			} else if (FlowForm.class.isAssignableFrom(event.getBeanClass())) {
-
-				cacheFlows();
-				return;
 			}
 
 			cacheFlows();
@@ -2526,6 +2572,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return flowTypeCacheMap.get(flowTypeID);
 	}
 
+	@Override
 	public EventHandler getEventHandler() {
 
 		return eventHandler;
@@ -2570,7 +2617,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			throw new AccessDeniedException("Changes to queries in flow " + flow + " is not allowed since the flow has one or more flow instances connected to it.");
 		}
 	}
-
+	
 	public DataSource getDataSource() {
 
 		return dataSource;
@@ -4184,21 +4231,25 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return null;
 	}
 
+	@Override
 	public String getFlowFormFilestore() {
 
 		return flowFormFilestore;
 	}
 
+	@Override
 	public String getFlowFormFilePath(FlowForm form) {
 
 		return getFlowFormFilestore() + java.io.File.separator + form.getFlowFormID() + ".pdf";
 	}
 
+	@Override
 	public boolean deleteFlowFormFile(FlowForm form) {
 
 		return FileUtils.deleteFile(getFlowFormFilePath(form));
 	}
 
+	@Override
 	public boolean allowSkipOverviewForFlowForms() {
 
 		return allowSkipOverviewForFlowForms;
@@ -4255,83 +4306,151 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		pdfRequestFilters.remove(filter);
 	}
-
+	
 	public synchronized void addExtensionViewProvider(FlowAdminExtensionViewProvider flowAdminExtensionProvider) {
-
+		
 		if (!extensionViewProviders.contains(flowAdminExtensionProvider)) {
-
+			
 			log.info("Extension view provider " + flowAdminExtensionProvider + " added");
 			
 			List<FlowAdminExtensionViewProvider> tempProviders = new ArrayList<FlowAdminExtensionViewProvider>(extensionViewProviders);
-
+			
 			tempProviders.add(flowAdminExtensionProvider);
-
+			
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
-
+			
 			extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>(tempProviders);
 		}
-
+		
 	}
-
+	
 	public synchronized void removeExtensionViewProvider(FlowAdminExtensionViewProvider flowAdminExtensionProvider) {
-
+		
 		extensionViewProviders.remove(flowAdminExtensionProvider);
-
+		
 		log.info("Extension view provider " + flowAdminExtensionProvider + " removed");
 	}
-
+	
 	public List<FlowAdminExtensionViewProvider> getExtensionViewProviders() {
-
+		
 		return extensionViewProviders;
 	}
-
+	
+	public synchronized void addFragmentExtensionViewProvider(FlowAdminFragmentExtensionViewProvider flowAdminFragmentExtensionProvider) {
+		
+		if (!fragmentExtensionViewProviders.contains(flowAdminFragmentExtensionProvider)) {
+			
+			log.info("Fragment extension view provider " + flowAdminFragmentExtensionProvider + " added");
+			
+			List<FlowAdminFragmentExtensionViewProvider> tempProviders = new ArrayList<FlowAdminFragmentExtensionViewProvider>(fragmentExtensionViewProviders);
+			
+			tempProviders.add(flowAdminFragmentExtensionProvider);
+			
+			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
+			
+			fragmentExtensionViewProviders = new CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider>(tempProviders);
+		}
+	}
+	
+	public synchronized void removeFragmentExtensionViewProvider(FlowAdminFragmentExtensionViewProvider flowAdminFragmentExtensionProvider) {
+		
+		fragmentExtensionViewProviders.remove(flowAdminFragmentExtensionProvider);
+		
+		log.info("Fragment extension view provider " + flowAdminFragmentExtensionProvider + " removed");
+	}
+	
+	public List<FlowAdminFragmentExtensionViewProvider> getFragmentExtensionViewProviders() {
+		
+		return fragmentExtensionViewProviders;
+	}
+	
+	public FlowAdminFragmentExtensionViewProvider getFragmentExtensionViewProvider(int moduleID) {
+		
+		for (FlowAdminFragmentExtensionViewProvider extension : fragmentExtensionViewProviders) {
+			
+			if (extension.getModuleID() == moduleID) {
+				return extension;
+			}
+		}
+		
+		return null;
+	}
+	
+	public synchronized void addFlowTypeExtensionProvider(FlowTypeExtensionProvider flowAdminFragmentExtensionProvider) {
+		
+		if (!flowTypeExtensionProviders.contains(flowAdminFragmentExtensionProvider)) {
+			
+			log.info("Flow type extension provider " + flowAdminFragmentExtensionProvider + " added");
+			
+			List<FlowTypeExtensionProvider> tempProviders = new ArrayList<FlowTypeExtensionProvider>(flowTypeExtensionProviders);
+			
+			tempProviders.add(flowAdminFragmentExtensionProvider);
+			
+			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
+			
+			flowTypeExtensionProviders = new CopyOnWriteArrayList<FlowTypeExtensionProvider>(tempProviders);
+		}
+	}
+	
+	public synchronized void removeFlowTypeExtensionProvider(FlowTypeExtensionProvider flowAdminFragmentExtensionProvider) {
+		
+		flowTypeExtensionProviders.remove(flowAdminFragmentExtensionProvider);
+		
+		log.info("Flow type extension provider " + flowAdminFragmentExtensionProvider + " removed");
+	}
+	
+	public List<FlowTypeExtensionProvider> getFlowTypeExtensionsProviders() {
+		
+		return flowTypeExtensionProviders;
+	}
+	
 	public void addFlowListExtensionLinkProvider(ExtensionLinkProvider e) {
-
+		
 		if (!flowListExtensionLinkProviders.contains(e)) {
-
+			
 			flowListExtensionLinkProviders.add(e);
-
+			
 			log.info("List flow extension link provider " + e + " added");
-
-			if(systemInterface.getSystemStatus() == SystemStatus.STARTED) {
+			
+			if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 				
 				sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
 			}
-		
+			
 		}
 	}
-
-	public void removeFlowListExtensionLinkProvider(ExtensionLinkProvider e) {
-
-		flowListExtensionLinkProviders.remove(e);
-
-		log.info("List flow extension link provider " + e + " removed");
 	
-		if(systemInterface.getSystemStatus() == SystemStatus.STARTED) {
+	public void removeFlowListExtensionLinkProvider(ExtensionLinkProvider e) {
+		
+		flowListExtensionLinkProviders.remove(e);
+		
+		log.info("List flow extension link provider " + e + " removed");
+		
+		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 			
 			sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
 		}
 	}
-
+	
 	public void addFlowShowExtensionLinkProvider(FlowAdminShowFlowExtensionLinkProvider e) {
-
+		
 		if (!flowShowExtensionLinkProviders.contains(e)) {
-
+			
 			flowShowExtensionLinkProviders.add(e);
-
+			
 			log.info("Show flow extension link provider " + e + " added");
 		}
 	}
-
+	
 	public void removeFlowShowExtensionLinkProvider(FlowAdminShowFlowExtensionLinkProvider e) {
-
+		
 		flowShowExtensionLinkProviders.remove(e);
-
+		
 		log.info("Show flow extension link provider " + e + " removed");
 	}
-
+	
 	public List<FlowAdminShowFlowExtensionLinkProvider> getFlowShowExtensionLinkProviders() {
-
+		
 		return flowShowExtensionLinkProviders;
 	}
 
@@ -4708,26 +4827,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return new SimpleForegroundModuleResponse(doc);
 	}
 
+	@Override
 	public String getFileMissing() {
 
 		return fileMissing;
 	}
 
+	@Override
 	public String getEventFlowFormAddedMessage() {
 
 		return eventFlowFormAddedMessage;
 	}
 
+	@Override
 	public String getEventFlowFormUpdatedMessage() {
 
 		return eventFlowFormUpdatedMessage;
 	}
 
+	@Override
 	public String getEventFlowFormDeletedMessage() {
 
 		return eventFlowFormDeletedMessage;
 	}
 
+	@Override
 	public Integer getMaxPDFFormFileSize() {
 
 		return maxPDFFormFileSize;
@@ -5230,9 +5354,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		throw new URINotFoundException(uriParser);
 	}
 	
-	public boolean hasFlowTypeAccess(User user, Flow bean) {
+	@Override
+	public boolean hasFlowTypeAccess(User user, Flow flow) {
 		
-		return AccessUtils.checkAccess(user, bean.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
+		return AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
 	}
 	
 	@Override
@@ -5247,6 +5372,48 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	
 	public List<String> getForeignIDattributes() {
 		return foreignIDattributes;
+	}
+	
+	@WebPublic(alias = "extension", autoAppendLinks = false, autoAppendScripts = false)
+	public ForegroundModuleResponse processFragmentExtensionView(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+		
+		Integer flowID;
+		Integer extensionModuleID;
+		Flow flow;
+		FlowAdminFragmentExtensionViewProvider fragmentExtension;
+		
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (extensionModuleID = uriParser.getInt(3)) != null && (flow = flowCacheMap.get(flowID)) != null && (fragmentExtension = getFragmentExtensionViewProvider(extensionModuleID)) != null) {
+
+			if (!hasFlowTypeAccess(user, flow)) {
+				
+				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+			}
+			
+			ViewFragment viewFragment = fragmentExtension.processRequest(getFragmentExtensionViewProviderURL(fragmentExtension, flow), flow, req, user, uriParser);
+			
+			if (viewFragment == null) {
+				
+				redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#" + fragmentExtension.getExtensionViewLinkName());
+				return null;
+			}
+			
+			Document doc = createDocument(req, uriParser, user);
+			Element updateUserElement = doc.createElement("ViewFragmentExtension");
+			doc.getFirstChild().appendChild(updateUserElement);
+			
+			updateUserElement.appendChild(viewFragment.toXML(doc));
+			
+			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc);
+			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
+			
+			return moduleResponse;
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
+	
+	public String getFragmentExtensionViewProviderURL(FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider, Flow flow) {
+		return getFullAlias() + "/extension/" + flow.getFlowID() + "/" + fragmentExtensionProvider.getModuleID();
 	}
 	
 }

@@ -47,62 +47,74 @@
 
 	<xsl:template match="Document">
 		
-		<div class="contentitem errands-wrapper flowadmin">
+		<xsl:choose>
+			<xsl:when test="ViewFragmentExtension">
 			
-			<xsl:if test="FlowInstanceManagerForm or FlowInstanceManagerPreview or FlowInstanceManagerSubmitted or ShowFlowOverview">
-				<xsl:attribute name="class">contentitem</xsl:attribute>
-				<xsl:attribute name="id">FlowBrowser</xsl:attribute>
-			</xsl:if>
-			
-			<xsl:apply-templates select="ListFlows" />
-			<xsl:apply-templates select="ShowFlow" />
-			<xsl:apply-templates select="AddFlow" />
-			<xsl:apply-templates select="UpdateFlow" />
-			<xsl:apply-templates select="SortFlow" />
-			
-			<xsl:apply-templates select="UpdateFlowFamily"/>
-			<xsl:apply-templates select="ChangeFlowType"/>
-			<xsl:apply-templates select="UpdateFlowIcon" />
-			<xsl:apply-templates select="UpdateNotifications"/>
+				<xsl:apply-templates select="ViewFragmentExtension" />
+				
+			</xsl:when>
+			<xsl:otherwise>
+				
+				<div class="contentitem errands-wrapper flowadmin">
 					
-			<xsl:apply-templates select="AddStep" />
-			<xsl:apply-templates select="UpdateStep" />
-			<xsl:apply-templates select="AddQueryDescriptor" />
-			<xsl:apply-templates select="AddEvaluatorDescriptor" />
-			
-			<xsl:apply-templates select="AddStatus" />
-			<xsl:apply-templates select="UpdateStatus" />
-			<xsl:apply-templates select="SortStatuses" />
-			<xsl:apply-templates select="ListStandardStatuses" />
-			<xsl:apply-templates select="AddStandardStatus" />
-			<xsl:apply-templates select="UpdateStandardStatus" />
-			
-			<xsl:apply-templates select="FlowInstanceManagerForm"/>
-			<xsl:apply-templates select="FlowInstanceManagerPreview"/>
-			<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
-			
-			<xsl:apply-templates select="ListFlowTypes"/>
-			<xsl:apply-templates select="ShowFlowType"/>
-			<xsl:apply-templates select="AddFlowType"/>
-			<xsl:apply-templates select="UpdateFlowType"/>
-			
-			<xsl:apply-templates select="AddCategory"/>
-			<xsl:apply-templates select="UpdateCategory"/>
-			
-			<xsl:apply-templates select="SelectImportTargetType"/>
-			<xsl:apply-templates select="ImportFlow"/>
-			<xsl:apply-templates select="ImportQueries"/>
-			
-			<xsl:apply-templates select="AddFlowForm" />
-			<xsl:apply-templates select="UpdateFlowForm" />
-			
-			<xsl:apply-templates select="ShowFlowFamilyEvents"/>
-			<xsl:apply-templates select="AddFlowFamilyEvent" />
-			
-			<xsl:apply-templates select="SigningForm"/>
-			<xsl:apply-templates select="ShowFlowOverview"/>
-			<xsl:apply-templates select="AutoManagerAssignment" />
-		</div>
+					<xsl:if test="FlowInstanceManagerForm or FlowInstanceManagerPreview or FlowInstanceManagerSubmitted or ShowFlowOverview">
+						<xsl:attribute name="class">contentitem</xsl:attribute>
+						<xsl:attribute name="id">FlowBrowser</xsl:attribute>
+					</xsl:if>
+					
+					<xsl:apply-templates select="ListFlows" />
+					<xsl:apply-templates select="ShowFlow" />
+					<xsl:apply-templates select="AddFlow" />
+					<xsl:apply-templates select="UpdateFlow" />
+					<xsl:apply-templates select="SortFlow" />
+					
+					<xsl:apply-templates select="UpdateFlowFamily"/>
+					<xsl:apply-templates select="ChangeFlowType"/>
+					<xsl:apply-templates select="UpdateFlowIcon" />
+					<xsl:apply-templates select="UpdateNotifications"/>
+							
+					<xsl:apply-templates select="AddStep" />
+					<xsl:apply-templates select="UpdateStep" />
+					<xsl:apply-templates select="AddQueryDescriptor" />
+					<xsl:apply-templates select="AddEvaluatorDescriptor" />
+					
+					<xsl:apply-templates select="AddStatus" />
+					<xsl:apply-templates select="UpdateStatus" />
+					<xsl:apply-templates select="SortStatuses" />
+					<xsl:apply-templates select="ListStandardStatuses" />
+					<xsl:apply-templates select="AddStandardStatus" />
+					<xsl:apply-templates select="UpdateStandardStatus" />
+					
+					<xsl:apply-templates select="FlowInstanceManagerForm"/>
+					<xsl:apply-templates select="FlowInstanceManagerPreview"/>
+					<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
+					
+					<xsl:apply-templates select="ListFlowTypes"/>
+					<xsl:apply-templates select="ShowFlowType"/>
+					<xsl:apply-templates select="AddFlowType"/>
+					<xsl:apply-templates select="UpdateFlowType"/>
+					
+					<xsl:apply-templates select="AddCategory"/>
+					<xsl:apply-templates select="UpdateCategory"/>
+					
+					<xsl:apply-templates select="SelectImportTargetType"/>
+					<xsl:apply-templates select="ImportFlow"/>
+					<xsl:apply-templates select="ImportQueries"/>
+					
+					<xsl:apply-templates select="AddFlowForm" />
+					<xsl:apply-templates select="UpdateFlowForm" />
+					
+					<xsl:apply-templates select="ShowFlowFamilyEvents"/>
+					<xsl:apply-templates select="AddFlowFamilyEvent" />
+					
+					<xsl:apply-templates select="SigningForm"/>
+					<xsl:apply-templates select="ShowFlowOverview"/>
+					<xsl:apply-templates select="AutoManagerAssignment" />
+					
+				</div>
+				
+			</xsl:otherwise>
+		</xsl:choose>
 		
 	</xsl:template>
 
@@ -146,7 +158,7 @@
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.versions" /></span></th>
 					<th width="100"><span data-icon-after="_"><xsl:value-of select="$i18n.SubmittedInstances" /></span></th>
 					<th width="115"><span data-icon-after="_"><xsl:value-of select="$i18n.NotSubmittedInstances" /></span></th>
-					<xsl:call-template name="ExtraFlowListColumnsHeader"></xsl:call-template>					
+					<xsl:call-template name="ExtraFlowListColumnsHeader" />
 					<th width="16" class="no-sort"/>
 				</tr>
 			</thead>
@@ -158,16 +170,16 @@
 							<td colspan="8">
 								<xsl:value-of select="$i18n.noFlowsFound" />
 							</td>
-						</tr>					
+						</tr>
 					</xsl:when>
 					<xsl:otherwise>
 						
 						<xsl:apply-templates select="Flow[latestVersion = 'true']" mode="list"/>
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
-		</table>		
+		</table>
 		
 		<xsl:if test="AddAccess">
 			<br/>
@@ -175,15 +187,15 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflow" title="{$i18n.addFlow}">
 					<xsl:value-of select="$i18n.addFlow"/>
 					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>			
+				</a>
 			</div>
 			<br/>
 			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow" title="{$i18n.importFlow}">
 					<xsl:value-of select="$i18n.importFlow"/>
 					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>			
-			</div>			
+				</a>
+			</div>
 		</xsl:if>
 		
 		<xsl:if test="AdminAccess">
@@ -192,19 +204,19 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.administrateStandardStatuses}">
 					<xsl:value-of select="$i18n.administrateStandardStatuses"/>
 					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
-				</a>			
+				</a>
 			</div>
 			<br/>
 			<div class="floatright marginright clearboth">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtypes" title="{$i18n.administrateFlowTypes}">
 					<xsl:value-of select="$i18n.administrateFlowTypes"/>
 					<img class="marginleft" src="{$imgPath}/folder_edit.png" alt=""/>
-				</a>			
+				</a>
 			</div>
-		</xsl:if>		
+		</xsl:if>
 		
 		<xsl:variable name="extensionLinks" select="ExtensionLink[slot='bottom-right']"/>
-					
+		
 		<xsl:if test="$extensionLinks">
 		
 			<div class="clearboth floatright marginright bottom-right-slot">
@@ -270,7 +282,7 @@
 			
 			<td data-title="{$i18n.versions}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="VersionCount" /></a>
-			</td>			
+			</td>
 			<td data-title="{$i18n.SubmittedInstances}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="SubmittedInstanceCount" /></a>
 			</td>
@@ -402,7 +414,7 @@
 											<img src="{$imgPath}/delete_gray.png" alt="" />
 										</a>
 				
-									</xsl:when>						
+									</xsl:when>
 								</xsl:choose>
 							
 							</xsl:otherwise>
@@ -415,9 +427,9 @@
 				</label>
 				
 				<div class="floatleft clearboth">
-					<xsl:value-of select="Flow/name" />				
+					<xsl:value-of select="Flow/name" />
 				</div>
-			</div>			
+			</div>
 			
 			<xsl:if test="Flow/externalLink">
 				
@@ -429,7 +441,7 @@
 					
 					<div class="floatleft clearboth">
 						<a href="{Flow/externalLink}" target="_blank" title="{$i18n.OpenExternalFlow}" data-icon-after="e"><xsl:value-of select="Flow/externalLink" /></a>
-					</div>				
+					</div>
 				</div>
 				
 			</xsl:if>
@@ -441,9 +453,9 @@
 				</label>
 				
 				<div class="floatleft clearboth">
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />							
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
 				</div>
-			</div>			
+			</div>
 			
 			<div class="floatleft min-width-thirtytree bigmarginbottom">
 				
@@ -461,10 +473,10 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:value-of select="$i18n.notPublished" />
-						</xsl:otherwise>					
-					</xsl:choose>			
+						</xsl:otherwise>
+					</xsl:choose>
 				</div>
-			</div>				
+			</div>
 			
 			<div class="floatleft min-width-thirtytree bigmarginbottom">
 				<div class="floatleft full">
@@ -473,7 +485,7 @@
 				</div>
 			</div>
 			
-			<xsl:if test="Flow/publishDate">	
+			<xsl:if test="Flow/publishDate">
 				<div class="floatleft min-width-thirtytree">
 				
 					<div class="floatleft fifty">
@@ -575,7 +587,7 @@
 							<xsl:value-of select="$i18n.PaymentEnabled" />
 						</label>
 					</div>
-				</div>				
+				</div>
 				
 			</xsl:if>
 			
@@ -777,9 +789,9 @@
 				<div class="floatleft full border">
 					<div class="padding">
 						<xsl:value-of select="Flow/shortDescription" disable-output-escaping="yes"/>
-					</div>						
+					</div>
 				</div>
-			</div>		
+			</div>
 			
 			<xsl:if test="Flow/longDescription">
 			
@@ -835,7 +847,7 @@
 						</div>
 					</div>
 				</div>
-						
+				
 			</xsl:if>
 
 			<xsl:if test="Flow/Checks">
@@ -858,7 +870,7 @@
 						</div>
 					</div>
 				</div>
-						
+				
 			</xsl:if>
 			
 			<xsl:if test="Flow/FlowFamily/Aliases">
@@ -892,7 +904,7 @@
 						</div>
 					</div>
 				</div>
-						
+				
 			</xsl:if>
 			
 			<xsl:if test="Flow/FlowFamily/contactName">
@@ -1017,8 +1029,8 @@
 	
 							<p><xsl:value-of select="$i18n.stepAndQueryManipulationDisabledIsPublished"/></p>
 	
-						</xsl:when>						
-					</xsl:choose>			
+						</xsl:when>
+					</xsl:choose>
 				</xsl:if>
 				
 				<xsl:choose>
@@ -1262,7 +1274,7 @@
 						</a>
 					</div>
 					
-				</fieldset>				
+				</fieldset>
 			
 			</xsl:if>
 	
@@ -1274,15 +1286,15 @@
 					
 					<xsl:value-of select="ShowFlowSurveysHTML" disable-output-escaping="yes"/>
 					
-				</fieldset>	
+				</fieldset>
 				
-			</xsl:if>		
+			</xsl:if>
 	
 		</xsl:if>
 
 		<xsl:apply-templates select="ExtensionProvider" />
 	
-		<a name="versions"/>	
+		<a name="versions"/>
 	
 		<fieldset>
 			<legend><xsl:value-of select="$i18n.versions"/></legend>
@@ -1346,7 +1358,7 @@
 				
 				<div class="floatright margintop marginright hidden clearboth" id="add_new_version">
 					<input type="submit" value="{$i18n.addNewVersion}"/>
-				</div>		
+				</div>
 				
 				<div class="floatright marginright margintop clearboth hidden" id="create_copy">
 					<input type="submit" name="new_family" value="{$i18n.createNewFlow}"/>
@@ -1402,7 +1414,7 @@
 				</div>
 		</fieldset>
 		
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="ExtensionProvider">
 		
@@ -1623,7 +1635,7 @@
 			</xsl:if>
 			<td>
 				<input type="radio" name="flowID" value="{flowID}" onclick="$('#add_new_version').show();$('#create_copy').show();"/>
-			</td>			
+			</td>
 			<td class="icon">
 				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="25" alt="" />
 			</td>
@@ -1641,7 +1653,7 @@
 			
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="version" /></a>
-			</td>	
+			</td>
 			<xsl:if test="$isInternal = 'true'">
 				<td>
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="count(Steps/Step)" /></a>
@@ -2249,7 +2261,7 @@
 						<xsl:value-of select="$i18n.PaymentSupportEnabled" />
 					</label>
 				</div>
-			</div>		
+			</div>
 		
 		</xsl:if>
 			
@@ -2470,7 +2482,7 @@
 							
 							<label for="showSubmitSurvey">
 								<xsl:value-of select="$i18n.showSubmitSurvey" />
-							</label>				
+							</label>
 						</div>
 					</div>
 				</xsl:when>
@@ -2515,10 +2527,10 @@
 						
 						<label for="addstandardstatuses">
 							<xsl:value-of select="$i18n.addStandardStatuses" />
-						</label>				
+						</label>
 					</div>
-				</div>			
-			</xsl:if>		
+				</div>
+			</xsl:if>
 		
 		</xsl:if>
 		
@@ -2534,10 +2546,10 @@
 					<xsl:with-param name="name" select="'shortDescription'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="Flow" />		
-				</xsl:call-template>									
-										
+				</xsl:call-template>
+				
 			</div>
-		</div>		
+		</div>
 		
 		<div class="floatleft full bigmarginbottom">
 			
@@ -2551,10 +2563,10 @@
 					<xsl:with-param name="name" select="'longDescription'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="Flow" />		
-				</xsl:call-template>									
-										
+				</xsl:call-template>
+				
 			</div>
-		</div>		
+		</div>
 		
 		<xsl:if test="$isInternal = 'true'">
 			
@@ -2570,8 +2582,8 @@
 						<xsl:with-param name="name" select="'submittedMessage'"/>
 						<xsl:with-param name="class" select="'flow-ckeditor'"/>
 						<xsl:with-param name="element" select="Flow" />		
-					</xsl:call-template>									
-											
+					</xsl:call-template>
+					
 				</div>
 			</div>
 		
@@ -2696,7 +2708,7 @@
 					<xsl:with-param name="element" select="Flow" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
 		<h2 class="floatleft bigmargintop">
 			<xsl:value-of select="$i18n.FlowFamily.SharedSettings"/>
@@ -2730,9 +2742,9 @@
 							<xsl:with-param name="name" select="'loginHelpLinkName'" />
 							<xsl:with-param name="id" select="'loginHelpLinkName'" />
 							<xsl:with-param name="element" select="Flow/FlowFamily" />
-							<xsl:with-param name="size" select="10" />         
+							<xsl:with-param name="size" select="10" />
 						</xsl:call-template>
-												
+						
 					</div>
 				
 				</div>
@@ -2749,7 +2761,7 @@
 							<xsl:with-param name="name" select="'loginHelpLinkURL'" />
 							<xsl:with-param name="id" select="'loginHelpLinkURL'" />
 							<xsl:with-param name="element" select="Flow/FlowFamily" />
-							<xsl:with-param name="size" select="10" />         
+							<xsl:with-param name="size" select="10" />
 						</xsl:call-template>
 						
 					</div>
@@ -2846,7 +2858,7 @@
 					<xsl:with-param name="name" select="'popularityBoost'" />
 					<xsl:with-param name="id" select="'popularityBoost'" />
 					<xsl:with-param name="element" select="Flow/FlowFamily" />
-					<xsl:with-param name="size" select="10" />         
+					<xsl:with-param name="size" select="10" />
 				</xsl:call-template>
 				
 			</div>
@@ -2864,7 +2876,7 @@
 					<xsl:with-param name="name" select="'startButtonText'" />
 					<xsl:with-param name="id" select="'startButtonText'" />
 					<xsl:with-param name="element" select="Flow/FlowFamily" />
-					<xsl:with-param name="size" select="30" />         
+					<xsl:with-param name="size" select="30" />
 				</xsl:call-template>
 				
 			</div>
@@ -2887,9 +2899,9 @@
 						<xsl:with-param name="name" select="'contactName'" />
 						<xsl:with-param name="id" select="'contactName'" />
 						<xsl:with-param name="element" select="Flow/FlowFamily" />
-						<xsl:with-param name="size" select="10" />         
+						<xsl:with-param name="size" select="10" />
 					</xsl:call-template>
-											
+					
 				</div>
 			
 			</div>
@@ -2906,9 +2918,9 @@
 						<xsl:with-param name="name" select="'contactEmail'" />
 						<xsl:with-param name="id" select="'contactEmail'" />
 						<xsl:with-param name="element" select="Flow/FlowFamily" />
-						<xsl:with-param name="size" select="10" />         
+						<xsl:with-param name="size" select="10" />
 					</xsl:call-template>
-											
+					
 				</div>
 			
 			</div>
@@ -2925,9 +2937,9 @@
 						<xsl:with-param name="name" select="'contactPhone'" />
 						<xsl:with-param name="id" select="'contactPhone'" />
 						<xsl:with-param name="element" select="Flow/FlowFamily" />
-						<xsl:with-param name="size" select="10" />         
+						<xsl:with-param name="size" select="10" />
 					</xsl:call-template>
-											
+					
 				</div>
 			
 			</div>
@@ -2950,9 +2962,9 @@
 						<xsl:with-param name="name" select="'ownerName'" />
 						<xsl:with-param name="id" select="'ownerName'" />
 						<xsl:with-param name="element" select="Flow/FlowFamily" />
-						<xsl:with-param name="size" select="10" />         
+						<xsl:with-param name="size" select="10" />
 					</xsl:call-template>
-											
+					
 				</div>
 			
 			</div>
@@ -2969,7 +2981,7 @@
 						<xsl:with-param name="name" select="'ownerEmail'" />
 						<xsl:with-param name="id" select="'ownerEmail'" />
 						<xsl:with-param name="element" select="Flow/FlowFamily" />
-						<xsl:with-param name="size" select="10" />         
+						<xsl:with-param name="size" select="10" />
 					</xsl:call-template>
 					
 				</div>
@@ -4467,7 +4479,7 @@
 			
 			</xsl:if>
 		</fieldset>
-
+		
 		<fieldset>
 			<legend>
 				<img class="alignmiddle" src="{$imgPath}/lock.png" alt="" />
@@ -4510,6 +4522,8 @@
 			</xsl:choose>
 			
 		</fieldset>
+		
+		<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes" />
 
 		<fieldset>
 			<legend>
@@ -4814,9 +4828,9 @@
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'adminuser'"/>
 				<xsl:with-param name="users" select="AllowedAdminUsers" />
-			</xsl:call-template>		
+			</xsl:call-template>
 		
-		</fieldset>		
+		</fieldset>
 		
 		<fieldset class="floatleft full bigmarginbottom">
 		
@@ -4880,7 +4894,9 @@
 				</label>
 			</div>
 		
-		</fieldset>	
+		</fieldset>
+		
+		<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes" />
 		
 		<div class="floatleft full bigmarginbottom">
 
@@ -6141,6 +6157,12 @@
 		</xsl:if>
 	
 	</xsl:template>
+	
+	<xsl:template match="ViewFragmentExtension">
+		
+		<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
+		
+	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='NoManagersSet']">
 	
@@ -6731,6 +6753,14 @@
 			<xsl:value-of select="$i18n.FlowFamilyAliasAlreadyInUseBySystem"/>
 		</p>
 		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='ExtensionErrors']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.ExtensionErrors"/>
+		</p>
+	
 	</xsl:template>
 	
 	<xsl:template match="validationError">

@@ -11,17 +11,17 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.ElementableListener;
 import se.unlogic.standardutils.xml.XMLUtils;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
 
 public class FlowFormElementableListener implements ElementableListener<FlowForm> {
 	
 	
 	protected final Logger log = Logger.getLogger(getClass());
 	
-	protected final FlowAdminModule flowAdminModule;
+	protected final FlowAdminCRUDCallback flowAdminModule;
 	
-	public FlowFormElementableListener(FlowAdminModule flowAdminModule) {
+	public FlowFormElementableListener(FlowAdminCRUDCallback flowAdminModule) {
 		
 		super();
 		this.flowAdminModule = flowAdminModule;

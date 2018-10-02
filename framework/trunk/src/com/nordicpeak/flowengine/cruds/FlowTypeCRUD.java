@@ -29,6 +29,7 @@ import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.crud.IntegerBeanIDParser;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
@@ -47,6 +48,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.interfaces.FlowTypeExtensionProvider;
 
 
 public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdminModule> {
@@ -176,37 +178,53 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 		return super.beanDeleted(bean, req, res, user, uriParser);
 	}
-
+	
 	@Override
 	protected void appendShowFormData(FlowType bean, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
-
+		
 		appendAdminAccess(user, doc, showTypeElement);
-
-		if(bean.getAllowedAdminGroupIDs() != null){
-
+		
+		if (bean.getAllowedAdminGroupIDs() != null) {
+			
 			XMLUtils.append(doc, showTypeElement, "AllowedAdminGroups", callback.getGroupHandler().getGroups(bean.getAllowedAdminGroupIDs(), false));
 		}
-
-		if(bean.getAllowedAdminUserIDs() != null){
-
+		
+		if (bean.getAllowedAdminUserIDs() != null) {
+			
 			XMLUtils.append(doc, showTypeElement, "AllowedAdminUsers", callback.getUserHandler().getUsers(bean.getAllowedAdminUserIDs(), false, true));
 		}
-
-		if(bean.getAllowedGroupIDs() != null){
-
+		
+		if (bean.getAllowedGroupIDs() != null) {
+			
 			XMLUtils.append(doc, showTypeElement, "AllowedGroups", callback.getGroupHandler().getGroups(bean.getAllowedGroupIDs(), false));
 		}
-
-		if(bean.getAllowedUserIDs() != null){
-
-			XMLUtils.append(doc, showTypeElement, "AllowedUsers", callback.getUserHandler().getUsers(bean.getAllowedUserIDs(), false, true));
-		}		
 		
-		if(bean.getAllowedQueryTypes() != null){
-
+		if (bean.getAllowedUserIDs() != null) {
+			
+			XMLUtils.append(doc, showTypeElement, "AllowedUsers", callback.getUserHandler().getUsers(bean.getAllowedUserIDs(), false, true));
+		}
+		
+		if (bean.getAllowedQueryTypes() != null) {
+			
 			XMLUtils.append(doc, showTypeElement, "QueryTypeDescriptors", callback.getQueryHandler().getQueryTypes(bean.getAllowedQueryTypes()));
 		}
-
+		
+		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
+			
+			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
+				
+				try {
+					ViewFragment paymentProviderViewFragment = extension.getShowFlowTypeFragment(bean, req, user, uriParser);
+			
+					showTypeElement.appendChild(paymentProviderViewFragment.toXML(doc));
+					
+				} catch (Exception e){
+					
+					log.error("Error getting getShowFlowTypeFragment view fragment from flow type extension " + extension, e);
+				}
+			}
+		}
+		
 		XMLUtils.appendNewElement(doc, showTypeElement, "flowFamilyCount", callback.getFlowFamilies(bean.getFlowTypeID()).size());
 	}
 
@@ -251,64 +269,139 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 		appendFormData(doc, addTypeElement, user, req, uriParser);
 	}
-
+	
 	@Override
-	protected void appendUpdateFormData(FlowType bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
-
+	protected void appendUpdateFormData(FlowType bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser, ValidationException validationException) throws Exception {
+		
 		appendFormData(doc, updateTypeElement, user, req, uriParser);
-
-		if(bean.getAllowedAdminGroupIDs() != null){
-
+		
+		if (bean.getAllowedAdminGroupIDs() != null) {
+			
 			XMLUtils.append(doc, updateTypeElement, "AllowedAdminGroups", callback.getGroupHandler().getGroups(bean.getAllowedAdminGroupIDs(), false));
 		}
-
-		if(bean.getAllowedAdminUserIDs() != null){
-
+		
+		if (bean.getAllowedAdminUserIDs() != null) {
+			
 			XMLUtils.append(doc, updateTypeElement, "AllowedAdminUsers", callback.getUserHandler().getUsers(bean.getAllowedAdminUserIDs(), false, true));
 		}
-
-		if(bean.getAllowedGroupIDs() != null){
-
+		
+		if (bean.getAllowedGroupIDs() != null) {
+			
 			XMLUtils.append(doc, updateTypeElement, "AllowedGroups", callback.getGroupHandler().getGroups(bean.getAllowedGroupIDs(), false));
 		}
-
-		if(bean.getAllowedUserIDs() != null){
-
+		
+		if (bean.getAllowedUserIDs() != null) {
+			
 			XMLUtils.append(doc, updateTypeElement, "AllowedUsers", callback.getUserHandler().getUsers(bean.getAllowedUserIDs(), false, true));
-		}	
+		}
+		
+		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
+			
+			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
+				
+				try {
+					ViewFragment paymentProviderViewFragment = extension.getUpdateFlowTypeFragment(bean, req, user, uriParser, (ValidationException) req.getAttribute(extension.getClass().getName() + "-validationException"), validationException != null);
+					
+					updateTypeElement.appendChild(paymentProviderViewFragment.toXML(doc));
+					
+				} catch (Exception e) {
+					
+					log.error("Error getting getUpdateFlowTypeFragment view fragment from flow type extension " + extension, e);
+				}
+			}
+		}
 	}
-
+	
 	private void appendFormData(Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) {
 
 		XMLUtils.append(doc, updateTypeElement, "QueryTypeDescriptors", callback.getQueryHandler().getAvailableQueryTypes());
-
-		if(callback.useFlowTypeIconUpload()) {
+		
+		if (callback.useFlowTypeIconUpload()) {
 			
 			XMLUtils.appendNewElement(doc, updateTypeElement, "useFlowTypeIconUpload", "true");
 		}
 	}
-
+	
+	@Override
+	protected FlowType populateFromUpdateRequest(FlowType flowType, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+		
+		boolean extensionErrors = false;
+		
+		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
+			
+			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
+				
+				try {
+					extension.validateUpdateFlowType(flowType, req, user, uriParser);
+					
+				} catch (ValidationException e) {
+					
+					extensionErrors = true;
+					req.setAttribute(extension.getClass().getName() + "-validationException", e);
+				}
+			}
+			
+		}
+		
+		flowType = super.populateFromUpdateRequest(flowType, req, user, uriParser);
+		
+		if (extensionErrors) {
+			
+			throw new ValidationException(new ValidationError("ExtensionErrors"));
+		}
+		
+		return flowType;
+	}
+	
 	@Override
 	protected void validateAddPopulation(FlowType bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
-
+		
 		super.validateAddPopulation(bean, req, user, uriParser);
 		
-		if(callback.useFlowTypeIconUpload()) {
+		if (callback.useFlowTypeIconUpload()) {
 			
 			setIcon(req, bean, user);
 		}
 		
 		bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 	}
-
+	
 	@Override
 	protected void validateUpdatePopulation(FlowType bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
-
+		
 		super.validateUpdatePopulation(bean, req, user, uriParser);
 		
-		if(callback.useFlowTypeIconUpload()) {
+		if (callback.useFlowTypeIconUpload()) {
 			
 			setIcon(req, bean, user);
+		}
+	}
+	
+	@Override
+	protected void updateFilteredBean(FlowType flowType, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+		
+		super.updateFilteredBean(flowType, req, user, uriParser);
+		
+		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
+			
+			boolean extensionErrors = false;
+			
+			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
+				
+				try {
+					extension.updateFlowType(flowType, req, user, uriParser);
+					
+				} catch (ValidationException e) {
+					
+					extensionErrors = true;
+					req.setAttribute(extension.getClass().getName() + "-validationException", e);
+				}
+			}
+			
+			if (extensionErrors) {
+				
+				throw new ValidationException(new ValidationError("ExtensionErrors"));
+			}
 		}
 	}
 

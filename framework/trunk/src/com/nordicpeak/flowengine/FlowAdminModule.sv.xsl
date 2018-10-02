@@ -579,4 +579,7 @@
 	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten.</xsl:variable>
 	<xsl:variable name="i18n.userDescriptionTemplate">Beskrivning på mina sidor</xsl:variable>
 	<xsl:variable name="i18n.managerDescriptionTemplate">Beskrivning i handläggargränssnittet</xsl:variable>
+	
+	<xsl:variable name="i18n.ExtensionErrors">Ett validerings fel har uppstått i ett tillägg, kolla längre ner efter vad som är fel.</xsl:variable>
+	
 </xsl:stylesheet>
