@@ -205,13 +205,26 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 			if (informerSetting.getReason() == null && personDataInformerModule.getDefaultReason() != null) {
 				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason()));
 			}
+			else if (informerSetting.getReason() != null) {
+				informerSetting.setReason(JTidyUtils.getXHTML(informerSetting.getReason()));
+			}
 			
 			if (informerSetting.getExtraInformation() == null && personDataInformerModule.getDefaultExtraInformation() != null) {
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation()));
 			}
+			else if (informerSetting.getExtraInformation() != null) {
+				informerSetting.setExtraInformation(JTidyUtils.getXHTML(informerSetting.getExtraInformation()));
+			}
 			
 			if (informerSetting.getExtraInformationStorage() == null && personDataInformerModule.getDefaultExtraInformationStorage() != null) {
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage()));
+			}
+			else if (informerSetting.getExtraInformationStorage() != null) {
+				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage()));
+			}
+			
+			if (informerSetting.getDataRecipient() != null) {
+				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient()));
 			}
 			
 			TextTagReplacer.replaceTextTags(informerSetting, instanceMetadata.getSiteProfile());
