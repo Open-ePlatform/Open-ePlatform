@@ -11,6 +11,7 @@
 	
 	<!-- Programatical additional globalscripts for UpdateSettings -->
 	<xsl:variable name="updateglobalscripts">
+		/jquery/jquery.js
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
@@ -336,13 +337,13 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		
-		<a href="{/Document/ModuleURI}/updateflowsettings/{Flow/flowID}" class="floatright">
+		<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/updateflowsettings" class="floatright">
 			<xsl:value-of select="$i18n.UpdateSettings" />
 			<img class="marginleft vertical-align-bottom" src="{/Document/StaticContentURL}/pics/pen.png" alt="" />
 		</a>
 		
 		<xsl:if test="FlowFamilyInformerSetting">
-			<a href="{/Document/ModuleURI}/deleteflowsettings/{Flow/flowID}" class="floatright clearboth" onclick="return confirm('{$i18n.DeleteSettings.Confirm}');">
+			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteflowsettings" class="floatright clearboth" onclick="return confirm('{$i18n.DeleteSettings.Confirm}');">
 				<xsl:value-of select="$i18n.DeleteSettings" />
 				<img class="marginleft vertical-align-bottom" src="{/Document/StaticContentURL}/pics/delete.png" alt="" />
 			</a>		
@@ -362,7 +363,7 @@
 	
 			<xsl:apply-templates select="ValidationErrors/validationError" mode="admin"/>
 	
-			<form method="post" action="{/Document/ModuleURI}/updateflowsettings/{Flow/flowID}">
+			<form method="post" action="{/Document/requestinfo/contextpath}{extensionRequestURL}/updateflowsettings">
 			
 				<div class="floatleft full bigmarginbottom">
 
@@ -530,7 +531,7 @@
 							
 							<div class="hidden" id="storage-settings-template">
 								<div class="clearfix storage-setting">
-									<div class="floatleft ten">
+									<div class="floatleft fifteen">
 										<label class="floatleft full">
 											<xsl:value-of select="$i18n.StorageType"/>
 										</label>
@@ -898,7 +899,7 @@
 		</xsl:variable>
 		
 		<div class="clearfix storage-setting">
-			<div class="floatleft ten">
+			<div class="floatleft fifteen">
 				<label for="{$typeName}" class="floatleft full">
 					<xsl:value-of select="$i18n.StorageType"/>
 				</label>

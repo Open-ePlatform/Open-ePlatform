@@ -19,22 +19,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
-import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -46,6 +30,7 @@ import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
@@ -95,7 +80,23 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
 
-public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
 
 	private static final AnnotatedRequestPopulator<FlowFamilyInformerSetting> POPULATOR = new AnnotatedRequestPopulator<FlowFamilyInformerSetting>(FlowFamilyInformerSetting.class);
 
@@ -190,7 +191,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		if (flowAdminModule == null && this.flowAdminModule != null) {
 
-			this.flowAdminModule.removeExtensionViewProvider(this);
+			this.flowAdminModule.removeFragmentExtensionViewProvider(this);
 			this.flowAdminModule.removeFlowBrowserExtensionViewProvider(this);
 		}
 
@@ -198,7 +199,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		if (this.flowAdminModule != null) {
 
-			this.flowAdminModule.addExtensionViewProvider(this);
+			this.flowAdminModule.addFragmentExtensionViewProvider(this);
 			this.flowAdminModule.addFlowBrowserExtensionViewProvider(this);
 		}
 	}
@@ -279,10 +280,9 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment getShowView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
+	public ViewFragment getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
 		if (!AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)) {
-
 			return null;
 		}
 
@@ -292,6 +292,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		doc.getDocumentElement().appendChild(showViewElement);
 
 		showViewElement.appendChild(flow.toXML(doc));
+		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
@@ -365,6 +366,12 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		return adminExtensionViewTitle;
 	}
+	
+	@Override
+	public String getExtensionViewLinkName() {
+
+		return "informersettings";
+	}
 
 	@Override
 	public int getPriority() {
@@ -390,20 +397,24 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		return scripts;
 	}
 
-	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateFlowSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+	@Override
+	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
-		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
-
-		if (flow == null) {
-
-			return flowAdminModule.list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
-
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, flowAdminModule)) {
-
-			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		String method = uriParser.get(4);
+		
+		if ("updateflowsettings".equals(method)) {
+			
+			return updateFlowSettings(extensionRequestURL, flow, req, user, uriParser);
+			
+		} else if ("deleteflowsettings".equals(method)) {
+			
+			return deleteFlowSettings(flow, req, user, uriParser);
 		}
-
+		
+		throw new URINotFoundException(uriParser);
+	}
+	
+	public ViewFragment updateFlowSettings(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
 		List<InformerDataAlternative> allDataAlternatives = dataAlternativesDAOWrapper.getAll();
@@ -583,8 +594,6 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 						
 						flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
 						
-						flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#informersettings");
-						
 						return null;
 					}
 
@@ -600,8 +609,6 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
 				}
 				
-				flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#informersettings");
-				
 				return null;
 			}
 		}
@@ -614,6 +621,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		doc.getDocumentElement().appendChild(settingsElement);
 
 		settingsElement.appendChild(flow.toXML(doc));
+		XMLUtils.appendNewElement(doc, settingsElement, "extensionRequestURL", extensionRequestURL);
 
 		XMLUtils.append(doc, settingsElement, informerSettings);
 		XMLUtils.append(doc, settingsElement, "DataAlternatives", allDataAlternatives);
@@ -649,25 +657,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
 
-		SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
-		response.addScripts(updateGlobalScriptTags);
-
-		return response;
+		SimpleViewFragment viewFragment = (SimpleViewFragment) viewFragmentTransformer.createViewFragment(doc);
+		return new SimpleViewFragment(viewFragment.getHTML(), viewFragment.getDebugXML(), updateGlobalScriptTags, viewFragment.getLinks());
 	}
 
-	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteFlowSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-
-		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
-
-		if (flow == null) {
-
-			return flowAdminModule.list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
-
-		} else if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, flowAdminModule)) {
-
-			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
-		}
+	public ViewFragment deleteFlowSettings(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
@@ -683,8 +677,6 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 			log.warn("User " + user + " trying to delete person data informer settings for flow " + flow + " which has no settings");
 		}
-
-		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#informersettings");
 
 		return null;
 	}
@@ -975,5 +967,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	public String getDefaultExtraInformationStorage() {
 
 		return defaultStorageDescription;
+	}
+
+	@Override
+	public int getModuleID() {
+		return moduleDescriptor.getModuleID();
 	}
 }
