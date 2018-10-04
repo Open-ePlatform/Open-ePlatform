@@ -1650,8 +1650,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			for (Contact ownerContact : getContacts(event.getFlowInstance())) {
 				
-				sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-				sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, flowInstanceMultiSignCanceledOwnerSMS);
+				sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
+				sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerSMS);
 			}
 			
 			if (event.getUser() != null) {
@@ -1676,8 +1676,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				continue;
 			}
 			
-			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, flowInstanceMultiSignCanceledUserSMS);
+			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, true, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
+			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, true, flowInstanceMultiSignCanceledUserSMS);
 		}
 	}
 
@@ -1803,6 +1803,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String subject, String message) {
+		
+		return sendSigningPartyEmail(flowInstance, signingParty, contact, false, subject, message);
+	}
+	
+	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, boolean skipURL, String subject, String message) {
 
 		if (signingParty.getEmail() == null || subject == null || message == null || multiSigningHandler == null) {
 			return false;
@@ -1814,10 +1819,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return false;
 		}
 		
-		String url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
+		String url = null;
 		
-		if (url == null) {
-			return false;
+		if (!skipURL) {
+			
+			url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
+			
+			if (url == null) {
+				return false;
+			}
 		}
 
 		TagReplacer tagReplacer = new TagReplacer();
@@ -1857,15 +1867,25 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	}
 
 	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String message) {
+		
+		sendSigningPartySMS(flowInstance, signingParty, contact, false, message);
+	}
+		
+	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, boolean skipURL, String message) {
 
 		if (signingParty.getMobilePhone() == null || smsSender == null || message == null || multiSigningHandler == null) {
 			return;
 		}
 		
-		String url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
+		String url = null;
 		
-		if (url == null) {
-			return;
+		if (!skipURL) {
+			
+			url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
+			
+			if (url == null) {
+				return;
+			}
 		}
 
 		TagReplacer tagReplacer = new TagReplacer();
