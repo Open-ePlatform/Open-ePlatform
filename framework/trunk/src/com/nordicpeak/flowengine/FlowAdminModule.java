@@ -5415,5 +5415,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public String getFragmentExtensionViewProviderURL(FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider, Flow flow) {
 		return getFullAlias() + "/extension/" + flow.getFlowID() + "/" + fragmentExtensionProvider.getModuleID();
 	}
-	
+
+	public String getAlias() {
+		return moduleDescriptor.getAlias();
+	}
 }
