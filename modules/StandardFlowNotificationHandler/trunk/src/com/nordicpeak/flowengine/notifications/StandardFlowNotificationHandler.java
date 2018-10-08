@@ -1826,6 +1826,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
 			
 			if (url == null) {
+				
+				log.error("Unable to get signing URL for flow instance " + flowInstance + " and signing party " + signingParty);
 				return false;
 			}
 		}
@@ -1884,6 +1886,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			url = multiSigningHandler.getSigningURL(flowInstance, signingParty);
 			
 			if (url == null) {
+				
+				log.error("Unable to get signing URL for flow instance " + flowInstance + " and signing party " + signingParty);
 				return;
 			}
 		}
