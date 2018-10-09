@@ -3162,9 +3162,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		XMLGeneratorDocument xmlGeneratorDocument = new XMLGeneratorDocument(doc);
 
-		//TODO exclude flowtype
-		//TODO exclude config url
-		
+		xmlGeneratorDocument.addIgnoredField(Flow.FLOW_TYPE_RELATION);
 		xmlGeneratorDocument.addElementableListener(QueryDescriptor.class, new QueryDescriptorElementableListener(queryHandler, validationErrors));
 		xmlGeneratorDocument.addElementableListener(EvaluatorDescriptor.class, new EvaluatorDescriptorElementableListener(evaluationHandler, validationErrors));
 		xmlGeneratorDocument.addElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
