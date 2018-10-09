@@ -941,11 +941,14 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		JsonArray abortCountArray = new JsonArray();
 		abortCountArray.addNode(flowStepAbortCountChartLabel);
 
-		for (Step step : flowStatistics.getSteps()) {
+		if(flowStatistics.getSteps() != null) {
+			
+			for (Step step : flowStatistics.getSteps()) {
 
-			stepArray.addNode(step.getName());
+				stepArray.addNode(step.getName());
 
-			abortCountArray.addNode(getMatchingEntryValue(step, flowStatistics.getStepAbortCount()));
+				abortCountArray.addNode(getMatchingEntryValue(step, flowStatistics.getStepAbortCount()));
+			}			
 		}
 
 		JsonObject jsonObject = new JsonObject(2);
