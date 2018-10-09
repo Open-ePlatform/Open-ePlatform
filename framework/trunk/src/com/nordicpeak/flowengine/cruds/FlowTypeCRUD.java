@@ -271,7 +271,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 	}
 	
 	@Override
-	protected void appendUpdateFormData(FlowType bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser, ValidationException validationException) throws Exception {
+	protected void appendUpdateFormData(FlowType bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
 		appendFormData(doc, updateTypeElement, user, req, uriParser);
 		
@@ -300,7 +300,8 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
 				
 				try {
-					ViewFragment paymentProviderViewFragment = extension.getUpdateFlowTypeFragment(bean, req, user, uriParser, (ValidationException) req.getAttribute(extension.getClass().getName() + "-validationException"), validationException != null);
+					
+					ViewFragment paymentProviderViewFragment = extension.getUpdateFlowTypeFragment(bean, req, user, uriParser, (ValidationException) req.getAttribute(extension.getProviderID() + "-validationException"));
 					
 					updateTypeElement.appendChild(paymentProviderViewFragment.toXML(doc));
 					
@@ -394,7 +395,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 				} catch (ValidationException e) {
 					
 					extensionErrors = true;
-					req.setAttribute(extension.getClass().getName() + "-validationException", e);
+					req.setAttribute(extension.getProviderID() + "-validationException", e);
 				}
 			}
 			
