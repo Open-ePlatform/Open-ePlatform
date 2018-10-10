@@ -20,4 +20,6 @@
 	<xsl:variable name="i18n.Columns.Two">Två kolumner</xsl:variable>
 	<xsl:variable name="i18n.Columns.Three">Tre kolumner</xsl:variable>
 	
+	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
+	
 </xsl:stylesheet>

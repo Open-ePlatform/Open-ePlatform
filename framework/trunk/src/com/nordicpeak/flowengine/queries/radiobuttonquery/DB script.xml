@@ -133,4 +133,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_queries` ADD COLUMN `hideTitle` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `columns`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

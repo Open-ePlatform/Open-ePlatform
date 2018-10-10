@@ -70,6 +70,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 	@XMLElement
 	private Columns columns = Columns.ONE;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideTitle;
+	
 	@Override
 	public Integer getQueryID() {
 		
@@ -150,6 +155,7 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
@@ -190,5 +196,17 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 	public void setAttributeName(String attributeName) {
 		
 		this.attributeName = attributeName;
+	}
+
+	
+	public boolean isHideTitle() {
+	
+		return hideTitle;
+	}
+
+	
+	public void setHideTitle(boolean hideTitle) {
+	
+		this.hideTitle = hideTitle;
 	}
 }

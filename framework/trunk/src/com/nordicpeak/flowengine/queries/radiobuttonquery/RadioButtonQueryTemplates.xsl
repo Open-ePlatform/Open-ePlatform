@@ -28,20 +28,24 @@
 		<div class="query">
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
+				<xsl:if test="RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 		
 			<article>
 				
 				<div class="heading-wrapper">
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
+				
+					<xsl:if test="not(RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true')">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>
 					
 					<xsl:call-template name="createUpdateButton">
 						<xsl:with-param name="queryID" select="RadioButtonQueryInstance/RadioButtonQuery/queryID" />
@@ -90,6 +94,7 @@
 		
 			<xsl:attribute name="class">
 				<xsl:text>query radiobuttonquery</xsl:text>
+				<xsl:if test="RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="RadioButtonQueryInstance/RadioButtonQuery/freeTextAlternative">
 					<xsl:text> hasFreeTextAlternative</xsl:text>
 				</xsl:if>
@@ -116,15 +121,17 @@
 			
 				<div class="heading-wrapper">
 					
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
-					
+					<xsl:if test="not(RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true')">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="RadioButtonQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>	
+						
 					<xsl:if test="RadioButtonQueryInstance/RadioButtonQuery/helpText">		
 						<xsl:apply-templates select="RadioButtonQueryInstance/RadioButtonQuery/helpText" />
 					</xsl:if>
