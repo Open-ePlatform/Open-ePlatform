@@ -56,7 +56,7 @@ function sortAlternativesAfterSortOrder(alternativesContainer){
 	
 	alternativesContainer.children().sort(function(a, b){
 		
-		return parseInt($(a).find('input[type="hidden"].sortorder').val()) > parseInt($(b).find('input[type="hidden"].sortorder').val());
+		return parseInt($(a).find('input[type="hidden"].sortorder').val()) - parseInt($(b).find('input[type="hidden"].sortorder').val());
 		
 	}).appendTo(alternativesContainer);
 }
