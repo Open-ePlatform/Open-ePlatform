@@ -17,19 +17,32 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowForm;
 
 public interface FlowAdminCRUDCallback extends AdvancedCRUDCallback<User> {
-	
+
 	public String getFlowFormFilePath(FlowForm form);
+
 	public String getFileMissing();
+
 	public String getFlowFormFilestore();
+
 	public boolean allowSkipOverviewForFlowForms();
+
 	public boolean deleteFlowFormFile(FlowForm form);
+
 	public void addFlowFamilyEvent(String message, ImmutableFlow flow, User user);
+
 	public EventHandler getEventHandler();
+
 	public String getEventFlowFormAddedMessage();
+
 	public String getEventFlowFormUpdatedMessage();
+
 	public String getEventFlowFormDeletedMessage();
+
 	public Integer getMaxPDFFormFileSize();
+
 	public void redirectToMethod(HttpServletRequest req, HttpServletResponse res, String alias) throws IOException;
-	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception ;
+
+	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception;
+
 	public boolean hasFlowTypeAccess(User user, Flow flow);
 }
