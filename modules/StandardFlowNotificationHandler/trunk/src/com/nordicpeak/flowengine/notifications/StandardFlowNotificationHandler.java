@@ -1347,7 +1347,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				xmlFile = xmlProvider.getXML(flowInstance.getFlowInstanceID(), event.getEvent().getEventID());
 			}
 			
-			if (!flowInstance.getAttributeHandler().getPrimitiveBoolean(Constants.FLOW_INSTANCE_SUPPRESS_SUBMIT_USER_SUBMITTED_NOTIFICATION_ATTRIBUTE)) {
+			if (!flowInstance.getAttributeHandler().getPrimitiveBoolean(Constants.FLOW_INSTANCE_SUPPRESS_USER_SUBMITTED_NOTIFICATION_ATTRIBUTE)) {
 				
 				Collection<Contact> contacts = getContacts(flowInstance);
 				
