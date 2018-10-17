@@ -33,7 +33,7 @@ public class Constants {
 	
 	public static final String FLOW_INSTANCE_ANONYMIZED_ATTRIBUTE = "anonymized";
 	
-	public static final String FLOW_INSTANCE_SUPPRESS_SUBMIT_USER_SUBMITTED_NOTIFICATION_ATTRIBUTE = "suppressNotificationSubmittedSubmitUser";
+	public static final String FLOW_INSTANCE_SUPPRESS_USER_SUBMITTED_NOTIFICATION_ATTRIBUTE = "suppressNotificationSubmittedSubmitUser";
 	
 	public static final String FLOW_INSTANCE_SUPPRESS_MANAGERS_SUBMITTED_NOTIFICATION_ATTRIBUTE = "suppressNotificationSubmittedManagers";
 	
