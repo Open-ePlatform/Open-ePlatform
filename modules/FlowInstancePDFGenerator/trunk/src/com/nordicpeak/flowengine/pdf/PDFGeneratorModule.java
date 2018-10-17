@@ -700,6 +700,16 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			}
 			
 			stamper.close();
+		
+		} catch (IOException e) {
+			
+			FileUtils.deleteFile(pdfTempOut);
+			throw e;
+			
+		} catch (DocumentException e) {
+			
+			FileUtils.deleteFile(pdfTempOut);
+			throw e;
 			
 		} finally {
 			
