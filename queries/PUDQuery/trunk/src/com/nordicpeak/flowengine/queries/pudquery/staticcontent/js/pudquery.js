@@ -26,7 +26,7 @@ function initPUDQuery(queryID) {
 
 		var $this = $(this);
 		
-		$selectedOption = $this.find("option:selected");
+		var $selectedOption = $this.find("option:selected");
 		
 		$input.attr("placeholder", $selectedOption.attr("label"));
 		
@@ -73,7 +73,7 @@ function initPUDQuery(queryID) {
 						
 					} else {
 						
-						searchPUDFromFnr(ui.item.fnr, queryID, $input, $select, pudField);
+						searchPUDFromFnr(ui.item.fnr, queryID, $input, $select, pudField, $selectedOption);
 					}
 				}
 			});
@@ -178,7 +178,7 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 	});
 }
 
-function searchPUDFromFnr(fnumber, queryID, $input, $select, pudField) {
+function searchPUDFromFnr(fnumber, queryID, $input, $select, pudField, $selectedOption) {
 	
 	$input.addClass("ui-autocomplete-loading");
 	
