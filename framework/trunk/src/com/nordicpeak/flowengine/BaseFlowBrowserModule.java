@@ -34,7 +34,7 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 	public static final ValidationError FLOW_INSTANCE_ERROR_DATA_SAVED_VALIDATION_ERROR = new ValidationError("FlowInstanceErrorDataSaved");
 	public static final ValidationError FLOW_INSTANCE_ERROR_DATA_NOT_SAVED_VALIDATION_ERROR = new ValidationError("FlowInstanceErrorDataNotSaved");
 	
-	protected static final RequestMetadata DEFAULT_REQUEST_METADATA = new RequestMetadata(false);
+	public static final RequestMetadata DEFAULT_REQUEST_METADATA = new RequestMetadata(false);
 
 	protected ForegroundModuleResponse processFlowRequestException(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, Exception e) throws SQLException, ModuleConfigurationException {
 
