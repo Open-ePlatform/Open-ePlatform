@@ -25,6 +25,7 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 @Table(name = "contact_detail_query_instances")
 @XMLElement
@@ -297,6 +298,26 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 				
 				updateOfficialAddress(poster);
 			}
+		}
+	}
+	
+	// Used by external modules when poster changes
+	public void forcedInitialize(User poster) {
+		
+		initialize(poster);
+		
+		if (query.getFieldCitizenID() != ContactDetailQueryField.HIDDEN) {
+
+			AttributeHandler attributeHandler = poster.getAttributeHandler();
+			
+			if (attributeHandler != null) {
+				citizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+			}
+		}
+		
+		if (query.getFieldName() != ContactDetailQueryField.HIDDEN) {
+			firstname = poster.getFirstname();
+			lastname = poster.getLastname();
 		}
 	}
 	
