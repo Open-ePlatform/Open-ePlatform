@@ -10,6 +10,7 @@ import se.unlogic.standardutils.validation.ValidationException;
 import com.nordicpeak.flowengine.beans.EvaluationResponse;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.evaluators.basequerystateevaluator.BaseQueryStateEvaluationProviderModule;
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQueryInstance;
 import com.nordicpeak.flowengine.interfaces.EvaluationCallback;
 import com.nordicpeak.flowengine.interfaces.Evaluator;
 import com.nordicpeak.flowengine.interfaces.MutableEvaluatorDescriptor;
@@ -32,7 +33,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 			return null;
 		}
 		
-		if (hasQueryValidationErrors) {
+		if (hasQueryValidationErrors && !(queryInstance instanceof CitizenIdentifierQueryInstance && ((CitizenIdentifierQueryInstance) queryInstance).getCitizenIdentifier() != null)) {
 			
 			return restoreDefaultQueryStates(queryInstance, evaluator, callback, attributeHandler);
 		}
