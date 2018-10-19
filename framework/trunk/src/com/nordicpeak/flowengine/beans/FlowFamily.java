@@ -24,6 +24,7 @@ import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -163,7 +164,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_aliases", remoteValueColumnName = "alias")
 	@WebPopulate(paramName = "alias", maxLength = 50, populator = StringURLAliasPopulator.class)
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@SplitOnLineBreak
 	@XMLElement(fixCase = true, childName = "Alias")
 	private List<String> aliases;

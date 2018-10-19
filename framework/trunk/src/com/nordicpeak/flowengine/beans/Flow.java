@@ -13,11 +13,6 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -29,6 +24,7 @@ import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.beans.Named;
+import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -56,6 +52,11 @@ import se.unlogic.standardutils.xml.XMLValidationUtils;
 import se.unlogic.webutils.annotations.URLRewrite;
 import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 import se.unlogic.webutils.url.URLRewriter;
+
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 @Table(name = "flowengine_flows")
 @XMLElement
@@ -220,7 +221,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_tags", remoteValueColumnName = "tag")
 	@WebPopulate(maxLength = 255)
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@SplitOnLineBreak
 	@XMLElement(fixCase = true, childName = "tag")
 	private List<String> tags;
@@ -229,7 +230,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_checks", remoteValueColumnName = "value", preserveListOrder=true, indexColumn="checkIndex")
 	@WebPopulate(maxLength = 255)
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@SplitOnLineBreak
 	@XMLElement(fixCase = true, childName = "check")
 	private List<String> checks;
