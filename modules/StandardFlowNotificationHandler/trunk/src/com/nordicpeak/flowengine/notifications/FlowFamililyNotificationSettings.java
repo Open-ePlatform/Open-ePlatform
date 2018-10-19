@@ -11,6 +11,7 @@ import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -175,7 +176,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceSubmittedGlobalEmail")
 	@SplitOnLineBreak
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> flowInstanceSubmittedGlobalEmailAddresses;
 
@@ -206,7 +207,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendExternalMessageReceivedGlobalEmail")
 	@SplitOnLineBreak
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
 	
@@ -221,7 +222,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@RequiredIfSet(paramNames = "sendManagerExpiredGlobalEmail")
 	@SplitOnLineBreak
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase=true, childName="address")
 	private List<String> managerExpiredGlobalEmailAddresses;
 
