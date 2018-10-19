@@ -11,6 +11,7 @@ import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -62,7 +63,7 @@ public class FileUploadQuery extends BaseQuery {
 	@SimplifiedRelation(table = "file_upload_query_extensions", remoteValueColumnName = "extension")
 	@WebPopulate(maxLength = 12)
 	@SplitOnLineBreak
-	@NoDuplicates
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement
 	private List<String> allowedFileExtensions;
 	
