@@ -44,6 +44,6 @@ public class UserFlowInstanceAccessController implements FlowInstanceAccessContr
 	@Override
 	public boolean isMutable(ImmutableFlowInstance flowInstance, User user) {
 
-		return flowInstance.getStatus().isUserMutable();
+		return flowInstance.getStatus() != null && flowInstance.getStatus().isUserMutable();
 	}
 }
