@@ -171,6 +171,7 @@ import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.comparators.FlowAdminExtensionViewProviderComparator;
 import com.nordicpeak.flowengine.comparators.FlowVersionComparator;
 import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
 import com.nordicpeak.flowengine.comparators.StepSortIndexComparator;
@@ -4315,7 +4316,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			
 			tempProviders.add(flowAdminExtensionProvider);
 			
-			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
+			Collections.sort(tempProviders, FlowAdminExtensionViewProviderComparator.getInstance());
 			
 			extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>(tempProviders);
 		}
