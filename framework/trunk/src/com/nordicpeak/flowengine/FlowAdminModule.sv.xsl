@@ -433,18 +433,18 @@
 	<xsl:variable name="i18n.StatisticsMode.Internal">Generera statistik men visa den endast för interna användare</xsl:variable>
 	<xsl:variable name="i18n.StatisticsMode.Public">Generera statistik och visa den publikt</xsl:variable>
 
-	<xsl:variable name="i18n.skipOverview">Hoppa över översiktsidan</xsl:variable>
+	<xsl:variable name="i18n.skipOverview">Hoppa över översiktssidan</xsl:variable>
 	
 	<xsl:variable name="i18n.MissingDefaultStatusMappingForMultiSigning">E-tjänsten går inte att publicera då den saknar statusmappning för flerpartssignering. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMappingForPayment">E-tjänsten går inte att publicera då den saknar statusmappning för betalning. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
 	<xsl:variable name="i18n.hasNoFlowForm">Den här e-tjänsten har ingen PDF blankett kopplad till sig.</xsl:variable>
 	<xsl:variable name="i18n.MayNotRemoveFlowFormIfNoSteps">Du får inte ta bort blanketten om e-tjänsten är aktiverad och saknar steg</xsl:variable>
-	<xsl:variable name="i18n.MayNotAddFlowFormIfOverviewSkipIsSet">Du kan inte lägga till en blankett om e-tjänsten är inställd på att hoppa över översiktsidan</xsl:variable>
-	<xsl:variable name="i18n.MayNotSetOverviewIfFlowFormIsSet">Du kan inte hoppa över översiktsidan om det finns en blankett kopplad till e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.MayNotAddFlowFormIfOverviewSkipIsSet">Du kan inte lägga till en blankett om e-tjänsten är inställd på att hoppa över översiktssidan</xsl:variable>
+	<xsl:variable name="i18n.MayNotSetOverviewIfFlowFormIsSet">Du kan inte hoppa över översiktssidan om det finns en blankett kopplad till e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.MayNotSetOverviewIfFlowFormIsSet.description">ej möjligt om det finns en blankett kopplad till e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.FlowHasNoContent">Du kan inte aktivera e-tjänsten då den inte har några steg eller har någon blankett</xsl:variable>
-	<xsl:variable name="i18n.FlowHasNoStepsAndOverviewSkipIsSet">Du kan inte aktivera e-tjänsten med alterntivet 'hoppa över översiktsidan' satt då e-tjänsten inte innehåller några steg.</xsl:variable>
+	<xsl:variable name="i18n.FlowHasNoStepsAndOverviewSkipIsSet">Du kan inte aktivera e-tjänsten med alterntivet 'hoppa över översiktssidan' satt då e-tjänsten inte innehåller några steg.</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilyAliasAlreadyInUse">Kortnamnet</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilyAliasAlreadyInUse2">används redan av e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilyAliasAlreadyInUseBySystem">används redan av en annan del av systemet.</xsl:variable>
