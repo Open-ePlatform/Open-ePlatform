@@ -4732,7 +4732,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, requestedFlow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
+		} else if (!hasFlowTypeAccess(user, requestedFlow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + requestedFlow.getFlowType());
 		}
