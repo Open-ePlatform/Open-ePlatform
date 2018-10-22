@@ -346,11 +346,11 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 
 					if (textTag.getType().equals(TextTagType.TEXTFIELD)) {
 
-						setting = new TextFieldSetting(textTag.getName(), textTag.getName(), description, textTag.getDefaultValue(), true);
+						setting = new TextFieldSetting(textTag.getName(), textTag.getName(), description, textTag.getDefaultValue(), false);
 
 					} else {
 
-						setting = new HTMLEditorSetting(textTag.getName(), textTag.getName(), description, textTag.getDefaultValue(), true);
+						setting = new HTMLEditorSetting(textTag.getName(), textTag.getName(), description, textTag.getDefaultValue(), false);
 
 					}
 
