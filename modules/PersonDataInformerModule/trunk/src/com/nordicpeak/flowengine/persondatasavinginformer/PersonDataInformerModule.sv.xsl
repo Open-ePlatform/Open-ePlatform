@@ -74,7 +74,8 @@
 	
 	<xsl:variable name="i18n.ComplaintTitle">Lämna klagomål på personuppgiftshantering</xsl:variable>
 	<xsl:variable name="i18n.DataRecipient">Mottagare av personuppgifter</xsl:variable>
-	
+	<xsl:variable name="i18n.PersonDataInformerQuery">Bekräftelse vid personuppgiftsfråga</xsl:variable>
+	<xsl:variable name="i18n.OverrideConfirmationText">Ange annan bekräftelsetext än standard</xsl:variable>
 	
 	
 </xsl:stylesheet>

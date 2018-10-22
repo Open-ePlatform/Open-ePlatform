@@ -174,6 +174,9 @@
 			<xsl:when test="$name = 'defaultExtraInformationDescription'">
 				<xsl:value-of select="$i18n.DefaultExtraInformationName"/>
 			</xsl:when>
+			<xsl:when test="$name = 'defaultConfirmationText'">
+				<xsl:value-of select="$i18n.DefaultConfirmationText"/>
+			</xsl:when>
 		</xsl:choose>
 		
 	</xsl:template>
@@ -245,57 +248,71 @@
 		<div class="full bigmarginbottom">
 			<label for="name" class="full"><xsl:value-of select="$i18n.StandardText"/></label>
 			
-			<xsl:call-template name="createTextArea">
-				<xsl:with-param name="id" select="'value'"/>
-				<xsl:with-param name="name" select="'value'"/>
-				<xsl:with-param name="class" select="'ckeditor'" />
-				<xsl:with-param name="element" select="InformerStandardText"/>
-			</xsl:call-template>
+			<xsl:choose>
+				<xsl:when test="InformerStandardText/type = 'EDITOR'">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'value'"/>
+						<xsl:with-param name="name" select="'value'"/>
+						<xsl:with-param name="class" select="'ckeditor'" />
+						<xsl:with-param name="element" select="InformerStandardText"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="InformerStandardText/type = 'TEXTFIELD'">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'value'"/>
+						<xsl:with-param name="name" select="'value'"/>
+						<xsl:with-param name="maxlength" select="'1024'"/>
+						<xsl:with-param name="element" select="InformerStandardText"/>
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
 		</div>
 		
-		<xsl:call-template name="initializeFCKEditor">
-			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
-			<xsl:with-param name="customConfig">config.js</xsl:with-param>
-			<xsl:with-param name="editorContainerClass">ckeditor</xsl:with-param>
-			<xsl:with-param name="editorHeight">150</xsl:with-param>
-			
-			<xsl:with-param name="contentsCss">
-				<xsl:if test="cssPath">
-					<xsl:value-of select="cssPath"/>
-				</xsl:if>
-			</xsl:with-param>
-			
-			<xsl:with-param name="filebrowserBrowseUri">
+		<xsl:if test="InformerStandardText/type = 'EDITOR'">
+			<xsl:call-template name="initializeFCKEditor">
+				<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
+				<xsl:with-param name="customConfig">config.js</xsl:with-param>
+				<xsl:with-param name="editorContainerClass">ckeditor</xsl:with-param>
+				<xsl:with-param name="editorHeight">150</xsl:with-param>
 				
-				<xsl:choose>
-					<xsl:when test="ckConnectorModuleAlias">
-						<xsl:text>filemanager/index.html?Connector=</xsl:text>
-						<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
-						<xsl:text>/connector</xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="''"/>
-					</xsl:otherwise>				
-				</xsl:choose>
-
-			</xsl:with-param>
-			
-			<xsl:with-param name="filebrowserImageBrowseUri">
-			
-				<xsl:choose>
-					<xsl:when test="ckConnectorModuleAlias">
-						<xsl:text>filemanager/index.html?Connector=</xsl:text>
-						<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
-						<xsl:text>/connector</xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="''"/>
-					</xsl:otherwise>
-				</xsl:choose>
-			
-			</xsl:with-param>
-			
-		</xsl:call-template>
+				<xsl:with-param name="contentsCss">
+					<xsl:if test="cssPath">
+						<xsl:value-of select="cssPath"/>
+					</xsl:if>
+				</xsl:with-param>
+				
+				<xsl:with-param name="filebrowserBrowseUri">
+					
+					<xsl:choose>
+						<xsl:when test="ckConnectorModuleAlias">
+							<xsl:text>filemanager/index.html?Connector=</xsl:text>
+							<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
+							<xsl:text>/connector</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="''"/>
+						</xsl:otherwise>				
+					</xsl:choose>
+	
+				</xsl:with-param>
+				
+				<xsl:with-param name="filebrowserImageBrowseUri">
+				
+					<xsl:choose>
+						<xsl:when test="ckConnectorModuleAlias">
+							<xsl:text>filemanager/index.html?Connector=</xsl:text>
+							<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="ckConnectorModuleAlias" />
+							<xsl:text>/connector</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="''"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				
+				</xsl:with-param>
+				
+			</xsl:call-template>
+		</xsl:if>
 		
 	</xsl:template>
 	
@@ -443,6 +460,9 @@
 				<xsl:choose>
 					<xsl:when test="fieldName = 'name'">
 						<xsl:value-of select="$i18n.Name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'value'">
+						<xsl:value-of select="$i18n.StandardText"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

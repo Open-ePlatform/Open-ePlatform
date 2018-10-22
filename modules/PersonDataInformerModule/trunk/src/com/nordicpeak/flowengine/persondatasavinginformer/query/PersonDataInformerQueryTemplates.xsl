@@ -65,7 +65,7 @@
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
 				
 					<p>
-						<strong><xsl:value-of select="$i18n.Accept" /></strong>
+						<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" /></strong>
 					</p>
 				
 				</xsl:if>
@@ -162,7 +162,7 @@
 							<xsl:attribute name="class">checkbox disabled</xsl:attribute>
 						</xsl:if>
 					
-						<xsl:value-of select="$i18n.Accept" />
+						<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" />
 					</label>
 				</div>
 			

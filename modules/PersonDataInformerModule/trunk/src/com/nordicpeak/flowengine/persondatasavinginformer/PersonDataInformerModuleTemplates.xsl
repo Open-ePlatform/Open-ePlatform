@@ -753,6 +753,52 @@
 						
 					</fieldset>
 					
+					<fieldset class="floatleft full">
+					
+						<legend>
+							<xsl:value-of select="$i18n.PersonDataInformerQuery" />
+						</legend>
+						
+						<div class="floatleft full marginleft marginbottom">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="id" select="'overrideConfirmationText'" />
+								<xsl:with-param name="name" select="'overrideConfirmationText'" />
+								<xsl:with-param name="value" select="'true'" />
+								<xsl:with-param name="checked" select="FlowFamilyInformerSetting/confirmationText != ''" />
+							</xsl:call-template>
+							
+							<label for="overrideConfirmationText">
+								<xsl:value-of select="$i18n.OverrideConfirmationText" />
+							</label>
+						</div>
+						
+						<div id="confirmationTextContainer" class="floatleft full">
+							<xsl:call-template name="createTextField">
+								<xsl:with-param name="id" select="'confirmationText'"/>
+								<xsl:with-param name="name" select="'confirmationText'"/>
+								<xsl:with-param name="element" select="FlowFamilyInformerSetting" />
+								<xsl:with-param name="value" select="DefaultConfirmationText" />
+							</xsl:call-template>
+						</div>
+						
+						<script type="text/javascript">
+				
+							$(function() {
+								var checkbox = $("#overrideConfirmationText");
+								var div = $("#confirmationTextContainer");
+								
+								div.toggle(checkbox[0].checked);
+								
+								checkbox.click(function(){
+									var checked = checkbox[0].checked;
+									div.toggle(checked).find('textarea').prop('disabled', !checked);
+								});
+							});
+						
+						</script>
+						
+					</fieldset>
+					
 					<xsl:call-template name="initializeFCKEditor">
 						<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
 						<xsl:with-param name="customConfig">config.js</xsl:with-param>

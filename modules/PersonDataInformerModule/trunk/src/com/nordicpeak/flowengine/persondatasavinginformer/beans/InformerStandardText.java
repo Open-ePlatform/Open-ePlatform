@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.persondatasavinginformer.beans;
 
 import java.io.Serializable;
 
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StandardTextType;
+
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -28,6 +30,10 @@ public class InformerStandardText extends GeneratedElementable implements Serial
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String value;
+
+	@DAOManaged
+	@XMLElement
+	private StandardTextType type;
 
 	@Override
 	public String toString() {
@@ -63,5 +69,15 @@ public class InformerStandardText extends GeneratedElementable implements Serial
 	public void setValue(String value) {
 
 		this.value = value;
+	}
+
+	public StandardTextType getType() {
+
+		return type;
+	}
+
+	public void setType(StandardTextType type) {
+
+		this.type = type;
 	}
 }

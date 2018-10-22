@@ -320,4 +320,32 @@
 		</Query>
 	</Script>
 	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultConfirmationText', 'Jag har tagit del av ovanstående information och godkänner behandlingen av personuppgifter');
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `confirmationText` VARCHAR(1024) NULL AFTER `extraInformationStorage`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_standardtexts` ADD COLUMN `type` VARCHAR(20) NOT NULL AFTER `value`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_standardtexts` SET type = 'EDITOR' WHERE name != 'defaultConfirmationText';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_standardtexts` SET type = 'TEXTFIELD' WHERE name = 'defaultConfirmationText';
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

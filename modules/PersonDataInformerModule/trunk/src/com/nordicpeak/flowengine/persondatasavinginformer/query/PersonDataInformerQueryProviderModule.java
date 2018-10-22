@@ -223,6 +223,13 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage()));
 			}
 			
+			if (informerSetting.getConfirmationText() == null && personDataInformerModule.getDefaultConfirmationText() != null) {
+				informerSetting.setConfirmationText(JTidyUtils.getXHTML(personDataInformerModule.getDefaultConfirmationText()));
+			}
+			else if (informerSetting.getConfirmationText() != null) {
+				informerSetting.setConfirmationText(JTidyUtils.getXHTML(informerSetting.getConfirmationText()));
+			}
+			
 			if (informerSetting.getDataRecipient() != null) {
 				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient()));
 			}

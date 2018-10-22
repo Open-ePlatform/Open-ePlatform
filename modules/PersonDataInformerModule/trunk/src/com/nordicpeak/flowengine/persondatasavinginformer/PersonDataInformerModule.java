@@ -19,6 +19,22 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -79,22 +95,6 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
-import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
 
@@ -172,6 +172,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	private String defaultReasonDescription = "";
 	private String defaultStorageDescription = "";
 	private String defaultExtraInformationDescription = "";
+	private String defaultConfirmationText = "";
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -366,7 +367,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		return adminExtensionViewTitle;
 	}
-	
+
 	@Override
 	public String getExtensionViewLinkName() {
 
@@ -401,20 +402,21 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
 		String method = uriParser.get(4);
-		
+
 		if ("updateflowsettings".equals(method)) {
-			
+
 			return updateFlowSettings(extensionRequestURL, flow, req, user, uriParser);
-			
+
 		} else if ("deleteflowsettings".equals(method)) {
-			
+
 			return deleteFlowSettings(flow, req, user, uriParser);
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	public ViewFragment updateFlowSettings(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
 		List<InformerDataAlternative> allDataAlternatives = dataAlternativesDAOWrapper.getAll();
@@ -425,190 +427,187 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
 			validationErrors = new ArrayList<ValidationError>();
-			
+
 			boolean isNewSetting = false;
 
 			if (informerSettings == null) {
 
 				informerSettings = new FlowFamilyInformerSetting();
 				informerSettings.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
-				
+
 				isNewSetting = true;
 			}
 
 			if (req.getParameter("usesPersonData") != null) {
-				
+
 				if (!isNewSetting) { // Fix for blanking standard text fields before populate
 					informerSettings.setComplaintDescription(null);
 					informerSettings.setExtraInformation(null);
 					informerSettings.setExtraInformationStorage(null);
 					informerSettings.setReason(null);
+					informerSettings.setConfirmationText(null);
 				}
-				
+
 				try {
 					POPULATOR.populate(informerSettings, req);
-					
+
 					if (!informerSettings.isOverrideComplaintDescription()) {
-						
+
 						informerSettings.setComplaintDescription(null);
 					}
-				
+
 					List<InformerDataAlternative> selectedDataAlternatives = new ArrayList<InformerDataAlternative>(allDataAlternatives);
 					List<InformerReasonAlternative> selectedReasonAlternatives = new ArrayList<InformerReasonAlternative>(allReasonAlternatives);
-						
+
 					if (!CollectionUtils.isEmpty(selectedDataAlternatives)) {
 						for (Iterator<InformerDataAlternative> it = selectedDataAlternatives.iterator(); it.hasNext();) {
-							
+
 							InformerDataAlternative alternative = it.next();
-							
+
 							if (req.getParameter("data_alternative_" + alternative.getAlternativeID()) == null) {
 								it.remove();
 							}
 						}
-						
+
 						if (CollectionUtils.isEmpty(selectedDataAlternatives)) {
-							
+
 							validationErrors.add(new ValidationError("dataAlternatives", ValidationErrorType.RequiredField));
 						}
 					}
-				
+
 					if (!CollectionUtils.isEmpty(selectedReasonAlternatives)) {
 						for (Iterator<InformerReasonAlternative> it = selectedReasonAlternatives.iterator(); it.hasNext();) {
-							
+
 							InformerReasonAlternative alternative = it.next();
-							
+
 							if (req.getParameter("reason_alternative_" + alternative.getAlternativeID()) == null) {
 								it.remove();
 							}
 						}
-						
+
 						if (CollectionUtils.isEmpty(selectedReasonAlternatives)) {
-							
+
 							validationErrors.add(new ValidationError("reasonAlternatives", ValidationErrorType.RequiredField));
 						}
 					}
-				
+
 					Integer storageCounter = NumberUtils.toInt(req.getParameter("storageCounter"));
-						
+
 					if (storageCounter == null) {
 						validationErrors.add(new ValidationError("NoStorageCounter"));
-					}
-					else {
+					} else {
 						informerSettings.setStorageSettings(new ArrayList<InformerDataSettingStorage>());
-						
+
 						boolean requiresDescription = false;
 						int typeCount = 0;
-						
+
 						for (int i = 1; i <= storageCounter; i++) {
 							StorageType storageType = EnumUtils.toEnum(StorageType.class, req.getParameter("storageType-" + i));
-							
+
 							if (storageType != null) {
 								typeCount++;
 							}
-							
+
 							if (typeCount > 1) {
 								requiresDescription = true;
 								break;
 							}
 						}
-						
+
 						boolean storageValidationError = false;
-						
+
 						for (int i = 1; i <= storageCounter; i++) {
 							StorageType storageType = EnumUtils.toEnum(StorageType.class, req.getParameter("storageType-" + i));
-							
+
 							if (storageType != null) {
 								String description = req.getParameter("storageDescription-" + i);
-								
+
 								if (requiresDescription) {
 									if (StringUtils.isEmpty(description)) {
 										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.RequiredField));
-										
+
 										storageValidationError = true;
-										
+
 										break;
-									}
-									else if (description.length() > 255) {
+									} else if (description.length() > 255) {
 										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.TooLong));
-										
+
 										storageValidationError = true;
-										
+
 										break;
 									}
 								}
-								
+
 								Integer period = NumberUtils.toInt(req.getParameter("storagePeriod-" + i));
-								
+
 								if (storageType != StorageType.INFINITY && period == null) {
 									validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.RequiredField));
-									
+
 									storageValidationError = true;
-									
+
 									break;
-								}
-								else if (storageType != StorageType.INFINITY && period < 1) {
-									
+								} else if (storageType != StorageType.INFINITY && period < 1) {
+
 									validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.InvalidFormat));
-									
+
 									storageValidationError = true;
-									
+
 									break;
 								}
-								
+
 								InformerDataSettingStorage storageSetting = new InformerDataSettingStorage();
-								
+
 								if (requiresDescription) {
 									storageSetting.setDescription(description);
 								}
-								
+
 								storageSetting.setPeriod(period);
 								storageSetting.setStorageType(storageType);
-								
+
 								informerSettings.getStorageSettings().add(storageSetting);
 							}
 						}
-						
+
 						if (CollectionUtils.isEmpty(informerSettings.getStorageSettings()) && !storageValidationError) {
 							validationErrors.add(new ValidationError("NoStorageSettings"));
 						}
 					}
-					
+
 					String ownerName = ValidationUtils.validateParameter("ownerName", req, false, 0, 255, validationErrors);
 					String ownerEmail = ValidationUtils.validateParameter("ownerEmail", req, false, 0, 255, EmailPopulator.getPopulator(), validationErrors);
-					
+
 					if (CollectionUtils.isEmpty(validationErrors)) {
-						
+
 						informerSettings.setDataAlternatives(selectedDataAlternatives);
 						informerSettings.setReasonAlternatives(selectedReasonAlternatives);
-						
+
 						log.info("User " + user + " updated person data informer settings for flow " + flow);
-						
+
 						settingsDAO.addOrUpdate(informerSettings, new RelationQuery(FlowFamilyInformerSetting.DATA_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.REASON_ALTERNATIVES_RELATION, FlowFamilyInformerSetting.STORAGE_SETTINGS_RELATION));
-						
+
 						flow.getFlowFamily().setOwnerName(ownerName);
 						flow.getFlowFamily().setOwnerEmail(ownerEmail);
-						
+
 						flowAdminModule.getDAOFactory().getFlowFamilyDAO().update(flow.getFlowFamily());
-						
+
 						systemInterface.getEventHandler().sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.UPDATE, flow.getFlowFamily()), EventTarget.ALL);
-						
+
 						flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
-						
+
 						return null;
 					}
 
 				} catch (ValidationException e) {
-	
+
 					validationErrors.addAll(e.getErrors());
 				}
-			}
-			else {
+			} else {
 				if (!isNewSetting) {
 					settingsDAO.delete(informerSettings);
-					
+
 					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
 				}
-				
+
 				return null;
 			}
 		}
@@ -626,27 +625,31 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		XMLUtils.append(doc, settingsElement, informerSettings);
 		XMLUtils.append(doc, settingsElement, "DataAlternatives", allDataAlternatives);
 		XMLUtils.append(doc, settingsElement, "ReasonAlternatives", allReasonAlternatives);
-		
+
 		if (defaultComplaintDescription != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "DefaultComplaintDescription", defaultComplaintDescription);
 		}
-		
+
 		if (defaultReasonDescription != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "DefaultReasonDescription", defaultReasonDescription);
 		}
-		
+
 		if (defaultStorageDescription != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "DefaultStorageDescription", defaultStorageDescription);
 		}
-		
+
 		if (defaultExtraInformationDescription != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "DefaultExtraInformationDescription", defaultExtraInformationDescription);
 		}
-		
+
+		if (defaultConfirmationText != null) {
+			XMLUtils.appendNewElement(doc, settingsElement, "DefaultConfirmationText", defaultConfirmationText);
+		}
+
 		if (flow.getFlowFamily().getOwnerName() != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "OwnerName", flow.getFlowFamily().getOwnerName());
 		}
-		
+
 		if (flow.getFlowFamily().getOwnerEmail() != null) {
 			XMLUtils.appendNewElement(doc, settingsElement, "OwnerEmail", flow.getFlowFamily().getOwnerEmail());
 		}
@@ -670,7 +673,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			log.info("User " + user + " deleting person data informer settings for flow " + flow);
 
 			settingsDAO.delete(informerSettings);
-			
+
 			flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFlowUpdatedMessage(), flow.getFlowFamily(), user);
 
 		} else {
@@ -887,6 +890,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			defaultStorageDescription = text.getValue();
 		} else if (text.getName().equals("defaultExtraInformationDescription")) {
 			defaultExtraInformationDescription = text.getValue();
+		} else if (text.getName().equals("defaultConfirmationText")) {
+			defaultConfirmationText = text.getValue();
 		}
 	}
 
@@ -900,46 +905,50 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			Document doc = createDocument(req, uriParser, user);
 			Element extensionElement = doc.createElement("FlowOverviewExtension");
 			doc.getDocumentElement().appendChild(extensionElement);
-			
+
 			SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
 
 			TextTagReplacer.replaceTextTags(setting, profile);
 
 			extensionElement.appendChild(setting.toXML(doc));
-			
+
 			if (defaultComplaintDescription != null) {
 				if (profile != null) {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", TextTagReplacer.replaceTextTags(defaultComplaintDescription, profile.getSettingHandler()));
-				}
-				else {
+				} else {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultComplaintDescription", defaultComplaintDescription);
 				}
 			}
-			
+
 			if (defaultReasonDescription != null) {
 				if (profile != null) {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", TextTagReplacer.replaceTextTags(defaultReasonDescription, profile.getSettingHandler()));
-				}
-				else {
+				} else {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultReasonDescription", defaultReasonDescription);
 				}
 			}
-			
+
 			if (defaultStorageDescription != null) {
 				if (profile != null) {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", TextTagReplacer.replaceTextTags(defaultStorageDescription, profile.getSettingHandler()));
-				}
-				else {
+				} else {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultStorageDescription", defaultStorageDescription);
 				}
 			}
-			
+
 			if (defaultExtraInformationDescription != null) {
 				if (profile != null) {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultExtraInformationDescription", TextTagReplacer.replaceTextTags(defaultExtraInformationDescription, profile.getSettingHandler()));
-				}
-				else {
+				} else {
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultExtraInformationDescription", defaultExtraInformationDescription);
+				}
+			}
+			
+			if (defaultConfirmationText != null) {
+				if (profile != null) {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultConfirmationText", TextTagReplacer.replaceTextTags(defaultConfirmationText, profile.getSettingHandler()));
+				} else {
+					XMLUtils.appendNewElement(doc, extensionElement, "DefaultConfirmationText", defaultConfirmationText);
 				}
 			}
 
@@ -968,9 +977,15 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		return defaultStorageDescription;
 	}
+	
+	public String getDefaultConfirmationText() {
+
+		return defaultConfirmationText;
+	}
 
 	@Override
 	public int getModuleID() {
+
 		return moduleDescriptor.getModuleID();
 	}
 }

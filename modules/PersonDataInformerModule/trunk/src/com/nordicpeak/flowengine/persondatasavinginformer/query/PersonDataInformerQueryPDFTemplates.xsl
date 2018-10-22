@@ -50,7 +50,7 @@
 			
 			<p>
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
-					<strong><xsl:value-of select="$i18n.Accept" /></strong>
+					<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" /></strong>
 				</xsl:if>
 			</p>
 			

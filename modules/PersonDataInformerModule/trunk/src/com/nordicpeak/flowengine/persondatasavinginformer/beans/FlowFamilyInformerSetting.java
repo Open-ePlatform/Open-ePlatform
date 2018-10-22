@@ -41,7 +41,7 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String reason;
-	
+
 	@WebPopulate
 	private boolean overrideExtraInformation;
 
@@ -71,6 +71,16 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String extraInformationStorage;
+
+	@WebPopulate
+	private boolean overrideConfirmationText;
+
+	@TextTagReplace
+	@DAOManaged
+	@PopulateOnlyIfSet(paramNames = "overrideConfirmationText", paramValues = "true")
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String confirmationText;
 
 	@TextTagReplace
 	@DAOManaged
@@ -181,6 +191,16 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	public void setComplaintDescription(String complaintDescription) {
 
 		this.complaintDescription = complaintDescription;
+	}
+
+	public String getConfirmationText() {
+
+		return confirmationText;
+	}
+
+	public void setConfirmationText(String confirmationText) {
+
+		this.confirmationText = confirmationText;
 	}
 
 	public List<InformerDataSettingStorage> getStorageSettings() {
