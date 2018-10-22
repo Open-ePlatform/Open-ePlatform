@@ -4732,7 +4732,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
 
-		} else if (!AccessUtils.checkAccess(user, requestedFlow.getFlowType().getAdminAccessInterface())) {
+		} else if (!AccessUtils.checkAccess(user, requestedFlow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + requestedFlow.getFlowType());
 		}
@@ -5104,6 +5104,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " removed");
 	}
 
+	public List<FlowBrowserExtensionViewProvider> getFlowBrowserExtensionViewProviders() {
+		
+		return flowBrowserExtensionViewProviders;
+	}
 	
 	public String getEventFunctionConfigured() {
 	
@@ -5418,4 +5422,5 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public String getAlias() {
 		return moduleDescriptor.getAlias();
 	}
+	
 }
