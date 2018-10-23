@@ -134,10 +134,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	protected String exportOtherGuardianZipCode = "This variable should be set by your stylesheet";
 	
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "User citizen identifier attribute", description = "Attribute to get citizen identifier from", required = true)
-	private String citizenIdentifierAttribute = "citizenIdentifier";
-
-	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User phone attribute", description = "Attribute to get phone from", required = true)
 	private String phoneAttribute = "mobilePhone";
 
@@ -428,7 +424,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			if (queryInstance.getQuery().isUseMultipartSigning()) {
 
-				String posterCitizienIdentifier = poster.getAttributeHandler().getString(citizenIdentifierAttribute);
+				String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 
 				for (StoredGuardian storedGuardian : storedGuardians) {
 
