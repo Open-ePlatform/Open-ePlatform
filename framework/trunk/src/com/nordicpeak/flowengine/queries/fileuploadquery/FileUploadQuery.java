@@ -288,6 +288,8 @@ public class FileUploadQuery extends BaseQuery {
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 		
+		selectFilesButtonText = XMLValidationUtils.validateParameter("selectFilesButtonText", xmlParser, false, 1, 30, StringPopulator.getPopulator(), errors);
+		
 		if (attachmentNamePrefixMode == null) {
 			
 			attachmentNamePrefixMode = AttachmentNamePrefixType.QUERY_NAME;
