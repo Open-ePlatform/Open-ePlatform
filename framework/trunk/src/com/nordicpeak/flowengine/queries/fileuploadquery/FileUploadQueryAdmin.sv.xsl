@@ -31,4 +31,5 @@
 	<xsl:variable name="i18n.attachmentNameCustomPrefix">filnamnsprefix</xsl:variable>
 	<xsl:variable name="i18n.AttachmentNameCustomPrefix">Filnamnsprefix</xsl:variable>
 
+	<xsl:variable name="i18n.SelectFilesButtonText">Anpassad text på uppladdningsknapp (max 30 tecken)</xsl:variable>
 </xsl:stylesheet>

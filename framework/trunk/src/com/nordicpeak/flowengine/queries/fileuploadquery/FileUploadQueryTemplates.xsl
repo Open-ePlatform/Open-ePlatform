@@ -133,7 +133,15 @@
 					<xsl:if test="not(Locked)">
 						<div class="upload clearboth">
 							<span class="btn btn-upload btn-blue">
-								<xsl:value-of select="$i18n.ChooseFiles" />
+							
+								<xsl:choose>
+									<xsl:when test="FileUploadQueryInstance/FileUploadQuery/selectFilesButtonText">
+										<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/selectFilesButtonText" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$i18n.ChooseFiles" />
+									</xsl:otherwise>
+								</xsl:choose>
 								
 								<xsl:variable name="allowedFileExtensionsRegex">
 									<xsl:choose>

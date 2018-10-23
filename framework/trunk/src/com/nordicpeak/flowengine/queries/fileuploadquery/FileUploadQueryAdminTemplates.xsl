@@ -175,6 +175,20 @@
 					</xsl:call-template>
 				</div>
 			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<label for="selectFilesButtonText" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.SelectFilesButtonText" />
+				</label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'selectFilesButtonText'" />
+						<xsl:with-param name="name" select="'selectFilesButtonText'" />
+						<xsl:with-param name="title" select="$i18n.SelectFilesButtonText" />
+						<xsl:with-param name="element" select="FileUploadQuery" />
+					</xsl:call-template>
+				</div>
+			</div>
 			
 			<script type="text/javascript">
 				(function(){
@@ -235,6 +249,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'attachmentNameCustomPrefix'">
 				<xsl:value-of select="$i18n.attachmentNameCustomPrefix" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'selectFilesButtonText'">
+				<xsl:value-of select="$i18n.SelectFilesButtonText" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

@@ -110,4 +110,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="7">
+		<Query>
+			<![CDATA[			
+				ALTER TABLE `file_upload_queries` ADD COLUMN `selectFilesButtonText` VARCHAR(30) NULL AFTER `attachmentNameCustomPrefix`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

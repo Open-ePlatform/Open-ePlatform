@@ -100,6 +100,11 @@ public class FileUploadQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean lockOnOwnershipTransfer;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 30)
+	@XMLElement
+	private String selectFilesButtonText;
 	
 	public static long getSerialversionuid() {
 		
@@ -360,6 +365,18 @@ public class FileUploadQuery extends BaseQuery {
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
 		
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
+
+	
+	public String getSelectFilesButtonText() {
+	
+		return selectFilesButtonText;
+	}
+
+	
+	public void setSelectFilesButtonText(String selectFilesButtonText) {
+	
+		this.selectFilesButtonText = selectFilesButtonText;
 	}
 	
 }
