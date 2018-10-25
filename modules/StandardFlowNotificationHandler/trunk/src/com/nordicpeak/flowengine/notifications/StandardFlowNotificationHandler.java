@@ -1648,10 +1648,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 		} else { // One of the signers cancelled
 			
-			for (Contact ownerContact : getContacts(event.getFlowInstance())) {
-				
-				sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-				sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerSMS);
+			List<Contact> ownerContacts = getContacts(event.getFlowInstance());
+			
+			if (ownerContacts != null) {
+				for (Contact ownerContact : ownerContacts) {
+					
+					sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
+					sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerSMS);
+				}
 			}
 			
 			if (event.getUser() != null) {
