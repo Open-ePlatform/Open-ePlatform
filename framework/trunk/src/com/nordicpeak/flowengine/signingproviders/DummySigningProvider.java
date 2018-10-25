@@ -31,7 +31,7 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 
-import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.SigningConfirmedResponse;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
@@ -131,8 +131,8 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			
 			FlowInstanceEvent signingEvent = response.getSigningEvent();
 			
-			signingEvent.getAttributeHandler().setAttribute("signingProvider", this.getClass().getName());
-			signingEvent.getAttributeHandler().setAttribute("signingChecksum", HashUtils.hash(pdfProvider.getTemporaryPDF(instanceManager), HashAlgorithms.SHA1));
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_PROVIDER, this.getClass().getName());
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM, HashUtils.hash(pdfProvider.getTemporaryPDF(instanceManager), HashAlgorithms.SHA1));
 			
 			if (user != null) {
 				
@@ -167,7 +167,6 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			signingCallback.signingComplete(instanceManager, response.getSubmitEvent() != null ? response.getSubmitEvent() : signingEvent, req);
 			
 			res.sendRedirect(signingCallback.getSignSuccessURL(instanceManager, req));
-			
 			return null;
 			
 		} else if (req.getParameter("fail") != null) {
@@ -263,7 +262,7 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 
 			signingEvent.getAttributeHandler().setAttribute("signingProvider", this.getClass().getName());
 			signingEvent.getAttributeHandler().setAttribute("signingChecksum", HashUtils.hash(signingCallback.getSigningPDF(instanceManager), HashAlgorithms.SHA1));
-			signingEvent.getAttributeHandler().setAttribute(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingCallback.getSigningChainID(instanceManager));
+			signingEvent.getAttributeHandler().setAttribute(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingCallback.getSigningChainID(instanceManager));
 
 			daoFactory.getFlowInstanceEventDAO().add(signingEvent, EVENT_ATTRIBUTE_RELATION_QUERY);
 
