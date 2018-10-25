@@ -194,14 +194,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	private static final String SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.sign.modificationcount";
 	private static final String PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE = "flowinstance.payment.modificationcount";
 	
-	//TODO @Deprecated
-	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
-	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION = "signingSessionID";
-	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT = "signingSessionEvent";
-	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF = "signingPDF";
-	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING = "signing";
-	public static final String FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF = "signedPDF";
-
 	protected static final URL DEFAULT_FLOW_ICON = BaseFlowModule.class.getResource("staticcontent/pics/flow_default.png");
 	
 	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
@@ -593,11 +585,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							} else {
 
 								response = new JsonObject().toJson();
-
 							}
 
 							HTTPUtils.sendReponse(response, "application/json;charset=" + systemInterface.getEncoding(), systemInterface.getEncoding(), res);
-
 							return null;
 						}
 					}
@@ -737,7 +727,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						return null;
 					}
 
-					if (enableSaving && instanceManager.getFlowInstance().getFlow().requiresSigning()) {
+					if (enableSaving && instanceManager.getFlowInstance().getFlow().requiresSigning() && (!instanceManager.getFlowInstance().getFlow().isSkipPosterSigning() || MultiSignUtils.requiresMultiSigning(instanceManager))) {
 
 						SigningProvider signingProvider = getSigningProvider();
 
@@ -784,12 +774,20 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						}
 
 						try {
-
 							SigningCallback signingCallback;
 
 							SiteProfile instanceProfile = getSiteProfile(instanceManager);
 							
 							if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
+								
+								if (instanceManager.getFlowInstance().getFlow().isSkipPosterSigning()) {
+									
+									FlowInstanceEvent saveEvent = save(instanceManager, user, poster, req, callback.getMultiSigningActionID(), EventType.SIGNING_SKIPPED, null);
+									signingComplete(instanceManager, saveEvent, req, instanceProfile, callback.getMultiSigningActionID());
+									
+									res.sendRedirect(getSignSuccessURL(instanceManager, req));
+									return null;
+								}
 
 								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, false);
 
@@ -821,7 +819,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						} catch (Exception e) {
 
-							log.error("Error ivoking signing provider " + signingProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
+							log.error("Error invoking signing provider " + signingProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
 							redirectToSignError(req, res, uriParser, instanceManager);
 
@@ -2111,7 +2109,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			viewFragment = null;
 			log.error("Error getting view fragment from payment provider " + paymentProvider, e);
-
 		}
 
 		if (res.isCommitted()) {
@@ -2354,48 +2351,47 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		if (!CollectionUtils.isEmpty(signEvents)) {
 			
 			submitEventAttributes = new HashMap<String, String>();
-			submitEventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signEvents.get(signEvents.size() - 1).getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE));
+			submitEventAttributes.put(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signEvents.get(signEvents.size() - 1).getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE));
 		}
 		
 		return submitEventAttributes;
 	}
 
 	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
-
+		
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
 		FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
-
-		if (addPaymentEvent) {
 		
+		if (addPaymentEvent) {
+			
 			flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
-
+		
 		Status nextStatus = flowInstance.getFlow().getDefaultState(actionID);
-
+		
 		if (nextStatus == null) {
-
+			
 			throw new FlowDefaultStatusNotFound(actionID, instanceManager.getFlowInstance().getFlow());
 		}
-
+		
 		Timestamp currentTimestamp = TimeUtils.getCurrentTimestamp();
-
+		
 		flowInstance.setStatus(nextStatus);
 		flowInstance.setLastStatusChange(currentTimestamp);
-
+		
 		if (flowInstance.getFirstSubmitted() == null) {
-
+			
 			flowInstance.setFirstSubmitted(currentTimestamp);
 		}
-
+		
 		this.daoFactory.getFlowInstanceDAO().update(flowInstance);
 		
 		FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.SUBMITTED, null, user, null, getPaymentCompleteSubmitEventAttributes(instanceManager));
-
+		
 		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
-
+		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
-
 	}
 
 	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, User poster, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
@@ -2510,7 +2506,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		return daoFactory.getFlowInstanceEventDAO().get(query);
 	}
-
 	
 	public FlowInstanceEventGenerator getFlowInstanceEventGenerator() {
 	
