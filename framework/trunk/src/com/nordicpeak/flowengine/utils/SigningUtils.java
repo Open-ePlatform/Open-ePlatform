@@ -3,11 +3,12 @@ package com.nordicpeak.flowengine.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.unlogic.standardutils.collections.ReverseListIterator;
+
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-
-import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class SigningUtils {
 	
@@ -53,7 +54,7 @@ public class SigningUtils {
 				}
 			}
 			
-			if(!signEvents.isEmpty()){
+			if (!signEvents.isEmpty()) {
 				
 				return signEvents;
 			}
@@ -62,19 +63,19 @@ public class SigningUtils {
 		return null;
 	}
 	
-	public static ImmutableFlowInstanceEvent getLastPosterSignEvents(ImmutableFlowInstance flowInstance) {
+	public static ImmutableFlowInstanceEvent getLastPosterSignEvent(ImmutableFlowInstance flowInstance) {
 		
-		return getLastPosterSignEvents(flowInstance.getEvents());
+		return getLastPosterSignEvent(flowInstance.getEvents());
 	}
 	
-	public static ImmutableFlowInstanceEvent getLastPosterSignEvents(List<? extends ImmutableFlowInstanceEvent> events) {
+	public static ImmutableFlowInstanceEvent getLastPosterSignEvent(List<? extends ImmutableFlowInstanceEvent> events) {
 		
 		if (events != null) {
 			
 			for (ImmutableFlowInstanceEvent event : new ReverseListIterator<ImmutableFlowInstanceEvent>(events)) {
 				
-				//TODO replace with BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION and FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF
-				if (event.getEventType() == EventType.SIGNED && event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
+				//TODO replace with Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT) when everyone uses new signing module
+				if ((event.getEventType() == EventType.SIGNED || event.getEventType() == EventType.SIGNING_SKIPPED) && event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
 					
 					return event;
 				}
