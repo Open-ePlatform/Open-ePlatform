@@ -48,7 +48,7 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		FlowInstanceEvent submitEvent = null;
 		
 		Map<String,String> eventAttributes = new HashMap<String, String>();
-		eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, Long.toString(signingChainID));
+		eventAttributes.put(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, Long.toString(signingChainID));
 		
 		if(poster == null && user != null) {
 			poster = user;
