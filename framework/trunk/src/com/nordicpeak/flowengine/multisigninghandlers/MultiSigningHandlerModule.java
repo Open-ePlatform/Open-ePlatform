@@ -49,7 +49,6 @@ import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModule
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
@@ -81,7 +80,7 @@ import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
-import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.OperatingMessageModule;
 import com.nordicpeak.flowengine.UserFlowInstanceModule;
@@ -111,7 +110,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesViewFragmentExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
@@ -126,7 +125,7 @@ import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
 import com.nordicpeak.flowengine.utils.SigningUtils;
 
-public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesExtensionProvider, ImmutableFlowEngineInterface {
+public class MultiSigningHandlerModule extends AnnotatedForegroundModule implements MultiSigningHandler, ViewFragmentModule<ForegroundModuleDescriptor>, MultiSigningCallback, ListFlowInstancesViewFragmentExtensionProvider, ImmutableFlowEngineInterface {
 	
 	public static final String CITIZEN_IDENTIFIER = "citizenIdentifier";
 	
@@ -202,7 +201,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (userFlowInstanceModule != null) {
 			
-			userFlowInstanceModule.removeListFlowInstancesExtensionProvider(this);
+			userFlowInstanceModule.removeListFlowInstancesViewFragmentExtensionProvider(this);
 		}
 		
 		super.unload();
@@ -305,6 +304,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 				
 				log.info("User " + user + " signing flow instance " + instanceManager);
 				
+				//TODO remove
 				req.setAttribute(this.getClass().getName() + ".siteProfile", getCurrentSiteProfile(req, user, uriParser));
 				
 				ViewFragment fragment = signingProvider.sign(req, res, user, instanceManager, this, signingParty);
@@ -381,7 +381,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			throw new NullPointerException("citizenIdentifier can not be null for flow instance " + instanceManager);
 		}
 		
-		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvents(instanceManager.getFlowInstance());
+		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvent(instanceManager.getFlowInstance());
 		
 		if (signingChainStartEvent == null) {
 			return null;
@@ -584,7 +584,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		Set<SigningParty> signingParties = MultiSignUtils.getSigningParties(instanceManager);
 		
-		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvents(instanceManager.getFlowInstance());
+		ImmutableFlowInstanceEvent signingChainStartEvent = SigningUtils.getLastPosterSignEvent(instanceManager.getFlowInstance());
 		
 		for (SigningParty signingParty : signingParties) {
 			
@@ -713,9 +713,12 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 			log.info("Multi-party signing of flowinstance " + instanceManager + " complete");
 			
 			Map<String, String> eventAttributes = new HashMap<String, String>();
-			eventAttributes.put(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, getSigningChainID(instanceManager));
+			eventAttributes.put(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, getSigningChainID(instanceManager));
 			
 			browserModule.multiSigningComplete(instanceManager, (SiteProfile) req.getAttribute(this.getClass().getName() + ".siteProfile"), MultiSignUtils.getSigningParties(instanceManager), eventAttributes);
+			
+			//TODO test correct siteprofile
+			//browserModule.multiSigningComplete(instanceManager, browserModule.getSiteProfile(instanceManager), MultiSignUtils.getSigningParties(instanceManager), eventAttributes);
 		}
 		
 		SessionUtils.setAttribute(this.getClass().getName() + "." + instanceManager.getFlowInstanceID(), signature, req);
@@ -800,7 +803,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (event != null) {
 			
-			return event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+			return event.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
 		}
 		
 		return null;
@@ -817,19 +820,14 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (userFlowInstanceModule != null) {
 			
-			userFlowInstanceModule.addListFlowInstancesExtensionProvider(this);
+			userFlowInstanceModule.addListFlowInstancesViewFragmentExtensionProvider(this);
 			
 		} else {
 			
-			this.userFlowInstanceModule.removeListFlowInstancesExtensionProvider(this);
+			this.userFlowInstanceModule.removeListFlowInstancesViewFragmentExtensionProvider(this);
 		}
 		
 		this.userFlowInstanceModule = userFlowInstanceModule;
-	}
-
-	@Override
-	public ExtensionLink getListFlowInstancesExtensionLink(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
-		return null;
 	}
 
 	@Override
