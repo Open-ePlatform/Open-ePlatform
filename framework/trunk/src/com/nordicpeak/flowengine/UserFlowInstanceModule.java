@@ -19,6 +19,54 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryOperators;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.URIParser;
+
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -68,7 +116,8 @@ import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionLinkProvider;
+import com.nordicpeak.flowengine.interfaces.ListFlowInstancesViewFragmentExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -86,54 +135,6 @@ import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.notifications.interfaces.NotificationSource;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowIconUtils;
-
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.WebPublic;
-import se.unlogic.hierarchy.core.annotations.XSLVariable;
-import se.unlogic.hierarchy.core.beans.Breadcrumb;
-import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
-import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
-import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
-import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
-import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
-import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
-import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryOperators;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.dao.querys.ArrayListQuery;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.enums.Order;
-import se.unlogic.standardutils.io.BinarySizeFormater;
-import se.unlogic.standardutils.io.BinarySizes;
-import se.unlogic.standardutils.numbers.NumberUtils;
-import se.unlogic.standardutils.populators.IntegerPopulator;
-import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
-import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
-import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.xml.XMLGeneratorDocument;
-import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.http.RequestUtils;
-import se.unlogic.webutils.http.URIParser;
 
 public class UserFlowInstanceModule extends BaseFlowBrowserModule implements MessageCRUDCallback, NotificationSource, UserMenuProvider {
 
@@ -240,7 +241,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	private ExternalMessageCRUD externalMessageCRUD;
 
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
-	protected CopyOnWriteArrayList<ListFlowInstancesExtensionProvider> listExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesExtensionProvider>();
+	protected CopyOnWriteArrayList<ListFlowInstancesExtensionLinkProvider> listExtensionLinkProviders = new CopyOnWriteArrayList<ListFlowInstancesExtensionLinkProvider>();
+	protected CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider> listViewFragmentExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider>();
 
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
 
@@ -331,7 +333,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 
 		tabExtensionProviders.clear();
-		listExtensionProviders.clear();
+		listExtensionLinkProviders.clear();
+		listViewFragmentExtensionProviders.clear();
 
 		super.unload();
 	}
@@ -428,10 +431,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 				if (flowInstance.getFlow().isEnabled()) {
 
-					for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
+					for (ListFlowInstancesExtensionLinkProvider listExtensionLinkProvider : listExtensionLinkProviders) {
 
 						try {
-							ExtensionLink flowInstanceExtensionLink = listExtensionProvider.getListFlowInstancesExtensionLink(flowInstance, req, uriParser, user);
+							ExtensionLink flowInstanceExtensionLink = listExtensionLinkProvider.getListFlowInstancesExtensionLink(flowInstance, req, uriParser, user);
 
 							if (flowInstanceExtensionLink != null) {
 
@@ -439,7 +442,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 							}
 
 						} catch (Exception e) {
-							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionProvider + " for user " + user, e);
+							log.error("Error appending extension link for flow instance " + flowInstance + " from FlowInstanceListExtensionProvider " + listExtensionLinkProvider + " for user " + user, e);
 						}
 					}
 				}
@@ -492,14 +495,14 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		List<ViewFragment> viewFragments = null;
 
-		if (!listExtensionProviders.isEmpty()) {
+		if (!listViewFragmentExtensionProviders.isEmpty()) {
 
-			viewFragments = new ArrayList<ViewFragment>(listExtensionProviders.size());
+			viewFragments = new ArrayList<ViewFragment>(listViewFragmentExtensionProviders.size());
 
-			for (ListFlowInstancesExtensionProvider listExtensionProvider : listExtensionProviders) {
+			for (ListFlowInstancesViewFragmentExtensionProvider listViewFragmentExtensionProvider : listViewFragmentExtensionProviders) {
 
 				try {
-					ViewFragment viewFragment = listExtensionProvider.getListFlowInstancesViewFragment(flowInstances, enableSiteProfileSupport ? profileHandler : null, req, uriParser, user);
+					ViewFragment viewFragment = listViewFragmentExtensionProvider.getListFlowInstancesViewFragment(flowInstances, enableSiteProfileSupport ? profileHandler : null, req, uriParser, user);
 
 					if (viewFragment != null) {
 
@@ -508,7 +511,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					}
 
 				} catch (Exception e) {
-					log.error("Error appending view fragment from FlowInstanceListExtensionProvider " + listExtensionProvider, e);
+					log.error("Error appending view fragment from ListFlowInstancesViewFragmentExtensionProvider " + listViewFragmentExtensionProvider, e);
 				}
 			}
 		}
@@ -1136,14 +1139,24 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return tabExtensionProviders.remove(provider);
 	}
 
-	public boolean addListFlowInstancesExtensionProvider(ListFlowInstancesExtensionProvider provider) {
+	public boolean addListFlowInstancesExtensionLinkProvider(ListFlowInstancesExtensionLinkProvider provider) {
 
-		return listExtensionProviders.add(provider);
+		return listExtensionLinkProviders.add(provider);
 	}
 
-	public boolean removeListFlowInstancesExtensionProvider(ListFlowInstancesExtensionProvider provider) {
+	public boolean removeListFlowInstancesExtensionLinkProvider(ListFlowInstancesExtensionLinkProvider provider) {
 
-		return listExtensionProviders.remove(provider);
+		return listExtensionLinkProviders.remove(provider);
+	}
+	
+	public boolean addListFlowInstancesViewFragmentExtensionProvider(ListFlowInstancesViewFragmentExtensionProvider provider) {
+
+		return listViewFragmentExtensionProviders.add(provider);
+	}
+
+	public boolean removeListFlowInstancesViewFragmentExtensionProvider(ListFlowInstancesViewFragmentExtensionProvider provider) {
+
+		return listViewFragmentExtensionProviders.remove(provider);
 	}
 
 	/**
@@ -1434,5 +1447,4 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return userMenuLink;
 	}
-
 }

@@ -1178,7 +1178,7 @@
 			<td class="icon">
 				<xsl:if test="Attributes/Attribute[Name='pdf']/Value = 'true'">
 					<xsl:choose>
-						<xsl:when test="eventType = 'SIGNED'">
+						<xsl:when test="eventType = 'SIGNED' or eventType = 'SIGNING_SKIPPED'">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceSignPDF}">
 								<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf_lock.png" />
 							</a>

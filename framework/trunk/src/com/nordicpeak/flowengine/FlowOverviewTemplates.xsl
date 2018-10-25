@@ -224,10 +224,10 @@
 										</xsl:when>
 										<xsl:otherwise>
 											<xsl:value-of select="0"/>
-										</xsl:otherwise>			
+										</xsl:otherwise>
 									</xsl:choose>
-								</xsl:variable>				  					
-			  								  					
+								</xsl:variable>
+			  				
 								<xsl:if test="usePreview = 'true'">
 		  							<li>
 				  						<span data-step="{$stepCount + 1}"><xsl:value-of select="$i18n.preview" /></span>
@@ -236,13 +236,13 @@
 			  					
 			  					
 			  					<xsl:choose>
-			  						<xsl:when test="paymentSupportEnabled = 'true' and requireSigning = 'true'">
+			  						<xsl:when test="paymentSupportEnabled = 'true' and requireSigning = 'true' and not(skipPosterSigning = 'true')">
 			  						
 										<li>
 					  						<span data-step="{$stepCount + 1 + $previewOffset}"><xsl:value-of select="$i18n.Sign" /></span>
-					  					</li>			  							
+					  					</li>
 			  						
-				  						<li>												
+				  						<li>
 											<span data-step="{$stepCount + 2 + $previewOffset}">
 												<xsl:value-of select="$i18n.payAndSubmit"/>
 											</span>
@@ -251,18 +251,18 @@
 			  						</xsl:when>
 			  						<xsl:when test="paymentSupportEnabled = 'true'">
 			  						
-				  						<li>												
+				  						<li>
 											<span data-step="{$stepCount + 1 + $previewOffset}">
 												<xsl:value-of select="$i18n.payAndSubmit"/>
 											</span>
 										</li>
 			  						
 			  						</xsl:when>
-			  						<xsl:when test="requireSigning = 'true'">
-			  									  						
+			  						<xsl:when test="requireSigning = 'true' and not(skipPosterSigning = 'true')">
+			  						
 										<li>
 					  						<span data-step="{$stepCount + 1 + $previewOffset}"><xsl:value-of select="$i18n.signAndSubmit" /></span>
-					  					</li>			  						
+					  					</li>
 			  						
 			  						</xsl:when>
 			  						<xsl:otherwise>
@@ -271,7 +271,7 @@
 					  						<li>
 						  						<span data-step="{$stepCount + 1 + $previewOffset}"><xsl:value-of select="$i18n.submit" /></span>
 						  					</li>
-						  				</xsl:if>			  						
+						  				</xsl:if>
 			  						
 			  						</xsl:otherwise>
 			  					</xsl:choose>

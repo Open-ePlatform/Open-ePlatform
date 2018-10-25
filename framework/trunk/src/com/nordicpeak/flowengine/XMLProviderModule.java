@@ -11,18 +11,6 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.XMLProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.utils.SigningUtils;
-
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
@@ -42,6 +30,18 @@ import se.unlogic.standardutils.date.PooledSimpleDateFormat;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.XMLProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.utils.SigningUtils;
 
 
 public class XMLProviderModule extends AnnotatedForegroundModule implements XMLProvider {
@@ -199,7 +199,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 			List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) flowInstance);
 			List<ImmutableFlowInstanceEvent> signEvents = null;
 			
-			String signingSessionID = event.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
+			String signingSessionID = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
 			
 			if (!StringUtils.isEmpty(signingSessionID)) {
 				
@@ -207,8 +207,10 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 				
 				for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 					
-					if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION)) && !BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
-						
+					if (flowInstanceEvent.getEventType() == EventType.SIGNED
+						&& signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION))
+						&& !Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
+					) {
 						signEvents.add(flowInstanceEvent);
 					}
 				}
@@ -220,7 +222,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 				
 			} else {
 				
-				String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+				String signChainID = event.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
 				
 				if (!StringUtils.isEmpty(signChainID)) {
 					
@@ -230,7 +232,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 						
 						for (ImmutableFlowInstanceEvent signEvent : signEvents) {
 							
-							if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
+							if (!signChainID.equals(signEvent.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
 								
 								log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + flowInstance);
 								signEvents.remove(signEvent);
@@ -348,6 +350,6 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 	@Override
 	public String getEncoding() {
 		
-		return forceUTF ? "UTF-8" : systemInterface.getEncoding(); 
+		return forceUTF ? "UTF-8" : systemInterface.getEncoding();
 	}
 }
