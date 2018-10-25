@@ -659,6 +659,22 @@
 							</label>
 						</div>
 					</div>
+					
+					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'skipPosterSigning'" />
+								<xsl:with-param name="id" select="'skipPosterSigning'" />
+								<xsl:with-param name="element" select="Flow" />
+								<xsl:with-param name="disabled" select="'true'" />
+							</xsl:call-template>
+							
+							<label for="skipPosterSigning">
+								<xsl:value-of select="$i18n.Flow.skipPosterSigning" />
+							</label>
+						</div>
+					</div>
 				</xsl:if>
 				
 				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
@@ -2392,6 +2408,23 @@
 						</label>
 					</div>
 				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop internal">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'skipPosterSigning'" />
+							<xsl:with-param name="id" select="'skipPosterSigning'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="skipPosterSigning">
+							<xsl:value-of select="$i18n.Flow.skipPosterSigning" />
+							<xsl:text> </xsl:text>
+							<xsl:value-of select="$i18n.Flow.skipPosterSigning.description" />
+						</label>
+					</div>
+				</div>
 			</xsl:if>
 			
 			<div class="floatleft full bigmarginbottom margintop internal">
@@ -3390,7 +3423,7 @@
 				
 				<label for="useAccessCheck">
 					<xsl:value-of select="$i18n.Status.useAccessCheck" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -3400,7 +3433,7 @@
 				<label class="floatleft full">
 					<xsl:value-of select="$i18n.allowedGroups" />
 				</label>
-								
+				
 				<xsl:call-template name="GroupList">
 					<xsl:with-param name="connectorURL">
 						<xsl:value-of select="/Document/requestinfo/currentURI"/>
@@ -3451,7 +3484,7 @@
 				
 				<label for="new">
 					<xsl:value-of select="$i18n.contentType.NEW" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 	
@@ -3467,7 +3500,7 @@
 				
 				<label for="waiting_for_multisign">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_MULTISIGN" />
-				</label>					
+				</label>
 			</div>
 		</div>
 		
@@ -3483,7 +3516,7 @@
 				
 				<label for="waiting_for_payment">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_PAYMENT" />
-				</label>					
+				</label>
 			</div>
 		</div>
 	
@@ -3499,7 +3532,7 @@
 				
 				<label for="submitted">
 					<xsl:value-of select="$i18n.contentType.SUBMITTED" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 	
@@ -3515,7 +3548,7 @@
 				
 				<label for="in_progress">
 					<xsl:value-of select="$i18n.contentType.IN_PROGRESS" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 		
@@ -3531,7 +3564,7 @@
 				
 				<label for="waiting_for_completion">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_COMPLETION" />
-				</label>					
+				</label>
 			</div>
 		</div>
 	
@@ -3547,7 +3580,7 @@
 				
 				<label for="archived">
 					<xsl:value-of select="$i18n.contentType.ARCHIVED" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 	
@@ -3586,11 +3619,11 @@
 					<xsl:if test="required = 'true'">
 						<xsl:text>&#160;(</xsl:text><xsl:value-of select="$i18n.required" /><xsl:text>)</xsl:text>
 					</xsl:if>
-				</label>				
+				</label>
 			</div>
-		</div>		
+		</div>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="UpdateFlowIcon">
 	
