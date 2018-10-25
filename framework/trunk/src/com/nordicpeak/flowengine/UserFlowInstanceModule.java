@@ -981,14 +981,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@Override
 	protected Breadcrumb getFlowInstancePreviewBreadcrumb(ImmutableFlowInstance flowInstance, HttpServletRequest req, URIParser uriParser) {
 
-		//TODO add prefix
 		return new Breadcrumb(this, flowInstance.getFlow().getName(), "/preview/" + flowInstance.getFlowInstanceID());
 	}
 
 	@Override
 	protected Breadcrumb getFlowInstanceSubmitBreadcrumb(ImmutableFlowInstance flowInstance, HttpServletRequest req, URIParser uriParser) {
 
-		//TODO add prefix
 		return new Breadcrumb(this, flowInstance.getFlow().getName(), "/submit/" + flowInstance.getFlowInstanceID());
 	}
 
