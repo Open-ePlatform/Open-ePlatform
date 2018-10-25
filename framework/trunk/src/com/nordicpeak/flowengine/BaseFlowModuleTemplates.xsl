@@ -15,8 +15,8 @@
   						<xsl:value-of select="$i18n.FlowInstanceConcurrentlyModified" />
   					</a>
   				</span>
-  			</section>		
-		</xsl:if>		
+  			</section>
+		</xsl:if>
 		
 		<xsl:if test="not(validationError)">
 			<xsl:apply-templates select="lastFlowAction" />
@@ -39,7 +39,7 @@
 							<xsl:otherwise>true</xsl:otherwise>
 						</xsl:choose>
 					</xsl:with-param>
-					 -->					
+					 -->
 				</xsl:call-template>
 			
 				<!-- <div class="section-full" /> -->
@@ -70,10 +70,10 @@
 						<xsl:if test="not($concurrentModificationLock)">
 						
 							<xsl:choose>
-								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and PaymentRequired">
+								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and not(FlowInstance/Flow/skipPosterSigning = 'true') and PaymentRequired">
 									<xsl:call-template name="createFlowInstanceManagerPreviewSigningPaymentButton" />
 								</xsl:when>							
-								<xsl:when test="FlowInstance/Flow/requireSigning = 'true'">
+								<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and not(FlowInstance/Flow/skipPosterSigning = 'true')">
 									<xsl:call-template name="createFlowInstanceManagerPreviewSigningButton" />
 								</xsl:when>
 								<xsl:when test="PaymentRequired">
@@ -85,7 +85,7 @@
 							</xsl:choose>
 						
 						</xsl:if>
-					</div>					
+					</div>
 					
 				</div>
 			
@@ -100,19 +100,19 @@
 			
 		</section>
 		
-	</xsl:template>			
+	</xsl:template>
 	
 	<xsl:template name="createFlowInstanceManagerPaymentButton">
 	
 		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.Payment" /></a>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template name="createFlowInstanceManagerPreviewSigningPaymentButton">
 	
 		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.Sign" /></a>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="SigningForm">
 		
@@ -606,13 +606,13 @@
 										<xsl:if test="ManagerResponse/concurrentModificationLock = 'false'">
 										
 											<xsl:choose>
-												<xsl:when test="FlowInstance/Flow/requireSigning = 'true'">
+												<xsl:when test="FlowInstance/Flow/requireSigning = 'true' and not(FlowInstance/Flow/skipPosterSigning = 'true')">
 													<xsl:call-template name="createFlowInstanceManagerFormSigningButton" />
 												</xsl:when>
 												<xsl:otherwise>
 													<xsl:call-template name="createFlowInstanceManagerFormSubmitButton" />
 												</xsl:otherwise>
-											</xsl:choose>										
+											</xsl:choose>
 										
 										</xsl:if>
 										
@@ -740,7 +740,7 @@
 		</xsl:if>
 
 		<xsl:choose>
-			<xsl:when test="../paymentSupportEnabled = 'true' and ../requireSigning = 'true'">
+			<xsl:when test="../paymentSupportEnabled = 'true' and ../requireSigning = 'true' and not(../skipPosterSigning = 'true')">
 			
 				<xsl:call-template name="createSubmitStep">
 					<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
@@ -755,11 +755,11 @@
 					<span data-step="{$stepCount + 2 + $previewOffset}">
 						<xsl:value-of select="$i18n.payAndSubmit"/>
 					</span>
-				</li>			
+				</li>
 			
 			</xsl:when>
 			<xsl:when test="../paymentSupportEnabled = 'true'">
-						
+				
 				<li>
 					<xsl:if test="/Document/InlinePaymentForm or StandalonePaymentForm">
 						<xsl:attribute name="class">active</xsl:attribute>
@@ -768,25 +768,25 @@
 					<span data-step="{$stepCount +  1 + $previewOffset}">
 						<xsl:value-of select="$i18n.payAndSubmit"/>
 					</span>
-				</li>			
+				</li>
 			
 			</xsl:when>
-			<xsl:when test="../requireSigning = 'true'">
-						  						
+			<xsl:when test="../requireSigning = 'true' and not(../skipPosterSigning = 'true')">
+				
 				<xsl:call-template name="createSubmitStep">
 					<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
 					<xsl:with-param name="submitText" select="$i18n.signAndSubmit" />
-				</xsl:call-template>		  						
+				</xsl:call-template>
 			
 			</xsl:when>
-			<xsl:otherwise>	
+			<xsl:otherwise>
 			
 				<xsl:if test="../hideSubmitStepText != 'true'">
 					<xsl:call-template name="createSubmitStep">
 						<xsl:with-param name="step" select="$stepCount + 1 + $previewOffset" />
 						<xsl:with-param name="submitText" select="$i18n.submit" />
 					</xsl:call-template>
-				</xsl:if>			  						
+				</xsl:if>
 			
 			</xsl:otherwise>
 		</xsl:choose>
@@ -965,6 +965,9 @@
 			</xsl:when>
 			<xsl:when test="eventType = 'SIGNED'">
 				<xsl:value-of select="$i18n.SignedEvent" />
+			</xsl:when>
+			<xsl:when test="eventType = 'SIGNING_SKIPPED'">
+				<xsl:value-of select="$i18n.SigningSkippedEvent" />
 			</xsl:when>
 			<xsl:when test="eventType = 'PAYED'">
 				<xsl:value-of select="$i18n.PayedEvent" />

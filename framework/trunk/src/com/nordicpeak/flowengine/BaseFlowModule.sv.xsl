@@ -70,6 +70,7 @@
 	
 	<xsl:variable name="i18n.SubmittedEvent">Inskickat</xsl:variable>
 	<xsl:variable name="i18n.SignedEvent">Signerat</xsl:variable>
+	<xsl:variable name="i18n.SigningSkippedEvent">Ingen signering av denna part</xsl:variable>
 	<xsl:variable name="i18n.PayedEvent">Betalat</xsl:variable>
 	<xsl:variable name="i18n.UpdatedEvent">Ändrat</xsl:variable>
 	<xsl:variable name="i18n.StatusUpdatedEvent">Status ändrad</xsl:variable>
