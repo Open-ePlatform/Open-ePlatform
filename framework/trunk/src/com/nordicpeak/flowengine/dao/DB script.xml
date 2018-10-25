@@ -2025,7 +2025,7 @@
 				DELETE FROM flowengine_flow_instance_attributes WHERE name = "description" OR name = "descriptionGenerated" AND flowInstanceID IN (SELECT flowInstanceID FROM (SELECT flowInstanceID FROM flowengine_flow_instance_attributes WHERE name = "descriptionGenerated") nested);
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="106">
 		<Query>
@@ -2033,6 +2033,14 @@
 				ALTER TABLE `flowengine_flows` ADD COLUMN `hideExternalMessageAttachments` TINYINT(1) UNSIGNED NOT NULL AFTER `hideExternalMessages`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="107">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `skipPosterSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `useSequentialSigning`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>
