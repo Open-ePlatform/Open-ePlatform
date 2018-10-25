@@ -92,9 +92,9 @@ $(document).ready(function() {
 	$("#requireSigning").change(function(e) {
 		
 		var checked = $(this).prop("checked");
-		var useSequentialSigning = $("#useSequentialSigning");
+		var fields = $("#useSequentialSigning, #skipPosterSigning");
 		
-		useSequentialSigning.parent().parent().toggle(checked);
+		fields.parent().parent().toggle(checked);
 	});
 	
 	$("#requireSigning").trigger("change");
