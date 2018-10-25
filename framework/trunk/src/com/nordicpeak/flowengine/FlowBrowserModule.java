@@ -1533,7 +1533,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 			daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
 			
-			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvents(flowInstance);
+			ImmutableFlowInstanceEvent posterSignEvent = SigningUtils.getLastPosterSignEvent(flowInstance);
 
 			FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, eventType, null, posterSignEvent.getPoster(), currentTimestamp, eventAttributes);
 
