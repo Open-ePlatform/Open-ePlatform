@@ -76,7 +76,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
-import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
@@ -321,7 +321,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
 					
-					String signingSessionID = event.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
+					String signingSessionID = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
 					
 					if (!StringUtils.isEmpty(signingSessionID)) {
 						
@@ -329,8 +329,10 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						
 						for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 							
-							if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION)) && !BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(BaseFlowModule.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
-								
+							if (flowInstanceEvent.getEventType() == EventType.SIGNED
+								&& signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION))
+								&& !Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
+							) {
 								signEvents.add(flowInstanceEvent);
 							}
 						}
@@ -346,7 +348,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						
 					} else {
 					
-						String signChainID = event.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
+						String signChainID = event.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
 						
 						if (!StringUtils.isEmpty(signChainID)) {
 							
@@ -356,7 +358,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								
 								for (ImmutableFlowInstanceEvent signEvent : signEvents) {
 									
-									if (!signChainID.equals(signEvent.getAttributeHandler().getString(BaseFlowModule.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
+									if (!signChainID.equals(signEvent.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
 										
 										log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + instanceManager.getFlowInstance());
 										signEvents.remove(signEvent);
