@@ -3,12 +3,11 @@ package com.nordicpeak.flowengine.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.unlogic.standardutils.collections.ReverseListIterator;
-
-import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+
+import se.unlogic.standardutils.collections.ReverseListIterator;
 
 public class SigningUtils {
 	
