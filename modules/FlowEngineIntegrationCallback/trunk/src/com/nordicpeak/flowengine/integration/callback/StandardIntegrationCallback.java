@@ -13,11 +13,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import se.unlogic.hiearchy.foregroundmodules.jaxws.BaseWSModuleService;
 import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleCallback;
 import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleInstanceResolver;
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.beans.SettingDescriptor;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.interfaces.instances.InstanceListener;
+import se.unlogic.hierarchy.core.interfaces.settings.SettingProvider;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -44,11 +49,15 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 @WebService(endpointInterface="com.nordicpeak.flowengine.integration.callback.IntegrationCallback", name="IntegrationCallback",serviceName="IntegrationCallback")
 @WSModuleInstanceResolver
-public class StandardIntegrationCallback extends BaseWSModuleService implements IntegrationCallback, InstanceListener<FlowAdminModule> {
+public class StandardIntegrationCallback extends BaseWSModuleService implements IntegrationCallback, InstanceListener<FlowAdminModule>, SettingProvider{
 	
 	protected static final RelationQuery FLOW_INSTANCE_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION);
 	protected static final RelationQuery FLOW_INSTANCE_MANAGERS_RELATION_QUERY = new RelationQuery(FlowInstance.MANAGERS_RELATION);
 	protected static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name="Set user on events", description="Set the API user on generated events")
+	private boolean setUserOnEvents;
 	
 	protected FlowAdminModule flowAdminModule;
 	
@@ -69,6 +78,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		statusIDParamFactory = daoFactory.getStatusDAO().getParamFactory("statusID", Integer.class);
 		statusNameParamFactory = daoFactory.getStatusDAO().getParamFactory("name", String.class);
 		statusFlowParamFactory = daoFactory.getStatusDAO().getParamFactory("flow", Flow.class);
+		
+		ModuleUtils.setModuleSettings(this, BaseWSModuleService.class, callback.getModuleDescriptor().getMutableSettingHandler(), callback.getSystemInterface());
 		
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FlowAdminModule.class, this);
 	}
@@ -426,7 +437,18 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					throw new RuntimeException(e);
 				}
 				
-				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null, null);
+				User eventUser;
+				
+				if(setUserOnEvents) {
+					
+					eventUser = callback.getUser();
+					
+				}else {
+					
+					eventUser = null;
+				}
+				
+				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null);
 				
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
@@ -567,5 +589,21 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 
 		return null;
+	}
+
+	@Override
+	public List<SettingDescriptor> getSettings() {
+
+		try {
+			return ModuleUtils.getAnnotatedSettingDescriptors(this, BaseWSModuleService.class, callback.getSystemInterface());
+
+		} catch (RuntimeException e) {
+
+			throw e;
+
+		} catch (Exception e){
+
+			throw new RuntimeException(e);
+		}
 	}
 }
