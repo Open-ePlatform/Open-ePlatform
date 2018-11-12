@@ -634,7 +634,7 @@
 			
 			<div class="floatleft full">
 
-				<div id="chooseFlowFamilies" class="scrolllist hidden">
+				<div id="chooseFlowFamilies" class="hidden">
 					<xsl:apply-templates select="FlowFamily">
 						<xsl:with-param name="operatingMessage" select="$operatingMessage" />
 					</xsl:apply-templates>
