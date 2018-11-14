@@ -10,6 +10,7 @@ import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
+import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -89,6 +90,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceArchivedUserEmail;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceSubmittedUserSMS;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceSubmittedNotLoggedInUserSMS;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
@@ -618,5 +631,21 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		
 		this.managerExpiredGlobalEmailAddresses = managerExpiredGlobalEmailAddresses;
 	}
-	
+
+	public String getFlowInstanceSubmittedUserSMS() {
+		return flowInstanceSubmittedUserSMS;
+	}
+
+	public void setFlowInstanceSubmittedUserSMS(String flowInstanceSubmittedUserSMS) {
+		this.flowInstanceSubmittedUserSMS = flowInstanceSubmittedUserSMS;
+	}
+
+	public String getFlowInstanceSubmittedNotLoggedInUserSMS() {
+		return flowInstanceSubmittedNotLoggedInUserSMS;
+	}
+
+	public void setFlowInstanceSubmittedNotLoggedInUserSMS(String flowInstanceSubmittedNotLoggedInUserSMS) {
+		this.flowInstanceSubmittedNotLoggedInUserSMS = flowInstanceSubmittedNotLoggedInUserSMS;
+	}
+
 }

@@ -269,6 +269,9 @@
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.NoNotificationsEnabled">Inga notifikationer är aktiverade för denna e-tjänst</xsl:variable>
 	
+	<xsl:variable name="i18n.FlowInstanceSubmittedUserSMS">Innehåll i SMS vid inskickat ärende (inloggad användare)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserSMS">Innehåll i SMS vid inskickat ärende (ej inloggad användare)</xsl:variable>
+	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailSubject">Rubrik på e-postmeddelande vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailMessage">Innehåll i e-postmeddelande vid inskickat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserEmailMessage">Innehåll i e-postmeddelande vid inskickat ärende (ej inloggad användare)</xsl:variable>
@@ -286,7 +289,8 @@
 
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	
-	<xsl:variable name="i18n.UserTagsTable.description">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
+	<xsl:variable name="i18n.UserTagsTable.smsDescription">Följande taggar kan användas i meddelande</xsl:variable>
+	<xsl:variable name="i18n.UserTagsTable.emailDescription">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.FlowNameTag">E-tjänsten namn</xsl:variable>

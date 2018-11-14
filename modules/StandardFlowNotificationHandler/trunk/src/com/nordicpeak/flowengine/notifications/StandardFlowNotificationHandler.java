@@ -80,6 +80,7 @@ import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.string.TagSource;
+import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
@@ -737,6 +738,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		FlowFamililyNotificationSettings notificationSettings = POPULATOR.populate(req);
 
 		//Remove texts if they are set to default values
+		
+		TemplateUtils.clearUnchangedTemplatedFields(notificationSettings, this);
+		
 		if (notificationSettings.getStatusChangedUserEmailSubject() != null && notificationSettings.getStatusChangedUserEmailSubject().trim().equals(statusChangedUserEmailSubject.trim())) {
 
 			notificationSettings.setStatusChangedUserEmailSubject(null);
@@ -823,6 +827,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		if (notificationSettings != null) {
 
+			TemplateUtils.setTemplatedFields(notificationSettings, this);
+			
 			if (notificationSettings.getStatusChangedUserEmailSubject() == null) {
 
 				notificationSettings.setStatusChangedUserEmailSubject(statusChangedUserEmailSubject);
@@ -898,12 +904,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		notificationSettings = new FlowFamililyNotificationSettings();
 
+		TemplateUtils.setTemplatedFields(notificationSettings, this);
 		
 		notificationSettings.setStatusChangedUserEmailSubject(statusChangedUserEmailSubject);
 		notificationSettings.setStatusChangedUserEmailMessage(statusChangedUserEmailMessage);
 		notificationSettings.setExternalMessageReceivedUserEmailSubject(externalMessageReceivedUserEmailSubject);
 		notificationSettings.setExternalMessageReceivedUserEmailMessage(externalMessageReceivedUserEmailMessage);
-		
 		
 		notificationSettings.setSendFlowInstanceArchivedUserEmail(sendFlowInstanceArchivedUserEmail);
 		notificationSettings.setSendFlowInstanceArchivedUserSMS(sendFlowInstanceArchivedUserSMS);
@@ -1211,9 +1217,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			if (notificationSettings.isSendFlowInstanceSubmittedUserSMS()) {
 
+				String message = getFlowInstaceSubmittedUserSMSMessage(notificationSettings, flowInstance);
+				
 				for (Contact contact : contacts) {
 
-					if (sendContactSMS(flowInstance, contact, getFlowInstaceSubmittedUserSMSMessage(flowInstance))) {
+					if (sendContactSMS(flowInstance, contact, message)) {
 
 						sentSMS++;
 					}
@@ -1355,9 +1363,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					
 					if (notificationSettings.isSendFlowInstanceSubmittedUserSMS()) {
 						
+						String message = getFlowInstaceSubmittedUserSMSMessage(notificationSettings, flowInstance);
+						
 						for (Contact contact : contacts) {
 							
-							sendContactSMS(flowInstance, contact, getFlowInstaceSubmittedUserSMSMessage(flowInstance));
+							sendContactSMS(flowInstance, contact, message);
 						}
 					}
 					
@@ -2322,15 +2332,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	}
 
-	private String getFlowInstaceSubmittedUserSMSMessage(ImmutableFlowInstance flowInstance) {
+	private String getFlowInstaceSubmittedUserSMSMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
 
 		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
 
-			return flowInstanceSubmittedUserSMS;
+			return notificationSettings.getFlowInstanceSubmittedUserSMS();
 
 		} else {
 
-			return flowInstanceSubmittedNotLoggedInUserSMS;
+			return notificationSettings.getFlowInstanceSubmittedNotLoggedInUserSMS();
 		}
 	}
 

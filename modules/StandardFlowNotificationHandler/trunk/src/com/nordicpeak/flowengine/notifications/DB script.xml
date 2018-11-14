@@ -217,4 +217,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `flowInstanceSubmittedUserSMS` VARCHAR(255) NULL AFTER `sendFlowInstanceArchivedUserEmail`,
+					ADD COLUMN `flowInstanceSubmittedNotLoggedInUserSMS` VARCHAR(255) NULL AFTER `flowInstanceSubmittedUserSMS`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

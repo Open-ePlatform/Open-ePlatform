@@ -152,19 +152,20 @@
 				
 			</ul>
 		
-		</xsl:if>		
+		</xsl:if>
 		
 		<xsl:if test="not(NotificationSettings/HasEnabledUserNotifications) and not(NotificationSettings/HasEnabledManagerNotifications) and not(NotificationSettings/HasEnabledGlobalNotifications)">
 		
 			<p class="nomargin"><xsl:value-of select="$i18n.NoNotificationsEnabled"/></p>
 		
-		</xsl:if>		
+		</xsl:if>
 		
 	</xsl:template>
 
 	<xsl:template match="UpdateSettings">
 	
 		<script>
+			
 			function toggleUserStatus(){
 				
 				$("#user-status-subject").toggleClass("hidden");
@@ -175,12 +176,17 @@
 				
 				$("#user-message-subject").toggleClass("hidden");
 				$("#user-message-message").toggleClass("hidden");
-			}		
+			}
 		
-			function toggleSubmit(){
+			function toggleSubmitEmail(){
 				
-				$("#submit-subject").toggleClass("hidden");
-				$("#submit-message").toggleClass("hidden");
+				$("#submit-email-subject").toggleClass("hidden");
+				$("#submit-email-message").toggleClass("hidden");
+			}
+			
+			function toggleSubmitSMS(){
+				
+				$("#submit-sms").toggleClass("hidden");
 			}
 			
 			function toggleArchived(){
@@ -193,7 +199,7 @@
 				
 				$("#manager-message-subject").toggleClass("hidden");
 				$("#manager-message-message").toggleClass("hidden");
-			}			
+			}
 			
 			function toggleGlobal(){
 				
@@ -224,6 +230,8 @@
 			<br/>
 		
 		</xsl:if>
+		
+		<xsl:variable name="errFieldNames" select="validationException/validationError/fieldName" />
 	
 		<h2><xsl:value-of select="$i18n.UserNotifications"/></h2>
 		
@@ -233,12 +241,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendStatusChangedUserSMS'" />
 					<xsl:with-param name="id" select="'sendStatusChangedUserSMS'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendStatusChangedUserSMS">
 					<xsl:value-of select="$i18n.SendStatusChangedUserSMS" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -248,12 +256,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendExternalMessageReceivedUserSMS'" />
 					<xsl:with-param name="id" select="'sendExternalMessageReceivedUserSMS'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendExternalMessageReceivedUserSMS">
 					<xsl:value-of select="$i18n.SendExternalMessageReceivedUserSMS" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -263,13 +271,58 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceSubmittedUserSMS'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceSubmittedUserSMS'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceSubmittedUserSMS">
 					<xsl:value-of select="$i18n.SendFlowInstanceSubmittedUserSMS" />
-				</label>				
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleSubmitSMS();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="submit-sms">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedUserSMS') and not($errFieldNames = 'flowInstanceSubmittedNotLoggedInUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceSubmittedUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceSubmittedUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceSubmittedUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceSubmittedUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<label for="flowInstanceSubmittedNotLoggedInUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceSubmittedNotLoggedInUserSMS" />
+			</label>
+			
+			<div class="floatleft full marginbottom">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceSubmittedNotLoggedInUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceSubmittedNotLoggedInUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
 		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
@@ -278,14 +331,14 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceArchivedUserSMS'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceArchivedUserSMS'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceArchivedUserSMS">
 					<xsl:value-of select="$i18n.SendFlowInstanceArchivedUserSMS" />
-				</label>				
+				</label>
 			</div>
-		</div>			
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -293,7 +346,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendStatusChangedUserEmail'" />
 					<xsl:with-param name="id" select="'sendStatusChangedUserEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendStatusChangedUserEmail">
@@ -306,7 +359,7 @@
 		
 		<div class="floatleft full bigmarginbottom" id="user-status-subject">
 		
-			<xsl:if test="not(validationException/validationError/fieldName = 'statusChangedUserEmailSubject') and not(validationException/validationError/fieldName = 'statusChangedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'statusChangedUserEmailSubject') and not($errFieldNames = 'statusChangedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
@@ -318,16 +371,16 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'statusChangedUserEmailSubject'"/>
 					<xsl:with-param name="name" select="'statusChangedUserEmailSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="user-status-message">
 			
-			<xsl:if test="not(validationException/validationError/fieldName = 'statusChangedUserEmailSubject') and not(validationException/validationError/fieldName = 'statusChangedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'statusChangedUserEmailSubject') and not($errFieldNames = 'statusChangedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>			
+			</xsl:if>
 			
 			<label for="statusChangedUserEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.StatusChangedUserEmailMessage" />
@@ -339,13 +392,13 @@
 					<xsl:with-param name="id" select="'statusChangedUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'statusChangedUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
-		</div>		
+		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -353,20 +406,20 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendExternalMessageReceivedUserEmail'" />
 					<xsl:with-param name="id" select="'sendExternalMessageReceivedUserEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendExternalMessageReceivedUserEmail">
 					<xsl:value-of select="$i18n.SendExternalMessageReceivedUserEmail" />
 				</label>
 				<xsl:text>&#160;</xsl:text>
-				<span class="tiny"><a onclick="toggleUserExternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>				
+				<span class="tiny"><a onclick="toggleUserExternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="user-message-subject">
 		
-			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'externalMessageReceivedUserEmailSubject') and not($errFieldNames = 'externalMessageReceivedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
@@ -378,16 +431,16 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'externalMessageReceivedUserEmailSubject'"/>
 					<xsl:with-param name="name" select="'externalMessageReceivedUserEmailSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="user-message-message">
 			
-			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'externalMessageReceivedUserEmailSubject') and not($errFieldNames = 'externalMessageReceivedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>			
+			</xsl:if>
 			
 			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailMessage" />
@@ -399,13 +452,13 @@
 					<xsl:with-param name="id" select="'externalMessageReceivedUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'externalMessageReceivedUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+						
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
-		</div>				
+		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -420,17 +473,15 @@
 					<xsl:value-of select="$i18n.SendFlowInstanceSubmittedUserEmail" />
 				</label>
 				<xsl:text>&#160;</xsl:text>
-				<span class="tiny"><a onclick="toggleSubmit();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
-								
+				<span class="tiny"><a onclick="toggleSubmitEmail();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
 			</div>
 			
 		</div>
 		
-		<xsl:variable name="fieldName" select="validationException/validationError/fieldName" />
+		<div class="floatleft full bigmarginbottom" id="submit-email-subject">
 		
-		<div class="floatleft full bigmarginbottom" id="submit-subject">
-		
-			<xsl:if test="not($fieldName = 'flowInstanceSubmittedUserEmailSubject') and not($fieldName = 'flowInstanceSubmittedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedUserEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
@@ -442,16 +493,16 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'flowInstanceSubmittedUserEmailSubject'"/>
 					<xsl:with-param name="name" select="'flowInstanceSubmittedUserEmailSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
-		<div class="floatleft full bigmarginbottom" id="submit-message">
+		<div class="floatleft full bigmarginbottom" id="submit-email-message">
 			
-			<xsl:if test="not($fieldName = 'flowInstanceSubmittedUserEmailSubject') and not($fieldName = 'flowInstanceSubmittedUserEmailMessage') and not($fieldName = 'flowInstanceSubmittedNotLoggedInUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedUserEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedUserEmailMessage') and not($errFieldNames = 'flowInstanceSubmittedNotLoggedInUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>			
+			</xsl:if>
 			
 			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.FlowInstanceSubmittedUserEmailMessage" />
@@ -463,9 +514,9 @@
 					<xsl:with-param name="id" select="'flowInstanceSubmittedUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceSubmittedUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
 			</div>
 			
 			<label for="flowInstanceSubmittedNotLoggedInUserEmailMessage" class="floatleft full">
@@ -478,9 +529,9 @@
 					<xsl:with-param name="id" select="'flowInstanceSubmittedNotLoggedInUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceSubmittedNotLoggedInUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+						
 			</div>
 			
 			<div class="floatleft full marginbottom">
@@ -489,12 +540,12 @@
 						<xsl:with-param name="name" select="'flowInstanceSubmittedUserEmailAttachPDF'" />
 						<xsl:with-param name="id" select="'flowInstanceSubmittedUserEmailAttachPDF'" />
 						<xsl:with-param name="element" select="NotificationSettings" />
-						<xsl:with-param name="onclick" select="'checkAttachPDF()'" />     
+						<xsl:with-param name="onclick" select="'checkAttachPDF()'" />
 					</xsl:call-template>
 					
 					<label for="flowInstanceSubmittedUserEmailAttachPDF">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedUserEmailAttachPDF" />
-					</label>				
+					</label>
 				</div>
 			</div>
 
@@ -502,7 +553,7 @@
 
 			<script>checkAttachPDF();</script>
 			
-		</div>			
+		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -510,22 +561,22 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceArchivedUserEmail'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceArchivedUserEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceArchivedUserEmail">
 					<xsl:value-of select="$i18n.SendFlowInstanceArchivedUserEmail" />
 				</label>
 				<xsl:text>&#160;</xsl:text>
-				<span class="tiny"><a onclick="toggleArchived();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>							
+				<span class="tiny"><a onclick="toggleArchived();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="archived-subject">
 		
-			<xsl:if test="not($fieldName = 'flowInstanceArchivedUserEmailSubject') and not($fieldName = 'flowInstanceArchivedUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceArchivedUserEmailSubject') and not($errFieldNames = 'flowInstanceArchivedUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>		
+			</xsl:if>
 		
 			<label for="flowInstanceArchivedUserEmailSubject" class="floatleft full">
 				<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailSubject" />
@@ -535,18 +586,16 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'flowInstanceArchivedUserEmailSubject'"/>
 					<xsl:with-param name="name" select="'flowInstanceArchivedUserEmailSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="archived-message">
 			
-			<xsl:variable name="fieldName" select="validationException/validationError/fieldName" />
-			
-			<xsl:if test="not($fieldName = 'flowInstanceArchivedUserEmailSubject') and not($fieldName = 'flowInstanceArchivedUserEmailMessage') and not($fieldName = 'flowInstanceArchivedNotLoggedInUserEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceArchivedUserEmailSubject') and not($errFieldNames = 'flowInstanceArchivedUserEmailMessage') and not($errFieldNames = 'flowInstanceArchivedNotLoggedInUserEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>	
+			</xsl:if>
 			
 			<label for="flowInstanceArchivedUserEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailMessage" />
@@ -558,9 +607,9 @@
 					<xsl:with-param name="id" select="'flowInstanceArchivedUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceArchivedUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
 			</div>
 			
 			<label for="flowInstanceArchivedNotLoggedInUserEmailMessage" class="floatleft full">
@@ -573,13 +622,13 @@
 					<xsl:with-param name="id" select="'flowInstanceArchivedNotLoggedInUserEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceArchivedNotLoggedInUserEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
-		</div>							
+		</div>
 		
 		<div class="clearboth marginbottom">
 			<br/>
@@ -593,7 +642,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendExternalMessageReceivedManagerEmail'" />
 					<xsl:with-param name="id" select="'sendExternalMessageReceivedManagerEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendExternalMessageReceivedManagerEmail">
@@ -606,7 +655,7 @@
 	
 		<div class="floatleft full bigmarginbottom" id="manager-message-subject">
 		
-			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedManagerSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedManagerMessage')">
+			<xsl:if test="not($errFieldNames = 'externalMessageReceivedManagerSubject') and not($errFieldNames = 'externalMessageReceivedManagerMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
@@ -618,16 +667,16 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'externalMessageReceivedManagerSubject'"/>
 					<xsl:with-param name="name" select="'externalMessageReceivedManagerSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="manager-message-message">
 			
-			<xsl:if test="not(validationException/validationError/fieldName = 'externalMessageReceivedManagerSubject') and not(validationException/validationError/fieldName = 'externalMessageReceivedManagerMessage')">
+			<xsl:if test="not($errFieldNames = 'externalMessageReceivedManagerSubject') and not($errFieldNames = 'externalMessageReceivedManagerMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>			
+			</xsl:if>
 			
 			<label for="flowInstanceSubmittedManagerMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage" />
@@ -640,8 +689,8 @@
 					<xsl:with-param name="name" select="'externalMessageReceivedManagerMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+				</xsl:call-template>
+				
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
@@ -653,12 +702,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceAssignedManagerEmail'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceAssignedManagerEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceAssignedManagerEmail">
 					<xsl:value-of select="$i18n.SendFlowInstanceAssignedManagerEmail" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -668,12 +717,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendStatusChangedManagerEmail'" />
 					<xsl:with-param name="id" select="'sendStatusChangedManagerEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendStatusChangedManagerEmail">
 					<xsl:value-of select="$i18n.SendStatusChangedManagerEmail" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -683,14 +732,14 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceSubmittedManagerEmail'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceSubmittedManagerEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceSubmittedManagerEmail">
 					<xsl:value-of select="$i18n.SendFlowInstanceSubmittedManagerEmail" />
-				</label>				
+				</label>
 			</div>
-		</div>				
+		</div>
 	
 		<div class="clearboth marginbottom">
 			<br/>
@@ -704,7 +753,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceSubmittedGlobalEmail'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceSubmittedGlobalEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendFlowInstanceSubmittedGlobalEmail">
@@ -712,13 +761,13 @@
 				</label>
 				<xsl:text>&#160;</xsl:text>
 				<span class="tiny"><a onclick="toggleGlobal();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
-								
+				
 			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="global-subject">
 		
-			<xsl:if test="not(validationException/validationError/fieldName = 'flowInstanceSubmittedGlobalEmailSubject') and not(validationException/validationError/fieldName = 'flowInstanceSubmittedGlobalEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedGlobalEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
@@ -730,14 +779,14 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'flowInstanceSubmittedGlobalEmailSubject'"/>
 					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailSubject'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />          
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
-		</div>				
+		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="global-message">
 			
-			<xsl:if test="not(validationException/validationError/fieldName = 'flowInstanceSubmittedGlobalEmailSubject') and not(validationException/validationError/fieldName = 'flowInstanceSubmittedGlobalEmailMessage')">
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedGlobalEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>			
 			
@@ -751,9 +800,9 @@
 					<xsl:with-param name="id" select="'flowInstanceSubmittedGlobalEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
-				</xsl:call-template>									
-										
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
@@ -771,10 +820,10 @@
 					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailAddresses'"/>
 					<xsl:with-param name="rows" select="5"/>
 					<xsl:with-param name="separateListValues" select="'true'"/>
-					<xsl:with-param name="element" select="NotificationSettings/FlowInstanceSubmittedGlobalEmailAddresses/address" />          
+					<xsl:with-param name="element" select="NotificationSettings/FlowInstanceSubmittedGlobalEmailAddresses/address" />
 				</xsl:call-template>
 			</div>
-		</div>			
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -782,7 +831,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailAttachPDF'" />
 					<xsl:with-param name="id" select="'flowInstanceSubmittedGlobalEmailAttachPDF'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="flowInstanceSubmittedGlobalEmailAttachPDF">
@@ -811,7 +860,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'flowInstanceSubmittedGlobalEmailAttachXML'" />
 					<xsl:with-param name="id" select="'flowInstanceSubmittedGlobalEmailAttachXML'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="flowInstanceSubmittedGlobalEmailAttachXML">
@@ -826,7 +875,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendExternalMessageReceivedGlobalEmail'" />
 					<xsl:with-param name="id" select="'sendExternalMessageReceivedGlobalEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendExternalMessageReceivedGlobalEmail">
@@ -847,7 +896,7 @@
 					<xsl:with-param name="name" select="'externalMessageReceivedGlobalEmailAddresses'"/>
 					<xsl:with-param name="rows" select="5"/>
 					<xsl:with-param name="separateListValues" select="'true'"/>
-					<xsl:with-param name="element" select="NotificationSettings/ExternalMessageReceivedGlobalEmailAddresses/address" />          
+					<xsl:with-param name="element" select="NotificationSettings/ExternalMessageReceivedGlobalEmailAddresses/address" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -858,7 +907,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendManagerExpiredGlobalEmail'" />
 					<xsl:with-param name="id" select="'sendManagerExpiredGlobalEmail'" />
-					<xsl:with-param name="element" select="NotificationSettings" />       
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 				<label for="sendManagerExpiredGlobalEmail">
@@ -879,7 +928,7 @@
 					<xsl:with-param name="name" select="'managerExpiredGlobalEmailAddresses'"/>
 					<xsl:with-param name="rows" select="5"/>
 					<xsl:with-param name="separateListValues" select="'true'"/>
-					<xsl:with-param name="element" select="NotificationSettings/ManagerExpiredGlobalEmailAddresses/address" />          
+					<xsl:with-param name="element" select="NotificationSettings/ManagerExpiredGlobalEmailAddresses/address" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -894,15 +943,25 @@
 					<xsl:value-of select="/Document/cssPath"/>
 				</xsl:if>
 			</xsl:with-param>
-		</xsl:call-template>	
+		</xsl:call-template>
 	
 	</xsl:template>
 	
 	<xsl:template name="addUserTagsTable">
+		<xsl:param name="sms" select="'false'"/>
 	
 		<div class="floatleft margintop full">
 
-			<p><xsl:value-of select="$i18n.UserTagsTable.description"/></p>
+			<p>
+				<xsl:choose>
+					<xsl:when test="$sms = 'true'">
+						<xsl:value-of select="$i18n.UserTagsTable.smsDescription"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.UserTagsTable.emailDescription"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</p>
 		
 			<table class="full border">
 				<tr>
@@ -952,7 +1011,7 @@
 					<td>
 						<xsl:value-of select="$i18n.StatusDescriptionTag"/>
 					</td>
-				</tr>				
+				</tr>
 				<tr>
 					<td>
 						<xsl:text>$contact.firstname</xsl:text>
@@ -976,7 +1035,7 @@
 					<td>
 						<xsl:value-of select="$i18n.FLowInstanceAttachedPDFTextTag"/>
 					</td>
-				</tr>			
+				</tr>
 			</table>
 		
 		</div>
@@ -998,7 +1057,7 @@
 					</xsl:when>
 					<xsl:when test="validationErrorType='TooLong'">
 						<xsl:value-of select="$i18n.validation.tooLong" />
-					</xsl:when>														
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.validation.unknownError" />
 					</xsl:otherwise>
@@ -1013,11 +1072,29 @@
 					<xsl:when test="fieldName = 'flowInstanceSubmittedUserEmailMessage'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedUserEmailMessage"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceSubmittedNotLoggedInUserEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceSubmittedNotLoggedInUserEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceSubmittedUserSMS'">
+						<xsl:value-of select="$i18n.FlowInstanceSubmittedUserSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceSubmittedNotLoggedInUserSMS'">
+						<xsl:value-of select="$i18n.FlowInstanceSubmittedNotLoggedInUserSMS"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceArchivedUserEmailSubject'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailSubject"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceArchivedUserEmailMessage'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedNotLoggedInUserEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedNotLoggedInUserEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'externalMessageReceivedUserEmailSubject'">
+						<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'externalMessageReceivedUserEmailMessage'">
+						<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailMessage"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedManagerSubject'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerSubject"/>
@@ -1034,10 +1111,16 @@
 					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'statusChangedUserEmailSubject'">
+						<xsl:value-of select="$i18n.StatusChangedUserEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'statusChangedUserEmailMessage'">
+						<xsl:value-of select="$i18n.StatusChangedUserEmailMessage"/>
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</p>
 		</xsl:if>
 		
@@ -1047,6 +1130,6 @@
 			</p>
 		</xsl:if>
 		
-	</xsl:template>		
+	</xsl:template>
 
 </xsl:stylesheet>
