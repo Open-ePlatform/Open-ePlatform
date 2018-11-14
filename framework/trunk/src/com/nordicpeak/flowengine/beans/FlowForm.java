@@ -55,6 +55,10 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 	private String externalURL;
 	
 	@DAOManaged
+	@XMLElement
+	private String fileExtension;
+	
+	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean showExternalLinkIcon;
@@ -65,73 +69,82 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 		
 		return flowFormID;
 	}
-	
+
 	public void setFlowFormID(Integer flowFormID) {
-		
+
 		this.flowFormID = flowFormID;
 	}
-	
+
 	public String getRawName() {
-		
+
 		return name;
 	}
-	
+
 	public String getName() {
-		
+
 		if (name != null) {
-			
+
 			return name;
 		}
-		
+
 		if (flow != null) {
-			
+
 			return flow.getName();
 		}
-		
+
 		return null;
 	}
-	
+
 	public void setName(String name) {
-		
+
 		this.name = name;
 	}
-	
+
 	public Flow getFlow() {
-		
+
 		return flow;
 	}
-	
+
 	public void setFlow(Flow flow) {
-		
+
 		this.flow = flow;
 	}
-	
+
 	public String getExternalURL() {
-		
+
 		return externalURL;
 	}
-	
+
 	public void setExternalURL(String externalPDF) {
-		
+
 		this.externalURL = externalPDF;
 	}
-	
+
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
 	@Override
 	public String toString() {
-		
+
 		return "name: " + name + " (ID: " + flowFormID + ")";
 	}
-	
+
 	public byte[] getImportFileContents() {
 		return importFileContents;
 	}
-	
+
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
 		
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		this.name = XMLValidationUtils.validateParameter("name", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		fileExtension = XMLValidationUtils.validateParameter("fileExtension", xmlParser, false, 1, 4, StringPopulator.getPopulator(), errors);
 		this.externalURL = XMLValidationUtils.validateParameter("externalURL", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
 		
 		if (externalURL == null) {

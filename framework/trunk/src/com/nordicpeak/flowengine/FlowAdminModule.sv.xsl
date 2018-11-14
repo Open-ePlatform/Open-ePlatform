@@ -223,7 +223,8 @@
 	<xsl:variable name="i18n.AddFlowForm.submit">Lägg till blankett</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowForm.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UnableToStoreFile">Det gick inte att spara blanketten.</xsl:variable>
-	<xsl:variable name="i18n.InvalidFlowFormFileFormat">Felaktig filformat endast blanketter i PDF format är tillåtna.</xsl:variable>
+	<xsl:variable name="i18n.InvalidFlowFormFileFormat.part1">Felaktig filformat endast blanketter i</xsl:variable>
+	<xsl:variable name="i18n.InvalidFlowFormFileFormat.part2">format är tillåtna.</xsl:variable>
 	<xsl:variable name="i18n.NoAttachedFile">Du har inte bifogat någon fil.</xsl:variable>
 	
 	<xsl:variable name="i18n.defaultQueryState">Standardläge</xsl:variable>
@@ -524,6 +525,7 @@
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av filuppladdningen i meddelandefunktionen</xsl:variable>
+	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>

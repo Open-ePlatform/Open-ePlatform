@@ -429,6 +429,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max PDF form file size", description = "Maxmium file size in megabytes allowed", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxPDFFormFileSize = 15;
+	
+	@ModuleSetting
+	@SplitOnLineBreak
+	@TextAreaSettingDescriptor(name = "Flow form file extensions", description = "Allowed file extensions for files uploaded as flow forms")
+	protected List<String> allowedFlowFormFileExtensions = Arrays.asList(new String[]{"pdf", "xls", "xlsx"});
 
 	@ModuleSetting(id = "allowSkipOverviewForPDFForms")
 	@CheckboxSettingDescriptor(name = "Allow skip overview for PDF forms", description = "If false always shows the overview if a PDF form is available. Requires special button on step pages if set.")
@@ -496,7 +501,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@SplitOnLineBreak
 	@TextAreaSettingDescriptor(name = "Foreign ID attribute", description = "Attribute that is set when user is logged in with a foreign ID")
 	protected List<String> foreignIDattributes;
-
+	
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
 
@@ -2551,18 +2556,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return flowCacheMap.get(flowID);
 	}
 
-	@Override
-	public int getRamThreshold() {
-
-		return ramThreshold;
-	}
-
-	@Override
-	public long getMaxRequestSize() {
-
-		return maxRequestSize;
-	}
-
 	public Collection<FlowType> getCachedFlowTypes() {
 
 		return this.flowTypeCacheMap.values();
@@ -4199,7 +4192,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		File sentFile = file;
 
-		if (!unmodified) {
+		if (!unmodified && flowForm.getFileExtension().equals("pdf")) {
 
 			for (PDFRequestFilter filter : pdfRequestFilters) {
 
@@ -4214,7 +4207,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		try {
-			HTTPUtils.sendFile(sentFile, flowForm.getName() + ".pdf", req, res, ContentDisposition.ATTACHMENT);
+			HTTPUtils.sendFile(sentFile, flowForm.getName() + "." + flowForm.getFileExtension(), req, res, ContentDisposition.ATTACHMENT);
 
 		} catch (IOException e) {
 
@@ -4239,7 +4232,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@Override
 	public String getFlowFormFilePath(FlowForm form) {
 
-		return getFlowFormFilestore() + java.io.File.separator + form.getFlowFormID() + ".pdf";
+		return getFlowFormFilestore() + java.io.File.separator + form.getFlowFormID() + "." + form.getFileExtension();
 	}
 
 	@Override
@@ -5421,6 +5414,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public String getAlias() {
 		return moduleDescriptor.getAlias();
+	}
+
+	@Override
+	public List<String> getAllowedFlowFormFileExtensions() {
+		return allowedFlowFormFileExtensions;
 	}
 	
 }

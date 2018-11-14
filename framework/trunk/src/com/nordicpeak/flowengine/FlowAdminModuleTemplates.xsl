@@ -713,6 +713,22 @@
 					
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideFromUser'" />
+							<xsl:with-param name="id" select="'hideFromUser'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="disabled" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="hideFromUser">
+							<xsl:value-of select="$i18n.Flow.hideFromUser" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="name" select="'hideExternalMessages'" />
 							<xsl:with-param name="id" select="'hideExternalMessages'" />
 							<xsl:with-param name="element" select="Flow" />
@@ -1574,7 +1590,7 @@
 				<xsl:when test="externalURL">
 
 					<a href="{externalURL}" target="_blank">
-						<img class="alignmiddle marginright" src="{$imgPath}/pdf.png" alt="" />
+						<img class="alignmiddle marginright" src="{$imgPath}/file.png" alt="" />
 						<xsl:value-of select="$i18n.DownloadFlowForm" />
 						<xsl:value-of select="'&#160;'" />
 						<xsl:text>(</xsl:text>
@@ -1587,7 +1603,16 @@
 				<xsl:otherwise>
 
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}?raw=t" target="_blank">
-						<img class="alignmiddle marginright" src="{$imgPath}/pdf.png" alt="" />
+						<img class="alignmiddle marginright" alt="" >
+							<xsl:attribute name="src">
+								<xsl:value-of select="$imgPath" />
+								<xsl:choose>
+									<xsl:when test="fileExtension = 'pdf'">/pdf.png</xsl:when>
+									<xsl:when test="fileExtension = 'xls' or fileExtension = 'xlsx'">/xls.png</xsl:when>
+									<xsl:otherwise>/file.png</xsl:otherwise>
+								</xsl:choose>
+							</xsl:attribute>
+						</img>
 						<xsl:value-of select="$i18n.DownloadFlowForm" />
 						
 						<xsl:if test="formattedSize">
@@ -2050,7 +2075,7 @@
 
 		<xsl:apply-templates select="validationException/validationError" />
 
-		<form method="post" action="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}">
+		<form id="flowForm" method="post" action="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}">
 		
 			<xsl:if test="Flow/externalLink">
 				<xsl:call-template name="createHiddenField">
@@ -2453,6 +2478,21 @@
 					
 					<label for="hideFromOverview">
 						<xsl:value-of select="$i18n.hideFromOverview" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom margintop internal">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideFromUser'" />
+						<xsl:with-param name="id" select="'hideFromUser'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="hideFromUser">
+						<xsl:value-of select="$i18n.Flow.hideFromUser" />
 					</label>
 				</div>
 			</div>
@@ -3177,7 +3217,7 @@
 						<xsl:with-param name="name" select="'name'"/>     
 					</xsl:call-template>
 				</div>
-			</div>					
+			</div>
 			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.AddEvaluatorDescriptor.submit}" />
@@ -3185,7 +3225,7 @@
 	
 		</form>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="AddStep">
 	
@@ -3330,7 +3370,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'managingTime'"/>
 					<xsl:with-param name="name" select="'managingTime'"/>
-					<xsl:with-param name="element" select="Status" />          
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -3343,14 +3383,14 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserMutable'" />
 					<xsl:with-param name="id" select="'isUserMutable'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="isUserMutable">
 					<xsl:value-of select="$i18n.isUserMutable" />
-				</label>				
+				</label>
 			</div>
-		</div>		
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop">
 		
@@ -3358,12 +3398,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserDeletable'" />
 					<xsl:with-param name="id" select="'isUserDeletable'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="isUserDeletable">
 					<xsl:value-of select="$i18n.isUserDeletable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -3373,12 +3413,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminMutable'" />
 					<xsl:with-param name="id" select="'isAdminMutable'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="isAdminMutable">
 					<xsl:value-of select="$i18n.isAdminMutable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -3388,12 +3428,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminDeletable'" />
 					<xsl:with-param name="id" select="'isAdminDeletable'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="isAdminDeletable">
 					<xsl:value-of select="$i18n.isAdminDeletable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -3403,12 +3443,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'requireSigning'" />
 					<xsl:with-param name="id" select="'requireSigning'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="requireSigning">
 					<xsl:value-of select="$i18n.Status.requireSigning" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -3418,7 +3458,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'useAccessCheck'" />
 					<xsl:with-param name="id" select="'useAccessCheck'" />
-					<xsl:with-param name="element" select="Status" />  					     
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
 				<label for="useAccessCheck">
@@ -3673,7 +3713,7 @@
 			
 			<div class="floatleft full bigmarginbottom">
 				
-				<label for="name" class="floatleft full">
+				<label for="icon" class="floatleft full">
 					<xsl:value-of select="$i18n.uploadNewIcon" />
 				</label>
 				
@@ -6365,7 +6405,11 @@
 	<xsl:template match="validationError[messageKey='InvalidFlowFormFileFormat']">
 	
 		<p class="error">
-			<xsl:value-of select="$i18n.InvalidFlowFormFileFormat"/>
+			<xsl:value-of select="$i18n.InvalidFlowFormFileFormat.part1"/>
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="displayName"/>
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="$i18n.InvalidFlowFormFileFormat.part2"/>
 		</p>	
 	</xsl:template>
 	

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
-
+	
+	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
+	
 	<xsl:template match="Flow" mode="overview">
 		
 		<xsl:param name="internalFlowMethodAlias" select="'flow'"/>
@@ -182,41 +184,41 @@
 								
 								<div class="help-backdrop" data-help-box="askLogin" />
 								
-	  					</xsl:if>
-	  					
-  					</xsl:if>
-  					
-  				</div>
-  				
-  				<xsl:if test="FlowForms/FlowForm">
+							</xsl:if>
+							
+						</xsl:if>
+						
+					</div>
+					
+					<xsl:if test="FlowForms/FlowForm">
 					<xsl:call-template name="FlowFormButton">
 						<xsl:with-param name="isDisabled" select="$isDisabled"/>
 						<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
 					</xsl:call-template>
 				</xsl:if>
-  					
-  			</div>
-  			
-  			<xsl:if test="$isInternal = 'true' and Steps">
-  			
-	  			<div class="section-full no-pad-tablet">
-	  				<h2 class="h1 hide-tablet"><xsl:value-of select="$i18n.StepDescriptionTitle" />:</h2>
-	  				
-	  				<div class="service-navigator-wrap summary">
-	  					<div>
-	  					
-	  						<a data-icon-after="&lt;" href="#" class="js-prev disabled">
-			  					<span><xsl:value-of select="$i18n.Previous" /></span>
-			  				</a>
-	  						
-	  						<ul class="service-navigator primary navigated">
-	  						
-			  					<xsl:apply-templates select="Steps/Step" mode="overview">
-			  						<xsl:with-param name="flowDisabled" select="$isDisabled" />
-			  					</xsl:apply-templates>
-			  					
-			  					<xsl:variable name="stepCount" select="count(Steps/Step)" />
-			  					
+						
+				</div>
+				
+				<xsl:if test="$isInternal = 'true' and Steps">
+				
+					<div class="section-full no-pad-tablet">
+						<h2 class="h1 hide-tablet"><xsl:value-of select="$i18n.StepDescriptionTitle" />:</h2>
+						
+						<div class="service-navigator-wrap summary">
+							<div>
+							
+								<a data-icon-after="&lt;" href="#" class="js-prev disabled">
+									<span><xsl:value-of select="$i18n.Previous" /></span>
+								</a>
+								
+								<ul class="service-navigator primary navigated">
+								
+									<xsl:apply-templates select="Steps/Step" mode="overview">
+										<xsl:with-param name="flowDisabled" select="$isDisabled" />
+									</xsl:apply-templates>
+									
+									<xsl:variable name="stepCount" select="count(Steps/Step)" />
+									
 								<xsl:variable name="previewOffset">
 									<xsl:choose>
 										<xsl:when test="usePreview = 'true'">
@@ -610,7 +612,16 @@
 				<xsl:attribute name="rel">nofollow</xsl:attribute>
 			</xsl:if>
 
-			<img class="alignmiddle marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/file.png" alt="" />
+			<img class="alignmiddle marginright" alt="" >
+				<xsl:attribute name="src">
+					<xsl:value-of select="$imgPath" />
+					<xsl:choose>
+						<xsl:when test="fileExtension = 'pdf'">/pdf.png</xsl:when>
+						<xsl:when test="fileExtension = 'xls' or fileExtension = 'xlsx'">/xls.png</xsl:when>
+						<xsl:otherwise>/file.png</xsl:otherwise>
+					</xsl:choose>
+				</xsl:attribute>
+			</img>
 		
 			<xsl:choose>
 				<xsl:when test="name">

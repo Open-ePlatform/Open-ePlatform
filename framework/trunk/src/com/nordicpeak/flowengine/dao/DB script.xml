@@ -2043,4 +2043,25 @@
 		</Query>
 	</Script>
 	
+	<Script version="108">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideFromUser` TINYINT(1) UNSIGNED NOT NULL AFTER `hideSubmitStepText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="109">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_forms` ADD COLUMN `fileExtension` CHAR(4) NULL DEFAULT NULL AFTER `externalURL`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowengine_flow_forms` SET `fileExtension` = 'pdf' WHERE externalURL IS NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

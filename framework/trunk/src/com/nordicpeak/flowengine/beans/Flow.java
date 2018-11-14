@@ -293,6 +293,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	private boolean hideInternalMessages;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideFromUser;
+	
+	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String userDescriptionTemplate;
@@ -940,7 +945,8 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 			this.hideManagerDetails = xmlParser.getPrimitiveBoolean("hideManagerDetails");
 		}
 		
-		this.hideFromOverview = xmlParser.getPrimitiveBoolean("hideFromOverview");
+		hideFromOverview = xmlParser.getPrimitiveBoolean("hideFromOverview");
+		hideFromUser = xmlParser.getPrimitiveBoolean("hideFromUser");
 		hideInternalMessages = xmlParser.getPrimitiveBoolean("hideInternalMessages");
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
 		hideExternalMessageAttachments = xmlParser.getPrimitiveBoolean("hideExternalMessageAttachments");
@@ -1025,34 +1031,42 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public boolean isHideInternalMessages() {
 		return hideInternalMessages;
 	}
-	
+
 	public void setHideInternalMessages(boolean hideInternalMessages) {
 		this.hideInternalMessages = hideInternalMessages;
 	}
-	
+
 	public boolean isHideExternalMessages() {
 		return hideExternalMessages;
 	}
-	
+
 	public void setHideExternalMessages(boolean hideExternalMessages) {
 		this.hideExternalMessages = hideExternalMessages;
 	}
-	
-	
+
 	public boolean isHideExternalMessageAttachments() {
-	
+
 		return hideExternalMessageAttachments;
 	}
 
-	
 	public void setHideExternalMessageAttachments(boolean hideExternalMessageAttachments) {
-	
+
 		this.hideExternalMessageAttachments = hideExternalMessageAttachments;
 	}
 
 	@Override
+	public boolean isHideFromUser() {
+		return hideFromUser;
+	}
+
+	public void setHideFromUser(boolean hideFromUser) {
+		this.hideFromUser = hideFromUser;
+	}
+
+
+	@Override
 	public boolean isPaymentSupportEnabled() {
-		
+
 		return paymentSupportEnabled;
 	}
 	

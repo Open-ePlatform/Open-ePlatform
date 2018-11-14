@@ -317,6 +317,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		validateFlowCategory(bean, req, errors);
 
+		validateFlowSettings(bean);
+
 		validateContactFields(bean.getFlowFamily(), errors);
 
 		validateAliases(bean.getFlowFamily(), errors);
@@ -407,6 +409,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		validateFlowCategory(bean, req, errors);
+		
+		validateFlowSettings(bean);
 
 		validateContactFields(bean.getFlowFamily(), errors);
 
@@ -479,6 +483,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
+		}
+	}
+	
+	private void validateFlowSettings(Flow flow) {
+		
+		if (flow.isHideFromUser()) {
+			
+			flow.setHideExternalMessages(true);
 		}
 	}
 

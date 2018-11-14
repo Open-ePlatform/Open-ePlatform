@@ -26,6 +26,7 @@ import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -192,24 +193,28 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		
 		MultipartRequest mReq = (MultipartRequest) req;
 		FileItem fileItem = getUploadedFileItem(mReq);
-		
+
 		if (fileItem != null) {
-			
-			String lowerCasefileName = fileItem.getName().toLowerCase();
-			
-			if (!(lowerCasefileName.endsWith(".pdf"))) {
-				
-				throw new ValidationException(new ValidationError("InvalidFlowFormFileFormat"));
+
+			String lowerCaseFileExtension = FileUtils.getFileExtension(fileItem.getName().toLowerCase());
+
+			if (!callback.getAllowedFlowFormFileExtensions().contains(lowerCaseFileExtension)) {
+
+				throw new ValidationException(new ValidationError("InvalidFlowFormFileFormat", StringUtils.toCommaSeparatedString(callback.getAllowedFlowFormFileExtensions())));
 			}
-			
+
+			flowForm.setFileExtension(lowerCaseFileExtension);
 			flowForm.setExternalURL(null);
-			
+
 		} else if (StringUtils.isEmpty(flowForm.getExternalURL())) {
-			
+
 			if (flowForm.getFlowFormID() == null || !(new File(callback.getFlowFormFilePath(flowForm)).exists())) {
-				
+
 				throw new ValidationException(new ValidationError("NoAttachedFile"));
 			}
+
+		} else {
+			flowForm.setFileExtension(null);
 		}
 	}
 	

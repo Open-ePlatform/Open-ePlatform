@@ -424,6 +424,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				if (excludedFlowTypesHashSet != null && excludedFlowTypesHashSet.contains(flowInstance.getFlow().getFlowType().getFlowTypeID())) {
 					continue;
 				}
+				
+				if (flowInstance.getFlow().isHideFromUser() && flowInstance.getFirstSubmitted() != null) {
+					continue;
+				}
 
 				Status status = flowInstance.getStatus();
 
@@ -1319,7 +1323,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		log.debug("Received external message event regarding " + event.getFlowInstance());
 
-		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.MANAGER) && notificationHandler != null) {
+		if (source == EventSource.LOCAL && event.getSenderType().equals(SenderType.MANAGER) && notificationHandler != null && !event.getFlowInstance().getFlow().isHideFromUser()) {
 
 			try {
 				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), notificationExternalMessage, event.getEvent().getPoster(), "message", null);
@@ -1336,7 +1340,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		log.debug("Received status changed by manager event regarding " + event.getFlowInstance());
 
-		if (source == EventSource.LOCAL && notificationHandler != null) {
+		if (source == EventSource.LOCAL && notificationHandler != null && !event.getFlowInstance().getFlow().isHideFromUser()) {
 
 			try {
 				notificationHandler.sendNotificationToFlowInstanceOwners(this, event.getFlowInstance().getFlowInstanceID(), eventStatusUpdated + ": " + event.getFlowInstance().getStatus().getName(), event.getUser(), "changedStatus", null);

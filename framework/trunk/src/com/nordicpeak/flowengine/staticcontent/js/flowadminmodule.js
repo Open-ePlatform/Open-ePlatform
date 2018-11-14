@@ -52,52 +52,82 @@ $(document).ready(function() {
 		updateSortOrder($(this));
 	});
 	
-	$("#flowtype").change(function(e) {
-		$(".flowTypeCategories").hide();
-		$(".flowTypeCategories select").attr("disabled", "disabled");
-		$("#flowTypeCategories_" + $(this).val() + " select").removeAttr("disabled");
-		$("#flowTypeCategories_" + $(this).val()).show();
-	});
+	if ($("#flowForm").length > 0) { // Add/Update flow
 	
-	$("#flowtype").trigger("change");
-	
-	$("#typeOfFlow").change(function(e) {
+		//Add flow
 		
-		var $flowForm = $("#flowForm");
+		$("#flowtype").change(function(e) {
+			$(".flowTypeCategories").hide();
+			$(".flowTypeCategories select").attr("disabled", "disabled");
+			$("#flowTypeCategories_" + $(this).val() + " select").removeAttr("disabled");
+			$("#flowTypeCategories_" + $(this).val()).show();
+			
+		}).trigger("change");
 		
-		if($(this).val() == "EXTERNAL") {
-			$flowForm.find(".internal").hide();
-			$("#enabled").removeAttr("disabled");
-			$("#externalLink").removeAttr("disabled").parent().parent().show();
-		} else {
-			$flowForm.find(".internal").show();
-			$("#enabled").attr("disabled", "disabled");
-			$("#externalLink").attr("disabled", "disabled").parent().parent().hide();
-		}
+		$("#typeOfFlow").change(function(e) {
+			
+			var $flowForm = $("#flowForm");
+			
+			if($(this).val() == "EXTERNAL") {
+				$flowForm.find(".internal").hide();
+				$("#enabled").removeAttr("disabled");
+				$("#externalLink").removeAttr("disabled").parent().parent().show();
+			} else {
+				$flowForm.find(".internal").show();
+				$("#enabled").attr("disabled", "disabled");
+				$("#externalLink").attr("disabled", "disabled").parent().parent().hide();
+			}
+			
+		}).trigger("change");
 		
-	});
-	
-	$("#typeOfFlow").trigger("change");
-	
-	$("#requireAuthentication").change(function(e) {
+		// Add and Update flow
 		
-		var checked = $(this).prop("checked");
-		var allowForeignIDs = $("#allowForeignIDs");
+		$("#requireAuthentication").change(function(e) {
+			
+			var checked = $(this).prop("checked");
+			var allowForeignIDs = $("#allowForeignIDs");
+			
+			allowForeignIDs.parent().parent().toggle(checked);
+			
+		}).trigger("change");
 		
-		allowForeignIDs.parent().parent().toggle(checked);
-	});
-	
-	$("#requireAuthentication").trigger("change");
-	
-	$("#requireSigning").change(function(e) {
+		$("#requireSigning").change(function(e) {
+			
+			var checked = $(this).prop("checked");
+			var fields = $("#useSequentialSigning, #skipPosterSigning");
+			
+			fields.parent().parent().toggle(checked);
+			
+		}).trigger("change");
 		
-		var checked = $(this).prop("checked");
-		var fields = $("#useSequentialSigning, #skipPosterSigning");
+		$('#hideExternalMessages').change(function() {
+
+			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
 		
-		fields.parent().parent().toggle(checked);
-	});
-	
-	$("#requireSigning").trigger("change");
+		}).trigger('change');
+		
+		$("#hideFromUser").change(function(e) {
+			
+			var checked = $(this).prop("checked");
+			
+			var fields = $("#hideExternalMessages");
+			
+			fields.prop("disabled", checked);
+			
+			if (checked) {
+				fields.prop("checked", true).trigger("change");
+			}
+			
+		}).trigger("change");
+		
+		$("#useAccessCheck").change(function(e) {
+			
+			var checked = $(useAccessCheck).prop("checked");
+			
+			$("#allowedManagers").toggle(checked).find("input").not(".usergroup-list input").prop("disabled", !checked);
+			
+		}).trigger("change");
+	}
 	
 	$("#checkall").click(function() {
 		
@@ -217,18 +247,6 @@ $(document).ready(function() {
 		}
     });
 	
-	$("#useAccessCheck").change(function(e) {
-		
-		var checked = $(useAccessCheck).prop("checked");
-		
-		$("#allowedManagers").toggle(checked).find("input").not(".usergroup-list input").prop("disabled", !checked);
-	}).trigger("change");
-
-	$('#hideExternalMessages').change(function() {
-
-		$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
-	
-	}).trigger('change');
 });
 
 function updateSortOrder(obj) {
