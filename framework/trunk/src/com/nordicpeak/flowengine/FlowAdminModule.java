@@ -5153,10 +5153,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 				
 				validationErrors = new ArrayList<ValidationError>();
 				
-				List<Integer> noMatchUserIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-user"));
-				List<Integer> noMatchGroupIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-group"));
-				List<Integer> alwaysUserIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-user"));
-				List<Integer> alwaysGroupIDs = NumberUtils.toInt(req.getParameterValues("auto-manager-always-group"));
+				List<Integer> noMatchUserIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-user")));
+				List<Integer> noMatchGroupIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-group")));
+				List<Integer> alwaysUserIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-always-user")));
+				List<Integer> alwaysGroupIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-always-group")));
 				
 				noMatchUsers = noMatchUserIDs == null ? null : systemInterface.getUserHandler().getUsers(noMatchUserIDs, false, true);
 				noMatchGroups = noMatchGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(noMatchGroupIDs, false);
@@ -5247,6 +5247,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 								}
 							}
 						}
+						
+						userIDs = CollectionUtils.removeDuplicates(userIDs);
+						groupIDs = CollectionUtils.removeDuplicates(groupIDs);
 						
 						List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
 						List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
