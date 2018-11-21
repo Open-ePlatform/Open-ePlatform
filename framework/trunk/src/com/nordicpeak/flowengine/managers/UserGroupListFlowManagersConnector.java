@@ -1,11 +1,7 @@
 package com.nordicpeak.flowengine.managers;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +13,6 @@ import se.unlogic.hierarchy.core.handlers.UserHandler;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
-import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.webutils.http.URIParser;
 
@@ -53,7 +48,7 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 			
 			ImmutableFlowFamily flowFamily = flow.getFlowFamily();
 			
-			Set<User> managingUsers = getAllowedFlowManagers(flowFamily);
+			List<User> managingUsers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, userHandler);
 			
 			if (CollectionUtils.isEmpty(managingUsers)) {
 				
@@ -67,10 +62,7 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 				
 				log.info("User " + user + " searching for manager users of flow " + flow + " using empty query, returning all " + managingUsers.size() + " managers");
 				
-				List<User> sortedUsers = new ArrayList<User>(managingUsers);
-				Collections.sort(sortedUsers, UserNameComparator.getInstance());
-				
-				sendJSONResponse(getUsersJsonArray(sortedUsers), res);
+				sendJSONResponse(getUsersJsonArray(managingUsers), res);
 				return null;
 			}
 			
@@ -118,8 +110,6 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 				sendEmptyJSONResponse(res);
 				return null;
 			}
-			
-			Collections.sort(matchingUsers, UserNameComparator.getInstance());
 			
 			sendJSONResponse(getUsersJsonArray(matchingUsers), res);
 			return null;
@@ -208,31 +198,4 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 		}
 	}
 	
-	protected Set<User> getAllowedFlowManagers(ImmutableFlowFamily flowFamily) {
-		
-		Set<User> managingUsers = new HashSet<User>();
-		
-		Collection<Integer> managerIDs = flowFamily.getActiveManagerUserIDs();
-		List<Integer> managerGroupIDs = flowFamily.getManagerGroupIDs();
-		
-		if (!CollectionUtils.isEmpty(managerIDs)) {
-			
-			List<User> users = userHandler.getUsers(managerIDs, false, true);
-			
-			if (users != null) {
-				managingUsers.addAll(users);
-			}
-		}
-		
-		if (!CollectionUtils.isEmpty(managerGroupIDs)) {
-			
-			List<User> users = userHandler.getUsersByGroups(managerGroupIDs, true);
-			
-			if (users != null) {
-				managingUsers.addAll(users);
-			}
-		}
-		
-		return managingUsers;
-	}
 }
