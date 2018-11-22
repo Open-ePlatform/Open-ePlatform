@@ -5,7 +5,5 @@ public class IntegrationCallbackConstants {
 
 	public static final String DELIVERY_CONFIRMED_ATTRIBUTE = "integrationDeliveryConfirmed";
 	
-	public static final String EXTERNAL_ID_ATTRIBUTE = "integrationExternalID";
-	
 	public static final String EXTERNAL_SYSTEM_ATTRIBUTE = "integrationExternalSystem";
 }

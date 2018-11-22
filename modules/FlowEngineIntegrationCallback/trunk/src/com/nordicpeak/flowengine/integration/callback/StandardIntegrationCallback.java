@@ -31,6 +31,7 @@ import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
@@ -340,7 +341,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 						throw new RuntimeException("System field of ExternalID cannot be empty");
 					}
 					
-					flowInstance.getAttributeHandler().setAttribute(IntegrationCallbackConstants.EXTERNAL_ID_ATTRIBUTE, externalID.getID());
+					flowInstance.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE, externalID.getID());
 					flowInstance.getAttributeHandler().setAttribute(IntegrationCallbackConstants.EXTERNAL_SYSTEM_ATTRIBUTE, externalID.getSystem());
 				}
 				
