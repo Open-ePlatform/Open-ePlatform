@@ -106,7 +106,6 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundI
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
@@ -603,7 +602,7 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		
 		if (flowInstance != null) {
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow())) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance)) {
 				
 				throw new FlowDisabledException(flowInstance.getFlow());
 			}
@@ -771,11 +770,11 @@ public class MultiSigningHandlerModule extends AnnotatedForegroundModule impleme
 		return uriParser.getFullContextPath() + this.getFullAlias() + "/sign/" + flowInstance.getFlowInstanceID();
 	}
 	
-	public boolean isOperatingStatusDisabled(ImmutableFlow flow) {
+	public boolean isOperatingStatusDisabled(ImmutableFlowInstance flowInstance) {
 		
 		if (operatingMessageModule != null) {
 			
-			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), false);
+			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), false, flowInstance.getFlowInstanceID() != null);
 			
 			if (operatingStatus != null && operatingStatus.isDisabled()) {
 				
