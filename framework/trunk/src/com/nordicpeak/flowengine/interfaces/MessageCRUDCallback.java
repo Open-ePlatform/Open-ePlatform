@@ -24,7 +24,7 @@ public interface MessageCRUDCallback {
 
 	String getTempDir();
 
-	boolean isOperatingStatusDisabled(ImmutableFlow flow, boolean manager);
+	boolean isOperatingStatusDisabled(ImmutableFlowInstance flowInstance, boolean manager);
 
 	ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> errors) throws SQLException, ModuleConfigurationException;
 
