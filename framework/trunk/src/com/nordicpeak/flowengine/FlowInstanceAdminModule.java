@@ -534,7 +534,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
@@ -751,7 +751,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
@@ -843,7 +843,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 				
-				if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+				if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 					
 					return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 				}
@@ -921,7 +921,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 				
-				if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+				if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 					
 					return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 				}
@@ -1011,7 +1011,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
@@ -1181,7 +1181,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
@@ -1840,7 +1840,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 			
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 				
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
