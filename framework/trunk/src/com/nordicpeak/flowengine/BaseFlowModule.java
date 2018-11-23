@@ -327,7 +327,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			callback.checkFlowInstanceAccess(flowInstance, user);
 
-			if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), requestMetadata.isManager()))) {
+			if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, requestMetadata.isManager()))) {
 
 				throw new FlowDisabledException(flowInstance.getFlow());
 			}
@@ -402,7 +402,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			
 			callback.checkNewFlowInstanceAccess(flow, user, profile);
 
-			if (checkEnabled && (!flow.isEnabled() || isOperatingStatusDisabled(flow, requestMetadata.isManager()))) {
+			if (checkEnabled && (!flow.isEnabled() || isOperatingStatusDisabled(flow, requestMetadata.isManager(), false))) {
 
 				throw new FlowDisabledException(flow);
 			}
@@ -448,7 +448,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new FlowNoLongerAvailableException(instanceManager.getFlowInstance().getFlow());
 		}
 
-		if (checkEnabled && (!flow.isEnabled() || isOperatingStatusDisabled(instanceManager.getFlowInstance().getFlow(), manager))) {
+		if (checkEnabled && (!flow.isEnabled() || isOperatingStatusDisabled(instanceManager.getFlowInstance(), manager))) {
 
 			this.removeMutableFlowInstanceManagerFromSession(instanceManager, session);
 
@@ -462,12 +462,17 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new FlowNotPublishedException(instanceManager.getFlowInstance().getFlow());
 		}
 	}
+	
+	public boolean isOperatingStatusDisabled(ImmutableFlowInstance flowInstance, boolean manager) {
 
-	public boolean isOperatingStatusDisabled(ImmutableFlow flow, boolean manager) {
+		return isOperatingStatusDisabled(flowInstance.getFlow(), manager, flowInstance.getFlowInstanceID() != null);
+	}
+
+	public boolean isOperatingStatusDisabled(ImmutableFlow flow, boolean manager, boolean existingFlowInstance) {
 
 		if (operatingMessageModule != null) {
 
-			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), manager);
+			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), manager, existingFlowInstance);
 
 			if (operatingStatus != null && operatingStatus.isDisabled()) {
 
@@ -492,7 +497,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			accessController.checkFlowInstanceAccess(flowInstance, user);
 		}
 
-		if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), manager))) {
+		if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager))) {
 
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
@@ -2203,7 +2208,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		accessController.checkFlowInstanceAccess(flowInstance, user);
 
-		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), manager)) {
+		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager)) {
 
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
@@ -2242,7 +2247,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		accessController.checkFlowInstanceAccess(flowInstance, user);
 
-		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), manager)) {
+		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager)) {
 
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
@@ -2281,7 +2286,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		accessController.checkFlowInstanceAccess(flowInstance, user);
 
-		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), manager)) {
+		if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager)) {
 
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
