@@ -589,7 +589,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		if (operatingMessageModule != null) {
 
-			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), false);
+			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), false, false);
 
 			if (operatingStatus != null) {
 				showFlowOverviewElement.appendChild(operatingStatus.toXML(doc));
