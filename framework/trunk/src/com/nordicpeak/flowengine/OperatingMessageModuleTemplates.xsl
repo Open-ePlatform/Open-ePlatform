@@ -558,14 +558,14 @@
 			<div class="floatleft">
 
 				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'allowExistingInstances'" />
-					<xsl:with-param name="name" select="'allowExistingInstances'" />
+					<xsl:with-param name="id" select="'allowUserHandlingOfSubmittedInstances'" />
+					<xsl:with-param name="name" select="'allowUserHandlingOfSubmittedInstances'" />
 					<xsl:with-param name="element" select="$operatingMessage" />
 					<xsl:with-param name="value" select="'true'" />
 				</xsl:call-template>
 				
-				<label for="allowExistingInstances">
-					<xsl:value-of select="$i18n.AllowExistingInstancesLabel" />
+				<label for="allowUserHandlingOfSubmittedInstances">
+					<xsl:value-of select="$i18n.AllowUserHandlingOfSubmittedInstancesLabel" />
 				</label>
 				
 			</div>

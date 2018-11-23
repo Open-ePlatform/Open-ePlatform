@@ -37,7 +37,7 @@ $(document).ready(function() {
 	
 	$("#disableFlows").change(function() {
 		
-		$("#allowManagingOfInstances, #allowExistingInstances").parent().parent().toggle($(this).prop("checked"));
+		$("#allowManagingOfInstances, #allowUserHandlingOfSubmittedInstances").parent().parent().toggle($(this).prop("checked"));
 	});	
 	
 	var $flowFamilies = $("#chooseFlowFamilies").find(".flowfamily");

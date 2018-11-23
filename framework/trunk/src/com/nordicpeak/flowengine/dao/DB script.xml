@@ -2074,4 +2074,13 @@
 		</Query>
 	</Script>
 	
+	<Script version="111">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_operating_messages`
+					CHANGE COLUMN `allowExistingInstances` `allowUserHandlingOfSubmittedInstances` TINYINT(1) UNSIGNED NOT NULL AFTER `allowManagingOfInstances`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

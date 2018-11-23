@@ -59,7 +59,7 @@
 	<xsl:variable name="i18n.Validation.TooLong.Part3"> tecken, vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.Validation.TooLong.Part4"> tecken</xsl:variable>
 	<xsl:variable name="i18n.AllowManagingOfInstancesLabel">Tillåt handläggning av ärenden under driftstoppet</xsl:variable>
-	<xsl:variable name="i18n.AllowExistingInstancesLabel">Tillåt medborgare att hantera befintliga ärenden under driftstoppet</xsl:variable>
+	<xsl:variable name="i18n.AllowUserHandlingOfSubmittedInstancesLabel">Tillåt medborgare att hantera inskickade ärenden under driftstoppet</xsl:variable>
 	<xsl:variable name="i18n.AllProfiles">Visa driftmeddelandet för alla profiler</xsl:variable>
 	<xsl:variable name="i18n.ChooseProfiles">Visa driftmeddelandet för specifika profiler</xsl:variable>
 	

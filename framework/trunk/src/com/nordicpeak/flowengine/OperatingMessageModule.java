@@ -278,7 +278,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		return flowAdminModule;
 	}
 	
-	public OperatingStatus getOperatingStatus(Integer flowFamilyID, boolean manager, boolean existingFlowInstance) {
+	public OperatingStatus getOperatingStatus(Integer flowFamilyID, boolean manager, boolean submittedFlowInstance) {
 		
 		List<OperatingMessage> pastMessages = null;
 		
@@ -304,7 +304,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 					continue;
 				}
 				
-				if (!manager && existingFlowInstance && operatingMessage.allowsExistingInstances()) {
+				if (!manager && submittedFlowInstance && operatingMessage.allowsUserHandlingOfSubmittedInstances()) {
 					
 					continue;
 				}
