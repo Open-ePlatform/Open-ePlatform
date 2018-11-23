@@ -553,7 +553,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 			}
 
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, false)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
@@ -1272,7 +1272,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
 
-			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance.getFlow(), true)) {
+			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, false)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
