@@ -64,4 +64,6 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public String getManagerDescriptionTemplate();
 
 	public String getUserDescriptionTemplate();
+	
+	public boolean isHideFromUser();
 }
