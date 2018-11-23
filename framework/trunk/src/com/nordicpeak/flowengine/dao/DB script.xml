@@ -2064,4 +2064,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="110">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_operating_messages`
+					CHANGE COLUMN `allowManagingOfInstances` `allowManagingOfInstances` TINYINT(1) UNSIGNED NOT NULL AFTER `disableFlows`,
+					ADD COLUMN `allowExistingInstances` TINYINT(1) UNSIGNED NOT NULL AFTER `allowManagingOfInstances`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

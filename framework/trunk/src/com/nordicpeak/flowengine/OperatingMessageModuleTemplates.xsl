@@ -401,8 +401,8 @@
 					<xsl:with-param name="name" select="'message'"/>
 					<xsl:with-param name="class" select="'full'"/>
 					<xsl:with-param name="element" select="$operatingMessage" />		
-				</xsl:call-template>									
-										
+				</xsl:call-template>
+				
 			</div>
 		</div>
 		
@@ -421,8 +421,8 @@
 						<xsl:with-param name="element" select="$operatingMessage" />
 						<xsl:with-param name="type" select="'date'" />
 						<xsl:with-param name="size" select="'15'" />
-					</xsl:call-template>									
-				</div>						
+					</xsl:call-template>
+				</div>
 			
 			</div>
 						
@@ -438,9 +438,9 @@
 						<xsl:with-param name="name" select="'startTime'"/>
 						<xsl:with-param name="size" select="'10'"/>
 						<xsl:with-param name="element" select="$operatingMessage" />
-					</xsl:call-template>									
+					</xsl:call-template>
 				</div>
-								
+				
 			</div>
 			
 			<div class="floatleft bigmarginleft marginright">
@@ -526,16 +526,16 @@
 					<xsl:with-param name="name" select="'disableFlows'" />
 					<xsl:with-param name="element" select="$operatingMessage" />
 					<xsl:with-param name="value" select="'true'" />
-				</xsl:call-template>									
-						
+				</xsl:call-template>
+				
 				<label for="disableFlows">
 					<xsl:value-of select="$i18n.DisableFlowsLabel" />
 				</label>
-										
+				
 			</div>
 		</div>
 		
-		<div class="floatleft full bigmarginbottom" id="allowManagingOfInstancesWrapper">
+		<div class="floatleft full bigmarginbottom">
 			
 			<div class="floatleft">
 
@@ -544,14 +544,32 @@
 					<xsl:with-param name="name" select="'allowManagingOfInstances'" />
 					<xsl:with-param name="element" select="$operatingMessage" />
 					<xsl:with-param name="value" select="'true'" />
-				</xsl:call-template>									
-						
+				</xsl:call-template>
+				
 				<label for="allowManagingOfInstances">
 					<xsl:value-of select="$i18n.AllowManagingOfInstancesLabel" />
 				</label>
-										
+				
 			</div>
-		</div>		
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft">
+
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'allowExistingInstances'" />
+					<xsl:with-param name="name" select="'allowExistingInstances'" />
+					<xsl:with-param name="element" select="$operatingMessage" />
+					<xsl:with-param name="value" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="allowExistingInstances">
+					<xsl:value-of select="$i18n.AllowExistingInstancesLabel" />
+				</label>
+				
+			</div>
+		</div>
 
 		<xsl:if test="../enableSiteProfileSupport = 'true'">
 
