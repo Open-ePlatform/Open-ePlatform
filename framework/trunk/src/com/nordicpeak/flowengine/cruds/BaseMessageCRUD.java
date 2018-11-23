@@ -190,10 +190,10 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 			previewAccessController.checkFlowInstanceAccess(message.getFlowInstance(), user);
 
-			if (!message.getFlowInstance().getFlow().isEnabled() || callback.isOperatingStatusDisabled(message.getFlowInstance().getFlow(), manager)) {
+			if (!message.getFlowInstance().getFlow().isEnabled() || callback.isOperatingStatusDisabled(message.getFlowInstance(), manager)) {
 
 				return callback.list(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
-			}	
+			}
 			
 			HighLevelQuery<AttachmentType> attachmentQuery = new HighLevelQuery<AttachmentType>();
 

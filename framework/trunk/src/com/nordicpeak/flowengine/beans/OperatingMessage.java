@@ -68,6 +68,11 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean allowExistingInstances;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean global;
 	
 	@DAOManaged
@@ -283,8 +288,16 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 
 	
 	public void setAllowManagingOfInstances(boolean allowManagingOfInstances) {
-	
+
 		this.allowManagingOfInstances = allowManagingOfInstances;
+	}
+
+	public boolean allowsExistingInstances() {
+		return allowExistingInstances;
+	}
+
+	public void setAllowExistingInstances(boolean allowExistingInstances) {
+		this.allowExistingInstances = allowExistingInstances;
 	}
 
 	@Override
