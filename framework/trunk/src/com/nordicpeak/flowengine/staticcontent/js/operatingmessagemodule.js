@@ -35,10 +35,9 @@ $(document).ready(function() {
 		
 	});
 	
-	
 	$("#disableFlows").change(function() {
 		
-		$("#allowManagingOfInstancesWrapper").toggle($(this).is(":checked"));
+		$("#allowManagingOfInstances, #allowExistingInstances").parent().parent().toggle($(this).prop("checked"));
 	});	
 	
 	var $flowFamilies = $("#chooseFlowFamilies").find(".flowfamily");
