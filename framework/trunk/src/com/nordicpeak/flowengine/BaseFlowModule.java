@@ -465,14 +465,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	
 	public boolean isOperatingStatusDisabled(ImmutableFlowInstance flowInstance, boolean manager) {
 
-		return isOperatingStatusDisabled(flowInstance.getFlow(), manager, flowInstance.getFlowInstanceID() != null);
+		return isOperatingStatusDisabled(flowInstance.getFlow(), manager, flowInstance.getFirstSubmitted() != null);
 	}
 
-	public boolean isOperatingStatusDisabled(ImmutableFlow flow, boolean manager, boolean existingFlowInstance) {
+	public boolean isOperatingStatusDisabled(ImmutableFlow flow, boolean manager, boolean submittedFlowInstance) {
 
 		if (operatingMessageModule != null) {
 
-			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), manager, existingFlowInstance);
+			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), manager, submittedFlowInstance);
 
 			if (operatingStatus != null && operatingStatus.isDisabled()) {
 
