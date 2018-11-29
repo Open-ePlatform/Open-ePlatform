@@ -33,6 +33,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.OperatingMessageModule;
+import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.OperatingMessage;
@@ -147,6 +148,12 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		
 		XMLUtils.append(doc, listTypeElement, "ExternalOperatingMessages", callback.getExternalOperatingMessages());
 		XMLUtils.append(doc, listTypeElement, "ExternalOperatingMessageSources", callback.getExternalOperatingMessageSources());
+		
+		OperatingMessageNotificationSettings notificationSettings = callback.getNotificationSettings(true);
+		
+		if (notificationSettings != null) {
+			listTypeElement.appendChild(notificationSettings.toXML(doc));
+		}
 	}
 	
 	private void appendFlowFamilies(Document doc, Element element) {

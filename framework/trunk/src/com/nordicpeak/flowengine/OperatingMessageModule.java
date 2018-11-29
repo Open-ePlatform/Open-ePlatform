@@ -5,8 +5,9 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +19,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.cron4jutils.CronStringValidator;
+import se.unlogic.emailutils.framework.EmailUtils;
+import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
@@ -32,7 +38,9 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
+import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileFilterModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -40,23 +48,29 @@ import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.StringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SimpleRequest;
 import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.beans.ExternalOperatingMessage;
 import com.nordicpeak.flowengine.beans.ExternalOperatingMessageSource;
 import com.nordicpeak.flowengine.beans.OperatingMessage;
+import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
 import com.nordicpeak.flowengine.cruds.OperatingMessageCRUD;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.OperatingMessageType;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidator;
 
@@ -64,15 +78,27 @@ import it.sauronsoftware.cron4j.Scheduler;
 
 public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, SystemStartupListener {
 	
+	private static final AnnotatedRequestPopulator<OperatingMessageNotificationSettings> EXTERNAL_SETTINGS_POPULATOR = new AnnotatedRequestPopulator<OperatingMessageNotificationSettings>(OperatingMessageNotificationSettings.class);
 	
-	private OperatingMessageCRUD messageCRUD;
+	@ModuleSetting
+	@XSLVariable(prefix = "java.")
+	@TextFieldSettingDescriptor(name = "New external operating message email subject", description = "The subject of emails sent to the selected users when a new external operating message is found", required = true)
+	private String newExternalOperatingMessageEmailSubject;
+
+	@ModuleSetting
+	@XSLVariable(prefix = "java.")
+	@HTMLEditorSettingDescriptor(name = "New external operating message email message", description = "The subject of emails sent to the selected users when a new external operating message is found", required = true)
+	private String newExternalOperatingMessageEmailMessage;
 	
-	private AnnotatedDAO<OperatingMessage> operatingMessageDAO;
-	
-	private CopyOnWriteArraySet<OperatingMessage> internalOperatingMessageCache;
-	private CopyOnWriteArrayList<ExternalOperatingMessage> externalOperatingMessageCache;
-	
-	private QueryParameterFactory<OperatingMessage, Timestamp> endTimeParameterFactory;
+	@ModuleSetting
+	@XSLVariable(prefix = "java.")
+	@TextFieldSettingDescriptor(name = "Removed external operating message email subject", description = "The subject of emails sent to the selected users when a external operating message is removed", required = true)
+	private String removedExternalOperatingMessageEmailSubject;
+
+	@ModuleSetting
+	@XSLVariable(prefix = "java.")
+	@HTMLEditorSettingDescriptor(name = "Removed external operating message email message", description = "The subject of emails sent to the selected users when a external operating message is removed", required = true)
+	private String removedExternalOperatingMessageEmailMessage;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable site profile support", description = "Controls if site profile support is enabled")
@@ -94,12 +120,27 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@TextFieldSettingDescriptor(name = "Read Timeout", description = "Read timeout in seconds", formatValidator = StringIntegerValidator.class, required = true)
 	protected Integer readTimeout = 5;
 	
+	private OperatingMessageCRUD messageCRUD;
+	
+	private AnnotatedDAO<OperatingMessage> operatingMessageDAO;
+	private AnnotatedDAO<OperatingMessageNotificationSettings> externalSettingsDAO;
+	
+	private QueryParameterFactory<OperatingMessage, Timestamp> endTimeParameterFactory;
+	
+	private CopyOnWriteArraySet<OperatingMessage> internalOperatingMessageCache;
+	private List<ExternalOperatingMessage> externalOperatingMessageCache;
+	
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
+	
+	@InstanceManagerDependency
+	private FlowNotificationHandler flowNotificationHandler;
 	
 	private Scheduler scheduler;
 	private String scheduleID;
 	private List<ExternalOperatingMessageSource> externalMessageSources = new ArrayList<ExternalOperatingMessageSource>();
+	
+	protected UserGroupListConnector userGroupListConnector;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -120,6 +161,8 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
 			systemInterface.addSystemStartupListener(this);
 		}
+		
+		userGroupListConnector = new UserGroupListConnector(systemInterface);
 	}
 	
 	@Override
@@ -160,7 +203,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		
 		if (externalOperatingMessageCache != null) {
 			
-			externalOperatingMessageCache.clear();
+			externalOperatingMessageCache = null;
 		}
 		
 		if (ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
@@ -196,9 +239,13 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		
 		super.createDAOs(dataSource);
 		
-		FlowEngineDAOFactory daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
 		
-		operatingMessageDAO = daoFactory.getOperatingMessageDAO();
+		externalSettingsDAO = daoFactory.getDAO(OperatingMessageNotificationSettings.class);
+		
+		FlowEngineDAOFactory flowDaoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		
+		operatingMessageDAO = flowDaoFactory.getOperatingMessageDAO();
 		
 		endTimeParameterFactory = operatingMessageDAO.getParamFactory("endTime", Timestamp.class);
 		
@@ -449,17 +496,104 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			
 			log.debug("Cached " + operatingMessages.size() + " external operating messages");
 		}
+
+		Collection<ExternalOperatingMessage> oldExternalOperatingMessageCache = externalOperatingMessageCache;
 		
-		externalOperatingMessageCache = new CopyOnWriteArrayList<ExternalOperatingMessage>(operatingMessages);
+		externalOperatingMessageCache = Collections.unmodifiableList(operatingMessages);
+		
+		sendNotifications(externalOperatingMessageCache, oldExternalOperatingMessageCache);
 	}
 	
+	private void sendNotifications(Collection<ExternalOperatingMessage> newOperatingMessages, Collection<ExternalOperatingMessage> oldOperatingMessages) {
+		
+		try {
+			OperatingMessageNotificationSettings notificationSettings = getNotificationSettings(true);
+
+			if (notificationSettings == null || notificationSettings.getNotificationUsers() == null || flowNotificationHandler == null) {
+				return;
+			}
+			
+			String emailSenderName = flowNotificationHandler.getEmailSenderName(null);
+			String emailSenderAddress = flowNotificationHandler.getEmailSenderAddress(null);
+
+			// Send notifications for removed operating messages
+			if (oldOperatingMessages != null) {
+				for (ExternalOperatingMessage oldExternalOperationMessage : oldOperatingMessages) {
+
+					if (!newOperatingMessages.contains(oldExternalOperationMessage)) {
+
+						TagReplacer tagReplacer = new TagReplacer();
+						tagReplacer.addTagSource(new SingleTagSource("$name", oldExternalOperationMessage.getSource().getName()));
+						tagReplacer.addTagSource(new SingleTagSource("$message", oldExternalOperationMessage.getMessage()));
+
+						for (User user : notificationSettings.getNotificationUsers()) {
+
+							SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+
+							try {
+								email.addRecipient(user.getEmail());
+								email.setMessageContentType(SimpleEmail.HTML);
+								email.setSenderName(emailSenderName);
+								email.setSenderAddress(emailSenderAddress);
+								email.setSubject(tagReplacer.replace(removedExternalOperatingMessageEmailSubject));
+								email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(removedExternalOperatingMessageEmailMessage)));
+
+								systemInterface.getEmailHandler().send(email);
+
+							} catch (Exception e) {
+
+								log.error("Error generating/sending email " + email, e);
+							}
+						}
+					}
+				}
+			}
+
+			// Send notifications for new operating messages
+			for (ExternalOperatingMessage newExternalOperationMessage : newOperatingMessages) {
+
+				if (oldOperatingMessages == null || !oldOperatingMessages.contains(newExternalOperationMessage)) {
+
+					TagReplacer tagReplacer = new TagReplacer();
+					tagReplacer.addTagSource(new SingleTagSource("$name", newExternalOperationMessage.getSource().getName()));
+					tagReplacer.addTagSource(new SingleTagSource("$message", newExternalOperationMessage.getMessage()));
+
+					for (User user : notificationSettings.getNotificationUsers()) {
+
+						SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+
+						try {
+							email.addRecipient(user.getEmail());
+							email.setMessageContentType(SimpleEmail.HTML);
+							email.setSenderName(emailSenderName);
+							email.setSenderAddress(emailSenderAddress);
+							email.setSubject(tagReplacer.replace(newExternalOperatingMessageEmailSubject));
+							email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(newExternalOperatingMessageEmailMessage)));
+
+							systemInterface.getEmailHandler().send(email);
+
+						} catch (Exception e) {
+
+							log.error("Error generating/sending email " + email, e);
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+
+			log.error("Error notifying users about changes to external operating messages", e);
+		}
+	}
+
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse reloadExternal(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
 		
 		if (user.isAdmin()) {
 			
 			cacheExternalOperatingMessages();
-			return null;
+			
+			return new SimpleForegroundModuleResponse("done", getDefaultBreadcrumb());
 		}
 		
 		throw new URINotFoundException(uriParser);
@@ -519,6 +653,73 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	
 	public List<ExternalOperatingMessageSource> getExternalOperatingMessageSources() {
 		return externalMessageSources;
+	}
+	
+	@WebPublic(alias = "users")
+	public ForegroundModuleResponse getUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+		
+		userGroupListConnector.setUserGroupFilter((List<Integer>) flowAdminModule.getAllowedGroupIDs());
+		
+		return userGroupListConnector.getUsers(req, res, user, uriParser);
+	}
+
+	public OperatingMessageNotificationSettings getNotificationSettings(boolean withUsers) throws SQLException {
+
+		HighLevelQuery<OperatingMessageNotificationSettings> query = new HighLevelQuery<OperatingMessageNotificationSettings>();
+
+		OperatingMessageNotificationSettings notificationSettings = externalSettingsDAO.get(query);
+		
+		if (notificationSettings != null && notificationSettings.getNotificationUserIDs() != null && withUsers) {
+			notificationSettings.setNotificationUsers(systemInterface.getUserHandler().getUsers(notificationSettings.getNotificationUserIDs(), false, true));
+		}
+		
+		return notificationSettings;
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateNotificationSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		OperatingMessageNotificationSettings notificationSettings = getNotificationSettings(true);
+
+		ValidationException validationException = null;
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+
+			try {
+				notificationSettings = EXTERNAL_SETTINGS_POPULATOR.populate(notificationSettings, req);
+
+				log.info("User " + user + " updating notification settings");
+
+				externalSettingsDAO.addOrUpdate(notificationSettings, null);
+
+				redirectToDefaultMethod(req, res);
+				return null;
+
+			} catch (ValidationException e) {
+
+				validationException = e;
+			}
+		}
+
+		log.info("User " + user + " viewing notification settings form");
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element settingsElement = doc.createElement("UpdateNotificationSettings");
+		doc.getDocumentElement().appendChild(settingsElement);
+
+		if (notificationSettings != null) {
+
+			settingsElement.appendChild(notificationSettings.toXML(doc));
+		}
+
+		if (validationException != null) {
+
+			settingsElement.appendChild(validationException.toXML(doc));
+			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
+		}
+
+		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
 	
 }

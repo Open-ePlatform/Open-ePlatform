@@ -2,7 +2,21 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 
+	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/usergrouplist/UserGroupList.sv.xsl"/>
+
 	<xsl:include href="OperatingMessageModuleTemplates.xsl"/>
+	
+	<xsl:variable name="java.newExternalOperatingMessageEmailSubject">Nytt externt driftmeddelande publicerat för $name</xsl:variable>
+	<xsl:variable name="java.newExternalOperatingMessageEmailMessage">
+		&lt;p&gt;Ett nytt externt driftmeddelande publicerat för $name har tagits emot med följande meddelande:&lt;/p&gt;
+		&lt;p&gt;$message&lt;/p&gt;
+	</xsl:variable>
+	
+	<xsl:variable name="java.removedExternalOperatingMessageEmailSubject">Externt driftmeddelande för $name avpublicerat</xsl:variable>
+	<xsl:variable name="java.removedExternalOperatingMessageEmailMessage">
+		&lt;p&gt;Ett externt driftmeddelande för $name har avpublicerat bort med följande meddelande:&lt;/p&gt;
+		&lt;p&gt;$message&lt;/p&gt;
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.AddOperatingMessage">Lägg till driftmeddelande</xsl:variable>
 	<xsl:variable name="i18n.UpdateOperatingMessage">Ändra driftmeddelande</xsl:variable>
@@ -72,5 +86,11 @@
 	<xsl:variable name="i18n.ExternalSourceEnabled.Yes">Aktiverad</xsl:variable>
 	<xsl:variable name="i18n.ExternalSourceEnabled.No">Inaktiverad</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageFrom">Källa</xsl:variable>
+
+	<xsl:variable name="i18n.UpdateNotificationSettings">Ändra notifierade användare</xsl:variable>	
+	<xsl:variable name="i18n.Notifications">Notifiering vid externa driftmeddelanden</xsl:variable>
+	<xsl:variable name="i18n.Notifications.description">Följande användare kommer att notifieras automatiskt när externa driftmeddelanden publiceras och avpubliceras.</xsl:variable>
+	<xsl:variable name="i18n.NotificationSettings.Update.title">Ändra notifikationsinställningar</xsl:variable>
+	<xsl:variable name="i18n.NotificationSettings.NotificationUsers">Användare som blir notifierade vid publiceras och avpubliceras externa driftmeddelanden</xsl:variable>
 	
 </xsl:stylesheet>

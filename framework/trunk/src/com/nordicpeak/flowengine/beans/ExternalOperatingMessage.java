@@ -42,12 +42,16 @@ public class ExternalOperatingMessage extends GeneratedElementable implements Op
 		
 		return messageType;
 	}
-	
+
 	public void setMessageType(OperatingMessageType messageType) {
-		
+
 		this.messageType = messageType;
 	}
-	
+
+	public ExternalOperatingMessageSource getSource() {
+		return source;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

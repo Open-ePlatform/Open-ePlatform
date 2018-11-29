@@ -3,6 +3,8 @@
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
+	
+	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
@@ -20,23 +22,26 @@
 		/js/jquery.ui.datepicker-sv.js
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
+		/js/UserGroupList.js
 		/js/operatingmessagemodule.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
 		/css/flowengine.css
+		/css/UserGroupList.css
 	</xsl:variable>
 
-	<xsl:template match="Document">	
-			
-			<div id="OperatingMessageModule" class="contentitem errands-wrapper">
-			
-				<xsl:apply-templates select="ListOperatingMessages" />
-				<xsl:apply-templates select="AddOperatingMessage" />
-				<xsl:apply-templates select="UpdateOperatingMessage" />
-			
-			</div>
-			
+	<xsl:template match="Document">
+		
+		<div id="OperatingMessageModule" class="contentitem errands-wrapper">
+		
+			<xsl:apply-templates select="ListOperatingMessages" />
+			<xsl:apply-templates select="AddOperatingMessage" />
+			<xsl:apply-templates select="UpdateOperatingMessage" />
+			<xsl:apply-templates select="UpdateNotificationSettings" />
+		
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template match="ListOperatingMessages">
@@ -46,7 +51,7 @@
 		<h2 class="clearboth"><xsl:value-of select="$i18n.LocalOperatingMessages" /></h2>
 	
 		<table id="messageList" class="full coloredtable oep-table" cellspacing="0">
-			<thead>	
+			<thead>
 				<tr>
 					<th width="16" class="no-sort"></th>
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
@@ -69,14 +74,14 @@
 							<td colspan="8">
 								<xsl:value-of select="$i18n.NoOperatingMessagesFound" />
 							</td>
-						</tr>					
+						</tr>
 					</xsl:when>
 					<xsl:otherwise>
 						
 						<xsl:apply-templates select="OperatingMessages/OperatingMessage" mode="list" />
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
 		</table>
 		
@@ -84,13 +89,13 @@
 			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/add" title="{$i18n.AddOperatingMessage}">
 				<xsl:value-of select="$i18n.AddOperatingMessage"/>
 				<img class="marginleft" style="vertical-align: sub;" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/add.png" alt="" />
-			</a>			
+			</a>
 		</div>
 		
 		<h2 class="clearboth"><xsl:value-of select="$i18n.ExternalOperatingMessages" /></h2>
 		
 		<table id="exernalMessageList" class="full coloredtable oep-table" cellspacing="0">
-			<thead>	
+			<thead>
 				<tr>
 					<th width="16" class="no-sort"></th>
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
@@ -121,7 +126,7 @@
 						<xsl:apply-templates select="ExternalOperatingMessages/OperatingMessage" mode="list-external" />
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
 		</table>
 		
@@ -151,9 +156,30 @@
 						<xsl:apply-templates select="ExternalOperatingMessageSources/ExternalOperatingMessageSource" />
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
 		</table>
+		
+		<div class="floatleft full bigmargintop">
+		
+			<h2 class="floatleft">
+				<xsl:value-of select="$i18n.Notifications" />
+			</h2>
+			
+			<p class="floatleft full">
+				<xsl:value-of select="$i18n.Notifications.description" />
+			</p>
+			
+			<xsl:apply-templates select="OperatingMessageNotificationSettings/NotificationUsers/user" mode="list"/>
+			
+			<div class="floatright">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatenotificationsettings" title="{$i18n.UpdateNotificationSettings}">
+					<xsl:value-of select="$i18n.UpdateNotificationSettings"/>
+					<img class="marginleft" style="vertical-align: sub;" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
+				</a>
+			</div>
+			
+		</div>
 		
 	</xsl:template>
 
@@ -208,7 +234,7 @@
 							</xsl:attribute>
 						</img>
 					</xsl:if>
-				</td>			
+				</td>
 			
 			</xsl:if>
 			<td data-title="{$i18n.FlowFamilies}">
@@ -233,7 +259,7 @@
 						</xsl:attribute>
 					</img>
 				</xsl:if>
-			</td>			
+			</td>
 			
 			<td data-title="{$i18n.DisableFlows}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}">
@@ -242,7 +268,7 @@
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
 					</xsl:choose>
 				</a>
-			</td>										
+			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}" class="marginright">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
@@ -317,7 +343,7 @@
 		</tr>
 		
 	</xsl:template>
-
+	
 	<xsl:template match="AddOperatingMessage">
 	
 		<form id="addOperatingMessageForm" method="post" action="{/Document/requestinfo/uri}">
@@ -457,8 +483,8 @@
 						<xsl:with-param name="type" select="'date'" />
 						<xsl:with-param name="size" select="'15'" />
 					</xsl:call-template>
-				</div>									
-										
+				</div>
+				
 			</div>
 			
 			<div class="floatleft">
@@ -473,9 +499,9 @@
 						<xsl:with-param name="name" select="'endTime'"/>
 						<xsl:with-param name="size" select="'10'"/>
 						<xsl:with-param name="element" select="$operatingMessage" />
-					</xsl:call-template>		
-				</div>							
-										
+					</xsl:call-template>
+				</div>
+				
 			</div>
 			
 		</div>
@@ -611,8 +637,8 @@
 						<xsl:apply-templates select="Profile">
 							<xsl:with-param name="operatingMessage" select="$operatingMessage" />
 						</xsl:apply-templates>
-					</div>								
-											
+					</div>
+					
 				</div>
 			</div>
 
@@ -656,8 +682,8 @@
 					<xsl:apply-templates select="FlowFamily">
 						<xsl:with-param name="operatingMessage" select="$operatingMessage" />
 					</xsl:apply-templates>
-				</div>								
-										
+				</div>
+				
 			</div>
 		</div>
 		
@@ -679,7 +705,7 @@
 					<xsl:with-param name="value" select="flowFamilyID" />
 					<xsl:with-param name="requestparameters" select="../requestparameters" />
 				</xsl:call-template>
-			</div>				
+			</div>
 		</div>
 		
 	</xsl:template>
@@ -700,11 +726,80 @@
 					<xsl:with-param name="value" select="profileID" />
 					<xsl:with-param name="requestparameters" select="../requestparameters" />
 				</xsl:call-template>
-			</div>				
+			</div>
 		</div>
 		
 	</xsl:template>
+	
+	<xsl:template match="UpdateNotificationSettings">
+		
+		<form action="{/Document/requestinfo/uri}" method="post">
+		
+			<h1>
+				<xsl:value-of select="$i18n.NotificationSettings.Update.title" />
+			</h1>
+			
+			<div class="floatleft full bigmarginbottom">
+	
+				<label for="userID">
+					<xsl:value-of select="$i18n.NotificationSettings.NotificationUsers" />
+				</label>
+				
+				<xsl:call-template name="UserList">
+					<xsl:with-param name="connectorURL">
+						<xsl:value-of select="/Document/requestinfo/currentURI"/>
+						<xsl:text>/</xsl:text>
+						<xsl:value-of select="/Document/module/alias"/>
+						<xsl:text>/users</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="name" select="'user'" />
+					<xsl:with-param name="users" select="OperatingMessageNotificationSettings/NotificationUsers" />
+					<xsl:with-param name="showEmail" select="false()"/>
+					<xsl:with-param name="showUsername" select="true()"/>
+				</xsl:call-template>
+			
+			</div>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.SaveChanges}"/>
+			</div>
+		
+		</form>
+		
+	</xsl:template>
+	
+	<xsl:template match="user" mode="list">
+		
+		<div class="floatleft full marginbottom border">
 
+			<xsl:choose>
+				<xsl:when test="enabled='true'">
+					<img class="alignbottom" src="{$imgPath}/user.png" alt="" />
+				</xsl:when>
+				<xsl:otherwise>
+					<img class="alignbottom" src="{$imgPath}/user_disabled.png" alt="" />
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:value-of select="firstname"/>
+			
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:value-of select="lastname"/>
+			
+			<xsl:if test="username">
+				<xsl:text>&#x20;</xsl:text>
+				
+				<xsl:text>(</xsl:text>
+					<xsl:value-of select="username"/>
+				<xsl:text>)</xsl:text>
+			</xsl:if>
+			
+		</div>
+		
+	</xsl:template>
 	
 	<xsl:template match="validationError">
 		
@@ -722,7 +817,7 @@
 					</xsl:when>
 					<xsl:when test="validationErrorType='TooLong'">
 						<xsl:value-of select="$i18n.Validation.TooLong.Part1" />
-					</xsl:when>														
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.Validation.UnknownError" />
 					</xsl:otherwise>
@@ -788,5 +883,5 @@
 				</xsl:choose>
 			</p>
 		</xsl:if>
-	</xsl:template>				
+	</xsl:template>
 </xsl:stylesheet>

@@ -2083,4 +2083,28 @@
 		</Query>
 	</Script>
 	
+	<Script version="112">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_operating_message_notifications` (
+					`dummyID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`dummyID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_operating_message_notification_users` (
+					`dummyID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) NOT NULL,
+					PRIMARY KEY (`dummyID`, `userID`),
+					CONSTRAINT `FK_flowengine_operating_message_notification_users_1` FOREIGN KEY (`dummyID`) REFERENCES `flowengine_operating_message_notifications` (`dummyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

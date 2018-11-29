@@ -15,4 +15,8 @@ public interface FlowNotificationHandler {
 	public ViewFragment getUpdateSettingsView(ImmutableFlow flow, HttpServletRequest req, User user, URIParser uriParser, ValidationException validationException) throws Exception;
 
 	public void updateSettings(ImmutableFlow flow, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception;
+	
+	public String getEmailSenderName(ImmutableFlowInstance flowInstance);
+	
+	public String getEmailSenderAddress(ImmutableFlowInstance flowInstance);
 }
