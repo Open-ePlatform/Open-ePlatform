@@ -21,6 +21,7 @@
 
 			<xsl:apply-templates select="validationError" />
 			<xsl:apply-templates select="UpdateChildQuery" />
+			<xsl:apply-templates select="TestChildren" />
 
 		</div>
 
@@ -239,6 +240,46 @@
 		</form>
 
 	</xsl:template>
+	
+	<xsl:template match="TestChildren">
+	
+		<h1>
+			<xsl:value-of select="$i18n.TestChildren.title" />
+		</h1>
+
+		<xsl:apply-templates select="validationException/validationError" />
+
+		<form name="testchildren" method="post" action="{/Document/requestinfo/uri}">
+
+			<p class="floatleft full">
+				<xsl:value-of select="$i18n.TestChildren.description.part1" />
+			</p>
+			
+			<p class="floatleft full">
+				<xsl:value-of select="$i18n.TestChildren.description.part2" />
+			</p>
+
+			<div class="floatleft full bigmarginbottom">
+
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'enable'" />
+					<xsl:with-param name="name" select="'enable'" />
+					<xsl:with-param name="value" select="'true'" />
+					<xsl:with-param name="checked" select="Enabled = 'true'" />
+				</xsl:call-template>
+				
+				<label for="enable">
+					<xsl:value-of select="$i18n.TestChildren.enabled" />
+				</label>
+			</div>
+			
+			<div class="floatright margintop clearboth">
+				<input type="submit" value="{$i18n.SaveChanges}" />
+			</div>
+
+		</form>
+	
+	</xsl:template>
 
 	<xsl:template match="validationError[messageKey = 'UpdateFailedChildQueryNotFound']">
 
@@ -261,7 +302,11 @@
 		<xsl:variable name="fieldName" select="." />
 
 		<xsl:choose>
-			<xsl:when test="$fieldName = ''">
+			<xsl:when test="$fieldName = 'minAge'">
+				<xsl:value-of select="$i18n.MinChildAge" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'maxAge'">
+				<xsl:value-of select="$i18n.MaxChildAge" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

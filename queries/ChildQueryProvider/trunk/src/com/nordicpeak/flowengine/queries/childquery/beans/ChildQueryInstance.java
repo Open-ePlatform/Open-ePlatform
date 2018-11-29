@@ -88,6 +88,8 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	
 	private ChildRelationProviderException fetchChildrenException;
 	
+	private boolean testChild;
+	
 	public Integer getQueryInstanceID() {
 		
 		return queryInstanceID;
@@ -115,6 +117,19 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		return citizenIdentifier;
 	}
 	
+	@Override
+	public boolean isTestCitizenIdentifier() {
+		return testChild;
+	}
+
+	public boolean isTestChild() {
+		return testChild;
+	}
+
+	public void setTestChild(boolean testChild) {
+		this.testChild = testChild;
+	}
+
 	public void setCitizenIdentifier(String citizenIdentifier) {
 		
 		this.citizenIdentifier = citizenIdentifier;
@@ -216,6 +231,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		address = null;
 		zipcode = null;
 		postalAddress = null;
+		testChild = false;
 		
 		attributeHandler.removeAttribute("childFirstname");
 		attributeHandler.removeAttribute("childLastname");

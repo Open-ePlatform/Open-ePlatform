@@ -707,7 +707,7 @@
 									
 									</div>
 								
-								</xsl:if>								
+								</xsl:if>
 								
 								<xsl:variable name="phoneID">
 									<xsl:value-of select="$fieldID"/>

@@ -2,7 +2,9 @@ package com.nordicpeak.flowengine.queries.childquery;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,12 +25,17 @@ import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
+import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -36,6 +43,7 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
+import se.unlogic.standardutils.date.PooledSimpleDateFormat;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
@@ -49,6 +57,7 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLGenerator;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
+import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
@@ -59,6 +68,7 @@ import com.nordicpeak.childrelationprovider.ChildRelationProvider;
 import com.nordicpeak.childrelationprovider.ChildrenResponse;
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
+import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
@@ -81,12 +91,19 @@ import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
-public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider {
+public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider, ExtensionLinkProvider {
 
+	private static final String SESSION_TEST_CHILDREN = "childQueryTestChildren";
+	
+	public static final PooledSimpleDateFormat CITIZEN_ID_DATE_FORMATTER = new PooledSimpleDateFormat("yyyyMMdd");
+	
 	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" +
 			"INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" +
 			"INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" +
 			"WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
+	
+	@XSLVariable(prefix = "java.")
+	protected String testChildrenMenuName = "This variable should be set by your stylesheet";
 	
 	@XSLVariable(prefix = "java.")
 	protected String childSelectedAlternativeName = "This variable should be set by your stylesheet";
@@ -139,6 +156,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	@InstanceManagerDependency(required = true)
 	private ChildRelationProvider childRelationProvider;
+	
+	protected StaticContentModule staticContentModule;
 
 	private AnnotatedDAO<ChildQuery> queryDAO;
 	private AnnotatedDAO<ChildQueryInstance> queryInstanceDAO;
@@ -151,6 +170,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	private ChildAlternative childSelectedAlternative;
 	private ChildAlternative singleGuardianAlternative;
 	private ChildAlternative multiGuardianAlternative;
+	
+	protected ExtensionLink flowListExtensionLink;
 	
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -184,6 +205,53 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
+	}
+	
+	@InstanceManagerDependency(required = true)
+	public void setStaticContentModule(StaticContentModule staticContentModule) {
+		
+		generateExtensionLinks(staticContentModule);
+		
+		this.staticContentModule = staticContentModule;
+	}
+	
+	@Override
+	@InstanceManagerDependency
+	public void setFlowAdminModule(FlowAdminModule flowAdminModule) throws SQLException {
+		
+		if (flowAdminModule != null) {
+			
+			flowAdminModule.addFlowListExtensionLinkProvider(this);
+			
+		} else if (this.flowAdminModule != null) {
+			
+			this.flowAdminModule.removeFlowListExtensionLinkProvider(this);
+		}
+		
+		super.setFlowAdminModule(flowAdminModule);
+	}
+	
+	@Override
+	public void unload() throws Exception {
+		
+		if (flowAdminModule != null) {
+			
+			flowAdminModule.removeFlowListExtensionLinkProvider(this);
+		}
+		
+		super.unload();
+	}
+	
+	private void generateExtensionLinks(StaticContentModule staticContentModule) {
+		
+		if (staticContentModule != null) {
+			
+			flowListExtensionLink = new ExtensionLink(testChildrenMenuName, systemInterface.getContextPath() + getFullAlias() + "/testchildren", staticContentModule.getModuleContentURL(moduleDescriptor) + "/pics/pen.png", "bottom-right");
+			
+		} else {
+			
+			flowListExtensionLink = null;
+		}
 	}
 
 	@Override
@@ -488,6 +556,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.setZipcode(selectedChild.getZipcode());
 			queryInstance.setPostalAddress(selectedChild.getPostalAddress());
 			queryInstance.setMunicipalityCode(selectedChild.getMunicipalityCode());
+			queryInstance.setTestChild(selectedChild.isTestChild());
 
 			if (queryInstance.getQuery().isUseMultipartSigning() || queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
 
@@ -578,6 +647,16 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata) {
 		
+		if ((requestMetadata == null || !requestMetadata.isManager()) && poster != null && SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession()) != null) {
+			
+			queryInstance.setHasChildrenUnderSecrecy(false);
+			
+			@SuppressWarnings("unchecked")
+			Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
+			
+			return storedChildMap;
+		}
+		
 		if (poster != null) {
 			
 			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
@@ -604,7 +683,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 						
 						queryInstance.setHasChildrenUnderSecrecy(childrenResponse.hasChildrenUnderSecrecy());
 						
-						Map<String, StoredChild> storedChildMap = new HashMap<String, StoredChild>();
+						Map<String, StoredChild> storedChildMap = new LinkedHashMap<String, StoredChild>();
 						
 						Map<String, Child> childMap = childrenResponse.getChildren();
 						
@@ -692,4 +771,77 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		
 		return labels;
 	}
+	
+	@Override
+	public ExtensionLink getExtensionLink(User user) {
+		
+		if (hasRequiredDependencies) {
+			
+			return flowListExtensionLink;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public AccessInterface getAccessInterface() {
+		
+		return moduleDescriptor;
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse testChildren(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+
+			if ("true".equals(req.getParameter("enable"))) {
+				
+				log.info("User " + user + " enabling test children");
+				
+				String userCitizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
+				StoredGuardian guardian = new StoredGuardian(user.getFirstname(), user.getLastname(), userCitizenID);
+				
+				Map<String, StoredChild> children = new LinkedHashMap<String, StoredChild>();
+				
+				for (int i = 0; i < 18; i++) {
+
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(Calendar.HOUR_OF_DAY, 0);
+					calendar.set(Calendar.MINUTE, 0);
+					calendar.set(Calendar.SECOND, 0);
+					calendar.set(Calendar.MILLISECOND, 0);
+					calendar.add(Calendar.YEAR, -i);
+					
+					StoredChild child = new StoredChild("Testbarn", i + "år", CITIZEN_ID_DATE_FORMATTER.format(calendar.getTime()) + "TEST");
+					child.setTestChild(true);
+					child.setMunicipalityCode("4321");
+					child.setAddress("Testgatan 1");
+					child.setZipcode("12345");
+					child.setPostalAddress("Testdalen");
+					child.setGuardians(Collections.singletonList(guardian));
+					children.put(child.getCitizenIdentifier(), child);
+				}
+				
+				SessionUtils.setAttribute(SESSION_TEST_CHILDREN, children, user.getSession());
+				
+			} else {
+				
+				log.info("User " + user + " disabling test children");
+				
+				SessionUtils.removeAttribute(SESSION_TEST_CHILDREN, user.getSession());
+			}
+		}
+
+		log.info("User " + user + " viewing test children form");
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element settingsElement = doc.createElement("TestChildren");
+		doc.getDocumentElement().appendChild(settingsElement);
+
+		XMLUtils.appendNewElement(doc, settingsElement, "Enabled", SessionUtils.getAttribute(SESSION_TEST_CHILDREN, user.getSession()) != null);
+
+		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
+	}
+	
 }

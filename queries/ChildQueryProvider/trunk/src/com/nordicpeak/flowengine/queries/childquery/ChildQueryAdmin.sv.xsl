@@ -8,6 +8,8 @@
 	<xsl:include href="ChildQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Val av barn</xsl:variable>
+	<xsl:variable name="java.testChildrenMenuName">Testbarn</xsl:variable>
+	
 	<xsl:variable name="java.childSelectedAlternativeName">Barn valt</xsl:variable>
 	<xsl:variable name="java.singleGuardianAlternativeName">Ensam vårdnad</xsl:variable>
 	<xsl:variable name="java.multiGuardianAlternativeName">Gemensam  vårdnad</xsl:variable>
@@ -36,8 +38,8 @@
 	<xsl:variable name="i18n.ShowGuardianAddress">Visa folkbokföringsaddress för vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWays">Krävda kontaktvägar för andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWayVerification">Kräv verifiering av kontaktvägar</xsl:variable>
-	<xsl:variable name="i18n.MinChildAge">Lägsta ålder på barn</xsl:variable>
-	<xsl:variable name="i18n.MaxChildAge">Högsta ålder på barn</xsl:variable>
+	<xsl:variable name="i18n.MinChildAge">Lägsta ålder på barn (lämna tomt för ingen gräns)</xsl:variable>
+	<xsl:variable name="i18n.MaxChildAge">Högsta ålder på barn (lämna tomt för ingen gräns)</xsl:variable>
 	<xsl:variable name="i18n.MinAgeLargerThanMaxAge">Minsta ålder kan inte vara större än högsta ålder</xsl:variable>
 	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt andra vårdnadshavaren som medsökande för ärendet</xsl:variable>
 	
@@ -46,4 +48,10 @@
 	<xsl:variable name="i18n.ContactWays.Phone">Mobiltelefon</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Both">Både e-post och mobiltelefon</xsl:variable>
 	<xsl:variable name="i18n.HideSSNForOtherGuardians">Dölj personnummer på andra vårdnadshavaren</xsl:variable>
+	
+	<xsl:variable name="i18n.TestChildren.title">Testbarn</xsl:variable>
+	<xsl:variable name="i18n.TestChildren.description.part1">Här kan du aktivera testbarn i val av barnfrågan för denna inloggning. När denna funktionen är aktiverad så hämtas inga barn från Skatteverket, istället visas en fast uppsättning testbarn. Testbarnen har åldern 0-17 år samt kommunkod 4321.</xsl:variable>
+	<xsl:variable name="i18n.TestChildren.description.part2">Denna ändring slår endast igenom på nya ärenden. Om du redan har ett ärende öppet så kommer det inte påverkas. Denna inställning nollställs varje gång du loggar in och ut.</xsl:variable>
+	<xsl:variable name="i18n.TestChildren.enabled">Aktivera testbarn</xsl:variable>
+	
 </xsl:stylesheet>

@@ -7,13 +7,6 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
-import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
-import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
-import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
-import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
-
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -30,6 +23,13 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 import se.unlogic.webutils.annotations.URLRewrite;
+
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
+import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
+import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
 
 @Table(name = "child_queries")
 @XMLElement
