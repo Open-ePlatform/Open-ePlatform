@@ -248,7 +248,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		
 		if (staticContentModule != null) {
 			
-			flowListExtensionLink = new ExtensionLink(testChildrenMenuName, systemInterface.getContextPath() + getFullAlias() + "/testchildren", staticContentModule.getModuleContentURL(moduleDescriptor) + "/pics/pen.png", "bottom-right");
+			flowListExtensionLink = new ExtensionLink(testChildrenMenuName, systemInterface.getContextPath() + getFullAlias() + "/testchildren", staticContentModule.getModuleContentURL(moduleDescriptor) + "/pics/group.png", "bottom-right");
 			
 		} else {
 			
