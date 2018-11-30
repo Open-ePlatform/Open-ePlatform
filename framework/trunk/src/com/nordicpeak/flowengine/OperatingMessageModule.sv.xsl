@@ -87,10 +87,10 @@
 	<xsl:variable name="i18n.ExternalSourceEnabled.No">Inaktiverad</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageFrom">Källa</xsl:variable>
 
-	<xsl:variable name="i18n.UpdateNotificationSettings">Ändra notifierade användare</xsl:variable>	
-	<xsl:variable name="i18n.Notifications">Notifiering vid externa driftmeddelanden</xsl:variable>
+	<xsl:variable name="i18n.UpdateNotificationSettings">Välj användare</xsl:variable>	
+	<xsl:variable name="i18n.Notifications">Notifiering</xsl:variable>
 	<xsl:variable name="i18n.Notifications.description">Följande användare kommer att notifieras automatiskt när externa driftmeddelanden publiceras och avpubliceras.</xsl:variable>
-	<xsl:variable name="i18n.NotificationSettings.Update.title">Ändra notifikationsinställningar</xsl:variable>
-	<xsl:variable name="i18n.NotificationSettings.NotificationUsers">Användare som blir notifierade vid publiceras och avpubliceras externa driftmeddelanden</xsl:variable>
+	<xsl:variable name="i18n.NotificationSettings.Update.title">Välj användare</xsl:variable>
+	<xsl:variable name="i18n.NotificationSettings.NotificationUsers">Välj vilka användare som ska notifieras automatiskt när externa driftmeddelanden publiceras och avpubliceras.</xsl:variable>
 	
 </xsl:stylesheet>

@@ -741,9 +741,9 @@
 			
 			<div class="floatleft full bigmarginbottom">
 	
-				<label for="userID">
+				<p>
 					<xsl:value-of select="$i18n.NotificationSettings.NotificationUsers" />
-				</label>
+				</p>
 				
 				<xsl:call-template name="UserList">
 					<xsl:with-param name="connectorURL">
