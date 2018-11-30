@@ -27,10 +27,12 @@ import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
@@ -792,6 +794,11 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse testChildren(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
+		if(flowAdminModule == null || !AccessUtils.checkAccess(user, flowAdminModule.getAccessInterface())){
+			
+			throw new AccessDeniedException("Access to toggling of test children denied");
+		}
+		
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
 			if ("true".equals(req.getParameter("enable"))) {
@@ -817,7 +824,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					child.setMunicipalityCode("4321");
 					child.setAddress("Testgatan 1");
 					child.setZipcode("12345");
-					child.setPostalAddress("Testdalen");
+					child.setPostalAddress("Testköping");
 					child.setGuardians(Collections.singletonList(guardian));
 					children.put(child.getCitizenIdentifier(), child);
 				}
