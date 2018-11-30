@@ -5424,4 +5424,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return allowedFlowFormFileExtensions;
 	}
 	
+	public AccessInterface getAccessInterface() {
+		
+		return moduleDescriptor;
+	}
 }
