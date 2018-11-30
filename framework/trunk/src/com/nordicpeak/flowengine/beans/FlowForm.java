@@ -144,8 +144,13 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		this.name = XMLValidationUtils.validateParameter("name", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
-		fileExtension = XMLValidationUtils.validateParameter("fileExtension", xmlParser, false, 1, 4, StringPopulator.getPopulator(), errors);
+		this.fileExtension = XMLValidationUtils.validateParameter("fileExtension", xmlParser, false, 1, 4, StringPopulator.getPopulator(), errors);
 		this.externalURL = XMLValidationUtils.validateParameter("externalURL", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
+		
+		if(externalURL == null && fileExtension == null) {
+			
+			this.fileExtension = "pdf";
+		}
 		
 		if (externalURL == null) {
 			
