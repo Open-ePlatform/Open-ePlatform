@@ -770,7 +770,7 @@
 	
 	<xsl:template match="user" mode="list">
 		
-		<div class="floatleft full marginbottom border">
+		<div class="floatleft full marginbottom">
 
 			<xsl:choose>
 				<xsl:when test="enabled='true'">
