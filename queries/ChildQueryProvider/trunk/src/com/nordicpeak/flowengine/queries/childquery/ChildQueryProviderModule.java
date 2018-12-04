@@ -837,6 +837,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				
 				SessionUtils.removeAttribute(SESSION_TEST_CHILDREN, user.getSession());
 			}
+			
+			this.flowAdminModule.redirectToDefaultMethod(req, res);
 		}
 
 		log.info("User " + user + " viewing test children form");
