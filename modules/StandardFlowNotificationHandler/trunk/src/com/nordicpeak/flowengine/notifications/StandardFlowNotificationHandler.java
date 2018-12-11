@@ -2056,7 +2056,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		sharedTagSources.add(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
-		sharedTagSources.add(new SingleTagSource("$flowInstance.externalID", flowInstance.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE)));
 
 		if (contact != null) {
 

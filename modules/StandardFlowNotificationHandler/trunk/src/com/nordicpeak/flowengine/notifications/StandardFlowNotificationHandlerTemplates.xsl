@@ -1128,7 +1128,7 @@
 				</tr>
 				<tr>
 					<td>
-						<xsl:text>$flowInstance.externalID</xsl:text>
+						<xsl:text>$attribute{integrationExternalID}</xsl:text>
 					</td>
 					<td>
 						<xsl:value-of select="$i18n.Tags.FlowInstance.ExternalID"/>
