@@ -25,7 +25,7 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="2">
@@ -35,7 +35,7 @@
 				 ADD COLUMN `sendFlowInstanceSubmittedGlobalEmail` BOOLEAN NOT NULL AFTER `sendFlowInstanceSubmittedManagerEmail`,
 				 ADD COLUMN `flowInstanceSubmittedGlobalEmailAddress` VARCHAR(255) AFTER `sendFlowInstanceSubmittedGlobalEmail`;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="3">
@@ -43,7 +43,7 @@
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `flowInstanceSubmittedGlobalEmailAttachPDF` BOOLEAN NOT NULL AFTER `flowInstanceSubmittedGlobalEmailAddress`;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="4">
@@ -62,7 +62,7 @@
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `flowInstanceSubmittedNotLoggedInUserEmailMessage` TEXT AFTER `flowInstanceSubmittedUserEmailMessage`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="5">
@@ -122,7 +122,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;				
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -132,7 +132,7 @@
 		</Query>
 		<Query>
 			<![CDATA[
-				ALTER TABLE `flow_familiy_notification_settings` DROP COLUMN `flowInstanceSubmittedGlobalEmailAddress`;								
+				ALTER TABLE `flow_familiy_notification_settings` DROP COLUMN `flowInstanceSubmittedGlobalEmailAddress`;
 			]]>
 		</Query>
 	</Script>
@@ -141,7 +141,7 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_setting_submitglobal` DROP PRIMARY KEY,
-				 ADD PRIMARY KEY  USING BTREE(`flowFamilyID`, `email`);				
+				 ADD PRIMARY KEY  USING BTREE(`flowFamilyID`, `email`);
 			]]>
 		</Query>
 	</Script>
@@ -151,7 +151,7 @@
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `sendExternalMessageReceivedGlobalEmail` BOOLEAN NOT NULL AFTER `flowInstanceSubmittedGlobalEmailMessage`;
 			]]>
-		</Query>	    
+		</Query>
 		<Query>
 			<![CDATA[
 				CREATE TABLE `flow_familiy_notification_setting_extmessageglobal` (
@@ -163,12 +163,12 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;			
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 	</Script>
 	
-	<Script version="11">    
+	<Script version="11">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_setting_extmessageglobal` DROP PRIMARY KEY, ADD PRIMARY KEY  USING BTREE(`flowFamilyID`, `email`);
@@ -176,7 +176,7 @@
 		</Query>
 	</Script>
 	
-	<Script version="12">    
+	<Script version="12">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flow_familiy_notification_settings` ADD COLUMN `statusChangedUserEmailSubject` VARCHAR(255) AFTER `sendStatusChangedUserEmail`,
@@ -223,6 +223,16 @@
 				ALTER TABLE `flow_familiy_notification_settings`
 					ADD COLUMN `flowInstanceSubmittedUserSMS` VARCHAR(255) NULL AFTER `sendFlowInstanceArchivedUserEmail`,
 					ADD COLUMN `flowInstanceSubmittedNotLoggedInUserSMS` VARCHAR(255) NULL AFTER `flowInstanceSubmittedUserSMS`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+				 ADD COLUMN `flowInstanceAssignedManagerEmailSubject` VARCHAR(255) AFTER `sendFlowInstanceAssignedManagerEmail`,
+				 ADD COLUMN `flowInstanceAssignedManagerEmailMessage` TEXT AFTER `flowInstanceAssignedManagerEmailSubject`;
 			]]>
 		</Query>
 	</Script>

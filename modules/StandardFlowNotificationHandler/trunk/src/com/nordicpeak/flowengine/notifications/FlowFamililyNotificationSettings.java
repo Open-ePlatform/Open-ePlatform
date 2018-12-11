@@ -157,6 +157,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceAssignedManagerEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedManagerEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedManagerEmailMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -646,6 +658,22 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 	public void setFlowInstanceSubmittedNotLoggedInUserSMS(String flowInstanceSubmittedNotLoggedInUserSMS) {
 		this.flowInstanceSubmittedNotLoggedInUserSMS = flowInstanceSubmittedNotLoggedInUserSMS;
+	}
+
+	public String getFlowInstanceAssignedManagerEmailSubject() {
+		return flowInstanceAssignedManagerEmailSubject;
+	}
+
+	public void setFlowInstanceAssignedManagerEmailSubject(String flowInstanceAssignedManagerSubject) {
+		this.flowInstanceAssignedManagerEmailSubject = flowInstanceAssignedManagerSubject;
+	}
+
+	public String getFlowInstanceAssignedManagerEmailMessage() {
+		return flowInstanceAssignedManagerEmailMessage;
+	}
+
+	public void setFlowInstanceAssignedManagerEmailMessage(String flowInstanceAssignedManagerMessage) {
+		this.flowInstanceAssignedManagerEmailMessage = flowInstanceAssignedManagerMessage;
 	}
 
 }

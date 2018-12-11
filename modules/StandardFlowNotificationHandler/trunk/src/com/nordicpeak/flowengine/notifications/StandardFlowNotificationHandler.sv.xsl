@@ -293,12 +293,17 @@
 	<xsl:variable name="i18n.UserTagsTable.emailDescription">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
+	
 	<xsl:variable name="i18n.FlowNameTag">E-tjänsten namn</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceIDTag">Ärende nummer</xsl:variable>
+	<xsl:variable name="i18n.Tags.FlowInstance.ExternalID">Externt ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceURLTag">Adress till ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
 	<xsl:variable name="i18n.StatusTag">Ärende status</xsl:variable>
+	<xsl:variable name="i18n.Tags.Manager.Firstname">Handläggarens förnamn</xsl:variable>
+	<xsl:variable name="i18n.Tags.Manager.Lastname">Handläggarens efternamn</xsl:variable>
 	<xsl:variable name="i18n.PosterFirstnameTag">Kontaktpersonens förnamn</xsl:variable>
 	<xsl:variable name="i18n.PosterLastnameTag">Kontaktpersonens efternamn</xsl:variable>
+	<xsl:variable name="i18n.StatusDescriptionTag">Beskrivning för ärendets status</xsl:variable>
 	<xsl:variable name="i18n.FLowInstanceAttachedPDFTextTag">Text som beskriver bifogad PDF-ansökan</xsl:variable>
 	
 	<xsl:variable name="i18n.GlobalNotifications">Generella notifikationer</xsl:variable>
@@ -325,5 +330,8 @@
 	<xsl:variable name="i18n.ExternalMessageReceivedUserEmailMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
-	<xsl:variable name="i18n.StatusDescriptionTag">Beskrivning för ärendets status</xsl:variable>
+	
+	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>
+	
 </xsl:stylesheet>

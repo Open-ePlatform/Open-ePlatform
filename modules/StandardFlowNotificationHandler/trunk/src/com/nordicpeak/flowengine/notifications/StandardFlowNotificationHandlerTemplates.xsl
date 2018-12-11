@@ -201,6 +201,12 @@
 				$("#manager-message-message").toggleClass("hidden");
 			}
 			
+			function toggleManagerAssignMessage(){
+				
+				$("#manager-assign-subject").toggleClass("hidden");
+				$("#manager-assign-message").toggleClass("hidden");
+			}
+			
 			function toggleGlobal(){
 				
 				$("#global-subject").toggleClass("hidden");
@@ -651,7 +657,7 @@
 				<xsl:text>&#160;</xsl:text>
 				<span class="tiny"><a onclick="toggleManagerExternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>			
 			</div>
-		</div>	
+		</div>
 	
 		<div class="floatleft full bigmarginbottom" id="manager-message-subject">
 		
@@ -659,7 +665,7 @@
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
-			<label for="flowInstanceSubmittedManagerSubject" class="floatleft full">
+			<label for="externalMessageReceivedManagerSubject" class="floatleft full">
 				<xsl:value-of select="$i18n.ExternalMessageReceivedManagerSubject" />
 			</label>
 			
@@ -678,7 +684,7 @@
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 			
-			<label for="flowInstanceSubmittedManagerMessage" class="floatleft full">
+			<label for="externalMessageReceivedManagerMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage" />
 			</label>
 			
@@ -688,13 +694,13 @@
 					<xsl:with-param name="id" select="'externalMessageReceivedManagerMessage'"/>
 					<xsl:with-param name="name" select="'externalMessageReceivedManagerMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="NotificationSettings" />		
+					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 				
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
-		</div>	
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -708,7 +714,52 @@
 				<label for="sendFlowInstanceAssignedManagerEmail">
 					<xsl:value-of select="$i18n.SendFlowInstanceAssignedManagerEmail" />
 				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerAssignMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-assign-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedManagerEmailSubject') and not($errFieldNames = 'flowInstanceAssignedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceAssignedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceAssignedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-assign-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedManagerEmailSubject') and not($errFieldNames = 'flowInstanceAssignedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceAssignedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceAssignedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
@@ -1042,6 +1093,110 @@
 	
 	</xsl:template>
 	
+	<xsl:template name="addManagerTagsTable">
+	
+		<div class="floatleft margintop full">
+			
+			<p>
+				<xsl:value-of select="$i18n.UserTagsTable.emailDescription"/>
+			</p>
+			
+			<table class="full border">
+				<tr>
+					<th>
+						<xsl:value-of select="$i18n.Tag"/>
+					</th>
+					<th>
+						<xsl:value-of select="$i18n.Description"/>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flow.name</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowNameTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.flowInstanceID</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceIDTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.externalID</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.FlowInstance.ExternalID"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.url</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$status.name</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.StatusTag"/>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<xsl:text>$status.description</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.StatusDescriptionTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$manager.firstname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.Manager.Firstname"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$manager.lastname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.Manager.Lastname"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$contact.firstname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.PosterFirstnameTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$contact.lastname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.PosterLastnameTag"/>
+					</td>
+				</tr>
+			</table>
+		
+		</div>
+	
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
 			<p class="error">
@@ -1110,6 +1265,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailMessage"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'statusChangedUserEmailSubject'">
 						<xsl:value-of select="$i18n.StatusChangedUserEmailSubject"/>

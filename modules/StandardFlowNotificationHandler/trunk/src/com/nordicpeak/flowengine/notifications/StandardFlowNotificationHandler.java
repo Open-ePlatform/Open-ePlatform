@@ -741,6 +741,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		TemplateUtils.clearUnchangedTemplatedFields(notificationSettings, this);
 		
+		//TODO move every setting over to @Templated
+		
 		if (notificationSettings.getStatusChangedUserEmailSubject() != null && notificationSettings.getStatusChangedUserEmailSubject().trim().equals(statusChangedUserEmailSubject.trim())) {
 
 			notificationSettings.setStatusChangedUserEmailSubject(null);
@@ -905,6 +907,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings = new FlowFamililyNotificationSettings();
 
 		TemplateUtils.setTemplatedFields(notificationSettings, this);
+		
+		//TODO move every text setting over to @Templated
 		
 		notificationSettings.setStatusChangedUserEmailSubject(statusChangedUserEmailSubject);
 		notificationSettings.setStatusChangedUserEmailMessage(statusChangedUserEmailMessage);
@@ -1615,7 +1619,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
 			}
 
-			sendManagerEmails(flowInstance, getPosterContact(flowInstance), flowInstanceAssignedManagerEmailSubject, flowInstanceAssignedManagerEmailMessage, excludedManagers, false);
+			sendManagerEmails(flowInstance, getPosterContact(flowInstance), notificationSettings.getFlowInstanceAssignedManagerEmailSubject(), notificationSettings.getFlowInstanceAssignedManagerEmailMessage(), excludedManagers, false);
 		}
 	}
 
@@ -2052,6 +2056,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		sharedTagSources.add(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
+		sharedTagSources.add(new SingleTagSource("$flowInstance.externalID", flowInstance.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE)));
 
 		if (contact != null) {
 
@@ -2316,7 +2321,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			return notificationSettings.getFlowInstanceSubmittedNotLoggedInUserEmailMessage();
 		}
-
 	}
 
 	private String getFlowInstaceArchivedUserEmailMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
@@ -2329,7 +2333,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			return notificationSettings.getFlowInstanceArchivedNotLoggedInUserEmailMessage();
 		}
-
 	}
 
 	private String getFlowInstaceSubmittedUserSMSMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
@@ -2355,12 +2358,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return flowInstanceArchivedNotLoggedInUserSMS;
 		}
 	}
-
+	
+	@Override
 	public String getEmailSenderName(ImmutableFlowInstance flowInstance) {
 
 		return emailSenderName;
 	}
 
+	@Override
 	public String getEmailSenderAddress(ImmutableFlowInstance flowInstance) {
 
 		return emailSenderAddress;
