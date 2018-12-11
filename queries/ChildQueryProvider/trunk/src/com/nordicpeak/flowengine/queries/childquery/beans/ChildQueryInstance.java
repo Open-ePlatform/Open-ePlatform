@@ -397,60 +397,68 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	
 	@Override
 	public List<String> getColumnValues() {
-		
+
 		List<String> values = new ArrayList<String>();
-		
+
 		values.add(firstname + " " + lastname);
 		values.add(citizenIdentifier);
-		
+
 		if (query.isShowAddress()) {
-			
+
 			values.add(address);
 			values.add(postalAddress);
 			values.add(zipcode);
 		}
-		
+
 		StoredGuardian otherGuardian = null;
-		
-		if(storedGuardians != null){
-		
+
+		if (storedGuardians != null) {
+
 			for (StoredGuardian storedGuardian : storedGuardians) {
-				
+
 				if (!storedGuardian.isPoster()) {
 					otherGuardian = storedGuardian;
 				}
 			}
 		}
-		
+
 		if (otherGuardian != null) {
-			
+
 			values.add(otherGuardian.getFirstname() + " " + otherGuardian.getLastname());
-			values.add(otherGuardian.getCitizenIdentifier());
+			
+			if (!query.isHideSSNForOtherGuardians()) {
+				values.add(otherGuardian.getCitizenIdentifier());
+			}
+			
 			values.add(otherGuardian.getEmail());
 			values.add(otherGuardian.getPhone());
-			
+
 			if (getQuery().isShowGuardianAddress()) {
-				
+
 				values.add(otherGuardian.getAddress());
 				values.add(otherGuardian.getPostalAddress());
 				values.add(otherGuardian.getZipcode());
 			}
-			
+
 		} else {
+
+			values.add("");
+			
+			if (!query.isHideSSNForOtherGuardians()) {
+				values.add("");
+			}
 			
 			values.add("");
 			values.add("");
-			values.add("");
-			values.add("");
-			
+
 			if (getQuery().isShowGuardianAddress()) {
-				
+
 				values.add("");
 				values.add("");
 				values.add("");
 			}
 		}
-		
+
 		return values;
 	}
 
