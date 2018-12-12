@@ -323,11 +323,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			throw new ModuleConfigurationException("No flowTypeIDs set in module settings for this module ");
 		}
 
-		//		if (flowTypes == null) {
-		//
-		//			throw new ModuleConfigurationException("The configured flow types was not found in the database");
-		//		}
-
 		return super.processRequest(req, res, user, uriParser);
 	}
 
