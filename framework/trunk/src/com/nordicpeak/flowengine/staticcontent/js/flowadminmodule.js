@@ -208,7 +208,9 @@ $(document).ready(function() {
 	
 	$("input[type='text'].color-input").minicolors();
 	
-	if ($(".readmore-text").html().length <= 110) {
+	var $readmoreText = $(".readmore-text");
+	
+	if ($readmoreText.length > 0 && $readmoreText.html.length <= 110) {
 		  $(".btn-readmore").remove();
 	}	
 	
