@@ -63,12 +63,15 @@
 						
 	  				</div>
 	  				<div class="description">
-	  					<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
-	  					<xsl:choose>
-	  						<xsl:when test="longDescription"><xsl:value-of select="longDescription" disable-output-escaping="yes" /></xsl:when>
-	  						<xsl:otherwise><xsl:value-of select="shortDescription" disable-output-escaping="yes" /></xsl:otherwise>
-	  					</xsl:choose>
-	  					
+	  					<div class="position-relative">
+	  						<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
+		  					<div class="readmore-text">
+			  					<xsl:choose>
+			  						<xsl:when test="longDescription"><xsl:value-of select="longDescription" disable-output-escaping="yes" /></xsl:when>
+			  						<xsl:otherwise><xsl:value-of select="shortDescription" disable-output-escaping="yes" /></xsl:otherwise>
+			  					</xsl:choose>
+		  					</div>
+	  					</div>
 	  					<xsl:call-template name="appendFlowContactAndOwner"/>
 	  					
 	  					<xsl:apply-templates select="../ExtensionViews/ExtensionView[slot = 'left']" mode="flowOverview-left"/>

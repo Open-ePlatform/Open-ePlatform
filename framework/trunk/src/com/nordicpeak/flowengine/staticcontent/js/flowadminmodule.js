@@ -208,8 +208,12 @@ $(document).ready(function() {
 	
 	$("input[type='text'].color-input").minicolors();
 	
+	if ($(".readmore-text").html().length <= 110) {
+		  $(".btn-readmore").remove();
+	}	
+	
 	// Copied from flowinstancebrowser.js
-	$(".section-inside div.description").expander({
+	$(".section-inside div.description .readmore-text").expander({
 		slicePoint : 110,
 		expandText : "",
 		userCollapseText : "",

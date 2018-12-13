@@ -327,3 +327,8 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	text-align: initial;
 	white-space: normal;
 }
+
+div.section-inside .description .btn-readmore {
+    bottom: 0px;
+    top: auto;
+}

@@ -178,9 +178,13 @@ $(document).ready(function() {
         e.returnValue = false;
         $(this).parents("section").toggleClass("active");
     });
+
+	if ($(".readmore-text").html().length <= 110) {
+		  $(".btn-readmore").remove();
+	}	
 	
 	// Copy exists in flowadminmodule.js
-	$(".section-inside div.description").expander({
+	$(".section-inside div.description .readmore-text").expander({
 		slicePoint : 110,
 		expandText : "",
 		userCollapseText : "",
