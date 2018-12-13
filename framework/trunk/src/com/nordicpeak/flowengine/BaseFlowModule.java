@@ -1238,7 +1238,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							}
 						}
 						
-						if (overrideStatus != null) {
+						if (overrideStatus != null && overrideStatus.getContentType() != ContentType.NEW) {
 							
 							log.info("Using flow status override for actionID " + actionID + " to flow status " + overrideStatus);
 							instanceManager.setFlowState(overrideStatus);
