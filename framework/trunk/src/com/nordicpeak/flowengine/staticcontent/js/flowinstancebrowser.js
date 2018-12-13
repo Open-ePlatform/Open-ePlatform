@@ -179,9 +179,12 @@ $(document).ready(function() {
         $(this).parents("section").toggleClass("active");
     });
 
-	if ($(".readmore-text").html().length <= 110) {
+	
+	var $readmoreText = $(".readmore-text");
+
+	if ($readmoreText.length > 0 && $readmoreText.html.length <= 110) {	
 		  $(".btn-readmore").remove();
-	}	
+	}
 	
 	// Copy exists in flowadminmodule.js
 	$(".section-inside div.description .readmore-text").expander({
