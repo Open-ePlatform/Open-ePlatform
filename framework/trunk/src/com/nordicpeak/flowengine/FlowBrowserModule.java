@@ -146,7 +146,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final String MULTI_SIGNING_ACTION_ID = FlowBrowserModule.class.getName() + ".multisigning";
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = FlowBrowserModule.class.getName();
-
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show all flowtypes", description = "List all flowtypes in this module")
 	private boolean listAllFlowTypes = false;
@@ -195,6 +195,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@CheckboxSettingDescriptor(name = "Use category filter", description = "Controls whether to use category filter when listing flows")
 	protected boolean useCategoryFilter = false;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Use expandable flow description", description = "Controls whether exapandable flow description should be used or not in flow overview")
+	private boolean useExpandableFlowDescription = true;
+	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
@@ -435,7 +439,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchDescription", searchDescription);
-
+			
 			if (useCategoryFilter) {
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "useCategoryFilter", true);
 			}
@@ -581,7 +585,9 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "showRelatedFlows", showRelatedFlows);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "setNoFollowOnFlowForms", setNoFollowOnFlowForms);
-
+		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "useExpandableFlowDescription", useExpandableFlowDescription);
+		
+		
 		if (operatingMessageModule != null) {
 
 			OperatingStatus operatingStatus = operatingMessageModule.getOperatingStatus(flow.getFlowFamily().getFlowFamilyID(), false, false);

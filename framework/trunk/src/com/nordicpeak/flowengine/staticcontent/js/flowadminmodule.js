@@ -209,13 +209,13 @@ $(document).ready(function() {
 	$("input[type='text'].color-input").minicolors();
 	
 	var $readmoreText = $(".readmore-text");
-	
-	if ($readmoreText.length > 0 && $readmoreText.html.length <= 110) {
+
+	if ($readmoreText.length > 0 && $readmoreText.text().length <= 110) {	
 		  $(".btn-readmore").remove();
-	}	
+	}
 	
 	// Copied from flowinstancebrowser.js
-	$(".section-inside div.description .readmore-text").expander({
+	$(".section-inside div.description .use-expandable .readmore-text").expander({
 		slicePoint : 110,
 		expandText : "",
 		userCollapseText : "",

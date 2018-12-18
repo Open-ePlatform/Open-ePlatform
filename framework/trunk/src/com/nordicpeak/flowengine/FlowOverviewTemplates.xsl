@@ -62,9 +62,13 @@
 						</xsl:if>
 						
 	  				</div>
+	  				
 	  				<div class="description">
 	  					<div class="position-relative">
-	  						<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
+	  						<xsl:if test="../useExpandableFlowDescription = 'true'">
+	  							<xsl:attribute name="class">position-relative use-expandable</xsl:attribute>
+	  							<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
+	  						</xsl:if>
 		  					<div class="readmore-text">
 			  					<xsl:choose>
 			  						<xsl:when test="longDescription"><xsl:value-of select="longDescription" disable-output-escaping="yes" /></xsl:when>
@@ -72,6 +76,7 @@
 			  					</xsl:choose>
 		  					</div>
 	  					</div>
+	  					
 	  					<xsl:call-template name="appendFlowContactAndOwner"/>
 	  					
 	  					<xsl:apply-templates select="../ExtensionViews/ExtensionView[slot = 'left']" mode="flowOverview-left"/>
@@ -194,11 +199,11 @@
 					</div>
 					
 					<xsl:if test="FlowForms/FlowForm">
-					<xsl:call-template name="FlowFormButton">
-						<xsl:with-param name="isDisabled" select="$isDisabled"/>
-						<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
-					</xsl:call-template>
-				</xsl:if>
+						<xsl:call-template name="FlowFormButton">
+							<xsl:with-param name="isDisabled" select="$isDisabled"/>
+							<xsl:with-param name="operatingMessage" select="$operatingMessage"/>
+						</xsl:call-template>
+					</xsl:if>
 						
 				</div>
 				
