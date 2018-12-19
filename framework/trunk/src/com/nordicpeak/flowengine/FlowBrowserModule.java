@@ -54,9 +54,9 @@ import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.log4jutils.thread.LoggingReflectedRunnable;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+import se.unlogic.standardutils.collections.CaseInsensitiveNameComparator;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.MethodComparator;
-import se.unlogic.standardutils.collections.NameComparator;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
@@ -146,7 +146,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public static final String MULTI_SIGNING_ACTION_ID = FlowBrowserModule.class.getName() + ".multisigning";
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = FlowBrowserModule.class.getName();
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show all flowtypes", description = "List all flowtypes in this module")
 	private boolean listAllFlowTypes = false;
@@ -439,7 +439,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchDescription", searchDescription);
-			
+
 			if (useCategoryFilter) {
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "useCategoryFilter", true);
 			}
@@ -1076,7 +1076,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		ArrayList<Flow> flowList = new ArrayList<Flow>(latestPublishedFlowVersionsMap.values());
 
-		Collections.sort(flowList, NameComparator.getInstance());
+		Collections.sort(flowList, CaseInsensitiveNameComparator.getInstance());
 
 		LinkedHashMap<Integer, Flow> flowMap = new LinkedHashMap<Integer, Flow>();
 
