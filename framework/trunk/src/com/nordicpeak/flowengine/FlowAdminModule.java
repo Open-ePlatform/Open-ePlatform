@@ -224,6 +224,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
 import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
 import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
 import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
@@ -559,6 +560,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider>();
 	
 	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
+	
+	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<XSDExtensionProvider>();
 
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
@@ -1845,6 +1848,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 			}
 		}
 
+		for(XSDExtensionProvider xsdExtensionProvider : xsdExtensionProviders) {
+			
+			try {
+				xsdExtensionProvider.processXSD(flow, doc);
+				
+			}catch(Exception e) {
+				
+				log.error("Error in XSD extension provider " + xsdExtensionProvider + " while processing XSD for flow " + flow, e);
+			}
+		}
+		
 		res.setHeader("Content-Disposition", "attachment; filename=\"schema-" + flow.getFlowID() + ".xsd\"");
 		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
 		res.setContentType("text/xml");
@@ -5427,5 +5441,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public AccessInterface getAccessInterface() {
 		
 		return moduleDescriptor;
+	}
+	
+	public void addXSDExtensionProvider(XSDExtensionProvider provider) {
+
+		if (provider == null) {
+			throw new NullPointerException();
+		}
+
+		xsdExtensionProviders.add(provider);
+	}
+
+	public void removeXSDExtensionProvider(XSDExtensionProvider provider) {
+
+		xsdExtensionProviders.remove(provider);
 	}
 }
