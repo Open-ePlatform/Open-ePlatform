@@ -22,5 +22,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="/Flexjson"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,6 +19,7 @@ function initPUDQuery(queryID) {
 	var $select = query.find("select");
 	var $input = $("#q" + queryID + "_searchInput");
 	var pudField = $("#q" + queryID + "_propertyUnitDesignation");
+	var poidField = $("#q" + queryID + "_propertyObjectIdentity");
 	var addressField = $("#q" + queryID + "_address");
 	var useAddressAsResult = $select.closest(".search-select").data("useaddressasresult");
 	
@@ -46,6 +47,7 @@ function initPUDQuery(queryID) {
 				select: function( event, ui ) {
 					
 					addressField.val("");
+					poidField.val(ui.item.estateID)
 					
 					pudField.val(ui.item.label);
 					pudField.parent().find("span").text(ui.item.label);
@@ -64,6 +66,7 @@ function initPUDQuery(queryID) {
 				select: function( event, ui ) {
 
 					addressField.val(ui.item.label);
+					poidField.val(ui.item.estateID)
 					
 					if (useAddressAsResult) {
 						
@@ -73,7 +76,7 @@ function initPUDQuery(queryID) {
 						
 					} else {
 						
-						searchPUDFromFnr(ui.item.fnr, queryID, $input, $select, pudField, $selectedOption);
+						searchPUDFromFnr(ui.item.estateID, queryID, $input, $select, pudField, $selectedOption);
 					}
 				}
 			});
@@ -128,7 +131,7 @@ function searchPUD(request, response, queryID, $input, $selectedOption) {
 					return {
 						label : pud,
 						value : pud,
-						objid : item.properties.objid
+						estateID : item.properties.objid
 					}
 				}));
 				
@@ -160,11 +163,11 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 			if (data.length > 0) {
 				response($.map(data, function(item) {
 					return {
-						label : item[1],
-						value : item[1],
-						fnr : item[4]
+						label    : item[1],
+						value    : item[1],
+						estateID : item[4],
 					}
-				}));							
+				}));
 			}
 			
 			$input.removeClass("ui-autocomplete-loading");
@@ -178,7 +181,7 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 	});
 }
 
-function searchPUDFromFnr(fnumber, queryID, $input, $select, pudField, $selectedOption) {
+function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, $selectedOption) {
 	
 	$input.addClass("ui-autocomplete-loading");
 	
@@ -187,7 +190,7 @@ function searchPUDFromFnr(fnumber, queryID, $input, $select, pudField, $selected
 		dataType : "json",
 		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 		data : {
-			fnrsimple : fnumber
+			fnr : estateID
 		},
 		success : function(data) {
 			

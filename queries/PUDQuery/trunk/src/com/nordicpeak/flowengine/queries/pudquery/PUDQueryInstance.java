@@ -13,6 +13,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
@@ -51,6 +52,10 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 	@DAOManaged
 	@XMLElement
 	private Integer propertyUnitNumber;
+	
+	@DAOManaged
+	@XMLElement
+	private String propertyObjectIdentity;
 
 	public Integer getQueryInstanceID() {
 		return queryInstanceID;
@@ -96,8 +101,9 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
-		this.propertyUnitDesignation = null;
-		this.setPropertyUnitNumber(null);
+		propertyUnitDesignation = null;
+		propertyUnitNumber = null;
+		propertyObjectIdentity = null;
 		address = null;
 
 		if (query.isSetAsAttribute()) {
@@ -111,6 +117,10 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 	public void resetAttribute(MutableAttributeHandler attributeHandler){
 		
 		attributeHandler.removeAttribute(query.getAttributeName());
+		attributeHandler.removeAttribute(query.getAttributeName() + ".address");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitDesignation");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitDesignationNoMunicipality");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyObjectIdentity");
 	}
 	
 	public void setAttribute(MutableAttributeHandler attributeHandler) {
@@ -122,6 +132,24 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 		} else {
 			
 			attributeHandler.setAttribute(query.getAttributeName(), propertyUnitDesignation);
+		}
+		
+		attributeHandler.setAttribute(query.getAttributeName() + ".address", address);
+		attributeHandler.setAttribute(query.getAttributeName() + ".propertyObjectIdentity", propertyObjectIdentity);
+		
+		if (!StringUtils.isEmpty(propertyUnitDesignation)) {
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".propertyUnitDesignation", propertyUnitDesignation);
+			
+			String unitDesignation = propertyUnitDesignation;
+			
+			int firstSpace = unitDesignation.indexOf(" ");
+			
+			if (firstSpace != -1) {
+				unitDesignation = unitDesignation.substring(firstSpace + 1);
+			}
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".propertyUnitDesignationNoMunicipality", unitDesignation);
 		}
 	}
 	
@@ -147,6 +175,8 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 			XMLUtils.appendNewCDATAElement(doc, element, "PropertyUnitDesignation", propertyUnitDesignation);
 			XMLUtils.appendNewElement(doc, element, "PropertyUnitNumber", propertyUnitNumber);
 		}
+		
+		XMLUtils.appendNewElement(doc, element, "PropertyObjectIdentity", propertyObjectIdentity);
 
 		return element;
 	}
@@ -171,6 +201,10 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 	@Override
 	public String getFreeTextAlternativeValue() {
 		return null;
+	}
+
+	public void setPropertyObjectIdentity(String propertyObjectIdentity) {
+		this.propertyObjectIdentity = propertyObjectIdentity;
 	}
 
 	@Override

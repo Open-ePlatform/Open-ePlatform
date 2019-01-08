@@ -115,4 +115,22 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_queries`
+					ADD COLUMN `setAsAttribute` tinyint(1) unsigned NOT NULL AFTER `minimumScale`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` ADD COLUMN `propertyObjectIdentity` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

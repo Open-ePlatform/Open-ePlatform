@@ -10,7 +10,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/pudquery.js
+		/js/pudquery.js?v=2
 	</xsl:variable>
 
 	<xsl:variable name="links">
@@ -190,6 +190,12 @@
 						<xsl:with-param name="id" select="concat($shortQueryID, '_address')" />
 						<xsl:with-param name="name" select="concat($shortQueryID, '_address')" />
 						<xsl:with-param name="value" select="PUDQueryInstance/address"/>
+					</xsl:call-template>
+					
+					<xsl:call-template name="createHiddenField">
+						<xsl:with-param name="id" select="concat($shortQueryID, '_propertyObjectIdentity')" />
+						<xsl:with-param name="name" select="concat($shortQueryID, '_propertyObjectIdentity')" />
+						<xsl:with-param name="value" select="PUDQueryInstance/propertyObjectIdentity"/>
 					</xsl:call-template>
 					
 					<xsl:choose>

@@ -209,21 +209,17 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 				if (!query.toLowerCase().startsWith(prefix.toLowerCase())) {
 					
 					query = URLEncoder.encode(prefix + " ", "UTF-8") + query;
-					
 				}
-				
 			}
 			
 			sendSearchReqest(req, res, user, search, query, "q");
 			
-		} else if (!StringUtils.isEmpty(query = req.getParameter("fnrsimple"))) {
+		} else if (!StringUtils.isEmpty(query = req.getParameter("fnr"))) {
 			
-			sendSearchReqest(req, res, user, search, query, "fnrsimple");
-			
+			sendSearchReqest(req, res, user, search, query, "fnr");
 		}
 		
 		return null;
-		
 	}
 	
 	private void sendSearchReqest(HttpServletRequest req, HttpServletResponse res, User user, String search, String query, String searchParam) throws IOException {
@@ -454,6 +450,7 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 		Integer queryID = query.getQueryID();
 		
 		String pud = req.getParameter("q" + queryID + "_propertyUnitDesignation");
+		String poid = req.getParameter("q" + queryID + "_propertyObjectIdentity");
 		String address = req.getParameter("q" + queryID + "_address");
 		
 		boolean empty = false;
@@ -487,11 +484,13 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 		
 		queryInstance.setAddress(address);
 		queryInstance.setPropertyUnitDesignation(pud);
+		queryInstance.setPropertyObjectIdentity(poid);
 		
 		queryInstance.getQueryInstanceDescriptor().setPopulated(true);
 		
 		if (queryInstance.getQuery().isSetAsAttribute()) {
 			
+			queryInstance.resetAttribute(attributeHandler);
 			queryInstance.setAttribute(attributeHandler);
 		}
 	}

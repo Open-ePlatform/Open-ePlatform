@@ -160,8 +160,14 @@ public class PUDQuery extends BaseQuery implements FixedAlternativesQuery {
 			propertyUnitNumberElement.setAttribute("minOccurs", "0");
 			propertyUnitNumberElement.setAttribute("maxOccurs", "1");
 			sequenceElement.appendChild(propertyUnitNumberElement);
-			
 		}
+		
+		Element propertyObjectIDElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
+		propertyObjectIDElement.setAttribute("name", "PropertyObjectIdentity");
+		propertyObjectIDElement.setAttribute("type", "xs:string");
+		propertyObjectIDElement.setAttribute("minOccurs", "0");
+		propertyObjectIDElement.setAttribute("maxOccurs", "1");
+		sequenceElement.appendChild(propertyObjectIDElement);
 
 		doc.getDocumentElement().appendChild(complexTypeElement);
 	}

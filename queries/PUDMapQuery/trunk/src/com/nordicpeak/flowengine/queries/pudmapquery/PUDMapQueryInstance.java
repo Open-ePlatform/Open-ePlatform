@@ -10,6 +10,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
@@ -30,6 +31,10 @@ public class PUDMapQueryInstance extends BaseMapQueryInstance<PUDMapQuery> {
 	@DAOManaged
 	@XMLElement
 	private Double yCoordinate;
+	
+	@DAOManaged
+	@XMLElement
+	private String propertyObjectIdentity;
 
 	@DAOManaged(columnName = "queryID")
 	@ManyToOne
@@ -70,13 +75,52 @@ public class PUDMapQueryInstance extends BaseMapQueryInstance<PUDMapQuery> {
 		this.geometry = geometry;
 	}
 
+	public String getPropertyObjectIdentity() {
+		return propertyObjectIdentity;
+	}
+
+	public void setPropertyObjectIdentity(String propertyObjectIdentity) {
+		this.propertyObjectIdentity = propertyObjectIdentity;
+	}
+
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
 		this.xCoordinate = null;
 		this.yCoordinate = null;
+		
+		if (query.isSetAsAttribute()) {
+			
+			resetAttribute(attributeHandler);
+		}
 
 		super.reset(attributeHandler);
+	}
+	
+	public void resetAttribute(MutableAttributeHandler attributeHandler){
+		
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyObjectIdentity");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitDesignation");
+	}
+	
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName() + ".propertyObjectIdentity", propertyObjectIdentity);
+		
+		if (!StringUtils.isEmpty(getPropertyUnitDesignation())) {
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".propertyUnitDesignation", getPropertyUnitDesignation());
+			
+			String unitDesignation = getPropertyUnitDesignation();
+			
+			int firstSpace = unitDesignation.indexOf(" ");
+			
+			if (firstSpace != -1) {
+				unitDesignation = unitDesignation.substring(firstSpace + 1);
+			}
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".propertyUnitDesignationNoMunicipality", unitDesignation);
+		}
 	}
 
 	@Override
@@ -92,6 +136,9 @@ public class PUDMapQueryInstance extends BaseMapQueryInstance<PUDMapQuery> {
 
 		XMLUtils.appendNewElement(doc, element, "XCoordinate", xCoordinate);
 		XMLUtils.appendNewElement(doc, element, "YCoordinate", yCoordinate);
+		
+		XMLUtils.appendNewElement(doc, element, "PropertyObjectIdentity", propertyObjectIdentity);
+		XMLUtils.appendNewElement(doc, element, "PropertyUnitDesignation", getPropertyUnitDesignation());
 
 		return element;
 	}

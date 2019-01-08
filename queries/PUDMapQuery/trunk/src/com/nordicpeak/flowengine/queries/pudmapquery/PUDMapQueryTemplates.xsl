@@ -244,6 +244,16 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='ErrorLookingUpEstateID']">
+	
+		<span>
+			<strong data-icon-before="!">
+				<xsl:value-of select="$i18n.Validation.ErrorLookingUpEstateID" />
+			</strong>
+		</span>
+		
+	</xsl:template>
+	
 	<xsl:template match="validationError[messageKey='RequiredQuery']">
 	
 		<span>

@@ -16,6 +16,8 @@ $(document).ready(function() {
 			allowedSearchService_PUD.prop("checked", false);
 			allowedSearchService_Address.prop("checked", true);
 		}
+		
+		$(".notforaddress").toggle(!checked);
 	};
 	
 	enableDisableAllowedSearch();

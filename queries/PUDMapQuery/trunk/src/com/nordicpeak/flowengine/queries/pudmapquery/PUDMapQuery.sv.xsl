@@ -23,5 +23,7 @@
 	<xsl:variable name="i18n.UnkownErrorMessage">Ett oväntat fel inträffade när fastigheten skulle hämtas. Kontakta administratören.</xsl:variable>
 	<xsl:variable name="i18n.NoPUDFoundMessageTitle">Kan inte hitta någon fastighet</xsl:variable>
 	<xsl:variable name="i18n.NoPUDFoundMessage">Det går inte att hitta någon fastighet på den angivna positionen.</xsl:variable>
-
+	
+	<xsl:variable name="i18n.Validation.ErrorLookingUpEstateID">Det gick inte att översätta fastighetsbeteckningen till fastighets ID, vänligen försök igen senare.</xsl:variable>
+	
 </xsl:stylesheet>

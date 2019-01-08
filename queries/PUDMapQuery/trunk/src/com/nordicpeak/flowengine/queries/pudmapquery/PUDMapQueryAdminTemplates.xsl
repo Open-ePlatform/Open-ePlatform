@@ -47,8 +47,61 @@
 						<xsl:with-param name="name" select="'minimumScale'" />
 						<xsl:with-param name="selectedValue" select="PUDMapQuery/minimumScale" />
 					</xsl:call-template>
+				</div>
+			</div>
+			
+			<h2 class="floatleft full bigmargintop"><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'setAsAttribute'" />
+						<xsl:with-param name="name" select="'setAsAttribute'" />
+						<xsl:with-param name="element" select="PUDMapQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="setAsAttribute">
+						<xsl:value-of select="$i18n.setAsAttribute" />
+					</label>
 			    </div>
 			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="attributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.attributeName" /></label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'attributeName'"/>
+						<xsl:with-param name="name" select="'attributeName'"/>
+						<xsl:with-param name="title" select="$i18n.attributeName"/>
+						<xsl:with-param name="element" select="PUDMapQuery" />
+						<xsl:with-param name="maxlength" select="'255'"/>
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
+			
+			<table class="floatleft clearboth border">
+				<thead>
+					<th><xsl:value-of select="$i18n.attributes.name" /></th>
+					<th><xsl:value-of select="$i18n.attributes.value" /></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prefix.propertyObjectIdentity</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyObjectIdentity" /></td>
+					</tr>
+					<tr>
+						<td>prefix.propertyUnitDesignation</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyUnitDesignation" /></td>
+					</tr>
+					<tr>
+						<td>prefix.propertyUnitDesignationNoMunicipality</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyUnitDesignationNoMunicipality" /></td>
+					</tr>
+				</tbody>
+			</table>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
@@ -73,6 +126,9 @@
 		<xsl:choose>
 			<xsl:when test="$fieldName = 'minimumScale'">
 				<xsl:value-of select="$i18n.minimumScale" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'attributeName'">
+				<xsl:value-of select="$i18n.attributeName" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

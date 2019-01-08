@@ -6,12 +6,14 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLElement;
@@ -30,6 +32,17 @@ public class PUDMapQuery extends BaseMapQuery {
 	@WebPopulate(maxLength = 255, populator=IntegerPopulator.class)
 	@XMLElement
 	private Integer minimumScale;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "setAsAttribute")
+	@XMLElement
+	private String attributeName;
 
 	@DAOManaged
 	@OneToMany
@@ -86,6 +99,9 @@ public class PUDMapQuery extends BaseMapQuery {
 
 		appendFieldDefenition("XCoordinate", "xs:double", false, doc, sequenceElement);
 		appendFieldDefenition("YCoordinate", "xs:double", false, doc, sequenceElement);
+		
+		appendFieldDefenition("PropertyObjectIdentity", "xs:string", false, doc, sequenceElement);
+		appendFieldDefenition("PropertyUnitDesignation", "xs:string", false, doc, sequenceElement);
 
 		doc.getDocumentElement().appendChild(complexTypeElement);
 	}
@@ -99,11 +115,37 @@ public class PUDMapQuery extends BaseMapQuery {
 
 		minimumScale = XMLValidationUtils.validateParameter("minimumScale", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 
-		if(!errors.isEmpty()){
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if (attributeName != null) {
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
+		
+		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
-
+	}
+	
+	public boolean isSetAsAttribute() {
+		
+		return setAsAttribute;
+	}
+	
+	public void setSetAsAttribute(boolean setAsAttribute) {
+		
+		this.setAsAttribute = setAsAttribute;
+	}
+	
+	public String getAttributeName() {
+		
+		return attributeName;
+	}
+	
+	public void setAttributeName(String attributeName) {
+		
+		this.attributeName = attributeName;
 	}
 
 }

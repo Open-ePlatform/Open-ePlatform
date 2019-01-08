@@ -102,8 +102,39 @@
 						<xsl:with-param name="element" select="PUDQuery" />
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
+			
+			<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
+			
+			<table class="floatleft clearboth border">
+				<thead>
+					<th><xsl:value-of select="$i18n.attributes.name" /></th>
+					<th><xsl:value-of select="$i18n.attributes.value" /></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prefix</td>
+						<td><xsl:value-of select="$i18n.attributes.legacy" /></td>
+					</tr>
+					<tr>
+						<td>prefix.address</td>
+						<td><xsl:value-of select="$i18n.attributes.address" /></td>
+					</tr>
+					<tr>
+						<td>prefix.propertyObjectIdentity</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyObjectIdentity" /></td>
+					</tr>
+					<tr class="notforaddress">
+						<td>prefix.propertyUnitDesignation</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyUnitDesignation" /></td>
+					</tr>
+					<tr class="notforaddress">
+						<td>prefix.propertyUnitDesignationNoMunicipality</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyUnitDesignationNoMunicipality" /></td>
+					</tr>
+				</tbody>
+			</table>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
