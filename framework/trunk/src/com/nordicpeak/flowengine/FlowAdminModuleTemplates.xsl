@@ -2363,6 +2363,10 @@
 						var checked = authCheckbox.prop("checked");
 						
 						$("#showLoginQuestion").parent().parent().toggle(!checked);
+						
+						if (checked) {
+							$("#showLoginQuestion").prop("checked", false).change();
+						}
 					};
 					
 					authCheckbox.change(showLoginQuestionCheckbox);
