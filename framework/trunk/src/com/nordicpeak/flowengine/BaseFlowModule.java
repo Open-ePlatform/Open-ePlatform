@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Date;
@@ -46,6 +47,7 @@ import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -93,7 +95,6 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.FlowAction;
 import com.nordicpeak.flowengine.enums.FlowDirection;
-import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
@@ -147,7 +148,6 @@ import com.nordicpeak.flowengine.interfaces.InvoiceLine;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
@@ -158,7 +158,6 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
-import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
@@ -848,12 +847,28 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						}
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
+						Status paymentStatus = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(callback.getPaymentActionID());
+						
+						if (paymentStatus != null && paymentStatus.getContentType() != ContentType.WAITING_FOR_PAYMENT) {
+							
+							log.warn("Wrong content type for payment status " + paymentStatus + " in flow " + instanceManager.getFlowInstance().getFlow());
+							paymentStatus = null;
+						}
 
-						if (instanceManager.hasUnsavedChanges()) {
+						if (instanceManager.hasUnsavedChanges() || (paymentStatus != null && !paymentStatus.equals(instanceManager.getFlowState()))) {
 
 							log.info("User " + user + " saving and preparing to pay flow instance " + instanceManager.getFlowInstance());
 
-							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+							if (paymentStatus != null) {
+								
+								save(instanceManager, user, poster, req, callback.getPaymentActionID(), EventType.UPDATED, null);
+								
+								removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
+								
+							} else {
+								
+								save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+							}
 							
 							savedFlowInstanceForPayment(instanceManager, user, req);
 
@@ -862,10 +877,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							log.info("User " + user + " preparing to pay flow instance " + instanceManager.getFlowInstance());
 						}
 
-						if (!previouslySaved) {
+						if (paymentStatus != null) {
+
+							res.sendRedirect(getStandalonePaymentURL(instanceManager, req));
+							return null;
+
+						} else if (!previouslySaved) {
 
 							res.sendRedirect(getSaveAndSubmitURL(instanceManager, req));
-
 							return null;
 						}
 						
@@ -873,7 +892,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							
 							SiteProfile instanceProfile = getSiteProfile(instanceManager);
 
-							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, poster, instanceProfile, callback.getSubmitActionID()));
+							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
 
 							if (res.isCommitted()) {
 
@@ -884,7 +903,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 								log.warn("Payment provider returned no view fragment and not committed not direct response for pay of flow instance " + instanceManager + " by user " + user);
 
 								redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
-
 								return null;
 							}
 
@@ -895,7 +913,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							log.error("Error invoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
 							redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
-
 							return null;
 						}
 					}
@@ -2050,8 +2067,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
-	//TODO show inline payment form?
-
 	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException {
 
 		Integer flowInstanceID = null;
@@ -2100,8 +2115,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			return callback.list(req, res, user, uriParser, Collections.singletonList(PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR));
 		}
 		
-		//TODO Submit check
-		
+		//TODO Submit check possible but would have to revert flow status
 		
 		SiteProfile instanceProfile = getSiteProfile(instanceManager);
 		ViewFragment viewFragment;
@@ -2362,7 +2376,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return submitEventAttributes;
 	}
 
-	public void standalonePaymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void paymentComplete(FlowInstanceManager instanceManager, HttpServletRequest req, User user, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 		
 		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 		
@@ -2399,29 +2413,12 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
 	}
 
-	public void inlinePaymentComplete(MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, User poster, SiteProfile siteProfile, String actionID, boolean addPaymentEvent, String eventDetails, Map<String, String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
-
-		instanceManager.getSessionAttributeHandler().removeAttribute(PAYMENT_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
-		
-		if (addPaymentEvent) {
-			
-			flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.PAYED, eventDetails, user, null, eventAttributes);
-		}
-
-		FlowInstanceEvent event = save(instanceManager, user, poster, req, actionID, EventType.SUBMITTED, getPaymentCompleteSubmitEventAttributes(instanceManager));
-
-		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
-
-		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
-
-	}
-
 	public void abortSigning(MutableFlowInstanceManager instanceManager) {
 		
 		instanceManager.getSessionAttributeHandler().removeAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE);
 	}
 
-	public abstract String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req);
+	public abstract String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req);
 	
 	public abstract String getPaymentFailURL(MutableFlowInstanceManager instanceManager, HttpServletRequest req);
 
@@ -2455,31 +2452,12 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			return false;
 		}
 		
-		List<PaymentQuery> paymentQueries = instanceManager.getQueries(PaymentQuery.class);
-		
-		if (paymentQueries != null) {
-			
-			int amount = 0;
-			
-			for (PaymentQuery paymentQuery : paymentQueries) {
-				
-				if (paymentQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(paymentQuery.getInvoiceLines())) {
-					
-					for (InvoiceLine invoiceLine : paymentQuery.getInvoiceLines()) {
-						
-						amount += invoiceLine.getQuanitity() * invoiceLine.getUnitPrice();
-						
-					}
-					
-				}
-				
-			}
-			
-			if (amount > 0) {
-				
-				return true;
-			}
-			
+		List<InvoiceLine> invoiceLines = FlowInstanceUtils.getPaymentInvoiceLines(instanceManager);
+		BigDecimal totalSum = FlowInstanceUtils.getPaymentInvoiceLinesSum(invoiceLines);
+
+		if (totalSum.compareTo(BigDecimal.ZERO) > 0) {
+
+			return true;
 		}
 		
 		return false;

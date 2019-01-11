@@ -11,11 +11,12 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
-import com.nordicpeak.flowengine.interfaces.StandalonePaymentCallback;
+import com.nordicpeak.flowengine.interfaces.FlowPaymentCallback;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 
 
-public class BaseFlowModuleStandalonePaymentCallback implements StandalonePaymentCallback {
+public class BaseFlowModuleStandalonePaymentCallback implements FlowPaymentCallback {
 
 	private final BaseFlowModule baseFlowModule;
 	private final String actionID;
@@ -30,27 +31,27 @@ public class BaseFlowModuleStandalonePaymentCallback implements StandalonePaymen
 	}
 	
 	@Override
-	public void paymentComplete(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req, User user, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
+	public void paymentComplete(FlowInstanceManager instanceManager, HttpServletRequest req, User user, boolean addPaymentEvent, String details, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, FlowDefaultStatusNotFound, SQLException {
 
-		baseFlowModule.standalonePaymentComplete(instanceManager, req, user, siteProfile, actionID, addPaymentEvent, details, eventAttributes);
+		baseFlowModule.paymentComplete(instanceManager, req, user, siteProfile, actionID, addPaymentEvent, details, eventAttributes);
 	}
 
 	@Override
-	public String getPaymentSuccessURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getPaymentSuccessURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 		
 		return baseFlowModule.getPaymentSuccessURL(instanceManager, req);
 	}
 	
 	@Override
-	public String getPaymentFailURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getPaymentFailURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return baseFlowModule.getStandalonePaymentURL(instanceManager, req);
+		return baseFlowModule.getStandalonePaymentURL((ImmutableFlowInstanceManager) instanceManager, req);
 	}
 
 	@Override
-	public String getPaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getPaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return baseFlowModule.getStandalonePaymentURL(instanceManager, req);
+		return baseFlowModule.getStandalonePaymentURL((ImmutableFlowInstanceManager) instanceManager, req);
 	}
 
 	@Override

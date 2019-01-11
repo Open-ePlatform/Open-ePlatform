@@ -7,15 +7,12 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
 
 public interface FlowPaymentProvider {
 
-	ViewFragment pay(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, MutableFlowInstanceManager instanceManager, InlinePaymentCallback callback) throws Exception;
-	
-	ViewFragment pay(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ImmutableFlowInstanceManager instanceManager, StandalonePaymentCallback callback) throws Exception;
+	ViewFragment pay(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceManager instanceManager, FlowPaymentCallback callback) throws Exception;
 	
 }
 
