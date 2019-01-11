@@ -54,6 +54,7 @@ import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModule
 import se.unlogic.hierarchy.core.interfaces.settings.MutableSettingHandler;
 import se.unlogic.hierarchy.core.interfaces.sms.SMSSender;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
@@ -131,7 +132,6 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
