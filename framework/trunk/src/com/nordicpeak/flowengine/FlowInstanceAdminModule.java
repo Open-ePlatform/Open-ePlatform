@@ -150,7 +150,6 @@ import com.nordicpeak.flowengine.interfaces.SigningResponse;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.listeners.FlowStatusManagerAccessElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
 import com.nordicpeak.flowengine.notifications.interfaces.Notification;
@@ -1754,7 +1753,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	@Override
-	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 		
 		throw new UnsupportedOperationException();
 	}

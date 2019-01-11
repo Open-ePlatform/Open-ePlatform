@@ -229,7 +229,6 @@ import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListene
 import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
 import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
@@ -1752,7 +1751,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		}
 
-		log.info("User " + user + " notification settings for flow " + flow);
+		log.info("User " + user + " updating notification settings for flow " + flow);
 
 		Document doc = createDocument(req, uriParser, user);
 
@@ -2947,7 +2946,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	}
 	
 	@Override
-	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		throw new UnsupportedOperationException();
 	}

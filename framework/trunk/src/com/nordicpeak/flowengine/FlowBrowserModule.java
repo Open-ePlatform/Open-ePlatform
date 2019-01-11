@@ -125,7 +125,6 @@ import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.search.FlowIndexer;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -1305,7 +1304,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@WebPublic(alias = "pay")
 	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
-		return super.showPaymentForm(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false);
+		if (user == null) {
+			
+			return super.showPaymentForm(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false);
+			
+		} else {
+			
+			return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this, false);
+		}
 	}
 
 	@Override
@@ -1320,7 +1326,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected void flowInstanceSavedAndClosed(FlowInstanceManager flowInstanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
 		redirectToDefaultMethod(req, res);
-
 	}
 
 	@Override
@@ -1354,7 +1359,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	}
 	
 	@Override
-	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/pay/" + instanceManager.getFlowInstanceID();
 	}
