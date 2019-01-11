@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -22,7 +23,6 @@ import com.nordicpeak.flowengine.annotations.TextTagReplace;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.queries.DescribedQuery;
-import com.nordicpeak.flowengine.utils.AttributeTagUtils;
 
 public abstract class BaseQuery extends GeneratedElementable implements Query, Serializable, DescribedQuery, XMLParserPopulateable {
 
