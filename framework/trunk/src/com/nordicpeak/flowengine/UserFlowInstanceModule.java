@@ -126,7 +126,6 @@ import com.nordicpeak.flowengine.interfaces.UserFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
@@ -1074,7 +1073,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 	
 	@Override
-	public String getStandalonePaymentURL(ImmutableFlowInstanceManager instanceManager, HttpServletRequest req) {
+	public String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
 		return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/pay/" + instanceManager.getFlowInstanceID();
 	}
