@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +11,7 @@ import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -18,9 +21,12 @@ import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.InvoiceLine;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
 public class FlowInstanceUtils {
@@ -332,9 +338,9 @@ public class FlowInstanceUtils {
 				
 				return attributeHandler.getString(descriptionAttributes.get(descriptionAttributes.size() - 1));
 			}
-		}	
+		}
 		
-		return null;		
+		return null;
 	}
 		
 	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
@@ -544,5 +550,54 @@ public class FlowInstanceUtils {
 		}
 		
 		contacts.add(contact);
+	}
+
+	public static List<InvoiceLine> getPaymentInvoiceLines(FlowInstanceManager instanceManager) {
+		
+		List<PaymentQuery> paymentQueries = instanceManager.getQueries(PaymentQuery.class);
+		
+		if (paymentQueries != null) {
+			
+			List<InvoiceLine> invoiceLines = new ArrayList<InvoiceLine>();
+			
+			for (PaymentQuery paymentQuery : paymentQueries) {
+				
+				if (paymentQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+					
+					List<? extends InvoiceLine> queryInvoiceLines = paymentQuery.getInvoiceLines();
+					
+					if (!CollectionUtils.isEmpty(queryInvoiceLines)) {
+						
+						invoiceLines.addAll(paymentQuery.getInvoiceLines());
+					}
+				}
+			}
+			
+			if (invoiceLines.size() > 0) {
+				
+				return invoiceLines;
+			}
+		}
+		
+		return null;
+	}
+
+	public static BigDecimal getPaymentInvoiceLinesSum(List<InvoiceLine> invoiceLines) {
+
+		BigDecimal totalSum = BigDecimal.ZERO;
+
+		if (!CollectionUtils.isEmpty(invoiceLines)) {
+
+			for (InvoiceLine invoiceLine : invoiceLines) {
+
+				totalSum = totalSum.add(invoiceLine.getQuantity().multiply(invoiceLine.getUnitPrice()));
+			}
+			
+			if (totalSum.scale() > 2) {
+				totalSum = totalSum.setScale(2, RoundingMode.UP);
+			}
+		}
+
+		return totalSum;
 	}
 }
