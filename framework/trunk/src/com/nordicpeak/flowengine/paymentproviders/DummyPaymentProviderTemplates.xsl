@@ -23,26 +23,13 @@
 	
 		<div id="DummyPaymentProvider">
 			
-			<xsl:apply-templates select="InlinePaymentForm" />
-			<xsl:apply-templates select="StandalonePaymentForm" />
+			<xsl:apply-templates select="PaymentForm" />
 			
 		</div>
 			
 	</xsl:template>
 	
-	<xsl:template match="InlinePaymentForm">
-		
-		<xsl:call-template name="paymentForm" />
-
-	</xsl:template>
-	
-	<xsl:template match="StandalonePaymentForm">
-		
-		<xsl:call-template name="paymentForm" />
-
-	</xsl:template>
-	
-	<xsl:template name="paymentForm">
+	<xsl:template match="PaymentForm">
 		
 		<xsl:apply-templates select="validationError" />
 		
