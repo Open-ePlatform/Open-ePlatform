@@ -94,6 +94,13 @@ public abstract class BaseEvaluationProviderModule<E extends BaseEvaluator> exte
 
 		systemInterface.getInstanceHandler().removeInstanceListener(EvaluationHandler.class, this);
 
+		EvaluationHandler evaluationHandler = systemInterface.getInstanceHandler().getInstance(EvaluationHandler.class);
+
+		if (evaluationHandler != null) {
+
+			evaluationHandler.removeEvaluationProvider(evaluatorDescriptor);
+		}
+		
 		super.unload();
 	}
 
@@ -171,6 +178,7 @@ public abstract class BaseEvaluationProviderModule<E extends BaseEvaluator> exte
 	}
 
 	
+	@Override
 	public String getEvaluatorTypeName() {
 	
 		return evaluatorTypeName;
