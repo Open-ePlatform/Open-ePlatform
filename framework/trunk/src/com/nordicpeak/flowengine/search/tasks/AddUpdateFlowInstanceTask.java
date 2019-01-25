@@ -20,14 +20,6 @@ public class AddUpdateFlowInstanceTask extends BaseTask {
 		this.flowFamily = flow.getFlowFamily();
 	}
 
-	public AddUpdateFlowInstanceTask(FlowInstanceIndexer flowInstanceIndexer, FlowInstance flowInstance, Flow flow) {
-
-		super(flowInstanceIndexer);
-		this.flowInstance = flowInstance;
-		this.flow = flow;
-		this.flowFamily = flow.getFlowFamily();
-	}
-
 	public AddUpdateFlowInstanceTask(FlowInstanceIndexer flowInstanceIndexer, FlowInstance flowInstance, Flow flow, FlowFamily flowFamily) {
 
 		super(flowInstanceIndexer);
