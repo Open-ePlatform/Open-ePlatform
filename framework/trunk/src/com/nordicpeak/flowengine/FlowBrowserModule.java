@@ -61,6 +61,7 @@ import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.html.HTMLUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -169,10 +170,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max search hits", description = "Maximum number of hits to get from index when searching", formatValidator = PositiveStringIntegerValidator.class, required = true)
 	protected int maxHitCount = 10;
-
-	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name = "User favourite module alias", description = "Full alias of the user favourite module", required = false)
-	protected String userFavouriteModuleAlias;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Intervall size", description = "Controls how any hours back in time that the popular statistics should be based on")
@@ -435,7 +432,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.append(doc, showFlowTypesElement, "recommendedTags", "Tag", recommendedTags);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchHints", searchHints);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "popularFlowCount", popularFlowCount);
-			XMLUtils.appendNewElement(doc, showFlowTypesElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchDescription", searchDescription);
 
@@ -580,12 +576,10 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.appendNewElement(doc, showFlowOverviewElement, "loggedIn");
 		}
 
-		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "userFavouriteModuleAlias", userFavouriteModuleAlias);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "showRelatedFlows", showRelatedFlows);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "setNoFollowOnFlowForms", setNoFollowOnFlowForms);
 		XMLUtils.appendNewElement(doc, showFlowOverviewElement, "useExpandableFlowDescription", useExpandableFlowDescription);
-		
 		
 		if (operatingMessageModule != null) {
 
@@ -636,6 +630,16 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 					response.addScripts(extensionView.getViewFragment().getScripts());
 				}
 			}
+		}
+		
+		if(flow.getShortDescription() != null) {
+			
+			String pageDescription = flow.getShortDescription();
+			
+			pageDescription = HTMLUtils.removeHTMLTags(pageDescription);
+			pageDescription = StringUtils.toLogFormat(pageDescription, 1000);
+			
+			response.setDescription(pageDescription);
 		}
 		
 		return response;
@@ -1252,11 +1256,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public String getMultiSigningActionID() {
 
 		return MULTI_SIGNING_ACTION_ID;
-	}
-
-	public String getUserFavouriteModuleAlias() {
-
-		return userFavouriteModuleAlias;
 	}
 
 	@Override
