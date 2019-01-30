@@ -90,12 +90,13 @@ public class FlowInstanceIndexer {
 	private static final String ORGANIZATION_NUMBER = "organizationNumber";
 	private static final String INTERNAL_MESSAGES = "internalMessages";
 	private static final String EXTERNAL_MESSAGES = "externalMessages";
+	private static final String MANAGER_DESCRIPTION = "managerDescription";
 	protected static final String ALLOWED_FULL_USER_FIELD = "allowedUser";
 	protected static final String ALLOWED_FULL_GROUP_FIELD = "allowedGroup";
 	protected static final String ALLOWED_RESTRICTED_USER_FIELD = "allowedRestrictedUser";
 	protected static final String ALLOWED_RESTRICTED_GROUP_FIELD = "allowedRestricedGroup";
 	
-	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES};
+	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES, MANAGER_DESCRIPTION};
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -564,6 +565,11 @@ public class FlowInstanceIndexer {
 						doc.add(new IntField(ALLOWED_FULL_USER_FIELD, manager.getUserID(), Field.Store.YES));
 					}
 				}
+			}
+			
+			if(flowInstance.getManagerDescription() != null) {
+				
+				doc.add(new TextField(MANAGER_DESCRIPTION, flowInstance.getManagerDescription(), Field.Store.NO));
 			}
 			
 			addAdditionalFields(doc, flowInstance, flowFamily);
