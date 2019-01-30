@@ -19,3 +19,8 @@ input[type="file"].fileuploader {
 	visibility: visible;
 	width: 90px;
 }
+
+.upload.no-hover:hover {
+  background: #fff;
+  border-color: #cacaca;
+}
