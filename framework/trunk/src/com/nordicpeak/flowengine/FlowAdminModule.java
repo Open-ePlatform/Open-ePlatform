@@ -82,7 +82,6 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
-import se.unlogic.hierarchy.core.interfaces.events.EventListener;
 import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.menu.BundleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
@@ -171,6 +170,7 @@ import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.cache.FlowCache;
 import com.nordicpeak.flowengine.comparators.FlowAdminExtensionViewProviderComparator;
 import com.nordicpeak.flowengine.comparators.FlowVersionComparator;
 import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
@@ -247,17 +247,63 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationErr
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements EventListener<CRUDEvent<?>>, AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
+public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
 
+	private static final Field[] FLOW_FAMILY_CACHE_RELATIONS = {
+		
+			FlowFamily.ALIASES_RELATION,
+			FlowFamily.MANAGER_USERS_RELATION,
+			FlowFamily.MANAGER_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+	};
+	
+	private static final Field[] FLOW_CACHE_RELATIONS = {
+			Flow.CHECKS_RELATION,
+			Flow.CATEGORY_RELATION,
+			Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION,
+			Flow.FLOW_FORMS_RELATION,
+			Flow.FLOW_TYPE_RELATION,
+			Flow.FLOW_FAMILY_RELATION,
+			Flow.STEPS_RELATION,
+			Flow.STATUSES_RELATION,
+			Flow.TAGS_RELATION,
+			
+			Status.MANAGER_GROUPS_RELATION,
+			Status.MANAGER_USERS_RELATION,
+			
+			Step.QUERY_DESCRIPTORS_RELATION,
+			
+			QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION,
+			
+			DefaultStatusMapping.FLOW_STATE_RELATION,
+			
+			FlowFamily.ALIASES_RELATION,
+			FlowFamily.MANAGER_USERS_RELATION,
+			FlowFamily.MANAGER_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+			
+			FlowType.CATEGORIES_RELATION,
+			FlowType.ALLOWED_ADMIN_USERS_RELATION,
+			FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
+			FlowType.ALLOWED_QUERIES_RELATION
+	};
+	
+	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION}; 
+			
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
 	public static final ValidationError MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR = new ValidationError("MayNotRemoveFlowFormIfNoSteps");
 	public static final ValidationError MAY_NOT_ADD_FLOW_FORM_IF_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotAddFlowFormIfOverviewSkipIsSet");
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
-
-	@SuppressWarnings("rawtypes")
-	private static final Class[] EVENT_LISTENER_CLASSES = new Class[] { FlowFamily.class, FlowType.class, Flow.class, Category.class, Step.class, QueryDescriptor.class, EvaluatorDescriptor.class, Status.class, FlowInstance.class };
 
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
@@ -542,8 +588,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	protected OrderByCriteria<Flow> flowVersionOrderByCriteria;
 
 	private LinkedHashMap<Integer, FlowType> flowTypeCacheMap;
-	private LinkedHashMap<Integer, Flow> flowCacheMap;
-	private HashMap<Integer, FlowFamily> flowFamilyCacheMap;
+	
+	private FlowCache flowCache;
 
 	protected UserGroupListConnector userGroupListConnector;
 	protected UserGroupListConnector unrestrictedUserGroupListConnector;
@@ -574,8 +620,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		cacheFlows();
 		cacheFlowTypes();
 
-		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
-		
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 		userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		
@@ -609,8 +653,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public void unload() throws Exception {
 		
 		stopScheduler();
-
-		eventHandler.removeEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 
 		systemInterface.getInstanceHandler().removeInstance(FlowAdminModule.class, this);
 
@@ -767,6 +809,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		}
 
 		log.info("Cached " + CollectionUtils.getSize(flowTypes) + " flow types in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+		//System.out.println("Cached " + CollectionUtils.getSize(flowTypes) + " flow types in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 	}
 
 	public synchronized void cacheFlows() throws SQLException {
@@ -779,50 +822,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			long startTime = System.currentTimeMillis();
 			
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(
-			//@formatter:off
-					Flow.CHECKS_RELATION,
-					Flow.CATEGORY_RELATION,
-					Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION,
-					Flow.FLOW_FORMS_RELATION,
-					Flow.FLOW_TYPE_RELATION,
-					Flow.FLOW_FAMILY_RELATION,
-					Flow.STEPS_RELATION,
-					Flow.STATUSES_RELATION,
-					Flow.TAGS_RELATION,
-					
-					Status.MANAGER_GROUPS_RELATION,
-					Status.MANAGER_USERS_RELATION,
-					
-					Step.QUERY_DESCRIPTORS_RELATION,
-					
-					QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION,
-					
-					DefaultStatusMapping.FLOW_STATE_RELATION,
-					
-					FlowFamily.ALIASES_RELATION,
-					FlowFamily.MANAGER_USERS_RELATION,
-					FlowFamily.MANAGER_GROUPS_RELATION,
-					FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION,
-					FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION,
-					FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
-					FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
-					FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
-					
-					FlowType.CATEGORIES_RELATION,
-					FlowType.ALLOWED_ADMIN_USERS_RELATION,
-					FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
-					FlowType.ALLOWED_QUERIES_RELATION
-			//@formatter:on
-			);
-			query.addCachedRelations(Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
+			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_CACHE_RELATIONS);
+			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
 
 			if (flows == null) {
 
-				flowCacheMap = new LinkedHashMap<Integer, Flow>(0);
-				flowFamilyCacheMap = new HashMap<Integer, FlowFamily>();
+				this.flowCache = new FlowCache(new LinkedHashMap<Integer, Flow>(0), new HashMap<Integer, FlowFamily>(0));
 
 			} else {
 
@@ -831,26 +838,157 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 				for (Flow flow : flows) {
 
-					flow.setFlowInstanceCount(getFlowInstanceCount(flow, transactionHandler));
-					flow.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(flow, transactionHandler));
-					flow.setLatestVersion(isLatestVersion(flow, transactionHandler));
-
-					setStatusFlowInstanceCount(flow, transactionHandler);
+					setCachedFlowDetails(flow,transactionHandler);
 
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
 				}
 
-				flowCacheMap = tempFlowCacheMap;
-				flowFamilyCacheMap = tempFlowFamilyMap;
+				this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 			}
 
-			log.info("Cached " + flowCacheMap.size() + " flows from " + flowFamilyCacheMap.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+			log.info("Cached " + flowCache.getFlowCacheMap().size() + " flows from " + flowCache.getFlowFamilyCacheMap().size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+			//System.out.println("Cached " + flowCache.getFlowCacheMap().size() + " flows from " + flowCache.getFlowFamilyCacheMap().size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 
 		} finally {
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
+	}
+	
+	private synchronized void cacheFlowFamilies(List<Integer> flowFamilyIDs) throws SQLException {
+
+		long startTime = System.currentTimeMillis();
+		
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FLOW_FAMILY_CACHE_RELATIONS);
+		
+		query.addParameter(flowFamiliyIDParamFactory.getWhereInParameter(flowFamilyIDs));
+		
+		List<FlowFamily> flowFamilies = this.daoFactory.getFlowFamilyDAO().getAll(query);
+		
+		if (flowFamilies == null) {
+
+			log.error("Flow family ID's " + flowFamilyIDs + " not found in DB, unbable to cache flow families");
+
+		} else {
+	
+			LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
+			HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+
+			for (FlowFamily flowFamily : flowFamilies) {
+
+				tempFlowFamilyMap.put(flowFamily.getFlowFamilyID(), flowFamily);
+				
+				//Update flow family of cached flows
+				for(Flow flow : tempFlowCacheMap.values()) {
+					
+					if(flow.getFlowFamily().equals(flowFamily)) {
+						
+						flow.setFlowFamily(flowFamily);
+					}
+				}
+			}
+
+			this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
+		}		
+		
+		log.info("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+		//System.out.println("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+	}
+	
+	private synchronized void deleteFlowFamiliesFromCache(List<FlowFamily> flowFamilies) {
+
+		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
+		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+		
+		for(FlowFamily flowFamily : flowFamilies) {
+			
+			if(tempFlowFamilyMap.remove(flowFamily.getFlowFamilyID()) != null) {
+				
+				log.info("Removed flow family " + flowFamily + " from cache");
+				
+			}else {
+				
+				log.warn("Flow family " + flowFamily + " not found in cache");
+			}
+		}
+		
+		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
+	}
+	
+	private synchronized void cacheFlows(List<Integer> flowIDs) throws SQLException {
+
+		TransactionHandler transactionHandler = null;
+
+		try {
+
+			transactionHandler = new TransactionHandler(dataSource);
+
+			long startTime = System.currentTimeMillis();
+			
+			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_CACHE_RELATIONS);
+			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
+			query.addParameter(flowIDParamFactory.getWhereInParameter(flowIDs));
+
+			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
+
+			if (flows == null) {
+
+				log.error("Flow ID's " + flowIDs + " not found in DB, unbable to cache flows");
+
+			} else {
+		
+				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
+				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+
+				for (Flow flow : flows) {
+
+					setCachedFlowDetails(flow,transactionHandler);
+
+					tempFlowCacheMap.put(flow.getFlowID(), flow);
+					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
+				}
+
+				this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
+			}
+
+			log.info("Cached " + flowIDs.size() + " flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+			//System.out.println("Cached " + flowIDs.size() + " flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
+
+		} finally {
+
+			TransactionHandler.autoClose(transactionHandler);
+		}
+		
+	}
+	
+	private synchronized void deleteFlowsFromCache(List<Flow> flows) {
+
+		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
+		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+		
+		for(Flow flow : flows) {
+			
+			if(tempFlowCacheMap.remove(flow.getFlowID()) != null) {
+				
+				log.info("Removed flow " + flow + " from cache");
+				
+			}else {
+				
+				log.warn("Flow " + flow + " not found in cache");
+			}
+		}
+		
+		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
+	}
+	
+	private void setCachedFlowDetails(Flow flow, TransactionHandler transactionHandler) throws SQLException {
+
+		flow.setFlowInstanceCount(getFlowInstanceCount(flow, transactionHandler));
+		flow.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(flow, transactionHandler));
+		flow.setLatestVersion(isLatestVersion(flow, transactionHandler));
+
+		setStatusFlowInstanceCount(flow, transactionHandler);		
 	}
 
 	private void setStatusFlowInstanceCount(Flow flow, TransactionHandler transactionHandler) throws SQLException {
@@ -960,7 +1098,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			listFlowsElement.appendChild(doc.createElement("AddAccess"));
 
-			Collection<Flow> flows = this.flowCacheMap.values();
+			Collection<Flow> flows = this.flowCache.getFlowCacheMap().values();
 
 			if (!AccessUtils.checkAccess(user, this)) {
 
@@ -1119,7 +1257,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		FlowFamily flowFamily;
 
-		if (uriParser.size() != 3 || !NumberUtils.isInt(uriParser.get(2)) || (flowFamily = flowFamilyCacheMap.get(NumberUtils.toInt(uriParser.get(2)))) == null) {
+		if (uriParser.size() != 3 || !NumberUtils.isInt(uriParser.get(2)) || (flowFamily = flowCache.getFlowFamilyCacheMap().get(NumberUtils.toInt(uriParser.get(2)))) == null) {
 
 			return list(req, res, user, uriParser, new ValidationError("RequestedFlowFamilyNotFound"));
 		}
@@ -2226,7 +2364,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		MutableFlowInstanceManager instanceManager;
 
 		try {
-			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCacheMap.get(flowID) != null) {
+			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCache.getFlowCacheMap().get(flowID) != null) {
 
 				//Create new instance or get instance from session
 				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
@@ -2344,170 +2482,275 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		return processMutableQueryRequest(req, res, user, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public synchronized void processEvent(CRUDEvent<?> event, EventSource source) {
+	
+	
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowType.class)
+	public void processFlowTypeEvent(CRUDEvent<FlowType> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow types");
+		
+		cacheFlowTypes();
+		cacheFlows();
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Category.class)
+	public void processCategoryEvent(CRUDEvent<Category> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " categories");
+		
+		cacheFlowTypes();
+		cacheFlows();
+	}	
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowFamily.class)
+	public void processFlowFamilyEvent(CRUDEvent<FlowFamily> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow families");
+		
+		if(event.getAction() == CRUDAction.DELETE) {
 
-		try {
-			log.info("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
+			deleteFlowFamiliesFromCache(event.getBeans());
+			
+		}else {
+			
+			List<Integer> flowFamilyIDs = new ArrayList<Integer>(event.getBeans().size());
+			
+			for(FlowFamily flowFamily : event.getBeans()) {
+				
+				flowFamilyIDs.add(flowFamily.getFlowFamilyID());
+			}
+			
+			cacheFlowFamilies(flowFamilyIDs);
+		}
+	}	
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Flow.class)
+	public void processFlowEvent(CRUDEvent<Flow> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flows");
+		
+		if (event.getAction() != CRUDAction.ADD) {
 
-			//Increment flow instance count for the given flow if the event is as an add or delete of a flow instance
-			if (FlowInstance.class.isAssignableFrom(event.getBeanClass())) {
+			for (Flow flow : event.getBeans()) {
 
-				for (FlowInstance flowInstance : (List<FlowInstance>) event.getBeans()) {
-
-					Flow flow;
-
-					//Check if the given flow is found in the cache else reload the whole cache
-					if (flowInstance.getFlow() == null || (flow = flowCacheMap.get(flowInstance.getFlow().getFlowID())) == null) {
-
-						cacheFlows();
-						return;
-
-					} else if (event.getAction() == CRUDAction.ADD) {
-
-						flow.setFlowInstanceCount(flow.getFlowInstanceCount() + 1);
-
-						if (flowInstance.getFirstSubmitted() != null) {
-
-							flow.setFlowSubmittedInstanceCount(flow.getFlowSubmittedInstanceCount() + 1);
-						}
-
-						Status status = getCachedStatus(flow, flowInstance.getStatus());
-
-						if (status != null) {
-
-							status.setFlowInstanceCount(status.getFlowInstanceCount() + 1);
-
-							if (flowInstance.getFirstSubmitted() != null) {
-
-								status.setFlowSubmittedInstanceCount(status.getFlowSubmittedInstanceCount() + 1);
-							}
-
-							continue;
-
-						} else {
-
-							cacheFlows();
-							return;
-						}
-
-					} else if (event.getAction() == CRUDAction.DELETE) {
-
-						flow.setFlowInstanceCount(flow.getFlowInstanceCount() - 1);
-
-						if (flowInstance.getFirstSubmitted() != null) {
-
-							flow.setFlowSubmittedInstanceCount(flow.getFlowSubmittedInstanceCount() - 1);
-						}
-
-						Status status = getCachedStatus(flow, flowInstance.getStatus());
-
-						if (status != null) {
-
-							status.setFlowInstanceCount(status.getFlowInstanceCount() - 1);
-
-							if (flowInstance.getFirstSubmitted() != null) {
-
-								status.setFlowSubmittedInstanceCount(status.getFlowSubmittedInstanceCount() - 1);
-							}
-
-							continue;
-
-						} else {
-
-							cacheFlows();
-							return;
-						}
-
-					}
-
-					//Update operation, reload flow submitted instance count, reload flow instance count for each status from DB
-					TransactionHandler transactionHandler = null;
-
-					try {
-						transactionHandler = new TransactionHandler(dataSource);
-
-						flow.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(flow, transactionHandler));
-
-						if (flow.getStatuses() != null) {
-
-							for (Status status : flow.getStatuses()) {
-
-								status.setFlowInstanceCount(getFlowInstanceCount(status, transactionHandler));
-								status.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(status, transactionHandler));
-							}
-						}
-
-					} finally {
-
-						TransactionHandler.autoClose(transactionHandler);
-					}
-				}
-
-				return;
-
-			} else if (FlowType.class.isAssignableFrom(event.getBeanClass()) || Category.class.isAssignableFrom(event.getBeanClass())) {
-
-				cacheFlowTypes();
-
-			} else if (Flow.class.isAssignableFrom(event.getBeanClass()) && (event.getAction() != CRUDAction.ADD)) {
-
-				for (Flow flow : (List<Flow>) event.getBeans()) {
-
-					closeInstanceManagers(flow);
-				}
-
-				if (event.getAction() == CRUDAction.DELETE) {
-
-					for (Flow flow : (List<Flow>) event.getBeans()) {
-
-						if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-
-							for (FlowForm flowForm : flow.getFlowForms()) {
-
-								deleteFlowFormFile(flowForm);
-							}
-						}
-					}
-				}
-
-			} else if (Step.class.isAssignableFrom(event.getBeanClass())) {
-
-				for (Step step : (List<Step>) event.getBeans()) {
-
-					closeInstanceManagers(step.getFlow());
-				}
-
-			} else if (QueryDescriptor.class.isAssignableFrom(event.getBeanClass())) {
-
-				for (QueryDescriptor queryDescriptor : (List<QueryDescriptor>) event.getBeans()) {
-
-					if (queryDescriptor.getStep() == null || queryDescriptor.getStep().getFlow() == null) {
-
-						log.error("Received CRUD event regarding query descriptor " + queryDescriptor + " without a flow set.");
-
-						continue;
-					}
-
-					closeInstanceManagers(queryDescriptor.getStep().getFlow());
-				}
-
-			} else if (EvaluatorDescriptor.class.isAssignableFrom(event.getBeanClass())) {
-
-				for (EvaluatorDescriptor evaluatorDescriptor : (List<EvaluatorDescriptor>) event.getBeans()) {
-
-					closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
-				}
+				closeInstanceManagers(flow);
 			}
 
-			cacheFlows();
+			if (event.getAction() == CRUDAction.DELETE) {
 
-		} catch (SQLException e) {
-			log.error("Error reloading cache", e);
+				//This code may leave loose files if the bean does not have all relations set
+				for (Flow flow : event.getBeans()) {
+
+					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+
+						for (FlowForm flowForm : flow.getFlowForms()) {
+
+							deleteFlowFormFile(flowForm);
+						}
+					}
+				}
+			}
+		}
+		
+		if(event.getAction() == CRUDAction.DELETE) {
+
+			deleteFlowsFromCache(event.getBeans());
+			
+		}else {
+			
+			List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+			
+			for(Flow flow : event.getBeans()) {
+				
+				flowIDs.add(flow.getFlowID());
+			}
+			
+			cacheFlows(flowIDs);
 		}
 	}
 	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Step.class)
+	public void processStepEvent(CRUDEvent<Step> event, EventSource source) throws SQLException {
+	
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " steps");
+		
+		for (Step step : event.getBeans()) {
+
+			closeInstanceManagers(step.getFlow());
+		}
+		
+		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		
+		for(Step step : event.getBeans()) {
+			
+			flowIDs.add(step.getFlow().getFlowID());
+		}
+		
+		cacheFlows(flowIDs);
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=QueryDescriptor.class)
+	public void processQueryDescriptorEvent(CRUDEvent<QueryDescriptor> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " query descriptors");
+		
+		for (QueryDescriptor queryDescriptor : event.getBeans()) {
+
+			if (queryDescriptor.getStep() == null || queryDescriptor.getStep().getFlow() == null) {
+
+				log.error("Received CRUD event regarding query descriptor " + queryDescriptor + " without a flow set.");
+
+				continue;
+			}
+
+			closeInstanceManagers(queryDescriptor.getStep().getFlow());
+		}
+		
+		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		
+		for(QueryDescriptor queryDescriptor : event.getBeans()) {
+			
+			flowIDs.add(queryDescriptor.getStep().getFlow().getFlowID());
+		}
+		
+		cacheFlows(flowIDs);
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=EvaluatorDescriptor.class)
+	public void processEvaluatorDescriptorEvent(CRUDEvent<EvaluatorDescriptor> event, EventSource source) throws SQLException {
+	
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " evaluator descriptors");
+		
+		for (EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
+
+			closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
+		}
+		
+		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		
+		for(EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
+			
+			flowIDs.add(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow().getFlowID());
+		}
+		
+		cacheFlows(flowIDs);
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Status.class)
+	public void processStatusEvent(CRUDEvent<Status> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " statuses");
+		
+		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		
+		for(Status status : event.getBeans()) {
+			
+			flowIDs.add(status.getFlow().getFlowID());
+		}
+		
+		cacheFlows(flowIDs);
+	}
+	
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowInstance.class)
+	public void processFlowInstanceEvent(CRUDEvent<FlowInstance> event, EventSource source) throws SQLException {
+		
+		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow instances");
+		
+		for (FlowInstance flowInstance : event.getBeans()) {
+
+			Flow flow;
+
+			//Check if the given flow is found in the cache else reload the whole cache
+			if (flowInstance.getFlow() == null || (flow = flowCache.getFlowCacheMap().get(flowInstance.getFlow().getFlowID())) == null) {
+
+				cacheFlows();
+				return;
+
+			} else if (event.getAction() == CRUDAction.ADD) {
+
+				flow.setFlowInstanceCount(flow.getFlowInstanceCount() + 1);
+
+				if (flowInstance.getFirstSubmitted() != null) {
+
+					flow.setFlowSubmittedInstanceCount(flow.getFlowSubmittedInstanceCount() + 1);
+				}
+
+				Status status = getCachedStatus(flow, flowInstance.getStatus());
+
+				if (status != null) {
+
+					status.setFlowInstanceCount(status.getFlowInstanceCount() + 1);
+
+					if (flowInstance.getFirstSubmitted() != null) {
+
+						status.setFlowSubmittedInstanceCount(status.getFlowSubmittedInstanceCount() + 1);
+					}
+
+					continue;
+
+				} else {
+
+					cacheFlows();
+					return;
+				}
+
+			} else if (event.getAction() == CRUDAction.DELETE) {
+
+				flow.setFlowInstanceCount(flow.getFlowInstanceCount() - 1);
+
+				if (flowInstance.getFirstSubmitted() != null) {
+
+					flow.setFlowSubmittedInstanceCount(flow.getFlowSubmittedInstanceCount() - 1);
+				}
+
+				Status status = getCachedStatus(flow, flowInstance.getStatus());
+
+				if (status != null) {
+
+					status.setFlowInstanceCount(status.getFlowInstanceCount() - 1);
+
+					if (flowInstance.getFirstSubmitted() != null) {
+
+						status.setFlowSubmittedInstanceCount(status.getFlowSubmittedInstanceCount() - 1);
+					}
+
+					continue;
+
+				} else {
+
+					cacheFlows();
+					return;
+				}
+
+			}
+
+			//Update operation, reload flow submitted instance count, reload flow instance count for each status from DB
+			TransactionHandler transactionHandler = null;
+
+			try {
+				transactionHandler = new TransactionHandler(dataSource);
+
+				flow.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(flow, transactionHandler));
+
+				if (flow.getStatuses() != null) {
+
+					for (Status status : flow.getStatuses()) {
+
+						status.setFlowInstanceCount(getFlowInstanceCount(status, transactionHandler));
+						status.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(status, transactionHandler));
+					}
+				}
+
+			} finally {
+
+				TransactionHandler.autoClose(transactionHandler);
+			}
+		}
+
+		return;
+	}
+		
 	private Status getCachedStatus(Flow flow, Status status) {
 
 		if (status == null || flow.getStatuses() == null) {
@@ -2555,7 +2798,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	@Override
 	protected Flow getBareFlow(Integer flowID) throws SQLException {
 
-		return flowCacheMap.get(flowID);
+		return flowCache.getFlowCacheMap().get(flowID);
 	}
 
 	@Override
@@ -2566,7 +2809,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public Flow getCachedFlow(Integer flowID) {
 
-		return flowCacheMap.get(flowID);
+		return flowCache.getFlowCacheMap().get(flowID);
 	}
 
 	public Collection<FlowType> getCachedFlowTypes() {
@@ -2654,19 +2897,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public ImmutableFlow getFlow(int flowID) {
 
-		return flowCacheMap.get(flowID);
+		return flowCache.getFlowCacheMap().get(flowID);
 	}
 
 	public FlowFamily getFlowFamily(int flowFamilyID) {
 
-		return flowFamilyCacheMap.get(flowFamilyID);
+		return flowCache.getFlowFamilyCacheMap().get(flowFamilyID);
 	}
 
 	public List<Flow> getFlowVersions(FlowFamily flowFamily) {
 
 		List<Flow> flows = new ArrayList<Flow>(flowFamily.getVersionCount());
 
-		for (Flow flow : flowCacheMap.values()) {
+		for (Flow flow : flowCache.getFlowCacheMap().values()) {
 
 			if (flow.getFlowFamily().getFlowFamilyID().equals(flowFamily.getFlowFamilyID())) {
 
@@ -2686,7 +2929,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		List<Flow> flows = new ArrayList<Flow>();
 
-		for (Flow flow : flowCacheMap.values()) {
+		for (Flow flow : flowCache.getFlowCacheMap().values()) {
 
 			if (flow.getFlowType().getFlowTypeID() == flowTypeID) {
 
@@ -2699,7 +2942,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public List<FlowFamily> getFlowFamilies(int flowTypeID) {
 
-		HashSet<FlowFamily> flowFamilies = new HashSet<FlowFamily>(this.flowFamilyCacheMap.size());
+		HashSet<FlowFamily> flowFamilies = new HashSet<FlowFamily>(this.flowCache.getFlowFamilyCacheMap().size());
 
 		List<Flow> flows = getFlows(flowTypeID);
 
@@ -2813,12 +3056,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public Collection<Flow> getCachedFlows() {
 
-		return this.flowCacheMap.values();
+		return this.flowCache.getFlowCacheMap().values();
 	}
 
 	public Collection<FlowFamily> getCachedFlowFamilies() {
 
-		return this.flowFamilyCacheMap.values();
+		return this.flowCache.getFlowFamilyCacheMap().values();
 	}
 
 	@Override
@@ -4020,7 +4263,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 			log.error("Error exporting query " + queryDescriptor, e);
 
-			return flowCRUD.showBean(flowCacheMap.get(flow.getFlowID()), req, res, user, uriParser, new QueryExportValidationError(queryDescriptor));
+			return flowCRUD.showBean(flowCache.getFlowCacheMap().get(flow.getFlowID()), req, res, user, uriParser, new QueryExportValidationError(queryDescriptor));
 		}
 
 		doc.appendChild(queryDescriptorElement);
@@ -4117,22 +4360,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public FlowNotificationHandler getNotificationHandler() {
 
 		return notificationHandler;
-	}
-
-	@Override
-	public int getPriority() {
-
-		return 0;
-	}
-
-	public String getCkConnectorModuleAlias() {
-
-		return ckConnectorModuleAlias;
-	}
-
-	public String getCssPath() {
-
-		return cssPath;
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -4262,7 +4489,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 	public FlowFamily getFlowFamilyByAlias(String alias) {
 
-		for (FlowFamily flowFamily : flowFamilyCacheMap.values()) {
+		for (FlowFamily flowFamily : flowCache.getFlowFamilyCacheMap().values()) {
 
 			if (!CollectionUtils.isEmpty(flowFamily.getAliases()) && flowFamily.getAliases().contains(alias)) {
 
@@ -4493,7 +4720,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		Integer flowID;
 		Flow flow;
 		
-		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCacheMap.get(flowID)) != null) {
+		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 			
 			if (!hasFlowTypeAccess(user, flow)) {
 				
@@ -4519,7 +4746,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		Integer flowID;
 		Flow flow;
 		
-		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCacheMap.get(flowID)) != null) {
+		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 
 			if (!hasFlowTypeAccess(user, flow)) {
 
@@ -4570,11 +4797,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 
 		if (flow.getFlowFamily() != null) {
 
-			addFlowFamilyEvent(message, flowFamilyCacheMap.get(flow.getFlowFamily().getFlowFamilyID()), flow.getVersion(), user);
+			addFlowFamilyEvent(message, flowCache.getFlowFamilyCacheMap().get(flow.getFlowFamily().getFlowFamilyID()), flow.getVersion(), user);
 
 		} else {
 
-			addFlowFamilyEvent(message, flowCacheMap.get(flow.getFlowID()).getFlowFamily(), flow.getVersion(), user);
+			addFlowFamilyEvent(message, flowCache.getFlowCacheMap().get(flow.getFlowID()).getFlowFamily(), flow.getVersion(), user);
 		}
 	}
 
@@ -4833,45 +5060,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	}
 
 	@Override
-	public String getFileMissing() {
-
-		return fileMissing;
-	}
-
-	@Override
-	public String getEventFlowFormAddedMessage() {
-
-		return eventFlowFormAddedMessage;
-	}
-
-	@Override
-	public String getEventFlowFormUpdatedMessage() {
-
-		return eventFlowFormUpdatedMessage;
-	}
-
-	@Override
-	public String getEventFlowFormDeletedMessage() {
-
-		return eventFlowFormDeletedMessage;
-	}
-
-	@Override
-	public Integer getMaxPDFFormFileSize() {
-
-		return maxPDFFormFileSize;
-	}
-
-	@Override
-	public Icon getFlowTypeIcon(Integer flowTypeID) {
-
-		return flowTypeCacheMap.get(flowTypeID);
-	}
-
-	@Override
 	public Icon getFlowIcon(Integer flowID) {
 
-		Flow flow = flowCacheMap.get(flowID);
+		Flow flow = flowCache.getFlowCacheMap().get(flowID);
 		
 		if(flow == null) {
 			
@@ -5026,7 +5217,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public ForegroundModuleResponse unPublishFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		if (!hasPublishAccess(user)) {
-			throw new AccessDeniedException("User does not have publish access");
+			throw new AccessDeniedException("User does not have publishing access");
 		}
 		
 		FlowFamily flowFamily = flowFamilyCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
@@ -5137,7 +5328,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		FlowFamily flowFamily;
 		ImmutableFlow flow;
 
-		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = getFlowFamily(flowFamilyID)) != null && (flow = flowCacheMap.get(flowID)) != null) {
+		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = getFlowFamily(flowFamilyID)) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 
 			if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
 
@@ -5394,7 +5585,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 		Flow flow;
 		FlowAdminFragmentExtensionViewProvider fragmentExtension;
 		
-		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (extensionModuleID = uriParser.getInt(3)) != null && (flow = flowCacheMap.get(flowID)) != null && (fragmentExtension = getFragmentExtensionViewProvider(extensionModuleID)) != null) {
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (extensionModuleID = uriParser.getInt(3)) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null && (fragmentExtension = getFragmentExtensionViewProvider(extensionModuleID)) != null) {
 
 			if (!hasFlowTypeAccess(user, flow)) {
 				
@@ -5454,5 +5645,51 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements EventListe
 	public void removeXSDExtensionProvider(XSDExtensionProvider provider) {
 
 		xsdExtensionProviders.remove(provider);
+	}
+	
+	public String getCkConnectorModuleAlias() {
+
+		return ckConnectorModuleAlias;
+	}
+
+	public String getCssPath() {
+
+		return cssPath;
+	}
+	
+	@Override
+	public String getFileMissing() {
+
+		return fileMissing;
+	}
+
+	@Override
+	public String getEventFlowFormAddedMessage() {
+
+		return eventFlowFormAddedMessage;
+	}
+
+	@Override
+	public String getEventFlowFormUpdatedMessage() {
+
+		return eventFlowFormUpdatedMessage;
+	}
+
+	@Override
+	public String getEventFlowFormDeletedMessage() {
+
+		return eventFlowFormDeletedMessage;
+	}
+
+	@Override
+	public Integer getMaxPDFFormFileSize() {
+
+		return maxPDFFormFileSize;
+	}
+
+	@Override
+	public Icon getFlowTypeIcon(Integer flowTypeID) {
+
+		return flowTypeCacheMap.get(flowTypeID);
 	}
 }

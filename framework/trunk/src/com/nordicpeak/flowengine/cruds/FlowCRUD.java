@@ -205,6 +205,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		callback.getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, bean), EventTarget.ALL);
 		
+		callback.getEventHandler().sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.UPDATE, bean.getFlowFamily()), EventTarget.ALL);
+		
 		callback.addFlowFamilyEvent(callback.getEventFlowUpdatedMessage(), bean, user);
 
 		callback.redirectToMethod(req, res, "/showflow/" + bean.getFlowID());
