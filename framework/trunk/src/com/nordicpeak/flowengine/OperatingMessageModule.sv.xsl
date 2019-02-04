@@ -8,13 +8,13 @@
 	
 	<xsl:variable name="java.newExternalOperatingMessageEmailSubject">Nytt externt driftmeddelande publicerat för $name</xsl:variable>
 	<xsl:variable name="java.newExternalOperatingMessageEmailMessage">
-		&lt;p&gt;Ett nytt externt driftmeddelande publicerat för $name har tagits emot med följande meddelande:&lt;/p&gt;
+		&lt;p&gt;Följande driftmeddelande har publicerats för $name:&lt;/p&gt;
 		&lt;p&gt;$message&lt;/p&gt;
 	</xsl:variable>
 	
 	<xsl:variable name="java.removedExternalOperatingMessageEmailSubject">Externt driftmeddelande för $name avpublicerat</xsl:variable>
 	<xsl:variable name="java.removedExternalOperatingMessageEmailMessage">
-		&lt;p&gt;Ett externt driftmeddelande för $name har avpublicerat bort med följande meddelande:&lt;/p&gt;
+		&lt;p&gt;Följande driftmeddelande för $name har avpublicerats:&lt;/p&gt;
 		&lt;p&gt;$message&lt;/p&gt;
 	</xsl:variable>
 	
