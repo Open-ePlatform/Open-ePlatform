@@ -75,7 +75,7 @@ public class EvaluatorDescriptorCRUD extends IntegerBasedCRUD<EvaluatorDescripto
 
 		QueryDescriptor queryDescriptor = (QueryDescriptor)req.getAttribute("queryDescriptor");
 
-		Query query = callback.getQueryHandler().getQuery(queryDescriptor, true);
+		Query query = callback.getQueryHandler().getQuery(queryDescriptor, false);
 
 		String evaluatorTypeID = req.getParameter("evaluatorTypeID");
 
@@ -193,7 +193,7 @@ public class EvaluatorDescriptorCRUD extends IntegerBasedCRUD<EvaluatorDescripto
 
 		addTypeElement.appendChild(queryDescriptor.toXML(doc));
 
-		Query query = callback.getQueryHandler().getQuery(queryDescriptor, true);
+		Query query = callback.getQueryHandler().getQuery(queryDescriptor, false);
 
 		XMLUtils.append(doc, addTypeElement, "EvaluatorTypes", callback.getEvaluationHandler().getAvailableEvaluatorTypes(query.getClass()));
 	}
