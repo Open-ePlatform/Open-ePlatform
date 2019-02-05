@@ -165,7 +165,7 @@ public class QueryDescriptorCRUD extends IntegerBasedCRUD<QueryDescriptor, FlowA
 
 					callback.getEvaluationHandler().deleteEvaluator(evaluatorDescriptor, transactionHandler);
 				}
-			}		
+			}
 			
 			transactionHandler.commit();
 
@@ -216,7 +216,7 @@ public class QueryDescriptorCRUD extends IntegerBasedCRUD<QueryDescriptor, FlowA
 	@Override
 	public ForegroundModuleResponse showUpdateForm(QueryDescriptor bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ValidationException validationException) throws Exception {
 
-		Query query = callback.getQueryHandler().getQuery(bean, false);
+		Query query = callback.getQueryHandler().getQuery(bean, true);
 
 		res.sendRedirect(req.getContextPath() + query.getConfigAlias());
 
