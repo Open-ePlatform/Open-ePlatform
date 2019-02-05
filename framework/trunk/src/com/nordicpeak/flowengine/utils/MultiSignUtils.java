@@ -24,30 +24,22 @@ public class MultiSignUtils {
 			
 			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 				
-				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
+				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && multiSignQueryinstance.getQueryInstanceDescriptor().isPopulated()) {
 					
-					for (SigningParty signer : multiSignQueryinstance.getSigningParties()) {
-						
-						if (!isSigningInitiator(signer, instanceManager)) {
+					List<? extends SigningParty> querySigningParties = multiSignQueryinstance.getSigningParties();
+					
+					if(!CollectionUtils.isEmpty(querySigningParties)) {
+					
+						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
 							
-							signingParties.add(signer);
+							if (signingParty != null && !isSigningInitiator(signingParty, instanceManager)) {
+								
+								signingParties.add(signingParty);
+							}
 						}
 					}
 				}
 			}
-			
-			//User poster = instanceManager.getFlowInstance().getPoster();
-			
-			//TODO: this code is trying to handle the scenario when multipart signer is editing the insteance and poster needs to be part of the multipart signing chain. This scenario is not handled in other places so this code does not solve the whole problem.
-			//TODO: If this logic is implemented then it also needs to look at the editor field not just the poster field
-			
-			//Line below contains potential NPE
-			//			if(!CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster).equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
-			//				
-			//				SigningParty posterSigningParty = new SigningParty(poster.getFirstname(), poster.getLastname(), poster.getEmail(), null, CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), false);
-			//				
-			//				signingParties.add(posterSigningParty);
-			//			}
 			
 			if (!signingParties.isEmpty()) {
 				
@@ -66,13 +58,18 @@ public class MultiSignUtils {
 			
 			for (MultiSignQueryinstance multiSignQueryinstance : multiSignQueryinstances) {
 				
-				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !CollectionUtils.isEmpty(multiSignQueryinstance.getSigningParties())) {
+				if (multiSignQueryinstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && multiSignQueryinstance.getQueryInstanceDescriptor().isPopulated()) {
 					
-					for (SigningParty signer : multiSignQueryinstance.getSigningParties()) {
+					List<? extends SigningParty> querySigningParties = multiSignQueryinstance.getSigningParties();
+					
+					if(!CollectionUtils.isEmpty(querySigningParties)) {
 						
-						if (!isSigningInitiator(signer, instanceManager)) {
+						for (SigningParty signingParty : querySigningParties) {
 							
-							return true;
+							if (!isSigningInitiator(signingParty, instanceManager)) {
+								
+								return true;
+							}
 						}
 					}
 				}
