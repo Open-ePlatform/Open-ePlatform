@@ -945,6 +945,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 					setCachedFlowDetails(flow,transactionHandler);
 
+					if(flow.isLatestVersion()) {
+						
+						for(Flow cachedFlow : tempFlowCacheMap.values()) {
+							
+							if(cachedFlow.getFlowFamily().equals(flow.getFlowFamily()) && cachedFlow.isLatestVersion()) {
+								
+								cachedFlow.setLatestVersion(false);
+							}
+						}
+					}
+					
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
 				}
