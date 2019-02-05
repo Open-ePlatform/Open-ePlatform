@@ -296,7 +296,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowType.ALLOWED_QUERIES_RELATION
 	};
 	
-	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION}; 
+	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION};
 			
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
@@ -890,7 +890,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
-		}		
+		}
 		
 		log.info("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 		//System.out.println("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
@@ -999,7 +999,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flow.setFlowSubmittedInstanceCount(getFlowSubmittedInstanceCount(flow, transactionHandler));
 		flow.setLatestVersion(isLatestVersion(flow, transactionHandler));
 
-		setStatusFlowInstanceCount(flow, transactionHandler);		
+		setStatusFlowInstanceCount(flow, transactionHandler);
 	}
 
 	private void setStatusFlowInstanceCount(Flow flow, TransactionHandler transactionHandler) throws SQLException {
@@ -1981,7 +1981,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 							continue;
 						}
 
-						Query query = queryHandler.getQuery(queryDescriptor, false);
+						Query query = queryHandler.getQuery(queryDescriptor, true);
 
 						Element queryElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 						queryElement.setAttribute("name", queryDescriptor.getXSDElementName());
@@ -2512,7 +2512,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		cacheFlowTypes();
 		cacheFlows();
-	}	
+	}
 	
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowFamily.class)
 	public void processFlowFamilyEvent(CRUDEvent<FlowFamily> event, EventSource source) throws SQLException {
@@ -2534,13 +2534,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			cacheFlowFamilies(flowFamilyIDs);
 		}
-	}	
+	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Flow.class)
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = Flow.class)
 	public void processFlowEvent(CRUDEvent<Flow> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flows");
-		
+
 		if (event.getAction() != CRUDAction.ADD) {
 
 			for (Flow flow : event.getBeans()) {
@@ -2548,35 +2548,35 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				closeInstanceManagers(flow);
 			}
 
-			if (event.getAction() == CRUDAction.DELETE) {
+		if (event.getAction() == CRUDAction.DELETE) {
 
-				//This code may leave loose files if the bean does not have all relations set
-				for (Flow flow : event.getBeans()) {
+			//This code may leave loose files if the bean does not have all relations set
+			for (Flow flow : event.getBeans()) {
 
-					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
 
-						for (FlowForm flowForm : flow.getFlowForms()) {
+					for (FlowForm flowForm : flow.getFlowForms()) {
 
-							deleteFlowFormFile(flowForm);
-						}
+						deleteFlowFormFile(flowForm);
 					}
 				}
+			}
 			}
 		}
 		
 		if(event.getAction() == CRUDAction.DELETE) {
 
 			deleteFlowsFromCache(event.getBeans());
-			
-		}else {
-			
+
+		} else {
+
 			List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
-			
-			for(Flow flow : event.getBeans()) {
-				
+
+			for (Flow flow : event.getBeans()) {
+
 				flowIDs.add(flow.getFlowID());
 			}
-			
+
 			cacheFlows(flowIDs);
 		}
 	}
@@ -5703,4 +5703,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return flowTypeCacheMap.get(flowTypeID);
 	}
+
+	public FlowFamilyCRUD getFlowFamilyCRUD() {
+		return flowFamilyCRUD;
+	}
+
 }
