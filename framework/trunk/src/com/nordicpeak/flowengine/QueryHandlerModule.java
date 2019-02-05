@@ -143,7 +143,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws QueryProviderNotFoundException, QueryNotFoundInQueryProviderException, QueryProviderErrorException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws QueryProviderNotFoundException, QueryNotFoundInQueryProviderException, QueryProviderErrorException {
 
 		QueryProvider queryProvider = queryProviderMap.get(descriptor.getQueryTypeID());
 

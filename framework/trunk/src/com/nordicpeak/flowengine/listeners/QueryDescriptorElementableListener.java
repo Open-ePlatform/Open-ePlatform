@@ -33,7 +33,7 @@ public class QueryDescriptorElementableListener implements ElementableListener<Q
 	public void elementGenerated(Document doc, Element element, QueryDescriptor queryDescriptor) {
 
 		try {
-			Query query = queryHandler.getQuery(queryDescriptor);
+			Query query = queryHandler.getQuery(queryDescriptor, false);
 			
 			element.appendChild(query.toXML(doc));
 			

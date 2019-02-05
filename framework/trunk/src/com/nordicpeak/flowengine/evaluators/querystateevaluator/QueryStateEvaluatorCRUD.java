@@ -35,7 +35,7 @@ public class QueryStateEvaluatorCRUD extends BaseQueryStateEvaluationCRUD<QueryS
 
 		super.appendUpdateFormData(bean, doc, updateTypeElement, user, req, uriParser);
 		
-		FixedAlternativesQuery query = (FixedAlternativesQuery) callback.getQueryHandler().getQuery((MutableQueryDescriptor) bean.getEvaluatorDescriptor().getQueryDescriptor());
+		FixedAlternativesQuery query = (FixedAlternativesQuery) callback.getQueryHandler().getQuery((MutableQueryDescriptor) bean.getEvaluatorDescriptor().getQueryDescriptor(), false);
 
 		List<? extends ImmutableAlternative> alternatives = query.getAlternatives();
 

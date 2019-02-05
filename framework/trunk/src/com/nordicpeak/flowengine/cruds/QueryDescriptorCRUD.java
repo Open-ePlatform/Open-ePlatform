@@ -216,7 +216,7 @@ public class QueryDescriptorCRUD extends IntegerBasedCRUD<QueryDescriptor, FlowA
 	@Override
 	public ForegroundModuleResponse showUpdateForm(QueryDescriptor bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, ValidationException validationException) throws Exception {
 
-		Query query = callback.getQueryHandler().getQuery(bean);
+		Query query = callback.getQueryHandler().getQuery(bean, false);
 
 		res.sendRedirect(req.getContextPath() + query.getConfigAlias());
 

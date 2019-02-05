@@ -570,7 +570,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 						if (queryTypeDescriptor != null && MultiSignQueryinstance.class.isAssignableFrom(queryTypeDescriptor.getQueryInstanceClass())) {
 
 							try {
-								Query query = callback.getQueryHandler().getQuery((QueryDescriptor)queryDescriptor);
+								Query query = callback.getQueryHandler().getQuery((QueryDescriptor)queryDescriptor, false);
 								
 								if(query != null && query instanceof MultiSignQuery && ((MultiSignQuery)query).requiresMultipartSigning()){
 									

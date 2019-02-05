@@ -1981,7 +1981,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 							continue;
 						}
 
-						Query query = queryHandler.getQuery(queryDescriptor);
+						Query query = queryHandler.getQuery(queryDescriptor, false);
 
 						Element queryElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 						queryElement.setAttribute("name", queryDescriptor.getXSDElementName());
@@ -4266,7 +4266,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		Element queryDescriptorElement = queryDescriptor.toXML(doc);
 
 		try {
-			Query query = queryHandler.getQuery(queryDescriptor);
+			Query query = queryHandler.getQuery(queryDescriptor, false);
 
 			queryDescriptorElement.appendChild(query.toXML(doc));
 
