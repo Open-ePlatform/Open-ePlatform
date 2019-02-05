@@ -171,46 +171,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			flowFamily.setManagerGroups(managerGroups);
 		}
 		
-		List<Integer> currentFlowInstanceManagerUserIDs = getCurrentFlowInstanceManagerUserIDs(flowFamily);
-		
-		if (currentFlowInstanceManagerUserIDs != null) {
-			
-			FlowFamily unchangedFlowFamily = getBean(flowFamily.getFlowFamilyID());
-			
-			List<User> currentManagers = callback.getUserHandler().getUsers(currentFlowInstanceManagerUserIDs, true, false);
-			
-			if (currentManagers != null) {
-				
-				List<Integer> allowedUserIDs = managerIDs;
-				List<Integer> allowedGroupIDs = managerGroupIDs;
-				
-				outer: for (User currentManager : currentManagers) {
-					
-					//User did not have access before, skip check
-					if (unchangedFlowFamily.getManagerAccess(currentManager) == null) {
-						continue;
-					}
-					
-					if (allowedUserIDs != null && allowedUserIDs.contains(currentManager.getUserID())) {
-						continue;
-					}
-					
-					Collection<Group> managerGroups = currentManager.getGroups();
-					
-					if (allowedGroupIDs != null && managerGroups != null) {
-						
-						for (Group group : managerGroups) {
-							
-							if (allowedGroupIDs.contains(group.getGroupID())) {
-								continue outer;
-							}
-						}
-					}
-					
-					validationErrors.add(new InUseManagerUserValidationError(currentManager));
-				}
-			}
-		}
+		checkManagersInUse(flowFamily, managerIDs, managerGroupIDs, validationErrors);
 		
 		//TODO check for still in use restricted groups InUseManagerGroupError
 		
@@ -221,6 +182,47 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 		
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
+		}
+	}
+	
+	public void checkManagersInUse(FlowFamily flowFamily, List<Integer> newManagerUserIDs, List<Integer> newManagerGroupIDs, List<ValidationError> validationErrors) throws SQLException, AccessDeniedException {
+		
+		List<Integer> currentFlowInstanceManagerUserIDs = getCurrentFlowInstanceManagerUserIDs(flowFamily);
+		
+		if (currentFlowInstanceManagerUserIDs != null) {
+			
+			FlowFamily unchangedFlowFamily = getBean(flowFamily.getFlowFamilyID());
+			
+			List<User> currentManagers = callback.getUserHandler().getUsers(currentFlowInstanceManagerUserIDs, true, false);
+			
+			if (currentManagers != null) {
+				
+				outer: for (User currentManager : currentManagers) {
+					
+					//User did not have access before, skip check
+					if (unchangedFlowFamily.getManagerAccess(currentManager) == null) {
+						continue;
+					}
+					
+					if (newManagerUserIDs != null && newManagerUserIDs.contains(currentManager.getUserID())) {
+						continue;
+					}
+					
+					Collection<Group> managerGroups = currentManager.getGroups();
+					
+					if (newManagerGroupIDs != null && managerGroups != null) {
+						
+						for (Group group : managerGroups) {
+							
+							if (newManagerGroupIDs.contains(group.getGroupID())) {
+								continue outer;
+							}
+						}
+					}
+					
+					validationErrors.add(new InUseManagerUserValidationError(currentManager));
+				}
+			}
 		}
 	}
 
