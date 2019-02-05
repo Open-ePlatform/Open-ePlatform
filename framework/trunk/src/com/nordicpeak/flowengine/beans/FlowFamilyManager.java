@@ -139,5 +139,16 @@ public class FlowFamilyManager extends GeneratedElementable implements Serializa
 		return element;
 	}
 	
-	
+	@Override
+	public String toString() {
+		
+		if (user != null) {
+			
+			return user + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ")";
+			
+		} else {
+			
+			return "userID " + userID + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ")";
+		}
+	}
 }
