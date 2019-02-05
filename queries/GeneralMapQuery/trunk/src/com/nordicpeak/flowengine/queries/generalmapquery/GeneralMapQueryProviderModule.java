@@ -484,7 +484,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		GeneralMapQuery query = this.getQuery(descriptor.getQueryID());
 

@@ -291,7 +291,7 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 	}
 	
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws Throwable {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws Throwable {
 		
 		checkConfiguration();
 		

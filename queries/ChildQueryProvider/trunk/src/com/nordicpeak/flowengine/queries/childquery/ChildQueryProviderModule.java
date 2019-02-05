@@ -289,7 +289,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		ChildQuery query = this.getQuery(descriptor.getQueryID());
 

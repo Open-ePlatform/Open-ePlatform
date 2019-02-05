@@ -106,7 +106,7 @@ public class StopQueryProviderModule extends BaseQueryProviderModule<StopQueryIn
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		StopQuery query = this.getQuery(descriptor.getQueryID());
 
