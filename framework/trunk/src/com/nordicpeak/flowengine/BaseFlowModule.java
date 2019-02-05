@@ -2067,7 +2067,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
-	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException {
+	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException, IOException {
 
 		Integer flowInstanceID = null;
 		ImmutableFlowInstanceManager instanceManager;
@@ -2104,7 +2104,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (instanceManager.getFlowState().getContentType() != ContentType.WAITING_FOR_PAYMENT) {
 
-			//TODO show correct view
+			ImmutableFlowInstanceEvent paymentEvent = FlowInstanceUtils.getLastestPaymentEvent(instanceManager.getFlowInstance(), true);
+			
+			if (paymentEvent != null) { // Already payed
+				
+				res.sendRedirect(getPaymentSuccessURL(instanceManager, req));
+				return null;
+			}
+			
 			throw new URINotFoundException(uriParser);
 		}
 
@@ -2147,6 +2154,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		paymentFormElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
+		//TODO show step status header, uncomment part in BaseFlowModuleTemplates template match="StandalonePaymentForm"
+//		List<? extends ImmutableStep> steps = instanceManager.getFlowInstance().getFlow().getSteps();
+//		paymentFormElement.appendChild(new ManagerResponse(steps.get(steps.size() - 1).getStepID(), steps.size() - 1, null, false, false).toXML(doc));
+		
 		//TODO fix add breadcrumbs
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 
