@@ -19,7 +19,7 @@ public interface QueryProvider {
 	
 	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 
-	public Query getQuery(MutableQueryDescriptor descriptor) throws Throwable;
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws Throwable;
 
 	public Query getQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 

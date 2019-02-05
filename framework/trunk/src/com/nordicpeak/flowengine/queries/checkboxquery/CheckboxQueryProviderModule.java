@@ -131,7 +131,7 @@ public class CheckboxQueryProviderModule extends BaseQueryProviderModule<Checkbo
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		CheckboxQuery query = this.getQuery(descriptor.getQueryID());
 

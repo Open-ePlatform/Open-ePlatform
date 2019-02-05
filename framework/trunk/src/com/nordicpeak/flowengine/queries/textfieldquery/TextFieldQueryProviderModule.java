@@ -191,7 +191,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		TextFieldQuery query = this.getQuery(descriptor.getQueryID());
 

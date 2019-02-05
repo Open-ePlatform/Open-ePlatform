@@ -165,7 +165,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		OrganizationDetailQuery query = this.getQuery(descriptor.getQueryID());
 

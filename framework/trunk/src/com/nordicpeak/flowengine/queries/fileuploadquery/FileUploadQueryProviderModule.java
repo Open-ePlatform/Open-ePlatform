@@ -225,7 +225,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		checkConfiguration();
 

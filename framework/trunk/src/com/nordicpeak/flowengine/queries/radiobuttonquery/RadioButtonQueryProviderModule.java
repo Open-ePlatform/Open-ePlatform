@@ -128,7 +128,7 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		RadioButtonQuery query = this.getQuery(descriptor.getQueryID());
 

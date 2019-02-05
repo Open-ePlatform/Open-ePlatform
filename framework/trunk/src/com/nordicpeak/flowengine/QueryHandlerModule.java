@@ -151,7 +151,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 
 			Query query;
 			try{
-				query = queryProvider.getQuery(descriptor);
+				query = queryProvider.getQuery(descriptor, extraData);
 
 				if(query != null){
 

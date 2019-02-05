@@ -111,7 +111,7 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		TextAreaQuery query = this.getQuery(descriptor.getQueryID());
 

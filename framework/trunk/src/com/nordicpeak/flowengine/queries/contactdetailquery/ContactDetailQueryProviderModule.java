@@ -159,7 +159,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	}
 	
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 		
 		ContactDetailQuery query = this.getQuery(descriptor.getQueryID());
 		

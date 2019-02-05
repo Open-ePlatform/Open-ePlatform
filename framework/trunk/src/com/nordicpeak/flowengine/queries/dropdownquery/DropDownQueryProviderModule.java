@@ -128,7 +128,7 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws SQLException {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
 
 		DropDownQuery query = this.getQuery(descriptor.getQueryID());
 

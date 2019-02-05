@@ -117,7 +117,7 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 	}
 
 	@Override
-	public Query getQuery(MutableQueryDescriptor descriptor) throws Throwable {
+	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws Throwable {
 
 		ManualMultiSignQuery query = this.getQuery(descriptor.getQueryID());
 
