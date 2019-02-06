@@ -977,19 +977,34 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
 		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
-		
-		for(Flow flow : flows) {
-			
-			if(tempFlowCacheMap.remove(flow.getFlowID()) != null) {
-				
+
+		for (Flow flow : flows) {
+
+			if (tempFlowCacheMap.remove(flow.getFlowID()) != null) {
+
 				log.info("Removed flow " + flow + " from cache");
-				
-			}else {
-				
+
+				if (flow.isLatestVersion()) {
+
+					Flow newLatestVersion = null;
+
+					for (Flow otherFlow : tempFlowCacheMap.values()) {
+						if (otherFlow.getFlowFamily().getFlowFamilyID().equals(flow.getFlowFamily().getFlowFamilyID()) && (newLatestVersion == null || otherFlow.getVersion() > newLatestVersion.getVersion())) {
+							newLatestVersion = otherFlow;
+						}
+					}
+
+					if (newLatestVersion != null) {
+						newLatestVersion.setLatestVersion(true);
+					}
+				}
+
+			} else {
+
 				log.warn("Flow " + flow + " not found in cache");
 			}
 		}
-		
+
 		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 	}
 	
@@ -2548,19 +2563,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				closeInstanceManagers(flow);
 			}
 
-		if (event.getAction() == CRUDAction.DELETE) {
+			if (event.getAction() == CRUDAction.DELETE) {
 
-			//This code may leave loose files if the bean does not have all relations set
-			for (Flow flow : event.getBeans()) {
+				//This code may leave loose files if the bean does not have all relations set
+				for (Flow flow : event.getBeans()) {
 
-				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
 
-					for (FlowForm flowForm : flow.getFlowForms()) {
+						for (FlowForm flowForm : flow.getFlowForms()) {
 
-						deleteFlowFormFile(flowForm);
+							deleteFlowFormFile(flowForm);
+						}
 					}
 				}
-			}
 			}
 		}
 		
