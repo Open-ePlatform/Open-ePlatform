@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.imageio.ImageIO;
@@ -977,34 +978,54 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
 		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
-
-		for (Flow flow : flows) {
-
-			if (tempFlowCacheMap.remove(flow.getFlowID()) != null) {
-
+		
+		Set<FlowFamily> familiesWithoutLatestVersion = null;
+		
+		for(Flow flow : flows) {
+			
+			Flow deletedFlow;
+			
+			if((deletedFlow = tempFlowCacheMap.remove(flow.getFlowID())) != null) {
+				
 				log.info("Removed flow " + flow + " from cache");
-
-				if (flow.isLatestVersion()) {
-
-					Flow newLatestVersion = null;
-
-					for (Flow otherFlow : tempFlowCacheMap.values()) {
-						if (otherFlow.getFlowFamily().getFlowFamilyID().equals(flow.getFlowFamily().getFlowFamilyID()) && (newLatestVersion == null || otherFlow.getVersion() > newLatestVersion.getVersion())) {
-							newLatestVersion = otherFlow;
-						}
-					}
-
-					if (newLatestVersion != null) {
-						newLatestVersion.setLatestVersion(true);
-					}
+				
+				if(deletedFlow.isLatestVersion()) {
+					
+					familiesWithoutLatestVersion = CollectionUtils.addAndInstantiateIfNeeded(familiesWithoutLatestVersion, deletedFlow.getFlowFamily());
 				}
-
-			} else {
-
+				
+			}else {
+				
 				log.warn("Flow " + flow + " not found in cache");
 			}
 		}
-
+		
+		if(familiesWithoutLatestVersion != null && !tempFlowCacheMap.isEmpty()) {
+			
+			for(FlowFamily flowFamily : familiesWithoutLatestVersion) {
+				
+				Flow latestVersion = null;
+				
+				for(Flow flow : tempFlowCacheMap.values()) {
+					
+					if(!flow.getFlowFamily().equals(flowFamily)) {
+						
+						continue;
+					}
+					
+					if(latestVersion == null || latestVersion.getVersion() < flow.getVersion()) {
+						
+						latestVersion = flow;
+					}
+				}
+				
+				if(latestVersion != null) {
+					
+					latestVersion.setLatestVersion(true);
+				}
+			}
+		}
+		
 		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 	}
 	
@@ -2564,14 +2585,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			if (event.getAction() == CRUDAction.DELETE) {
-
+	
 				//This code may leave loose files if the bean does not have all relations set
 				for (Flow flow : event.getBeans()) {
-
+	
 					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-
+	
 						for (FlowForm flowForm : flow.getFlowForms()) {
-
+	
 							deleteFlowFormFile(flowForm);
 						}
 					}
