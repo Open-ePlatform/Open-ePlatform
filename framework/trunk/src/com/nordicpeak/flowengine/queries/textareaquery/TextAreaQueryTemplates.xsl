@@ -76,6 +76,7 @@
 				<xsl:text>query textareaquery</xsl:text>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
 				<xsl:if test="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
+				<xsl:if test="TextAreaQueryInstance/TextAreaQuery/showLetterCount = 'true' and TextAreaQueryInstance/TextAreaQuery/maxLength"> showlettercount</xsl:if>
 			</xsl:attribute>
 			
 			<a name="{$queryID}" />
@@ -118,7 +119,11 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/description" disable-output-escaping="yes" />
-					</span>		
+					</span>
+				</xsl:if>
+				
+				<xsl:if test="TextAreaQueryInstance/TextAreaQuery/showLetterCount = 'true' and TextAreaQueryInstance/TextAreaQuery/maxLength">
+					<div class="floatright lettercounter" data-maxlength="{TextAreaQueryInstance/TextAreaQuery/maxLength}" style="margin-right: 2%"/>
 				</xsl:if>
 				
 				<xsl:call-template name="createTextArea">
@@ -143,7 +148,13 @@
 					<xsl:with-param name="disabled" select="Locked"/>
 				</xsl:call-template>
 				
-			</article>			
+			</article>
+			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					initTextAreaQuery('<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/queryID" />');
+				});
+			</script>
 		
 		</div>
 		
@@ -157,11 +168,11 @@
 				<xsl:value-of select="currentLength"/>
 				<xsl:value-of select="$i18n.TooLongFieldContent.part2"/>
 				<xsl:value-of select="maxLength"/>
-				<xsl:value-of select="$i18n.TooLongFieldContent.part3"/>			
+				<xsl:value-of select="$i18n.TooLongFieldContent.part3"/>
 			</strong>
 		</span>
 		
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey = 'RequiredField']">
 		
@@ -171,7 +182,7 @@
 			</strong>
 		</span>
 		
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="validationError">
 		
@@ -181,6 +192,6 @@
 			</strong>
 		</span>
 		
-	</xsl:template>	
+	</xsl:template>
 		
 </xsl:stylesheet>

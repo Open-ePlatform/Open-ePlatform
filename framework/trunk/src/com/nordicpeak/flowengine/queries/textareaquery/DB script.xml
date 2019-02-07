@@ -26,7 +26,7 @@
 				)
 				ENGINE = InnoDB;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="2">
@@ -34,7 +34,7 @@
 			<![CDATA[
 				ALTER TABLE `text_area_queries` ADD COLUMN `rows` INTEGER UNSIGNED AFTER `maxLength`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="3">
@@ -42,7 +42,7 @@
 			<![CDATA[
 				ALTER TABLE `text_area_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `rows`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="4">
@@ -50,7 +50,7 @@
 			<![CDATA[
 				ALTER TABLE `text_area_queries` ADD COLUMN `hideDescriptionInPDF` BOOLEAN NOT NULL AFTER `attributeName`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="5">
@@ -58,7 +58,7 @@
 			<![CDATA[
 				ALTER TABLE `text_area_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `hideDescriptionInPDF`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="6">
@@ -66,7 +66,15 @@
 			<![CDATA[
 				ALTER TABLE `text_area_queries` ADD COLUMN `hideTitle` BOOLEAN NOT NULL AFTER `hideDescriptionInPDF`;
 			]]>
-		</Query>	
-	</Script>	
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `showLetterCount` BOOLEAN NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

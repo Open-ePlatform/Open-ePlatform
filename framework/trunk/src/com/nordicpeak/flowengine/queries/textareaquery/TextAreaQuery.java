@@ -67,6 +67,11 @@ public class TextAreaQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean showLetterCount;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean lockOnOwnershipTransfer;
 	
 	@DAOManaged
@@ -212,63 +217,69 @@ public class TextAreaQuery extends BaseQuery {
 		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
+		showLetterCount = xmlParser.getPrimitiveBoolean("showLetterCount");
 		
 		if (!errors.isEmpty()) {
-			
+
 			throw new ValidationException(errors);
 		}
-		
+
 	}
-	
+
 	public boolean isLockOnOwnershipTransfer() {
 		return lockOnOwnershipTransfer;
 	}
-	
+
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
 	}
-	
+
 	public boolean isSetAsAttribute() {
-		
+
 		return setAsAttribute;
 	}
-	
+
 	public void setSetAsAttribute(boolean setAsAttribute) {
-		
+
 		this.setAsAttribute = setAsAttribute;
 	}
-	
+
 	public String getAttributeName() {
-		
+
 		return attributeName;
 	}
-	
+
 	public void setAttributeName(String attributeName) {
-		
+
 		this.attributeName = attributeName;
 	}
 
-	
 	public boolean isHideDescriptionInPDF() {
-	
+
 		return hideDescriptionInPDF;
 	}
 
-	
 	public void setHideDescriptionInPDF(boolean hideDescriptionInPDF) {
-	
+
 		this.hideDescriptionInPDF = hideDescriptionInPDF;
 	}
 
-	
 	public boolean isHideTitle() {
-	
+
 		return hideTitle;
 	}
 
-	
 	public void setHideTitle(boolean hideTitle) {
-	
+
 		this.hideTitle = hideTitle;
 	}
+
+	public boolean isShowLetterCount() {
+		return showLetterCount;
+	}
+
+	public void setShowLetterCount(boolean showLetterCount) {
+		this.showLetterCount = showLetterCount;
+	}
+
 }

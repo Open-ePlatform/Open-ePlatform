@@ -59,7 +59,7 @@
 						<xsl:with-param name="element" select="TextAreaQuery" />
 					</xsl:call-template>
 			    </div>
-			</div>			
+			</div>
 			
 			<div class="floatleft full bigmarginbottom">
 				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
@@ -90,7 +90,7 @@
 						<xsl:with-param name="element" select="TextAreaQuery" />
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
 
 			<div class="floatleft full bigmarginbottom">
@@ -121,7 +121,21 @@
 					<label for="hideDescriptionInPDF">
 						<xsl:value-of select="$i18n.hideDescriptionInPDF" />
 					</label>
-			    </div>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'showLetterCount'" />
+						<xsl:with-param name="name" select="'showLetterCount'" />
+						<xsl:with-param name="element" select="TextAreaQuery" /> 
+					</xsl:call-template>
+						
+					<label for="showLetterCount">
+						<xsl:value-of select="$i18n.showLetterCount" />
+					</label>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -135,7 +149,7 @@
 					<label for="lockOnOwnershipTransfer">
 						<xsl:value-of select="$i18n.lockOnOwnershipTransfer" />
 					</label>
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatright margintop clearboth">

@@ -23,6 +23,7 @@
 	
 	<xsl:variable name="i18n.hideDescriptionInPDF">Dölj beskrivning i PDF</xsl:variable>
 	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
+	<xsl:variable name="i18n.showLetterCount">Visa antal tecken som används av antal som får användas</xsl:variable>
 	
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
 	
