@@ -75,6 +75,7 @@ import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
 public class FlowInstanceIndexer {
 
 	private static final String ID_FIELD = "id";
+	private static final String EXTERNAL_ID_FIELD = Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE;
 	private static final String FLOW_ID_FIELD = "flowID";
 	private static final String FLOW_NAME_FIELD = "name";
 	private static final String FLOW_FAMILY_ID_FIELD = "familyID";
@@ -96,7 +97,7 @@ public class FlowInstanceIndexer {
 	protected static final String ALLOWED_RESTRICTED_USER_FIELD = "allowedRestrictedUser";
 	protected static final String ALLOWED_RESTRICTED_GROUP_FIELD = "allowedRestricedGroup";
 	
-	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES, MANAGER_DESCRIPTION};
+	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, EXTERNAL_ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES, MANAGER_DESCRIPTION};
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -462,6 +463,13 @@ public class FlowInstanceIndexer {
 			if (childCitizenIdentifier != null) {
 				
 				doc.add(new TextField(CHILD_CITIZEN_IDENTIFIER, childCitizenIdentifier, Field.Store.NO));
+			}
+			
+			String externalID = attributeHandler.getString(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE);
+			
+			if (externalID != null) {
+				
+				doc.add(new TextField(EXTERNAL_ID_FIELD, externalID, Field.Store.NO));
 			}
 			
 			String organizationNumber = attributeHandler.getString(ORGANIZATION_NUMBER);
