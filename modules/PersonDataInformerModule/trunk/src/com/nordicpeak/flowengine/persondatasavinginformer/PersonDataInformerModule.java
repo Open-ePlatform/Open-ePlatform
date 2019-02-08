@@ -19,22 +19,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
-import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -83,6 +67,8 @@ import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.enums.EnumUtils;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -95,6 +81,22 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerReasonAlternative;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerStandardText;
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, FlowBrowserExtensionViewProvider {
 
@@ -514,61 +516,31 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 							}
 						}
 
-						boolean storageValidationError = false;
+						int preStorageValidationErrors = validationErrors.size();
 
 						for (int i = 1; i <= storageCounter; i++) {
 							StorageType storageType = EnumUtils.toEnum(StorageType.class, req.getParameter("storageType-" + i));
 
 							if (storageType != null) {
-								String description = req.getParameter("storageDescription-" + i);
-
-								if (requiresDescription) {
-									if (StringUtils.isEmpty(description)) {
-										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.RequiredField));
-
-										storageValidationError = true;
-
-										break;
-									} else if (description.length() > 255) {
-										validationErrors.add(new ValidationError("storageDescription", ValidationErrorType.TooLong));
-
-										storageValidationError = true;
-
-										break;
-									}
-								}
-
-								Integer period = NumberUtils.toInt(req.getParameter("storagePeriod-" + i));
-
-								if (storageType != StorageType.INFINITY && period == null) {
-									validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.RequiredField));
-
-									storageValidationError = true;
-
-									break;
-								} else if (storageType != StorageType.INFINITY && period < 1) {
-
-									validationErrors.add(new ValidationError("storagePeriod", ValidationErrorType.InvalidFormat));
-
-									storageValidationError = true;
-
-									break;
-								}
-
+								
 								InformerDataSettingStorage storageSetting = new InformerDataSettingStorage();
-
-								if (requiresDescription) {
-									storageSetting.setDescription(description);
-								}
-
-								storageSetting.setPeriod(period);
 								storageSetting.setStorageType(storageType);
+
+								if (requiresDescription || storageType == StorageType.CUSTOM) {
+									
+									storageSetting.setDescription(ValidationUtils.validateParameter("storageDescription-" + i, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors));
+								}
+								
+								if (storageType == StorageType.YEAR || storageType == StorageType.MONTH) {
+
+									storageSetting.setPeriod(ValidationUtils.validateParameter("storagePeriod-" + i, req, true, PositiveStringIntegerPopulator.getPopulator(), validationErrors));
+								}
 
 								informerSettings.getStorageSettings().add(storageSetting);
 							}
 						}
 
-						if (CollectionUtils.isEmpty(informerSettings.getStorageSettings()) && !storageValidationError) {
+						if (CollectionUtils.isEmpty(informerSettings.getStorageSettings()) && preStorageValidationErrors == validationErrors.size()) {
 							validationErrors.add(new ValidationError("NoStorageSettings"));
 						}
 					}
@@ -601,7 +573,9 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 					validationErrors.addAll(e.getErrors());
 				}
+				
 			} else {
+				
 				if (!isNewSetting) {
 					settingsDAO.delete(informerSettings);
 
@@ -825,12 +799,16 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 							if (storageSetting.getStorageType() == StorageType.INFINITY) {
 								yearsSavedString.append(yearsSavedInfinite);
+								
+							} else if (storageSetting.getStorageType() == StorageType.CUSTOM) {
+								
 							} else {
 								yearsSavedString.append(storageSetting.getPeriod());
 								yearsSavedString.append(" ");
 
 								if (storageSetting.getStorageType() == StorageType.YEAR) {
 									yearsSavedString.append(yearsSavedYears);
+									
 								} else {
 									yearsSavedString.append(yearsSavedMonths);
 								}

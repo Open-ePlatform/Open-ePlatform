@@ -5,5 +5,6 @@ public enum StorageType {
 
 	INFINITY,
 	YEAR,
-	MONTH
+	MONTH,
+	CUSTOM
 }

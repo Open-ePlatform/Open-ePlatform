@@ -2,14 +2,14 @@ package com.nordicpeak.flowengine.persondatasavinginformer.beans;
 
 import java.io.Serializable;
 
-import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
-
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+
+import com.nordicpeak.flowengine.persondatasavinginformer.enums.StorageType;
 
 @Table(name = "person_data_informer_settings_storage")
 @XMLElement(name = "StorageSetting")
@@ -33,59 +33,41 @@ public class InformerDataSettingStorage extends GeneratedElementable implements 
 	@DAOManaged
 	@XMLElement
 	private String description;
-	
+
 	@DAOManaged(columnName = "flowFamilyID")
 	@ManyToOne
 	@XMLElement(fixCase = true)
 	private FlowFamilyInformerSetting informerSetting;
 
 	public Integer getStorageSettingID() {
-
 		return storageSettingID;
 	}
 
 	public void setStorageSettingID(Integer storageSettingID) {
-
 		this.storageSettingID = storageSettingID;
 	}
 
-//	public Integer getFlowFamilyID() {
-//
-//		return flowFamilyID;
-//	}
-//
-//	public void setFlowFamilyID(Integer flowFamilyID) {
-//
-//		this.flowFamilyID = flowFamilyID;
-//	}
-
 	public Integer getPeriod() {
-
 		return period;
 	}
 
 	public void setPeriod(Integer period) {
-
 		this.period = period;
 	}
 
 	public StorageType getStorageType() {
-
 		return storageType;
 	}
 
 	public void setStorageType(StorageType storageType) {
-
 		this.storageType = storageType;
 	}
 
 	public String getDescription() {
-
 		return description;
 	}
 
 	public void setDescription(String description) {
-
 		this.description = description;
 	}
 }

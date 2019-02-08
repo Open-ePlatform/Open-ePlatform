@@ -27,16 +27,20 @@
 	
 	<xsl:variable name="storageOptionsVar">
 		<option>
-			<name><xsl:value-of select="$i18n.Infinity"/></name>
+			<name><xsl:value-of select="$i18n.YearsSaved.Infinite"/></name>
 			<value>INFINITY</value>
 		</option>
 		<option>
-			<name><xsl:value-of select="$i18n.Years"/></name>
+			<name><xsl:value-of select="$i18n.YearsSaved.Years"/></name>
 			<value>YEAR</value>
 		</option>
 		<option>
-			<name><xsl:value-of select="$i18n.Months"/></name>
+			<name><xsl:value-of select="$i18n.YearsSaved.Months"/></name>
 			<value>MONTH</value>
+		</option>
+		<option>
+			<name><xsl:value-of select="$i18n.YearsSaved.Custom"/></name>
+			<value>CUSTOM</value>
 		</option>
 	</xsl:variable>
 	
@@ -168,6 +172,8 @@
 				<xsl:when test="storageType = 'INFINITY'">
 					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
 				</xsl:when>
+				<xsl:when test="storageType = 'CUSTOM'">
+				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="period"/>
 					
@@ -175,17 +181,19 @@
 					
 					<xsl:choose>
 						<xsl:when test="storageType = 'YEAR'">
-							<xsl:value-of select="$i18n.YearsSaved.Years"/>
+							<xsl:value-of select="$i18n.YearsSaved.years"/>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="$i18n.YearsSaved.Months"/>
+							<xsl:value-of select="$i18n.YearsSaved.months"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:otherwise>
 			</xsl:choose>
 			
 			<xsl:if test="description">
-				<xsl:text> - </xsl:text>
+				<xsl:if test="not(storageType = 'CUSTOM')">
+					<xsl:text> - </xsl:text>
+				</xsl:if>
 				
 				<xsl:value-of select="description"/>
 			</xsl:if>
@@ -485,6 +493,11 @@
 										else {
 											$visibleSettings.find(".storage-description").show().find("input").prop("disabled", false);
 										}
+										
+										$visibleSettings.filter(function(){
+											var input = $(this).find(".storagetype-selector");
+											return input.val() == "CUSTOM";
+										}).find(".storage-description").show().find("input").prop("disabled", false);
 									});
 									
 									toggleDescriptions();
@@ -492,14 +505,23 @@
 									$storageSettings.on("change", ".storagetype-selector", function() {
 										var $select = $(this);
 										
-										$select.parent().siblings(".storagetype-period").toggle($select.val() !== "INFINITY");
+										$select.parent().siblings(".storagetype-period").toggle($select.val() == "YEAR" || $select.val() == "MONTH");
+										
+										var $visibleSettings = $("#storage-settings-wrapper .storage-setting").slice(1);
+										var settingCount = $visibleSettings.length;
+										
+										if (settingCount === 1) {
+											var show = $select.val() == "CUSTOM";
+											$select.parent().siblings(".storage-description").toggle(show).find("input").prop("disabled, !show");
+										}
 										
 									}).on("click", ".remove-storage-setting", function(e) {
 										e.preventDefault();
 										
-										$(this).closest(".storage-setting").remove();
-										
-										toggleDescriptions();
+										if (confirm('<xsl:value-of select="$i18n.RemoveStorageSettingConfirm" />?')) {
+											$(this).closest(".storage-setting").remove();
+											toggleDescriptions();
+										}
 									});
 									
 									$(".storagetype-selector").change();
@@ -563,7 +585,7 @@
 									</div>
 									
 									<div class="floatleft bigmarginleft ten" style="padding-top: 48px">
-										<a href="#" class="remove-storage-setting icon" onclick="return confirm('{$i18n.RemoveStorageSettingConfirm}?');">
+										<a href="#" class="remove-storage-setting icon">
 											<i data-icon-before="x"></i>
 										</a>
 									</div>
@@ -970,7 +992,7 @@
 			</div>
 			
 			<div class="floatleft bigmarginleft ten storagetype-period">
-				<xsl:if test="$requestparameters/parameter[name=$typeName]/value = 'INFINITY' or (not($requestparameters) and $element/storageType = 'INFINITY')">
+				<xsl:if test="($requestparameters/parameter[name=$typeName]/value != 'YEAR' and $requestparameters/parameter[name=$typeName]/value != 'MONTH') or (not($requestparameters) and ($element/storageType != 'YEAR' or $element/storageType != 'MONTH'))">
 					<xsl:attribute name="class">
 						<xsl:text>floatleft bigmarginleft ten storagetype-period hidden</xsl:text>
 					</xsl:attribute>
@@ -1023,7 +1045,7 @@
 			
 			<xsl:if test="$counter > 1">
 				<div class="floatleft bigmarginleft ten" style="padding-top: 48px">
-					<a href="#" class="remove-storage-setting icon" onclick="return confirm('{$i18n.RemoveStorageSettingConfirm}?');">
+					<a href="#" class="remove-storage-setting icon">
 						<i data-icon-before="x"></i>
 					</a>
 				</div>
@@ -1124,7 +1146,7 @@
 					</xsl:when>
 					<xsl:when test="validationErrorType='TooLong'">
 						<xsl:value-of select="$i18n.validation.tooLong" />
-					</xsl:when>														
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.validation.unknownError" />
 					</xsl:otherwise>
@@ -1154,19 +1176,31 @@
 					<xsl:when test="fieldName = 'ownerEmail'">
 						<xsl:value-of select="$i18n.Email"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'storageDescription'">
-						<xsl:value-of select="$i18n.StorageDescription"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'storagePeriod'">
-						<xsl:value-of select="$i18n.StoragePeriod"/>
-					</xsl:when>
 					<xsl:when test="fieldName = 'complaintDescription'">
 						<xsl:value-of select="$i18n.ComplaintDescription"/>
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'storagePeriod-')">
+						<xsl:value-of select="$i18n.StorageType" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="substring(fieldName, 15)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.StoragePeriod" />
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'storageDescription-')">
+						<xsl:value-of select="$i18n.StorageType" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="substring(fieldName, 20)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.StorageDescription" />
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</p>
 		</xsl:if>
 		

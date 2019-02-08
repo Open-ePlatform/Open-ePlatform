@@ -24,13 +24,14 @@
 	<xsl:variable name="i18n.Reasons">Laglig grund för behandlingen</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
-	<xsl:variable name="i18n.YearsSaved.Years">år</xsl:variable>
-	<xsl:variable name="i18n.YearsSaved.Months">månader</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Custom">Egen beskrivning</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.years">år</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Years">År</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.months">månader</xsl:variable>
+	<xsl:variable name="i18n.YearsSaved.Months">Månader</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite">Gallras</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite.Years">Antal år uppgifterna sparas</xsl:variable>
 	<xsl:variable name="i18n.ExtraInformation">Övriga upplysningar</xsl:variable>
-	
-	<xsl:variable name="i18n.years">år</xsl:variable>
 	
 	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet:'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet:'"/>
@@ -66,9 +67,6 @@
 	<xsl:variable name="i18n.Name">Namn</xsl:variable>
 	<xsl:variable name="i18n.Email">E-post</xsl:variable>
 	
-	<xsl:variable name="i18n.Infinity">För evigt</xsl:variable>
-	<xsl:variable name="i18n.Years">År</xsl:variable>
-	<xsl:variable name="i18n.Months">Månader</xsl:variable>
 	<xsl:variable name="i18n.AddStorageSetting">Lägg till lagringsobjekt</xsl:variable>
 	<xsl:variable name="i18n.RemoveStorageSettingConfirm">Vill du ta bort lagringsobjektet</xsl:variable>
 	
@@ -76,6 +74,8 @@
 	<xsl:variable name="i18n.DataRecipient">Mottagare av personuppgifter</xsl:variable>
 	<xsl:variable name="i18n.PersonDataInformerQuery">Bekräftelse vid personuppgiftsfråga</xsl:variable>
 	<xsl:variable name="i18n.OverrideConfirmationText">Ange annan bekräftelsetext än standard</xsl:variable>
+	
+	<xsl:variable name="i18n.row">rad</xsl:variable>
 	
 	
 </xsl:stylesheet>
