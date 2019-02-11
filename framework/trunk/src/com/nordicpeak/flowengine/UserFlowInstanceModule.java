@@ -244,6 +244,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider> listViewFragmentExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider>();
 
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
+	
+	protected CopyOnWriteArrayList<FlowInstanceFilter> flowInstanceFilters = new CopyOnWriteArrayList<FlowInstanceFilter>();
 
 	protected Locale systemLocale;
 
@@ -334,7 +336,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		tabExtensionProviders.clear();
 		listExtensionLinkProviders.clear();
 		listViewFragmentExtensionProviders.clear();
-
+		flowInstanceFilters.clear();
+		
 		super.unload();
 	}
 
@@ -427,6 +430,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				if (flowInstance.getFlow().isHideFromUser() && flowInstance.getFirstSubmitted() != null) {
 					continue;
 				}
+
+				if (!evaluateFlowInstanceFilters(flowInstance)) {
+					
+					continue;
+				};
 
 				Status status = flowInstance.getStatus();
 
@@ -529,6 +537,31 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 
 		return moduleResponse;
+	}
+
+	private boolean evaluateFlowInstanceFilters(FlowInstance flowInstance) {
+
+		if (CollectionUtils.isEmpty(flowInstanceFilters)) {
+
+			return true;
+		}
+
+		for (FlowInstanceFilter filter : flowInstanceFilters) {
+
+			try {
+
+				if (!filter.evaluateFlowInstance(flowInstance)) {
+
+					return false;
+				}
+
+			} catch (Throwable t) {
+
+				log.error("Error running evaluateFlowInstance on filter " + filter, t);
+			}
+		}
+
+		return true;
 	}
 
 	@WebPublic(alias = "overview")
@@ -1302,6 +1335,16 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return userFlowInstanceProviders.remove(flowInstanceProvider);
 	}
 
+	public boolean addFlowInstanceListFilter(FlowInstanceFilter flowInstanceFilter) {
+
+		return flowInstanceFilters.add(flowInstanceFilter);
+	}
+
+	public boolean removeFlowInstanceListFilter(FlowInstanceFilter flowInstanceFilter) {
+
+		return flowInstanceFilters.remove(flowInstanceFilter);
+	}
+	
 	@InstanceManagerDependency
 	public void setNotificationHandlerModule(NotificationHandler notificationHandler) {
 
