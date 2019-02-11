@@ -299,12 +299,12 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	private boolean hideFromUser;
 	
 	@DAOManaged
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 1024)
 	@XMLElement
 	private String userDescriptionTemplate;
 	
 	@DAOManaged
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 1024)
 	@XMLElement
 	private String managerDescriptionTemplate;
 	

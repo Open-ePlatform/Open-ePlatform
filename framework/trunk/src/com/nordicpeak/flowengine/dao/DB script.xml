@@ -2107,4 +2107,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="113">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` 
+				MODIFY COLUMN `userDescriptionTemplate` VARCHAR(1024) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+				MODIFY COLUMN `managerDescriptionTemplate` VARCHAR(1024) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
