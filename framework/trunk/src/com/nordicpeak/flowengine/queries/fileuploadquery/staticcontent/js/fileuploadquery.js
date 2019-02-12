@@ -2,12 +2,24 @@ $(document).ready(function() {
 	
 	setQueryRequiredFunctions["FileUploadQueryInstance"] = makeFileUploatQueryRequired;
 	
+});
+
+function makeFileUploatQueryRequired(queryID) {
+	
+	$("#query_" + queryID).find(".heading-wrapper h2").addClass("required");
+}
+
+function initFileUploadQuery(queryID) {
+	
+	initFileUploader($("#query_" + queryID + "_fileuploader"));
+	var $query = $("#query_" + queryID);
+	
 	var ua = window.navigator.userAgent;
 	var isMSBrowser = ua.indexOf('MSIE ') > -1 || ua.indexOf('Trident/') > -1 || ua.indexOf('Edge/') > -1;
 	
 	if (isMSBrowser) {
 
-		$('.upload')
+		$query.find('.upload')
 			.addClass('no-hover')
 			.on('drop dragenter dragover', function(e){ 
 			
@@ -16,7 +28,7 @@ $(document).ready(function() {
 		
 	} else {
 		
-		$('.upload').on('drop', function(e){
+		$query.find('.upload').on('drop', function(e){
 			
 			e.preventDefault();
 			$(this).removeClass('active');
@@ -41,16 +53,6 @@ $(document).ready(function() {
 			
 			$(this).removeClass('active');
 		});
-	}
-	
-});
+	}	
 
-function makeFileUploatQueryRequired(queryID) {
-	
-	$("#query_" + queryID).find(".heading-wrapper h2").addClass("required");
-}
-
-function initFileUploadQuery(queryID) {
-	
-	initFileUploader($("#query_" + queryID + "_fileuploader"));
 }
