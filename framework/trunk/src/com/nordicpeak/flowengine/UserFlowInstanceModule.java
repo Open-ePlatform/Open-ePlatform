@@ -110,6 +110,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInst
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
@@ -434,7 +435,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				if (!evaluateFlowInstanceFilters(flowInstance)) {
 					
 					continue;
-				};
+				}
 
 				Status status = flowInstance.getStatus();
 
@@ -550,7 +551,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			try {
 
-				if (!filter.evaluateFlowInstance(flowInstance)) {
+				if (!filter.include(flowInstance)) {
 
 					return false;
 				}
