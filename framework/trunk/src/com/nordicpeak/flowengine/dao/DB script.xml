@@ -2117,4 +2117,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="114">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` ADD INDEX `contentType` (`contentType`);
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
