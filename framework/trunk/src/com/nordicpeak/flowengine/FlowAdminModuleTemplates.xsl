@@ -439,7 +439,7 @@
 						<xsl:value-of select="$i18n.externalLink" />
 					</label>
 					
-					<div class="floatleft clearboth">
+					<div class="floatleft clearboth  word-break-all">
 						<a href="{Flow/externalLink}" target="_blank" title="{$i18n.OpenExternalFlow}" data-icon-after="e"><xsl:value-of select="Flow/externalLink" /></a>
 					</div>
 				</div>
