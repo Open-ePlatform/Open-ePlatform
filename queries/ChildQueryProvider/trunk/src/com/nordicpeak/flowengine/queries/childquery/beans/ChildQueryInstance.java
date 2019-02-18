@@ -359,7 +359,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	@Override
 	public List<? extends ImmutableAlternative> getAlternatives() {
 		
-		List<ChildAlternative> alternatives = null;
+		List<ImmutableAlternative> alternatives = null;
 		
 		if (citizenIdentifier != null) {
 			

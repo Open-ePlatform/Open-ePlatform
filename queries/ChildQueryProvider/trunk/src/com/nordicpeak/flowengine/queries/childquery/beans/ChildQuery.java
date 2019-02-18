@@ -108,11 +108,11 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@XMLElement
 	private List<ChildQueryInstance> instances;
 
-	private ChildAlternative childSelectedAlternative;
+	private ImmutableAlternative childSelectedAlternative;
 
-	private ChildAlternative singleGuardianAlternative;
+	private ImmutableAlternative singleGuardianAlternative;
 
-	private ChildAlternative multiGuardianAlternative;
+	private ImmutableAlternative multiGuardianAlternative;
 
 	public boolean isShowAddress() {
 
@@ -453,32 +453,32 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		return this.useMultipartSigning;
 	}
 
-	public ChildAlternative getChildSelectedAlternative() {
+	public ImmutableAlternative getChildSelectedAlternative() {
 
 		return childSelectedAlternative;
 	}
 
-	public void setChildSelectedAlternative(ChildAlternative childSelectedAlternative) {
+	public void setChildSelectedAlternative(ImmutableAlternative childSelectedAlternative) {
 
 		this.childSelectedAlternative = childSelectedAlternative;
 	}
 
-	public ChildAlternative getSingleGuardianAlternative() {
+	public ImmutableAlternative getSingleGuardianAlternative() {
 
 		return singleGuardianAlternative;
 	}
 
-	public void setSingleGuardianAlternative(ChildAlternative singleGuardianAlternative) {
+	public void setSingleGuardianAlternative(ImmutableAlternative singleGuardianAlternative) {
 
 		this.singleGuardianAlternative = singleGuardianAlternative;
 	}
 
-	public ChildAlternative getMultiGuardianAlternative() {
+	public ImmutableAlternative getMultiGuardianAlternative() {
 
 		return multiGuardianAlternative;
 	}
 
-	public void setMultiGuardianAlternative(ChildAlternative multiGuardianAlternative) {
+	public void setMultiGuardianAlternative(ImmutableAlternative multiGuardianAlternative) {
 
 		this.multiGuardianAlternative = multiGuardianAlternative;
 	}

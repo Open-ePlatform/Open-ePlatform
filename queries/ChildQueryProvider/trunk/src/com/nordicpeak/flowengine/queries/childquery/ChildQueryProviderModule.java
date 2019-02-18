@@ -73,7 +73,9 @@ import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.SimpleImmutableAlternative;
 import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
@@ -84,7 +86,6 @@ import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.queries.childquery.beans.ChildAlternative;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
@@ -169,9 +170,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	private QueryParameterFactory<ChildQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<ChildQueryInstance, Integer> queryInstanceIDParamFactory;
 
-	private ChildAlternative childSelectedAlternative;
-	private ChildAlternative singleGuardianAlternative;
-	private ChildAlternative multiGuardianAlternative;
+	private ImmutableAlternative childSelectedAlternative;
+	private ImmutableAlternative singleGuardianAlternative;
+	private ImmutableAlternative multiGuardianAlternative;
 	
 	protected ExtensionLink flowListExtensionLink;
 	
@@ -182,9 +183,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR);
 
-		childSelectedAlternative = new ChildAlternative(childSelectedAlternativeName, 1, 1);
-		singleGuardianAlternative = new ChildAlternative(singleGuardianAlternativeName, 2, 2);
-		multiGuardianAlternative = new ChildAlternative(multiGuardianAlternativeName, 3, 3);
+		childSelectedAlternative = new SimpleImmutableAlternative(childSelectedAlternativeName, 1, 1);
+		singleGuardianAlternative = new SimpleImmutableAlternative(singleGuardianAlternativeName, 2, 2);
+		multiGuardianAlternative = new SimpleImmutableAlternative(multiGuardianAlternativeName, 3, 3);
 	}
 
 	@Override
