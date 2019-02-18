@@ -19,11 +19,12 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 
 @Table(name = "contact_detail_queries")
 @XMLElement
-public class ContactDetailQuery extends BaseQuery {
+public class ContactDetailQuery extends BaseQuery implements CitizenIdentifierQuery {
 	
 	
 	private static final long serialVersionUID = -842191226937409416L;

@@ -19,12 +19,13 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
 import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 
 @Table(name = "manual_multi_sign_queries")
 @XMLElement
-public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery {
+public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery, CitizenIdentifierQuery {
 
 	private static final long serialVersionUID = 3734201104262524858L;
 

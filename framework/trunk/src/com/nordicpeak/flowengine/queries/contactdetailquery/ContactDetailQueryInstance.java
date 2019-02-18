@@ -20,6 +20,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.Contact;
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -29,7 +30,7 @@ import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 @Table(name = "contact_detail_query_instances")
 @XMLElement
-public class ContactDetailQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, ContactQueryInstance {
+public class ContactDetailQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, ContactQueryInstance, CitizenIdentifierQueryInstance {
 	
 	
 	private static final long serialVersionUID = -7761759005604863873L;
@@ -441,6 +442,12 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	}
 	
 	@Override
+	public String getCitizenIdentifier() {
+	
+		return getCitizenID();
+	}
+
+	@Override
 	public List<String> getColumnLabels(QueryHandler queryHandler) {
 		
 		ContactDetailQueryProviderModule queryProvider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), ContactDetailQueryProviderModule.class);
@@ -574,6 +581,12 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	@Override
 	public boolean updatedPoster() {
 		return isPersistUserProfile();
+	}
+
+	@Override
+	public boolean isTestCitizenIdentifier() {
+
+		return false;
 	}
 	
 }

@@ -18,6 +18,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -26,7 +27,7 @@ import com.nordicpeak.flowengine.queries.checkboxquery.CheckboxQueryInstance;
 
 @Table(name = "manual_multi_sign_query_instances")
 @XMLElement
-public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSignQueryinstance, ColumnExportableQueryInstance {
+public class ManualMultiSignQueryInstance extends BaseQueryInstance implements MultiSignQueryinstance, ColumnExportableQueryInstance, CitizenIdentifierQueryInstance {
 
 	private static final long serialVersionUID = 2847121037559137804L;
 
@@ -183,6 +184,12 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 	}
 
 	@Override
+	public String getCitizenIdentifier() {
+
+		return getSocialSecurityNumber();
+	}
+	
+	@Override
 	public List<? extends SigningParty> getSigningParties() {
 
 		if (getQueryInstanceDescriptor().isPopulated()) {
@@ -236,4 +243,11 @@ public class ManualMultiSignQueryInstance extends BaseQueryInstance implements M
 
 		return values;
 	}
+
+	@Override
+	public boolean isTestCitizenIdentifier() {
+
+		return false;
+	}
+
 }
