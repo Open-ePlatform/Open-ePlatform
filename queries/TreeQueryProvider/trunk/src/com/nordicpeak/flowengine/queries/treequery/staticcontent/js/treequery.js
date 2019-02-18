@@ -57,6 +57,7 @@ function initTreeQuery2(queryID, previouslySelected) {
 			filter: {
 				mode: 'hide', // 'dimm' | 'hide'
 				highlight: true,
+				nodata: 'Ingen sökträff'
 			},
 			
 			focus: function(event, data) {
