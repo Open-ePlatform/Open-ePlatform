@@ -86,4 +86,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `tree_queries`
+					ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `onlyAllowSelectingLeafs`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

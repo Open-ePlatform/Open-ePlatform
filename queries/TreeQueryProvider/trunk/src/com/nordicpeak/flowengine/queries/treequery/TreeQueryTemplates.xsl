@@ -101,7 +101,7 @@
 			
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
-				<xsl:if test="EnableAjaxPosting">enableAjaxPosting</xsl:if>
+				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
 				<xsl:if test="TreeQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
@@ -262,7 +262,7 @@
 		
 		</div>
 		
-		<div id="tree{$Query/queryID}" data-nofolders="{$Query/onlyAllowSelectingLeafs}"/>
+		<div id="tree{$Query/queryID}" class="clearboth" data-nofolders="{$Query/onlyAllowSelectingLeafs}"/>
 		
 		<xsl:call-template name="createHiddenField">
 			<xsl:with-param name="name">

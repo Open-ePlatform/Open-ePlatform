@@ -9,6 +9,7 @@
 	
 	<xsl:variable name="java.queryTypeName">Trädfråga</xsl:variable>
 	<xsl:variable name="java.missingTreeProvider">Tidigare vald trädleverantör som saknas</xsl:variable>
+	<xsl:variable name="java.selectedAlternativeName">Något valt</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateQuery">Ändra fråga</xsl:variable>
 	<xsl:variable name="i18n.ProviderIdentifier">Trädleverantör</xsl:variable>
@@ -16,5 +17,16 @@
 	<xsl:variable name="i18n.TreeQueryNotFound">Den begärda frågan hittades inte</xsl:variable>
 	
 	<xsl:variable name="i18n.OnlyAllowSelectingLeafs">Tillåt endast val av löv, dvs spetsen på en gren.</xsl:variable>
+	
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.Query.setAsAttribute">Spara fältens värde som attribut</xsl:variable>
+	<xsl:variable name="i18n.Query.attributeName">Attributprefix</xsl:variable>
+	
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användings exempel om du valt prefixet 'test': $attribute{test.ID}</xsl:variable>
+	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
+	<xsl:variable name="i18n.attribute.ID">ID</xsl:variable>
+	<xsl:variable name="i18n.attribute.Name">Namn</xsl:variable>
+	
 	
 </xsl:stylesheet>

@@ -74,6 +74,58 @@
 					<xsl:value-of select="$i18n.OnlyAllowSelectingLeafs" />
 				</label>
 			</div>
+			
+			<div class="floatleft full bigmargintop">
+				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'setAsAttribute'" />
+						<xsl:with-param name="name" select="'setAsAttribute'" />
+						<xsl:with-param name="element" select="TreeQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="setAsAttribute">
+						<xsl:value-of select="$i18n.Query.setAsAttribute" />
+					</label>
+			    </div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="attributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.Query.attributeName" /></label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'attributeName'"/>
+						<xsl:with-param name="name" select="'attributeName'"/>
+						<xsl:with-param name="title" select="$i18n.Query.attributeName"/>
+						<xsl:with-param name="element" select="TreeQuery" />
+						<xsl:with-param name="maxlength" select="'255'"/>
+					</xsl:call-template>
+			  </div>
+			</div>
+			
+			<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
+			
+			<table class="floatleft clearboth border">
+				<thead>
+					<th><xsl:value-of select="$i18n.attributes.name" /></th>
+					<th><xsl:value-of select="$i18n.attributes.value" /></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prefix.ID</td>
+						<td><xsl:value-of select="$i18n.attribute.ID" /></td>
+					</tr>
+					<tr>
+						<td>prefix.Name</td>
+						<td><xsl:value-of select="$i18n.attribute.Name" /></td>
+					</tr>
+				</tbody>
+			</table>
 
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />

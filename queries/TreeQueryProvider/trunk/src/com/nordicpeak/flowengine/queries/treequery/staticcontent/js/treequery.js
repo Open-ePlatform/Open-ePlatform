@@ -17,7 +17,7 @@ function waitUntilTreeQueryScriptsAreLoaded(queryID, previouslySelected) {
 	} else {
 		
 		initTreeQuery2(queryID, previouslySelected);
-	} 
+	}
 }
 
 function initTreeQuery2(queryID, previouslySelected) {
@@ -48,7 +48,7 @@ function initTreeQuery2(queryID, previouslySelected) {
 			persist: {
 				cookiePrefix: "fancytree-treequery-" + queryID,
 				overrideSource: false,  // true: cookie takes precedence over `source` data attributes.
-				store: "session",     // 'cookie': use cookie, 'local': use localStore, 'session': use sessionStore
+				store: "session",	 // 'cookie': use cookie, 'local': use localStore, 'session': use sessionStore
 				types: "expanded",  // which status types to store "active expanded focus selected"
 				expandLazy: true
 			},
@@ -61,30 +61,30 @@ function initTreeQuery2(queryID, previouslySelected) {
 			},
 			
 			focus: function(event, data) {
-		        data.node.scrollIntoView(true);
-		    },
-		    
-		    beforeActivate: function(event, data){
+				data.node.scrollIntoView(true);
+			},
+			
+			beforeActivate: function(event, data){
 				if(onlyleafselection && data.node.hasChildren()){
 					return false;
 				}
 			},
-		    
-		    activate: function(event, data) {
-	    		selectedInput.val(data.node.key);
-	    		
-	    		if(query.hasClass("enableAjaxPosting")) {
-		    		var parameters = {};
-		    		parameters[selectedInput.attr("name")] = data.node.key;
-		    		
-		    		runQueryEvaluators(queryID, parameters);
-	    		}
-	    	},
+			
+			activate: function(event, data) {
+				selectedInput.val(data.node.key);
+				
+				if (query.hasClass("enableAjaxPosting")) {
+					var parameters = {};
+					parameters[selectedInput.attr("name")] = data.node.key;
+					
+					runQueryEvaluators(queryID, parameters);
+				}
+			},
 		});
 		
 		var tree = $tree.fancytree("getTree");
 		
-		if(previouslySelected != ''){
+		if (previouslySelected != '') {
 			tree.activateKey(previouslySelected, {activeVisible: true});
 		}
 		
@@ -94,7 +94,7 @@ function initTreeQuery2(queryID, previouslySelected) {
 		$("input[name='filterField" + queryID + "']").keyup(function(event){
 			
 			var $this = $(this);
-	        var filter = $this.val();
+			var filter = $this.val();
 
 			if (event && event.keyCode == KEYCODE_ESC || $.trim(filter) === "") {
 				
@@ -134,17 +134,17 @@ function treeQueryCreateShowTree(queryID) {
 			debugLevel: 1, 			// 0:quiet, 1:normal, 2:debug
 			minExpandLevel: 99, 	// x: nodes x from invisible root (inclusive) is not collapsible
 			titlesTabbable: false,  // Add all node titles to TAB chain
-			quicksearch: false,     // Jump to nodes when pressing first character
+			quicksearch: false,		// Jump to nodes when pressing first character
 			keyboard: false,
 			source: window["TreeQueryTree" + queryID],
 			
 			beforeActivate: function(event, data) {
-	    		return false;
-	    	},
+				return false;
+			},
 		
 			beforeSelect: function(event, data) {
-	    		return false;
-	    	}
+				return false;
+			}
 		});
 	}
 }

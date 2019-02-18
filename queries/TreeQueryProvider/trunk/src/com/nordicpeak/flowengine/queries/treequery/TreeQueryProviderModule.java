@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -24,6 +25,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -46,7 +48,9 @@ import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.SimpleImmutableAlternative;
 import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
@@ -69,6 +73,9 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 
 	@XSLVariable(prefix = "java.")
 	private String missingTreeProvider = "Missing";
+	
+	@XSLVariable(prefix = "java.")
+	protected String selectedAlternativeName = "This variable should be set by your stylesheet";
 
 	private AnnotatedDAO<TreeQuery> queryDAO;
 	private AnnotatedDAO<TreeQueryInstance> queryInstanceDAO;
@@ -79,6 +86,8 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 	private QueryParameterFactory<TreeQueryInstance, Integer> queryInstanceIDParamFactory;
 
 	private ConcurrentHashMap<String, TreeDataProvider> treeProviders = new ConcurrentHashMap<String, TreeDataProvider>();
+	
+	private ImmutableAlternative selectedAlternative;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -89,6 +98,16 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 
 			throw new RuntimeException("Unable to register module " + moduleDescriptor + " in global instance handler using key " + TreeDataHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+	}
+	
+	@Override
+	protected void moduleConfigured() throws Exception {
+
+		super.moduleConfigured();
+
+		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR);
+
+		selectedAlternative = new SimpleImmutableAlternative(selectedAlternativeName, 1, 1);
 	}
 
 	@Override
@@ -131,6 +150,8 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		this.queryDAO.add(query, transactionHandler, null);
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
+		
+		query.setSelectedAlternative(selectedAlternative);
 
 		return query;
 	}
@@ -160,6 +181,8 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		}
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
+		
+		query.setSelectedAlternative(selectedAlternative);
 
 		return query;
 	}
@@ -175,6 +198,8 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		}
 
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
+		
+		query.setSelectedAlternative(selectedAlternative);
 
 		return query;
 	}
@@ -205,6 +230,8 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 
 			return null;
 		}
+		
+		queryInstance.getQuery().setSelectedAlternative(selectedAlternative);
 
 		if (req != null) {
 
@@ -222,7 +249,6 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		//If this is a new query instance copy the default values
 		if (descriptor.getQueryInstanceID() == null) {
 
-			queryInstance.copyQueryValues();
 			queryInstance.setFullTree(getFullTree(queryInstance, poster, null));
 		}
 
@@ -327,6 +353,12 @@ public class TreeQueryProviderModule extends BaseQueryProviderModule<TreeQueryIn
 		queryInstance.setSelectedTreeNodes(selectedTreeNode.getDirectParents());
 
 		queryInstance.getQueryInstanceDescriptor().setPopulated(true);
+
+		if (queryInstance.getQuery().isSetAsAttribute()) {
+
+			queryInstance.resetFlowInstanceAttributes(attributeHandler);
+			queryInstance.setFlowInstanceAttributes(attributeHandler);
+		}
 	}
 
 	@WebPublic(alias = "config")

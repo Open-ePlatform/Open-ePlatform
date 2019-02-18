@@ -2,11 +2,14 @@ package com.nordicpeak.flowengine.queries.treequery.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -18,11 +21,13 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
+import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
 
 @Table(name = "tree_queries")
 @XMLElement
-public class TreeQuery extends BaseQuery {
+public class TreeQuery extends BaseQuery implements FixedAlternativesQuery {
 
 	private static final long serialVersionUID = -842191226937409429L;
 
@@ -40,11 +45,24 @@ public class TreeQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean onlyAllowSelectingLeafs;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "setAsAttribute")
+	@XMLElement
+	private String attributeName;
 
 	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<TreeQueryInstance> instances;
+	
+	private ImmutableAlternative selectedAlternative;
 
 	@Override
 	public Integer getQueryID() {
@@ -149,6 +167,12 @@ public class TreeQuery extends BaseQuery {
 		providerIdentifier = XMLValidationUtils.validateParameter("providerIdentifier", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		onlyAllowSelectingLeafs = xmlParser.getPrimitiveBoolean("onlyAllowSelectingLeafs");
 
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if (attributeName != null) {
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
+		
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
@@ -164,6 +188,49 @@ public class TreeQuery extends BaseQuery {
 	public void setProviderIdentifier(String providerIdentifier) {
 
 		this.providerIdentifier = providerIdentifier;
+	}
+
+	@Override
+	public List<? extends ImmutableAlternative> getAlternatives() {
+		return CollectionUtils.getList(selectedAlternative);
+	}
+
+	@Override
+	public String getFreeTextAlternative() {
+		return null;
+	}
+
+	@Override
+	public Map<Integer, Integer> getAlternativeConversionMap() {
+		return null;
+	}
+
+	public ImmutableAlternative getSelectedAlternative() {
+		return selectedAlternative;
+	}
+
+	public void setSelectedAlternative(ImmutableAlternative selectedAlternative) {
+		this.selectedAlternative = selectedAlternative;
+	}
+	
+	public boolean isSetAsAttribute() {
+	
+		return setAsAttribute;
+	}
+
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+	
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+	
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
 	}
 
 }

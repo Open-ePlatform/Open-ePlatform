@@ -6,10 +6,6 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
-
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -22,9 +18,15 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGenerator;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
+import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryInstance;
+
 @Table(name = "tree_query_instances")
 @XMLElement
-public class TreeQueryInstance extends BaseQueryInstance implements StringValueQueryInstance {
+public class TreeQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, FixedAlternativesQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -148,20 +150,38 @@ public class TreeQueryInstance extends BaseQueryInstance implements StringValueQ
 			}
 		}
 	}
-
+	
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
 		selectedNodeKey = null;
 		selectedTreeNodes = null;
 		
+		if (query.isSetAsAttribute()) {
+			
+			resetFlowInstanceAttributes(attributeHandler);
+		}
+		
 		super.reset(attributeHandler);
 	}
-
-	public void copyQueryValues() {
-
+	
+	public void setFlowInstanceAttributes(MutableAttributeHandler attributeHandler) {
+		
+		attributeHandler.setAttribute(query.getAttributeName() + ".ID", selectedNodeKey);
+		
+		StoredTreeNode node = getSelectedTreeNode();
+		
+		if (node != null) {
+			attributeHandler.setAttribute(query.getAttributeName() + ".Name", node.getName());
+		}
 	}
-
+	
+	public void resetFlowInstanceAttributes(MutableAttributeHandler attributeHandler) {
+		
+		attributeHandler.removeAttribute(query.getAttributeName() + ".ID");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".Name");
+	}
+	
 	@Override
 	public Element toXML(Document doc) {
 
@@ -203,6 +223,24 @@ public class TreeQueryInstance extends BaseQueryInstance implements StringValueQ
 			return selectedNode.getName();
 		}
 
+		return null;
+	}
+	
+	@Override
+	public List<? extends ImmutableAlternative> getAlternatives() {
+		
+		List<ImmutableAlternative> alternatives = null;
+		
+		if (selectedNodeKey != null) {
+			alternatives = CollectionUtils.addAndInstantiateIfNeeded(alternatives, query.getSelectedAlternative());
+		}
+		
+		return alternatives;
+	}
+	
+	@Override
+	public String getFreeTextAlternativeValue() {
+		
 		return null;
 	}
 
