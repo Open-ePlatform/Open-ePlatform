@@ -104,7 +104,7 @@ public class TextTagAdminModule extends AnnotatedForegroundModule implements CRU
 		tagIDParamFactory = textTagDAO.getParamFactory("textTagID", Integer.class);
 		tagNameParamFactory = textTagDAO.getParamFactory("name", String.class);
 
-		textTagCRUD = new TextTagCRUD(textTagDAO.getWrapper("name", String.class), new AnnotatedRequestPopulator<TextTag>(TextTag.class), this);
+		textTagCRUD = new TextTagCRUD(textTagDAO.getWrapper("textTagID", Integer.class), textTagDAO.getWrapper("name", String.class), new AnnotatedRequestPopulator<TextTag>(TextTag.class), this);
 	}
 	
 	@Override

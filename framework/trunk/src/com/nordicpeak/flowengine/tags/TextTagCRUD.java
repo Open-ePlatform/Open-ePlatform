@@ -21,18 +21,18 @@ import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
 
 
-public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdminModule> {
+public class TextTagCRUD extends GenericCRUD<TextTag, Integer, User, TextTagAdminModule> {
 
 	protected TextTagAdminModule textTagModule;
 	
 	protected AnnotatedDAOWrapper<TextTag, String> textTagDAO;
 	
-	public TextTagCRUD(AnnotatedDAOWrapper<TextTag, String> crudDAO, BeanRequestPopulator<TextTag> populator, TextTagAdminModule textTagModule) {
+	public TextTagCRUD(AnnotatedDAOWrapper<TextTag, Integer> crudDAO, AnnotatedDAOWrapper<TextTag, String> textTagDAO, BeanRequestPopulator<TextTag> populator, TextTagAdminModule textTagModule) {
 
 		super(crudDAO, populator, "TextTag", "text tag", "/", textTagModule);
 		
 		this.textTagModule = textTagModule;
-		this.textTagDAO = crudDAO;
+		this.textTagDAO = textTagDAO;
 		
 	}
 
@@ -82,7 +82,7 @@ public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdmin
 
 	protected void validateName(TextTag bean) throws SQLException, ValidationException {
 		
-		TextTag textTag = crudDAO.get(bean.getName());
+		TextTag textTag = textTagDAO.get(bean.getName());
 		
 		if(textTag != null && (bean.getTextTagID() == null || !textTag.getTextTagID().equals(bean.getTextTagID()))) {
 			
@@ -95,9 +95,9 @@ public class TextTagCRUD extends GenericCRUD<TextTag, String, User, TextTagAdmin
 	@Override
 	public TextTag getRequestedBean(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, String getMode) throws SQLException, AccessDeniedException {
 
-		String beanID = null;
+		Integer beanID = null;
 		
-		if (uriParser.size() > 2 && (beanID = uriParser.get(2))!= null) {
+		if (uriParser.size() > 2 && (beanID = uriParser.getInt(2))!= null) {
 
 			return crudDAO.get(beanID);
 		}
