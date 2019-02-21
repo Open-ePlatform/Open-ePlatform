@@ -1676,8 +1676,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				
 				contact = FlowInstanceUtils.getContactForUser(event.getUser());
 				
-			} else { // They were not logged in
+			} else { 
 				
+				// They cancelling user was not logged in, this code is most likely not used at the curren time
 				contact = new Contact();
 				
 				contact.setFirstname(event.getCancellingSigningParty().getFirstname());
