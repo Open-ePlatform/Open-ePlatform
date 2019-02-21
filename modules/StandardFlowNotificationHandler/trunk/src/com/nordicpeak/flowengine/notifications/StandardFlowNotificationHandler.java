@@ -107,6 +107,7 @@ import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.NotificationRecipient;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
@@ -1636,8 +1637,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				
 				for (SigningParty signingParty : signingParties) {
 					
-					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
-					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, flowInstanceMultiSignInitiatedUserSMS);
+					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
+					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserSMS);
 				}
 			}
 		}
@@ -1647,8 +1648,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		Contact contact = getPosterContact(flowInstance);
 		
-		sendSigningPartyEmail(flowInstance, signingParty, contact, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
-		sendSigningPartySMS(flowInstance, signingParty, contact, flowInstanceMultiSignInitiatedUserSMS);
+		sendSigningPartyEmail(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
+		sendSigningPartySMS(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserSMS);
 	}
 
 	@EventListener(channel = FlowInstance.class)
@@ -1667,8 +1668,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (ownerContacts != null) {
 				for (Contact ownerContact : ownerContacts) {
 					
-					sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-					sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, true, flowInstanceMultiSignCanceledOwnerSMS);
+					sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
+					sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, flowInstanceMultiSignCanceledOwnerSMS);
 				}
 			}
 			
@@ -1688,15 +1689,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 		
-		//TODO don't send to not yet requested parties if sequential
 		for (SigningParty signingParty : event.getSigningParties()) {
 			
 			if (signingParty.equals(event.getCancellingSigningParty())) {
 				continue;
 			}
 			
-			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, true, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, true, flowInstanceMultiSignCanceledUserSMS);
+			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
+			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, flowInstanceMultiSignCanceledUserSMS);
 		}
 	}
 
@@ -1821,12 +1821,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return scripts;
 	}
 
-	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String subject, String message) {
+	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, NotificationRecipient recipient, String subject, String message) {
 		
-		return sendSigningPartyEmail(flowInstance, signingParty, contact, false, subject, message);
+		return sendSigningPartyEmail(flowInstance, signingParty, contact, recipient, false, subject, message);
 	}
 	
-	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, boolean skipURL, String subject, String message) {
+	private boolean sendSigningPartyEmail(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, NotificationRecipient recipient, boolean skipURL, String subject, String message) {
 
 		if (signingParty.getEmail() == null || subject == null || message == null || multiSigningHandler == null) {
 			return false;
@@ -1869,7 +1869,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
 		try {
-			email.addRecipient(signingParty.getEmail());
+			
+			if(recipient.equals(NotificationRecipient.OWNER)) {
+			
+				email.addRecipient(contact.getEmail());
+				
+			} else {
+				
+				email.addRecipient(signingParty.getEmail());
+			}
+			
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
@@ -1887,12 +1896,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return true;
 	}
 
-	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, String message) {
+	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, NotificationRecipient recipient, String message) {
 		
-		sendSigningPartySMS(flowInstance, signingParty, contact, false, message);
+		sendSigningPartySMS(flowInstance, signingParty, contact, recipient, false, message);
 	}
 		
-	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, boolean skipURL, String message) {
+	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, NotificationRecipient recipient, boolean skipURL, String message) {
 
 		if (signingParty.getMobilePhone() == null || smsSender == null || message == null || multiSigningHandler == null) {
 			return;
@@ -1931,7 +1940,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		try {
 			sms.setSenderName(getSmsSenderName(flowInstance));
 			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
-			sms.addRecipient(signingParty.getMobilePhone());
+			
+			if(recipient.equals(NotificationRecipient.OWNER)) {
+				
+				sms.addRecipient(contact.getMobilePhone());
+				
+			} else {
+				
+				sms.addRecipient(signingParty.getMobilePhone());
+			}
 
 			smsSender.send(sms);
 
