@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.enums;
+package com.nordicpeak.flowengine.notifications.enums;
 
 
 public enum NotificationRecipient {
