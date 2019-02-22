@@ -332,3 +332,59 @@ div.section-inside .description .btn-readmore {
     bottom: 0px;
     top: auto;
 }
+
+@media 
+only screen and (max-device-width: 1004px)  {
+	/* Force table to not be like tables anymore */
+	table.signingstatustable, .signingstatustable thead, .signingstatustable tbody, .signingstatustable th, .signingstatustable td, .signingstatustable tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	.signingstatustable thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	.signingstatustable td { 
+/* 		Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+	}
+	
+	.signingstatustable td:before { 
+/* 		Now like a table header */
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	.signingstatustable td {
+		border-bottom: none;
+	}
+
+	.signingstatustable tr {
+		border: none;
+		border-bottom: 1px solid #ccc;
+		padding-bottom: 10px;
+		margin-bottom: 5px;
+	}
+
+	.signingstatustable thead {
+		display: none;
+	}
+	
+	/* Label the data */
+	.signingstatustable td:nth-of-type(1):before { content: attr(data-name); }
+	.signingstatustable td:nth-of-type(2):before { content: attr(data-name); }
+	.signingstatustable td:nth-of-type(3):before { content: attr(data-name); }
+	.signingstatustable td:nth-of-type(4):before { content: attr(data-name); }
+	.signingstatustable td:nth-of-type(5):before { content: attr(data-name); }
+	.signingstatustable td:nth-of-type(6):before { content: attr(data-name); }
+}
