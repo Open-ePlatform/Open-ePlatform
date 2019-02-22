@@ -12,11 +12,11 @@
 	<xsl:variable name="i18n.FileUploadQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	<xsl:variable name="i18n.AllowedFileExtensions">Tillåtna filtyper (ange en filtyp per rad)</xsl:variable>
 	<xsl:variable name="i18n.MaxFileCount">Antal filer som får bifogas</xsl:variable>
-	<xsl:variable name="i18n.MaxFileSize">Största datamängd som får bifogas i MB</xsl:variable>
+	<xsl:variable name="i18n.MaxFileSize">Maximal filstorlek som får bifogas i MB</xsl:variable>
 	<xsl:variable name="i18n.MaxAllowedFileSize.Part1">som standard</xsl:variable>
 	<xsl:variable name="i18n.MaxAllowedFileSize.Part2">MB</xsl:variable>
 	<xsl:variable name="i18n.maxFileCount">antal filer som får bifogas</xsl:variable>
-	<xsl:variable name="i18n.maxFileSize">största datamängd som får bifogas i MB</xsl:variable>
+	<xsl:variable name="i18n.maxFileSize">maximal filstorlek som får bifogas i MB</xsl:variable>
 	<xsl:variable name="i18n.MaxFileNameLength">Maximalt antal tecken i filnamnet, inklusive filändelse</xsl:variable>
 	<xsl:variable name="i18n.maxFileNameLength">maximalt antal tecken i filnamnet, maximalt värde är 255</xsl:variable>
 	<xsl:variable name="i18n.inlinePDFAttachments">Bifoga PDF filer direkt i ärendets PDF</xsl:variable>
