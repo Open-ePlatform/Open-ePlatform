@@ -123,7 +123,7 @@
 				</xsl:if>
 				
 				<xsl:if test="TextAreaQueryInstance/TextAreaQuery/showLetterCount = 'true' and TextAreaQueryInstance/TextAreaQuery/maxLength">
-					<div class="floatright lettercounter" data-maxlength="{TextAreaQueryInstance/TextAreaQuery/maxLength}" style="margin-right: 2%"/>
+					<div class="floatleft marginbottom lettercounter" data-maxlength="{TextAreaQueryInstance/TextAreaQuery/maxLength}" />
 				</xsl:if>
 				
 				<xsl:call-template name="createTextArea">
