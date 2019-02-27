@@ -15,7 +15,7 @@
 	<xsl:variable name="java.flowInstanceSubmittedNotLoggedInUserSMS">Ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har skickats in.</xsl:variable>
 	<xsl:variable name="java.flowInstanceArchivedNotLoggedInUserSMS">Handläggningen av ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har slutförts.</xsl:variable>
 	
-	<xsl:variable name="java.flowInstanceMultiSignInitiatedUserSMS">Hej $signingParty.firstname, du har ombets att signera ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som skickats in av $contact.firstname $contact.lastname. Använd följande länk för att visa ärendet: $flowInstanceSign.url</xsl:variable>
+	<xsl:variable name="java.flowInstanceMultiSignInitiatedUserSMS">Hej $signingParty.firstname, du har ombetts att signera ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som skickats in av $contact.firstname $contact.lastname. Använd följande länk för att visa ärendet: $flowInstanceSign.url</xsl:variable>
 	<xsl:variable name="java.flowInstanceMultiSignCanceledUserSMS">Hej $signingParty.firstname, $contact.firstname $contact.lastname har valt att avbryta signeringen av ärende $flow.name (ärende nr. $flowInstance.flowInstanceID) som du tidigare blev ombedd att signera. Det kan komma en ny signeringsförfrågan om ärendet skickas in på nytt.</xsl:variable>
 	<xsl:variable name="java.flowInstanceMultiSignCanceledOwnerSMS">Hej $contact.firstname, $signingParty.firstname $signingParty.lastname har valt att avbryta signeringen av ärende $flow.name (ärende nr. $flowInstance.flowInstanceID).</xsl:variable>		
 	
@@ -102,7 +102,7 @@
 	
 		&lt;p&gt;Hej $signingParty.firstname,&lt;/p&gt;
 		
-		&lt;p&gt;Du har ombets att signera ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som skickats in av $contact.firstname $contact.lastname.&lt;/p&gt;
+		&lt;p&gt;Du har ombetts att signera ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som skickats in av $contact.firstname $contact.lastname.&lt;/p&gt;
 		
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
