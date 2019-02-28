@@ -93,13 +93,13 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	
 	@DAOManaged
 	@Templated
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 1024)
 	@XMLElement
 	private String flowInstanceSubmittedUserSMS;
 	
 	@DAOManaged
 	@Templated
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 1024)
 	@XMLElement
 	private String flowInstanceSubmittedNotLoggedInUserSMS;
 

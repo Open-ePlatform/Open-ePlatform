@@ -237,4 +237,13 @@
 		</Query>
 	</Script>
 	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings` MODIFY COLUMN `flowInstanceSubmittedUserSMS` VARCHAR(1024) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+				 MODIFY COLUMN `flowInstanceSubmittedNotLoggedInUserSMS` VARCHAR(1024) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>
