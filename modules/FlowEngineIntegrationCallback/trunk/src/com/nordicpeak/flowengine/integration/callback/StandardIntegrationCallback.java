@@ -210,6 +210,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			
 			externalMessage.setPoster(principalUser);
 			externalMessage.setFlowInstance(flowInstance);
+			externalMessage.setPostedByManager(true);
 			
 			try {
 				daoFactory.getExternalMessageDAO().add(externalMessage);
