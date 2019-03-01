@@ -24,7 +24,6 @@
 	<xsl:variable name="i18n.UncategorizedFlows">Övriga e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.ShowLongDescription">Visa mer information</xsl:variable>
 	<xsl:variable name="i18n.HideLongDescription">Dölj information</xsl:variable>
-	<xsl:variable name="i18n.FlowDisabled">Ej tillgänglig på grund av underhållsarbete</xsl:variable>
 	
 	<xsl:variable name="i18n.SearchTitle">Sök e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.RecommendedSearches">Rekommenderade sökningar</xsl:variable>

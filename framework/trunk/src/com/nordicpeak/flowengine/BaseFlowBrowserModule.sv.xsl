@@ -7,7 +7,7 @@
 	
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 	
-	<xsl:variable name="i18n.FlowDisabled">Den här e-tjänsten är för tillfället inte tillgänglig</xsl:variable>
+	<xsl:variable name="i18n.FlowDisabled">Den här e-tjänsten är inte tillgänglig för tillfället</xsl:variable>
 	<xsl:variable name="i18n.FlowNotAvailiableInRequestedFormat">E-tjänsten är inte tillgänglig i det begärda formatet</xsl:variable>
 	<xsl:variable name="i18n.FlowNoLongerAvailable">E-tjänsten är inte längre tillgänglig.</xsl:variable>
 	<xsl:variable name="i18n.FlowNoLongerPublished">Den här versionen av e-tjänsten är inte längre publicerad i systemet. Sök upp e-tjänsten här nedan och starta den på nytt utifrån den senaste versionen.</xsl:variable>
