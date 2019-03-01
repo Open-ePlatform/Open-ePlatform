@@ -269,6 +269,8 @@
 				<xsl:when test="storageType = 'INFINITY'">
 					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
 				</xsl:when>
+				<xsl:when test="storageType = 'CUSTOM'">
+				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="period"/>
 					
@@ -286,7 +288,9 @@
 			</xsl:choose>
 			
 			<xsl:if test="description">
-				<xsl:text> - </xsl:text>
+				<xsl:if test="storageType != 'CUSTOM'">
+					<xsl:text> - </xsl:text>
+				</xsl:if>
 				
 				<xsl:value-of select="description"/>
 			</xsl:if>
