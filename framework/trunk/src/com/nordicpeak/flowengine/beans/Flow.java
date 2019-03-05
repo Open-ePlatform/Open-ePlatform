@@ -952,8 +952,8 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
 		hideExternalMessageAttachments = xmlParser.getPrimitiveBoolean("hideExternalMessageAttachments");
 		
-		this.userDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
-		this.managerDescriptionTemplate = XMLValidationUtils.validateParameter("managerDescriptionTemplate", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.userDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
+		this.managerDescriptionTemplate = XMLValidationUtils.validateParameter("managerDescriptionTemplate", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
 		
 		if (!errors.isEmpty()) {
 			
