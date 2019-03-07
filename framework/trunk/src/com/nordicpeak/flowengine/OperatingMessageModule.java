@@ -77,9 +77,9 @@ import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidato
 import it.sauronsoftware.cron4j.Scheduler;
 
 public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, SystemStartupListener {
-	
+
 	private static final AnnotatedRequestPopulator<OperatingMessageNotificationSettings> EXTERNAL_SETTINGS_POPULATOR = new AnnotatedRequestPopulator<OperatingMessageNotificationSettings>(OperatingMessageNotificationSettings.class);
-	
+
 	@ModuleSetting
 	@XSLVariable(prefix = "java.")
 	@TextFieldSettingDescriptor(name = "New external operating message email subject", description = "The subject of emails sent to the selected users when a new external operating message is found", required = true)
@@ -89,7 +89,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@XSLVariable(prefix = "java.")
 	@HTMLEditorSettingDescriptor(name = "New external operating message email message", description = "The subject of emails sent to the selected users when a new external operating message is found", required = true)
 	private String newExternalOperatingMessageEmailMessage;
-	
+
 	@ModuleSetting
 	@XSLVariable(prefix = "java.")
 	@TextFieldSettingDescriptor(name = "Removed external operating message email subject", description = "The subject of emails sent to the selected users when a external operating message is removed", required = true)
@@ -99,425 +99,430 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@XSLVariable(prefix = "java.")
 	@HTMLEditorSettingDescriptor(name = "Removed external operating message email message", description = "The subject of emails sent to the selected users when a external operating message is removed", required = true)
 	private String removedExternalOperatingMessageEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable site profile support", description = "Controls if site profile support is enabled")
 	protected boolean enableSiteProfileSupport;
-	
+
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Subscriptions", description = "name:http|https://url", formatValidator = OperatingMessageSubscriptionValidator.class)
 	protected List<String> subscriptions;
-	
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Subscription file encoding", description = "The encoding to use when parsing subscriptions")
+	protected String subscriptionFileEncoding = "ISO-8859-1";
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Subscriptions update interval", description = "How often this module should update external operating messages (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String subscriptionUpdateInterval = "*/5 * * * *";
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection Timeout", description = "Connection timeout in seconds", formatValidator = StringIntegerValidator.class, required = true)
 	protected Integer connectionTimeout = 5;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read Timeout", description = "Read timeout in seconds", formatValidator = StringIntegerValidator.class, required = true)
 	protected Integer readTimeout = 5;
-	
+
 	private OperatingMessageCRUD messageCRUD;
-	
+
 	private AnnotatedDAO<OperatingMessage> operatingMessageDAO;
 	private AnnotatedDAO<OperatingMessageNotificationSettings> externalSettingsDAO;
-	
+
 	private QueryParameterFactory<OperatingMessage, Timestamp> endTimeParameterFactory;
-	
+
 	private CopyOnWriteArraySet<OperatingMessage> internalOperatingMessageCache;
 	private List<ExternalOperatingMessage> externalOperatingMessageCache;
-	
+
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
-	
+
 	@InstanceManagerDependency
 	private FlowNotificationHandler flowNotificationHandler;
-	
+
 	private Scheduler scheduler;
 	private String scheduleID;
 	private List<ExternalOperatingMessageSource> externalMessageSources = new ArrayList<ExternalOperatingMessageSource>();
-	
+
 	protected UserGroupListConnector userGroupListConnector;
-	
+
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
-		
+
 		super.init(moduleDescriptor, sectionInterface, dataSource);
-		
+
 		if (!systemInterface.getInstanceHandler().addInstance(OperatingMessageModule.class, this)) {
-			
+
 			throw new RuntimeException("Unable to register module in global instance handler using key " + OperatingMessageModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
-		
+
 		cacheComingOperatingMessages();
 		initScheduler();
-		
+
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 			systemStarted();
-			
+
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
 			systemInterface.addSystemStartupListener(this);
 		}
-		
+
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 	}
-	
+
 	@Override
 	public void systemStarted() throws Exception {
-		
-		new Thread(this, moduleDescriptor.getName() + " Initial Caching").start();;
+
+		new Thread(this, moduleDescriptor.getName() + " Initial Caching").start();
 	}
-	
+
 	@Override
 	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
-		
+
 		super.update(descriptor, dataSource);
-		
+
 		scheduler.reschedule(scheduleID, subscriptionUpdateInterval);
 		cacheExternalOperatingMessages();
 	}
-	
+
 	@Override
 	protected void moduleConfigured() throws Exception {
-		
+
 		// Resave old enabled sources
 		boolean settingsMissing = false;
-		
+
 		for (ExternalOperatingMessageSource source : externalMessageSources) {
-			
+
 			if (source.isEnabled() && !moduleDescriptor.getMutableSettingHandler().isSet("source." + source.getName())) {
-				
+
 				settingsMissing = true;
 				moduleDescriptor.getMutableSettingHandler().setSetting("source." + source.getName(), "true");
 			}
 		}
-		
+
 		if (settingsMissing) {
 			moduleDescriptor.saveSettings(systemInterface);
 		}
-		
+
 		externalMessageSources.clear();
-		
+
 		if (externalOperatingMessageCache != null) {
-			
+
 			externalOperatingMessageCache = null;
 		}
-		
+
 		if (ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
-			
+
 			if (!CollectionUtils.isEmpty(subscriptions)) {
 				for (String subscription : subscriptions) {
-					
+
 					String[] splits = subscription.split("(?<!https?):");
-					
+
 					String name = splits[0];
 					String url = splits[1];
-					
+
 					externalMessageSources.add(new ExternalOperatingMessageSource(name, url, moduleDescriptor.getMutableSettingHandler().getPrimitiveBoolean("source." + name)));
 				}
 			}
 		}
-		
+
 		super.moduleConfigured();
 	}
-	
+
 	@Override
 	public void unload() throws Exception {
-		
+
 		stopScheduler();
-		
+
 		systemInterface.getInstanceHandler().removeInstance(OperatingMessageModule.class, this);
-		
+
 		super.unload();
 	}
-	
+
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
-		
+
 		super.createDAOs(dataSource);
-		
+
 		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
-		
+
 		externalSettingsDAO = daoFactory.getDAO(OperatingMessageNotificationSettings.class);
-		
+
 		FlowEngineDAOFactory flowDaoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
-		
+
 		operatingMessageDAO = flowDaoFactory.getOperatingMessageDAO();
-		
+
 		endTimeParameterFactory = operatingMessageDAO.getParamFactory("endTime", Timestamp.class);
-		
+
 		messageCRUD = new OperatingMessageCRUD(operatingMessageDAO.getAdvancedWrapper("messageID", Integer.class), this);
 	}
-	
+
 	private void cacheComingOperatingMessages() throws SQLException {
-		
+
 		log.info("Caching coming operating messages");
-		
+
 		HighLevelQuery<OperatingMessage> query = new HighLevelQuery<OperatingMessage>();
-		
+
 		Timestamp currentTimestamp = TimeUtils.getCurrentTimestamp();
-		
+
 		query.addParameter(endTimeParameterFactory.getParameter(currentTimestamp, QueryOperators.BIGGER_THAN));
-		
+
 		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(query);
-		
+
 		if (operatingMessages != null) {
-			
+
 			internalOperatingMessageCache = new CopyOnWriteArraySet<OperatingMessage>(operatingMessages);
-			
+
 			return;
 		}
-		
+
 		internalOperatingMessageCache = new CopyOnWriteArraySet<OperatingMessage>();
 	}
-	
+
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		return messageCRUD.list(req, res, user, uriParser, null);
 	}
-	
+
 	@WebPublic
 	public ForegroundModuleResponse add(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		return messageCRUD.add(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic
 	public ForegroundModuleResponse update(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		return messageCRUD.update(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic
 	public ForegroundModuleResponse delete(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		return messageCRUD.delete(req, res, user, uriParser);
 	}
-	
+
 	@Override
 	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
-		
+
 		Document doc = XMLUtils.createDomDocument();
 		Element documentElement = doc.createElement("Document");
 		documentElement.appendChild(RequestUtils.getRequestInfoAsXML(doc, req, uriParser));
 		documentElement.appendChild(this.moduleDescriptor.toXML(doc));
-		
+
 		if (enableSiteProfileSupport) {
 			XMLUtils.appendNewElement(doc, documentElement, "enableSiteProfileSupport", "true");
 		}
-		
+
 		doc.appendChild(documentElement);
 		return doc;
 	}
-	
+
 	@Override
 	public String getTitlePrefix() {
-		
+
 		return moduleDescriptor.getName();
 	}
-	
+
 	public FlowAdminModule getFlowAdminModule() {
-		
+
 		return flowAdminModule;
 	}
-	
+
 	public OperatingStatus getOperatingStatus(Integer flowFamilyID, boolean manager, boolean submittedFlowInstance) {
-		
+
 		List<OperatingMessage> pastMessages = null;
-		
+
 		Timestamp currentTime = TimeUtils.getCurrentTimestamp();
-		
+
 		OperatingStatus operatingStatus = null;
-		
+
 		for (OperatingMessage operatingMessage : internalOperatingMessageCache) {
-			
+
 			if (enableSiteProfileSupport) {
-				
+
 				if (operatingMessage.getProfileIDs() != null && SiteProfileFilterModule.getCurrentProfile() != null && !operatingMessage.getProfileIDs().contains(SiteProfileFilterModule.getCurrentProfile().getProfileID())) {
-					
+
 					//Message is set for specific profiles, but current profile is not one of them. Message should not be shown.
 					continue;
 				}
 			}
-			
+
 			if (operatingMessage.getStartTime().before(currentTime) && operatingMessage.getEndTime().after(currentTime)) {
-				
+
 				if (manager && operatingMessage.allowsManagingOfInstances()) {
-					
+
 					continue;
 				}
-				
+
 				if (!manager && submittedFlowInstance && operatingMessage.allowsUserHandlingOfSubmittedInstances()) {
-					
+
 					continue;
 				}
-				
+
 				if (operatingStatus == null && operatingMessage.isGlobal()) {
-					
+
 					operatingStatus = operatingMessage;
-					
+
 				} else if ((operatingMessage.getFlowFamilyIDs() != null && flowFamilyID != null && operatingMessage.getFlowFamilyIDs().contains(flowFamilyID))) {
-					
+
 					operatingStatus = operatingMessage;
-					
+
 					break;
 				}
-				
+
 			} else if (!operatingMessage.getEndTime().after(currentTime)) {
-				
+
 				pastMessages = CollectionUtils.addAndInstantiateIfNeeded(pastMessages, operatingMessage);
 			}
 		}
-		
+
 		if (pastMessages != null) {
-			
+
 			internalOperatingMessageCache.removeAll(pastMessages);
 		}
-		
+
 		if (operatingStatus == null && externalOperatingMessageCache != null) {
-			
+
 			for (ExternalOperatingMessage operatingMessage : externalOperatingMessageCache) {
-				
+
 				if (!operatingMessage.isDisabled()) {
-					
+
 					operatingStatus = operatingMessage;
 					break;
 				}
 			}
 		}
-		
+
 		return operatingStatus;
 	}
-	
+
 	public OperatingStatus getGlobalOperatingStatus(boolean manager) {
-		
+
 		return getOperatingStatus(null, manager, false);
 	}
-	
+
 	public void addOrUpdateOperatingMessage(OperatingMessage operatingMessage) {
-		
+
 		internalOperatingMessageCache.remove(operatingMessage);
-		
+
 		if (operatingMessage.getEndTime().after(TimeUtils.getCurrentTimestamp())) {
-			
+
 			internalOperatingMessageCache.add(operatingMessage);
 		}
 	}
-	
+
 	public void deleteOperatingMessage(OperatingMessage operatingMessage) {
-		
+
 		internalOperatingMessageCache.remove(operatingMessage);
 	}
-	
+
 	protected synchronized void initScheduler() {
-		
+
 		if (scheduler != null) {
-			
+
 			log.warn("Invalid state: scheduler not null");
 			stopScheduler();
 		}
-		
+
 		scheduler = new Scheduler();
-		
+
 		scheduleID = scheduler.schedule(subscriptionUpdateInterval, this);
 		scheduler.start();
 	}
-	
+
 	protected synchronized void stopScheduler() {
-		
+
 		try {
 			if (scheduler != null) {
-				
+
 				scheduler.stop();
 				scheduler = null;
 			}
-			
+
 		} catch (IllegalStateException e) {
 			log.error("Error stopping scheduler", e);
 		}
 	}
-	
+
 	@Override
 	public void run() {
-		
+
 		try {
 			cacheExternalOperatingMessages();
-			
+
 		} catch (Throwable t) {
 			log.error("Error caching external operating messages", t);
 		}
 	}
-	
+
 	private void cacheExternalOperatingMessages() {
-		
+
 		List<ExternalOperatingMessage> operatingMessages = new ArrayList<ExternalOperatingMessage>();
-		
+
 		for (ExternalOperatingMessageSource source : externalMessageSources) {
-			
+
 			try {
 				SimpleRequest listRequest = new SimpleRequest(source.getURL());
 
 				listRequest.setConnectionTimeout(connectionTimeout * MillisecondTimeUnits.SECOND);
 				listRequest.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
 
-				String response = HTTPUtils.sendHTTPGetRequest(listRequest, Charset.forName("ISO-8859-1")).getValue();
-				
+				String response = HTTPUtils.sendHTTPGetRequest(listRequest, Charset.forName(subscriptionFileEncoding)).getValue();
+
 				if (!StringUtils.isEmpty(response)) {
-					
+
 					try {
 						XMLParser parser = new XMLParser(XMLUtils.parseXML(response, false, false));
-						
-						XMLParser item = parser.getNode("/Document/OperatingMessage");
-						
+
+						XMLParser item = parser.getNode("/Document/OperatingMessage", true);
+
 						if (item != null) {
-							
+
 							OperatingMessageType type = OperatingMessageType.valueOf(item.getString("Type"));
 							String message = item.getString("Text");
-							
+
 							operatingMessages.add(new ExternalOperatingMessage(source, type, message));
 						}
-						
+
 					} catch (Exception e) {
-						
-						log.warn("Error parsing alternatives XML for " + source, e);
+
+						log.warn("Error parsing XML from source " + source, e);
 					}
 				}
-				
+
 			} catch (Exception e) {
 				log.warn("Error getting alternatives for " + source, e);
 			}
 		}
-		
+
 		if (operatingMessages.size() > 0 && log.isDebugEnabled()) {
-			
+
 			log.debug("Cached " + operatingMessages.size() + " external operating messages");
 		}
 
 		Collection<ExternalOperatingMessage> oldExternalOperatingMessageCache = externalOperatingMessageCache;
-		
+
 		externalOperatingMessageCache = Collections.unmodifiableList(operatingMessages);
-		
+
 		sendNotifications(externalOperatingMessageCache, oldExternalOperatingMessageCache);
 	}
-	
+
 	private void sendNotifications(Collection<ExternalOperatingMessage> newOperatingMessages, Collection<ExternalOperatingMessage> oldOperatingMessages) {
-		
+
 		try {
 			OperatingMessageNotificationSettings notificationSettings = getNotificationSettings(true);
 
 			if (notificationSettings == null || notificationSettings.getNotificationUsers() == null || flowNotificationHandler == null) {
 				return;
 			}
-			
+
 			String emailSenderName = flowNotificationHandler.getEmailSenderName(null);
 			String emailSenderAddress = flowNotificationHandler.getEmailSenderAddress(null);
 
 			// Send notifications for removed operating messages
 			if (oldOperatingMessages != null) {
+				
 				for (ExternalOperatingMessage oldExternalOperationMessage : oldOperatingMessages) {
 
 					if (!newOperatingMessages.contains(oldExternalOperationMessage)) {
@@ -527,6 +532,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 						tagReplacer.addTagSource(new SingleTagSource("$message", oldExternalOperationMessage.getMessage()));
 
 						for (User user : notificationSettings.getNotificationUsers()) {
+
+							if (user.getEmail() == null) {
+
+								continue;
+							}
 
 							SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -560,6 +570,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 					for (User user : notificationSettings.getNotificationUsers()) {
 
+						if (user.getEmail() == null) {
+
+							continue;
+						}
+
 						SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
 						try {
@@ -588,78 +603,80 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse reloadExternal(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
-		
+
 		if (user.isAdmin()) {
-			
+
 			cacheExternalOperatingMessages();
-			
+
 			return new SimpleForegroundModuleResponse("done", getDefaultBreadcrumb());
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	@WebPublic
 	public ForegroundModuleResponse enableExternalSource(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, IOException, SQLException {
-		
+
 		if (uriParser.size() == 3) {
-			
+
 			String name = uriParser.get(2);
-			
+
 			for (ExternalOperatingMessageSource source : externalMessageSources) {
-				
+
 				if (source.getName().equals(name)) {
-					
+
 					source.setEnabled(true);
 					moduleDescriptor.getMutableSettingHandler().setSetting("source." + name, "true");
 					moduleDescriptor.saveSettings(systemInterface);
 				}
 			}
-			
+
 			redirectToDefaultMethod(req, res);
 			return null;
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	@WebPublic
 	public ForegroundModuleResponse disableExternalSource(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, IOException, SQLException {
-		
+
 		if (uriParser.size() == 3) {
-			
+
 			String name = uriParser.get(2);
-			
+
 			for (ExternalOperatingMessageSource source : externalMessageSources) {
-				
+
 				if (source.getName().equals(name)) {
-					
+
 					source.setEnabled(false);
 					moduleDescriptor.getMutableSettingHandler().setSetting("source." + name, "false");
 					moduleDescriptor.saveSettings(systemInterface);
 				}
 			}
-			
+
 			redirectToDefaultMethod(req, res);
 			return null;
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	public List<ExternalOperatingMessage> getExternalOperatingMessages() {
+
 		return externalOperatingMessageCache;
 	}
-	
+
 	public List<ExternalOperatingMessageSource> getExternalOperatingMessageSources() {
+
 		return externalMessageSources;
 	}
-	
+
 	@WebPublic(alias = "users")
 	public ForegroundModuleResponse getUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		userGroupListConnector.setUserGroupFilter((List<Integer>) flowAdminModule.getAllowedGroupIDs());
-		
+
 		return userGroupListConnector.getUsers(req, res, user, uriParser);
 	}
 
@@ -668,11 +685,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		HighLevelQuery<OperatingMessageNotificationSettings> query = new HighLevelQuery<OperatingMessageNotificationSettings>();
 
 		OperatingMessageNotificationSettings notificationSettings = externalSettingsDAO.get(query);
-		
+
 		if (notificationSettings != null && notificationSettings.getNotificationUserIDs() != null && withUsers) {
 			notificationSettings.setNotificationUsers(systemInterface.getUserHandler().getUsers(notificationSettings.getNotificationUserIDs(), false, true));
 		}
-		
+
 		return notificationSettings;
 	}
 
@@ -721,5 +738,5 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
-	
+
 }
