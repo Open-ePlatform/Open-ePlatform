@@ -1903,7 +1903,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 	private void sendSigningPartySMS(ImmutableFlowInstance flowInstance, SigningParty signingParty, Contact contact, NotificationRecipient recipient, boolean skipURL, String message) {
 
-		if (signingParty.getMobilePhone() == null || smsSender == null || message == null || multiSigningHandler == null) {
+		if (smsSender == null || message == null || multiSigningHandler == null) {
+			return;
+		}
+		
+		if(recipient == NotificationRecipient.OWNER && contact.getMobilePhone() == null) {
+			
+			return;
+		}
+		
+		if (recipient == NotificationRecipient.SIGNING_PARTY && signingParty.getMobilePhone() == null){
+			
 			return;
 		}
 		
@@ -1941,13 +1951,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			sms.setSenderName(getSmsSenderName(flowInstance));
 			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 			
-			if(recipient.equals(NotificationRecipient.OWNER)) {
+			if(recipient == NotificationRecipient.OWNER) {
 				
 				sms.addRecipient(contact.getMobilePhone());
 				
-			} else {
+			} else if(recipient == NotificationRecipient.SIGNING_PARTY) {
 				
 				sms.addRecipient(signingParty.getMobilePhone());
+				
+			} else {
+				
+				throw new RuntimeException("Unknown recipient type " + recipient);
 			}
 
 			smsSender.send(sms);
