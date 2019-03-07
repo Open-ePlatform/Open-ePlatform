@@ -20,7 +20,7 @@
 		/js/textfieldqueryadmin.js
 	</xsl:variable>
 
-	<xsl:template match="Document">	
+	<xsl:template match="Document">
 		
 		<div id="TextFieldQueryProvider" class="contentitem">
 		
@@ -221,7 +221,7 @@
 					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="maxlength" select="'255'"/>
 				</xsl:call-template>
-		    </div>
+			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
@@ -236,8 +236,8 @@
 				<label for="disabled">
 					<xsl:value-of select="$i18n.Disabled" />
 				</label>
-		    </div>
-		</div>		
+			</div>
+		</div>
 		
 		<div class="floatleft full bigmarginbottom" id="default-value">
 			<label for="defaultValue" class="floatleft clearboth"><xsl:value-of select="$i18n.DefaultValue" /></label>
@@ -249,8 +249,8 @@
 					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="maxlength" select="'255'"/>
 				</xsl:call-template>
-		    </div>
-		</div>		
+			</div>
+		</div>
 		
 		<div id="disable-hide-fields">
 			<div class="floatleft full bigmarginbottom">
@@ -265,7 +265,7 @@
 					<label for="required">
 						<xsl:value-of select="$i18n.Required" />
 					</label>
-			    </div>
+				</div>
 			</div>
 			
 			<!-- 
@@ -279,7 +279,7 @@
 						<xsl:with-param name="size" select="'30'" />
 						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
 			 -->
 			
@@ -296,7 +296,7 @@
 						<xsl:with-param name="selectedValue" select="$element/formatValidator" />
 					</xsl:call-template>
 					<xsl:apply-templates select="FormatValidator" />
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -308,7 +308,7 @@
 						<xsl:with-param name="title" select="$i18n.InvalidFormatMessage"/>
 						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -321,7 +321,20 @@
 						<xsl:with-param name="element" select="$element" />
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
-			    </div>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="minContentLength" class="floatleft clearboth"><xsl:value-of select="$i18n.Field.MinLength" /></label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'minContentLength'"/>
+						<xsl:with-param name="name" select="'minContentLength'"/>
+						<xsl:with-param name="title" select="$i18n.Field.MinLength"/>
+						<xsl:with-param name="size" select="'30'"/>
+						<xsl:with-param name="element" select="$element" />
+					</xsl:call-template>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -334,8 +347,8 @@
 						<xsl:with-param name="size" select="'30'"/>
 						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
-			    </div>
-			</div>		
+				</div>
+			</div>
 		</div>
 		
 		<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
@@ -352,7 +365,7 @@
 				<label for="setAsAttribute">
 					<xsl:value-of select="$i18n.setAsAttribute" />
 				</label>
-		    </div>
+			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
@@ -365,7 +378,7 @@
 					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="maxlength" select="'255'"/>
 				</xsl:call-template>
-		    </div>
+			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
@@ -377,8 +390,8 @@
 					<xsl:with-param name="title" select="$i18n.xsdElementName"/>
 					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
-		    </div>
-		</div>		
+			</div>
+		</div>
 		
 	</xsl:template>
 	
@@ -422,7 +435,7 @@
 						<xsl:with-param name="element" select="FieldLayout" />
 						<xsl:with-param name="selectedValue" select="TextFieldQuery/layout" />
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -471,9 +484,9 @@
 		<form id="sortTextFieldsForm" name="queryAdminForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full sortable">
-							
+				
 				<xsl:apply-templates select="TextFieldQuery/Fields/TextField" mode="sort" />
-							
+				
 			</div>
 			
 			<div class="floatright margintop clearboth">
@@ -514,6 +527,9 @@
 		<xsl:variable name="fieldName" select="." />
 	
 		<xsl:choose>
+			<xsl:when test="$fieldName = 'minContentLength'">
+				<xsl:value-of select="$i18n.Field.minLength" />
+			</xsl:when>
 			<xsl:when test="$fieldName = 'maxContentLength'">
 				<xsl:value-of select="$i18n.maxLength" />
 			</xsl:when>

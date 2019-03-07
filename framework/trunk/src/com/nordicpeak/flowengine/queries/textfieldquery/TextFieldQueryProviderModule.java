@@ -41,6 +41,7 @@ import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.StringFormatValidator;
 import se.unlogic.standardutils.validation.TooLongContentValidationError;
+import se.unlogic.standardutils.validation.TooShortContentValidationError;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -372,6 +373,12 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 			value = value.trim();
 
+			if (textField.getMinContentLength() != null && value.length() < textField.getMinContentLength()) {
+				
+				validationErrors.add(new TooShortContentValidationError(textField.getTextFieldID().toString(), value.length(), textField.getMinContentLength()));
+				continue;
+			}
+			
 			Integer maxLength = textField.getMaxContentLength();
 
 			if (maxLength == null || maxLength > 255) {
@@ -382,7 +389,6 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			if (value.length() > maxLength) {
 
 				validationErrors.add(new TooLongContentValidationError(textField.getTextFieldID().toString(), value.length(), maxLength));
-
 				continue;
 			}
 
@@ -390,14 +396,13 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 				StringFormatValidator formatValidator = getStringFormatValidator(textField);
 
-				if(formatValidator == null){
-					
+				if (formatValidator == null) {
+
 					log.warn("Unable to get format validator " + textField.getFormatValidator() + " for field " + textField);
-					
-				}else if (!formatValidator.validateFormat(value)) {
+
+				} else if (!formatValidator.validateFormat(value)) {
 
 					validationErrors.add(new InvalidFormatValidationError(textField.getTextFieldID().toString(), textField.getInvalidFormatMessage()));
-
 					continue;
 				}
 			}

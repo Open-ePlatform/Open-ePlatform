@@ -61,13 +61,17 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	private boolean required;
 	
 	@DAOManaged
-	@WebPopulate(populator=PositiveStringIntegerPopulator.class)
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer width;
 
-	//TODO implement client side
 	@DAOManaged
-	@WebPopulate(populator=PositiveStringIntegerPopulator.class)
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
+	@XMLElement
+	private Integer minContentLength;
+
+	@DAOManaged
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer maxContentLength;
 
@@ -118,9 +122,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@XMLElement
 	private List<TextFieldValue> values;
 
-	public TextField() {
-
-	}
+	public TextField() {}
 
 	public Integer getTextFieldID() {
 
@@ -208,6 +210,14 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		this.formatValidator = formatValidator;
 	}
 
+	public Integer getMinContentLength() {
+		return minContentLength;
+	}
+
+	public void setMinContentLength(Integer minContentLength) {
+		this.minContentLength = minContentLength;
+	}
+
 	public Integer getMaxContentLength() {
 
 		return maxContentLength;
@@ -217,7 +227,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 
 		this.maxContentLength = maxContentLength;
 	}
-	
+
 	public String getInvalidFormatMessage() {
 	
 		return invalidFormatMessage;
@@ -238,6 +248,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		required = xmlParser.getPrimitiveBoolean("required");
 		
 		width = XMLValidationUtils.validateParameter("width", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
+		minContentLength = XMLValidationUtils.validateParameter("minContentLength", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxContentLength = XMLValidationUtils.validateParameter("maxContentLength", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		
 		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, NonNegativeStringIntegerPopulator.getPopulator(), errors);
@@ -262,7 +273,6 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 			
 			throw new ValidationException(errors);
 		}
-		
 	}
 	
 	public boolean isSetAsAttribute() {

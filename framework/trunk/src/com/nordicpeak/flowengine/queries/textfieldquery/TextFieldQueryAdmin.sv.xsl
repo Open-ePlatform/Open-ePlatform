@@ -28,6 +28,8 @@
 	<xsl:variable name="i18n.Required">Obligatoriskt</xsl:variable>
 	<xsl:variable name="i18n.MaxLength">Tillåten längd på textinnehåll</xsl:variable>
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>
+	<xsl:variable name="i18n.Field.MinLength">Krävd längd på textinnehåll</xsl:variable>
+	<xsl:variable name="i18n.Field.minLength">krävd längd på textinnehåll</xsl:variable>
 	<xsl:variable name="i18n.FormatValidator">Validator</xsl:variable>
 	<xsl:variable name="i18n.InvalidFormatMessage">Valideringsmeddelande</xsl:variable>
 	<xsl:variable name="i18n.invalidFormatMessage">valideringsmeddelande</xsl:variable>

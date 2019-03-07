@@ -28,7 +28,7 @@
 		/js/textfieldquery.js
 	</xsl:variable>
 
-	<xsl:template match="Document">	
+	<xsl:template match="Document">
 		
 		<xsl:apply-templates select="ShowQueryValues"/>
 		<xsl:apply-templates select="ShowQueryForm"/>
@@ -140,10 +140,10 @@
 					<span class="italic">
 						<xsl:if test="/Document/useCKEditorForDescription = 'true'"><xsl:attribute name="class">italic html-description</xsl:attribute></xsl:if>
 						<xsl:value-of select="TextFieldQueryInstance/TextFieldQuery/description" disable-output-escaping="yes" />
-					</span>		
-				</xsl:if>				
+					</span>
+				</xsl:if>
 				
-				<fieldset>		
+				<fieldset>
 					<xsl:apply-templates select="TextFieldQueryInstance/TextFieldQuery/Fields/TextField" />
 				</fieldset>
 		
@@ -204,6 +204,10 @@
 					<xsl:attribute name="class">required</xsl:attribute>
 				</xsl:if>
 				<xsl:value-of select="label"/>
+				
+				<xsl:if test="maxContentLength">
+					<div class="floatright lettercounter" data-maxlength="{maxContentLength}" />
+				</xsl:if>
 			</label>
 
 			<xsl:variable name="size">
@@ -287,13 +291,27 @@
 			
 		</div>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'RequiredField']">
 		
 		<i data-icon-after="!" title="{$i18n.RequiredField}"></i>
 		
-	</xsl:template>	
+	</xsl:template>
+	
+	<xsl:template match="validationError[validationErrorType = 'TooShort']">
+		
+		<i data-icon-after="!">
+			<xsl:attribute name="title">
+				<xsl:value-of select="$i18n.TooShortFieldContent.part1"/>
+				<xsl:value-of select="currentLength"/>
+				<xsl:value-of select="$i18n.TooShortFieldContent.part2"/>
+				<xsl:value-of select="minLength"/>
+				<xsl:value-of select="$i18n.TooShortFieldContent.part3"/>
+			</xsl:attribute>
+		</i>
+		
+	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'TooLong']">
 		
@@ -324,7 +342,7 @@
 			</xsl:attribute>
 		</i>
 		
-	</xsl:template>	
+	</xsl:template>
 		
 	<xsl:template match="validationError">
 		

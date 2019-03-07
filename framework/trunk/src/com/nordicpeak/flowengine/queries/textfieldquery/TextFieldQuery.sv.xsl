@@ -7,6 +7,9 @@
 	
 	<xsl:variable name="i18n.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
 	<xsl:variable name="i18n.InvalidFormat">Innehållet i det här fältet har ett ogiltigt format!</xsl:variable>
+	<xsl:variable name="i18n.TooShortFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
+	<xsl:variable name="i18n.TooShortFieldContent.part2"> tecken men måste vara minst </xsl:variable>
+	<xsl:variable name="i18n.TooShortFieldContent.part3"> tecken!</xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part3"> tecken!</xsl:variable>

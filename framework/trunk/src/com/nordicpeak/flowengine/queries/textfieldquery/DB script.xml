@@ -42,7 +42,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;	
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -69,7 +69,7 @@
 			<![CDATA[
 				ALTER TABLE `text_fields` ADD COLUMN `maxContentLength` INTEGER UNSIGNED AFTER `queryID`;
 			]]>
-		</Query>				
+		</Query>
 	</Script>
 
 	<Script version="2">
@@ -132,6 +132,14 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `text_field_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_fields` ADD COLUMN `minContentLength` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `queryID`;
 			]]>
 		</Query>
 	</Script>

@@ -168,6 +168,11 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 	
 	protected void validatePopulation(TextField bean) throws ValidationException {
 		
+		if (bean.getMinContentLength() != null && bean.getMinContentLength() > 255) {
+			
+			throw new ValidationException(new ValidationError("minContentLength", ValidationErrorType.TooLong));
+		}
+		
 		if (bean.getMaxContentLength() != null && bean.getMaxContentLength() > 255) {
 			
 			throw new ValidationException(new ValidationError("maxContentLength", ValidationErrorType.TooLong));
