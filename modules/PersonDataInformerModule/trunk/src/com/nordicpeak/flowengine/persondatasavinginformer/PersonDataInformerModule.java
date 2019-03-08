@@ -285,6 +285,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	@Override
 	public ViewFragment getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
+		//This check is not necessary when fragments are used, this should be removed and the module re-tested
 		if (!AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)) {
 			return null;
 		}
