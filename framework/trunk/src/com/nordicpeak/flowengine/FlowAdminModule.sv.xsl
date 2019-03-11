@@ -420,7 +420,7 @@
 	<xsl:variable name="i18n.UnableToParseFile.part2">.</xsl:variable>
 	
 	<xsl:variable name="i18n.showSubmitSurvey">Visa användarundersökning</xsl:variable>
-	<xsl:variable name="i18n.hideSubmitStepText">Göm steget "Skicka in" i stegöverblicken</xsl:variable>
+	<xsl:variable name="i18n.hideSubmitStepText">Dölj steget "Skicka in" i stegöverblicken</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowSurveysTitle">Användarundersökningar</xsl:variable>
 	
