@@ -49,7 +49,6 @@ import se.unlogic.standardutils.date.PooledSimpleDateFormat;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
-import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.populators.StringSwedishPhoneNumberPopulator;
@@ -437,16 +436,35 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
-
+	
 	@Override
 	public void populate(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+		
+		if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
+
+			populateGuardians(queryInstance.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
+
+			if (!validationErrors.isEmpty()) {
+				throw new ValidationException(validationErrors);
+			}
+
+			queryInstance.getQueryInstanceDescriptor().setPopulated(true);
+			queryInstance.setAttributes(attributeHandler);
+			
+			return;
+		}
 
 		String childCitizenIdentifier = ValidationUtils.validateParameter("q" + queryID + "_child", req, false, StringPopulator.getPopulator(), validationErrors);
 
+		if (childCitizenIdentifier == null && queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.VISIBLE_REQUIRED) {
+			queryInstance.reset(attributeHandler);
+			return;
+		}
+		
 		if (!allowPartialPopulation && childCitizenIdentifier == null) {
 			validationErrors.add(new ValidationError("Required"));
 		}
@@ -456,12 +474,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		if (childCitizenIdentifier != null) {
 
 			if (!CollectionUtils.isEmpty(queryInstance.getChildren())) {
-
 				selectedChild = queryInstance.getChildren().get(childCitizenIdentifier);
-
-			} else if (queryInstance.getChildren() == null && childCitizenIdentifier.equals(queryInstance.getCitizenIdentifier())) {
-
-				selectedChild = new StoredChild(queryInstance.getFirstname(), queryInstance.getLastname(), queryInstance.getCitizenIdentifier());
 			}
 
 			if (selectedChild == null || (queryInstance.getQuery().getMinAge() != null && selectedChild.getAge() < queryInstance.getQuery().getMinAge()) || (queryInstance.getQuery().getMaxAge() != null && selectedChild.getAge() > queryInstance.getQuery().getMaxAge())) {
@@ -469,86 +482,15 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			}
 		}
 
-		if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.VISIBLE_REQUIRED && ObjectUtils.isNull(selectedChild)) {
-
-			queryInstance.reset(attributeHandler);
-			return;
-		}
-
 		if (!validationErrors.isEmpty()) {
-
 			throw new ValidationException(validationErrors);
 		}
 
-		List<StoredGuardian> storedGuardians = null;
-
 		if (selectedChild != null) {
 
-			if (selectedChild.getGuardians() != null) {
-
-				storedGuardians = selectedChild.getGuardians();
-
-			} else {
-
-				storedGuardians = queryInstance.getGuardians();
-			}
-
-			if (queryInstance.getQuery().isUseMultipartSigning()) {
-
-				String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
-
-				for (StoredGuardian storedGuardian : storedGuardians) {
-
-					if (storedGuardian.getCitizenIdentifier() == null) {
-
-						validationErrors.add(new ValidationError("SecretGuardian"));
-
-					} else if (storedGuardian.getCitizenIdentifier().equals(posterCitizienIdentifier)) {
-
-						storedGuardian.setPoster(true);
-						storedGuardian.setEmail(poster.getEmail());
-						storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
-
-					} else {
-
-						String emailID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email";
-						String phoneID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone";
-
-						String email = ValidationUtils.validateParameter(emailID, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
-						String phone = ValidationUtils.validateParameter(phoneID, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
-
-						storedGuardian.setPoster(false);
-						storedGuardian.setEmail(email);
-						storedGuardian.setPhone(phone);
-
-						if (!allowPartialPopulation && !queryInstance.getQuery().isRequireGuardianEmail() && !queryInstance.getQuery().isRequireGuardianPhone() && storedGuardian.getEmail() == null && storedGuardian.getPhone() == null && StringUtils.isEmpty(req.getParameter(emailID)) && StringUtils.isEmpty(req.getParameter(phoneID))) {
-
-							validationErrors.add(new ValidationError("EmailOrPhoneRequired"));
-
-						} else if (queryInstance.getQuery().isRequireGuardianContactInfoVerification() && !requestMetadata.isManager()) {
-
-							String emailID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email2";
-							String phoneID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone2";
-
-							String email2 = ValidationUtils.validateParameter(emailID2, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
-							String phone2 = ValidationUtils.validateParameter(phoneID2, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
-
-							if (((email == null && email2 != null) || (email != null && !email.equals(email2))) && !ValidationUtils.containsValidationErrorForField(emailID2, validationErrors)) {
-
-								validationErrors.add(new ValidationError("EmailVerificationMismatch", "", emailID2));
-							}
-
-							if (((phone == null && phone2 != null) || (phone != null && !phone.equals(phone2))) && !ValidationUtils.containsValidationErrorForField(phoneID2, validationErrors)) {
-
-								validationErrors.add(new ValidationError("PhoneVerificationMismatch", "", phoneID2));
-							}
-						}
-					}
-				}
-			}
-
+			List<StoredGuardian> storedGuardians = populateGuardians(selectedChild.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
+			
 			if (!validationErrors.isEmpty()) {
-
 				throw new ValidationException(validationErrors);
 			}
 
@@ -562,7 +504,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.setTestChild(selectedChild.isTestChild());
 
 			if (queryInstance.getQuery().isUseMultipartSigning() || queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
-
 				queryInstance.setGuardians(storedGuardians);
 			}
 
@@ -576,6 +517,66 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.reset(attributeHandler);
 			queryInstance.getQueryInstanceDescriptor().setPopulated(false);
 		}
+	}
+	
+	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
+		
+		if (queryInstance.getQuery().isUseMultipartSigning()) {
+
+			Integer queryID = queryInstance.getQuery().getQueryID();
+			String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+
+			for (StoredGuardian storedGuardian : storedGuardians) {
+
+				if (storedGuardian.getCitizenIdentifier() == null) {
+
+					validationErrors.add(new ValidationError("SecretGuardian"));
+
+				} else if (storedGuardian.getCitizenIdentifier().equals(posterCitizienIdentifier)) {
+
+					storedGuardian.setPoster(true);
+					storedGuardian.setEmail(poster.getEmail());
+					storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
+
+				} else {
+
+					String emailID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email";
+					String phoneID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone";
+
+					String email = ValidationUtils.validateParameter(emailID, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
+					String phone = ValidationUtils.validateParameter(phoneID, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
+
+					storedGuardian.setPoster(false);
+					storedGuardian.setEmail(email);
+					storedGuardian.setPhone(phone);
+
+					if (!allowPartialPopulation && !queryInstance.getQuery().isRequireGuardianEmail() && !queryInstance.getQuery().isRequireGuardianPhone() && storedGuardian.getEmail() == null && storedGuardian.getPhone() == null && StringUtils.isEmpty(req.getParameter(emailID)) && StringUtils.isEmpty(req.getParameter(phoneID))) {
+
+						validationErrors.add(new ValidationError("EmailOrPhoneRequired"));
+
+					} else if (queryInstance.getQuery().isRequireGuardianContactInfoVerification() && !requestMetadata.isManager()) {
+
+						String emailID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email2";
+						String phoneID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone2";
+
+						String email2 = ValidationUtils.validateParameter(emailID2, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
+						String phone2 = ValidationUtils.validateParameter(phoneID2, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
+
+						if (((email == null && email2 != null) || (email != null && !email.equals(email2))) && !ValidationUtils.containsValidationErrorForField(emailID2, validationErrors)) {
+
+							validationErrors.add(new ValidationError("EmailVerificationMismatch", "", emailID2));
+						}
+
+						if (((phone == null && phone2 != null) || (phone != null && !phone.equals(phone2))) && !ValidationUtils.containsValidationErrorForField(phoneID2, validationErrors)) {
+
+							validationErrors.add(new ValidationError("PhoneVerificationMismatch", "", phoneID2));
+						}
+					}
+				}
+			}
+		}
+		
+		return storedGuardians;
 	}
 
 	@WebPublic(alias = "config")
@@ -650,25 +651,25 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata) {
 		
-		if ((requestMetadata == null || !requestMetadata.isManager()) && poster != null && SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession()) != null) {
-			
-			queryInstance.setHasChildrenUnderSecrecy(false);
-			
-			@SuppressWarnings("unchecked")
-			Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
-			
-			return storedChildMap;
-		}
-		
 		if (poster != null) {
+			
+			if ((requestMetadata == null || !requestMetadata.isManager()) && SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession()) != null) {
+				
+				queryInstance.setHasChildrenUnderSecrecy(false);
+				
+				@SuppressWarnings("unchecked")
+				Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
+				
+				return storedChildMap;
+			}
+			
+			if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
+				return null;
+			}
 			
 			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 			
 			if (citizenIdentifier != null) {
-				
-				if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
-					return null;
-				}
 				
 				if (childRelationProvider == null) {
 
