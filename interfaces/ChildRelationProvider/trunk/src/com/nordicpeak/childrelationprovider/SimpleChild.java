@@ -21,6 +21,19 @@ public class SimpleChild extends BasePerson implements Child {
 		this.citizenIdentifier = citizenIdentifier;
 	}
 	
+	public SimpleChild(String firstname, String lastname, String citizenIdentifier, String address, String zipcode, String postalAddress, String municipalityCode) {
+		
+		super();
+
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.citizenIdentifier = citizenIdentifier;
+		this.address = address;
+		this.zipCode = zipcode;
+		this.postalAddress = postalAddress;
+		this.municipalityCode = municipalityCode;
+	}
+	
 	@Override
 	public List<Guardian> getGuardians() {
 
@@ -32,6 +45,7 @@ public class SimpleChild extends BasePerson implements Child {
 		this.guardians = guardians;
 	}
 	
+	@Override
 	public String getMunicipalityCode() {
 	
 		return municipalityCode;

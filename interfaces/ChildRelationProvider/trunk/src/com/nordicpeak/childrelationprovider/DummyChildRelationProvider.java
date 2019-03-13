@@ -6,9 +6,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
-import com.nordicpeak.childrelationprovider.exceptions.IncompleteDataException;
-
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -16,6 +13,9 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.populators.SwedishSocialSecurity12DigitsWithoutMinusPopulator;
+
+import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
+import com.nordicpeak.childrelationprovider.exceptions.IncompleteDataException;
 
 public class DummyChildRelationProvider extends AnnotatedForegroundModule implements ChildRelationProvider {
 	
@@ -78,8 +78,7 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 		
 		if (child1 && !secret1) {
 			
-			SimpleChild child1 = new SimpleChild("kalle", "kula", childID1);
-			child1.setMunicipalityCode("11");
+			SimpleChild child1 = new SimpleChild("kalle", "kula", childID1, "gatan", "12345", "orten", "1234");
 			
 			if (ensam1) {
 				
@@ -103,9 +102,8 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 		
 		if (child2 && !secret2) {
 			
-			SimpleChild child2 = new SimpleChild("lisa", "kula", childID2);
+			SimpleChild child2 = new SimpleChild("lisa", "kula", childID2, "gatan", "12345", "orten", "4321");
 			child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
-			child2.setMunicipalityCode("12");
 			
 			children.put(child2.getCitizenIdentifier(), child2);
 		}
