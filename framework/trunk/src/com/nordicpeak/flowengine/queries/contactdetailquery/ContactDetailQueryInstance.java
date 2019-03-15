@@ -246,6 +246,10 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		
 		//Preserve fields in case they have been prepopulated
 		
+		if (query.isSetAsAttribute()) {
+			resetAttributes(attributeHandler);
+		}
+		
 		super.reset(attributeHandler);
 	}
 	
@@ -269,6 +273,16 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		officalAddress = false;
 		
 		reset(attributeHandler);
+	}
+	
+	public void resetAttributes(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.removeAttribute(query.getAttributeName() + ".citizenIdentifier");
+	}
+
+	public void setAttributes(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName() + ".citizenIdentifier", citizenID);
 	}
 	
 	@Override

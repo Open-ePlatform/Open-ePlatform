@@ -278,4 +278,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="25">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries`
+					ADD COLUMN `setAsAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `managerUpdateAccess`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL DEFAULT NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

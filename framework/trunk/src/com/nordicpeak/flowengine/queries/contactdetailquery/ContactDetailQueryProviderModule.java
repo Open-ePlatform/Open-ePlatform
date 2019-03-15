@@ -13,22 +13,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
-import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.QueryInstance;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
-import com.nordicpeak.flowengine.utils.JTidyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -63,6 +47,22 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.flowengine.beans.QueryResponse;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
+import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
+import com.nordicpeak.flowengine.utils.JTidyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<ContactDetailQueryInstance> implements BaseQueryCRUDCallback {
 	
@@ -548,6 +548,12 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		queryInstance.setPersistUserProfile(persistUserProfile);
 		queryInstance.setCitizenID(citizenID);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(queryInstance.isPopulated());
+		
+		if (query.isSetAsAttribute()) {
+
+			queryInstance.resetAttributes(attributeHandler);
+			queryInstance.setAttributes(attributeHandler);
+		}
 		
 		if (hasUpdateUserProfileAccess(poster, user, persistUserProfile, requestMetadata, query)) {
 			
