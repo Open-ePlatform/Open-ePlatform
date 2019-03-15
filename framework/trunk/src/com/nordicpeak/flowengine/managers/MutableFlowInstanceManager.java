@@ -1274,7 +1274,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					if (queryInstance instanceof SubmitCheck) {
 						
 						try {
-							if (!((SubmitCheck) queryInstance).isValidForSubmit(flowInstance.getAttributeHandler(), resolvedPoster, queryHandler)) {
+							if (!((SubmitCheck) queryInstance).isValidForSubmit(flowInstance.getAttributeHandler(), resolvedPoster, queryHandler, this)) {
 								
 								blockingQueryInstance = managedQueryInstance;
 								blockingStep = step;
