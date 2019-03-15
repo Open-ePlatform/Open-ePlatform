@@ -15,7 +15,7 @@ function initTextFieldQuery(queryID) {
 	
 	var $query = $("#query_" + queryID);
 	
-	initQueryValidationErrors($query);
+	initTextFieldQueryValidationErrors($query);
 	
 	if ($query.hasClass("enableAjaxPosting")) {
 		
@@ -122,7 +122,7 @@ function initTextFieldQuery(queryID) {
 	});
 }
 
-function initQueryValidationErrors($query) {
+function initTextFieldQueryValidationErrors($query) {
 
 // TODO re-enable when placement is correct
 //	$query.find(".input-error input").tooltip({
@@ -204,6 +204,6 @@ function setTextFieldValidationError(queryID, validationErrors) {
 		
 	});
 	
-	initQueryValidationErrors($query);
+	initTextFieldQueryValidationErrors($query);
 	
 }
