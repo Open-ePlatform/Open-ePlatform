@@ -17,7 +17,7 @@ $(document).ready(function() {
 		cursor: 'move',
 		update: function(event, ui) {
 			
-			if(validatePosition($(this), ui.item, ui.position)) {
+			if (validatePosition($(this), ui.item, ui.position)) {
 				updateSortOrder($(this));
 			}
 			
@@ -272,7 +272,7 @@ function highlightAffectedQueries($item) {
 	
 	var itemID = $item.attr("id");
 	
-	if (itemID.indexOf("step") == 0) {
+	if (itemID === undefined || itemID.indexOf("step") == 0) {
 		return;
 	}
 	
@@ -301,7 +301,7 @@ function validatePosition($sortable, $item, newItemPosition) {
 	
 	var itemID = $item.attr("id");
 	
-	if (itemID.indexOf("step") == 0) {
+	if (itemID === undefined || itemID.indexOf("step") == 0) {
 		return true;
 	}
 	
@@ -755,3 +755,74 @@ function refreshAutoManagerAssignmentRule(row, ruleID) {
 	row.find(".auto-manager-users > span").text(ruleUsers.length);
 	row.find(".auto-manager-groups > span").text(ruleGroups.length);	
 }
+
+function generateUUID() {
+	
+	var chars = '0123456789abcdef'.split('');
+	var uuid = [], rnd = Math.random;
+	var r;
+	
+	uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+	uuid[14] = '4';
+	
+	for (var i = 0; i < 36; i++) {
+		if (!uuid[i]) {
+			r = 0 | rnd()*16;
+			uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+		}
+	}
+	
+	return uuid.join('');
+}
+
+function addOverviewAttribute(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var uuid = generateUUID();
+	var container = $(button).closest(".overview-attributes-container");
+	var alternatives = container.find(".overview-attributes");
+	
+	if (alternatives.children().length < 6) {
+		
+		var template = container.find(".overview-attribute-template").children().first().clone();
+		
+		template.find("input").prop("disabled", false).each(function() {
+			
+			var input = $(this);
+			
+			input.attr("id", input.attr("id") + uuid);
+			
+			if (input.attr("name") == "overviewAttributeID") {
+				
+				input.val(uuid);
+				
+			} else {
+				
+				input.attr("name", input.attr("name") + uuid);
+			}
+		});
+		
+		template.find("input.sortorder").val(alternatives.children().length);
+		
+		alternatives.append(template);
+		
+	} else {
+		alert(container.find(".overview-attribute-template").data("maxtext"));
+	}
+}
+
+function deleteOverviewAttribute(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	button = $(button);
+	
+	if (confirm(button.data("confirm"))) {
+		
+		var alternatives = button.closest(".overview-attributes");
+		button.closest(".overview-attribute").remove();
+		updateSortOrder(alternatives);
+	}
+}
+

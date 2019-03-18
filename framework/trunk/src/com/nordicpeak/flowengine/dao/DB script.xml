@@ -2125,4 +2125,21 @@
 		</Query>
 	</Script>
 	
+	<Script version="115">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_overview_attributes` (
+					`flowID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(50) NOT NULL,
+					`value` VARCHAR(255) NOT NULL,
+					`sortIndex` SMALLINT(5) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowID`, `name`),
+					CONSTRAINT `flowengine_flow_overview_attributes_1` FOREIGN KEY (`flowID`) REFERENCES `flowengine_flows` (`flowID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

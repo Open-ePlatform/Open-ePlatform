@@ -165,7 +165,7 @@ import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
 public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, ServerStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 	
 	
-	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
 	
 	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, Flow.STATUSES_RELATION, FlowInstance.OWNERS_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION};
 	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.OWNERS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
@@ -270,8 +270,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	protected NotificationHandler notificationHandler;
 	
-	protected CopyOnWriteArrayList<ExtensionLinkProvider> overviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
-	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
+	protected CopyOnWriteArrayList<ExtensionLinkProvider> listOverviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
+	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> flowInstanceOverviewTabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
 	protected CopyOnWriteArrayList<AdminFlowInstanceProvider> adminFlowInstanceProviders = new CopyOnWriteArrayList<AdminFlowInstanceProvider>();
 	
 	protected ExternalMessageCRUD externalMessageCRUD;
@@ -311,8 +311,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		flowInstanceIndexer.close();
 		
-		overviewExtensionLinkProviders.clear();
-		tabExtensionProviders.clear();
+		listOverviewExtensionLinkProviders.clear();
+		flowInstanceOverviewTabExtensionProviders.clear();
 		adminFlowInstanceProviders.clear();
 		
 		super.unload();
@@ -355,7 +355,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (enableExternalID) {
 			
-			ArrayList<String> attributes = new ArrayList<String>(2);
+			ArrayList<String> attributes = new ArrayList<String>(1);
 			
 			if (enableExternalID) {
 				
@@ -440,7 +440,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			
 			XMLUtils.append(doc, overviewElement, validationErrors);
 			
-			ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
+			ExtensionLinkUtils.appendExtensionLinks(this.listOverviewExtensionLinkProviders, user, req, doc, overviewElement);
 			
 			return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 		}
@@ -519,7 +519,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			XMLUtils.appendNewElement(doc, overviewElement, "ShowExternalID");
 		}
 		
-		ExtensionLinkUtils.appendExtensionLinks(this.overviewExtensionLinkProviders, user, req, doc, overviewElement);
+		ExtensionLinkUtils.appendExtensionLinks(this.listOverviewExtensionLinkProviders, user, req, doc, overviewElement);
 		
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
@@ -696,7 +696,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 	
 	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
-		
+
 		Element showFlowInstanceElement = flowInstance.toXML(doc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
 		
@@ -715,7 +715,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 		List<ViewFragment> viewFragments = new ArrayList<ViewFragment>();
 		
-		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : tabExtensionProviders) {
+		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : flowInstanceOverviewTabExtensionProviders) {
 			
 			try {
 				ExtensionLink headerExtensionLink = tabExtensionProvider.getOverviewTabHeaderExtensionLink(flowInstance, req, uriParser, user);
@@ -1783,22 +1783,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	public boolean addOverviewExtensionLinkProvider(ExtensionLinkProvider e) {
 		
-		return overviewExtensionLinkProviders.add(e);
+		return listOverviewExtensionLinkProviders.add(e);
 	}
 	
 	public boolean removeOverviewExtensionLinkProvider(ExtensionLinkProvider e) {
 		
-		return overviewExtensionLinkProviders.remove(e);
+		return listOverviewExtensionLinkProviders.remove(e);
 	}
 	
 	public boolean addFlowInstanceOverviewExtensionProvider(FlowInstanceOverviewExtensionProvider provider) {
 		
-		return tabExtensionProviders.add(provider);
+		return flowInstanceOverviewTabExtensionProviders.add(provider);
 	}
 	
 	public boolean removeFlowInstanceOverviewExtensionProvider(FlowInstanceOverviewExtensionProvider provider) {
 		
-		return tabExtensionProviders.remove(provider);
+		return flowInstanceOverviewTabExtensionProviders.remove(provider);
 	}
 	
 	public boolean addFlowInstanceProvider(AdminFlowInstanceProvider flowInstanceProvider) {
@@ -1819,7 +1819,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	private FlowInstanceOverviewExtensionProvider getOverviewExtensionProvider(String providerID) {
 		
-		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : tabExtensionProviders) {
+		for (FlowInstanceOverviewExtensionProvider tabExtensionProvider : flowInstanceOverviewTabExtensionProviders) {
 			
 			if (providerID.equals(tabExtensionProvider.getOverviewExtensionProviderID())) {
 				
@@ -2227,4 +2227,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 		}
 	}
+
+	public int getHighPriorityThreshold() {
+		return highPriorityThreshold;
+	}
+
+	public int getMediumPriorityThreshold() {
+		return mediumPriorityThreshold;
+	}
+
 }

@@ -34,6 +34,7 @@ import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.templates.TemplateUtils;
@@ -47,6 +48,7 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.populators.annotated.RequestMapping;
+import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
@@ -58,6 +60,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.beans.FlowOverviewAttribute;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
@@ -150,9 +153,11 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	}
 
 	@Override
-	protected void appendUpdateFormData(Flow bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+	protected void appendUpdateFormData(Flow flow, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		appendAddUpdateFormData(doc, updateTypeElement, user);
+		
+		XMLUtils.append(doc, updateTypeElement, "OverviewAttributes", flow.getOverviewAttributes());
 	}
 
 	private void appendAddUpdateFormData(Document doc, Element typeElement, User user) {
@@ -326,6 +331,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		validateAliases(bean.getFlowFamily(), errors);
 		
 		validateTags(bean, errors);
+		
+		validateFlowOverviewAttributes(bean, req, errors);
 
 		if (!errors.isEmpty()) {
 
@@ -420,6 +427,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		validateTags(bean, errors);
 		
+		validateFlowOverviewAttributes(bean, req, errors);
+		
 		if (bean.isInternal() && bean.isEnabled() && bean.isPublished()) {
 
 			List<FlowAction> requiredFlowActions = callback.getFlowActions(false);
@@ -508,6 +517,41 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if(callback.requiresTags() && CollectionUtils.isEmpty(bean.getTags())){
 			
 			errors.add(new ValidationError("tags", ValidationErrorType.RequiredField));
+		}
+	}
+
+	private void validateFlowOverviewAttributes(Flow flow, HttpServletRequest req, List<ValidationError> validationErrors) {
+
+		String[] alternativeIDs = req.getParameterValues("overviewAttributeID");
+
+		if (alternativeIDs != null) {
+
+			List<FlowOverviewAttribute> overviewAttributes = new ArrayList<FlowOverviewAttribute>(alternativeIDs.length);
+
+			for (String alternativeID : alternativeIDs) {
+
+				String name = ValidationUtils.validateParameter("overviewAttributeName_" + alternativeID, req, true, 1, 50, validationErrors);
+				String value = ValidationUtils.validateParameter("overviewAttributeValue_" + alternativeID, req, true, 1, 255, validationErrors);
+				Integer sortIndex = ValidationUtils.validateParameter("overviewAttributeSortIndex_" + alternativeID, req, true, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
+
+				if (name == null || value == null || sortIndex == null) {
+					continue;
+				}
+
+				FlowOverviewAttribute alternative = new FlowOverviewAttribute();
+
+				alternative.setName(name);
+				alternative.setValue(value);
+				alternative.setSortIndex(sortIndex);
+
+				overviewAttributes.add(alternative);
+			}
+			
+			flow.setOverviewAttributes(overviewAttributes);
+			
+		} else {
+			
+			flow.setOverviewAttributes(null);
 		}
 	}
 

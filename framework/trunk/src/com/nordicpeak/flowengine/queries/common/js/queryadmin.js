@@ -158,8 +158,10 @@ function deleteAlternative(button, event) {
 	
 	if(confirm(Alternativesi18n.deleteConfirm + "?")) {
 		
-		let alternatives = $(button).closest(".alternatives");
-		$(button).closest(".alternative").remove();
+		var $button = $(button);
+		
+		var alternatives = $button.closest(".alternatives");
+		$button.closest(".alternative").remove();
 		updateSortOrder(alternatives);
 	}
 }

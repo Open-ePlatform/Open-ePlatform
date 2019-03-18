@@ -164,10 +164,8 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	display: inline-block;
 }
 
-#FlowInstanceAdminModule .description span.overview {
-	
+#FlowInstanceAdminModule .description div.overview {
 	padding-left: 160px;
-	display: inline-block;
 }
 
 #FlowInstanceAdminModule ul.manager-list img.group-picture {

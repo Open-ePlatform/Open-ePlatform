@@ -250,8 +250,8 @@ import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
 
+	//@formatter:off
 	private static final Field[] FLOW_FAMILY_CACHE_RELATIONS = {
-		
 			FlowFamily.ALIASES_RELATION,
 			FlowFamily.MANAGER_USERS_RELATION,
 			FlowFamily.MANAGER_GROUPS_RELATION,
@@ -272,6 +272,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			Flow.STEPS_RELATION,
 			Flow.STATUSES_RELATION,
 			Flow.TAGS_RELATION,
+			Flow.OVERVIEW_ATTRIBUTES_RELATION,
 			
 			Status.MANAGER_GROUPS_RELATION,
 			Status.MANAGER_USERS_RELATION,
@@ -296,6 +297,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
 			FlowType.ALLOWED_QUERIES_RELATION
 	};
+	//@formatter:on
 	
 	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION};
 			
@@ -306,8 +308,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
 
-	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
-	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
 
@@ -696,8 +698,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		this.flowFamilyCRUD = new FlowFamilyCRUD(flowFamilyDAOWrapper, this);
 
 		AdvancedAnnotatedDAOWrapper<Flow, Integer> flowDAOWrapper = daoFactory.getFlowDAO().getAdvancedWrapper("flowID", Integer.class);
-		flowDAOWrapper.getAddQuery().addRelations(Flow.FLOW_FAMILY_RELATION, Flow.STATUSES_RELATION, Status.DEFAULT_STATUS_MAPPINGS_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
-		flowDAOWrapper.getUpdateQuery().addRelations(Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
+		flowDAOWrapper.getAddQuery().addRelations(Flow.FLOW_FAMILY_RELATION, Flow.STATUSES_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.DEFAULT_STATUS_MAPPINGS_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, FlowFamily.ALIASES_RELATION);
+		flowDAOWrapper.getUpdateQuery().addRelations(Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, FlowFamily.ALIASES_RELATION);
 
 		this.flowCRUD = new FlowCRUD(flowDAOWrapper, this);
 
@@ -3465,6 +3467,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		xmlGeneratorDocument.addElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
 
 		Element flowNode = flow.toXML(xmlGeneratorDocument);
+		XMLUtils.append(doc, flowNode, "OverviewAttributes", flow.getOverviewAttributes());
+		
 		doc.appendChild(flowNode);
 
 		if (flow.getIcon() != null) {
@@ -5742,6 +5746,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public FlowFamilyCRUD getFlowFamilyCRUD() {
 		return flowFamilyCRUD;
+	}
+
+	public FlowCache getFlowCache() {
+		return flowCache;
 	}
 
 }

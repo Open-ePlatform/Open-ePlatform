@@ -62,7 +62,6 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 @XMLElement
 public class Flow extends GeneratedElementable implements ImmutableFlow, XMLParserPopulateable, Named, Icon{
 	
-	
 	private static final long serialVersionUID = -1533312692687401406L;
 	
 	public static final Field DEFAULT_FLOW_STATE_MAPPINGS_RELATION = ReflectionUtils.getField(Flow.class, "defaultFlowStateMappings");
@@ -75,6 +74,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public static final Field CHECKS_RELATION = ReflectionUtils.getField(Flow.class, "checks");
 	public static final Field FLOW_INSTANCES_RELATION = ReflectionUtils.getField(Flow.class, "flowInstances");
 	public static final Field FLOW_FORMS_RELATION = ReflectionUtils.getField(Flow.class, "flowForms");
+	public static final Field OVERVIEW_ATTRIBUTES_RELATION = ReflectionUtils.getField(Flow.class, "overviewAttributes");
 	
 	public static final Field ICON_BLOB_FIELD = ReflectionUtils.getField(Flow.class, "icon");
 	public static final Field DESCRIPTION_SHORT_FIELD = ReflectionUtils.getField(Flow.class, "shortDescription");
@@ -332,6 +332,10 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<FlowForm> flowForms;
+	
+	@DAOManaged
+	@OneToMany
+	private List<FlowOverviewAttribute> overviewAttributes;
 	
 	@XMLElement
 	private Integer flowInstanceCount;
@@ -933,6 +937,8 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 			this.flowForms = XMLPopulationUtils.populateBeans(xmlParser, "FlowForms/FlowForm", FlowForm.class, errors);
 		}
 		
+		overviewAttributes = XMLPopulationUtils.populateBeans(xmlParser, "OverviewAttributes/FlowOverviewAttribute", FlowOverviewAttribute.class, errors);
+		
 		this.externalLink = XMLValidationUtils.validateParameter("externalLink", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
 		
 		//Only populated if no externalLink is set
@@ -1153,6 +1159,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	
 	public void setSkipPosterSigning(boolean skipPosterSigningInMultiSigning) {
 		this.skipPosterSigning = skipPosterSigningInMultiSigning;
+	}
+	
+	public List<FlowOverviewAttribute> getOverviewAttributes() {
+		return overviewAttributes;
+	}
+
+	public void setOverviewAttributes(List<FlowOverviewAttribute> overviewAttributes) {
+		this.overviewAttributes = overviewAttributes;
 	}
 	
 }

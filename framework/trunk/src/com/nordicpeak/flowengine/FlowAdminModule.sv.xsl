@@ -101,6 +101,18 @@
 	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk i "Krav för e-tjänsten" (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.Name">Länknamn</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.popularity.boost">Extra antal ärenden vid beräkning av popularitet</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.startButtonText">Anpassad text på startknapp (max 24 tecken)</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes">Extra attribut i ärendeöversikten</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Description">För att underlätta handläggning så finns möjligheten att visa upp till 6st rader med attribut värden direkt i ärendeöversikten. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.name">Namn</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.value">Attribut</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Add">Lägg till attributrad</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Add.MaxReached">Du får högst ha 6st rader</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Move">Flytta attribut</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Delete">Ta bort attributet från ärendeöversikten</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.DeleteConfirm">Är du säker på att du inte längre vill visa attributet på ärendeöversikten?</xsl:variable>
+	
 	<xsl:variable name="i18n.contact.title">Kontaktuppgifter - Frågor om e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.contact.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.contact.email">E-post</xsl:variable>
@@ -366,7 +378,7 @@
 	<xsl:variable name="i18n.requireSigning">Kräv signering</xsl:variable>
 	<xsl:variable name="i18n.Flow.allowForeignIDs">Tillåt användare inloggade med eIDAS</xsl:variable>
 	<xsl:variable name="i18n.Flow.useSequentialSigning">Sekventiell signering</xsl:variable>
-	<xsl:variable name="i18n.Flow.skipPosterSigning">Kräv inte signering av första parten</xsl:variable>
+	<xsl:variable name="i18n.Flow.skipPosterSigning">Hoppa över signering för första parten</xsl:variable>
 	<xsl:variable name="i18n.Flow.skipPosterSigning.description">(bör endast användas vid flerpartsignering)</xsl:variable>
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
@@ -471,13 +483,12 @@
 	<xsl:variable name="i18n.Events.Description">Tabellen nedan visar de senaste ändringarna för samtliga versioner av denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.Events.Full.Description">Tabellen nedan visar alla ändringarna för samtliga versioner av denna e-tjänst.</xsl:variable>
 	<xsl:variable name="i18n.Events.message">Händelse</xsl:variable>
-	<xsl:variable name="i18n.Event.message">Notering</xsl:variable>
 	<xsl:variable name="i18n.Events.poster">Användare</xsl:variable>
 	<xsl:variable name="i18n.Events.added">Tidpunkt</xsl:variable>
 	<xsl:variable name="i18n.Events.FlowFamilyHasNoEvents">Inga ändringar hittades.</xsl:variable>
 	<xsl:variable name="i18n.Events.ShowAll">Visa alla ändringar</xsl:variable>
-	<xsl:variable name="i18n.Events.Add">Lägg till notering</xsl:variable>
-	<xsl:variable name="i18n.Events.Add.title">Lägg till notering i ändringslogg för</xsl:variable>
+	<xsl:variable name="i18n.Events.Add">Lägg till händelse</xsl:variable>
+	<xsl:variable name="i18n.Events.Add.title">Lägg till händelse i ändringslogg för</xsl:variable>
 	<xsl:variable name="i18n.Events.Add.submit">Lägg till</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
@@ -503,10 +514,6 @@
 	<xsl:variable name="i18n.noAccessFilter">Samtliga användare har åtkomst till e-tjänsterna i denna kategori.</xsl:variable>
 
 	<xsl:variable name="i18n.hideManagerDetails">Dölj uppgifter om handläggare</xsl:variable>
-	
-	<xsl:variable name="i18n.popularity.boost">Extra antal ärenden vid beräkning av popularitet</xsl:variable>
-	
-	<xsl:variable name="i18n.startButtonText">Anpassad text på startknapp (max 24 tecken)</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowType.Icon">Ikon</xsl:variable>
 	
@@ -585,5 +592,7 @@
 	<xsl:variable name="i18n.managerDescriptionTemplate">Beskrivning i handläggargränssnittet</xsl:variable>
 	
 	<xsl:variable name="i18n.ExtensionErrors">Ett validerings fel har uppstått i ett tillägg, kolla längre ner efter vad som är fel.</xsl:variable>
+	
+	<xsl:variable name="i18n.Row">Rad</xsl:variable>
 	
 </xsl:stylesheet>

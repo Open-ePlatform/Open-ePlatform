@@ -14,7 +14,7 @@
 		/jquery/jquery-ui.js
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
-		/ckeditor/init.js			
+		/ckeditor/init.js
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js
+		/js/flowadminmodule.js?v=1
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -1872,7 +1872,7 @@
 				
 				<xsl:text>)</xsl:text>
 				
-			</span>			
+			</span>
 			
 			<span class="bigmarginleft">
 				<xsl:if test="$disableStructureManipulation = false()">
@@ -1883,16 +1883,16 @@
 					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
 						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
-				</xsl:if>			
+				</xsl:if>
 			</span>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
 				<ol>
 					<xsl:apply-templates select="EvaluatorDescriptors/EvaluatorDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-					</xsl:apply-templates>				
+					</xsl:apply-templates>
 				</ol>
-			</xsl:if>					
+			</xsl:if>
 		</li>
 	
 	</xsl:template>	
@@ -1926,11 +1926,11 @@
 					
 						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
 							<img src="{$imgPath}/delete.png" alt="" />
-						</a>					
+						</a>
 					
-					</xsl:otherwise>					
+					</xsl:otherwise>
 				</xsl:choose>
-			</td>			
+			</td>
 		</tr>
 	
 	</xsl:template>
@@ -2787,6 +2787,64 @@
 			</div>
 		</div>
 		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label class="floatleft full">
+				<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes" />
+			</label>
+			
+			<div class="floatleft full">
+				<p>
+					<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.Description"/>
+				</p>
+			</div>
+			
+			<div class="overview-attributes-container full floatleft bigmarginbottom">
+			
+				<div class="full floatleft marginleft">
+					<span class="display-inline-block paddingright" style="padding-left: 23px; width: calc(50% - 24px);">
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.name"/>
+					</span>
+					<span class="display-inline-block">
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.value"/>
+					</span>
+				</div>
+			
+				<div class="overview-attributes full floatleft marginleft sortable">
+					<xsl:choose>
+						<xsl:when test="requestparameters">
+							<xsl:apply-templates select="requestparameters/parameter[name = 'overviewAttributeID']" mode="overviewAttribute" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates select="OverviewAttributes/FlowOverviewAttribute" >
+							</xsl:apply-templates>
+						</xsl:otherwise>
+					</xsl:choose>
+				</div>
+				
+				<div class="overview-attribute-template" style="display: none;" data-maxtext="{$i18n.FlowFamily.OverviewAttributes.Add.MaxReached}">
+					<xsl:call-template name="createOverviewAttribute">
+						<xsl:with-param name="id" select="''" />
+						<xsl:with-param name="name" select="''" />
+						<xsl:with-param name="value" select="''" />
+						<xsl:with-param name="sortIndex" select="''" />
+						<xsl:with-param name="disabled" select="'true'" />
+					</xsl:call-template>
+				</div>
+				
+				<div class="floatright margintop">
+					<a href="#" onclick="addOverviewAttribute(this, event)" title="{$i18n.FlowFamily.OverviewAttributes.Add}">
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.Add"/>
+					</a>
+					<a href="#" onclick="addOverviewAttribute(this, event)" title="{$i18n.FlowFamily.OverviewAttributes.Add}">
+						<img class="vertical-align-bottom marginleft" src="{$imgPath}/add.png"/>
+					</a>
+				</div>
+			
+			</div>
+			
+		</div>
+		
 		<h2 class="floatleft bigmargintop">
 			<xsl:value-of select="$i18n.FlowFamily.SharedSettings"/>
 		</h2>
@@ -2926,7 +2984,7 @@
 		<div class="floatleft full bigmarginbottom">
 			
 			<label for="tags" class="floatleft full">
-				<xsl:value-of select="$i18n.popularity.boost" />
+				<xsl:value-of select="$i18n.FlowFamily.popularity.boost" />
 			</label>
 			
 			<div class="floatleft full">
@@ -2944,7 +3002,7 @@
 		<div class="floatleft full bigmarginbottom">
 			
 			<label for="tags" class="floatleft full">
-				<xsl:value-of select="$i18n.startButtonText" />
+				<xsl:value-of select="$i18n.FlowFamily.startButtonText" />
 			</label>
 			
 			<div class="floatleft full">
@@ -3069,6 +3127,83 @@
 		
 	</xsl:template>
 	
+	<xsl:template name="createOverviewAttribute">
+		
+		<xsl:param name="id" />
+		<xsl:param name="name" />
+		<xsl:param name="value" />
+		<xsl:param name="sortIndex" />
+		<xsl:param name="disabled" select="null" />
+		
+		<div class="overview-attribute full floatleft margintop marginbottom">
+			<img class="vertical-align-middle marginright cursor-move" src="{$imgPath}/move.png" title="{$i18n.FlowFamily.OverviewAttributes.Move}"/>
+			
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('overviewAttributeID_', $id)"/>
+				<xsl:with-param name="name" select="'overviewAttributeID'"/>
+				<xsl:with-param name="value" select="$id"/>
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('overviewAttributeSortIndex_', $id)" />
+				<xsl:with-param name="name" select="concat('overviewAttributeSortIndex_', $id)" />
+				<xsl:with-param name="value" select="$sortIndex" />
+				<xsl:with-param name="class" select="'sortorder'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createTextField">
+				<xsl:with-param name="id" select="concat('overviewAttributeName_', $id)"/>
+				<xsl:with-param name="name" select="concat('overviewAttributeName_', $id)"/>
+				<xsl:with-param name="value" select="$name"/>
+				<xsl:with-param name="class" select="'marginright'"/>
+				<xsl:with-param name="width" select="'calc(50% - 24px)'"/>
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			<xsl:call-template name="createTextField">
+				<xsl:with-param name="id" select="concat('overviewAttributeValue_', $id)"/>
+				<xsl:with-param name="name" select="concat('overviewAttributeValue_', $id)"/>
+				<xsl:with-param name="value" select="$value"/>
+				<xsl:with-param name="width" select="'calc(50% - 24px)'"/>
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+				<xsl:with-param name="disabled" select="$disabled"/>
+			</xsl:call-template>
+			
+			<a href="#" onclick="deleteOverviewAttribute(this, event)" title="{$i18n.FlowFamily.OverviewAttributes.Delete}" data-confirm="{$i18n.FlowFamily.OverviewAttributes.DeleteConfirm}">
+				<img class="vertical-align-middle marginleft" src="{$imgPath}/delete.png"/>
+			</a>
+			
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowOverviewAttribute">
+	
+		<xsl:call-template name="createOverviewAttribute">
+			<xsl:with-param name="id" select="generate-id(.)" />
+			<xsl:with-param name="name" select="name" />
+			<xsl:with-param name="value" select="value" />
+			<xsl:with-param name="sortIndex" select="sortIndex" />
+		</xsl:call-template>
+			
+	</xsl:template>
+	
+	<xsl:template match="parameter" mode="overviewAttribute">
+	
+		<xsl:for-each select="value">
+			<xsl:variable name="id" select="." />
+			
+			<xsl:call-template name="createOverviewAttribute">
+				<xsl:with-param name="id" select="$id" />
+				<xsl:with-param name="name" select="../../parameter[name = concat('overviewAttributeName_', $id)]/value" />
+				<xsl:with-param name="value" select="../../parameter[name = concat('overviewAttributeValue_', $id)]/value" />
+				<xsl:with-param name="sortIndex" select="../../parameter[name = concat('overviewAttributeSortIndex_', $id)]/value" />
+			</xsl:call-template>
+		</xsl:for-each>
+		
+	</xsl:template>
+	
 	<xsl:template match="AddQueryDescriptor">
 	
 		<h1><xsl:value-of select="$i18n.AddQueryDescriptor.title"/></h1>
@@ -3088,7 +3223,7 @@
 						<xsl:with-param name="name" select="'stepID'"/>
 						<xsl:with-param name="valueElementName" select="'stepID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="Steps/Step" />      
+						<xsl:with-param name="element" select="Steps/Step" />
 					</xsl:call-template>
 				</div>
 			</div>	
@@ -3104,10 +3239,10 @@
 						<xsl:with-param name="name" select="'queryTypeID'"/>
 						<xsl:with-param name="valueElementName" select="'queryTypeID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="QueryTypes/QueryTypeDescriptor" />      
+						<xsl:with-param name="element" select="QueryTypes/QueryTypeDescriptor" />
 					</xsl:call-template>
 				</div>
-			</div>		
+			</div>
 					
 			<div class="floatleft full bigmarginbottom">
 				
@@ -4023,11 +4158,11 @@
 							</tr>
 						</thead>
 						<tbody>
-						
+							
 							<xsl:apply-templates select="StandardStatuses/StandardStatus" mode="list"/>
-									
+							
 						</tbody>
-					</table>				
+					</table>
 				
 				</xsl:when>
 				<xsl:otherwise>
@@ -4061,11 +4196,11 @@
 		
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirm('{$i18n.deleteStandardStatus.confirm}: {name}?');" title="{$i18n.deleteStandardStatus.link.title}: {name}">
 					<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
-				</a>							
-			</td>			
+				</a>
+			</td>
 		</tr>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="AddStandardStatus">
 	
@@ -4105,7 +4240,7 @@
 		
 		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template name="standardStatusForm">
 	
@@ -4119,10 +4254,10 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'name'"/>
 					<xsl:with-param name="name" select="'name'"/>
-					<xsl:with-param name="element" select="StandardStatus" />          
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 			</div>
-		</div>	
+		</div>
 		
 		<div class="floatleft full bigmarginbottom">
 			
@@ -4134,7 +4269,7 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'description'"/>
 					<xsl:with-param name="name" select="'description'"/>
-					<xsl:with-param name="element" select="Status" />          
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4151,7 +4286,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'managingTime'"/>
 					<xsl:with-param name="name" select="'managingTime'"/>
-					<xsl:with-param name="element" select="Status" />          
+					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4164,14 +4299,14 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserMutable'" />
 					<xsl:with-param name="id" select="'isUserMutable'" />
-					<xsl:with-param name="element" select="StandardStatus" />  					     
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 				
 				<label for="isUserMutable">
 					<xsl:value-of select="$i18n.isUserMutable" />
-				</label>				
+				</label>
 			</div>
-		</div>		
+		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop">
 		
@@ -4179,12 +4314,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserDeletable'" />
 					<xsl:with-param name="id" select="'isUserDeletable'" />
-					<xsl:with-param name="element" select="StandardStatus" />  					     
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 				
 				<label for="isUserDeletable">
 					<xsl:value-of select="$i18n.isUserDeletable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -4194,12 +4329,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminMutable'" />
 					<xsl:with-param name="id" select="'isAdminMutable'" />
-					<xsl:with-param name="element" select="StandardStatus" />  					     
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 				
 				<label for="isAdminMutable">
 					<xsl:value-of select="$i18n.isAdminMutable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 		
@@ -4209,12 +4344,12 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminDeletable'" />
 					<xsl:with-param name="id" select="'isAdminDeletable'" />
-					<xsl:with-param name="element" select="StandardStatus" />  					     
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 				
 				<label for="isAdminDeletable">
 					<xsl:value-of select="$i18n.isAdminDeletable" />
-				</label>				
+				</label>
 			</div>
 		</div>
 	
@@ -4228,15 +4363,15 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'new'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'NEW'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'NEW'"/>
 				</xsl:call-template>
 				
 				<label for="new">
 					<xsl:value-of select="$i18n.contentType.NEW" />
-				</label>					
+				</label>
 			</div>
-		</div>	
+		</div>
 	
 		<div class="floatleft full bigmarginbottom">
 						
@@ -4244,13 +4379,13 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_multisign'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_multisign">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_MULTISIGN" />
-				</label>					
+				</label>
 			</div>
 		</div>
 		
@@ -4260,13 +4395,13 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_payment'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_payment">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_PAYMENT" />
-				</label>					
+				</label>
 			</div>
 		</div>
 	
@@ -4276,15 +4411,15 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'submitted'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'SUBMITTED'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'SUBMITTED'"/>
 				</xsl:call-template>
 				
 				<label for="submitted">
 					<xsl:value-of select="$i18n.contentType.SUBMITTED" />
-				</label>					
+				</label>
 			</div>
-		</div>	
+		</div>
 	
 		<div class="floatleft full bigmarginbottom">
 						
@@ -4292,15 +4427,15 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'in_progress'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'IN_PROGRESS'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'IN_PROGRESS'"/>
 				</xsl:call-template>
 				
 				<label for="in_progress">
 					<xsl:value-of select="$i18n.contentType.IN_PROGRESS" />
-				</label>					
+				</label>
 			</div>
-		</div>	
+		</div>
 	
 		<div class="floatleft full bigmarginbottom">
 						
@@ -4308,13 +4443,13 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_completion'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_completion">
 					<xsl:value-of select="$i18n.contentType.WAITING_FOR_COMPLETION" />
-				</label>					
+				</label>
 			</div>
 		</div>
 	
@@ -4324,15 +4459,15 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'archived'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />  
-					<xsl:with-param name="value" select="'ARCHIVED'"/>        
+					<xsl:with-param name="element" select="StandardStatus" />
+					<xsl:with-param name="value" select="'ARCHIVED'"/>
 				</xsl:call-template>
 				
 				<label for="archived">
 					<xsl:value-of select="$i18n.contentType.ARCHIVED" />
-				</label>					
+				</label>
 			</div>
-		</div>	
+		</div>
 	
 		<xsl:if test="FlowActions">
 		
@@ -4344,7 +4479,7 @@
 		
 		</xsl:if>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="FlowAction" mode="standardStatusForm">
 	
@@ -4352,7 +4487,7 @@
 		
 			<xsl:variable name="id">
 				<xsl:value-of select="'action_'"/>
-				<xsl:value-of select="position()"/>			
+				<xsl:value-of select="position()"/>
 			</xsl:variable>
 		
 			<div class="floatleft">
@@ -4366,9 +4501,9 @@
 				
 				<label for="{$id}">
 					<xsl:value-of select="name" />
-				</label>				
+				</label>
 			</div>
-		</div>		
+		</div>
 	
 	</xsl:template>
 	
@@ -4686,7 +4821,7 @@
 				<xsl:text>)</xsl:text>
 			</xsl:if>
 			
-		</div>	
+		</div>
 		
 	</xsl:template>
 	
@@ -5447,7 +5582,7 @@
 		</p>
 		
 		<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
-			<thead>	
+			<thead>
 				<tr>
 					<th><xsl:value-of select="$i18n.name" /></th>
 					
@@ -5466,16 +5601,16 @@
 							<td colspan="3">
 								<xsl:value-of select="$i18n.noFlowTypesFound" />
 							</td>
-						</tr>					
+						</tr>
 					</xsl:when>
 					<xsl:otherwise>
 						
 						<xsl:apply-templates select="FlowTypes/FlowType" mode="list-import-target"/>
 						
 					</xsl:otherwise>
-				</xsl:choose>			
+				</xsl:choose>
 			</tbody>
-		</table>		
+		</table>
 			
 	</xsl:template>
 
@@ -6936,7 +7071,38 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'managerDescriptionTemplate'">
 						<xsl:value-of select="$i18n.managerDescriptionTemplate"/>
-					</xsl:when>										
+					</xsl:when>
+					<xsl:when test="fieldName = 'iconColor'">
+						<xsl:value-of select="$i18n.FlowType.iconColor"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'loginQuestionText'">
+						<xsl:value-of select="$i18n.Flow.showLoginQuestion"/>
+					</xsl:when>
+					
+					<xsl:when test="fieldName = 'event-message'">
+						<xsl:value-of select="$i18n.Events.message"/>
+					</xsl:when>
+					
+					<!-- FlowFamily -->
+					<xsl:when test="fieldName = 'loginHelpLinkName'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
+						<xsl:text>: </xsl:text>
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'loginHelpLinkURL'">
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
+						<xsl:text>: </xsl:text>
+						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'alias'">
+						<xsl:value-of select="$i18n.aliases"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'popularityBoost'">
+						<xsl:value-of select="$i18n.FlowFamily.popularity.boost"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'startButtonText'">
+						<xsl:value-of select="$i18n.FlowFamily.startButtonText"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'ownerName'">
 						<xsl:value-of select="$i18n.owner.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.owner.name"/>
 					</xsl:when>
@@ -6952,31 +7118,34 @@
 					<xsl:when test="fieldName = 'contactPhone'">
 						<xsl:value-of select="$i18n.contact.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.contact.phone"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'alias'">
-						<xsl:value-of select="$i18n.aliases"/>
+					<xsl:when test="starts-with(fieldName, 'overviewAttributeName_')">
+						<xsl:variable name="id" select="substring(fieldName, 23)" />
+						<xsl:variable name="sortIndex" select="../../requestparameters/parameter[name = concat('overviewAttributeSortIndex_', $id)]/value" />
+						
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + $sortIndex" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.name" />
+						
 					</xsl:when>
-					<xsl:when test="fieldName = 'popularityBoost'">
-						<xsl:value-of select="$i18n.popularity.boost"/>
+					<xsl:when test="starts-with(fieldName, 'overviewAttributeValue_')">
+						<xsl:variable name="id" select="substring(fieldName, 24)" />
+						<xsl:variable name="sortIndex" select="../../requestparameters/parameter[name = concat('overviewAttributeSortIndex_', $id)]/value" />
+						
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + $sortIndex" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.FlowFamily.OverviewAttributes.value" />
+						
 					</xsl:when>
-					<xsl:when test="fieldName = 'iconColor'">
-						<xsl:value-of select="$i18n.FlowType.iconColor"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'showLoginQuestion'">
-						<xsl:value-of select="$i18n.Flow.showLoginQuestion"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'loginHelpLinkName'">
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
-						<xsl:text>: </xsl:text>
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.Name"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'loginHelpLinkURL'">
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp"/>
-						<xsl:text>: </xsl:text>
-						<xsl:value-of select="$i18n.FlowFamily.LoginHelp.URL"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'event-message'">
-						<xsl:value-of select="$i18n.Event.message"/>
-					</xsl:when>
+					
+					<!-- Managers -->
 					<xsl:when test="starts-with(fieldName, 'manager-validFromDate')">
 						<xsl:variable name="id" select="substring(fieldName, 22)" />
 						
@@ -6994,7 +7163,7 @@
 						
 					</xsl:when>
 					
-					<!-- Auto manager assignment-->
+					<!-- Auto manager assignment -->
 					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-attribute-')">
 						<xsl:variable name="id" select="substring(fieldName, 29)" />
 						
