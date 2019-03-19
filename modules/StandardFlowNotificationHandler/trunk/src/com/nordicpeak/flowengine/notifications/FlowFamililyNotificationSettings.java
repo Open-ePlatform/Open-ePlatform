@@ -252,6 +252,11 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean flowInstanceArchivedGlobalEmailAttachPDF;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean sendExternalMessageReceivedGlobalEmail;
 	
 	@DAOManaged
@@ -602,8 +607,16 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.flowInstanceArchivedGlobalEmailAddresses = flowInstanceArchivedGlobalEmailAddresses;
 	}
 
+	public boolean isFlowInstanceArchivedGlobalEmailAttachPDF() {
+		return flowInstanceArchivedGlobalEmailAttachPDF;
+	}
+
+	public void setFlowInstanceArchivedGlobalEmailAttachPDF(boolean flowInstanceArchivedGlobalEmailAttachPDF) {
+		this.flowInstanceArchivedGlobalEmailAttachPDF = flowInstanceArchivedGlobalEmailAttachPDF;
+	}
+
 	public List<String> getExternalMessageReceivedGlobalEmailAddresses() {
-		
+
 		return externalMessageReceivedGlobalEmailAddresses;
 	}
 	
