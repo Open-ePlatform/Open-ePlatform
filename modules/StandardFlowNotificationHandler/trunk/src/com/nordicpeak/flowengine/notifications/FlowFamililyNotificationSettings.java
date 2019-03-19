@@ -186,12 +186,12 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	private boolean sendFlowInstanceSubmittedGlobalEmail;
 
 	@DAOManaged
-	@WebPopulate
+	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String flowInstanceSubmittedGlobalEmailSubject;
 
 	@DAOManaged
-	@WebPopulate
+	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String flowInstanceSubmittedGlobalEmailMessage;
 
@@ -220,6 +220,34 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@PopulateOnlyIfSet(paramNames = "flowInstanceSubmittedGlobalEmailAttachPDF")
 	@XMLElement
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendFlowInstanceArchivedGlobalEmail;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceArchivedGlobalEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String flowInstanceArchivedGlobalEmailMessage;
+
+	@DAOManaged
+	@Templated
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flow_familiy_notification_setting_archivedglobal", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@RequiredIfSet(paramNames = "sendFlowInstanceArchivedGlobalEmail")
+	@SplitOnLineBreak
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
+	@XMLElement(fixCase = true, childName = "address")
+	private List<String> flowInstanceArchivedGlobalEmailAddresses;
 	
 	@DAOManaged
 	@WebPopulate
@@ -541,7 +569,39 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		this.flowInstanceSubmittedGlobalEmailAddresses = flowInstanceSubmittedGlobalEmailAddresses;
 	}
-	
+
+	public boolean isSendFlowInstanceArchivedGlobalEmail() {
+		return sendFlowInstanceArchivedGlobalEmail;
+	}
+
+	public void setSendFlowInstanceArchivedGlobalEmail(boolean sendFlowInstanceArchivedGlobalEmail) {
+		this.sendFlowInstanceArchivedGlobalEmail = sendFlowInstanceArchivedGlobalEmail;
+	}
+
+	public String getFlowInstanceArchivedGlobalEmailSubject() {
+		return flowInstanceArchivedGlobalEmailSubject;
+	}
+
+	public void setFlowInstanceArchivedGlobalEmailSubject(String flowInstanceArchivedGlobalEmailSubject) {
+		this.flowInstanceArchivedGlobalEmailSubject = flowInstanceArchivedGlobalEmailSubject;
+	}
+
+	public String getFlowInstanceArchivedGlobalEmailMessage() {
+		return flowInstanceArchivedGlobalEmailMessage;
+	}
+
+	public void setFlowInstanceArchivedGlobalEmailMessage(String flowInstanceArchivedGlobalEmailMessage) {
+		this.flowInstanceArchivedGlobalEmailMessage = flowInstanceArchivedGlobalEmailMessage;
+	}
+
+	public List<String> getFlowInstanceArchivedGlobalEmailAddresses() {
+		return flowInstanceArchivedGlobalEmailAddresses;
+	}
+
+	public void setFlowInstanceArchivedGlobalEmailAddresses(List<String> flowInstanceArchivedGlobalEmailAddresses) {
+		this.flowInstanceArchivedGlobalEmailAddresses = flowInstanceArchivedGlobalEmailAddresses;
+	}
+
 	public List<String> getExternalMessageReceivedGlobalEmailAddresses() {
 		
 		return externalMessageReceivedGlobalEmailAddresses;

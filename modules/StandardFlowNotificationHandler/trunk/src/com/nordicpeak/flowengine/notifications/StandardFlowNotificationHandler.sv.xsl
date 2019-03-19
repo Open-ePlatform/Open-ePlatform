@@ -211,7 +211,22 @@
 			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
 		&lt;/p&gt;
 	
-	</xsl:variable>	
+	</xsl:variable>
+	
+	<xsl:variable name="java.flowInstanceArchivedGlobalEmailSubject">Arkiverat ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceArchivedGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett ärende har arkiverats, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
 	
 	<xsl:variable name="java.externalMessageReceivedGlobalEmailSubject">Nytt meddelande kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.externalMessageReceivedGlobalEmailMessage">
@@ -307,14 +322,19 @@
 	<xsl:variable name="i18n.FLowInstanceAttachedPDFTextTag">Text som beskriver bifogad PDF-ansökan</xsl:variable>
 	
 	<xsl:variable name="i18n.GlobalNotifications">Generella notifikationer</xsl:variable>
+	
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedGlobalEmail">E-post när nya ärenden skickas in</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid inskickat ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAddresses">E-postadresser för notifiering om nya ärenden (en adress per rad)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachXML">Bifoga ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately">Bifoga bilagor separat</xsl:variable>
 	
-	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid inskickat ärende</xsl:variable>
-	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid inskickat ärende</xsl:variable>
+	<xsl:variable name="i18n.SendFlowInstanceArchivedGlobalEmail">E-post när ärenden arkiveras</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAddresses">E-postadresser för notifiering om arkiverade ärenden (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid arkiverat ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid arkiverat ärende</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	

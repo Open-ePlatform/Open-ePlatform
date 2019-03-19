@@ -456,6 +456,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private Integer flowInstanceSubmittedGlobalEmailPDFSizeLimit;
 
 	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are archived", description = "Controls if email messages are the sent to specified address when new flow instances are archived.")
+	private boolean sendFlowInstanceArchivedGlobalEmail;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow instance archived email subject (global)", description = "The subject of emails sent when a new flow instance is archived", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceArchivedGlobalEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow instance archived email message (global)", description = "The message of emails sent when a new flow instance is archived", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceArchivedGlobalEmailMessage;
+
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Flow instance archived email address (global)", description = "Global address to be notified when new flow instances are archived", formatValidator = EmailPopulator.class)
+	private List<String> flowInstanceArchivedGlobalEmailAddresses;
+	
+	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF filename (without file extension)", description = "Filename of the attached PDF (without file extension). Available tags: $flow.name, $flow.version, $flowInstance.flowInstanceID, $poster.*", required = true)
 	protected String pdfFilename = "$flow.name, $flowInstance.flowInstanceID";
 
@@ -948,6 +966,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailAddresses(flowInstanceSubmittedGlobalEmailAddress);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailMessage(flowInstanceSubmittedGlobalEmailMessage);
+		
+		notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArchivedGlobalEmail);
 		
 		notificationSettings.setExternalMessageReceivedGlobalEmailAddresses(externalMessageReceivedGlobalEmailAddresses);;
 		notificationSettings.setManagerExpiredGlobalEmailAddresses(managerExpiredGlobalEmailAddresses);
@@ -1589,6 +1609,19 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			sendManagerEmails(flowInstance, getPosterContact(flowInstance), statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
 		}
+		
+		if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
+			
+			if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
+				
+				Contact posterContact = getPosterContact(flowInstance);
+				
+				for (String email : notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses()) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), null, false);
+				}
+			}
+		}
 	}
 
 	@EventListener(channel = FlowInstance.class)
@@ -1677,7 +1710,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				
 				contact = FlowInstanceUtils.getContactForUser(event.getUser());
 				
-			} else { 
+			} else {
 				
 				// They cancelling user was not logged in, this code is most likely not used at the curren time
 				contact = new Contact();

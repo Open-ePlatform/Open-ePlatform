@@ -138,6 +138,12 @@
 					</li>
 				</xsl:if>
 				
+				<xsl:if test="NotificationSettings/sendFlowInstanceArchivedGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceArchivedGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
 				<xsl:if test="NotificationSettings/sendExternalMessageReceivedGlobalEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendExternalMessageReceivedGlobalEmail"/>
@@ -168,20 +174,23 @@
 			
 			function toggleUserStatus(){
 				
-				$("#user-status-subject").toggleClass("hidden");
-				$("#user-status-message").toggleClass("hidden");
+				$("#user-status-subject, #user-status-message").toggleClass("hidden");
 			}
 		
 			function toggleUserExternalMessage(){
 				
-				$("#user-message-subject").toggleClass("hidden");
-				$("#user-message-message").toggleClass("hidden");
+				$("#user-message-subject, #user-message-message").toggleClass("hidden");
 			}
 		
 			function toggleSubmitEmail(){
 				
-				$("#submit-email-subject").toggleClass("hidden");
-				$("#submit-email-message").toggleClass("hidden");
+				$("#submit-email-subject, #submit-email-message").toggleClass("hidden");
+			}
+			
+			function checkAttachPDF(){
+				
+				var $tagRow = $("#submit-email-message").find("table tr.attached-pdf-tag");
+				$tagRow.toggle($("#flowInstanceSubmittedUserEmailAttachPDF").is(":checked"));
 			}
 			
 			function toggleSubmitSMS(){
@@ -191,40 +200,29 @@
 			
 			function toggleArchived(){
 				
-				$("#archived-subject").toggleClass("hidden");
-				$("#archived-message").toggleClass("hidden");
+				$("#archived-subject, #archived-message").toggleClass("hidden");
 			}
 			
 			function toggleManagerExternalMessage(){
 				
-				$("#manager-message-subject").toggleClass("hidden");
-				$("#manager-message-message").toggleClass("hidden");
+				$("#manager-message-subject, #manager-message-message").toggleClass("hidden");
 			}
 			
 			function toggleManagerAssignMessage(){
 				
-				$("#manager-assign-subject").toggleClass("hidden");
-				$("#manager-assign-message").toggleClass("hidden");
+				$("#manager-assign-subject, #manager-assign-message").toggleClass("hidden");
 			}
 			
-			function toggleGlobal(){
+			function toggleGlobalSubmit(){
 				
-				$("#global-subject").toggleClass("hidden");
-				$("#global-message").toggleClass("hidden");
+				$("#global-submit-subject, #global-submit-message").toggleClass("hidden");
 			}
 			
-			function checkAttachPDF(){
+			function toggleGlobalArchived(){
 				
-				var $tagRow = $("#submit-message").find("table tr.attached-pdf-tag");
-			
-				if($("#flowInstanceSubmittedUserEmailAttachPDF").is(":checked")) {
-					$tagRow.show();
-				} else {
-					$tagRow.hide();
-				}
-				
+				$("#global-archived-subject, #global-archived-message").toggleClass("hidden");
 			}
-
+			
 		</script>
 	
 		<br/>
@@ -798,6 +796,7 @@
 	
 		<h2><xsl:value-of select="$i18n.GlobalNotifications"/></h2>
 		
+		<!-- FlowInstanceSubmittedGlobalEmail -->
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
 			<div class="floatleft">
@@ -811,18 +810,18 @@
 					<xsl:value-of select="$i18n.SendFlowInstanceSubmittedGlobalEmail" />
 				</label>
 				<xsl:text>&#160;</xsl:text>
-				<span class="tiny"><a onclick="toggleGlobal();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				<span class="tiny"><a onclick="toggleGlobalSubmit();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 				
 			</div>
 		</div>
 		
-		<div class="floatleft full bigmarginbottom" id="global-subject">
+		<div class="floatleft full bigmarginbottom" id="global-submit-subject">
 		
 			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedGlobalEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
-			<label for="flowInstanceSubmittedUserEmailSubject" class="floatleft full">
+			<label for="flowInstanceSubmittedGlobalEmailSubject" class="floatleft full">
 				<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailSubject" />
 			</label>
 			
@@ -835,13 +834,13 @@
 			</div>
 		</div>
 		
-		<div class="floatleft full bigmarginbottom" id="global-message">
+		<div class="floatleft full bigmarginbottom" id="global-submit-message">
 			
 			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedGlobalEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
-			</xsl:if>			
+			</xsl:if>
 			
-			<label for="flowInstanceSubmittedUserEmailMessage" class="floatleft full">
+			<label for="flowInstanceSubmittedGlobalEmailMessage" class="floatleft full">
 				<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailMessage" />
 			</label>
 			
@@ -857,7 +856,7 @@
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
-		</div>		
+		</div>
 		
 		<div class="floatleft full bigmarginbottom">
 		
@@ -919,7 +918,87 @@
 				</label>
 			</div>
 		</div>
+		
+		<!-- FlowInstanceArchivedGlobalEmail -->
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceArchivedGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceArchivedGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceArchivedGlobalEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceArchivedGlobalEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGlobalArchived();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-archived-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceArchivedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceArchivedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceArchivedGlobalEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceArchivedGlobalEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceArchivedGlobalEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-archived-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceArchivedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceArchivedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceArchivedGlobalEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceArchivedGlobalEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceArchivedGlobalEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="flowInstanceArchivedGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceArchivedGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'flowInstanceArchivedGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/FlowInstanceArchivedGlobalEmailAddresses/address" />
+				</xsl:call-template>
+			</div>
+		</div>
 	
+		<!-- ExternalMessageReceivedGlobalEmail -->
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
 			<div class="floatleft">
@@ -952,6 +1031,8 @@
 			</div>
 		</div>
 		
+		
+		<!-- ManagerExpiredGlobalEmail -->
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
 			<div class="floatleft">
@@ -1221,6 +1302,7 @@
 				<xsl:text>&#x20;</xsl:text>
 				
 				<xsl:choose>
+					<!-- User -->
 					<xsl:when test="fieldName = 'flowInstanceSubmittedUserEmailSubject'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedUserEmailSubject"/>
 					</xsl:when>
@@ -1245,11 +1327,25 @@
 					<xsl:when test="fieldName = 'flowInstanceArchivedNotLoggedInUserEmailMessage'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedNotLoggedInUserEmailMessage"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'statusChangedUserEmailSubject'">
+						<xsl:value-of select="$i18n.StatusChangedUserEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'statusChangedUserEmailMessage'">
+						<xsl:value-of select="$i18n.StatusChangedUserEmailMessage"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedUserEmailSubject'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailSubject"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedUserEmailMessage'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedUserEmailMessage"/>
+					</xsl:when>
+					
+					<!-- Manager -->
+					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailMessage"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedManagerSubject'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerSubject"/>
@@ -1257,8 +1353,25 @@
 					<xsl:when test="fieldName = 'externalMessageReceivedManagerMessage'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage"/>
 					</xsl:when>
+					
+					<!-- Global -->
+					<xsl:when test="fieldName = 'flowInstanceSubmittedGlobalEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceSubmittedGlobalEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailMessage"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceSubmittedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailAddresses"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedGlobalEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedGlobalEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedGlobalEmailAddresses'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailAddresses"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedGlobalEmailAddresses"/>
@@ -1266,18 +1379,7 @@
 					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailSubject'">
-						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailSubject"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'flowInstanceAssignedManagerEmailMessage'">
-						<xsl:value-of select="$i18n.FlowInstanceAssignedManagerEmailMessage"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'statusChangedUserEmailSubject'">
-						<xsl:value-of select="$i18n.StatusChangedUserEmailSubject"/>
-					</xsl:when>
-					<xsl:when test="fieldName = 'statusChangedUserEmailMessage'">
-						<xsl:value-of select="$i18n.StatusChangedUserEmailMessage"/>
-					</xsl:when>
+					
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
 					</xsl:otherwise>

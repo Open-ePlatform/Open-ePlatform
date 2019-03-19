@@ -244,6 +244,29 @@
 				 MODIFY COLUMN `flowInstanceSubmittedNotLoggedInUserSMS` VARCHAR(1024) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_archivedglobal` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`email` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `email`),
+					CONSTRAINT `FK_flow_familiy_notification_setting_archivedglobal_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceArchivedGlobalEmail` TINYINT(1) NOT NULL AFTER `flowInstanceSubmittedGlobalEmailMessage`,
+					ADD COLUMN `flowInstanceArchivedGlobalEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceArchivedGlobalEmail`,
+					ADD COLUMN `flowInstanceArchivedGlobalEmailMessage` TEXT NULL AFTER `flowInstanceArchivedGlobalEmailSubject`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>
