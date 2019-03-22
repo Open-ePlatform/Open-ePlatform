@@ -104,7 +104,7 @@
 	<xsl:variable name="i18n.FlowFamily.popularity.boost">Extra antal ärenden vid beräkning av popularitet</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.startButtonText">Anpassad text på startknapp (max 24 tecken)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes">Extra attribut i ärendeöversikten</xsl:variable>
-	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Description">För att underlätta handläggning så finns möjligheten att visa upp till 6st rader med attribut värden direkt i ärendeöversikten. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Description">För att underlätta handläggning så finns möjligheten att visa upp till 6st rader med attributvärden direkt i ärendeöversikten. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.value">Attribut</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Add">Lägg till attributrad</xsl:variable>
