@@ -485,8 +485,8 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							XMLUtils.appendNewElement(doc, flowElement, "CategoryID", flow.getFlowType().getFlowTypeID());
 							XMLUtils.appendNewElement(doc, flowElement, "Published", published);
 							XMLUtils.appendNewElement(doc, flowElement, "Changed", changed);
-							XMLUtils.appendNewElement(doc, flowElement, "NativeOeP", flow.isInternal());
-							XMLUtils.appendNewElement(doc, flowElement, "Visible", flow.isHideFromOverview());
+							XMLUtils.appendNewElement(doc, flowElement, "Internal", flow.isInternal());
+							XMLUtils.appendNewElement(doc, flowElement, "Visible", !flow.isHideFromOverview());
 
 							responseElement.appendChild(flowElement);
 						}
