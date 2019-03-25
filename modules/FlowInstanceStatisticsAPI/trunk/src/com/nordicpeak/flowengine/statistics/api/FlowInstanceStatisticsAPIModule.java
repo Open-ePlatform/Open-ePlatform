@@ -452,7 +452,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 			if (validationErrors.isEmpty()) {
 
-				log.info("User " + user + " requested flows as " + StringUtils.toLogFormat(responseType, 30));
+				log.info("User " + user + " listing flows as " + StringUtils.toLogFormat(responseType, 30));
 
 				Collection<Flow> flows = flowAdminModule.getCachedFlows();
 
@@ -498,7 +498,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 			} else {
 
-				log.warn("User " + user + " got following validation errors when trying to list flowinstance statistics: " + validationErrors);
+				log.warn("User " + user + " got following validation errors when trying to list flows: " + validationErrors);
 
 				XMLUtils.append(doc, responseElement, "ValidationErrors", validationErrors);
 			}
