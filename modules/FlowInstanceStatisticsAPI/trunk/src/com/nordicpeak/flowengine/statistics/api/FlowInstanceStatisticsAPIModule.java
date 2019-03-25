@@ -191,7 +191,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							normalFlowInstances += flowInstances.size();
 
 							if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
-								log.info("Statistics aborted...");
+								log.info("List flowinstance statistics aborted...");
 								return;
 							}
 
@@ -290,7 +290,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							abortedFlowInstances += flowInstances.size();
 
 							if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
-								log.info("Statistics aborted...");
+								log.info("List flowinstance statistics aborted...");
 								return;
 							}
 
@@ -350,7 +350,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							deletedFlowInstances += flowInstances.size();
 
 							if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
-								log.info("Statistics aborted...");
+								log.info("List flowinstance statistics aborted...");
 								return;
 							}
 
@@ -389,7 +389,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 			} else {
 
-				log.warn("User " + user + " got following validation errors when trying to list flowinstance statistics: " + validationErrors);
+				log.info("User " + user + " got following validation errors when trying to list flowinstance statistics: " + validationErrors);
 
 				XMLUtils.append(doc, responseElement, "ValidationErrors", validationErrors);
 			}
@@ -498,7 +498,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 			} else {
 
-				log.warn("User " + user + " got following validation errors when trying to list flows: " + validationErrors);
+				log.info("User " + user + " got following validation errors when trying to list flows: " + validationErrors);
 
 				XMLUtils.append(doc, responseElement, "ValidationErrors", validationErrors);
 			}
