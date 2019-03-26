@@ -215,7 +215,15 @@
 					<xsl:with-param name="showSaveButton" select="'false'"/>
 					<xsl:with-param name="showFlowInstanceID" select="'false'"/>
 				</xsl:call-template>
-			
+				
+<!-- 				<div class="service-navigator-wrap"> -->
+<!-- 					<div> -->
+<!-- 						<ul class="service-navigator primary"> -->
+<!-- 							<xsl:apply-templates select="FlowInstance/Flow/Steps"/> -->
+<!-- 						</ul> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				
 				<div class="section-full push">
 					
 					<h2 class="h1 hide-tablet"><xsl:value-of select="$i18n.payHeader" /></h2>
@@ -352,7 +360,7 @@
 			<h2 data-icon-before="c" class="h1">
 				<xsl:value-of select="currentStepIndex + 1"/>
 				<xsl:text>. </xsl:text>
-				<xsl:value-of select="../../FlowInstance/Flow/Steps/Step[stepID = $stepID]/name"/>				
+				<xsl:value-of select="../../FlowInstance/Flow/Steps/Step[stepID = $stepID]/name"/>
 			</h2>
 			
 			<xsl:choose>
@@ -363,7 +371,7 @@
 					<p><xsl:value-of select="$i18n.noAnsweredQueriesInThisStep"/></p>
 				</xsl:otherwise>
 			</xsl:choose>
-			<!-- 			
+			<!--
 			<xsl:if test="$mode = 'receipt' and position() = last()">
 				<div class="navigator-buttons">
 					<a href="#" class="btn btn-right btn-light xl hide-mobile" onclick="event.preventDefault(); window.print();"><xsl:value-of select="$i18n.Print" /></a>
@@ -455,8 +463,12 @@
 	  				<div class="heading">
   						<h1 class="xl"><xsl:value-of select="$i18n.Receipt" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/Flow/name" /></h1>
 						<span class="errandno">
-							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" />
-							<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
+							
+							<xsl:if test="not(FlowInstance/Flow/hideFlowInstanceIDFromUser = 'true')">
+								<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" />
+								<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
+							</xsl:if>
+							
 							<xsl:value-of select="$i18n.PostedBy" /><xsl:text>:&#160;</xsl:text>
 							<xsl:call-template name="PrintPostedBy">
 								<xsl:with-param name="poster" select="$submittedEvents[position() = last()]/poster/user"/>
@@ -723,7 +735,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="0"/>
-				</xsl:otherwise>			
+				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		
@@ -736,7 +748,7 @@
 				<span data-step="{$stepCount + 1}">
 					<xsl:value-of select="$i18n.preview"/>
 				</span>
-			</li>		
+			</li>
 		</xsl:if>
 
 		<xsl:choose>
@@ -765,7 +777,7 @@
 						<xsl:attribute name="class">active</xsl:attribute>
 					</xsl:if>
 					
-					<span data-step="{$stepCount +  1 + $previewOffset}">
+					<span data-step="{$stepCount + 1 + $previewOffset}">
 						<xsl:value-of select="$i18n.payAndSubmit"/>
 					</span>
 				</li>
@@ -949,9 +961,9 @@
 		<xsl:if test=". = 'SAVE' or . = 'SAVE_AND_PREVIEW'">
 			
 			<section class="modal success">
-  				<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
-  				<i class="icon close">x</i>
-  			</section>
+				<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
+				<i class="icon close">x</i>
+			</section>
 			
 		</xsl:if>
 		

@@ -533,6 +533,7 @@
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av filuppladdningen i meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>
+	<xsl:variable name="i18n.Flow.hideFlowInstanceIDFromUser">Dölj ärendenummer från mina sidor och kvittens</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>
@@ -587,7 +588,7 @@
 	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständig handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
 	
 	<xsl:variable name="i18n.DescriptionColumnSettings.Title">Inställningar för ärendebeskrivningar</xsl:variable>
-	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten.</xsl:variable>
+	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten. Ändringar slår inte igenom på befintliga ärenden.</xsl:variable>
 	<xsl:variable name="i18n.userDescriptionTemplate">Beskrivning på mina sidor</xsl:variable>
 	<xsl:variable name="i18n.managerDescriptionTemplate">Beskrivning i handläggargränssnittet</xsl:variable>
 	

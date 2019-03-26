@@ -2247,7 +2247,20 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		try {
 			log.info("Sending PDF for flow instance " + flowInstance + ", event " + eventID + " to user " + user);
-			HTTPUtils.sendFile(pdfFile, flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + ".pdf", req, res, ContentDisposition.ATTACHMENT);
+			
+			String filename;
+			
+			if (!manager && flowInstance.getFlow().isHideFlowInstanceIDFromUser()) {
+				
+				filename = flowInstance.getFlow().getName() + ".pdf";
+				
+			} else {
+				
+				filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + ".pdf";
+			}
+			
+			HTTPUtils.sendFile(pdfFile, filename, req, res, ContentDisposition.ATTACHMENT);
+			
 		} catch (Exception e) {
 			log.info("Error sending PDF for flow instance " + flowInstance + ", event " + eventID + " to user " + user + ", " + e);
 		}

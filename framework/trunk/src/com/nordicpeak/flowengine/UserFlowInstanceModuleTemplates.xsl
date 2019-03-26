@@ -345,20 +345,20 @@
 			</td>
 			<td data-title="{$i18n.FlowName}" class="service"><xsl:value-of select="Flow/name" /></td>
 			
-			<xsl:call-template name="printSiteProfile"/>		
+			<xsl:call-template name="printSiteProfile"/>
 			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando">
-			
-				<xsl:value-of select="flowInstanceID" />
-				
-				<xsl:call-template name="printExternalID"/>
+				<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
+					<xsl:value-of select="flowInstanceID" />
+					<xsl:call-template name="printExternalID"/>
+				</xsl:if>
 			</td>
 
 			<xsl:call-template name="printDescription"/>
 
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
 			<td data-title="{$i18n.LastEvent}" class="date">
-				<xsl:value-of select="firstSubmitted" />			
+				<xsl:value-of select="firstSubmitted" />
 			</td>
 			
 			<td class="link">
@@ -383,10 +383,10 @@
 			<xsl:call-template name="printSiteProfile"/>
 			
 			<td data-title="{$i18n.FlowInstanceID}" class="errando">
-			
-				<xsl:value-of select="flowInstanceID" />
-				
-				<xsl:call-template name="printExternalID"/>
+				<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
+					<xsl:value-of select="flowInstanceID" />
+					<xsl:call-template name="printExternalID"/>
+				</xsl:if>
 			</td>
 
 			<xsl:call-template name="printDescription"/>
@@ -472,7 +472,11 @@
 					<xsl:with-param name="iconClass" select="'icon-blue'" />
 				</xsl:call-template>
 			</td>
-			<td data-title="{$i18n.FlowInstanceID}" class="errando"><xsl:value-of select="flowInstanceID" /></td>
+			<td data-title="{$i18n.FlowInstanceID}" class="errando">
+				<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
+					<xsl:value-of select="flowInstanceID" />
+				</xsl:if>
+			</td>
 			<td data-title="{$i18n.Status}" class="status">
 				<xsl:for-each select="newEvents/FlowInstanceEvent">
 					<xsl:value-of select="shortDate" /><xsl:text>&#160;-&#160;</xsl:text>
@@ -481,7 +485,7 @@
 						<xsl:otherwise><xsl:value-of select="status" /></xsl:otherwise>
 					</xsl:choose>
 					<br/>
-				</xsl:for-each>			
+				</xsl:for-each>
 			</td>
 			<td class="link">
 				<xsl:call-template name="printFlowInstanceButton">
@@ -522,18 +526,21 @@
 	  							</b>
 	  						</h1>
 							
-							<span class="errandno hide-mobile">
-								<xsl:value-of select="$i18n.FlowInstanceID" />
-								<xsl:text>:&#160;</xsl:text>
-							</span>
+							<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
 							
-							<span class="hide-mobile">									
-								<xsl:value-of select="flowInstanceID" />
+								<span class="errandno hide-mobile">
+									<xsl:value-of select="$i18n.FlowInstanceID" />
+									<xsl:text>:&#160;</xsl:text>
+								</span>
+							
+								<span class="hide-mobile">
+									<xsl:value-of select="flowInstanceID" />
+									<xsl:call-template name="printExternalID"/>
+								</span>
 								
-								<xsl:call-template name="printExternalID"/>
-							</span>
-							
-							<br/>
+								<br/>
+								
+							</xsl:if>
 							
 							<xsl:if test="../ShowDescriptionColumn and userDescription">
 								
@@ -542,13 +549,13 @@
 									<xsl:text>:&#160;</xsl:text>
 								</span>
 						
-								<span class="hide-mobile">	
-									<xsl:value-of select="userDescription"/>	
+								<span class="hide-mobile">
+									<xsl:value-of select="userDescription"/>
 								</span>
 										
-								<br/>	
+								<br/>
 								
-							</xsl:if>							
+							</xsl:if>
 							
 							<span class="errandno hide-mobile">
 								<xsl:value-of select="$i18n.CurrentStatus" />
@@ -566,15 +573,18 @@
   				<div class="description">
   					<xsl:variable name="submittedEvents" select="events/FlowInstanceEvent[eventType='SUBMITTED']" />
   					
-  					<p class="only-mobile">
-  						<strong class="overview">
-  							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
-  						</strong>
-  						
-  						<xsl:value-of select="flowInstanceID" />
-  						
-  						<xsl:call-template name="printExternalID"/>
-  					</p>
+  					<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
+	  					
+	  					<p class="only-mobile">
+	  						<strong class="overview">
+	  							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
+	  						</strong>
+	  						
+	  						<xsl:value-of select="flowInstanceID" />
+	  						<xsl:call-template name="printExternalID"/>
+	  					</p>
+	  					
+  					</xsl:if>
   					
 					<xsl:if test="../ShowDescriptionColumn and userDescription">
 						

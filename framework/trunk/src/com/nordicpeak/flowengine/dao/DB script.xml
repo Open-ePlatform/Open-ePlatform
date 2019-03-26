@@ -2142,4 +2142,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="116">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideFlowInstanceIDFromUser` TINYINT(1) UNSIGNED NOT NULL AFTER `hideFromUser`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
