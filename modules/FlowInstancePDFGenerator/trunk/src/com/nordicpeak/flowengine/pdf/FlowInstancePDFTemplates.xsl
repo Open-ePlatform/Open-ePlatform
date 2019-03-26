@@ -10,7 +10,7 @@
 			
 			<xsl:call-template name="title"/>
 			
-			<xsl:apply-templates select="staticStylesheets"/>>
+			<xsl:apply-templates select="staticStylesheets"/>
 			
 			<xsl:apply-templates select="StyleSheets/StyleSheet"/>
 			
@@ -30,7 +30,21 @@
 	</xsl:template>
 	
 	<xsl:template name="title">
-		<title>Ärendenummer #<xsl:value-of select="FlowInstance/flowInstanceID"/></title>
+		<title>
+			<xsl:choose>
+				<xsl:when test="FlowInstance/Flow/hideFlowInstanceIDFromUser = 'true'">
+				
+					<xsl:text>Ärende</xsl:text>
+					
+				</xsl:when>
+				<xsl:otherwise>
+				
+					<xsl:text>Ärendenummer #</xsl:text>
+					<xsl:value-of select="FlowInstance/flowInstanceID"/>
+					
+				</xsl:otherwise>
+			</xsl:choose>
+		</title>
 	</xsl:template>
 	
 	<xsl:template match="staticStylesheets" >
@@ -66,10 +80,13 @@
 						<xsl:when test="UnsubmittedExport"><xsl:value-of select="$i18n.UnsubmittedExport"/></xsl:when>
 						<xsl:otherwise>
 						
-							<xsl:text>Ärendenummer: #</xsl:text>
-							<xsl:value-of select="FlowInstance/flowInstanceID"/>
+							<xsl:if test="not(FlowInstance/Flow/hideFlowInstanceIDFromUser = 'true')">
+								<xsl:text>Ärendenummer: #</xsl:text>
+								<xsl:value-of select="FlowInstance/flowInstanceID"/>
+								<xsl:text> | </xsl:text>
+							</xsl:if>
 							
-							<xsl:text> | Inskickat av: </xsl:text>
+							<xsl:text>Inskickat av: </xsl:text>
 							<xsl:call-template name="PrintPostedBy" />
 							
 							<xsl:if test="SignEvents">
@@ -98,11 +115,14 @@
 		<div id="footer">
 			
 			<xsl:if test="not(Signing) and not(UnsubmittedExport)">
+				
+				<xsl:if test="not(FlowInstance/Flow/hideFlowInstanceIDFromUser = 'true')">
+					<xsl:text>Ärendenummer: #</xsl:text>
+					<xsl:value-of select="FlowInstance/flowInstanceID"/>
+					<xsl:text> | </xsl:text>
+				</xsl:if>
 			
-				<xsl:text>Ärendenummer: #</xsl:text>
-				<xsl:value-of select="FlowInstance/flowInstanceID"/>
-			
-				<xsl:text> | Inskickat av: </xsl:text>
+				<xsl:text>Inskickat av: </xsl:text>
 				<xsl:call-template name="PrintPostedBy" />
 				
 				<xsl:if test="SignEvents">
