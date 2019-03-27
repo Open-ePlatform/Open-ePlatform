@@ -2012,7 +2012,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			sms.setSenderName(getSmsSenderName(flowInstance));
+			sms.setSenderName(getSMSSenderName(flowInstance));
 			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 
 			if(recipient == NotificationRecipient.OWNER) {
@@ -2103,7 +2103,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		SimpleSMS sms = new SimpleSMS();
 
 		try {
-			sms.setSenderName(this.getSmsSenderName(flowInstance));
+			sms.setSenderName(this.getSMSSenderName(flowInstance));
 			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
 			sms.addRecipient(contact.getMobilePhone());
 
@@ -2483,7 +2483,8 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		return emailSenderAddress;
 	}
 
-	public String getSmsSenderName(ImmutableFlowInstance flowInstance) {
+	@Override
+	public String getSMSSenderName(ImmutableFlowInstance flowInstance) {
 
 		return smsSenderName;
 	}
