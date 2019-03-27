@@ -204,10 +204,6 @@
 					<xsl:attribute name="class">required</xsl:attribute>
 				</xsl:if>
 				<xsl:value-of select="label"/>
-				
-				<xsl:if test="maxContentLength">
-					<div class="floatright lettercounter" data-maxlength="{maxContentLength}" />
-				</xsl:if>
 			</label>
 
 			<xsl:variable name="size">

@@ -99,27 +99,6 @@ function initTextFieldQuery(queryID) {
 			input.addClass("input-error");
 		}
 	});
-	
-	$query.find(".lettercounter").each(function(){
-		
-		var counter = $(this);
-		var input = counter.closest(".split").find("input");
-		
-		var updateCounter = function() {
-			var length = input.val().length;
-			var max = counter.data("maxlength")
-			counter.text(length + "/" + max);
-			
-			if (length > max) {
-				counter.css('color', 'red');
-			} else {
-				counter.css('color', '');
-			}
-		};
-		
-		updateCounter();
-		input.on("keyup change", updateCounter);
-	});
 }
 
 function initTextFieldQueryValidationErrors($query) {
