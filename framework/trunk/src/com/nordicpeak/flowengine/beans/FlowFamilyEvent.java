@@ -126,7 +126,7 @@ public class FlowFamilyEvent extends GeneratedElementable {
 	@Override
 	public String toString() {
 
-		return "(ID=" + eventID + ", flowFamilyID=" + flowFamily.getFlowFamilyID() + ", flowVersion=" + flowVersion + ", added=" + added + ", poster=" + poster + ", message=" + message + ")";
+		return "FlowFamilyEvent (ID: " + eventID + ", poster: " + poster + ")";
 	}
 
 }
