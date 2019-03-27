@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.notifications;
+package com.nordicpeak.flowengine.internalnotifications;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +14,9 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.notifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationHandler;
 
-public class NotificationBackgroundModule extends AnnotatedBackgroundModule {
+public class InternalNotificationBackgroundModule extends AnnotatedBackgroundModule {
 	
 	@InstanceManagerDependency(required = true)
 	protected NotificationHandler notificationHandler;

@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.notifications.interfaces;
+package com.nordicpeak.flowengine.internalnotifications.interfaces;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;

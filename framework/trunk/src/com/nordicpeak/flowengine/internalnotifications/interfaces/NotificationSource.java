@@ -1,9 +1,9 @@
-package com.nordicpeak.flowengine.notifications.interfaces;
+package com.nordicpeak.flowengine.internalnotifications.interfaces;
 
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.notifications.beans.NotificationMetadata;
+import com.nordicpeak.flowengine.internalnotifications.beans.NotificationMetadata;
 
 public interface NotificationSource {
 

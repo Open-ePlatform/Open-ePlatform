@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.notifications.beans;
+package com.nordicpeak.flowengine.internalnotifications.beans;
 
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttribute;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;

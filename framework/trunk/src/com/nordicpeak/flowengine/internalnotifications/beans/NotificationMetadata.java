@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.notifications.beans;
+package com.nordicpeak.flowengine.internalnotifications.beans;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

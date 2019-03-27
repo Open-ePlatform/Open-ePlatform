@@ -19,4 +19,6 @@ public interface FlowNotificationHandler {
 	public String getEmailSenderName(ImmutableFlowInstance flowInstance);
 	
 	public String getEmailSenderAddress(ImmutableFlowInstance flowInstance);
+	
+	public String getSMSSenderName(ImmutableFlowInstance flowInstance);
 }

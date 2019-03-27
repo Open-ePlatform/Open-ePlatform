@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.notifications.beans;
+package com.nordicpeak.flowengine.internalnotifications.beans;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -18,7 +18,7 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
-import com.nordicpeak.flowengine.notifications.interfaces.Notification;
+import com.nordicpeak.flowengine.internalnotifications.interfaces.Notification;
 
 @Table(name = "flowengine_notifications")
 @XMLElement(name = "Notification")
