@@ -105,7 +105,7 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 	private QueryParameterFactory<StoredNotification, Integer> flowInstanceIDParamFactory;
 	private QueryParameterFactory<FlowInstance, Integer> flowInstanceID2ParamFactory;
 	
-	private ConcurrentHashMap<Integer, NotificationSource> notificationCreatorMap = new ConcurrentHashMap<Integer, NotificationSource>();
+	private ConcurrentHashMap<Integer, NotificationSource> notificationSourceMap = new ConcurrentHashMap<Integer, NotificationSource>();
 	
 	@Override
 	public void init(ForegroundModuleDescriptor descriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -395,7 +395,7 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 				
 				StoredNotification notification = it.next();
 				
-				NotificationSource notificationSource = notificationCreatorMap.get(notification.getSourceModuleID());
+				NotificationSource notificationSource = notificationSourceMap.get(notification.getSourceModuleID());
 				
 				if (notificationSource == null) {
 					
@@ -632,24 +632,24 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 	@Override
 	public void addNotificationSource(NotificationSource notificationSource) {
 		
-		if(notificationCreatorMap.putIfAbsent(notificationSource.getModuleDescriptor().getModuleID(), notificationSource) == null){
+		if(notificationSourceMap.putIfAbsent(notificationSource.getModuleDescriptor().getModuleID(), notificationSource) == null){
 			
-			log.info("NotificationCreator " + notificationSource + " registered");
+			log.info("NotificationSource " + notificationSource + " registered");
 		
 		}else{
 			
-			log.error("NotificationCreator " + notificationSource + " is already registered");
+			log.error("NotificationSource " + notificationSource + " is already registered");
 		}
 	}
 	
 	@Override
 	public boolean removeNotificationSource(NotificationSource notificationSource) {
 		
-		boolean removed = notificationCreatorMap.remove(notificationSource.getModuleDescriptor().getModuleID()) != null;
+		boolean removed = notificationSourceMap.remove(notificationSource.getModuleDescriptor().getModuleID()) != null;
 		
 		if (removed) {
 			
-			log.info("NotificationCreator " + notificationSource + " unregistered");
+			log.info("NotificationSource " + notificationSource + " unregistered");
 		}
 		
 		return removed;
