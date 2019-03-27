@@ -3908,6 +3908,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 									log.error("Error importing query " + queryDescriptor + " of type " + queryDescriptor.getQueryTypeID() + " into flow " + flow + " uploaded by user " + user, e);
 
+									queryDescriptor.setEvaluatorDescriptors(null);
 									throw new ValidationException(new QueryImportValidationError(queryDescriptor));
 								}
 							}
