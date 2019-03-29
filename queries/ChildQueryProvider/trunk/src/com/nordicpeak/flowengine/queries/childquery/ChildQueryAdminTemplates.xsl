@@ -173,7 +173,7 @@
 						<value>both</value>
 					</option>
 				</xsl:variable>
-
+				
 				<xsl:call-template name="createDropdown">
 					<xsl:with-param name="id" select="'contactWays'" />
 					<xsl:with-param name="name" select="'contactWays'" />
@@ -230,8 +230,92 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-			  </div>
+				</div>
 			</div>
+			
+			<xsl:if test="FilterApiEndpoints">
+			
+				<div class="floatleft hugemarginright">
+					<div>
+						<label for="filterEndpointID" class="floatleft clearboth">
+							<xsl:value-of select="$i18n.FilterEndpoint.title" />
+						</label>
+					</div>
+					<div>
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'filterEndpointID'" />
+							<xsl:with-param name="name" select="'filterEndpointID'" />
+							<xsl:with-param name="title" select="$i18n.FilterEndpoint.title"/>
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'endpointID'" />
+							<xsl:with-param name="element" select="FilterApiEndpoints/ChildQueryFilterEndpoint" />
+							<xsl:with-param name="class" select="'marginright'" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.FilterEndpoint.EmptyOption" />
+							<xsl:with-param name="selectedValue" select="ChildQuery/ChildQueryFilterEndpoint/endpointID" />
+						</xsl:call-template>
+					</div>
+				</div>
+				
+				<label id="endpoint-attributes" class="floatleft full">
+					<xsl:value-of select="$i18n.FilterEndpoint.Attributes" />
+				</label>
+				
+				<xsl:variable name="attributeOptions">
+					<option>
+						<name><xsl:value-of select="$i18n.FilterEndpoint.Attribute.DisplayMode.Always"/></name>
+						<value>ALWAYS</value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.FilterEndpoint.Attribute.DisplayMode.IfValue"/></name>
+						<value>IF_VALUE</value>
+					</option>
+					<option>
+						<name><xsl:value-of select="$i18n.FilterEndpoint.Attribute.DisplayMode.Never"/></name>
+						<value>NEVER</value>
+					</option>
+				</xsl:variable>
+				
+				<xsl:for-each select="FilterApiEndpoints/ChildQueryFilterEndpoint">
+					<div id="endpoint-{endpointID}" class="filterEndpoint floatleft full" style="display: none;">
+						
+						<xsl:variable name="endpointID" select="endpointID" />
+						
+						<table>
+							
+							<xsl:for-each select="Fields/value">
+								
+								<tr>
+									<xsl:variable name="name" select="concat('attribute-', $endpointID, '-', .)" />
+									
+									<td>
+										<label for="{$name}" class="nomargin bigpaddingright">
+											<xsl:value-of select="." />
+										</label>
+									</td>
+									
+									<td>
+										<xsl:call-template name="createDropdown">
+											<xsl:with-param name="id" select="$name" />
+											<xsl:with-param name="name" select="$name" />
+											<xsl:with-param name="title" select="$i18n.FilterEndpoint.Attribute.DisplayMode"/>
+											<xsl:with-param name="labelElementName" select="'name'" />
+											<xsl:with-param name="valueElementName" select="'value'" />
+											<xsl:with-param name="element" select="exsl:node-set($attributeOptions)/option" />
+											<xsl:with-param name="selectedValue" select="../../../../ChildQuery/SelectedChildAttributes/SelectedAttribute[name = current()]/displayMode" />
+											<xsl:with-param name="requestparameters" select="../../../../requestparameters" />
+										</xsl:call-template>
+									</td>
+									
+								</tr>
+								
+							</xsl:for-each>
+							
+						</table>
+						
+					</div>
+				</xsl:for-each>
+				
+			</xsl:if>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
@@ -307,6 +391,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'maxAge'">
 				<xsl:value-of select="$i18n.MaxChildAge" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'filterEndpointID'">
+				<xsl:value-of select="$i18n.FilterEndpoint.title" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

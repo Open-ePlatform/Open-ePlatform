@@ -193,4 +193,65 @@
 		</Query>
 	</Script>
 	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_filter_endpoints` (
+					`endpointID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					`address` VARCHAR(1024) NOT NULL,
+					`username` VARCHAR(255) NULL,
+					`password` VARCHAR(255) NULL,
+					`encoding` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`endpointID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_filter_endpoint_fields` (
+					`endpointID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`endpointID`, `name`),
+					CONSTRAINT `FK_child_query_filter_endpoint_fields_1` FOREIGN KEY (`endpointID`) REFERENCES `child_query_filter_endpoints` (`endpointID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `filterEndpointID` INT UNSIGNED NULL AFTER `setMultipartsAsOwners`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_instance_attributes` (
+					`queryInstanceID` INTEGER UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`value` VARCHAR(1024) NOT NULL,
+					PRIMARY KEY (`queryInstanceID`, `name`),
+					CONSTRAINT `FK_child_query_instance_attributes_1` FOREIGN KEY (`queryInstanceID`) REFERENCES `child_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `child_query_selected_attributes` (
+					`queryID` INTEGER UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`displayMode` VARCHAR(50) NOT NULL,
+					PRIMARY KEY (`queryID`, `name`),
+					CONSTRAINT `FK_child_query_selected_attributes_1` FOREIGN KEY (`queryID`) REFERENCES `child_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

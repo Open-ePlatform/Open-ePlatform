@@ -12,6 +12,7 @@ import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
+import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.IntegerPopulator;
@@ -29,6 +30,7 @@ import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
+import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpoint;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
 
 @Table(name = "child_queries")
@@ -102,6 +104,16 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer maxAge;
+	
+	@DAOManaged(columnName = "filterEndpointID")
+	@ManyToOne(autoAdd = true, autoGet = true, autoUpdate = true)
+	@XMLElement(fixCase = true)
+	private ChildQueryFilterEndpoint filterEndpoint;
+	
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@XMLElement(fixCase = true)
+	private List<SelectedChildAttribute> selectedChildAttributes;
 
 	@DAOManaged
 	@OneToMany
@@ -481,6 +493,22 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	public void setMultiGuardianAlternative(ImmutableAlternative multiGuardianAlternative) {
 
 		this.multiGuardianAlternative = multiGuardianAlternative;
+	}
+
+	public ChildQueryFilterEndpoint getFilterEndpoint() {
+		return filterEndpoint;
+	}
+
+	public void setFilterEndpoint(ChildQueryFilterEndpoint filterEndpoint) {
+		this.filterEndpoint = filterEndpoint;
+	}
+
+	public List<SelectedChildAttribute> getSelectedChildAttributes() {
+		return selectedChildAttributes;
+	}
+
+	public void setSelectedChildAttributes(List<SelectedChildAttribute> selectedChildAttributes) {
+		this.selectedChildAttributes = selectedChildAttributes;
 	}
 
 }

@@ -35,4 +35,24 @@ $(function() {
 		
 	}).change();
 	
+	var filterEndpointInput = $("#filterEndpointID");
+	
+	filterEndpointInput.change(function() {
+		
+		$(".filterEndpoint").hide().find("select").prop("disabled", true);
+		
+		var endpointID = filterEndpointInput.val();
+		
+		if (endpointID != "") {
+			
+			$("#endpoint-attributes").show();
+			$("#endpoint-" + endpointID).show().find("select").prop("disabled", false);
+			
+		} else {
+			
+			$("#endpoint-attributes").hide();
+		}
+		
+	}).change();
+	
 });

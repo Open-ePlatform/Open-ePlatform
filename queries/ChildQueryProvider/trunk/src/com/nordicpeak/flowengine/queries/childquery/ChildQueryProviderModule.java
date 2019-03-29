@@ -89,6 +89,8 @@ import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
+import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpointAdminModule;
+import com.nordicpeak.flowengine.queries.childquery.filterapi.FilterAPIChild;
 import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
@@ -158,6 +160,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	@InstanceManagerDependency(required = true)
 	private ChildRelationProvider childRelationProvider;
+	
+	@InstanceManagerDependency
+	private ChildQueryFilterEndpointAdminModule filterAPIModule;
 	
 	protected StaticContentModule staticContentModule;
 
@@ -502,6 +507,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.setPostalAddress(selectedChild.getPostalAddress());
 			queryInstance.setMunicipalityCode(selectedChild.getMunicipalityCode());
 			queryInstance.setTestChild(selectedChild.isTestChild());
+			queryInstance.setChildAttributes(selectedChild.getAttributes());
 
 			if (queryInstance.getQuery().isUseMultipartSigning() || queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
 				queryInstance.setGuardians(storedGuardians);
@@ -690,10 +696,44 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 						Map<String, StoredChild> storedChildMap = new LinkedHashMap<String, StoredChild>();
 						
 						Map<String, Child> childMap = childrenResponse.getChildren();
+						Map<String, FilterAPIChild> apiChildren = null;
+
+						if (queryInstance.getQuery().getFilterEndpoint() != null) {
+
+							if (filterAPIModule == null) {
+
+								log.error("Missing required instance manager dependency: ChildQueryFilterEndpointAdminModule");
+								queryInstance.setFetchChildrenException(new CommunicationException("Missing required instance manager dependency: ChildQueryFilterEndpointAdminModule"));
+								return null;
+							}
+
+							apiChildren = filterAPIModule.getChildren(queryInstance.getQuery().getFilterEndpoint(), poster, citizenIdentifier);
+
+							if (apiChildren == null) {
+								
+								queryInstance.setFetchChildrenException(new CommunicationException("Got no response from filterAPIModule"));
+								return null;
+							}
+						}
 						
 						for (Entry<String, Child> entry : childMap.entrySet()) {
 							
-							storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
+							StoredChild child = new StoredChild(entry.getValue());
+							
+							if (apiChildren != null) {
+								
+								FilterAPIChild apiChild = apiChildren.get(entry.getKey());
+								
+								if (apiChild == null) {
+									continue;
+									
+								} else {
+									
+									child.setAttributes(apiChild.getFields());
+								}
+							}
+							
+							storedChildMap.put(entry.getKey(), child);
 						}
 						
 						return storedChildMap;
@@ -854,5 +894,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
-	
+
+	public ChildQueryFilterEndpointAdminModule getFilterAPIModule() {
+		return filterAPIModule;
+	}
+
 }

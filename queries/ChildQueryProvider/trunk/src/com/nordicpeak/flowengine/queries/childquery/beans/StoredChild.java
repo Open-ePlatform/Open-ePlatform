@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,6 +47,9 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
+
+	@XMLElement(fixCase = true)
+	private List<ChildAttribute> attributes;
 
 	private boolean testChild;
 
@@ -179,6 +184,31 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 
 	public void setTestChild(boolean test) {
 		this.testChild = test;
+	}
+
+	public List<ChildAttribute> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(List<ChildAttribute> storedFields) {
+		this.attributes = storedFields;
+	}
+
+	public void setAttributes(Map<String, String> fields) {
+
+		if (fields == null) {
+
+			attributes = null;
+
+		} else {
+
+			attributes = new ArrayList<ChildAttribute>();
+
+			for (Entry<String, String> entry : fields.entrySet()) {
+
+				attributes.add(new ChildAttribute(entry.getKey(), entry.getValue()));
+			}
+		}
 	}
 
 }

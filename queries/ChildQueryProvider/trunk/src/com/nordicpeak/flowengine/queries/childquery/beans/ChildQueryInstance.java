@@ -81,6 +81,11 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
 	
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@XMLElement(fixCase = true)
+	private List<ChildAttribute> childAttributes;
+	
 	@XMLElement
 	private boolean hasChildrenUnderSecrecy;
 	
@@ -232,6 +237,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		zipcode = null;
 		postalAddress = null;
 		testChild = false;
+		childAttributes = null;
 		
 		attributeHandler.removeAttribute("childFirstname");
 		attributeHandler.removeAttribute("childLastname");
@@ -462,15 +468,22 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		return values;
 	}
 
-	
 	public String getMunicipalityCode() {
-	
+
 		return municipalityCode;
 	}
 
-	
 	public void setMunicipalityCode(String municipalityCode) {
-	
+
 		this.municipalityCode = municipalityCode;
 	}
+
+	public List<ChildAttribute> getChildAttributes() {
+		return childAttributes;
+	}
+
+	public void setChildAttributes(List<ChildAttribute> childAttributes) {
+		this.childAttributes = childAttributes;
+	}
+
 }

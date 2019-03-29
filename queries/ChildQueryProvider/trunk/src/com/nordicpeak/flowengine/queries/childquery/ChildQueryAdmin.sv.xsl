@@ -43,6 +43,12 @@
 	<xsl:variable name="i18n.MinAgeLargerThanMaxAge">Minsta ålder kan inte vara större än högsta ålder</xsl:variable>
 	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt andra vårdnadshavaren som medsökande för ärendet</xsl:variable>
 	
+	<xsl:variable name="i18n.FilterEndpoint.Attributes">Extra fält</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.Attribute.DisplayMode">Visningsläge</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.Attribute.DisplayMode.Always">Visa alltid</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.Attribute.DisplayMode.IfValue">Visa om värde finns</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.Attribute.DisplayMode.Never">Visa inte</xsl:variable>
+	
 	<xsl:variable name="i18n.ContactWays.Either">Antingen e-post eller mobiltelefon</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Email">E-post</xsl:variable>
 	<xsl:variable name="i18n.ContactWays.Phone">Mobiltelefon</xsl:variable>
@@ -53,5 +59,8 @@
 	<xsl:variable name="i18n.TestChildren.description.part1">Här kan du aktivera testbarn i val av barnfrågan för denna inloggning. När denna funktionen är aktiverad så hämtas inga barn från Skatteverket, istället visas en fast uppsättning testbarn. Testbarnen har åldern 0-17 år samt kommunkod 4321.</xsl:variable>
 	<xsl:variable name="i18n.TestChildren.description.part2">Denna ändring slår endast igenom på nya ärenden. Om du redan har ett ärende öppet så kommer det inte påverkas. Denna inställning nollställs varje gång du loggar in och ut.</xsl:variable>
 	<xsl:variable name="i18n.TestChildren.enabled">Aktivera testbarn</xsl:variable>
+	
+	<xsl:variable name="i18n.FilterEndpoint.title">Välj API-källa för filtrering och extra information</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa</xsl:variable>
 	
 </xsl:stylesheet>

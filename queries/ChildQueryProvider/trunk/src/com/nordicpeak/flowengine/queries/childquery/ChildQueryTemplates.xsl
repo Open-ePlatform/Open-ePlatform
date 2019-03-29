@@ -97,6 +97,11 @@
 										
 									</xsl:if>
 									
+									<xsl:apply-templates select="ChildQueryInstance/ChildQuery/ChildQueryFilterEndpoint">
+										<xsl:with-param name="attributes" select="ChildQueryInstance/ChildAttributes" />
+										<xsl:with-param name="selectedAttributes" select="ChildQueryInstance/ChildQuery/SelectedChildAttributes" />
+									</xsl:apply-templates>
+									
 								</p>
 							</div>
 						</div>
@@ -163,9 +168,9 @@
 								</p>
 							</xsl:if>
 					
-						</div>						
-					
-					</article>				
+						</div>
+				
+					</article>
 				
 				</xsl:if>
 			
@@ -459,6 +464,11 @@
 						
 					</xsl:if>
 					
+					<xsl:apply-templates select="../../ChildQuery/ChildQueryFilterEndpoint">
+						<xsl:with-param name="attributes" select="Attributes" />
+						<xsl:with-param name="selectedAttributes" select="../../ChildQuery/SelectedChildAttributes" />
+					</xsl:apply-templates>
+					
 				</p>
 			</label>
 			
@@ -529,6 +539,12 @@
 						</xsl:if>
 						
 					</xsl:if>
+					
+					<xsl:apply-templates select="ChildQueryInstance/ChildQuery/ChildQueryFilterEndpoint">
+						<xsl:with-param name="attributes" select="ChildQueryInstance/ChildAttributes" />
+						<xsl:with-param name="selectedAttributes" select="ChildQueryInstance/ChildQuery/SelectedChildAttributes" />
+					</xsl:apply-templates>
+					
 				</p>
 			</label>
 			
@@ -961,6 +977,33 @@
 	
 	</xsl:template>
 	
+	<xsl:template match="ChildQueryFilterEndpoint">
+		<xsl:param name="attributes" />
+		<xsl:param name="selectedAttributes" />
+	
+		<xsl:variable name="endpointFields" select="Fields"/>
+	
+		<xsl:for-each select="$selectedAttributes/SelectedAttribute">
+			
+			<xsl:if test="$endpointFields/value[. = current()/name]">
+				
+				<xsl:variable name="value" select="$attributes/Attribute[name = current()/name]/value"/>
+				
+				<xsl:if test="displayMode = 'ALWAYS' or (displayMode = 'IF_VALUE' and $value != '')">
+				
+					<br/>
+					<xsl:value-of select="name" />
+					<xsl:text>:&#160;</xsl:text>
+					<xsl:value-of select="$value" />
+				
+				</xsl:if>
+				
+			</xsl:if>
+		
+		</xsl:for-each>
+	
+	</xsl:template>
+	
 	<xsl:template match="validationError[validationErrorType = 'RequiredField']">
 		
 		<i data-icon-after="!" title="{$i18n.Error.RequiredField}"></i>
@@ -1028,7 +1071,7 @@
 			</strong>
 		</span>
 		
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey = 'Required']">
 		
