@@ -7,6 +7,8 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -23,6 +25,7 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 @Table(name = "organization_detail_query_instances")
 @XMLElement
@@ -283,6 +286,25 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 		this.organizationID = null;
 
 		reset(attributeHandler);
+	}
+	
+	// Used by external modules when poster changes
+	public void forcedInitialize(User poster) {
+		
+		firstname = poster.getFirstname();
+		lastname = poster.getLastname();
+		email = poster.getEmail();
+		
+		citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+		
+		AttributeHandler attributeHandler = poster.getAttributeHandler();
+		
+		if (attributeHandler != null) {
+			
+			mobilePhone = attributeHandler.getString("mobilePhone");
+			phone = attributeHandler.getString("phone");
+			contactBySMS = attributeHandler.getPrimitiveBoolean("contactBySMS");
+		}
 	}
 
 	@Override
