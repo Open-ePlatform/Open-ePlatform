@@ -42,7 +42,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 		
 		try {
 			
-			calculatedValue = getCalculatedValue(queryInstance, evaluator);
+			calculatedValue = getCalculatedValue(queryInstance, evaluator, poster);
 			
 		} catch (ValidationException e) {
 			
@@ -72,7 +72,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 		return evaluator;
 	}
 	
-	protected abstract BigDecimal getCalculatedValue(QueryInstance queryInstance, T evaluator) throws ValidationException;
+	protected abstract BigDecimal getCalculatedValue(QueryInstance queryInstance, T evaluator, User poster) throws ValidationException;
 	
 	protected abstract boolean supportsQueryInstance(QueryInstance queryInstance);
 	
