@@ -58,7 +58,7 @@
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.setAsAttribute">Spara värden som attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>
-	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användings exempel om du valt prefixet 'test': $attribute{test.citizenIdentifier}</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.citizenIdentifier}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	
