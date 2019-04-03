@@ -15,6 +15,8 @@
 	<xsl:variable name="java.multiGuardianAlternativeName">Gemensam  vårdnad</xsl:variable>
 	
 	<xsl:variable name="java.exportChildCitizenName">Barnets namn</xsl:variable>
+	<xsl:variable name="java.exportChildCitizenFirstName">Barnets förnamn</xsl:variable>
+	<xsl:variable name="java.exportChildCitizenLastName">Barnets efternamn</xsl:variable>
 	<xsl:variable name="java.exportChildCitizenIdentifier">Barnets personnummer</xsl:variable>
 	<xsl:variable name="java.exportChildAdress">Barnets address</xsl:variable>
 	<xsl:variable name="java.exportChildPostalAdress">Barnets postort</xsl:variable>
@@ -62,5 +64,12 @@
 	
 	<xsl:variable name="i18n.FilterEndpoint.title">Välj API-källa för filtrering och extra information</xsl:variable>
 	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa</xsl:variable>
+
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.Query.setAsAttribute">Spara bokning som attribut</xsl:variable>
+	<xsl:variable name="i18n.Query.attributeName">Attributprefix</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.date}</xsl:variable>
+	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	
 </xsl:stylesheet>

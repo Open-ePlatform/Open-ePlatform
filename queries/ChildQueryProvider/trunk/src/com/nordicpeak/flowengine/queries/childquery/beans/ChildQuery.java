@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.FCKContent;
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -104,6 +105,17 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer maxAge;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "setAsAttribute")
+	@XMLElement
+	private String attributeName;
 	
 	@DAOManaged(columnName = "filterEndpointID")
 	@ManyToOne(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -434,7 +446,13 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		minAge = XMLValidationUtils.validateParameter("minAge", xmlParser, false, IntegerPopulator.getPopulator(), errors);
 		maxAge = XMLValidationUtils.validateParameter("maxAge", xmlParser, false, IntegerPopulator.getPopulator(), errors);
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
-
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		
+		if (attributeName != null) {
+			
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
+		
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
@@ -493,6 +511,26 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	public void setMultiGuardianAlternative(ImmutableAlternative multiGuardianAlternative) {
 
 		this.multiGuardianAlternative = multiGuardianAlternative;
+	}
+
+	public boolean isSetAsAttribute() {
+	
+		return setAsAttribute;
+	}
+
+	public void setSetAsAttribute(boolean setAsAttribute) {
+	
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	public String getAttributeName() {
+	
+		return attributeName;
+	}
+
+	public void setAttributeName(String attributeName) {
+	
+		this.attributeName = attributeName;
 	}
 
 	public ChildQueryFilterEndpoint getFilterEndpoint() {

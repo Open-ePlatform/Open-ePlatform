@@ -220,9 +220,17 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	
 	public void setAttributes(MutableAttributeHandler attributeHandler) {
 		
+		// Backward compatibility
 		attributeHandler.setAttribute("childFirstname", firstname);
 		attributeHandler.setAttribute("childLastname", lastname);
 		attributeHandler.setAttribute("childCitizenIdentifier", citizenIdentifier);
+		
+		if (query.isSetAsAttribute() && query.getAttributeName() != null) {
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".childFirstname", firstname);
+			attributeHandler.setAttribute(query.getAttributeName() + ".childLastname", lastname);
+			attributeHandler.setAttribute(query.getAttributeName() + ".childCitizenIdentifier", citizenIdentifier);
+		}
 	}
 	
 	@Override
@@ -239,9 +247,17 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		testChild = false;
 		childAttributes = null;
 		
+		// Backward compatibility
 		attributeHandler.removeAttribute("childFirstname");
 		attributeHandler.removeAttribute("childLastname");
 		attributeHandler.removeAttribute("childCitizenIdentifier");
+
+		if (query.isSetAsAttribute() && query.getAttributeName() != null) {
+			
+			attributeHandler.removeAttribute(query.getAttributeName() + ".childFirstname");
+			attributeHandler.removeAttribute(query.getAttributeName() + ".childLastname");
+			attributeHandler.removeAttribute(query.getAttributeName() + ".childCitizenIdentifier");
+		}
 		
 		super.reset(attributeHandler);
 	}

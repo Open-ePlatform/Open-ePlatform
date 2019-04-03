@@ -119,7 +119,13 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	protected String multiGuardianAlternativeName = "This variable should be set by your stylesheet";
 	
 	@XSLVariable(prefix = "java.")
-	protected String exportChildCitizenName= "This variable should be set by your stylesheet";
+	protected String exportChildCitizenName = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildCitizenFirstName = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String exportChildCitizenLastName = "This variable should be set by your stylesheet";
 	
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenIdentifier = "This variable should be set by your stylesheet";

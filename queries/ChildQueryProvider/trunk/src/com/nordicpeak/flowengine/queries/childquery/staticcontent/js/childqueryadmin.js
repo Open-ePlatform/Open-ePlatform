@@ -55,4 +55,10 @@ $(function() {
 		
 	}).change();
 	
+	$('#setAsAttribute').change(function(){
+		
+		$('#attributeContainer').toggle(this.checked);
+		
+	}).change();
+	
 });

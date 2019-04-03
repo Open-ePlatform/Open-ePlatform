@@ -254,4 +254,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` 
+					ADD COLUMN `setAsAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `maxAge`,
+				 	ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
