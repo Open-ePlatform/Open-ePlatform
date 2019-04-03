@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.attachments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -71,8 +72,9 @@ import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.mime.MimeUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.streams.StreamUtils;
+import se.unlogic.standardutils.string.SimpleStringConverter;
+import se.unlogic.standardutils.string.StringConverter;
 import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.string.URLStringConverterUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -93,6 +95,8 @@ import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 
 public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule implements ViewFragmentModule<ForegroundModuleDescriptor> {
 	
+	//TODO create converter dynamically based on system encoding
+	private static final StringConverter ISO_TO_UTF8_STRING_DECODER = new SimpleStringConverter(Charset.forName("ISO-8859-1"), Charset.forName("UTF-8"));
 	
 	@XSLVariable(prefix = "java.")
 	protected String attachmentsUpdatedMessage = "Updated attachments";
@@ -460,7 +464,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 						if (fileItem.getSize() > (getMaxFileSize() * BinarySizes.MegaByte)) {
 							
 							//TODO check system encoding before converting string, use local string converter
-							validationErrors.add(new FileSizeLimitExceededValidationError(URLStringConverterUtils.getUTF8StringDecoder().decode(FilenameUtils.getName(fileItem.getName())), fileItem.getSize(), getMaxFileSize() * BinarySizes.MegaByte));
+							validationErrors.add(new FileSizeLimitExceededValidationError(ISO_TO_UTF8_STRING_DECODER.decode(FilenameUtils.getName(fileItem.getName())), fileItem.getSize(), getMaxFileSize() * BinarySizes.MegaByte));
 							
 							fileIterator.remove();
 							continue;
@@ -474,7 +478,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 						Attachment attachment = new Attachment();
 						
 						//TODO check system encoding before converting string, use local string converter
-						String fileName = URLStringConverterUtils.getUTF8StringDecoder().decode((FilenameUtils.getName(fileItem.getName())));
+						String fileName = ISO_TO_UTF8_STRING_DECODER.decode((FilenameUtils.getName(fileItem.getName())));
 						
 						attachment.setFilename(fileName);
 						attachment.setSize(fileItem.getSize());
