@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -62,9 +63,9 @@ import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.mime.MimeUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.streams.StreamUtils;
+import se.unlogic.standardutils.string.SimpleStringConverter;
 import se.unlogic.standardutils.string.StringConverter;
 import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.string.URLStringConverterUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLGenerator;
@@ -108,6 +109,8 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<GeneralMapQueryInstance> implements BaseQueryCRUDCallback {
 
+	private static final StringConverter ISO_TO_UTF8_STRING_DECODER = new SimpleStringConverter(Charset.forName("ISO-8859-1"), Charset.forName("UTF-8"));
+	
 	private static final RelationQuery SAVE_QUERY_INSTANCE_RELATION_QUERY = new RelationQuery(GeneralMapQueryInstance.MAPPRINTS_RELATION, GeneralMapQueryInstance.GEOMETRIES_RELATION);
 
 	@XSLVariable(prefix = "java.")
@@ -239,7 +242,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 		if (useSearchLMServiceRequestEncodingFix) {
 
-			URL_STRING_DECODER = URLStringConverterUtils.getUTF8StringDecoder();
+			URL_STRING_DECODER = ISO_TO_UTF8_STRING_DECODER;
 
 		} else {
 
@@ -1251,7 +1254,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 			if (useSearchLMServiceResponseEncodingFix) {
 
-				text = URLStringConverterUtils.getUTF8StringDecoder().decode(text);
+				text = ISO_TO_UTF8_STRING_DECODER.decode(text);
 			}
 		}
 
