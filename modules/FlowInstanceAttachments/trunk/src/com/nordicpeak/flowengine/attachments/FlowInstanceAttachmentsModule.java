@@ -459,6 +459,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 						
 						if (fileItem.getSize() > (getMaxFileSize() * BinarySizes.MegaByte)) {
 							
+							//TODO check system encoding before converting string, use local string converter
 							validationErrors.add(new FileSizeLimitExceededValidationError(URLStringConverterUtils.getUTF8StringDecoder().decode(FilenameUtils.getName(fileItem.getName())), fileItem.getSize(), getMaxFileSize() * BinarySizes.MegaByte));
 							
 							fileIterator.remove();
@@ -472,6 +473,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 						
 						Attachment attachment = new Attachment();
 						
+						//TODO check system encoding before converting string, use local string converter
 						String fileName = URLStringConverterUtils.getUTF8StringDecoder().decode((FilenameUtils.getName(fileItem.getName())));
 						
 						attachment.setFilename(fileName);
