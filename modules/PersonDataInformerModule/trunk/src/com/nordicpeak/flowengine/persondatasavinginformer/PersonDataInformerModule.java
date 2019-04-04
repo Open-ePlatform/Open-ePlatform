@@ -192,7 +192,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	@InstanceManagerDependency(required = true)
 	public void setFlowAdminModule(FlowAdminModule flowAdminModule) {
 
-		if (flowAdminModule == null && this.flowAdminModule != null) {
+		if (this.flowAdminModule != null) {
 
 			this.flowAdminModule.removeFragmentExtensionViewProvider(this);
 			this.flowAdminModule.removeFlowBrowserExtensionViewProvider(this);
@@ -200,10 +200,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		this.flowAdminModule = flowAdminModule;
 
-		if (this.flowAdminModule != null) {
+		if (flowAdminModule != null) {
 
-			this.flowAdminModule.addFragmentExtensionViewProvider(this);
-			this.flowAdminModule.addFlowBrowserExtensionViewProvider(this);
+			flowAdminModule.addFragmentExtensionViewProvider(this);
+			flowAdminModule.addFlowBrowserExtensionViewProvider(this);
 		}
 	}
 
@@ -284,11 +284,6 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	@Override
 	public ViewFragment getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
-
-		//This check is not necessary when fragments are used, this should be removed and the module re-tested
-		if (!AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)) {
-			return null;
-		}
 
 		Document doc = createDocument(req, uriParser, user);
 
@@ -418,7 +413,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		throw new URINotFoundException(uriParser);
 	}
 
-	public ViewFragment updateFlowSettings(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+	private ViewFragment updateFlowSettings(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
@@ -639,7 +634,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 		return new SimpleViewFragment(viewFragment.getHTML(), viewFragment.getDebugXML(), updateGlobalScriptTags, viewFragment.getLinks());
 	}
 
-	public ViewFragment deleteFlowSettings(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+	private ViewFragment deleteFlowSettings(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
