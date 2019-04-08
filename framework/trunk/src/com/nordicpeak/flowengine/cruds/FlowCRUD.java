@@ -522,13 +522,13 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	private void validateFlowOverviewAttributes(Flow flow, HttpServletRequest req, List<ValidationError> validationErrors) {
 
-		String[] alternativeIDs = req.getParameterValues("overviewAttributeID");
+		String[] attributeIDs = req.getParameterValues("overviewAttributeID");
 
-		if (alternativeIDs != null) {
+		if (attributeIDs != null) {
 
-			List<FlowOverviewAttribute> overviewAttributes = new ArrayList<FlowOverviewAttribute>(alternativeIDs.length);
+			List<FlowOverviewAttribute> overviewAttributes = new ArrayList<FlowOverviewAttribute>(attributeIDs.length);
 
-			for (String alternativeID : alternativeIDs) {
+			for (String alternativeID : attributeIDs) {
 
 				String name = ValidationUtils.validateParameter("overviewAttributeName_" + alternativeID, req, true, 1, 50, validationErrors);
 				String value = ValidationUtils.validateParameter("overviewAttributeValue_" + alternativeID, req, true, 1, 255, validationErrors);
