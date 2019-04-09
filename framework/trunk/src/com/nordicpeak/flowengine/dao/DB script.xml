@@ -2150,4 +2150,22 @@
 		</Query>
 	</Script>
 	
+	<Script version="117">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_external_message_templates` (
+					`templateID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowFamilyID` INT(11) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`message` TEXT NOT NULL,
+					PRIMARY KEY (`templateID`),
+					INDEX `FK_flowengine_flow_family_external_message_templates_1` (`flowFamilyID`),
+					CONSTRAINT `FK_flowengine_flow_family_external_message_templates_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

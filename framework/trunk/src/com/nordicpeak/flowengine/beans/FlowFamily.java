@@ -23,8 +23,8 @@ import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
-import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -60,6 +60,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field MANAGER_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "managerUsers");
 	public static final Field ALIASES_RELATION = ReflectionUtils.getField(FlowFamily.class, "aliases");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowFamily.class, "events");
+	public static final Field EXTERNAL_MESSAGE_TEMPLATES_RELATION = ReflectionUtils.getField(FlowFamily.class, "externalMessageTemplates");
 	
 	public static final Field AUTO_MANAGER_ASSIGNMENT_RULES_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentRules");
 	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysUserIDs");
@@ -203,6 +204,11 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_groups", remoteValueColumnName = "groupID")
 	private List<Integer> autoManagerAssignmentNoMatchGroupIDs;
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement(fixCase = true)
+	private List<ExternalMessageTemplate> externalMessageTemplates;
 	
 	private boolean hasTextTags;
 	
@@ -670,12 +676,20 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public void setAutoManagerAssignmentNoMatchGroupIDs(List<Integer> autoManagerAssignmentNoMatchGroupIDs) {
 		this.autoManagerAssignmentNoMatchGroupIDs = autoManagerAssignmentNoMatchGroupIDs;
 	}
-	
+
 	public boolean usesAutoManagerAssignment() {
-		
+
 		return !ObjectUtils.isNull(autoManagerAssignmentRules, autoManagerAssignmentAlwaysUserIDs, autoManagerAssignmentAlwaysGroupIDs, autoManagerAssignmentNoMatchUserIDs, autoManagerAssignmentNoMatchGroupIDs);
 	}
-	
+
+	public List<ExternalMessageTemplate> getExternalMessageTemplates() {
+		return externalMessageTemplates;
+	}
+
+	public void setExternalMessageTemplates(List<ExternalMessageTemplate> externalMessageTemplates) {
+		this.externalMessageTemplates = externalMessageTemplates;
+	}
+
 	public Element toXML(Document doc, SiteProfile siteProfile) {
 		
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);

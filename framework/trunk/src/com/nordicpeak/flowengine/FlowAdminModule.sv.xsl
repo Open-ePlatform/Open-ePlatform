@@ -42,6 +42,9 @@
 	<xsl:variable name="java.eventFlowInstanceManagerExpired">Handläggare automatiskt borttagen:</xsl:variable>
 	<xsl:variable name="java.eventFunctionConfigured">Ändrande konfigurationen av funktionen</xsl:variable>
 	<xsl:variable name="java.eventUpdateAutoManagerAssignment">Ändrade inställningar för automatisk tilldelning av handläggare</xsl:variable>
+	<xsl:variable name="java.eventExternalMessageTemplatesAddedMessage">Skapade meddelandemall</xsl:variable>
+	<xsl:variable name="java.eventExternalMessageTemplatesUpdatedMessage">Uppdaterade meddelandemall</xsl:variable>
+	<xsl:variable name="java.eventExternalMessageTemplatesDeletedMessage">Tog bort meddelandemall</xsl:variable>
 	
 	<xsl:variable name="java.bundleListFlows">Lista e-tjänster</xsl:variable>
 	<xsl:variable name="java.bundleAddFlow">Lägg till e-tjänst</xsl:variable>
@@ -585,7 +588,18 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Always">Handläggare som alltid tilldelas</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel matchar</xsl:variable>
 	
+	<xsl:variable name="i18n.ExternalMessageTemplates.title">Meddelandemallar</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.add">Lägg till meddelandemall</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.update">Ändra meddelandemallar</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.submit">Spara meddelandemall</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.delete">Ta bort</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.deleteConfirm">Är du säker på att du vill ta bort meddelandemallen?</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplates.noExternalMessageTemplates">Inga meddelandemallar finns.</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplate.name">Namn</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageTemplate.message">Meddelande</xsl:variable>
+	
 	<xsl:variable name="i18n.ValidationError.FullManagerOrFallbackManagerRequired">För att e-tjänsten ska få använda automatiskt tilldelning av handläggare så måste den antingen ha minst 1 fullständig handläggare, alltid tilldela en handläggare eller tilldela handläggare när ingen regel matchar.</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.ExternalMessageTemplateNotFound">Den begärda meddelandemallen hittades inte!</xsl:variable>
 	
 	<xsl:variable name="i18n.DescriptionColumnSettings.Title">Inställningar för ärendebeskrivningar</xsl:variable>
 	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten. Ändringar slår inte igenom på befintliga ärenden.</xsl:variable>

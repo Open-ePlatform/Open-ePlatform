@@ -92,6 +92,7 @@ import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.GenericCRUD;
+import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
@@ -144,6 +145,7 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.PooledXPathFactory;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLParser;
+import se.unlogic.standardutils.xml.XMLPopulationUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
@@ -159,6 +161,7 @@ import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -178,6 +181,7 @@ import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
 import com.nordicpeak.flowengine.comparators.StepSortIndexComparator;
 import com.nordicpeak.flowengine.cruds.CategoryCRUD;
 import com.nordicpeak.flowengine.cruds.EvaluatorDescriptorCRUD;
+import com.nordicpeak.flowengine.cruds.ExternalMessageTemplateCRUD;
 import com.nordicpeak.flowengine.cruds.FlowCRUD;
 import com.nordicpeak.flowengine.cruds.FlowFamilyCRUD;
 import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
@@ -260,6 +264,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
 	};
 	
 	private static final Field[] FLOW_CACHE_RELATIONS = {
@@ -291,6 +296,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
 			
 			FlowType.CATEGORIES_RELATION,
 			FlowType.ALLOWED_ADMIN_USERS_RELATION,
@@ -308,7 +314,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public static final ValidationError MAY_NOT_SET_SKIP_OVERVIEW_IF_FLOW_FORM_IS_SET_VALIDATION_ERROR = new ValidationError("MayNotSetOverviewIfFlowFormIsSet");
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
 
-	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
@@ -415,6 +421,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	@XSLVariable(prefix = "java.")
 	private String eventUpdateAutoManagerAssignment = "eventUpdateAutoManagerAssignment";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventExternalMessageTemplatesAddedMessage = "external message templates added";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventExternalMessageTemplatesUpdatedMessage = "external message templates updated";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventExternalMessageTemplatesDeletedMessage = "external message templates deleted";
 
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows= "List flows";
@@ -560,6 +575,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
 	
+	protected AnnotatedDAO<ExternalMessageTemplate> externalMessageTemplateDAO;
+	
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
 	private StepCRUD stepCRUD;
@@ -570,6 +587,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private FlowTypeCRUD flowTypeCRUD;
 	private CategoryCRUD categoryCRUD;
 	private FlowFormCRUD flowFormCRUD;
+	private ExternalMessageTemplateCRUD externalMessageTemplateCRUD;
 
 	protected QueryParameterFactory<FlowFamily, Integer> flowFamiliyIDParamFactory;
 
@@ -587,7 +605,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected QueryParameterFactory<QueryDescriptor, String> queryDescriptorQueryTypeIDParamFactory;
 	protected QueryParameterFactory<EvaluatorDescriptor, String> evaluatorDescriptorEvaluatorTypeIDParamFactory;
-
+	
 	protected OrderByCriteria<Flow> flowVersionOrderByCriteria;
 
 	private LinkedHashMap<Integer, FlowType> flowTypeCacheMap;
@@ -759,6 +777,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowVersionOrderByCriteria = daoFactory.getFlowDAO().getOrderByCriteria("version", Order.DESC);
 
 		flowFamilyEventFlowFamilyParamFactory = daoFactory.getFlowFamilyEventDAO().getParamFactory("flowFamily", FlowFamily.class);
+		
+		HierarchyAnnotatedDAOFactory normalDAOFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, false, false);
+		
+		externalMessageTemplateDAO = normalDAOFactory.getDAO(ExternalMessageTemplate.class);
+		AnnotatedDAOWrapper<ExternalMessageTemplate, Integer> externalMessageTemplateDAOWrapper = externalMessageTemplateDAO.getWrapper(Integer.class);
+		externalMessageTemplateDAOWrapper.setUseRelationsOnGet(true);
+		externalMessageTemplateDAOWrapper.addRelations(ExternalMessageTemplate.FLOW_FAMILY_RELATION);
+		
+		externalMessageTemplateCRUD = new ExternalMessageTemplateCRUD(externalMessageTemplateDAOWrapper, this);
 	}
 
 	@Override
@@ -1282,6 +1309,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return flowCRUD.show(req, res, user, uriParser);
 	}
+	
+	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception {
+
+		return flowCRUD.show(req, res, user, uriParser, validationErrors);
+	}
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse addFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
@@ -1403,6 +1435,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily flowFamily = new FlowFamily();
 			flowFamily.setVersionCount(1);
 			flowFamily.setStatisticsMode(flow.getFlowFamily().getStatisticsMode());
+			
+			if (flow.getFlowFamily().getExternalMessageTemplates() != null) {
+				
+				ArrayList<ExternalMessageTemplate> externalMessageTemplates = new ArrayList<ExternalMessageTemplate>(flow.getFlowFamily().getExternalMessageTemplates().size());
+				
+				for (ExternalMessageTemplate externalMessageTemplate : flow.getFlowFamily().getExternalMessageTemplates()) {
+					
+					ExternalMessageTemplate externalMessageTemplateCopy = SerializationUtils.cloneSerializable(externalMessageTemplate);
+					externalMessageTemplateCopy.setTemplateID(null);
+					
+					externalMessageTemplates.add(externalMessageTemplateCopy);
+				}
+				
+				flowFamily.setExternalMessageTemplates(externalMessageTemplates);
+			}
+			
 			flowCopy.setFlowFamily(flowFamily);
 			flowCopy.setVersion(1);
 			flowCopy.setName(flow.getName() + flowNameCopySuffix);
@@ -2531,8 +2579,23 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return processMutableQueryRequest(req, res, user, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
 	}
 
-	
-	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse addExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return externalMessageTemplateCRUD.add(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return externalMessageTemplateCRUD.update(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse deleteExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return externalMessageTemplateCRUD.delete(req, res, user, uriParser);
+	}
 	
 	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowType.class)
 	public void processFlowTypeEvent(CRUDEvent<FlowType> event, EventSource source) throws SQLException {
@@ -3684,6 +3747,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				FlowFamily flowFamily = new FlowFamily();
 				flowFamily.setVersionCount(1);
+				
+				List<ValidationError> errors = new ArrayList<ValidationError>();
+				
+				flowFamily.setExternalMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", ExternalMessageTemplate.class, errors));
+
+				if (!errors.isEmpty()) {
+
+					throw new ValidationException(errors);
+				}
 
 				flow.setFlowFamily(flowFamily);
 
@@ -4960,6 +5032,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return eventStatusDeletedMessage;
 	}
+	
+	
 
 	public boolean getUseCategories() {
 
@@ -5731,6 +5805,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public String getEventFlowFormDeletedMessage() {
 
 		return eventFlowFormDeletedMessage;
+	}
+	
+	public String getEventExternalMessageTemplatesAddedMessage() {
+
+		return eventExternalMessageTemplatesAddedMessage;
+	}
+	
+	public String getEventExternalMessageTemplatesUpdatedMessage() {
+
+		return eventExternalMessageTemplatesUpdatedMessage;
+	}
+	
+	public String getEventExternalMessageTemplatesDeletedMessage() {
+
+		return eventExternalMessageTemplatesDeletedMessage;
 	}
 
 	@Override
