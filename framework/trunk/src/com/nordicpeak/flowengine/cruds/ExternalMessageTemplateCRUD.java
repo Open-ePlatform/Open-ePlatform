@@ -13,7 +13,6 @@ import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -21,15 +20,15 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
 import com.nordicpeak.flowengine.populators.ExternalMessageTemplateBeanIDParser;
 
-public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemplate, Integer, User, FlowAdminModule> {
+public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemplate, Integer, User, FlowAdminCRUDCallback> {
 
-	public ExternalMessageTemplateCRUD(CRUDDAO<ExternalMessageTemplate, Integer> crudDAO, FlowAdminModule callback) {
+	public ExternalMessageTemplateCRUD(CRUDDAO<ExternalMessageTemplate, Integer> crudDAO, FlowAdminCRUDCallback callback) {
 
 		super(ExternalMessageTemplateBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ExternalMessageTemplate>(ExternalMessageTemplate.class), "ExternalMessageTemplate", "external message template", "", callback);
 	}
@@ -66,7 +65,7 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 			throw new URINotFoundException(uriParser);
 		}
 
-		if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
+		if (!callback.hasFlowTypeAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
