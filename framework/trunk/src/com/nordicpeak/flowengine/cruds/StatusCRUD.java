@@ -44,7 +44,6 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedGroupNotManagerValidationError;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
 
 public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
@@ -205,7 +204,6 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 			List<Integer> selectedGroupIDs = bean.getManagerGroupIDs();
 			
 			List<User> allowedManagerUsers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, callback.getUserHandler());
-			List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, callback.getGroupHandler());
 			
 			if (!CollectionUtils.isEmpty(selectedUserIDs)) {
 				
@@ -238,12 +236,6 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 						errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR);
 						continue;
 					}
-					
-					if (allowedManagerGroups != null && allowedManagerGroups.contains(selectedGroup)) {
-						continue;
-					}
-					
-					errors.add(new UnauthorizedGroupNotManagerValidationError(selectedGroup));
 				}
 			}
 			
