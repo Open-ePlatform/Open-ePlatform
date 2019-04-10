@@ -3693,7 +3693,7 @@
 			</div>
 		</div>
 		
-		<div id="allowedManagers" class="floatleft full">
+		<div id="allowedManagers" class="floatleft full hidden">
 			<div class="floatleft full bigmarginbottom">
 				
 				<label class="floatleft full">
@@ -3705,7 +3705,7 @@
 						<xsl:value-of select="/Document/requestinfo/currentURI"/>
 						<xsl:text>/</xsl:text>
 						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/managergroups/</xsl:text>
+						<xsl:text>/groups/</xsl:text>
 						<xsl:value-of select="Flow/flowID"/>
 					</xsl:with-param>
 					<xsl:with-param name="name" select="'group'"/>
@@ -3725,7 +3725,7 @@
 						<xsl:value-of select="/Document/requestinfo/currentURI"/>
 						<xsl:text>/</xsl:text>
 						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/managerusers/</xsl:text>
+						<xsl:text>/users/</xsl:text>
 						<xsl:value-of select="Flow/flowID"/>
 					</xsl:with-param>
 					<xsl:with-param name="name" select="'user'"/>

@@ -52,6 +52,10 @@ $(document).ready(function() {
 		updateSortOrder($(this));
 	});
 	
+	$("#useAccessCheck").on("change", function() {
+		$("#allowedManagers").toggle($(this).is(":checked"));
+	}).change();
+	
 	if ($("#flowForm").length > 0) { // Add/Update flow
 	
 		//Add flow
