@@ -871,7 +871,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					child.setTestChild(true);
 					child.setMunicipalityCode("4321");
 					child.setAddress("Testgatan 1");
-					child.setZipcode("12345");
+					child.setZipcode("123 45");
 					child.setPostalAddress("Testköping");
 					child.setGuardians(Collections.singletonList(guardian));
 					children.put(child.getCitizenIdentifier(), child);
