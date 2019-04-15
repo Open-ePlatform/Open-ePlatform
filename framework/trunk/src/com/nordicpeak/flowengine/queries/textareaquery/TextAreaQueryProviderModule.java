@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
@@ -24,6 +26,7 @@ import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.TooLongContentValidationError;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -51,6 +54,10 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAreaQueryInstance> implements BaseQueryCRUDCallback {
 
 	private static final int DEFAULT_MAX_LENGTH = 65536;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Keepalive poll frequency", description = "Controls the maximum interval at which the clients contact the server (specified in seconds)", required = true, formatValidator = PositiveStringIntegerValidator.class)
+	protected int keepalivePollFrequency = 60;
 
 	private AnnotatedDAO<TextAreaQuery> queryDAO;
 	private AnnotatedDAO<TextAreaQueryInstance> queryInstanceDAO;
@@ -240,6 +247,8 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 			
 			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
 		}
+		
+		XMLUtils.appendNewElement(doc, targetElement, "KeepalivePollFrequency", keepalivePollFrequency);
 	}
 
 	@Override
@@ -284,6 +293,17 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 	public ForegroundModuleResponse configureQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		return this.queryCRUD.update(req, res, user, uriParser);
+	}
+
+	@WebPublic(alias = "keepalive")
+	public ForegroundModuleResponse keepalive(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		res.setContentType("text/html");
+		res.setCharacterEncoding("ISO-8859-1");
+		res.getWriter().write(user != null ? "1" : "0");
+		res.getWriter().flush();
+
+		return null;
 	}
 
 	@Override

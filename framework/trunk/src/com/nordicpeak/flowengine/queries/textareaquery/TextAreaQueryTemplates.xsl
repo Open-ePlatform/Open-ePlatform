@@ -71,7 +71,7 @@
 	
 		<xsl:variable name="queryID" select="concat('query_', TextAreaQueryInstance/TextAreaQuery/queryID)" />
 	
-		<div id="{$queryID}">
+		<div id="{$queryID}" data-keepalive-url="{/Document/requestinfo/contextpath}{/Document/fullAlias}/keepalive">
 			<xsl:attribute name="class">
 				<xsl:text>query textareaquery</xsl:text>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
@@ -152,7 +152,11 @@
 			
 			<script type="text/javascript">
 				$(document).ready(function(){
-					initTextAreaQuery('<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/queryID" />');
+					initTextAreaQuery(
+						'<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/queryID" />',
+						<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/keepalive" />,
+						<xsl:value-of select="KeepalivePollFrequency" />
+					);
 				});
 			</script>
 		

@@ -77,4 +77,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `keepalive` BOOLEAN NOT NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

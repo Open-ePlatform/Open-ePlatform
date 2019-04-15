@@ -3,13 +3,13 @@ $(document).ready(function() {
 	setQueryRequiredFunctions["TextAreaQueryInstance"] = makeTextAreaQueryRequired;
 });
 
-function initTextAreaQuery(queryID) {
+function initTextAreaQuery(queryID, keepalive, keepalivePollFrequency) {
 	
 	var query = $("#query_" + queryID);
+	var textarea = query.find("textarea");
 	
 	if (query.hasClass("showlettercount")) {
 		
-		var textarea = query.find("textarea");
 		var counter = query.find(".lettercounter");
 		
 		var updateCounter = function() {
@@ -27,6 +27,29 @@ function initTextAreaQuery(queryID) {
 		updateCounter();
 		textarea.on("keyup change", updateCounter);
 	}
+	
+	if (keepalive) {
+
+		var lastKeepalive = Date.now();
+
+		textarea.on("keyup change", function() {
+
+			var now = Date.now();
+
+			if (lastKeepalive < (now - (keepalivePollFrequency * 1000))) {
+
+				$.ajax({
+					url : query.data('keepalive-url'),
+					cache : false,
+					success : function(result) {
+
+						lastKeepalive = now;
+					}
+				});
+			}
+		});
+	}
+	
 }
 
 function makeTextAreaQueryRequired(queryID) {

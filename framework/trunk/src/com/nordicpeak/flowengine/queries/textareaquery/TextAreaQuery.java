@@ -75,6 +75,11 @@ public class TextAreaQuery extends BaseQuery {
 	private boolean lockOnOwnershipTransfer;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean keepalive;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement
 	private List<TextAreaQueryInstance> instances;
@@ -280,6 +285,16 @@ public class TextAreaQuery extends BaseQuery {
 
 	public void setShowLetterCount(boolean showLetterCount) {
 		this.showLetterCount = showLetterCount;
+	}
+	
+	public boolean isKeepalive() {
+	
+		return keepalive;
+	}
+	
+	public void setKeepalive(boolean keepalive) {
+	
+		this.keepalive = keepalive;
 	}
 
 }
