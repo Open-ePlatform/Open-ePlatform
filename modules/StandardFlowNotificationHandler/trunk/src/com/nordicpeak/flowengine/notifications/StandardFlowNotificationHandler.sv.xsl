@@ -213,12 +213,12 @@
 	
 	</xsl:variable>
 	
-	<xsl:variable name="java.flowInstanceArchivedGlobalEmailSubject">Arkiverat ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceArchivedGlobalEmailSubject">Avslutat ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceArchivedGlobalEmailMessage">
 	
 		&lt;p&gt;Hej,&lt;/p&gt;
 		
-		&lt;p&gt;Ett ärende har arkiverats, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
+		&lt;p&gt;Ett ärende har avslutats, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
 		
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
@@ -333,8 +333,8 @@
 	
 	<xsl:variable name="i18n.SendFlowInstanceArchivedGlobalEmail">E-post när ärenden avslutas</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAddresses">E-postadresser för notifiering om avslutade ärenden (en adress per rad)</xsl:variable>
-	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid arkiverat ärende</xsl:variable>
-	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid arkiverat ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid avslutat ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
