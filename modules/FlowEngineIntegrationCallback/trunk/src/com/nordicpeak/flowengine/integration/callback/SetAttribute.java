@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.integration.callback;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -17,10 +18,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="flowInstanceID" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="externalID" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}ExternalID" minOccurs="0"/>
- *         &lt;element name="delivered" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="logMessage" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;choice>
+ *           &lt;element name="flowInstanceID" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *           &lt;element name="externalID" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}ExternalID"/>
+ *         &lt;/choice>
+ *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="value" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -33,30 +36,39 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "flowInstanceID",
     "externalID",
-    "delivered",
-    "logMessage"
+    "name",
+    "value"
 })
-@XmlRootElement(name = "confirmDelivery")
-public class ConfirmDelivery {
+@XmlRootElement(name = "setAttribute")
+public class SetAttribute {
 
-    protected int flowInstanceID;
+    protected Integer flowInstanceID;
     protected ExternalID externalID;
-    protected boolean delivered;
-    protected String logMessage;
+    @XmlElement(required = true)
+    protected String name;
+    protected String value;
 
     /**
      * Gets the value of the flowInstanceID property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
      */
-    public int getFlowInstanceID() {
+    public Integer getFlowInstanceID() {
         return flowInstanceID;
     }
 
     /**
      * Sets the value of the flowInstanceID property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
      */
-    public void setFlowInstanceID(int value) {
+    public void setFlowInstanceID(Integer value) {
         this.flowInstanceID = value;
     }
 
@@ -85,43 +97,51 @@ public class ConfirmDelivery {
     }
 
     /**
-     * Gets the value of the delivered property.
-     * 
-     */
-    public boolean isDelivered() {
-        return delivered;
-    }
-
-    /**
-     * Sets the value of the delivered property.
-     * 
-     */
-    public void setDelivered(boolean value) {
-        this.delivered = value;
-    }
-
-    /**
-     * Gets the value of the logMessage property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLogMessage() {
-        return logMessage;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the logMessage property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLogMessage(String value) {
-        this.logMessage = value;
+    public void setName(String value) {
+        this.name = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

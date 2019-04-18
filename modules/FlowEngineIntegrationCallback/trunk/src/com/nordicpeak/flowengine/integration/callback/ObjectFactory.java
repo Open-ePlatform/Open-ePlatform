@@ -36,6 +36,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SetAttributeResponse }
+     * 
+     */
+    public SetAttributeResponse createSetAttributeResponse() {
+        return new SetAttributeResponse();
+    }
+
+    /**
      * Create an instance of {@link DeleteInstanceResponse }
      * 
      */
@@ -60,11 +68,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteInstance }
+     * Create an instance of {@link SetAttribute }
      * 
      */
-    public DeleteInstance createDeleteInstance() {
-        return new DeleteInstance();
+    public SetAttribute createSetAttribute() {
+        return new SetAttribute();
     }
 
     /**
@@ -73,6 +81,14 @@ public class ObjectFactory {
      */
     public ExternalID createExternalID() {
         return new ExternalID();
+    }
+
+    /**
+     * Create an instance of {@link DeleteInstance }
+     * 
+     */
+    public DeleteInstance createDeleteInstance() {
+        return new DeleteInstance();
     }
 
     /**

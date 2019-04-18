@@ -47,7 +47,7 @@
 				<xs:choice minOccurs="1" maxOccurs="1">
 					<xs:element name="statusID" type="xs:int"/>
 					<xs:element name="statusAlias" type="xs:string"/>
-				</xs:choice>				
+				</xs:choice>
 				<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -176,6 +176,23 @@
 				<xs:element name="setManagersReturn" type="xs:int" />
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="setAttribute">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="setAttributeResponse">
+		<xs:complexType />
 	</xs:element>
 
 </xs:schema>

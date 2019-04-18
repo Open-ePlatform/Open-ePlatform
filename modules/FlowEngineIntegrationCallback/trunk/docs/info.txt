@@ -1,0 +1,3 @@
+Stand in the src folder and run:
+
+jdk1.7 wsimport.exe -Xnocompile -keep -p com.nordicpeak.flowengine.integration.callback com/nordicpeak/flowengine/integration/callback/IntegrationCallbackService.wsdl -b ../docs/binding.xjb

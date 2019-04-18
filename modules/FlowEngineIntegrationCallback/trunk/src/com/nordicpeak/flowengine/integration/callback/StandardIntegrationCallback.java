@@ -308,7 +308,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void confirmDelivery(Integer flowInstanceID, ExternalID externalID, boolean delivered, String logMessage) throws AccessDeniedException, FlowInstanceNotFoundException {
+	public void confirmDelivery(int flowInstanceID, ExternalID externalID, boolean delivered, String logMessage) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		try{
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
@@ -606,6 +606,55 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		} catch (Exception e){
 
 			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void setAttribute(Integer flowInstanceID, ExternalID externalID, String name, String value) throws AccessDeniedException, FlowInstanceNotFoundException {
+
+		try {
+			checkDependencies();
+
+			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+			log.info("User " + callback.getUser() + " requested set attribute for flow instance " + flowInstance + " attribute \"" + name + "\" with value \"" + value + "\"");
+
+			if (StringUtils.isEmpty(name)) {
+				throw new RuntimeException("Name cannot be empty");
+			}
+			
+			if (StringUtils.isEmpty(value)) {
+
+				if (!flowInstance.getAttributeHandler().isSet(name)) {
+					return;
+				}
+
+				flowInstance.getAttributeHandler().removeAttribute(name);
+
+			} else if (value.equals(flowInstance.getAttributeHandler().getString(name))) {
+
+				return;
+
+			} else {
+
+				flowInstance.getAttributeHandler().setAttribute(name, value);
+			}
+
+			try {
+				daoFactory.getFlowInstanceDAO().update(flowInstance, new RelationQuery(FlowInstance.ATTRIBUTES_RELATION));
+
+			} catch (SQLException e) {
+
+				throw new RuntimeException(e);
+			}
+
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+
+		} catch (RuntimeException e) {
+
+			log.error("Error setting attribute", e);
+
+			throw e;
 		}
 	}
 }

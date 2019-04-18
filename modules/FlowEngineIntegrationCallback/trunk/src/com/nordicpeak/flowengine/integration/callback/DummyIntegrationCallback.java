@@ -78,7 +78,7 @@ public class DummyIntegrationCallback extends BaseWSModuleService implements Int
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void confirmDelivery(Integer flowInstanceID, ExternalID externalID, boolean delivered, String logMessage) throws AccessDeniedException, FlowInstanceNotFoundException {
+	public void confirmDelivery(int flowInstanceID, ExternalID externalID, boolean delivered, String logMessage) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		log.info("User " + callback.getUser() + " requested confirmDelivery");
 
@@ -123,5 +123,13 @@ public class DummyIntegrationCallback extends BaseWSModuleService implements Int
 				throw new AccessDeniedException("Access to flow instance " + flowInstanceID + " denied", new AccessDenied());
 			}
 		}
+	}
+
+	@Override
+	public void setAttribute(Integer flowInstanceID, ExternalID externalID, String name, String value) throws AccessDeniedException, FlowInstanceNotFoundException {
+		
+		log.info("User " + callback.getUser() + " requested setAttribute");
+
+		checkFlowInstanceID(flowInstanceID);
 	}
 }

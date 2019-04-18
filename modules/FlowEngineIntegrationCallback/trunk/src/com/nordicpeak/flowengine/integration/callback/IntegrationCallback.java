@@ -35,9 +35,9 @@ public interface IntegrationCallback {
      * @param statusAlias
      * @return
      *     returns int
-     * @throws StatusNotFoundException
      * @throws AccessDeniedException
      * @throws FlowInstanceNotFoundException
+     * @throws StatusNotFoundException
      */
     @WebMethod
     @WebResult(name = "eventID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
@@ -131,7 +131,7 @@ public interface IntegrationCallback {
     @ResponseWrapper(localName = "confirmDeliveryResponse", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.ConfirmDeliveryResponse")
     public void confirmDelivery(
         @WebParam(name = "flowInstanceID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
-        Integer flowInstanceID,
+        int flowInstanceID,
         @WebParam(name = "externalID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
         ExternalID externalID,
         @WebParam(name = "delivered", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
@@ -185,6 +185,31 @@ public interface IntegrationCallback {
         ExternalID externalID,
         @WebParam(name = "managers", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
         List<Principal> managers)
+        throws AccessDeniedException, FlowInstanceNotFoundException
+    ;
+
+    /**
+     * This method is used to set attributes in flow instances. The attribute name will be automatically prefixed by "callback.". An empty value will remove the attribute.
+     * 
+     * @param flowInstanceID
+     * @param name
+     * @param value
+     * @param externalID
+     * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
+     */
+    @WebMethod
+    @RequestWrapper(localName = "setAttribute", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.SetAttribute")
+    @ResponseWrapper(localName = "setAttributeResponse", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.SetAttributeResponse")
+    public void setAttribute(
+        @WebParam(name = "flowInstanceID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        Integer flowInstanceID,
+        @WebParam(name = "externalID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        ExternalID externalID,
+        @WebParam(name = "name", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        String name,
+        @WebParam(name = "value", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        String value)
         throws AccessDeniedException, FlowInstanceNotFoundException
     ;
 
