@@ -32,6 +32,8 @@ public interface EvaluationHandler {
 	public <X extends EvaluationProvider> X getEvaluationProvider(String evluatorTypeID, Class<X> clazz);
 
 	public EvaluationProvider getEvaluationProvider(String evaluatorTypeID);
+	
+	public <X extends EvaluationProvider> List<X> getAssignableEvaluationProviders(Class<X> clazz);
 
 	public List<Evaluator> getEvaluators(List<EvaluatorDescriptor> evaluatorDescriptors, InstanceMetadata instanceMetadata) throws EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException;
 

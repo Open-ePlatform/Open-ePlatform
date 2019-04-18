@@ -176,6 +176,27 @@ public class EvaluationHandlerModule extends AnnotatedForegroundModule implement
 
 		return this.evaluationProviderMap.get(evaluatorTypeID);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <X extends EvaluationProvider> List<X> getAssignableEvaluationProviders(Class<X> clazz) {
+		
+		List<X> values = new ArrayList<X>();
+		
+		for (EvaluationProvider evaluationProvider : evaluationProviderMap.values()) {
+			
+			if (clazz.isAssignableFrom(evaluationProvider.getClass())) {
+				
+				values.add((X) evaluationProvider);
+			}
+		}
+		
+		if (values.isEmpty()) {
+			return null;
+		}
+		
+		return values;
+	}
 
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
