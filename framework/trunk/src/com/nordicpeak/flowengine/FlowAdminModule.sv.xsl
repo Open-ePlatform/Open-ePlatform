@@ -348,8 +348,8 @@
 	<xsl:variable name="i18n.UpdateManagers.openModal">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validFromDate">Giltig från och med</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.validToDate">Giltig till och med</xsl:variable>
-	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (Kan endast se ärenden hen blivit tilldelade)</xsl:variable>
-	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (Kan endast se ärenden gruppen blivit tilldelad)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>
