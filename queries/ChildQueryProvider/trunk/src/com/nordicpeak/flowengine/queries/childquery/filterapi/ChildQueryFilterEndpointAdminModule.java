@@ -166,7 +166,7 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		simpleRequest.setHeaders(headerEntries);
 
 		try {
-		HTTPResponse response = HTTPUtils.sendHTTPGetRequest(simpleRequest, endpoint.getCharset());
+			HTTPResponse response = HTTPUtils.sendHTTPGetRequest(simpleRequest, endpoint.getCharset());
 
 			try {
 				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), false, false));
@@ -207,6 +207,7 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 			} catch (Exception e) {
 
 				log.warn("Error parsing children XML for " + endpoint, e);
+				return null;
 			}
 			
 		} catch (IOException e) {
