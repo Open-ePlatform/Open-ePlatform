@@ -617,11 +617,13 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
 
-			log.info("User " + callback.getUser() + " requested set attribute for flow instance " + flowInstance + " attribute \"" + name + "\" with value \"" + value + "\"");
-
 			if (StringUtils.isEmpty(name)) {
 				throw new RuntimeException("Name cannot be empty");
 			}
+			
+			name = "callback." + name;
+			
+			log.info("User " + callback.getUser() + " requested set attribute for flow instance " + flowInstance + " attribute \"" + name + "\" with value \"" + value + "\"");
 			
 			if (StringUtils.isEmpty(value)) {
 
