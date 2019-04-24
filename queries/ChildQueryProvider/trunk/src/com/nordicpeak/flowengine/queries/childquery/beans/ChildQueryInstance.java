@@ -230,7 +230,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			if (childAttributes != null) {
 				for (ChildAttribute childAttribute : childAttributes) {
 					
-					attributeHandler.setAttribute(query.getAttributeName() + ".child" + childAttribute.getName(), childAttribute.getValue());
+					attributeHandler.setAttribute(query.getAttributeName() + "." + childAttribute.getName(), childAttribute.getValue());
 				}
 			}
 			
@@ -267,7 +267,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			if (childAttributes != null) {
 				for (ChildAttribute childAttribute : childAttributes) {
 
-					attributeHandler.removeAttribute(query.getAttributeName() + ".child" + childAttribute.getName());
+					attributeHandler.removeAttribute(query.getAttributeName() + "." + childAttribute.getName());
 				}
 			}
 		}
