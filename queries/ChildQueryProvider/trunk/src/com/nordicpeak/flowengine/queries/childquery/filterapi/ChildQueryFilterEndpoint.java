@@ -69,7 +69,7 @@ public class ChildQueryFilterEndpoint extends GeneratedElementable implements Se
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@WebPopulate
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
-	@SimplifiedRelation(table = "child_query_filter_endpoint_fields", remoteValueColumnName = "name")
+	@SimplifiedRelation(table = "child_query_filter_endpoint_fields", remoteValueColumnName = "name", preserveListOrder = true, indexColumn = "sortIndex")
 	@XMLElement(fixCase = true)
 	private List<String> fields;
 
