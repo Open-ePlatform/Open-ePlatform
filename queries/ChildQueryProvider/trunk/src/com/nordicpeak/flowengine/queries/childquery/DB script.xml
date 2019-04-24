@@ -267,7 +267,15 @@
 	<Script version="18">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `child_query_filter_endpoint_fields` ADD COLUMN `sortIndex` INTEGER UNSIGNED NOT NULL AFTER `name`;				
+				ALTER TABLE `child_query_filter_endpoint_fields` ADD COLUMN `sortIndex` INTEGER UNSIGNED NOT NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="19">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_selected_attributes` ADD COLUMN `sortIndex` INTEGER UNSIGNED NOT NULL AFTER `name`;
 			]]>
 		</Query>
 	</Script>

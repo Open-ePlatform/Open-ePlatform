@@ -7,6 +7,7 @@ import java.util.List;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
+import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
@@ -25,7 +26,7 @@ import com.nordicpeak.flowengine.queries.childquery.enums.ChildAttributeDisplayM
 public class SelectedChildAttribute extends GeneratedElementable implements XMLParserPopulateable, Serializable {
 
 	private static final long serialVersionUID = -5407922522706409574L;
-	
+
 	public static final EnumPopulator<ChildAttributeDisplayMode> DISPLAY_MODE_POPULATOR = new EnumPopulator<ChildAttributeDisplayMode>(ChildAttributeDisplayMode.class);
 
 	@DAOManaged(columnName = "queryID")
@@ -42,12 +43,18 @@ public class SelectedChildAttribute extends GeneratedElementable implements XMLP
 	@XMLElement
 	private ChildAttributeDisplayMode displayMode;
 
+	@DAOManaged
+	@OrderBy
+	@XMLElement
+	private int sortIndex;
+
 	public SelectedChildAttribute() {}
 
-	public SelectedChildAttribute(String name, ChildAttributeDisplayMode displayMode) {
+	public SelectedChildAttribute(String name, ChildAttributeDisplayMode displayMode, int sortIndex) {
 		super();
 		this.name = name;
 		this.displayMode = displayMode;
+		this.sortIndex = sortIndex;
 	}
 
 	public ChildQuery getQuery() {
@@ -79,10 +86,25 @@ public class SelectedChildAttribute extends GeneratedElementable implements XMLP
 
 		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		displayMode = XMLValidationUtils.validateParameter("displayName", xmlParser, true, 1, 255, DISPLAY_MODE_POPULATOR, errors);
-
+		
+		Integer sortIndex = xmlParser.getInteger("sortIndex");
+		
+		if (sortIndex != null) {
+			this.sortIndex = sortIndex;
+		}
+		
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
 	}
+
+	public int getSortIndex() {
+		return sortIndex;
+	}
+
+	public void setSortIndex(int sortIndex) {
+		this.sortIndex = sortIndex;
+	}
+
 }

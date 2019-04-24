@@ -111,12 +111,14 @@ public class ChildQueryCRUD extends BaseQueryCRUD<ChildQuery, ChildQueryProvider
 
 					List<SelectedChildAttribute> selectedChildAttributes = new ArrayList<SelectedChildAttribute>(endpoint.getFields().size());
 
+					int sortIndex = 0;
+					
 					for (String fieldName : endpoint.getFields()) {
 
 						ChildAttributeDisplayMode displayMode = ValidationUtils.validateParameter("attribute-" + endpoint.getEndpointID() + "-" + fieldName, req, true, SelectedChildAttribute.DISPLAY_MODE_POPULATOR, validationErrors);
 
 						if (displayMode != null) {
-							selectedChildAttributes.add(new SelectedChildAttribute(fieldName, displayMode));
+							selectedChildAttributes.add(new SelectedChildAttribute(fieldName, displayMode, sortIndex++));
 						}
 					}
 
