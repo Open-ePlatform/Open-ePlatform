@@ -227,18 +227,21 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		
 		if (query.isSetAsAttribute() && query.getAttributeName() != null) {
 			
+			if (childAttributes != null) {
+				for (ChildAttribute childAttribute : childAttributes) {
+					
+					attributeHandler.setAttribute(query.getAttributeName() + ".child" + childAttribute.getName(), childAttribute.getValue());
+				}
+			}
+			
 			attributeHandler.setAttribute(query.getAttributeName() + ".childFirstname", firstname);
 			attributeHandler.setAttribute(query.getAttributeName() + ".childLastname", lastname);
 			attributeHandler.setAttribute(query.getAttributeName() + ".childCitizenIdentifier", citizenIdentifier);
-			
-			//TODO set child attributes
 		}
 	}
 	
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
-		
-		//TODO clear child attributes
 		
 		citizenIdentifier = null;
 		firstname = null;
@@ -249,8 +252,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		zipcode = null;
 		postalAddress = null;
 		testChild = false;
-		childAttributes = null;
-		
+
 		// Backward compatibility
 		attributeHandler.removeAttribute("childFirstname");
 		attributeHandler.removeAttribute("childLastname");
@@ -260,8 +262,17 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			
 			attributeHandler.removeAttribute(query.getAttributeName() + ".childFirstname");
 			attributeHandler.removeAttribute(query.getAttributeName() + ".childLastname");
-			attributeHandler.removeAttribute(query.getAttributeName() + ".childCitizenIdentifier");			
+			attributeHandler.removeAttribute(query.getAttributeName() + ".childCitizenIdentifier");
+
+			if (childAttributes != null) {
+				for (ChildAttribute childAttribute : childAttributes) {
+
+					attributeHandler.removeAttribute(query.getAttributeName() + ".child" + childAttribute.getName());
+				}
+			}
 		}
+		
+		childAttributes = null;
 		
 		super.reset(attributeHandler);
 	}
