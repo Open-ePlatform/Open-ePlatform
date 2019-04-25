@@ -43,6 +43,7 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.validationerrors.InUseManagerGroupValidationError;
 import com.nordicpeak.flowengine.validationerrors.InUseManagerUserValidationError;
 
 public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdminModule> {
@@ -62,9 +63,19 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 		}
 	}
 
-	private static final String ACTIVE_FLOWINSTANCE_MANAGERS_SQL = "SELECT DISTINCT userID FROM flowengine_flow_instance_managers WHERE flowInstanceID IN(" +
-			"SELECT ffi.flowInstanceID FROM flowengine_flow_instances AS ffi LEFT JOIN flowengine_flow_statuses AS ffs ON ffi.statusID = ffs.statusID WHERE ffi.flowID IN(" +
-			"SELECT flowID FROM flowengine_flows WHERE flowFamilyID = ? AND enabled = true) AND ffs.contentType != 'ARCHIVED')";
+	//@formatter:off
+	private static final String ACTIVE_FLOWINSTANCE_MANAGERS_SQL = "SELECT DISTINCT userID FROM flowengine_flow_instance_managers"
+			+ " WHERE flowInstanceID IN ("
+			+ " SELECT ffi.flowInstanceID FROM flowengine_flow_instances AS ffi"
+			+ " LEFT JOIN flowengine_flow_statuses AS ffs ON ffi.statusID = ffs.statusID"
+			+ " WHERE ffi.flowID IN (SELECT flowID FROM flowengine_flows WHERE flowFamilyID = ? AND enabled = true) AND ffs.contentType != 'ARCHIVED')";
+	
+	private static final String ACTIVE_FLOWINSTANCE_MANAGER_GROUPS_SQL = "SELECT DISTINCT groupID FROM flowengine_flow_instance_manager_groups"
+			+ " WHERE flowInstanceID IN ("
+			+ " SELECT ffi.flowInstanceID FROM flowengine_flow_instances AS ffi"
+			+ " LEFT JOIN flowengine_flow_statuses AS ffs ON ffi.statusID = ffs.statusID"
+			+ " WHERE ffi.flowID IN (SELECT flowID FROM flowengine_flows WHERE flowFamilyID = ? AND enabled = true) AND ffs.contentType != 'ARCHIVED')";
+	//@formatter:on
 
 	public FlowFamilyCRUD(CRUDDAO<FlowFamily, Integer> crudDAO, FlowAdminModule callback) {
 
@@ -112,11 +123,13 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 				if (managerUser != null) {
 					
 					boolean restricted = "true".equals(req.getParameter("manager-restricted" + managerID));
+					boolean allowUpdatingManagers = restricted && "true".equals(req.getParameter("manager-allowUpdatingManagers" + managerID));
 					Date validFromDate = ValidationUtils.validateParameter("manager-validFromDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					Date validToDate = ValidationUtils.validateParameter("manager-validToDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					
 					FlowFamilyManager manager = new FlowFamilyManager(managerUser);
 					manager.setRestricted(restricted);
+					manager.setAllowUpdatingManagers(allowUpdatingManagers);
 					
 					if (validFromDate != null) {
 						
@@ -156,9 +169,11 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 				if (group != null) {
 					
 					boolean restricted = "true".equals(req.getParameter("manager-group-restricted" + groupID));
+					boolean allowUpdatingManagers = restricted && "true".equals(req.getParameter("manager-group-allowUpdatingManagers" + groupID));
 					
 					FlowFamilyManagerGroup managerGroup = new FlowFamilyManagerGroup(group);
 					managerGroup.setRestricted(restricted);
+					managerGroup.setAllowUpdatingManagers(allowUpdatingManagers);
 					
 					managerGroups.add(managerGroup);
 					
@@ -172,8 +187,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 		}
 		
 		checkManagersInUse(flowFamily, managerIDs, managerGroupIDs, validationErrors);
-		
-		//TODO check for still in use restricted groups InUseManagerGroupError
+		checkRestrictedManagerGroupsInUse(flowFamily, managerGroupIDs, validationErrors);
 		
 		if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, callback.getUserHandler())) {
 			
@@ -199,7 +213,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 				
 				outer: for (User currentManager : currentManagers) {
 					
-					//User did not have access before, skip check
+					// User did not have access before, skip check
 					if (unchangedFlowFamily.getManagerAccess(currentManager) == null) {
 						continue;
 					}
@@ -225,6 +239,35 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			}
 		}
 	}
+	
+	public void checkRestrictedManagerGroupsInUse(FlowFamily flowFamily, List<Integer> newManagerGroupIDs, List<ValidationError> validationErrors) throws SQLException, AccessDeniedException {
+		
+		List<Integer> currentFlowInstanceManagerGroupIDs = getCurrentFlowInstanceManagerGroupIDs(flowFamily);
+		
+		if (currentFlowInstanceManagerGroupIDs != null) {
+			
+			FlowFamily unchangedFlowFamily = getBean(flowFamily.getFlowFamilyID());
+			
+			List<Group> currentGroups = callback.getGroupHandler().getGroups(currentFlowInstanceManagerGroupIDs, false);
+			
+			if (currentGroups != null) {
+				
+				for (Group currentGroup : currentGroups) {
+					
+					// Group did not have access before, skip check
+					if (unchangedFlowFamily.getManagerGroupIDs() == null || !unchangedFlowFamily.getManagerGroupIDs().contains(currentGroup.getGroupID())) {
+						continue;
+					}
+					
+					if (newManagerGroupIDs != null && newManagerGroupIDs.contains(currentGroup.getGroupID())) {
+						continue;
+					}
+					
+					validationErrors.add(new InUseManagerGroupValidationError(currentGroup));
+				}
+			}
+		}
+	}
 
 	@Override
 	public FlowFamily getBean(Integer beanID) throws SQLException, AccessDeniedException {
@@ -241,16 +284,6 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 
 	@Override
 	protected void appendUpdateFormData(FlowFamily flowFamily, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
-
-		//		This code is kept in case client side validation is to be implemented again
-		//
-		//		List<Integer> flowInstanceManagerUserIDs = getCurrentFlowInstanceManagerUserIDs(bean);
-		//
-		//		if (flowInstanceManagerUserIDs != null) {
-		//
-		//			XMLUtils.append(doc, updateTypeElement, "FlowInstanceManagerUsers", callback.getUserHandler().getUsers(flowInstanceManagerUserIDs, true, false));
-		//
-		//		}
 
 		XMLUtils.append(doc, updateTypeElement, (Flow) req.getAttribute("flow"));
 		
@@ -293,6 +326,15 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 	private List<Integer> getCurrentFlowInstanceManagerUserIDs(FlowFamily flowFamily) throws SQLException {
 
 		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(callback.getDataSource(), ACTIVE_FLOWINSTANCE_MANAGERS_SQL, IntegerPopulator.getPopulator());
+
+		query.setInt(1, flowFamily.getFlowFamilyID());
+
+		return query.executeQuery();
+	}
+	
+	private List<Integer> getCurrentFlowInstanceManagerGroupIDs(FlowFamily flowFamily) throws SQLException {
+
+		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(callback.getDataSource(), ACTIVE_FLOWINSTANCE_MANAGER_GROUPS_SQL, IntegerPopulator.getPopulator());
 
 		query.setInt(1, flowFamily.getFlowFamilyID());
 

@@ -350,12 +350,14 @@
 	<xsl:variable name="i18n.UpdateManagers.Modal.validToDate">Giltig till och med</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.allowUpdatingManagers">Tillåt byte av handläggare</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.validToDate">Giltig till och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromToDate">till och med</xsl:variable>
 	<xsl:variable name="i18n.Manager.restricted">Begränsad</xsl:variable>
+	<xsl:variable name="i18n.Manager.allowUpdatingManagers">Får byta handläggare</xsl:variable>
 	
 	<xsl:variable name="i18n.AddFlowCategoryNotFound">Den begärda underkategorin hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.AddCategoryFailedFlowTypeNotFound">Den begärda kategorin hittades inte.</xsl:variable>

@@ -29,6 +29,10 @@ public class FlowFamilyManagerGroup extends GeneratedElementable implements Seri
 	@DAOManaged
 	@XMLElement
 	private boolean restricted;
+	
+	@DAOManaged
+	@XMLElement
+	private boolean allowUpdatingManagers;
 
 	/** Only for display */
 	@XMLElement
@@ -78,17 +82,25 @@ public class FlowFamilyManagerGroup extends GeneratedElementable implements Seri
 	public void setRestricted(boolean restricted) {
 		this.restricted = restricted;
 	}
+	
+	public boolean isAllowUpdatingManagers() {
+		return allowUpdatingManagers;
+	}
+
+	public void setAllowUpdatingManagers(boolean allowUpdatingManagers) {
+		this.allowUpdatingManagers = allowUpdatingManagers;
+	}
 
 	@Override
 	public String toString() {
 
 		if (group != null) {
 
-			return group + " (restricted=" + restricted + ")";
+			return group + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
 
 		} else {
 
-			return "groupID " + groupID + " (restricted=" + restricted + ")";
+			return "groupID " + groupID + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
 		}
 	}
 

@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=1
+		/js/flowadminmodule.js?v=2
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -1546,6 +1546,14 @@
 				<span class="bigmarginleft">
 					<xsl:value-of select="$i18n.Manager.restricted"/>
 				</span>
+				
+				<xsl:if test="allowUpdatingManagers = 'true'">
+					
+					<span class="bigmarginleft">
+						<xsl:value-of select="$i18n.Manager.allowUpdatingManagers"/>
+					</span>
+					
+				</xsl:if>
 			
 			</xsl:if>
 			
@@ -1615,6 +1623,14 @@
 				<span class="bigmarginleft">
 					<xsl:value-of select="$i18n.Manager.restricted"/>
 				</span>
+				
+				<xsl:if test="allowUpdatingManagers = 'true'">
+					
+					<span class="bigmarginleft">
+						<xsl:value-of select="$i18n.Manager.allowUpdatingManagers"/>
+					</span>
+					
+				</xsl:if>
 			
 			</xsl:if>
 			
@@ -5433,16 +5449,20 @@
 						</div>
 						
 						<div class="floatleft full bigmarginbottom">
-						
-							<div class="floatleft">
-								<input type="checkbox" id="restricted1" name="restricted" value="true" />
-								<label class="marginleft" for="restricted1">
-									<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedUser" />
-								</label>
-							</div>
+							<input type="checkbox" id="restricted1" name="restricted" value="true" />
+							<label class="marginleft" for="restricted1">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedUser" />
+							</label>
 						</div>
 						
-						<input class="close bigmargintop floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
+						<div class="floatleft full bigmarginbottom">
+							<input type="checkbox" id="allowUpdatingManagers1" name="allowUpdatingManagers" value="true" />
+							<label class="marginleft" for="allowUpdatingManagers1">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.allowUpdatingManagers" />
+							</label>
+						</div>
+						
+						<input class="close bigmargintop clearboth floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
 						
 					</div>
 					
@@ -5463,16 +5483,20 @@
 					<div class="modal-body">
 					
 						<div class="floatleft full bigmarginbottom">
-						
-							<div class="floatleft">
-								<input type="checkbox" id="restricted2" name="restricted" value="true" />
-								<label class="marginleft" for="restricted2">
-									<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedGroup" />
-								</label>
-							</div>
+							<input type="checkbox" id="restricted2" name="restricted" value="true" />
+							<label class="marginleft" for="restricted2">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.restrictedGroup" />
+							</label>
 						</div>
 						
-						<input class="close bigmargintop floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
+						<div class="floatleft full bigmarginbottom">
+							<input type="checkbox" id="allowUpdatingManagers2" name="allowUpdatingManagers" value="true" />
+							<label class="marginleft" for="allowUpdatingManagers2">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.allowUpdatingManagers" />
+							</label>
+						</div>
+						
+						<input class="close bigmargintop clearboth floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
 						
 					</div>
 					
@@ -5491,6 +5515,10 @@
 				
 				<span class="bigmarginleft restricted" style="display: none;">
 					<xsl:value-of select="$i18n.Manager.restricted" />
+				</span>
+				
+				<span class="bigmarginleft allowUpdatingManagers" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.allowUpdatingManagers" />
 				</span>
 				
 				<span class="bigmarginleft validfrom" style="display: none;">
@@ -5521,9 +5549,13 @@
 		<xsl:choose>
 			<xsl:when test="$listname = 'manager-group'">
 			
-				<div class="display-inline bigmarginleft restricted" style="display: none;">
+				<span class="bigmarginleft restricted" style="display: none;">
 					<xsl:value-of select="$i18n.Manager.restricted" />
-				</div>
+				</span>
+				
+				<span class="bigmarginleft allowUpdatingManagers" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.allowUpdatingManagers" />
+				</span>
 			
 				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagerGroupModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
 					<img class="vertical-align-middle" src="{$imgPath}/pen.png" alt="{$i18n.UpdateManagers.openModal}" />
@@ -5555,6 +5587,12 @@
 				<xsl:call-template name="userlist-extension-default">
 					<xsl:with-param name="listname" select="$listname" />
 					<xsl:with-param name="name" select="'restricted'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
 					<xsl:with-param name="value" select="''" />
 				</xsl:call-template>
 			
@@ -5590,6 +5628,13 @@
 					<xsl:with-param name="name" select="'restricted'" />
 					<xsl:with-param name="value" select="../restricted" />
 				</xsl:call-template>
+				
+				<xsl:call-template name="userlist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
+					<xsl:with-param name="value" select="../allowUpdatingManagers" />
+				</xsl:call-template>
 			
 			</xsl:when>
 		</xsl:choose>
@@ -5605,6 +5650,12 @@
 				<xsl:call-template name="grouplist-extension-default">
 					<xsl:with-param name="listname" select="$listname" />
 					<xsl:with-param name="name" select="'restricted'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="grouplist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
 					<xsl:with-param name="value" select="''" />
 				</xsl:call-template>
 				
@@ -5625,6 +5676,13 @@
 					<xsl:with-param name="requestparameters" select="$requestparameters" />
 					<xsl:with-param name="name" select="'restricted'" />
 					<xsl:with-param name="value" select="../restricted" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="grouplist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
+					<xsl:with-param name="value" select="../allowUpdatingManagers" />
 				</xsl:call-template>
 			
 			</xsl:when>

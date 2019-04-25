@@ -358,6 +358,7 @@ function updateManagerShowHideRowExtra(row) {
 	
 	var userID = row.find("input[name='manager']").val();
 	row.find(".restricted").toggle(row.find("input[name='manager-restricted" + userID + "']").val() == "true");
+	row.find(".allowUpdatingManagers").toggle(row.find("input[name='manager-allowUpdatingManagers" + userID + "']").val() == "true");
 	
 	var validFrom = row.find("input[name='manager-validFromDate" + userID + "']").val();
 	var validTo = row.find("input[name='manager-validToDate" + userID + "']").val();
@@ -370,6 +371,24 @@ function updateManagerGroupShowHideRowExtra(row) {
 	
 	var groupID = row.find("input[name='manager-group']").val();
 	row.find(".restricted").toggle(row.find("input[name='manager-group-restricted" + groupID + "']").val() == "true");
+	row.find(".allowUpdatingManagers").toggle(row.find("input[name='manager-group-allowUpdatingManagers" + groupID + "']").val() == "true");
+}
+
+function updateManagerShowHideModalFields(content) {
+	
+	var restrictedField = content.find("input[name='restricted']");
+	var allowUpdatingManagersField = content.find("input[name='allowUpdatingManagers']");
+	
+	restrictedField.change(function(){
+		
+		var restricted = restrictedField.prop("checked")
+		allowUpdatingManagersField.parent().toggle(restricted);
+		
+		if (!restricted) {
+			allowUpdatingManagersField.prop("checked", false);
+		}
+		
+	}).change();
 }
 
 function openUpdateManagerModal(button, event) {
@@ -393,7 +412,7 @@ function openUpdateManagerModal(button, event) {
 				modal.find("input, select").each(function() {
 					
 					var input = $(this);
-					var savedInput = row.find("input[name^='manager-" + input.prop("name") + userID + "']");
+					var savedInput = row.find("input[name='manager-" + input.prop("name") + userID + "']");
 					
 					if (savedInput.length > 0) {
 						
@@ -423,8 +442,9 @@ function openUpdateManagerModal(button, event) {
 			            changeYear: true,
 			            showWeek: true,
 					});
-					
 				}
+				
+				updateManagerShowHideModalFields(content);
 				
 				modal.detach();
 			},
@@ -444,7 +464,7 @@ function openUpdateManagerModal(button, event) {
 						val = input.val();
 					}
 					
-					row.find("input[name^='manager-" + input.prop("name") + userID + "']").val(val);
+					row.find("input[name='manager-" + input.prop("name") + userID + "']").val(val);
 					
 //					console.info("store " + input.prop("name") + " " + val);
 				});
@@ -478,7 +498,7 @@ function openUpdateManagerGroupModal(button, event) {
 				modal.find("input, select").each(function(){
 					
 					var input = $(this);
-					var savedInput = row.find("input[name^='manager-group-" + input.prop("name") + groupID + "']");
+					var savedInput = row.find("input[name='manager-group-" + input.prop("name") + groupID + "']");
 					
 					if (savedInput.length > 0) {
 						
@@ -511,6 +531,8 @@ function openUpdateManagerGroupModal(button, event) {
 					
 				}
 				
+				updateManagerShowHideModalFields(content);
+				
 				modal.detach();
 			},
 			
@@ -529,7 +551,7 @@ function openUpdateManagerGroupModal(button, event) {
 						val = input.val();
 					}
 					
-					row.find("input[name^='manager-group-" + input.prop("name") + groupID + "']").val(val);
+					row.find("input[name='manager-group-" + input.prop("name") + groupID + "']").val(val);
 					
 //					console.info("store " + input.prop("name") + " " + val);
 				});

@@ -31,7 +31,7 @@
 		/css/UserGroupList.css
 	</xsl:variable>
 
-	<xsl:template match="Document">		
+	<xsl:template match="Document">
 		
 		<div id="FlowInstanceAdminModule" class="contentitem">
 		
@@ -40,7 +40,7 @@
 			<xsl:apply-templates select="ImmutableFlowInstanceManagerPreview"/>
 			<xsl:apply-templates select="FlowInstanceManagerForm"/>
 			<xsl:apply-templates select="FlowInstanceManagerPreview"/>
-			<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>		
+			<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
 			<xsl:apply-templates select="UpdateInstanceStatus"/>
 			<xsl:apply-templates select="UpdateInstanceManagers"/>
 			<xsl:apply-templates select="SigningForm"/>
@@ -990,7 +990,7 @@
 			  						<script>
 										imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
 										deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-									</script>				
+									</script>
 									
 									<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
 									
@@ -1099,7 +1099,7 @@
 		  						<script>
 									imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
 									deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-								</script>				
+								</script>
 								
 								<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
 								
@@ -1139,7 +1139,7 @@
 		  						</xsl:when>
 		  						<xsl:otherwise>
 		  							<xsl:value-of select="$i18n.NoInternalMessages" />
-		  						</xsl:otherwise>	  					
+		  						</xsl:otherwise>
 		  					</xsl:choose>
 		  					
 		  				</div>
@@ -1638,9 +1638,9 @@
 				</div>
  				
 			</form>
-		</section>	
+		</section>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="lastFlowAction">
 		

@@ -45,6 +45,10 @@ public class FlowFamilyManager extends GeneratedElementable implements Serializa
 	@XMLElement
 	private boolean restricted;
 	
+	@DAOManaged
+	@XMLElement
+	private boolean allowUpdatingManagers;
+	
 	/** Only for display */
 	@XMLElement
 	private User user;
@@ -121,34 +125,42 @@ public class FlowFamilyManager extends GeneratedElementable implements Serializa
 	public boolean isRestricted() {
 		return restricted;
 	}
-	
+
 	public void setRestricted(boolean restricted) {
 		this.restricted = restricted;
 	}
-	
+
+	public boolean isAllowUpdatingManagers() {
+		return allowUpdatingManagers;
+	}
+
+	public void setAllowUpdatingManagers(boolean allowUpdatingManagers) {
+		this.allowUpdatingManagers = allowUpdatingManagers;
+	}
+
 	@Override
 	public Element toXML(Document doc) {
 
 		Element element = super.toXML(doc);
-		
+
 		if (isActive()) {
-			
+
 			XMLUtils.appendNewElement(doc, element, "Active", true);
 		}
-		
+
 		return element;
 	}
-	
+
 	@Override
 	public String toString() {
 		
 		if (user != null) {
 			
-			return user + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ")";
+			return user + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
 			
 		} else {
 			
-			return "userID " + userID + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ")";
+			return "userID " + userID + " (restricted=" + restricted + ", validFromDate=" + validFromDate + ", validToDate=" + validToDate + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
 		}
 	}
 }

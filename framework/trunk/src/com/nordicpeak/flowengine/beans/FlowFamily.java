@@ -550,6 +550,72 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	}
 	
 	@Override
+	public FlowFamilyManagerDetailedAccess getManagerDetailedAccess(User user) {
+		
+		FlowFamilyManagerDetailedAccess detailedAccess = new FlowFamilyManagerDetailedAccess();
+		
+		if (!CollectionUtils.isEmpty(managerUsers)) {
+			
+			Timestamp startOfToday = DateUtils.setTimeToMidnight(TimeUtils.getCurrentTimestamp());
+			
+			for (FlowFamilyManager manager : managerUsers) {
+				
+				if (manager.getUserID().equals(user.getUserID())) {
+					
+					if (manager.getValidFromDate() != null && startOfToday.compareTo(manager.getValidFromDate()) < 0) {
+						break;
+					}
+					
+					if (manager.isRestricted()) {
+						
+						detailedAccess.setAccess(ManagerAccess.RESTRICTED);
+						detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || manager.isAllowUpdatingManagers());
+						
+					} else {
+						
+						detailedAccess.setAccess(ManagerAccess.FULL);
+						detailedAccess.setAllowUpdatingManagers(true);
+						return detailedAccess;
+					}
+					
+					break;
+				}
+			}
+		}
+		
+		if ((detailedAccess.getAccess() == null || detailedAccess.getAccess() == ManagerAccess.RESTRICTED) && !CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
+			
+			for (Group group : user.getGroups()) {
+				
+				if (group.isEnabled()) {
+					
+					for (FlowFamilyManagerGroup managerGroup : managerGroups) {
+						
+						if (managerGroup.getGroupID().equals(group.getGroupID())) {
+							
+							if (managerGroup.isRestricted()) {
+								
+								detailedAccess.setAccess(ManagerAccess.RESTRICTED);
+								detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || managerGroup.isAllowUpdatingManagers());
+								
+							} else {
+								
+								detailedAccess.setAccess(ManagerAccess.FULL);
+								detailedAccess.setAllowUpdatingManagers(true);
+								return detailedAccess;
+							}
+							
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		return detailedAccess;
+	}
+	
+	@Override
 	public boolean checkManagerFullAccess(User user) {
 		
 		return getManagerAccess(user) == ManagerAccess.FULL;

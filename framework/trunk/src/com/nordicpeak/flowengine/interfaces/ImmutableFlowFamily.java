@@ -9,6 +9,7 @@ import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerDetailedAccess;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 
 
@@ -30,6 +31,8 @@ public interface ImmutableFlowFamily extends Elementable {
 	
 	public ManagerAccess getManagerAccess(User user);
 	
+	public FlowFamilyManagerDetailedAccess getManagerDetailedAccess(User user);
+	
 	public List<AutoManagerAssignmentRule> getAutoManagerAssignmentRules();
 	
 	public List<Integer> getAutoManagerAssignmentAlwaysUserIDs();
@@ -43,5 +46,6 @@ public interface ImmutableFlowFamily extends Elementable {
 	public boolean checkManagerRestrictedAccess(User user);
 	
 	public boolean checkManagerFullAccess(User user);
+
 	
 }

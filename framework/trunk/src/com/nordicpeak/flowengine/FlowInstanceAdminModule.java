@@ -91,6 +91,7 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerDetailedAccess;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceAttribute;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
@@ -693,7 +694,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			if (flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
 
-				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "RestrictedManager");
+				Element restrictedManagerElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "RestrictedManager");
+				
+				FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
+				
+				if (detailedAccess.isAllowUpdatingManagers()) {
+					
+					XMLUtils.appendNewElement(doc, restrictedManagerElement, "AllowUpdatingManagers");
+				}
 			}
 
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
@@ -1028,7 +1036,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
-			getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
+			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
+			
+			FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
+			
+			if (!detailedAccess.isAllowUpdatingManagers()) {
+				throw new AccessDeniedException("User is not allowed to update flow instance managers for flow family " + flowInstance.getFlow().getFlowFamily());
+			}
 
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 

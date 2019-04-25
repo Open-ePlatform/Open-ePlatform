@@ -249,7 +249,7 @@
 						</a>
 			  		</li>
 			  		
-			  		<xsl:if test="not($restrictedManager)">
+			  		<xsl:if test="not($restrictedManager) or $restrictedManager/AllowUpdatingManagers">
 				  		<li>
 				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/managers/{$flowInstance/flowInstanceID}" class="btn btn-light">
 								<xsl:if test="$view = 'MANAGER'"><xsl:attribute name="class">btn btn-light active</xsl:attribute></xsl:if>
@@ -271,6 +271,6 @@
 		
 		</div>
 		
-	</xsl:template>		
+	</xsl:template>
 		
 </xsl:stylesheet>
