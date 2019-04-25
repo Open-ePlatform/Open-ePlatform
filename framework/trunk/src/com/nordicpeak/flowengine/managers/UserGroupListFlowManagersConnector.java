@@ -44,7 +44,7 @@ public class UserGroupListFlowManagersConnector extends UserGroupListConnector {
 		Integer flowID;
 		ImmutableFlow flow = null;
 		
-		if (uriParser.size() == 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowAdminModule.getFlow(flowID)) != null) {
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowAdminModule.getFlow(flowID)) != null) {
 			
 			ImmutableFlowFamily flowFamily = flow.getFlowFamily();
 			

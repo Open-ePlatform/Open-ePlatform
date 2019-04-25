@@ -4,6 +4,7 @@
 	<xsl:import href="BaseFlowBrowserModule.sv.xsl"/>
 	
 	<xsl:include href="FlowInstanceAdminModuleTemplates.xsl"/>
+	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/usergrouplist/UserGroupList.sv.xsl"/>
 
 	<xsl:variable name="java.noManagersSelected">Ingen handläggare vald.</xsl:variable>
 	<xsl:variable name="java.notificationNewManager">Tilldelad ärende</xsl:variable>
@@ -88,6 +89,7 @@
 	<xsl:variable name="i18n.LastSubmitted">Senast kompletterat</xsl:variable>
 	<xsl:variable name="i18n.LastChanged">Senast ändrat</xsl:variable>
 	<xsl:variable name="i18n.Managers">Handläggare</xsl:variable>
+	<xsl:variable name="i18n.Groups">Grupper</xsl:variable>
 	<xsl:variable name="i18n.LastSubmittedBy">Senast kompletterat av</xsl:variable>
 	
 	<xsl:variable name="i18n.by">av</xsl:variable>
@@ -135,11 +137,6 @@
 	<xsl:variable name="i18n.NewInternalMessage">Ny notering</xsl:variable>
 	<xsl:variable name="i18n.InternalMessagesTitle">Noteringar</xsl:variable>
 	<xsl:variable name="i18n.NoInternalMessages">Inga noteringar</xsl:variable>
-	
-	<xsl:variable name="i18n.ChooseManager">Välj handläggare</xsl:variable>
-	<xsl:variable name="i18n.SearchManager">Sök i listan</xsl:variable>
-	<xsl:variable name="i18n.AddManager">Lägg till</xsl:variable>
-	<xsl:variable name="i18n.DeleteManager">Ta bort</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstancePreviewError">Ett fel uppstod vid visning av ärendet.</xsl:variable>
 		

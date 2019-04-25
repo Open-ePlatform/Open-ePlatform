@@ -22,11 +22,13 @@
 		/js/flowengine.tablesorter.js
 		/js/flowinstanceadminmodule.js
 		/js/jquery.qloader-init.js
+		/js/UserGroupList.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css
 		/js/mentionable/mentionable.css
+		/css/UserGroupList.css
 	</xsl:variable>
 
 	<xsl:template match="Document">		
@@ -1572,68 +1574,59 @@
 			
 			<div class="divider" />
 			
-			<script type="text/javascript">
-				i18nChooseManager = '<xsl:value-of select="$i18n.ChooseManager" />';
-			</script>
-			
 			<form method="post" action="{/Document/requestinfo/uri}">
 			
 				<div class="section-full">
 			
-					<ul class="manager-list list-table">
+					<div class="full bigmarginbottom user-group-list-container" data-search-count="{AvailableManagerGroupsCount}">
+					
+						<label>
+							<xsl:value-of select="$i18n.Groups" />
+						</label>
+					
+						<xsl:call-template name="GroupList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/getmanagergroups</xsl:text>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="FlowInstance/Flow/flowID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'groupID'"/>
+							<xsl:with-param name="groups" select="FlowInstance/managerGroups" />
+							<xsl:with-param name="document" select="/Document" />
+							<xsl:with-param name="searchfieldclass" select="'form-control'"/>
+						</xsl:call-template>
 						
-						<xsl:apply-templates select="FlowInstance/managers/user" mode="flowinstance-managers" />
-						<xsl:apply-templates select="FlowInstance/managerGroups/group" mode="flowinstance-managers" />
-						
-						<li id="manager_template" style="display: none">
-							<xsl:call-template name="createHiddenField">
-								<xsl:with-param name="name" select="'userID'" />
-								<xsl:with-param name="disabled" select="'disabled'" />
-							</xsl:call-template>
-							<div class="wrap">
-								<figure>
-									<img class="picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/profile-standard.png" alt="" />
-								</figure>
-								<span class="text"/>
-								<a class="delete" data-icon-after="t">
-									<xsl:value-of select="$i18n.DeleteManager" />
-								</a>
-							</div>
-						</li>
-						
-						<li id="manager_group_template" style="display: none">
-							<xsl:call-template name="createHiddenField">
-								<xsl:with-param name="name" select="'groupID'" />
-								<xsl:with-param name="disabled" select="'disabled'" />
-							</xsl:call-template>
-							<div class="wrap">
-								<figure>
-									<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
-								</figure>
-								<span class="text"/>
-								<a class="delete" data-icon-after="t">
-									<xsl:value-of select="$i18n.DeleteManager" />
-								</a>
-							</div>
-						</li>
-						
-					</ul>
-	
-					<div class="select-box left with-search addmanagers">
-						<span class="text"><xsl:value-of select="$i18n.ChooseManager" /></span>
-						<span class="arrow">_</span>
-						<div class="search">
-							<input type="text" placeholder="{$i18n.SearchManager}" />
-						</div>
-						<div class="options with-search">
-							<ul>
-								<xsl:apply-templates select="AvailableManagers/user" mode="manager-list" />
-								<xsl:apply-templates select="AvailableManagerGroups/group" mode="manager-list" />
-							</ul>
-						</div>
 					</div>
-					<a class="btn btn-green btn-inline" href="#" data-icon-before="+"><xsl:value-of select="$i18n.AddManager" /></a>
-
+					
+					<div class="full bigmarginbottom user-group-list-container" data-search-count="{AvailableManagersCount}">
+					
+						<label>
+							<xsl:value-of select="$i18n.Managers" />
+						</label>
+					
+						<xsl:call-template name="UserList">
+							<xsl:with-param name="connectorURL">
+								<xsl:value-of select="/Document/requestinfo/currentURI"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="/Document/module/alias"/>
+								<xsl:text>/getmanagers</xsl:text>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="FlowInstance/Flow/flowID"/>
+								<xsl:text>/</xsl:text>
+								<xsl:value-of select="FlowInstance/flowInstanceID"/>
+							</xsl:with-param>
+							<xsl:with-param name="name" select="'userID'"/>
+							<xsl:with-param name="users" select="FlowInstance/managers" />
+							<xsl:with-param name="document" select="/Document" />
+							<xsl:with-param name="showUsername" select="true()" />
+							<xsl:with-param name="searchfieldclass" select="'form-control'"/>
+						</xsl:call-template>
+						
+					</div>
+					
 				</div>
 
 	  			<div class="divider"/>
@@ -1648,90 +1641,6 @@
 		</section>	
 	
 	</xsl:template>		
-	
-	<xsl:template match="user" mode="flowinstance-managers">
-		
-		<li id="manager_user_{userID}">
-			<xsl:call-template name="createHiddenField">
-				<xsl:with-param name="name" select="'userID'" />
-				<xsl:with-param name="value" select="userID" />
-			</xsl:call-template>
-			<div class="wrap">
-				<figure>
-					<img class="picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/profile-standard.png" alt="" />
-				</figure>
-				<span class="text">
-					<xsl:value-of select="firstname" />
-					<xsl:text>&#160;</xsl:text>
-					<xsl:value-of select="lastname" />
-					
-					<xsl:if test="username">
-						<xsl:text>&#160;(</xsl:text>
-						<xsl:value-of select="username" />
-						<xsl:text>)</xsl:text>
-					</xsl:if>
-				</span>
-				<a class="delete" data-icon-after="t">
-					<xsl:value-of select="$i18n.DeleteManager" />
-				</a>
-			</div>
-		</li>
-		
-	</xsl:template>
-	
-	<xsl:template match="group" mode="flowinstance-managers">
-		
-		<li id="manager_group_{groupID}">
-			<xsl:call-template name="createHiddenField">
-				<xsl:with-param name="name" select="'groupID'" />
-				<xsl:with-param name="value" select="groupID" />
-			</xsl:call-template>
-			<div class="wrap">
-				<figure>
-					<img class="picture group-picture" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/group.png" alt="" />
-				</figure>
-				<span class="text">
-					<xsl:value-of select="name" />
-				</span>
-				<a class="delete" data-icon-after="t">
-					<xsl:value-of select="$i18n.DeleteManager" />
-				</a>
-			</div>
-		</li>
-		
-	</xsl:template>
-	
-	<xsl:template match="user" mode="manager-list">
-		
-		<li id="user_{userID}">
-			<a href="#">
-				<span class="text">
-					<xsl:value-of select="firstname" />
-					<xsl:text>&#160;</xsl:text>
-					<xsl:value-of select="lastname" />
-					
-					<xsl:if test="username">
-						<xsl:text>&#160;(</xsl:text>
-						<xsl:value-of select="username" />
-						<xsl:text>)</xsl:text>
-					</xsl:if>
-				</span>
-			</a>
-		</li>
-	
-	</xsl:template>
-	
-	<xsl:template match="group" mode="manager-list">
-		
-		<li id="group_{groupID}">
-			<a href="#">
-				<span class="text">
-					<xsl:value-of select="name" />
-				</span>
-			</a>
-		</li>
-	
-	</xsl:template>
 	
 	<xsl:template match="lastFlowAction">
 		

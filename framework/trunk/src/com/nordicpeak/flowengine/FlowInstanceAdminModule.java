@@ -155,6 +155,7 @@ import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSo
 import com.nordicpeak.flowengine.listeners.FlowStatusManagerAccessElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
@@ -266,6 +267,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	@InstanceManagerDependency
 	protected GenericSigningProvider genericSigningProvider;
+	
+	protected FlowAdminModule flowAdminModule;
 
 	protected NotificationHandler notificationHandler;
 
@@ -285,6 +288,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	private QueryParameterFactory<FlowInstanceAttribute, String> attributeNameParamFactory;
 
 	protected List<String> selectedAttributes;
+	
+	private UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -365,6 +370,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}
 
 		return null;
+	}
+	
+	@InstanceManagerDependency
+	public void setFlowAdminModule(FlowAdminModule flowAdminModule) {
+		
+		this.flowAdminModule = flowAdminModule;
+		
+		if (flowAdminModule != null) {
+			
+			userGroupListFlowManagersConnector = new UserGroupListFlowManagersConnector(systemInterface, flowAdminModule);
+			
+		} else {
+			
+			userGroupListFlowManagersConnector = null;
+		}
+		
 	}
 
 	protected FlowInstanceIndexer createIndexer() throws Exception {
@@ -1089,8 +1110,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			updateInstanceManagersElement.appendChild(flowInstance.toXML(doc));
 
 			XMLUtils.append(doc, updateInstanceManagersElement, user);
-			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagers", allowedManagers);
-			XMLUtils.append(doc, updateInstanceManagersElement, "AvailableManagerGroups", allowedManagerGroups);
+			XMLUtils.appendNewElement(doc, updateInstanceManagersElement, "AvailableManagersCount", CollectionUtils.getSize(allowedManagers));
+			XMLUtils.appendNewElement(doc, updateInstanceManagersElement, "AvailableManagerGroupsCount", CollectionUtils.getSize(allowedManagerGroups));
 
 			appendBookmark(doc, updateInstanceManagersElement, flowInstance, req, user);
 
@@ -1099,7 +1120,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
+	
+	@WebPublic(alias = "getmanagers")
+	public ForegroundModuleResponse getManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
+		return userGroupListFlowManagersConnector.getUsers(req, res, user, uriParser);
+	}
+	
+	@WebPublic(alias = "getmanagergroups")
+	public ForegroundModuleResponse getManagerGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+		
+		return userGroupListFlowManagersConnector.getGroups(req, res, user, uriParser);
+	}
+	
 	protected Field[] getUpdateManagerRelations() {
 
 		return UPDATE_MANAGER_RELATIONS;

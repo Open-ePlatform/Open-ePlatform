@@ -49,125 +49,26 @@ $(document).ready(function() {
 	
 	/* Change managers scripts */
 	
-	var $managerList = $("ul.manager-list");
+	var MAX_SEARCH_COUNT_EMPTY_SEARCH = 100;
 	
-	$managerList.find("li").each(function(i) {
-		initDeleteManagerButton($(this), $managerList);
-	});
-	
-	updateListRowColors($managerList);
-	
-	$(".select-box.addmanagers").each(function(i) {
+	$('#groupID-search, #userID-search').each(function(){
 		
-		var $selectBox = $(this);
-		
-		$selectBox.click(function(e) {
+		if ($(this).closest('.user-group-list-container').data('search-count') < MAX_SEARCH_COUNT_EMPTY_SEARCH) {
 			
-			e.stopPropagation();
-			
-			if ($selectBox.hasClass("active")) {
-				$selectBox.removeClass("active");
-				$selectBox.find("> span.arrow").text("_");
-			} else {
-				$selectBox.addClass("active");
-				$selectBox.find("> span.arrow").text("^");
-			}
-			
-		});
-		
-		$searchInput = $selectBox.find(".search input");
-		
-		var $users = $selectBox.find(".options ul li");
-		
-		$users.each(function(j) {
-			
-			var $user = $(this);
-			
-			if ($("#manager_" + $user.attr("id")).length > 0) {
-				$user.addClass("disabled").hide();
-			}
-			
-			$user.find("a").click(function(e) {
+			$(this).on('focus', function(){
 				
-				e.preventDefault();
+				var searchValue = this.value === '' ? ' ' : this.value;
 				
-				$users.removeClass("selected");
-				$user.addClass("selected");
+				$(this).autocomplete('search', searchValue);
 				
-				$selectBox.find("> span.text").text($(this).find(".text").text());
-				$selectBox.find("> span.arrow").text("_");
-				$searchInput.val("").keyup();
 			});
-		});
-		
-		$searchInput.click(function(e) {
-			e.stopPropagation();
-		});
-		
-		$searchInput.keyup(function () {
 			
-			var searchStr = $(this).val();
-			
-			var $items = $selectBox.find("ul li:not(.disabled)");
-			
-			$items.hide();
-			
-			if (searchStr != "") {
+			$(this).on('autocompleteclose', function(){
 				
-				$items.each(function () {
-		            if ($(this).find("span.text").text().search(new RegExp(searchStr, "i")) < 0) {
-		            	$(this).hide();
-		            } else {
-		            	$(this).show();
-		            }
-		        });
-		        
-		    } else {
-		    	
-		    	$items.show();
-		    }
-			
-	    });
-		
-		$selectBox.next("a.btn").click(function(e) {
-			
-			e.preventDefault();
-			
-			var $manager = $selectBox.find(".options ul li.selected");
-			
-			if ($manager.length > 0) {
+				$(this).is(':focus') && $(this).autocomplete('search', ' ');
 				
-				var user = $manager.attr("id").lastIndexOf("user", 0) === 0;
-				var $clone;
-				
-				if (user) {
-					$clone = $("#manager_template").clone();
-					
-				} else {
-					$clone = $("#manager_group_template").clone();
-				}
-				
-				$clone.find("span.text").text($manager.find("span.text").text());
-				$clone.find("input[type='hidden']").removeAttr("disabled").val($manager.attr("id").split("_")[1]);
-				$clone.attr("id", "manager_" + $manager.attr("id"));
-				
-				$manager.addClass("disabled").removeClass("selected").hide();
-				$selectBox.find("> span.text").text(i18nChooseManager);
-				
-				initDeleteManagerButton($clone, $managerList);
-				
-				$managerList.find("li:last").before($clone);
-				$clone.show();
-				
-				updateListRowColors($managerList);
-			}
-			
-		});
-		
-	});
-	
-	$(document).on("click", function(e) {
-		$(".select-box.with-search").removeClass("active");
+			});
+		}
 	});
 	
 	/* Search flow instance scripts */
