@@ -124,7 +124,9 @@ public class ExpiredManagerRemover implements Runnable {
 							Integer managerID = entry.getKey();
 							User manager = flowAdminModule.getUserHandler().getUser(managerID, false, false);
 							
-							log.debug("Removing expired manager " + manager + " from flow instances");
+							String managerToString = manager != null ? manager.toString() : managerID.toString();
+							
+							log.debug("Removing expired manager " + managerToString + " from flow instances");
 							
 							for (FlowFamily flowFamily : entry.getValue()) {
 								
@@ -140,20 +142,23 @@ public class ExpiredManagerRemover implements Runnable {
 										
 										FlowInstance flowInstance = getFlowInstance(flowInstanceID);
 										
-										log.info("Removing expired manager " + manager + " from " + flowInstance);
-										
+										log.info("Removing expired manager " + managerToString + " from " + flowInstance);
+
 										List<User> previousManagers = new ArrayList<User>(flowInstance.getManagers());
 										
-										Iterator<User> iterator = flowInstance.getManagers().iterator();
-										
-										while (iterator.hasNext()) {
-										
-											User flowInstanceManager = iterator.next();
-											
-											if (flowInstanceManager.equals(manager)) {
-												
-												iterator.remove();
-												break;
+										if (manager != null) { // If user was removed an update is enough to remove the stray ID
+
+											Iterator<User> iterator = flowInstance.getManagers().iterator();
+
+											while (iterator.hasNext()) {
+
+												User flowInstanceManager = iterator.next();
+
+												if (flowInstanceManager.equals(manager)) {
+
+													iterator.remove();
+													break;
+												}
 											}
 										}
 										
@@ -161,7 +166,8 @@ public class ExpiredManagerRemover implements Runnable {
 										updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
 										flowInstanceDAO.update(flowInstance, updateQuery);
 										
-										String detailString = flowAdminModule.getEventFlowInstanceManagerExpired() + " " + manager.getFirstname() + " " + manager.getLastname();
+										String managerName = manager != null ? manager.getFirstname() + " " + manager.getLastname() : managerID.toString();
+										String detailString = flowAdminModule.getEventFlowInstanceManagerExpired() + " " + managerName;
 										FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 										
 										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
