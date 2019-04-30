@@ -184,10 +184,14 @@ function setActiveTab(tabID) {
 
 function scrollToMessages(selector) {
 	
-	$('html, body').animate({
-		scrollTop : ($(selector).last().offset().top - 43)
-	}, 'fast');
+	var $element = $(selector);
 	
+	if ($element.length) {
+		
+		$('html, body').animate({
+			scrollTop : ($element.last().offset().top - 43)
+		}, 'fast');
+	}
 }
 
 function toggleBookmark(e, trigger, uri) {
