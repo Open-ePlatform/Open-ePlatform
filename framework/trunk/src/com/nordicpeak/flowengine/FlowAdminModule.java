@@ -1545,6 +1545,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 					throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
 				}
+				
+				if (version.equals(flow.getVersion())) {
+
+					log.error("Duplicate version created from getNextVersion. Original " + flow + ", new version " + version);
+				}
 
 				flowCopy.getFlowFamily().setVersionCount(version);
 				flowCopy.setVersion(version);
@@ -1656,6 +1661,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					}
 				}
 			}
+			
+			if (flow.getVersion().equals(flowCopy.getVersion())) {
+
+				log.error("Duplicate version created pre commit. Original " + flow + ", copy " + flowCopy);
+			}
 
 			try {
 				// Commit
@@ -1679,10 +1689,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
+		
+		if (flow.getVersion().equals(flowCopy.getVersion())) {
+			
+			log.error("Duplicate version created pre events. Original " + flow + ", copy " + flowCopy);
+		}
 
 		eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flowCopy), EventTarget.ALL);
 
 		addFlowFamilyEvent(eventCopyFlowMessage + " " + flow.getVersion() + " \"" + flow.getName() + "\"", flowCopy, user);
+		
+		if (flow.getVersion().equals(flowCopy.getVersion())) {
+			
+			log.error("Duplicate version created post events. Original " + flow + ", copy " + flowCopy);
+		}
 
 		redirectToMethod(req, res, "/showflow/" + flowCopy.getFlowID());
 
