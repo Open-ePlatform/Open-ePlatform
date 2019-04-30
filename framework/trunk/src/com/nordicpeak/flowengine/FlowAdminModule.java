@@ -1310,6 +1310,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return flowCRUD.show(req, res, user, uriParser);
 	}
 	
+	@Override
 	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception {
 
 		return flowCRUD.show(req, res, user, uriParser, validationErrors);
@@ -2940,6 +2941,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return eventHandler;
 	}
 
+	@Override
 	public Flow getRequestedFlow(HttpServletRequest req, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
 
 		return flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.SHOW);
@@ -4556,7 +4558,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		File sentFile = file;
 
-		if (!unmodified && flowForm.getFileExtension().equals("pdf")) {
+		if (!unmodified && "pdf".equals(flowForm.getFileExtension())) {
 
 			for (PDFRequestFilter filter : pdfRequestFilters) {
 
@@ -5807,16 +5809,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return eventFlowFormDeletedMessage;
 	}
 	
+	@Override
 	public String getEventExternalMessageTemplatesAddedMessage() {
 
 		return eventExternalMessageTemplatesAddedMessage;
 	}
 	
+	@Override
 	public String getEventExternalMessageTemplatesUpdatedMessage() {
 
 		return eventExternalMessageTemplatesUpdatedMessage;
 	}
 	
+	@Override
 	public String getEventExternalMessageTemplatesDeletedMessage() {
 
 		return eventExternalMessageTemplatesDeletedMessage;
