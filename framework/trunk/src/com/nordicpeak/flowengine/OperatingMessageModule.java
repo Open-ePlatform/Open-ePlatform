@@ -35,7 +35,7 @@ import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
+import se.unlogic.hierarchy.core.interfaces.listeners.ServerStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
@@ -76,7 +76,7 @@ import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidato
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, SystemStartupListener {
+public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, ServerStartupListener {
 
 	private static final AnnotatedRequestPopulator<OperatingMessageNotificationSettings> EXTERNAL_SETTINGS_POPULATOR = new AnnotatedRequestPopulator<OperatingMessageNotificationSettings>(OperatingMessageNotificationSettings.class);
 
@@ -157,22 +157,21 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		}
 
 		cacheComingOperatingMessages();
-		initScheduler();
 
-		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
-			systemStarted();
-
-		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
-			systemInterface.addSystemStartupListener(this);
+		if (systemInterface.getSystemStatus() != SystemStatus.STARTED) {
+			
+			systemInterface.addServerStartupListener(this);
 		}
 
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 	}
 
 	@Override
-	public void systemStarted() throws Exception {
+	public void serverStarted() throws Exception {
 
 		new Thread(this, moduleDescriptor.getName() + " Initial Caching").start();
+		
+		initScheduler();
 	}
 
 	@Override
@@ -737,6 +736,12 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		}
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
+	}
+
+	@Override
+	public int getPriority() {
+
+		return 0;
 	}
 
 }
