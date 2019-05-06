@@ -34,6 +34,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.Priority;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
@@ -585,4 +586,15 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 			this.managerDescription = null;
 		}
 	}
+	
+	public boolean isExternalMessagesEnabled() {
+		
+		if (flow == null || status == null) {
+			
+			return false;
+		}
+		
+		return !(flow.isHideExternalMessages() || (flow.isHideExternalMessagesOnArchivedFlowInstances() && status.getContentType() == ContentType.ARCHIVED));
+	}
+	
 }

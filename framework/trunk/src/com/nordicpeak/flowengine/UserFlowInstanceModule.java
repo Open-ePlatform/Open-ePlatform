@@ -140,7 +140,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION };
 
-	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_FIELD, Flow.HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD, FlowInstanceEvent.POSTER_FIELD };
+	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_ON_ARCHIVED_FLOW_INSTANCES_FIELD, Flow.HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD, FlowInstanceEvent.POSTER_FIELD };
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = UserFlowInstanceModule.class.getName();
 
@@ -615,23 +615,20 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideManagerEmailInOverview");
 			}
 			
-			if (req.getMethod().equalsIgnoreCase("POST")) {
+			if (req.getMethod().equalsIgnoreCase("POST") && flowInstance.isExternalMessagesEnabled()) {
+					
+				//TODO append message or request parameters
+				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
 				
-				if (!flowInstance.getFlow().isHideExternalMessages()) {
+				if (externalMessage != null) {
 					
-					//TODO append message or request parameters
-					ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
+					FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 					
-					if (externalMessage != null) {
-						
-						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.CUSTOMER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
-						
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, instanceProfile, externalMessage, SenderType.USER), EventTarget.ALL);
-						
-						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
-						
-						return null;
-					}
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, instanceProfile, externalMessage, SenderType.USER), EventTarget.ALL);
+					
+					res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
+					
+					return null;
 				}
 			}
 

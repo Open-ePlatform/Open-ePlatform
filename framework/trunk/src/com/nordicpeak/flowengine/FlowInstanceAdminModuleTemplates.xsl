@@ -929,7 +929,7 @@
   						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
   					</li>
   				
-  					<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true')">
+  					<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true' or (Flow/hideExternalMessagesOnArchivedFlowInstances = 'true' and Status/contentType = 'ARCHIVED'))">
 	  					<li data-tabid="#messages">
 	  						<a data-icon-before="m" href="#messages">
 	  							<xsl:value-of select="$i18n.ExternalMessages" />
@@ -959,7 +959,7 @@
   					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
   				</ul>
   				
-  				<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true')">
+ 				<xsl:if test="Owners/user and not(Flow/hideExternalMessages = 'true' or (Flow/hideExternalMessagesOnArchivedFlowInstances = 'true' and Status/contentType = 'ARCHIVED'))">
 	  				<div id="messages">
 	  					
 	  					<div id="new-message" class="tabs-content">

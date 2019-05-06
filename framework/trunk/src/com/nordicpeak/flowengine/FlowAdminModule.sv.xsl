@@ -536,6 +536,7 @@
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
+	<xsl:variable name="i18n.hideExternalMessagesOnArchivedFlowInstances">Stäng av meddelandefunktionen på avslutade ärenden</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av filuppladdningen i meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFlowInstanceIDFromUser">Dölj ärendenummer från mina sidor och kvittens</xsl:variable>

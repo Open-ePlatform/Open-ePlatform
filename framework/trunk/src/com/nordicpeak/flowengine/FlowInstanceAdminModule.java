@@ -570,7 +570,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
-				if (req.getParameter("externalmessage") != null && !flowInstance.getFlow().isHideExternalMessages()) {
+				if (req.getParameter("externalmessage") != null && flowInstance.isExternalMessagesEnabled()) {
 
 					if (flowInstance.getOwners() != null) {
 

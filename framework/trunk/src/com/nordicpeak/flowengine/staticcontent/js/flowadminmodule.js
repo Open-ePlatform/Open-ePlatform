@@ -106,7 +106,7 @@ $(document).ready(function() {
 		
 		$('#hideExternalMessages').change(function() {
 
-			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
+			$('#hideExternalMessageAttachments, #hideExternalMessagesOnArchivedFlowInstances').parent().parent().toggle(!this.checked);
 		
 		}).trigger('change');
 		
