@@ -723,6 +723,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 
+	@WebPublic(alias = "messages")
+	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2))) {
+
+			redirectToMethod(req, res, "/overview/" + uriParser.get(2) + "#messages");
+
+			return null;
+		}
+
+		throw new URINotFoundException(uriParser);
+	}
+
 	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
 		Element showFlowInstanceElement = flowInstance.toXML(doc);

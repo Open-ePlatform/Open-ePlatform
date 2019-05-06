@@ -1775,6 +1775,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource(event.getFlowInstance().getFlow()));
 			sharedTagSources.add(POSTER_TAG_SOURCE_FACTORY.getTagSource(event.getUser()));
 			sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/overview/" + event.getFlowInstance().getFlowInstanceID() + "#notes"));
+			sharedTagSources.add(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/messages/" + event.getFlowInstance().getFlow().getFlowID() + "/" + event.getFlowInstance().getFlowInstanceID()));
 
 			for (User user : event.getMentionedUsers()) {
 
@@ -2156,6 +2157,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		sharedTagSources.add(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
+		sharedTagSources.add(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
@@ -2213,6 +2215,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
@@ -2522,6 +2525,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tags.addAll(StandardFlowNotificationHandler.STATUS_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
+		tags.add("$flowInstance.messagesUrl");
 
 		return tags;
 	}
@@ -2536,6 +2540,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.addAll(StandardFlowNotificationHandler.MANAGER_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
+		tags.add("$flowInstance.messagesUrl");
 
 		return tags;
 	}
@@ -2549,6 +2554,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tags.addAll(StandardFlowNotificationHandler.STATUS_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
+		tags.add("$flowInstance.messagesUrl");
 
 		return tags;
 	}
@@ -2563,6 +2569,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.addAll(StandardFlowNotificationHandler.SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
+		tags.add("$flowInstance.messagesUrl");
 
 		return tags;
 	}
