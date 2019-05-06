@@ -166,16 +166,21 @@ public class ExpiredManagerRemover implements Runnable {
 										updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
 										flowInstanceDAO.update(flowInstance, updateQuery);
 										
-										String managerName = manager != null ? manager.getFirstname() + " " + manager.getLastname() : managerID.toString();
-										String detailString = flowAdminModule.getEventFlowInstanceManagerExpired() + " " + managerName;
-										FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
+										if (manager != null) {
+											
+											String detailString = flowAdminModule.getEventFlowInstanceManagerExpired() + " " + manager.getFirstname() + " " + manager.getLastname();
+											FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
+										
+											flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
+										}
 										
 										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-										flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
 									}
 								}
 								
-								managerExpiredEvents.add(new ManagerExpiredEvent(manager, flowFamily, flowInstanceIDs));
+								if (manager != null) {
+									managerExpiredEvents.add(new ManagerExpiredEvent(manager, flowFamily, flowInstanceIDs));
+								}
 							}
 						}
 						
