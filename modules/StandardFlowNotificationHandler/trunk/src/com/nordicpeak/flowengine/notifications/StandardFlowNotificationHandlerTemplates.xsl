@@ -1145,6 +1145,14 @@
 				</tr>
 				<tr>
 					<td>
+						<xsl:text>$flowInstance.messagesUrl</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceMessagesURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
 						<xsl:text>$status.name</xsl:text>
 					</td>
 					<td>
@@ -1236,6 +1244,14 @@
 					</td>
 					<td>
 						<xsl:value-of select="$i18n.FlowInstanceURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.messagesUrl</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceMessagesURLTag"/>
 					</td>
 				</tr>
 				<tr>

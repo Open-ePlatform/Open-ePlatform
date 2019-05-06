@@ -1929,6 +1929,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tagReplacer.addTagSource(SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagSource(signingParty));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", url));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -2008,6 +2009,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tagReplacer.addTagSource(SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagSource(signingParty));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", url));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 
@@ -2056,6 +2058,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -2099,6 +2102,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 

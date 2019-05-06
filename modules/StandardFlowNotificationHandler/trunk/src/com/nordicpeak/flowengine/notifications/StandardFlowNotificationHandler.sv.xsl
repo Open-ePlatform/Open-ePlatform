@@ -313,6 +313,7 @@
 	<xsl:variable name="i18n.FlowInstanceIDTag">Ärende nummer</xsl:variable>
 	<xsl:variable name="i18n.Tags.FlowInstance.ExternalID">Externt ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceURLTag">Adress till ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceMessagesURLTag">Adress till meddelandefliken i ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
 	<xsl:variable name="i18n.StatusTag">Ärende status</xsl:variable>
 	<xsl:variable name="i18n.Tags.Manager.Firstname">Handläggarens förnamn</xsl:variable>
 	<xsl:variable name="i18n.Tags.Manager.Lastname">Handläggarens efternamn</xsl:variable>
