@@ -44,7 +44,7 @@
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
 		&lt;p&gt;
-			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
 		&lt;/p&gt;
 	
 	</xsl:variable>
@@ -148,7 +148,7 @@
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
 		&lt;p&gt;
-			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
 		&lt;/p&gt;
 	
 	</xsl:variable>
@@ -238,7 +238,7 @@
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
 		&lt;p&gt;
-			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
 		&lt;/p&gt;
 	
 	</xsl:variable>	
