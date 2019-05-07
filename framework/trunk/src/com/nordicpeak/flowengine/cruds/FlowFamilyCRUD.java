@@ -43,8 +43,8 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-import com.nordicpeak.flowengine.validationerrors.InUseManagerGroupValidationError;
-import com.nordicpeak.flowengine.validationerrors.InUseManagerUserValidationError;
+import com.nordicpeak.flowengine.validationerrors.ManagerGroupInUseValidationError;
+import com.nordicpeak.flowengine.validationerrors.ManagerUserInUseValidationError;
 
 public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdminModule> {
 
@@ -234,7 +234,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 						}
 					}
 					
-					validationErrors.add(new InUseManagerUserValidationError(currentManager));
+					validationErrors.add(new ManagerUserInUseValidationError(currentManager));
 				}
 			}
 		}
@@ -263,7 +263,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 						continue;
 					}
 					
-					validationErrors.add(new InUseManagerGroupValidationError(currentGroup));
+					validationErrors.add(new ManagerGroupInUseValidationError(currentGroup));
 				}
 			}
 		}

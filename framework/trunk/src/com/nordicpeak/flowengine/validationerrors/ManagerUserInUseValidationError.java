@@ -6,14 +6,14 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 //TODO fix case...
 @XMLElement(name = "validationError")
-public class InUseManagerUserValidationError extends ValidationError {
+public class ManagerUserInUseValidationError extends ValidationError {
 
 	@XMLElement
 	private final User user;
 
-	public InUseManagerUserValidationError(User user) {
+	public ManagerUserInUseValidationError(User user) {
 
-		super("InUseManagerUserError");
+		super("ManagerUserInUseError");
 		this.user = user;
 	}
 

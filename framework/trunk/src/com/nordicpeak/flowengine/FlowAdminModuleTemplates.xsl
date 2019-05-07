@@ -7120,7 +7120,7 @@
 		</p>
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='InUseManagerUserError']">
+	<xsl:template match="validationError[messageKey='ManagerUserInUseError']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.ValidationError.InUseManagerUserError.Part1" />
@@ -7154,7 +7154,7 @@
 		</p>
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='InUseManagerGroupError']">
+	<xsl:template match="validationError[messageKey='ManagerGroupInUseError']">
 		<p class="error">
 			<xsl:value-of select="$i18n.ValidationError.InUseManagerGroupError.Part1" />
 			<xsl:text>&#160;</xsl:text>
