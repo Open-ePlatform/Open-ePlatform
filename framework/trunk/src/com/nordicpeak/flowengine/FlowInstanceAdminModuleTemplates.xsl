@@ -1577,30 +1577,35 @@
 			<form method="post" action="{/Document/requestinfo/uri}">
 			
 				<div class="section-full">
-			
-					<div class="full bigmarginbottom user-group-list-container" data-search-count="{AvailableManagerGroupsCount}">
+				
+					<xsl:if test="AvailableManagerGroupsCount > 0">
 					
-						<label>
-							<xsl:value-of select="$i18n.Groups" />
-						</label>
-					
-						<xsl:call-template name="GroupList">
-							<xsl:with-param name="connectorURL">
-								<xsl:value-of select="/Document/requestinfo/currentURI"/>
-								<xsl:text>/</xsl:text>
-								<xsl:value-of select="/Document/module/alias"/>
-								<xsl:text>/getmanagergroups</xsl:text>
-								<xsl:text>/</xsl:text>
-								<xsl:value-of select="FlowInstance/Flow/flowID"/>
-							</xsl:with-param>
-							<xsl:with-param name="name" select="'groupID'"/>
-							<xsl:with-param name="groups" select="FlowInstance/managerGroups" />
-							<xsl:with-param name="document" select="/Document" />
-							<xsl:with-param name="searchfieldclass" select="'form-control'"/>
-						</xsl:call-template>
+						<div class="full bigmarginbottom user-group-list-container" data-search-count="{AvailableManagerGroupsCount}">
 						
-					</div>
-					
+							<label>
+								<xsl:value-of select="$i18n.Groups" />
+							</label>
+						
+							<xsl:call-template name="GroupList">
+								<xsl:with-param name="connectorURL">
+									<xsl:value-of select="/Document/requestinfo/currentURI"/>
+									<xsl:text>/</xsl:text>
+									<xsl:value-of select="/Document/module/alias"/>
+									<xsl:text>/getmanagergroups</xsl:text>
+									<xsl:text>/</xsl:text>
+									<xsl:value-of select="FlowInstance/Flow/flowID"/>
+								</xsl:with-param>
+								<xsl:with-param name="name" select="'groupID'"/>
+								<xsl:with-param name="groups" select="FlowInstance/managerGroups" />
+								<xsl:with-param name="document" select="/Document" />
+								<xsl:with-param name="searchfieldclass" select="'form-control'"/>
+								<xsl:with-param name="placeholder" select="$i18n.Search.Groups"/>
+							</xsl:call-template>
+							
+						</div>
+						
+					</xsl:if>
+			
 					<div class="full bigmarginbottom user-group-list-container" data-search-count="{AvailableManagersCount}">
 					
 						<label>
@@ -1623,6 +1628,7 @@
 							<xsl:with-param name="document" select="/Document" />
 							<xsl:with-param name="showUsername" select="true()" />
 							<xsl:with-param name="searchfieldclass" select="'form-control'"/>
+							<xsl:with-param name="placeholder" select="$i18n.Search.Managers"/>							
 						</xsl:call-template>
 						
 					</div>

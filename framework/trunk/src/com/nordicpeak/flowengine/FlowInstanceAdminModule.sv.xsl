@@ -89,8 +89,11 @@
 	<xsl:variable name="i18n.LastSubmitted">Senast kompletterat</xsl:variable>
 	<xsl:variable name="i18n.LastChanged">Senast ändrat</xsl:variable>
 	<xsl:variable name="i18n.Managers">Handläggare</xsl:variable>
-	<xsl:variable name="i18n.Groups">Grupper</xsl:variable>
+	<xsl:variable name="i18n.Groups">Handläggargrupper</xsl:variable>
 	<xsl:variable name="i18n.LastSubmittedBy">Senast kompletterat av</xsl:variable>
+
+	<xsl:variable name="i18n.Search.Groups">Sök handläggargrupper</xsl:variable>
+	<xsl:variable name="i18n.Search.Managers">Sök handläggare</xsl:variable>
 	
 	<xsl:variable name="i18n.by">av</xsl:variable>
 	<xsl:variable name="i18n.NoManager">Ingen handläggare tilldelad</xsl:variable>
