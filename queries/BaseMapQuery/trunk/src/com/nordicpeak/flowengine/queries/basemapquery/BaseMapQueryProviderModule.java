@@ -1122,7 +1122,6 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void sendSearchReqest(HttpServletRequest req, HttpServletResponse res, User user, String search, boolean appendSearchPrefix) throws IOException {
 
 		SettingHandler profileSettingHandler = getCurrentSiteProfileSettingHandler(req, user);
