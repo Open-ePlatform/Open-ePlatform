@@ -20,7 +20,7 @@
 		/js/flowengine.step-navigator.js
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
-		/js/flowinstanceadminmodule.js
+		/js/flowinstanceadminmodule.js?v=1
 		/js/jquery.qloader-init.js
 		/js/UserGroupList.js
 	</xsl:variable>
