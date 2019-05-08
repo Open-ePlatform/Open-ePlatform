@@ -2189,4 +2189,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="120">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_operating_messages`	ADD COLUMN `allowFlowForms` TINYINT(1) UNSIGNED NOT NULL AFTER `allowUserHandlingOfSubmittedInstances`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

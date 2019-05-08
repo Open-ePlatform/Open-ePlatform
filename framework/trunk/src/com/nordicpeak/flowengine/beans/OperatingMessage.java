@@ -47,7 +47,7 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@WebPopulate
 	@XMLElement
 	private OperatingMessageType messageType;
-	
+
 	@DAOManaged
 	@WebPopulate(paramName = "flowFamilyID")
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -59,43 +59,48 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	@WebPopulate
 	@XMLElement
 	private boolean disableFlows;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean allowManagingOfInstances;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean allowUserHandlingOfSubmittedInstances;
-	
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean allowFlowForms;
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean global;
-	
+
 	@DAOManaged
 	@XMLElement
 	private Timestamp posted;
-	
+
 	@DAOManaged
 	@XMLElement
 	private Timestamp updated;
-	
-	@DAOManaged(dontUpdateIfNull=true)
-	@XMLElement(childName="poster")
+
+	@DAOManaged(dontUpdateIfNull = true)
+	@XMLElement(childName = "poster")
 	private User poster;
-	
+
 	@DAOManaged
-	@XMLElement(childName="editor")
+	@XMLElement(childName = "editor")
 	private User editor;
 
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean profileFilter;
-	
+
 	@DAOManaged
 	@WebPopulate(paramName = "profileID")
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -145,12 +150,12 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 	}
 
 	public OperatingMessageType getMessageType() {
-		
+
 		return messageType;
 	}
 
 	public void setMessageType(OperatingMessageType messageType) {
-	
+
 		this.messageType = messageType;
 	}
 
@@ -184,64 +189,56 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 		this.global = global;
 	}
 
-	
 	public Timestamp getPosted() {
-	
+
 		return posted;
 	}
 
-	
 	public void setPosted(Timestamp posted) {
-	
+
 		this.posted = posted;
 	}
 
-	
 	public Timestamp getUpdated() {
-	
+
 		return updated;
 	}
 
-	
 	public void setUpdated(Timestamp updated) {
-	
+
 		this.updated = updated;
 	}
 
-	
 	public User getPoster() {
-	
+
 		return poster;
 	}
 
-	
 	public void setPoster(User poster) {
-	
+
 		this.poster = poster;
 	}
 
-	
 	public User getEditor() {
-	
+
 		return editor;
 	}
 
-	
 	public void setEditor(User editor) {
-	
+
 		this.editor = editor;
 	}
 
 	public List<Integer> getProfileIDs() {
-		
+
 		return profileIDs;
 	}
-	
+
 	public void setProfileIDs(List<Integer> profileIDs) {
-	
+
 		this.profileIDs = profileIDs;
 	}
-	
+
 	@Override
 	public int hashCode() {
 
@@ -280,13 +277,11 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 		return disableFlows;
 	}
 
-	
 	public boolean allowsManagingOfInstances() {
-	
+
 		return allowManagingOfInstances;
 	}
 
-	
 	public void setAllowManagingOfInstances(boolean allowManagingOfInstances) {
 
 		this.allowManagingOfInstances = allowManagingOfInstances;
@@ -300,17 +295,25 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 		this.allowUserHandlingOfSubmittedInstances = allowExistingInstances;
 	}
 
+	public boolean isAllowFlowForms() {
+		return allowFlowForms;
+	}
+
+	public void setAllowFlowForms(boolean allowFlowForms) {
+		this.allowFlowForms = allowFlowForms;
+	}
+
 	@Override
 	public String toString() {
 
 		return StringUtils.toLogFormat(message, 30) + " (ID: " + messageID + ")";
 	}
-	
+
 	@Override
 	public Element toXML(Document doc) {
 
 		Element element = super.toXML(doc);
-		
+
 		if (startTime != null && endTime != null) {
 
 			XMLUtils.appendNewElement(doc, element, "startTime", TimeUtils.TIME_FORMATTER.format(startTime));
@@ -320,7 +323,7 @@ public class OperatingMessage extends GeneratedElementable implements OperatingS
 			XMLUtils.appendNewElement(doc, element, "endDate", DateUtils.DATE_FORMATTER.format(endTime));
 
 		}
-		
+
 		return element;
 	}
 }

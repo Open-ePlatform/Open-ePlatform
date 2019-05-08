@@ -563,7 +563,7 @@
 			<div class="btn-wrapper no-border">
 				<xsl:if test="not($flow/Checks/check) and $flow/FlowFamily/useLoginHelpLink != 'true'"><xsl:attribute name="class">btn-wrapper no-border no-padding</xsl:attribute></xsl:if>
 				<xsl:choose>
-					<xsl:when test="$isDisabled">
+					<xsl:when test="$isDisabled and not($operatingMessage/allowFlowForms = 'true')">
 					
 						<a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
 					

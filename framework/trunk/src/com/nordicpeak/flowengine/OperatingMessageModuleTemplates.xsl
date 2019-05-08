@@ -596,7 +596,25 @@
 				
 			</div>
 		</div>
-
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft">
+				
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'allowFlowForms'" />
+					<xsl:with-param name="name" select="'allowFlowForms'" />
+					<xsl:with-param name="element" select="$operatingMessage" />
+					<xsl:with-param name="value" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="allowFlowForms">
+					<xsl:value-of select="$i18n.OperatingMessage.allowFlowForms" />
+				</label>
+				
+			</div>
+		</div>
+		
 		<xsl:if test="../enableSiteProfileSupport = 'true'">
 
 			<div class="floatleft full">
