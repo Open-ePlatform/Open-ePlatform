@@ -75,6 +75,14 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
 
+import com.vividsolutions.jts.algorithm.CentroidArea;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
+
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
@@ -99,13 +107,6 @@ import com.nordicpeak.flowengine.utils.BlobPDFAttachment;
 import com.nordicpeak.flowengine.utils.BlobResourceProvider;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-import com.vividsolutions.jts.algorithm.CentroidArea;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<GeneralMapQueryInstance> implements BaseQueryCRUDCallback {
 
@@ -884,7 +885,6 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void sendSearchReqest(HttpServletRequest req, HttpServletResponse res, User user, String search, boolean appendSearchPrefix) throws IOException {
 
 		String charset = "UTF-8";
