@@ -342,6 +342,39 @@ public class FlowInstanceUtils {
 		
 		return null;
 	}
+	
+	public static StringBuilder getManagerUsernamesString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups, String suffixDelimiter) {
+		
+		if (managers != null) {
+			
+			for (User selectedManager : managers) {
+				
+				if (stringBuilder.length() > 0) {
+					
+					stringBuilder.append(", ");
+				}
+				
+				String username = selectedManager.getUsername();
+				
+				if (!StringUtils.isEmpty(suffixDelimiter)) {
+					
+					String[] usernameArray = username.split(suffixDelimiter);
+					
+					if (usernameArray.length > 0 && !StringUtils.isEmpty(usernameArray[0])) {
+						
+						stringBuilder.append(usernameArray[0]);
+						continue;
+					}
+				}
+					
+				stringBuilder.append(username);
+			}
+		}
+		
+		appendManagerGroupStrings(stringBuilder, managerGroups);
+		
+		return stringBuilder;
+	}
 		
 	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
 		
@@ -359,6 +392,13 @@ public class FlowInstanceUtils {
 				stringBuilder.append(selectedManager.getLastname());
 			}
 		}
+
+		appendManagerGroupStrings(stringBuilder, managerGroups);
+		
+		return stringBuilder;
+	}
+	
+	private static void appendManagerGroupStrings(StringBuilder stringBuilder, List<Group> managerGroups) {
 		
 		if (managerGroups != null) {
 			
@@ -372,8 +412,6 @@ public class FlowInstanceUtils {
 				stringBuilder.append(selectedManagerGroup.getName());
 			}
 		}
-		
-		return stringBuilder;
 	}
 	
 	public static String getManagersString(List<User> managers, List<Group> managerGroups) {
