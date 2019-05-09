@@ -1049,12 +1049,17 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
-			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
-			
-			FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
-			
-			if (!detailedAccess.isAllowUpdatingManagers()) {
-				throw new AccessDeniedException("User is not allowed to update flow instance managers for flow family " + flowInstance.getFlow().getFlowFamily());
+			try {
+
+				getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
+				
+			} catch (AccessDeniedException e) {
+				
+				FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
+				
+				if (!detailedAccess.isAllowUpdatingManagers()) {
+					throw new AccessDeniedException("User is not allowed to update flow instance managers for flow family " + flowInstance.getFlow().getFlowFamily());
+				}
 			}
 
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
