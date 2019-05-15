@@ -36,10 +36,10 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 	}
 	
 	public List<AlternativeType> populate(List<AlternativeType> currentAlternatives, HttpServletRequest req, List<ValidationError> validationErrors) {
-		return populate(currentAlternatives, req, 255, validationErrors);
+		return populate(currentAlternatives, req, 255, 255, validationErrors);
 	}
 	
-	public List<AlternativeType> populate(List<AlternativeType> currentAlternatives, HttpServletRequest req, int maxLength, List<ValidationError> validationErrors) {
+	public List<AlternativeType> populate(List<AlternativeType> currentAlternatives, HttpServletRequest req, int maxLength, int extraMaxLength, List<ValidationError> validationErrors) {
 		
 		String[] alternativeIDs = req.getParameterValues("alternativeID");
 		
@@ -56,8 +56,8 @@ public class AlternativesPopulator<AlternativeType extends MutableAlternative> {
 				}
 				
 				String sortOrder = req.getParameter("sortorder_" + alternativeID);
-				String xmlValue = req.getParameter("alternative-xml-value_" + alternativeID);
-				String attributeValue = req.getParameter("alternative-attribute-value_" + alternativeID);
+				String xmlValue = ValidationUtils.validateParameter("alternative-xml-value_" + alternativeID, req, false, 0, extraMaxLength, validationErrors);
+				String attributeValue = ValidationUtils.validateParameter("alternative-attribute-value_" + alternativeID, req, false, 0, extraMaxLength, validationErrors);
 				
 				if (NumberUtils.isInt(sortOrder)) {
 					

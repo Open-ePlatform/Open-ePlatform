@@ -47,7 +47,7 @@ public class RadioButtonQueryCRUD extends BaseQueryCRUD<RadioButtonQuery, RadioB
 			validationErrors.add(new ValidationError("freeTextAlternative", ValidationErrorType.RequiredField));
 		}
 		
-		List<RadioButtonAlternative> alternatives = ALTERNATIVES_POPLATOR.populate(bean.getAlternatives(), req, 1024, validationErrors);
+		List<RadioButtonAlternative> alternatives = ALTERNATIVES_POPLATOR.populate(bean.getAlternatives(), req, 1024, 255, validationErrors);
 		
 		if(CollectionUtils.isEmpty(alternatives) || alternatives.size() + (bean.getFreeTextAlternative() != null ? 1 : 0) < 2) {
 			validationErrors.add(new ValidationError("TooFewAlternatives"));

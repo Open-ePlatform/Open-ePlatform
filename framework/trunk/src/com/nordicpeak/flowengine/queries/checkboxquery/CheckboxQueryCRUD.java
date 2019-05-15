@@ -47,7 +47,7 @@ public class CheckboxQueryCRUD extends BaseQueryCRUD<CheckboxQuery, CheckboxQuer
 			validationErrors.add(new ValidationError("freeTextAlternative", ValidationErrorType.RequiredField));
 		}
 
-		List<CheckboxAlternative> alternatives = ALTERNATIVES_POPLATOR.populate(bean.getAlternatives(), req, 1024, validationErrors);
+		List<CheckboxAlternative> alternatives = ALTERNATIVES_POPLATOR.populate(bean.getAlternatives(), req, 1024, 255, validationErrors);
 
 		if(CollectionUtils.isEmpty(alternatives)) {
 
