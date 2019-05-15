@@ -448,7 +448,7 @@
 	<xsl:variable name="i18n.UpdateNotifications.reset">Återställ standardvärden</xsl:variable>
 	<xsl:variable name="i18n.UpdateNotifications.submit">Spara ändringar</xsl:variable>
 	
-	<xsl:variable name="i18n.StatisticsSettings">Statistik inställningar</xsl:variable>
+	<xsl:variable name="i18n.StatisticsSettings">Statistikinställningar</xsl:variable>
 	<xsl:variable name="i18n.StatisticsMode.None">Generera ingen statistik</xsl:variable>
 	<xsl:variable name="i18n.StatisticsMode.Internal">Generera statistik men visa den endast för interna användare</xsl:variable>
 	<xsl:variable name="i18n.StatisticsMode.Public">Generera statistik och visa den publikt</xsl:variable>
