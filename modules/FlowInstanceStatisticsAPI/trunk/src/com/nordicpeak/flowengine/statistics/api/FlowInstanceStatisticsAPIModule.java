@@ -42,7 +42,9 @@ import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.db.DBUtils;
 import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.populators.CombinedPopulator;
 import se.unlogic.standardutils.populators.DatePopulator;
+import se.unlogic.standardutils.populators.SwedishSocialSecurityPopulator;
 import se.unlogic.standardutils.populators.TimeStampPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -181,9 +183,13 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 						QueryResultsStreamer<FlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstance, Integer>(flowAdminModule.getDAOFactory().getFlowInstanceDAO(), FlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
 
+						SwedishSocialSecurityPopulator citizenIDValidatorHyphen = new SwedishSocialSecurityPopulator(true, true, true, false);
+						SwedishSocialSecurityPopulator citizenIDValidatorNoHyphen = new SwedishSocialSecurityPopulator(true, true, true, true);
+						
+						@SuppressWarnings("unchecked")
+						CombinedPopulator<String> citizenIDValidator = new CombinedPopulator<String>(String.class, citizenIDValidatorHyphen, citizenIDValidatorNoHyphen);
+						
 						Calendar today = Calendar.getInstance();
-						int currentCentury = today.get(Calendar.YEAR) / 100;
-						int currentDecennium = today.get(Calendar.YEAR) % 100;
 
 						List<FlowInstance> flowInstances = resultsStreamer.getBeans();
 
@@ -207,19 +213,11 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 								String citizenIdentifier;
 
-								if (flowInstance.getPoster() != null && flowInstance.getPoster().getAttributeHandler() != null && (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) != null) {
+								if (flowInstance.getPoster() != null && flowInstance.getPoster().getAttributeHandler() != null && (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) != null && citizenIDValidator.validateFormat(citizenIdentifier)) {
 
-									citizenIdentifier = citizenIdentifier.replaceAll("[-+]", "");
+									if (citizenIdentifier.length() < 12) {
 
-									if (citizenIdentifier.length() == 10 || citizenIdentifier.length() == 6) {
-
-										int ssnDecennium = Integer.valueOf(citizenIdentifier.substring(0, 2));
-
-										if (ssnDecennium > currentDecennium) {
-											currentCentury -= 1;
-										}
-
-										citizenIdentifier = Integer.toString(currentCentury) + citizenIdentifier;
+										citizenIdentifier = SwedishSocialSecurityPopulator.addCentury(citizenIdentifier);
 									}
 
 									Calendar calendar = Calendar.getInstance();
