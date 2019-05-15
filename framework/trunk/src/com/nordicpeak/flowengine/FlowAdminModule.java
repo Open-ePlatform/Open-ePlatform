@@ -47,6 +47,102 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
+import com.nordicpeak.flowengine.beans.Category;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
+import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
+import com.nordicpeak.flowengine.beans.FlowForm;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.StandardStatus;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.cache.FlowCache;
+import com.nordicpeak.flowengine.comparators.FlowAdminExtensionViewProviderComparator;
+import com.nordicpeak.flowengine.comparators.FlowVersionComparator;
+import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
+import com.nordicpeak.flowengine.comparators.StepSortIndexComparator;
+import com.nordicpeak.flowengine.cruds.CategoryCRUD;
+import com.nordicpeak.flowengine.cruds.EvaluatorDescriptorCRUD;
+import com.nordicpeak.flowengine.cruds.ExternalMessageTemplateCRUD;
+import com.nordicpeak.flowengine.cruds.FlowCRUD;
+import com.nordicpeak.flowengine.cruds.FlowFamilyCRUD;
+import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
+import com.nordicpeak.flowengine.cruds.FlowTypeCRUD;
+import com.nordicpeak.flowengine.cruds.QueryDescriptorCRUD;
+import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
+import com.nordicpeak.flowengine.cruds.StatusCRUD;
+import com.nordicpeak.flowengine.cruds.StepCRUD;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.ShowMode;
+import com.nordicpeak.flowengine.enums.StatisticsMode;
+import com.nordicpeak.flowengine.exceptions.FlowEngineException;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
+import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
+import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
+import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
+import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowFamilyEventHandler;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
+import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
+import com.nordicpeak.flowengine.interfaces.FlowTypeExtensionProvider;
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
+import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
+import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
+import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
+import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
+import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
+import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
+import com.nordicpeak.flowengine.validationerrors.NoQueryDescriptorSortindexValidationError;
+import com.nordicpeak.flowengine.validationerrors.NoStepSortindexValidationError;
+import com.nordicpeak.flowengine.validationerrors.QueryExportValidationError;
+import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
+import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
+import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
+
+import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
@@ -154,103 +250,6 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
-import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
-import com.nordicpeak.flowengine.beans.Category;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
-import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAction;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
-import com.nordicpeak.flowengine.beans.FlowForm;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.StandardStatus;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.cache.FlowCache;
-import com.nordicpeak.flowengine.comparators.FlowAdminExtensionViewProviderComparator;
-import com.nordicpeak.flowengine.comparators.FlowVersionComparator;
-import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
-import com.nordicpeak.flowengine.comparators.StepSortIndexComparator;
-import com.nordicpeak.flowengine.cruds.CategoryCRUD;
-import com.nordicpeak.flowengine.cruds.EvaluatorDescriptorCRUD;
-import com.nordicpeak.flowengine.cruds.ExternalMessageTemplateCRUD;
-import com.nordicpeak.flowengine.cruds.FlowCRUD;
-import com.nordicpeak.flowengine.cruds.FlowFamilyCRUD;
-import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
-import com.nordicpeak.flowengine.cruds.FlowTypeCRUD;
-import com.nordicpeak.flowengine.cruds.QueryDescriptorCRUD;
-import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
-import com.nordicpeak.flowengine.cruds.StatusCRUD;
-import com.nordicpeak.flowengine.cruds.StepCRUD;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.ShowMode;
-import com.nordicpeak.flowengine.enums.StatisticsMode;
-import com.nordicpeak.flowengine.exceptions.FlowEngineException;
-import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
-import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
-import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
-import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
-import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
-import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
-import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
-import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowFamilyEventHandler;
-import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
-import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
-import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
-import com.nordicpeak.flowengine.interfaces.FlowTypeExtensionProvider;
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
-import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
-import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
-import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
-import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
-import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
-import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
-import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
-import com.nordicpeak.flowengine.validationerrors.EvaluatorTypeNotFoundValidationError;
-import com.nordicpeak.flowengine.validationerrors.NoQueryDescriptorSortindexValidationError;
-import com.nordicpeak.flowengine.validationerrors.NoStepSortindexValidationError;
-import com.nordicpeak.flowengine.validationerrors.QueryExportValidationError;
-import com.nordicpeak.flowengine.validationerrors.QueryImportValidationError;
-import com.nordicpeak.flowengine.validationerrors.QueryTypeNotAllowedInFlowTypeValidationError;
-import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationError;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
 
@@ -1529,6 +1528,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		TransactionHandler transactionHandler = null;
+		
+		boolean familyUpdated = false;
 
 		try {
 			transactionHandler = daoFactory.getFlowDAO().createTransaction();
@@ -1556,6 +1557,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				daoFactory.getFlowFamilyDAO().update(flowCopy.getFlowFamily(), transactionHandler, null);
 				daoFactory.getFlowDAO().add(flowCopy, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
+				
+				familyUpdated = true;
 			}
 
 			if (flow.getSteps() != null) {
@@ -1696,6 +1699,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flowCopy), EventTarget.ALL);
+		
+		if (familyUpdated) {
+			eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flowCopy.getFlowFamily()), EventTarget.ALL);
+		}
 
 		addFlowFamilyEvent(eventCopyFlowMessage + " " + flow.getVersion() + " \"" + flow.getName() + "\"", flowCopy, user);
 		
@@ -3943,6 +3950,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			//Create transaction
 			TransactionHandler transactionHandler = null;
+			
+			boolean familyUpdated = false;
 
 			try {
 				transactionHandler = daoFactory.getTransactionHandler();
@@ -3966,6 +3975,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 					daoFactory.getFlowFamilyDAO().update(flow.getFlowFamily(), transactionHandler, null);
 					daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
+					
+					familyUpdated = true;
 				}
 
 				//Set target query ID's on evaluator descriptors
@@ -4088,6 +4099,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				log.info("User " + user + " succefully imported flow " + flow);
 
 				eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flow), EventTarget.ALL);
+				
+				if (familyUpdated) {
+					eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flow.getFlowFamily()), EventTarget.ALL);
+				}
 
 				addFlowFamilyEvent(eventImportFlowMessage + " \"" + flow.getName() + "\"", flow, user);
 
