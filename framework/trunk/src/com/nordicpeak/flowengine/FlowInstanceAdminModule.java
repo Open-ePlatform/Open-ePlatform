@@ -295,9 +295,17 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
-		super.init(moduleDescriptor, sectionInterface, dataSource);
+		initNoRegister(moduleDescriptor, sectionInterface, dataSource);
 
-		systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this);
+		if (!systemInterface.getInstanceHandler().addInstance(FlowInstanceAdminModule.class, this)) {
+
+			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowInstanceAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+	}
+	
+	public void initNoRegister(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+
+		super.init(moduleDescriptor, sectionInterface, dataSource);
 
 		eventHandler.addEventListener(CRUDEvent.class, this, EVENT_LISTENER_CLASSES);
 	}
