@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.statistics.api;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -394,14 +395,21 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 				XMLUtils.append(doc, responseElement, "ValidationErrors", validationErrors);
 			}
 
-			if (charset != null) {
-
-				res.setCharacterEncoding(charset.name());
-				XMLUtils.writeXML(doc, res.getOutputStream(), true, charset.name());
-
-			} else {
-
-				XMLUtils.writeXML(doc, res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
+			try {
+				
+				if (charset != null) {
+	
+					res.setCharacterEncoding(charset.name());
+					XMLUtils.writeXML(doc, res.getOutputStream(), true, charset.name());
+	
+				} else {
+	
+					XMLUtils.writeXML(doc, res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
+				}
+				
+			} catch (IOException e) {
+				
+				log.warn("Error sending flow instance statistics to " + user, e);
 			}
 
 		} else {
