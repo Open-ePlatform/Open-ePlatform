@@ -8,6 +8,15 @@ public class FlowFamilyManagerDetailedAccess {
 
 	private boolean allowUpdatingManagers;
 
+	public FlowFamilyManagerDetailedAccess() {}
+
+	public FlowFamilyManagerDetailedAccess(ManagerAccess access, boolean allowUpdatingManagers) {
+		super();
+
+		this.access = access;
+		this.allowUpdatingManagers = allowUpdatingManagers;
+	}
+
 	public ManagerAccess getAccess() {
 		return access;
 	}

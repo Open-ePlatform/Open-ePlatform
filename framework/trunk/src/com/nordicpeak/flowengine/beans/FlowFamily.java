@@ -552,7 +552,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@Override
 	public FlowFamilyManagerDetailedAccess getManagerDetailedAccess(User user) {
 		
-		FlowFamilyManagerDetailedAccess detailedAccess = new FlowFamilyManagerDetailedAccess();
+		FlowFamilyManagerDetailedAccess detailedAccess = null;
 		
 		if (!CollectionUtils.isEmpty(managerUsers)) {
 			
@@ -568,14 +568,16 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 					
 					if (manager.isRestricted()) {
 						
+						if (detailedAccess == null) {
+							detailedAccess = new FlowFamilyManagerDetailedAccess();
+						}
+						
 						detailedAccess.setAccess(ManagerAccess.RESTRICTED);
 						detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || manager.isAllowUpdatingManagers());
 						
 					} else {
 						
-						detailedAccess.setAccess(ManagerAccess.FULL);
-						detailedAccess.setAllowUpdatingManagers(true);
-						return detailedAccess;
+						return new FlowFamilyManagerDetailedAccess(ManagerAccess.FULL, true);
 					}
 					
 					break;
@@ -583,7 +585,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 			}
 		}
 		
-		if ((detailedAccess.getAccess() == null || detailedAccess.getAccess() == ManagerAccess.RESTRICTED) && !CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
+		if ((detailedAccess == null || detailedAccess.getAccess() == ManagerAccess.RESTRICTED) && !CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
 			
 			for (Group group : user.getGroups()) {
 				
@@ -594,15 +596,17 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 						if (managerGroup.getGroupID().equals(group.getGroupID())) {
 							
 							if (managerGroup.isRestricted()) {
+
+								if (detailedAccess == null) {
+									detailedAccess = new FlowFamilyManagerDetailedAccess();
+								}
 								
 								detailedAccess.setAccess(ManagerAccess.RESTRICTED);
 								detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || managerGroup.isAllowUpdatingManagers());
 								
 							} else {
 								
-								detailedAccess.setAccess(ManagerAccess.FULL);
-								detailedAccess.setAllowUpdatingManagers(true);
-								return detailedAccess;
+								return new FlowFamilyManagerDetailedAccess(ManagerAccess.FULL, true);
 							}
 							
 							break;

@@ -108,6 +108,7 @@ import com.nordicpeak.flowengine.cruds.ExternalMessageCRUD;
 import com.nordicpeak.flowengine.cruds.InternalMessageCRUD;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.Priority;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
@@ -187,10 +188,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	
 	//@formatter:on
 
-	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false);
-	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true, false);
-	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false);
-	public static final ManagerFlowInstanceAccessController GENERAL_FULL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, true);
+	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false, false);
+	public static final ManagerFlowInstanceAccessController UPDATE_MANAGERS_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false, true);
+	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true, false, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false, false);
+	public static final ManagerFlowInstanceAccessController GENERAL_FULL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, true, false);
 
 	public static final ValidationError STATUS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("StatusNotFoundValidationError");
 	public static final ValidationError INVALID_STATUS_VALIDATION_ERROR = new ValidationError("InvalidStatusValidationError");
@@ -700,11 +702,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 			}
 
-			if (flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+			FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
+			
+			if (detailedAccess != null && detailedAccess.getAccess() == ManagerAccess.RESTRICTED) {
 
 				Element restrictedManagerElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "RestrictedManager");
-				
-				FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
 				
 				if (detailedAccess.isAllowUpdatingManagers()) {
 					
@@ -1057,19 +1059,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateManagerRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
-			try {
-
-				getGeneralFullAccessController().checkFlowInstanceAccess(flowInstance, user);
-				
-			} catch (AccessDeniedException e) {
-				
-				FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
-				
-				if (!detailedAccess.isAllowUpdatingManagers()) {
-					throw new AccessDeniedException("User is not allowed to update flow instance managers for flow family " + flowInstance.getFlow().getFlowFamily());
-				}
-			}
-
+			getUpdateManagersAccessController().checkFlowInstanceAccess(flowInstance, user);
+			
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, true)) {
 
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
@@ -1127,7 +1118,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, user), EventTarget.ALL);
 					}
 
-					redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
+					try {
+						getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
+
+						redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
+
+					} catch (AccessDeniedException e) {
+
+						redirectToDefaultMethod(req, res);
+					}
 
 					return null;
 
@@ -1935,6 +1934,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected FlowInstanceAccessController getUpdateAccessController() {
 
 		return UPDATE_ACCESS_CONTROLLER;
+	}
+	
+	protected FlowInstanceAccessController getUpdateManagersAccessController() {
+
+		return UPDATE_MANAGERS_ACCESS_CONTROLLER;
 	}
 
 	protected FlowInstanceAccessController getDeleteAccessController() {
