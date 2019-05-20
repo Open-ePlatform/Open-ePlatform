@@ -642,6 +642,40 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return new ManagerResponse(currentStep.getStep().getStepID(), currentStepIndex, queryResponses, false, concurrentModificationLock);
 	}
 
+	public synchronized List<ManagerResponse> getFullFormHTML(QueryHandler queryHandler, HttpServletRequest req, User user, User poster, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, FlowInstanceManagerClosedException {
+
+		checkState();
+
+		List<ManagerResponse> managerResponses = new ArrayList<ManagerResponse>(managedSteps.size());
+
+		for (int stepIndex = 0; stepIndex < managedSteps.size(); stepIndex++) {
+
+			ManagedStep step = managedSteps.get(stepIndex);
+
+			ArrayList<QueryResponse> queryResponses = new ArrayList<QueryResponse>(step.getManagedQueryInstances().size());
+
+			for (ManagedQueryInstance managedQueryInstance : step.getManagedQueryInstances()) {
+
+				if (managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+
+					try {
+						queryResponses.add(managedQueryInstance.getQueryInstance().getFormHTML(req, user, getPoster(poster), null, queryHandler, false, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, flowInstance.getAttributeHandler()));
+
+					} catch (Throwable e) {
+						throw new UnableToGetQueryInstanceFormHTMLException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
+					}
+					
+				} else {
+					queryResponses.add(new QueryResponse(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryDescriptor()));
+				}
+			}
+
+			managerResponses.add(new ManagerResponse(step.getStep().getStepID(), stepIndex, queryResponses, false, concurrentModificationLock));
+		}
+
+		return managerResponses;
+	}
+
 	public boolean requiresAjaxPosting(ManagedQueryInstance managedQueryInstance, ManagedStep currentStep) {
 
 		//Check if this query should enable ajax posting

@@ -88,6 +88,7 @@
 					<xsl:apply-templates select="FlowInstanceManagerForm"/>
 					<xsl:apply-templates select="FlowInstanceManagerPreview"/>
 					<xsl:apply-templates select="FlowInstanceManagerSubmitted"/>
+					<xsl:apply-templates select="FlowInstanceManagerAllStepsForm"/>
 					
 					<xsl:apply-templates select="ListFlowTypes"/>
 					<xsl:apply-templates select="ShowFlowType"/>
@@ -6599,6 +6600,101 @@
 				</xsl:call-template>
 			</div>
 		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowInstanceManagerAllStepsForm">
+	
+		<xsl:if test="ManagerResponse/concurrentModificationLock = 'true'">
+			<section class="modal error">
+					<span data-icon-before="!">
+						<a href="{/Document/requestinfo/uri}?close-reopen=1" onclick="return confirm('{$i18n.FlowInstanceConcurrentlyModifiedConfirm}')" title="{$i18n.FlowInstanceConcurrentlyModifiedLinkTitle}">
+							<xsl:value-of select="$i18n.FlowInstanceConcurrentlyModified" />
+						</a>
+					</span>
+				</section>
+		</xsl:if>
+	
+		<xsl:if test="ManagerResponse/ValidationErrors != 'true' and not(validationError)">
+			<xsl:apply-templates select="lastFlowAction" />
+		</xsl:if>
+	
+		<xsl:apply-templates select="validationError"/>
+
+		<section class="service has-navigator">
+			
+			<form method="post" action="{/Document/requestinfo/uri}" enctype="multipart/form-data">
+				
+				<input id="submitmode" type="hidden" value="true" />
+				
+				<xsl:call-template name="createFlowInstanceManagerFormHeader">
+					<xsl:with-param name="showSaveButton">false</xsl:with-param>
+				</xsl:call-template>
+				
+				<xsl:for-each select="ManagerResponses/ManagerResponse">
+					
+					<xsl:variable name="currentStepID" select="currentStepID" />
+					<xsl:variable name="currentStepIndex" select="currentStepIndex" />
+					
+					<div class="service-navigator-wrap">
+						<div>
+							<ul class="service-navigator primary">
+								<xsl:for-each select="../../FlowInstance/Flow/Steps/Step">
+								
+									<li>
+										<xsl:choose>
+											<xsl:when test="$currentStepID = stepID"><xsl:attribute name="class">active</xsl:attribute></xsl:when>
+											<xsl:when test="$currentStepIndex >= sortIndex">
+												<xsl:attribute name="class">
+													<xsl:text>completed</xsl:text>
+												</xsl:attribute>
+											</xsl:when>
+										</xsl:choose>
+										
+										<span data-step="{position()}">
+											<xsl:value-of select="name"/>
+										</span>
+									</li>
+									
+								</xsl:for-each>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="section-full">
+						
+						<div class="queries">
+						
+						<xsl:apply-templates select="QueryResponses/QueryResponse"/>
+						
+						<xsl:if test="not(QueryResponses/QueryResponse/HTML)">
+							<p><xsl:value-of select="$i18n.NoQueriesInCurrentStep" /></p>
+						</xsl:if>
+						
+					</div>
+					
+				</div>
+				
+			</xsl:for-each>
+			
+			<div id="ajaxLoadingMessage" style="display: none">
+				<h1><xsl:value-of select="$i18n.AjaxLoading" />..</h1><p class="tiny"><a href="javascript:void(0)" onclick="cancelAjaxPost()"><xsl:value-of select="$i18n.AjaxCancel" />.</a></p>
+			</div>
+		
+			<div id="submitLoadingMessage" style="display: none">
+				<h1><xsl:value-of select="$i18n.SubmitLoading" />..</h1>
+			</div>
+		
+			<div id="ajaxErrorMessage" style="display: none">
+				<h1><xsl:value-of select="$i18n.UnExpectedAjaxError" /></h1>
+				<p><xsl:value-of select="$i18n.UnExpectedAjaxErrorDescription" /></p>
+				<input id="AjaxRetryButton" type="button" value="{$i18n.AjaxRetry}" onclick="retryAjaxPost()" class="marginright btn btn-blue" /> 
+				<input id="AjaxReloadButton" type="button" value="{$i18n.AjaxReload}" onclick="reloadCurrentStep()" class="btn btn-blue" />
+			</div>
+					
+			</form>
+			
+		</section>
 		
 	</xsl:template>
 

@@ -158,6 +158,7 @@ import se.unlogic.webutils.validation.ValidationUtils;
 import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.Category;
+import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
@@ -191,6 +192,7 @@ import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
 import com.nordicpeak.flowengine.cruds.StatusCRUD;
 import com.nordicpeak.flowengine.cruds.StepCRUD;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
@@ -226,6 +228,7 @@ import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
@@ -234,6 +237,7 @@ import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListene
 import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
 import com.nordicpeak.flowengine.listeners.QueryDescriptorElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
@@ -2520,6 +2524,120 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			redirectToMethod(req, res, "/testflow/" + flowID);
 
 			return null;
+		}
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse testFlowAllSteps(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		Integer flowID = null;
+
+		try {
+			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCache.getFlowCacheMap().get(flowID) != null) {
+				
+				//Create new instance or get instance from session, only needed for query request processors
+				MutableFlowInstanceManager normalTestFlowInstanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+
+				if (normalTestFlowInstanceManager == null) {
+
+					log.info("User " + user + " requested non-existing flow with ID " + flowID + ", listing flows");
+					return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
+				}
+
+				//Create new temporary instance with no evaluators
+
+				Flow flow = getFlow(flowID);
+
+				if (flow == null) {
+
+					log.info("User " + user + " requested non-existing flow with ID " + flowID + ", listing flows");
+
+					return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
+
+				} else if (!flow.isInternal() || flow.getSteps() == null) {
+
+					throw new FlowNotAvailiableInRequestedFormat(flowID);
+				}
+
+				for (Step step : flow.getSteps()) {
+
+					if (step.getQueryDescriptors() != null) {
+						for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
+
+							queryDescriptor.setEvaluatorDescriptors(null);
+
+							if (queryDescriptor.getDefaultQueryState() == QueryState.HIDDEN) {
+
+								queryDescriptor.setDefaultQueryState(QueryState.VISIBLE);
+								queryDescriptor.setName(queryDescriptor.getName() + " (Dold)");
+							}
+						}
+					}
+				}
+
+				SiteProfile profile = getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily());
+
+				updateAccessController.checkNewFlowInstanceAccess(flow, user, profile);
+
+				log.info("Creating new instance of flow " + flow + " for user " + user);
+
+				InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
+
+				MutableFlowInstanceManager instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, user, instanceMetadata, DEFAULT_REQUEST_METADATA, getAbsoluteFileURL(uriParser, flow));
+				
+				try {
+					log.info("User " + user + " requested testFlowAllSteps of flow instance " + instanceManager.getFlowInstance());
+		
+					List<ManagerResponse> managerResponses = instanceManager.getFullFormHTML(queryHandler, req, user, user, getMutableQueryRequestBaseURL(req, normalTestFlowInstanceManager), DEFAULT_REQUEST_METADATA);
+		
+					Document doc = createDocument(req, uriParser, user);
+					Element flowInstanceManagerPreviewElement = doc.createElement("FlowInstanceManagerAllStepsForm");
+					doc.getDocumentElement().appendChild(flowInstanceManagerPreviewElement);
+		
+					flowInstanceManagerPreviewElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
+		
+					XMLUtils.append(doc, flowInstanceManagerPreviewElement, "ManagerResponses", managerResponses);
+		
+					appendFormData(doc, flowInstanceManagerPreviewElement, instanceManager, req, user);
+		
+					SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName());
+		
+					appendLinksAndScripts(moduleResponse, managerResponses);
+		
+					return moduleResponse;
+					
+				} catch (FlowInstanceManagerClosedException e) {
+
+					log.info("User " + user + " requested flow instance manager for flow instance " + e.getFlowInstance() + " which has already been closed. Removing flow instance manager from session.");
+		
+					redirectToMethod(req, res, "/testflowallsteps/" + flowID);
+					return null;
+					
+				} finally {
+					
+					instanceManager.close(queryHandler);
+				}
+
+			} else {
+
+				log.info("User " + user + " requested invalid URL, listing flows");
+				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
+			}
+
+		} catch (FlowNoLongerAvailableException e) {
+
+			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer available.");
+			return list(req, res, user, uriParser, FLOW_NO_LONGER_AVAILABLE_VALIDATION_ERROR);
+
+		} catch (FlowNotAvailiableInRequestedFormat e) {
+
+			log.info("User " + user + " requested flow " + flowID + " which is not availiable in the requested format.");
+			return list(req, res, user, uriParser, FLOW_NOT_AVAILIABLE_IN_REQUESTED_FORMAT_VALIDATION_ERROR);
+
+		} catch (FlowEngineException e) {
+
+			log.error("Unable to get flow instance manager for flowID " + flowID + " requested by user " + user, e);
+			return list(req, res, user, uriParser, ERROR_GETTING_FLOW_INSTANCE_MANAGER_VALIDATION_ERROR);
 		}
 	}
 
