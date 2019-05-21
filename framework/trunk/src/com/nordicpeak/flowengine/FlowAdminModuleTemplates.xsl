@@ -1937,7 +1937,7 @@
 						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
-					<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
+					<xsl:if test="count(EvaluatorDescriptors/EvaluatorDescriptor) > 1">
 						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortevaluators/{queryID}" title="{$i18n.SortEvaluators.title}: {name}">
 							<img src="{$imgPath}/move.png" alt="" />
 						</a>
