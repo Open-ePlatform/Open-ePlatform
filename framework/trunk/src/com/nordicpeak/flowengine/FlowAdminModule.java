@@ -418,6 +418,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private String eventStatusSortMessage = "eventStatusSortMessage";
 	
 	@XSLVariable(prefix = "java.")
+	private String eventEvaluatorSortMessage = "eventEvaluatorSortMessage";
+	
+	@XSLVariable(prefix = "java.")
 	private String eventFunctionConfigured = "eventFunctionConfigured";
 	
 	@XSLVariable(prefix = "java.")
@@ -1897,6 +1900,78 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			sortFlowElement.appendChild(validationError.toXML(doc));
 		}
+
+		return new SimpleForegroundModuleResponse(doc);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse sortEvaluators(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+
+		Integer queryID = uriParser.getInt(2);
+		
+		if (queryID == null) {
+			
+			return list(req, res, user, uriParser, new ValidationError("QueryNotFound"));
+		}
+		
+		QueryDescriptor queryDescriptor = getQueryDescriptor(queryID);
+		
+		if (queryDescriptor == null) {
+			
+			return list(req, res, user, uriParser, new ValidationError("QueryNotFound"));
+		}
+		
+		Flow flow = queryDescriptor.getStep().getFlow();
+
+		if (!hasFlowTypeAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+		
+		if (queryDescriptor.getEvaluatorDescriptors() == null) {
+			
+			log.info("User " + user + " requested sort evaluators form for query " + queryDescriptor + " in flow " + flow + " which has no evaluators.");
+
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+			return null;
+		}
+
+		List<ValidationError> validationErrors = null;
+		
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			
+			validationErrors = new ArrayList<>();
+
+			for (EvaluatorDescriptor evaluatorDescription : queryDescriptor.getEvaluatorDescriptors()) {
+
+				Integer sortIndex = ValidationUtils.validateParameter("sortorder_" + evaluatorDescription.getEvaluatorID(), req, true, IntegerPopulator.getPopulator(), validationErrors);
+				
+				if (sortIndex != null) {
+
+					evaluatorDescription.setSortIndex(sortIndex);
+				}
+
+				evaluatorDescription.setQueryDescriptor(queryDescriptor);
+			}
+
+			daoFactory.getEvaluatorDescriptorDAO().update(queryDescriptor.getEvaluatorDescriptors(), null);
+
+			addFlowFamilyEvent(eventEvaluatorSortMessage + " \"" + queryDescriptor.getName() + "\"", flow, user);
+
+			getEventHandler().sendEvent(EvaluatorDescriptor.class, new CRUDEvent<EvaluatorDescriptor>(EvaluatorDescriptor.class, CRUDAction.UPDATE, queryDescriptor.getEvaluatorDescriptors()), EventTarget.ALL);
+
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#steps");
+			return null;
+		}
+
+		log.info("User " + user + " requesting sort status form for flow " + flow);
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element sortEvaluatorsElement = doc.createElement("SortEvaluators");
+		doc.getDocumentElement().appendChild(sortEvaluatorsElement);
+
+		sortEvaluatorsElement.appendChild(queryDescriptor.toXML(doc));
 
 		return new SimpleForegroundModuleResponse(doc);
 	}

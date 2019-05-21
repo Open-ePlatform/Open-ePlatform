@@ -77,6 +77,7 @@
 					<xsl:apply-templates select="UpdateStep" />
 					<xsl:apply-templates select="AddQueryDescriptor" />
 					<xsl:apply-templates select="AddEvaluatorDescriptor" />
+					<xsl:apply-templates select="SortEvaluators" />
 					
 					<xsl:apply-templates select="AddStatus" />
 					<xsl:apply-templates select="UpdateStatus" />
@@ -399,7 +400,7 @@
 							
 								<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
 									<img src="{$imgPath}/delete.png" alt="" />
-								</a>				
+								</a>
 							
 							</xsl:when>
 							<xsl:otherwise>
@@ -1869,7 +1870,7 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>			
+		<li>
 			<span class="bold"><xsl:value-of select="name"/></span>
 		
 			<span class="bigmarginleft">
@@ -1882,13 +1883,13 @@
 						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
 				</xsl:if>
-			</span>		
+			</span>
 		
 			<xsl:if test="QueryDescriptors/QueryDescriptor">
 				<ol>
 					<xsl:apply-templates select="QueryDescriptors/QueryDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-					</xsl:apply-templates>				
+					</xsl:apply-templates>
 				</ol>
 			</xsl:if>
 		</li>
@@ -1899,7 +1900,7 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>	
+		<li>
 			<xsl:value-of select="name"/>
 			
 			<span class="tiny">
@@ -1925,30 +1926,36 @@
 			
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
 					<img src="{$imgPath}/download.png" alt="" />
-				</a>			
+				</a>
 			
 				<xsl:if test="$disableStructureManipulation = false()">
 					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
 						<img src="{$imgPath}/cog_add.png" alt="" />
-					</a>				
+					</a>
 				
 					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
 						<img src="{$imgPath}/pen.png" alt="" />
 					</a>
 					
+					<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortevaluators/{queryID}" title="{$i18n.SortEvaluators.title}: {name}">
+							<img src="{$imgPath}/move.png" alt="" />
+						</a>
+					</xsl:if>
+					
 					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
 						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
-				</xsl:if>			
+				</xsl:if>
 			</span>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
 				<ul>
 					<xsl:apply-templates select="EvaluatorDescriptors/EvaluatorDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-					</xsl:apply-templates>				
+					</xsl:apply-templates>
 				</ul>
-			</xsl:if>					
+			</xsl:if>
 		</li>
 	
 	</xsl:template>
@@ -1957,7 +1964,7 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>	
+		<li>
 			<xsl:value-of select="name"/>
 			
 			<span class="tiny">
@@ -2002,7 +2009,7 @@
 			</xsl:if>
 		</li>
 	
-	</xsl:template>	
+	</xsl:template>
 		
 	<xsl:template match="Status" mode="list">
 	
@@ -4245,18 +4252,18 @@
 		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full sortable">
-							
+				
 				<xsl:apply-templates select="Flow/Statuses/Status" mode="sort" />
-							
+				
 			</div>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SortFlow.submit}" />
 			</div>
 
-		</form>	
+		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="Status" mode="sort">
 	
@@ -4270,9 +4277,49 @@
 					<xsl:with-param name="value" select="sortIndex" />
 				</xsl:call-template>
 			</div>
-		</div>	
+		</div>
 	
-	</xsl:template>	
+	</xsl:template>
+	
+	<xsl:template match="SortEvaluators">
+	
+		<h1>
+			<xsl:value-of select="$i18n.SortEvaluators.title" />
+			<xsl:text>:&#160;</xsl:text>
+			<xsl:value-of select="QueryDescriptor/name" />
+		</h1>
+		
+		<form id="evaluatorSortingForm" name="evaluatorSortingForm" method="post" action="{/Document/requestinfo/uri}">
+		
+			<div class="floatleft full sortable">
+				
+				<xsl:apply-templates select="QueryDescriptor/EvaluatorDescriptors/EvaluatorDescriptor" mode="sort" />
+				
+			</div>
+			
+			<div class="floatright margintop clearboth">
+				<input type="submit" value="{$i18n.SortFlow.submit}" />
+			</div>
+
+		</form>
+	
+	</xsl:template>
+	
+	<xsl:template match="EvaluatorDescriptor" mode="sort">
+	
+		<div id="evaluator_{evaluatorID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
+			<div class="padding">
+				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveEvaluator}" alt="" />
+				<xsl:value-of select="name" />
+				<xsl:call-template name="createHiddenField">
+					<xsl:with-param name="name" select="concat('sortorder_', evaluatorID)" />
+					<xsl:with-param name="class" select="'sortorder'" />
+					<xsl:with-param name="value" select="sortIndex" />
+				</xsl:call-template>
+			</div>
+		</div>
+	
+	</xsl:template>
 	
 	<xsl:template match="ListStandardStatuses">
 	

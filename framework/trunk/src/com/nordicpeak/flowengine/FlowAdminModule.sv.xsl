@@ -36,6 +36,7 @@
 	<xsl:variable name="java.eventStatusDeletedMessage">Tog bort status</xsl:variable>
 	<xsl:variable name="java.eventChangeFlowType">Ändrade kategori till</xsl:variable>
 	<xsl:variable name="java.eventStatusSortMessage">Sorterade statusar</xsl:variable>
+	<xsl:variable name="java.eventEvaluatorSortMessage">Sorterade regler i fråga</xsl:variable>
 	<xsl:variable name="java.eventFlowFormAddedMessage">Skapade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormUpdatedMessage">Uppdaterade blankett</xsl:variable>
 	<xsl:variable name="java.eventFlowFormDeletedMessage">Tog bort blankett</xsl:variable>
@@ -550,8 +551,11 @@
 	<xsl:variable name="i18n.sortStatuses">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
-	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>
 	
+	<xsl:variable name="i18n.SortEvaluators.title">Sortera regler i frågan</xsl:variable>
+	<xsl:variable name="i18n.MoveEvaluator">Flytta regel</xsl:variable>
+	
+	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>
 	<xsl:variable name="i18n.PreviewEnabled">Förhandsgranskning</xsl:variable>
 	<xsl:variable name="i18n.PaymentEnabled">Betalstöd</xsl:variable>
 	
