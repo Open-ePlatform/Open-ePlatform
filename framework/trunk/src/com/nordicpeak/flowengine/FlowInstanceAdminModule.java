@@ -1613,7 +1613,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	public void run() {
 
-		this.flowInstanceIndexer.cacheFlowInstances();
+		try {
+			this.flowInstanceIndexer.cacheFlowInstances();
+			
+		} catch (Throwable t) {
+			log.error("Error caching flow instances in indexer", t);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
