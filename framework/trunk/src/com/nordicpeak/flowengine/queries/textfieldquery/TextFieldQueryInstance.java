@@ -38,27 +38,28 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 	@XMLElement
 	private Integer queryInstanceID;
 
-	@DAOManaged(columnName="queryID")
+	@DAOManaged(columnName = "queryID")
 	@ManyToOne
 	@XMLElement
 	private TextFieldQuery query;
 
 	@DAOManaged
 	@OneToMany
-	@XMLElement(fixCase=true)
+	@XMLElement(fixCase = true)
 	private List<TextFieldValue> values;
+
+	@DAOManaged
+	private boolean initialized;
 
 	public Integer getQueryInstanceID() {
 
 		return queryInstanceID;
 	}
 
-
 	public void setQueryInstanceID(Integer queryInstanceID) {
 
 		this.queryInstanceID = queryInstanceID;
 	}
-
 
 	@Override
 	public TextFieldQuery getQuery() {
@@ -66,12 +67,10 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 		return query;
 	}
 
-
 	public void setQuery(TextFieldQuery query) {
 
 		this.query = query;
 	}
-
 
 	@Override
 	public String toString() {
@@ -82,35 +81,35 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
-		if(this.values != null){
+		if (this.values != null) {
 
 			Iterator<TextFieldValue> iterator = this.values.iterator();
-			
-			while(iterator.hasNext()){
-				
+
+			while (iterator.hasNext()) {
+
 				TextFieldValue textFieldValue = iterator.next();
-				
-				if(textFieldValue.getTextField().isSetAsAttribute()){
+
+				if (textFieldValue.getTextField().isSetAsAttribute()) {
 
 					attributeHandler.removeAttribute(textFieldValue.getTextField().getAttributeName());
 				}
-				
-				if(!textFieldValue.getTextField().isDisabled()){
-					
+
+				if (!textFieldValue.getTextField().isDisabled()) {
+
 					iterator.remove();
 				}
 			}
 		}
 
+		initialized = false;
+
 		super.reset(attributeHandler);
 	}
-
 
 	public List<TextFieldValue> getValues() {
 
 		return values;
 	}
-
 
 	public void setValues(List<TextFieldValue> values) {
 
@@ -119,11 +118,11 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	public String getFieldValue(String label) {
 
-		if(this.values != null){
+		if (this.values != null) {
 
-			for(TextFieldValue textFieldValue : this.values){
+			for (TextFieldValue textFieldValue : this.values) {
 
-				if(textFieldValue.getTextField().getLabel().equals(label)){
+				if (textFieldValue.getTextField().getLabel().equals(label)) {
 
 					return textFieldValue.getValue();
 				}
@@ -138,47 +137,47 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 		Element element = getBaseExportXML(doc);
 
-		if(this.values != null){
+		if (this.values != null) {
 
 			//TODO this code needs to be sorted later on as it may lead to different element names than the generated XSD since not all labels are iterated over, preferably the element names of the fields should be set when configuring the query
 
 			ArrayList<String> fieldElementNames = new ArrayList<String>(this.values.size());
 
-			for(TextFieldValue textFieldValue : this.values){
+			for (TextFieldValue textFieldValue : this.values) {
 
 				String elementName;
-				
-				if(textFieldValue.getTextField().getXSDElementName() != null){
-					
+
+				if (textFieldValue.getTextField().getXSDElementName() != null) {
+
 					elementName = textFieldValue.getTextField().getXSDElementName();
-					
+
 					fieldElementNames.add(elementName);
-					
-				}else{
-					
+
+				} else {
+
 					elementName = TextFieldQuery.generateElementName(textFieldValue.getTextField().getLabel(), fieldElementNames);
-				}				
-				
+				}
+
 				XMLUtils.appendNewCDATAElement(doc, element, elementName, textFieldValue.getValue());
 			}
 		}
 
 		return element;
 	}
-	
+
 	@Override
 	public String getStringValue() {
 
-		if(values == null){
+		if (values == null) {
 
 			return null;
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for(TextFieldValue value : values){
+		for (TextFieldValue value : values) {
 
-			if(stringBuilder.length() != 0){
+			if (stringBuilder.length() != 0) {
 
 				stringBuilder.append(", ");
 			}
@@ -188,7 +187,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 		return stringBuilder.toString();
 	}
-	
+
 	@Override
 	public List<String> getColumnLabels(QueryHandler queryHandler) {
 
@@ -213,7 +212,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 		if (!CollectionUtils.isEmpty(query.getFields())) {
 
 			for (TextField textField : query.getFields()) {
-				
+
 				boolean found = false;
 
 				for (TextFieldValue value : this.values) {
@@ -225,8 +224,8 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 						break;
 					}
 				}
-				
-				if(!found){
+
+				if (!found) {
 					values.add(null);
 				}
 			}
@@ -235,91 +234,90 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 		return values;
 	}
 
-
 	protected TextFieldValue getTextFieldValue(Integer textFieldID) {
 
-		if(values != null){
-			
-			for(TextFieldValue textFieldValue : values){
-				
-				if(textFieldValue.getTextField().getTextFieldID().equals(textFieldID)){
-					
+		if (values != null) {
+
+			for (TextFieldValue textFieldValue : values) {
+
+				if (textFieldValue.getTextField().getTextFieldID().equals(textFieldID)) {
+
 					return textFieldValue;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
 	public String getFieldValue(Integer textFieldID) {
-		
+
 		TextFieldValue textFieldValue = getTextFieldValue(textFieldID);
-		
-		if(textFieldValue != null){
-			
+
+		if (textFieldValue != null) {
+
 			return textFieldValue.getValue();
 		}
-		
+
 		return null;
-	}	
-	
+	}
+
 	public void setFieldValue(Integer textFieldID, String value, MutableAttributeHandler attributeHandler) {
 
-		if(value == null){
-			
-			if(values != null){
-				
-				for(TextFieldValue textFieldValue : values){
-					
-					if(textFieldValue.getTextField().getTextFieldID().equals(textFieldID)){
-						
+		if (value == null) {
+
+			if (values != null) {
+
+				for (TextFieldValue textFieldValue : values) {
+
+					if (textFieldValue.getTextField().getTextFieldID().equals(textFieldID)) {
+
 						values.remove(textFieldValue);
-						
+
 						break;
 					}
 				}
 			}
-			
+
 			return;
 		}
-		
-		if(values != null){
-			
-			for(TextFieldValue textFieldValue : values){
-				
-				if(textFieldValue.getTextField().getTextFieldID().equals(textFieldID)){
-					
+
+		if (values != null) {
+
+			for (TextFieldValue textFieldValue : values) {
+
+				if (textFieldValue.getTextField().getTextFieldID().equals(textFieldID)) {
+
 					textFieldValue.setValue(value);
-					
+
 					if (textFieldValue.getTextField().isSetAsAttribute()) {
 
 						attributeHandler.setAttribute(textFieldValue.getTextField().getAttributeName(), value);
 					}
-					
+
 					return;
 				}
 			}
 		}
-		
-		if(getQuery().getFields() != null){
-			
+
+		if (getQuery().getFields() != null) {
+
 			for (TextField textField : getQuery().getFields()) {
-				
-				if(textField.getTextFieldID().equals(textFieldID)){
-					
-					if(values == null){
-						
+
+				if (textField.getTextFieldID().equals(textFieldID)) {
+
+					if (values == null) {
+
 						values = new ArrayList<TextFieldValue>(1);
 					}
-					
+
 					values.add(new TextFieldValue(textField, value));
-					
+
 					if (attributeHandler != null && textField.isSetAsAttribute()) {
-						
+
 						attributeHandler.setAttribute(textField.getAttributeName(), value);
 					}
-					
+
 					return;
 				}
 			}
@@ -328,15 +326,24 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	public void setDefaultValues() {
 
-		if(query.getFields() != null){
-			
-			for(TextField textField : query.getFields()){
-				
-				if(textField.isDisabled() && textField.getDefaultValue() != null){
-					
+		if (query.getFields() != null) {
+
+			for (TextField textField : query.getFields()) {
+
+				if (textField.isDisabled() && textField.getDefaultValue() != null) {
+
 					setFieldValue(textField.getTextFieldID(), textField.getDefaultValue(), null);
 				}
 			}
 		}
 	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
 }

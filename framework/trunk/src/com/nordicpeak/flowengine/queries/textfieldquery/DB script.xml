@@ -144,4 +144,49 @@
 		</Query>
 	</Script>
 	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `text_field_query_endpoints` (
+					`endpointID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					`address` VARCHAR(1024) NOT NULL,
+					`username` VARCHAR(255) NULL,
+					`password` VARCHAR(255) NULL,
+					`encoding` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`endpointID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `text_field_query_endpoint_fields` (
+					`endpointID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`endpointID`, `name`),
+					CONSTRAINT `FK_text_field_query_endpoint_fields_1` FOREIGN KEY (`endpointID`) REFERENCES `text_field_query_endpoints` (`endpointID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_field_queries` ADD COLUMN `endpointID` INT UNSIGNED NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_fields` ADD COLUMN `endpointField` VARCHAR(255);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_field_query_instances` ADD COLUMN `initialized` TINYINT UNSIGNED NOT NULL AFTER `queryID`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

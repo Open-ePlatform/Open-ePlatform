@@ -30,6 +30,7 @@
 			<xsl:apply-templates select="AddTextField"/>
 			<xsl:apply-templates select="UpdateTextField"/>
 			<xsl:apply-templates select="SortTextFields"/>
+			<xsl:apply-templates select="SelectTextFieldQueryEndpoint"/>
 		
 		</div>
 		
@@ -125,6 +126,37 @@
 			</div>
 			
 		</fieldset>
+		
+		<xsl:if test="Endpoints">
+			
+			<fieldset>
+				<legend><xsl:value-of select="$i18n.Endpoint.Title"/></legend>
+				
+				<xsl:choose>
+					<xsl:when test="TextFieldQuery/Endpoint">
+					
+						<xsl:value-of select="$i18n.Endpoint.Selected"/>
+						<xsl:text>: </xsl:text>
+						<strong><xsl:value-of select="TextFieldQuery/Endpoint/name"/></strong>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<xsl:value-of select="$i18n.Endpoint.NonSelected"/>
+					
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				<div class="clearboth floatright">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/selectendpoint/{TextFieldQuery/queryID}" title="{$i18n.Endpoint.Select}">
+						<xsl:value-of select="$i18n.Endpoint.Select"/>
+						<img class="alignbottom marginleft" src="{$commonImagePath}/pen.png"/>
+					</a>
+				</div>
+				
+			</fieldset>
+		
+		</xsl:if>
 		
 		<div class="floatright margintop clearboth">
 			<input type="button" value="{$i18n.Done}" onclick="window.location = '{showFlowURL}'" />
@@ -513,11 +545,98 @@
 		</div>
 	
 	</xsl:template>
+	 
+	<xsl:template match="SelectTextFieldQueryEndpoint">
+	
+		<xsl:apply-templates select="validationException/validationError" />
+	
+		<form id="selectTextFieldQueryEndpointForm" name="selectTextFieldQueryEndpointForm" method="post" action="{/Document/requestinfo/uri}">
+	
+			<div class="floatleft hugemarginright">
+				<div>
+					<label for="endpointID" class="floatleft clearboth">
+						<xsl:value-of select="$i18n.Endpoint.Title" />
+					</label>
+				</div>
+				<div>
+					<xsl:call-template name="createDropdown">
+						<xsl:with-param name="id" select="'endpointID'" />
+						<xsl:with-param name="name" select="'endpointID'" />
+						<xsl:with-param name="title" select="$i18n.Endpoint.Title"/>
+						<xsl:with-param name="labelElementName" select="'name'" />
+						<xsl:with-param name="valueElementName" select="'endpointID'" />
+						<xsl:with-param name="element" select="Endpoints/Endpoint" />
+						<xsl:with-param name="class" select="'marginright'" />
+						<xsl:with-param name="selectedValue" select="TextFieldQuery/Endpoint/endpointID" />
+						<xsl:with-param name="addEmptyOption" select="$i18n.Endpoint.Select.empty" />
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<label id="endpoint-fields" class="floatleft full">
+				<xsl:value-of select="$i18n.Endpoint.Fields" />
+			</label>
+			
+			<xsl:for-each select="Endpoints/Endpoint">
+			
+				<div id="endpoint-{endpointID}" class="endpoint floatleft full" style="display: none;">
+					
+					<table>
+					
+						<xsl:variable name="endpoint" select="."/>
+						
+						<xsl:for-each select="../../TextFieldQuery/Fields/TextField">
+						
+							<tr>
+								<xsl:variable name="name" select="concat('endpointField-', $endpoint/endpointID, '-', textFieldID)" />
+								
+								<td>
+									<label for="{$name}" class="nomargin bigpaddingright">
+										<xsl:value-of select="label" />
+									</label>
+								</td>
+								
+								<td>
+									<xsl:call-template name="createDropdown">
+										<xsl:with-param name="id" select="$name" />
+										<xsl:with-param name="name" select="$name" />
+										<xsl:with-param name="selectedValue" select="endpointField" />
+										<xsl:with-param name="element" select="$endpoint/Fields/value" />
+										<xsl:with-param name="simple" select="true()" />
+										<xsl:with-param name="addEmptyOption" select="$i18n.Endpoint.Field.Select" />
+										<xsl:with-param name="requestparameters" select="../../../requestparameters" />
+									</xsl:call-template>
+								</td>
+								
+							</tr>	
+						
+						</xsl:for-each>
+						
+					</table>
+					
+				</div>
+			</xsl:for-each>
+			
+			<div class="floatright margintop clearboth">
+				<input type="submit" value="{$i18n.SaveChanges}" />
+			</div>
+		
+		</form>
+	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey = 'UpdateFailedTextFieldQueryNotFound']">
 		
 		<p class="error">
 			<xsl:value-of select="$i18n.TextFieldQueryNotFound" />
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey = 'NoEndpointFieldsSelected']">
+		
+		<p class="error">
+			<xsl:value-of select="$i18n.Endpoint.Validation.NoEndpointFieldsSelected" />
 		</p>
 		
 	</xsl:template>
@@ -547,6 +666,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'defaultValue'">
 				<xsl:value-of select="$i18n.DefaultValue" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'endpointID'">
+				<xsl:value-of select="$i18n.Endpoint" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

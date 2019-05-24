@@ -104,8 +104,22 @@
 			
 				<div id="{$queryID}-validationerrors" class="validationerrors">
 					<div class="info-box error">
-						<span/>
-						<div class="marker"></div>
+					
+						<xsl:variable name="validationErrors" select="ValidationErrors/validationError[messageKey]"/>
+						
+						<xsl:choose>
+							<xsl:when test="$validationErrors">
+								
+								<xsl:apply-templates select="$validationErrors" />
+								
+							</xsl:when>
+							<xsl:otherwise>
+								
+								<span />
+								
+							</xsl:otherwise>
+						</xsl:choose>
+						<div class="marker"/>
 					</div>
 				</div>
 				
@@ -130,7 +144,7 @@
 						</h2>
 					</xsl:if>
 					
-					<xsl:if test="TextFieldQueryInstance/TextFieldQuery/helpText">		
+					<xsl:if test="TextFieldQueryInstance/TextFieldQuery/helpText">
 						<xsl:apply-templates select="TextFieldQueryInstance/TextFieldQuery/helpText" />
 					</xsl:if>
 					
@@ -242,7 +256,7 @@
 					</xsl:choose>
 				</xsl:with-param>
 				<xsl:with-param name="disabled">
-					<xsl:if test="disabled = 'true' or ../../../../Locked">
+					<xsl:if test="disabled = 'true' or ../../../../Locked or ../../../../ValidationErrors/validationError[messageKey = 'APIRequestException']">
 						<xsl:text>true</xsl:text>
 					</xsl:if>
 				</xsl:with-param>
@@ -287,6 +301,14 @@
 			
 		</div>
 	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey = 'APIRequestException']">
+		
+		<span>
+			<xsl:value-of select="$i18n.APIRequestException" />
+		</span>
+		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'RequiredField']">

@@ -12,6 +12,7 @@ import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
+import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.StringPopulator;
@@ -24,6 +25,7 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
+import com.nordicpeak.flowengine.queries.textfieldquery.api.TextFieldQueryEndpoint;
 
 @Table(name = "text_field_queries")
 @XMLElement
@@ -39,10 +41,10 @@ public class TextFieldQuery extends BaseQuery {
 	private Integer queryID;
 
 	@DAOManaged
-	@WebPopulate(required=true)
+	@WebPopulate(required = true)
 	@XMLElement
 	private FieldLayout layout;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -52,19 +54,24 @@ public class TextFieldQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean lockOnOwnershipTransfer;
-	
-	@DAOManaged(dontUpdateIfNull=true)
-	@OneToMany(autoUpdate=true, autoAdd=true)
-	@XMLElement(fixCase=true)
+
+	@DAOManaged(dontUpdateIfNull = true)
+	@OneToMany(autoUpdate = true, autoAdd = true)
+	@XMLElement(fixCase = true)
 	private List<TextField> fields;
 
-	@DAOManaged(dontUpdateIfNull=true)
-	@OneToMany(autoUpdate=true)
+	@DAOManaged(dontUpdateIfNull = true)
+	@OneToMany(autoUpdate = true)
 	@XMLElement
 	private List<TextFieldQueryInstance> instances;
 
-	private Map<Integer,Integer> textFieldConversionMap;
-	
+	@DAOManaged(columnName = "endpointID")
+	@ManyToOne(autoAdd = true, autoGet = true, autoUpdate = true)
+	@XMLElement(fixCase = true)
+	private TextFieldQueryEndpoint endpoint;
+
+	private Map<Integer, Integer> textFieldConversionMap;
+
 	public static long getSerialversionuid() {
 
 		return serialVersionUID;
@@ -91,6 +98,16 @@ public class TextFieldQuery extends BaseQuery {
 		this.instances = instances;
 	}
 
+	public TextFieldQueryEndpoint getEndpoint() {
+
+		return endpoint;
+	}
+
+	public void setEndpoint(TextFieldQueryEndpoint endpoint) {
+
+		this.endpoint = endpoint;
+	}
+
 	public void setQueryID(int queryID) {
 
 		this.queryID = queryID;
@@ -100,21 +117,21 @@ public class TextFieldQuery extends BaseQuery {
 
 		this.fields = alternatives;
 	}
-	
+
 	public boolean isHideTitle() {
-		
+
 		return hideTitle;
 	}
-	
+
 	public void setHideTitle(boolean hideTitle) {
-		
+
 		this.hideTitle = hideTitle;
 	}
 
 	@Override
 	public String toString() {
 
-		if(this.queryDescriptor != null){
+		if (this.queryDescriptor != null) {
 
 			return queryDescriptor.getName() + " (queryID: " + queryID + ")";
 		}
@@ -132,15 +149,13 @@ public class TextFieldQuery extends BaseQuery {
 		this.layout = layout;
 	}
 
-	
 	public Map<Integer, Integer> getTextFieldConversionMap() {
-	
+
 		return textFieldConversionMap;
 	}
 
-	
 	public void setTextFieldConversionMap(Map<Integer, Integer> textFieldConversionMap) {
-	
+
 		this.textFieldConversionMap = textFieldConversionMap;
 	}
 
@@ -153,20 +168,20 @@ public class TextFieldQuery extends BaseQuery {
 	@Override
 	public void toXSD(Document doc) {
 
-		Element complexTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:complexType");
+		Element complexTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:complexType");
 		complexTypeElement.setAttribute("name", getXSDTypeName());
 
-		Element complexContentElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:complexContent");
+		Element complexContentElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:complexContent");
 		complexTypeElement.appendChild(complexContentElement);
 
-		Element extensionElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:extension");
+		Element extensionElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:extension");
 		extensionElement.setAttribute("base", "Query");
 		complexContentElement.appendChild(extensionElement);
 
-		Element sequenceElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:sequence");
+		Element sequenceElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:sequence");
 		extensionElement.appendChild(sequenceElement);
 
-		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		nameElement.setAttribute("name", "Name");
 		nameElement.setAttribute("type", "xs:string");
 		nameElement.setAttribute("minOccurs", "1");
@@ -176,26 +191,26 @@ public class TextFieldQuery extends BaseQuery {
 
 		ArrayList<String> fieldElementNames = new ArrayList<String>(fields.size());
 
-		if(!CollectionUtils.isEmpty(fields)){
+		if (!CollectionUtils.isEmpty(fields)) {
 
-			for(TextField textField : fields){
+			for (TextField textField : fields) {
 
 				sequenceElement.appendChild(doc.createComment(textField.getLabel()));
 
 				String elementName;
-				
-				if(textField.getXSDElementName() != null){
-					
+
+				if (textField.getXSDElementName() != null) {
+
 					elementName = textField.getXSDElementName();
-					
+
 					fieldElementNames.add(elementName);
-					
-				}else{
-					
+
+				} else {
+
 					elementName = generateElementName(textField.getLabel(), fieldElementNames);
 				}
 
-				Element fieldElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+				Element fieldElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 				fieldElement.setAttribute("name", elementName);
 				fieldElement.setAttribute("type", "xs:string");
 				fieldElement.setAttribute("minOccurs", textField.isRequired() ? "1" : "0");
@@ -212,11 +227,11 @@ public class TextFieldQuery extends BaseQuery {
 
 		String elementName = XMLUtils.toValidElementName(label);
 
-		if(fieldElementNames.contains(elementName)){
+		if (fieldElementNames.contains(elementName)) {
 
 			int counter = 1;
 
-			while(fieldElementNames.contains(elementName + counter)){
+			while (fieldElementNames.contains(elementName + counter)) {
 
 				counter++;
 			}
@@ -240,46 +255,46 @@ public class TextFieldQuery extends BaseQuery {
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		layout = XMLValidationUtils.validateParameter("layout", xmlParser, true, TextFieldCRUD.LAYOUT_POPULATOR, errors);
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
-		
+
 		List<XMLParser> xmlParsers = xmlParser.getNodes("Fields/TextField");
-		
+
 		if (xmlParsers != null) {
-			
+
 			fields = new ArrayList<TextField>(xmlParsers.size());
-			
+
 			for (XMLParser parser : xmlParsers) {
-				
+
 				TextField textField = new TextField();
-				
+
 				textField.populate(parser);
-				
+
 				textField.setQuery(this);
-				
+
 				fields.add(textField);
-				
+
 			}
 
 		}
-//		else {
-//
-//			errors.add(new ValidationError("NoTextFieldsFound"));
-//
-//		}
+		//		else {
+		//
+		//			errors.add(new ValidationError("NoTextFieldsFound"));
+		//
+		//		}
 
 		if (!errors.isEmpty()) {
-			
+
 			throw new ValidationException(errors);
 		}
 	}
-	
+
 	public boolean isLockOnOwnershipTransfer() {
-		
+
 		return lockOnOwnershipTransfer;
 	}
-	
+
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
-		
+
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
 	}
-	
+
 }

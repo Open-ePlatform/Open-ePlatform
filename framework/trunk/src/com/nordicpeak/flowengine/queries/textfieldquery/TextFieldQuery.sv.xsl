@@ -13,6 +13,7 @@
 	<xsl:variable name="i18n.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.TooLongFieldContent.part3"> tecken!</xsl:variable>
+	<xsl:variable name="i18n.APIRequestException">Kunde inte hämta data från API, vänligen försök igen senare.</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	
 	<xsl:variable name="i18n.js.ColorChoose">Välj</xsl:variable>

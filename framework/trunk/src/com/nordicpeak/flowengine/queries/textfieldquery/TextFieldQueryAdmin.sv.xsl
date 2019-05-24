@@ -49,4 +49,15 @@
 	
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	<xsl:variable name="i18n.No">Nej</xsl:variable>
+	
+	<xsl:variable name="i18n.Endpoint">API-källa</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Title">Koppling mot API-källa</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Select">Välj API-källa</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Select.empty">Ingen API-källa</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Selected">Denna fråga är kopplad mot API-källan</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.NonSelected">Denna fråga är inte kopplad mot någon API-källa</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Fields">Koppling av fält</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Field.Select">Välj fält</xsl:variable>
+	<xsl:variable name="i18n.Endpoint.Validation.NoEndpointFieldsSelected">Du måste koppla minst ett fält</xsl:variable>
+
 </xsl:stylesheet>

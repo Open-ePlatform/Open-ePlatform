@@ -13,9 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUD;
-
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
@@ -32,6 +29,9 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUD;
 
 public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQueryProviderModule> {
 
@@ -56,18 +56,17 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 
 				List<TextField> textFields = query.getFields();
 
-				if(!CollectionUtils.isEmpty(textFields)) {
+				if (!CollectionUtils.isEmpty(textFields)) {
 
-					for(TextField textField : textFields) {
+					for (TextField textField : textFields) {
 
 						String sortIndex = req.getParameter("sortorder_" + textField.getTextFieldID());
 
-						if(NumberUtils.isInt(sortIndex)) {
+						if (NumberUtils.isInt(sortIndex)) {
 
 							textField.setSortIndex(NumberUtils.toInt(sortIndex));
 
 						}
-
 					}
 
 					queryDAO.update(query);
@@ -77,9 +76,7 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 					callback.redirectToQueryConfig(query, req, res);
 
 					return null;
-
 				}
-
 			}
 
 			Document doc = this.callback.createDocument(req, uriParser, user);
@@ -89,7 +86,6 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 			updateTypeElement.appendChild(query.toXML(doc));
 
 			return new SimpleForegroundModuleResponse(doc);
-
 		}
 
 		throw new URINotFoundException(uriParser);
@@ -104,7 +100,7 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 
 		this.populateQueryDescriptor((QueryDescriptor) query.getQueryDescriptor(), req, validationErrors);
 
-		if(!validationErrors.isEmpty()) {
+		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
 
@@ -119,7 +115,11 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 		XMLUtils.append(doc, showTypeElement, callback.getFormatValidators());
 		
 		this.appendFieldLayouts(doc, showTypeElement);
-
+		
+		if (callback.getAPIModule() != null) {
+			
+			XMLUtils.append(doc, showTypeElement, "Endpoints", callback.getAPIModule().getEndpoints());
+		}
 	}
 
 	@Override
@@ -140,7 +140,6 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 		callback.redirectToQueryConfig(bean, req, res);
 
 		return null;
-
 	}
 
 	@Override
@@ -151,7 +150,7 @@ public class TextFieldQueryCRUD extends BaseQueryCRUD<TextFieldQuery, TextFieldQ
 
 	protected void appendFieldLayouts(Document doc, Element element) {
 
-		for(FieldLayout layout : FieldLayout.values()) {
+		for (FieldLayout layout : FieldLayout.values()) {
 
 			Element fieldLayoutElement = doc.createElement("FieldLayout");
 			element.appendChild(fieldLayoutElement);

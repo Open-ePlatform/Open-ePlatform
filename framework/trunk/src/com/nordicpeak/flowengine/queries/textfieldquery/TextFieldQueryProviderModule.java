@@ -1,15 +1,20 @@
 package com.nordicpeak.flowengine.queries.textfieldquery;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,6 +22,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
@@ -38,6 +44,8 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.StringFormatValidator;
 import se.unlogic.standardutils.validation.TooLongContentValidationError;
@@ -51,8 +59,10 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
+import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.formatvalidation.FormatValidationHandler;
@@ -66,6 +76,9 @@ import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.queries.textfieldquery.api.TextFieldAPIRequestException;
+import com.nordicpeak.flowengine.queries.textfieldquery.api.TextFieldQueryEndpoint;
+import com.nordicpeak.flowengine.queries.textfieldquery.api.TextFieldQueryEndpointAdminModule;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
@@ -90,6 +103,9 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 	@InstanceManagerDependency(required=true)
 	private FormatValidationHandler formatValidationHandler;
+	
+	@InstanceManagerDependency
+	private TextFieldQueryEndpointAdminModule apiModule;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -269,11 +285,16 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 		return queryInstance;
 	}
 
-	private TextFieldQuery getQuery(Integer queryID) throws SQLException {
+	private TextFieldQuery getQuery(Integer queryID, Field... extraRelations) throws SQLException {
 
 		HighLevelQuery<TextFieldQuery> query = new HighLevelQuery<TextFieldQuery>(TextFieldQuery.TEXT_FIELDS_RELATION);
 
 		query.addParameter(queryIDParamFactory.getParameter(queryID));
+		
+		if (extraRelations != null) {
+			
+			query.addRelations(extraRelations);
+		}
 
 		return queryDAO.get(query);
 	}
@@ -321,16 +342,114 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			XMLUtils.appendNewElement(doc, targetElement, "Locked", "true");
 		}
 	}
+	
+	@Override
+	public QueryResponse getFormHTML(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
 
+		TextFieldQuery query = queryInstance.getQuery();
+
+		if (query.getEndpoint() != null && !queryInstance.isInitialized()) {
+
+			List<ValidationError> apiErrors = getFromAPI(queryInstance, poster, attributeHandler);
+
+			if (validationErrors instanceof AbstractList) { // Fix for unmodifiable list
+				validationErrors = new ArrayList<>(validationErrors);
+			}
+
+			if (apiErrors != null) {
+
+				for (ValidationError error : apiErrors) {
+
+					if (validationErrors == null || !validationErrors.contains(error)) {
+						
+						validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, error);
+					}
+				}
+
+			} else if (apiErrors == null && validationErrors != null) { // Remove populate validation error if it worked just now
+
+				Iterator<ValidationError> it = validationErrors.iterator();
+
+				while (it.hasNext()) {
+
+					if ("APIRequestException".equals(it.next().getMessageKey())) {
+
+						it.remove();
+						break;
+					}
+				}
+			}
+		}
+
+		return super.getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler);
+	}
+	
+	private List<ValidationError> getFromAPI(TextFieldQueryInstance queryInstance, User poster, AttributeHandler attributeHandler) {
+
+		List<ValidationError> validationErrors = null;
+		TextFieldQuery query = queryInstance.getQuery();
+		
+		if (!CollectionUtils.isEmpty(query.getFields())) {
+
+			if (apiModule == null) {
+
+				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("APIRequestException"));
+
+			} else {
+
+				try {
+					Map<String, String> valuesFromAPI = apiModule.getAPIFieldValues(query.getEndpoint(), poster);
+
+					if (!CollectionUtils.isEmpty(valuesFromAPI)) {
+
+						for (TextField textField : query.getFields()) {
+
+							if (!StringUtils.isEmpty(textField.getEndpointField())) {
+
+								String valueFromAPI = valuesFromAPI.get(textField.getEndpointField());
+
+								queryInstance.setFieldValue(textField.getTextFieldID(), valueFromAPI, (MutableAttributeHandler) attributeHandler);
+							}
+						}
+					}
+
+					queryInstance.setInitialized(true);
+					
+				} catch (TextFieldAPIRequestException e) {
+
+					validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("APIRequestException"));
+				}
+			}
+
+		} else {
+
+			queryInstance.setInitialized(true);
+		}
+		
+		return validationErrors;
+	}
+	
 	@Override
 	public void populate(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
 		TextFieldQuery query = queryInstance.getQuery();
 		
+		if (query.getEndpoint() != null && !queryInstance.isInitialized()) {
+			
+			if (allowPartialPopulation) {
+				
+				return;
+				
+			} else {
+				
+				throw new ValidationException(new ValidationError("APIRequestException"));
+			}
+		}
+
 		if (query.isLockOnOwnershipTransfer() && attributeHandler.getPrimitiveBoolean("OwnershipTransfered")) {
 			return;
 		}
-		
+
 		List<TextField> textFields = queryInstance.getQuery().getFields();
 
 		if (CollectionUtils.isEmpty(textFields)) {
@@ -341,24 +460,25 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 		}
 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>(queryInstance.getQuery().getFields().size());
+		
 
 		List<TextFieldValue> textFieldValues = new ArrayList<TextFieldValue>(queryInstance.getQuery().getFields().size());
 
 		for (TextField textField : textFields) {
 
 			//If the field is disabled use the previous value if there is any
-			if(textField.isDisabled()){
-				
+			if (textField.isDisabled()) {
+
 				TextFieldValue fieldValue = queryInstance.getTextFieldValue(textField.getTextFieldID());
-				
-				if(fieldValue != null){
-					
+
+				if (fieldValue != null) {
+
 					textFieldValues.add(fieldValue);
 				}
-				
+
 				continue;
 			}
-			
+
 			String value = req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_field" + textField.getTextFieldID());
 
 			if (StringUtils.isEmpty(value)) {
@@ -374,11 +494,11 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			value = value.trim();
 
 			if (textField.getMinContentLength() != null && value.length() < textField.getMinContentLength()) {
-				
+
 				validationErrors.add(new TooShortContentValidationError(textField.getTextFieldID().toString(), value.length(), textField.getMinContentLength()));
 				continue;
 			}
-			
+
 			Integer maxLength = textField.getMaxContentLength();
 
 			if (maxLength == null || maxLength > 255) {
@@ -502,6 +622,98 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		return queryCRUD.sort(req, res, user, uriParser);
 	}
+	
+	@WebPublic(alias = "selectendpoint")
+	public ForegroundModuleResponse selectEndpoint(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+		
+		TextFieldQuery query = queryCRUD.getRequestedBean(req, res, user, uriParser, "UPDATE");
+		
+		if (query != null && !CollectionUtils.isEmpty(query.getFields()) && apiModule != null) {
+			
+			checkUpdateQueryAccess(user, query);
+			
+			List<ValidationError> validationErrors = null;
+			
+			if (req.getMethod().equalsIgnoreCase("POST")) {
+				
+				validationErrors = new ArrayList<ValidationError>();
+
+				Integer endpointID = ValidationUtils.validateParameter("endpointID", req, false, IntegerPopulator.getPopulator(), validationErrors);
+				
+				if (endpointID == null) {
+					
+					query.setEndpoint(null);
+					
+				} else {
+					
+					TextFieldQueryEndpoint endpoint = apiModule.getEndpoint(endpointID);
+
+					if (endpoint == null) {
+						
+						validationErrors.add(new ValidationError("endpointID", ValidationErrorType.InvalidFormat));
+						
+					} else {
+
+						query.setEndpoint(endpoint);
+						
+						boolean anyEndpointFieldsSelected = false;
+						
+						for (TextField queryField : query.getFields()) {
+							
+							String fieldName = "endpointField-" + endpoint.getEndpointID() + "-" + queryField.getTextFieldID();
+
+							String endpointField = ValidationUtils.validateParameter(fieldName, req, false, StringPopulator.getPopulator(), validationErrors);
+
+							if (!endpoint.getFields().contains(endpointField)) {
+
+								validationErrors.add(new ValidationError(fieldName, ValidationErrorType.InvalidFormat));
+								anyEndpointFieldsSelected = true;
+								
+							} else {
+
+								queryField.setEndpointField(endpointField);
+
+								if (!StringUtils.isEmpty(endpointField)) {
+
+									anyEndpointFieldsSelected = true;
+								}
+							}
+						}
+						
+						if (!anyEndpointFieldsSelected) {
+							
+							validationErrors.add(new ValidationError("NoEndpointFieldsSelected"));
+						}
+					}
+				}
+				
+				if (validationErrors.isEmpty()) {
+					
+					queryDAO.update(query);
+					
+					return queryCRUD.beanUpdated(query, req, res, user, uriParser);
+				}
+			}
+			
+			Document doc = createDocument(req, user);
+			Element selectEndpointElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "SelectTextFieldQueryEndpoint");
+
+			XMLUtils.append(doc, selectEndpointElement, query);
+
+			XMLUtils.append(doc, selectEndpointElement, "Endpoints", apiModule.getEndpoints());
+
+			if (!CollectionUtils.isEmpty(validationErrors)) {
+
+				XMLUtils.append(doc, selectEndpointElement, new ValidationException(validationErrors));
+
+				selectEndpointElement.appendChild(RequestUtils.getRequestParameters(req, doc));
+			}
+
+			return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
+		}
+		
+		throw new URINotFoundException(uriParser);
+	}
 
 	@Override
 	public boolean deleteQuery(ImmutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws SQLException {
@@ -548,19 +760,16 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 		}
 
 		return layout.toString();
-
 	}
 
 	public void checkUpdateQueryAccess(User user, TextFieldQuery query) throws AccessDeniedException, SQLException {
 
 		flowAdminModule.checkFlowStructureManipulationAccess(user, (Flow) query.getQueryDescriptor().getStep().getFlow());
-
 	}
 
 	public void redirectToQueryConfig(TextFieldQuery query, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		res.sendRedirect(req.getContextPath() + this.getFullAlias() + "/config/" + query.getQueryID());
-
 	}
 
 	public List<FormatValidator> getFormatValidators() {
@@ -608,4 +817,10 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		return TextFieldQueryInstance.class;
 	}
+	
+	public TextFieldQueryEndpointAdminModule getAPIModule() {
+		
+		return apiModule;
+	}
+	
 }
