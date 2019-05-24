@@ -66,4 +66,20 @@ $(document).ready(function() {
 		$("#invalidFormatMessage").parent().parent().hide();
 	}
 	
+	$('#endpointID').change(function(){
+		
+		var selectedEndpointID = this.value;
+		
+		$('#endpoint-fields').toggle(!!selectedEndpointID);
+			
+		$('.endpoint').each(function(){
+			
+			var isSelected = this.id === 'endpoint-' + selectedEndpointID;
+			
+			$(this).toggle(isSelected).find('select').prop('disabled', !isSelected);
+			
+		});
+		
+	}).change();
+	
 });
