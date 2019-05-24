@@ -132,15 +132,16 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			FlowInstanceEvent signingEvent = response.getSigningEvent();
 			
 			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_PROVIDER, this.getClass().getName());
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_DATA, "user " + user + " has signed this");
 			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM, HashUtils.hash(pdfProvider.getTemporaryPDF(instanceManager), HashAlgorithms.SHA1));
 			
 			if (user != null) {
 				
-				String ssn = getSocialSecurityNumber(user);
+				String citizenID = getCitizenID(user);
 				
-				if (ssn != null) {
+				if (citizenID != null) {
 					
-					signingEvent.getAttributeHandler().setAttribute(CITIZEN_IDENTIFIER, ssn);
+					signingEvent.getAttributeHandler().setAttribute(CITIZEN_IDENTIFIER, citizenID);
 				}
 			}
 			
@@ -260,8 +261,9 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			signingEvent.setStatusDescription(flowInstance.getStatus().getDescription());
 			signingEvent.setAdded(TimeUtils.getCurrentTimestamp());
 
-			signingEvent.getAttributeHandler().setAttribute("signingProvider", this.getClass().getName());
-			signingEvent.getAttributeHandler().setAttribute("signingChecksum", HashUtils.hash(signingCallback.getSigningPDF(instanceManager), HashAlgorithms.SHA1));
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_PROVIDER, this.getClass().getName());
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_DATA, "user " + user + " has signed this");
+			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM, HashUtils.hash(signingCallback.getSigningPDF(instanceManager), HashAlgorithms.SHA1));
 			signingEvent.getAttributeHandler().setAttribute(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingCallback.getSigningChainID(instanceManager));
 
 			daoFactory.getFlowInstanceEventDAO().add(signingEvent, EVENT_ATTRIBUTE_RELATION_QUERY);
@@ -317,7 +319,7 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 		return new SimpleViewFragment(stringBuilder.toString());
 	}
 	
-	protected String getSocialSecurityNumber(User user) {
+	protected String getCitizenID(User user) {
 		
 		if (user != null) {
 			
@@ -368,8 +370,9 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 			
 			Map<String, String> signingAttributes = new HashMap<String, String>();
 			
-			signingAttributes.put("signingProvider", getClass().getName());
-			signingAttributes.put("signingChecksum", HashUtils.hash(signingRequest.getDataToSign(), HashAlgorithms.SHA1));
+			signingAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_PROVIDER, getClass().getName());
+			signingAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_DATA, "user " + user + " has signed this");
+			signingAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM, signingRequest.getHashToSign());
 
 			return new SimpleSigningResponse(user, signingAttributes);
 			
