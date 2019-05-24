@@ -5,6 +5,9 @@
 	
 	<xsl:include href="FlowInstancePDFTemplates.xsl"/>
 	
+	<xsl:variable name="java.signature">Signatur</xsl:variable>
+	<xsl:variable name="java.signingPDF">Signeringsunderlag</xsl:variable>
+	
 	<xsl:variable name="i18n.AnonymousUser">anonym användare</xsl:variable>
 	<xsl:variable name="i18n.EditedByManager">Ändrad av handläggare</xsl:variable>
 	<xsl:variable name="i18n.EditDate">Ändrings datum</xsl:variable>

@@ -57,6 +57,7 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileSettingProvider;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.io.BinarySizes;
@@ -69,6 +70,7 @@ import se.unlogic.standardutils.xml.ClassPathURIResolver;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.URIXSLTransformer;
+import se.unlogic.standardutils.xsl.XSLVariableReader;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfFileSpecification;
@@ -95,7 +97,9 @@ import com.nordicpeak.flowengine.managers.PDFManagerResponse;
 import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+import com.nordicpeak.flowengine.utils.PDFFileAttachment;
 import com.nordicpeak.flowengine.utils.SigningUtils;
+import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
@@ -164,6 +168,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	protected URIXSLTransformer pdfTransformer;
 	
+	protected String signatureAttachmentName = "Signature";
+	protected String signingPDFAttachmentName = "Signing PDF";
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 		
@@ -208,9 +215,25 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			URL styleSheetURL = this.getClass().getResource(pdfStyleSheet);
 			
 			if (styleSheetURL != null) {
-				
+
 				try {
 					pdfTransformer = new URIXSLTransformer(styleSheetURL.toURI(), ClassPathURIResolver.getInstance(), true);
+
+					XSLVariableReader variableReader = new XSLVariableReader(styleSheetURL.toURI());
+
+					String signatureAttachmentName = variableReader.getValue("java.signature");
+
+					if (!StringUtils.isEmpty(signatureAttachmentName)) {
+
+						this.signatureAttachmentName = signatureAttachmentName;
+					}
+
+					String signingPDFAttachmentName = variableReader.getValue("java.signingPDF");
+
+					if (!StringUtils.isEmpty(signingPDFAttachmentName)) {
+
+						this.signingPDFAttachmentName = signingPDFAttachmentName;
+					}
 					
 					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
 					
@@ -310,6 +333,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			XMLUtils.append(doc, documentElement, "StyleSheets", "StyleSheet", customStyleSheets);
 			
 			Timestamp submitDate;
+			List<ImmutableFlowInstanceEvent> signEvents = null;
 			
 			if (event != null) {
 				
@@ -325,7 +349,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					
 					if (!StringUtils.isEmpty(signingSessionID)) {
 						
-						List<ImmutableFlowInstanceEvent> signEvents = new ArrayList<ImmutableFlowInstanceEvent>(flowInstanceEvents.size());
+						signEvents = new ArrayList<ImmutableFlowInstanceEvent>(flowInstanceEvents.size());
 						
 						for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 							
@@ -352,7 +376,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						
 						if (!StringUtils.isEmpty(signChainID)) {
 							
-							List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
+							signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
 							
 							if (!CollectionUtils.isEmpty(signEvents)) {
 								
@@ -474,7 +498,45 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			
 			basePDF = createBasePDF(document, managerResponses, instanceManager.getFlowInstanceID(), event, temporary);
 			
-			pdfWithAttachments = addAttachments(basePDF, managerResponses, instanceManager.getFlowInstanceID(), event, temporary);
+			List<PDFAttachment> extraAttachments = null;
+			
+			if (signEvents != null && instanceManager.getFlowInstance().getFlow().isAppendSigningSignatureToPDF()) {
+				
+				for (ImmutableFlowInstanceEvent signEvent : new ReverseListIterator<>(signEvents)) {
+					
+					String signData = signEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_DATA);
+					
+					if (signData != null) {
+						
+						String name = signatureAttachmentName + " - ";
+						
+						if (signEvent.getPoster() != null) {
+							
+							name += signEvent.getPoster().getFirstname() + " " + signEvent.getPoster().getLastname();
+							
+						} else if (signEvent.getAttributeHandler().isSet("name")) {
+							
+							name += signEvent.getAttributeHandler().getString("name");
+							
+						} else {
+							
+							name += signEvent.getAttributeHandler().getString("firstname") + " " + signEvent.getAttributeHandler().getString("lastname");
+						}
+
+						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFInputStreamAttachment(new ByteArrayInputStream(signData.getBytes("ISO-8859-1")), name + ".txt", name));
+					}
+					
+					if (Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(signEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
+							|| (signEvent.getAttributeHandler().isSet(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE) && "true".equals(signEvent.getAttributeHandler().getString("pdf")))) {
+						
+						File signingPDF = getPDF(instanceManager.getFlowInstanceID(), signEvent.getEventID());
+						
+						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFFileAttachment(signingPDF, signingPDFAttachmentName + ".pdf", signingPDFAttachmentName));
+					}
+				}
+			}
+			
+			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstanceID(), event, temporary);
 			
 			File outputFile = writePDFA(pdfWithAttachments, instanceManager, event, temporary);
 			
@@ -614,7 +676,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return null;
 	}
 	
-	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
+	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
 		
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
@@ -692,11 +754,24 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							try {
 								PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, attachment.getInputStream(), attachment.getName());
 								writer.addFileAttachment(attachment.getDescription(), fs);
-							} catch (Exception e) {
 								
+							} catch (Exception e) {
 								log.error("Error appending attachment " + attachment.getName() + " from query " + queryResponse.getQueryDescriptor(), e);
 							}
 						}
+					}
+				}
+			}
+
+			if (extraAttachments != null) {
+				for (PDFAttachment attachment : extraAttachments) {
+
+					try {
+						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, attachment.getInputStream(), attachment.getName());
+						writer.addFileAttachment(attachment.getDescription(), fs);
+						
+					} catch (Exception e) {
+						log.error("Error appending extra attachment " + attachment.getName(), e);
 					}
 				}
 			}
