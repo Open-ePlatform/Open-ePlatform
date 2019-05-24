@@ -14,7 +14,7 @@
 	
 	<!-- Internationalization -->
 	
-	<xsl:variable name="i18n.ListEndpoints">API-källor</xsl:variable>
+	<xsl:variable name="i18n.ListEndpoints">API-källor för textfältsfrågor</xsl:variable>
 	<xsl:variable name="i18n.NoEndpoints">Det finns inga API-källor upplagda ännu</xsl:variable>
 	
 	<xsl:variable name="i18n.ShowEndpoint">API-källa</xsl:variable>
