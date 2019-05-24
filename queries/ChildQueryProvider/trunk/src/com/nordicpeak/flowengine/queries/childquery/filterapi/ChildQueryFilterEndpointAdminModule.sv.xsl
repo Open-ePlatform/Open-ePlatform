@@ -14,7 +14,7 @@
 	
 	<!-- Internationalization -->
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
-	<xsl:variable name="i18n.ListEndpoints">API-källor</xsl:variable>
+	<xsl:variable name="i18n.ListEndpoints">API-källor för val av barn</xsl:variable>
 	<xsl:variable name="i18n.ShowEndpoint">API-källa</xsl:variable>
 	<xsl:variable name="i18n.AddEndpoint">Ny API-källa</xsl:variable>
 	<xsl:variable name="i18n.UpdateEndpoint">Ändra API-källa</xsl:variable>
