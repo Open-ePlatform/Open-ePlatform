@@ -98,7 +98,7 @@ $(document).ready(function() {
 		$("#requireSigning").change(function(e) {
 			
 			var checked = $(this).prop("checked");
-			var fields = $("#useSequentialSigning, #skipPosterSigning");
+			var fields = $("#useSequentialSigning, #skipPosterSigning, #appendSigningSignatureToPDF");
 			
 			fields.parent().parent().toggle(checked);
 			

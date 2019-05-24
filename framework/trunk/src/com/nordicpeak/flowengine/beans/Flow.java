@@ -204,6 +204,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean appendSigningSignatureToPDF;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean showSubmitSurvey;
 	
 	@DAOManaged
@@ -929,6 +934,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
 		skipPosterSigning = xmlParser.getPrimitiveBoolean("skipPosterSigning");
+		appendSigningSignatureToPDF = xmlParser.getPrimitiveBoolean("appendSigningSignatureToPDF");
 		allowForeignIDs = xmlParser.getPrimitiveBoolean("allowForeignIDs");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -1181,16 +1187,24 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setAllowForeignIDs(boolean allowForeignIDs) {
 		this.allowForeignIDs = allowForeignIDs;
 	}
-	
+
 	@Override
 	public boolean isSkipPosterSigning() {
 		return skipPosterSigning;
 	}
-	
+
 	public void setSkipPosterSigning(boolean skipPosterSigningInMultiSigning) {
 		this.skipPosterSigning = skipPosterSigningInMultiSigning;
 	}
-	
+
+	public boolean isAppendSigningSignatureToPDF() {
+		return appendSigningSignatureToPDF;
+	}
+
+	public void setAppendSigningSignatureToPDF(boolean appendSigningSignatureToPDF) {
+		this.appendSigningSignatureToPDF = appendSigningSignatureToPDF;
+	}
+
 	public List<FlowOverviewAttribute> getOverviewAttributes() {
 		return overviewAttributes;
 	}

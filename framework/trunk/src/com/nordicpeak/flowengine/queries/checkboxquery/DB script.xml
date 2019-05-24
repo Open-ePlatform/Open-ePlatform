@@ -25,7 +25,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;	
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -41,7 +41,7 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;	
+				ENGINE = InnoDB;
 			]]>
 		</Query>
 		<Query>
@@ -59,9 +59,9 @@
 				    ON DELETE CASCADE
 				    ON UPDATE CASCADE
 				)
-				ENGINE = InnoDB;	
+				ENGINE = InnoDB;
 			]]>
-		</Query>		
+		</Query>
 	</Script>
 	
 	<Script version="2">
@@ -75,7 +75,7 @@
 	<Script version="3">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `checkbox_queries` ADD COLUMN `helpText` TEXT AFTER `maxChecked`;	
+				ALTER TABLE `checkbox_queries` ADD COLUMN `helpText` TEXT AFTER `maxChecked`;
 			]]>
 		</Query>
 	</Script>
@@ -86,7 +86,7 @@
 				ALTER TABLE `checkbox_queries` MODIFY COLUMN `description` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
 			]]>
 		</Query>
-	</Script>		
+	</Script>
 	
 	<Script version="5">
 		<Query>
@@ -164,7 +164,7 @@
 					ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `hideTitle`,
 					ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
 			]]>
-		</Query>	
+		</Query>
 	</Script>
 	
 	<Script version="14">

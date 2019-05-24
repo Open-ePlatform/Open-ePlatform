@@ -2197,4 +2197,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="121">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `appendSigningSignatureToPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `skipPosterSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

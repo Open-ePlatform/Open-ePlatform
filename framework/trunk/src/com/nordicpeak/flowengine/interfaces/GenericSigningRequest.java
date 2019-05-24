@@ -6,7 +6,7 @@ public interface GenericSigningRequest {
 	
 	String getDescription();
 	
-	String getDataToSign();
+	String getHashToSign();
 	
 	String getSigningFormURL(HttpServletRequest req);
 	

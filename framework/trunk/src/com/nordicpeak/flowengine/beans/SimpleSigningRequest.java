@@ -1,7 +1,12 @@
 package com.nordicpeak.flowengine.beans;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
+import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.string.StringUtils;
 
 import com.nordicpeak.flowengine.interfaces.GenericSigningRequest;
@@ -9,7 +14,7 @@ import com.nordicpeak.flowengine.interfaces.GenericSigningRequest;
 public class SimpleSigningRequest implements GenericSigningRequest {
 
 	private final String description;
-	private final String dataToSign;
+	private final String hashToSign;
 	private final String signingFormURL;
 	private final String processSigningURL;
 
@@ -18,7 +23,17 @@ public class SimpleSigningRequest implements GenericSigningRequest {
 		super();
 
 		this.description = description;
-		this.dataToSign = dataToSign;
+		this.hashToSign = HashUtils.hash(dataToSign, HashAlgorithms.SHA1);
+		this.signingFormURL = signingFormURL;
+		this.processSigningURL = processSigningURL;
+	}
+	
+	public SimpleSigningRequest(String description, File fileToSign, String signingFormURL, String processSigningURL) throws IOException {
+
+		super();
+
+		this.description = description;
+		this.hashToSign = HashUtils.hash(fileToSign, HashAlgorithms.SHA1);
 		this.signingFormURL = signingFormURL;
 		this.processSigningURL = processSigningURL;
 	}
@@ -30,9 +45,9 @@ public class SimpleSigningRequest implements GenericSigningRequest {
 	}
 
 	@Override
-	public String getDataToSign() {
+	public String getHashToSign() {
 
-		return dataToSign;
+		return hashToSign;
 	}
 
 	@Override
