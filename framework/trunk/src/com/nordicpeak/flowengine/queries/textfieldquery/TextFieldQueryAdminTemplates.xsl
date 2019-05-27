@@ -670,6 +670,15 @@
 			<xsl:when test="$fieldName = 'endpointID'">
 				<xsl:value-of select="$i18n.Endpoint" />
 			</xsl:when>
+			<xsl:when test="starts-with($fieldName, 'endpointField-')">
+			
+				<xsl:variable name="lastParts" select="substring($fieldName, 15)" />
+				<xsl:variable name="endpointID" select="substring-before($lastParts, '-')" />
+				<xsl:variable name="textFieldID" select="substring($lastParts, 2 + string-length($endpointID))" />
+				
+				<xsl:value-of select="../../../TextFieldQuery/Fields/TextField[textFieldID = $textFieldID]/label" />
+				
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />
 			</xsl:otherwise>
