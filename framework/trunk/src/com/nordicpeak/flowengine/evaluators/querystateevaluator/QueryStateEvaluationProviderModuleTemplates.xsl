@@ -232,12 +232,12 @@
 
 	<xsl:template match="Step" mode="list">
 		
-		<li>			
+		<li>
 			<span class="font-weight-bold"><xsl:value-of select="name"/></span>
 				
 			<xsl:if test="QueryDescriptors/QueryDescriptor">
 				<ol>
-					<xsl:apply-templates select="QueryDescriptors/QueryDescriptor" mode="list"/>			
+					<xsl:apply-templates select="QueryDescriptors/QueryDescriptor" mode="list"/>
 				</ol>
 			</xsl:if>
 		</li>
@@ -258,11 +258,12 @@
 				<xsl:with-param name="value" select="queryID" />
 				<xsl:with-param name="disabled" select="../../../../../DisabledQueries[queryID=$queryID]/queryID"/>
 				<xsl:with-param name="element" select="../../../../../QueryStateEvaluator/EvaluatorDescriptor/TargetQueryIDs" />
+				<xsl:with-param name="requestparameters" select="../../../../../requestparameters" />
 			</xsl:call-template>
 
 			<label for="query{queryID}">
 				<xsl:value-of select="name" />
-			</label>				
+			</label>
 		</li>
 	
 	</xsl:template>
@@ -276,7 +277,7 @@
 					<xsl:with-param name="id">
 						<xsl:value-of select="'alternative'"/>
 						<xsl:value-of select="alternativeID"/>
-					</xsl:with-param>				
+					</xsl:with-param>
 					<xsl:with-param name="name" select="'alternativeID'" />
 					<xsl:with-param name="value" select="alternativeID" />
 					<xsl:with-param name="element" select="../../QueryStateEvaluator/RequiredAlternativeIDs" />
