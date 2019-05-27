@@ -67,7 +67,7 @@ public class TextFieldQueryEndpoint extends GeneratedElementable implements Seri
 	@DAOManaged
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
-	@WebPopulate
+	@WebPopulate(required = true)
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "text_field_query_endpoint_fields", remoteValueColumnName = "name")
 	@XMLElement(fixCase = true)

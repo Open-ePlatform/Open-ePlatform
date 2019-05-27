@@ -664,16 +664,16 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 							String endpointField = ValidationUtils.validateParameter(fieldName, req, false, StringPopulator.getPopulator(), validationErrors);
 
-							if (!endpoint.getFields().contains(endpointField)) {
+							if (endpointField != null && endpoint.getFields() != null && !endpoint.getFields().contains(endpointField)) {
 
 								validationErrors.add(new ValidationError(fieldName, ValidationErrorType.InvalidFormat));
-								anyEndpointFieldsSelected = true;
+								anyEndpointFieldsSelected = true; // Suppress nothing selected error
 								
 							} else {
 
 								queryField.setEndpointField(endpointField);
 
-								if (!StringUtils.isEmpty(endpointField)) {
+								if (endpointField != null) {
 
 									anyEndpointFieldsSelected = true;
 								}

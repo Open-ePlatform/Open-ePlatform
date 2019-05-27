@@ -227,7 +227,7 @@
 		<form id="TextFieldQueryEndpointForm" name="textFieldQueryEndpointForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full bigmarginbottom">
-				<label for="name" class="floatleft clearboth"><xsl:value-of select="$i18n.Name" /></label>
+				<label for="name" class="floatleft clearboth required"><xsl:value-of select="$i18n.Name" /></label>
 				
 				<div class="floatleft full">
 					<xsl:call-template name="createTextField">
@@ -241,8 +241,8 @@
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
-				<label for="address" class="floatleft clearboth">
-					<xsl:value-of select="$i18n.Address" /><br/>
+				<label for="address" class="floatleft clearboth required">
+					<xsl:value-of select="$i18n.Address" />
 				</label>
 				
 				<div class="floatleft full">
@@ -322,7 +322,7 @@
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
-				<label for="fields" class="floatleft clearboth"><xsl:value-of select="$i18n.Query.fields" /></label>
+				<label for="fields" class="floatleft clearboth required"><xsl:value-of select="$i18n.Query.fields" /></label>
 				
 				<div class="floatleft full">
 					<xsl:call-template name="createTextArea">
@@ -426,7 +426,7 @@
 						<xsl:value-of select="$i18n.Encoding"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'fields'">
-						<xsl:value-of select="i18n.Query.fields"/>
+						<xsl:value-of select="$i18n.Query.fields"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
