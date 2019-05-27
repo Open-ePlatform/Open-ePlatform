@@ -131,7 +131,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 		}
 
 		if (responseType.equals("xml")) {
-
+			
 			res.setContentType("text/xml");
 
 			Document doc = XMLUtils.createDomDocument();
@@ -299,7 +299,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 								Flow flow = flowAdminModule.getCachedFlow(flowInstance.getFlowID());
 
-								if (flow != null) {
+								if (flow != null && flow.getSteps() != null) {
 
 									int stepIndex = 1;
 
