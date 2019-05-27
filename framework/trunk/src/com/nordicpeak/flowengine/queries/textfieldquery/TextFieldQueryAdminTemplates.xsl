@@ -17,7 +17,7 @@
 
 	<xsl:variable name="scripts">
 		/common/js/queryadmin.js
-		/js/textfieldqueryadmin.js
+		/js/textfieldqueryadmin.js?v=1
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -127,7 +127,7 @@
 			
 		</fieldset>
 		
-		<xsl:if test="Endpoints">
+		<xsl:if test="Endpoints and TextFieldQuery/Fields/TextField">
 			
 			<fieldset>
 				<legend><xsl:value-of select="$i18n.Endpoint.Title"/></legend>
