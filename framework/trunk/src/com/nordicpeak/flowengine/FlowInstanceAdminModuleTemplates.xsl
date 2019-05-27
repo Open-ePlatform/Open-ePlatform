@@ -894,9 +894,20 @@
 							<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
 							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 							
-							<xsl:call-template name="printUser">
-								<xsl:with-param name="user" select="editor/user" />
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="editor/user">
+								
+									<xsl:call-template name="printUser">
+										<xsl:with-param name="user" select="editor/user" />
+									</xsl:call-template>
+									
+								</xsl:when>
+								<xsl:otherwise>
+								
+									<xsl:value-of select="$i18n.AnonymousUser" />
+									
+								</xsl:otherwise>
+							</xsl:choose>
 						</p>
   					</xsl:if>
   					<p>
