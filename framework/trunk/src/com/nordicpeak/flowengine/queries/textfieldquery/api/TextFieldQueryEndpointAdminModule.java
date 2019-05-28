@@ -275,7 +275,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 			HTTPResponse response = HTTPUtils.sendHTTPGetRequest(simpleRequest, endpoint.getCharset());
 
 			try {
-				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), false, false));
+				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), endpoint.getCharset().toString(), false, false));
 
 				List<XMLParser> fields = parser.getNodes("/Fields/Field");
 
