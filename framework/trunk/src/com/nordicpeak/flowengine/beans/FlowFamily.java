@@ -550,9 +550,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	}
 	
 	@Override
-	public FlowFamilyManagerDetailedAccess getManagerDetailedAccess(User user) {
-		
-		FlowFamilyManagerDetailedAccess detailedAccess = null;
+	public boolean hasUpdateManagerAccess(User user) {
 		
 		if (!CollectionUtils.isEmpty(managerUsers)) {
 			
@@ -566,26 +564,15 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 						break;
 					}
 					
-					if (manager.isRestricted()) {
-						
-						if (detailedAccess == null) {
-							detailedAccess = new FlowFamilyManagerDetailedAccess();
-						}
-						
-						detailedAccess.setAccess(ManagerAccess.RESTRICTED);
-						detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || manager.isAllowUpdatingManagers());
-						
-					} else {
-						
-						return new FlowFamilyManagerDetailedAccess(ManagerAccess.FULL, true);
+					if (!manager.isRestricted() || manager.isAllowUpdatingManagers()) {
+
+						return true;
 					}
-					
-					break;
 				}
 			}
 		}
 		
-		if ((detailedAccess == null || detailedAccess.getAccess() == ManagerAccess.RESTRICTED) && !CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
+		if (!CollectionUtils.isEmpty(user.getGroups()) && !CollectionUtils.isEmpty(managerGroups)) {
 			
 			for (Group group : user.getGroups()) {
 				
@@ -595,28 +582,17 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 						
 						if (managerGroup.getGroupID().equals(group.getGroupID())) {
 							
-							if (managerGroup.isRestricted()) {
+							if (!managerGroup.isRestricted() || managerGroup.isAllowUpdatingManagers()) {
 
-								if (detailedAccess == null) {
-									detailedAccess = new FlowFamilyManagerDetailedAccess();
-								}
-								
-								detailedAccess.setAccess(ManagerAccess.RESTRICTED);
-								detailedAccess.setAllowUpdatingManagers(detailedAccess.isAllowUpdatingManagers() || managerGroup.isAllowUpdatingManagers());
-								
-							} else {
-								
-								return new FlowFamilyManagerDetailedAccess(ManagerAccess.FULL, true);
-							}
-							
-							break;
+								return true;
+							} 
 						}
 					}
 				}
 			}
 		}
 		
-		return detailedAccess;
+		return false;
 	}
 	
 	@Override

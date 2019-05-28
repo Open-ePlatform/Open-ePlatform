@@ -91,7 +91,6 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManagerDetailedAccess;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceAttribute;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
@@ -108,7 +107,6 @@ import com.nordicpeak.flowengine.cruds.ExternalMessageCRUD;
 import com.nordicpeak.flowengine.cruds.InternalMessageCRUD;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.Priority;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
@@ -701,17 +699,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "NoContactWay");
 				}
 			}
-
-			FlowFamilyManagerDetailedAccess detailedAccess = flowInstance.getFlow().getFlowFamily().getManagerDetailedAccess(user);
 			
-			if (detailedAccess != null && detailedAccess.getAccess() == ManagerAccess.RESTRICTED) {
+			try {
 
-				Element restrictedManagerElement = XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "RestrictedManager");
+				getUpdateManagersAccessController().checkFlowInstanceAccess(flowInstance, user);
+
+			} catch (AccessDeniedException e) {
 				
-				if (detailedAccess.isAllowUpdatingManagers()) {
-					
-					XMLUtils.appendNewElement(doc, restrictedManagerElement, "AllowUpdatingManagers");
-				}
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideUpdateManagers");
 			}
 
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
@@ -858,9 +853,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				}
 			}
 
-			if (flowInstance.getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+			try {
 
-				XMLUtils.appendNewElement(doc, updateInstanceStatusElement, "RestrictedManager");
+				getUpdateManagersAccessController().checkFlowInstanceAccess(flowInstance, user);
+
+			} catch (AccessDeniedException e) {
+				
+				XMLUtils.appendNewElement(doc, updateInstanceStatusElement, "HideUpdateManagers");
 			}
 
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
@@ -1570,10 +1569,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public void appendFormData(Document doc, Element baseElement, MutableFlowInstanceManager instanceManager, HttpServletRequest req, User user) {
 
 		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
+		
+		try {
 
-		if (instanceManager.getFlowInstance().getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+			getUpdateManagersAccessController().checkFlowInstanceAccess(instanceManager.getFlowInstance(), user);
 
-			XMLUtils.appendNewElement(doc, baseElement, "RestrictedManager");
+		} catch (AccessDeniedException e) {
+			
+			XMLUtils.appendNewElement(doc, baseElement, "HideUpdateManagers");
 		}
 	}
 
@@ -1582,9 +1585,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		appendBookmark(doc, baseElement, (FlowInstance) instanceManager.getFlowInstance(), req, user);
 
-		if (instanceManager.getFlowInstance().getFlow().getFlowFamily().checkManagerRestrictedAccess(user)) {
+		try {
 
-			XMLUtils.appendNewElement(doc, baseElement, "RestrictedManager");
+			getUpdateManagersAccessController().checkFlowInstanceAccess(instanceManager.getFlowInstance(), user);
+
+		} catch (AccessDeniedException e) {
+			
+			XMLUtils.appendNewElement(doc, baseElement, "HideUpdateManagers");
 		}
 	}
 
