@@ -189,7 +189,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	//@formatter:on
 
 	public static final ManagerFlowInstanceAccessController UPDATE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false, false);
-	public static final ManagerFlowInstanceAccessController UPDATE_MANAGERS_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(true, false, false, true);
+	public static final ManagerFlowInstanceAccessController UPDATE_MANAGERS_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false, true);
 	public static final ManagerFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, true, false, false);
 	public static final ManagerFlowInstanceAccessController GENERAL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, false, false);
 	public static final ManagerFlowInstanceAccessController GENERAL_FULL_ACCESS_CONTROLLER = new ManagerFlowInstanceAccessController(false, false, true, false);
