@@ -3,62 +3,65 @@ package com.nordicpeak.flowengine.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.unlogic.standardutils.collections.ReverseListIterator;
+
+import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 
-import se.unlogic.standardutils.collections.ReverseListIterator;
-
 public class SigningUtils {
 	
-	public static List<ImmutableFlowInstanceEvent> getLastestSignEvents(ImmutableFlowInstance flowInstance, boolean skipImmediateSubmitEvent) {
-		
-		return getLastestSignEvents(flowInstance.getEvents(), skipImmediateSubmitEvent);
+	public static List<ImmutableFlowInstanceEvent> getLastestSigningSessionEvents(ImmutableFlowInstance flowInstance) {
+
+		return getLastestSigningSessionEvents(flowInstance.getEvents());
 	}
 	
 	/** @return Returned list order is newest event first */
-	public static List<ImmutableFlowInstanceEvent> getLastestSignEvents(List<? extends ImmutableFlowInstanceEvent> events, boolean skipImmediateSubmitEvent) {
-		
+	public static List<ImmutableFlowInstanceEvent> getLastestSigningSessionEvents(List<? extends ImmutableFlowInstanceEvent> events) {
+
 		List<ImmutableFlowInstanceEvent> signEvents = null;
-		
+
 		if (events != null) {
-			
+
 			signEvents = new ArrayList<ImmutableFlowInstanceEvent>(events.size());
-			
-			boolean firstSubmitEvent = true;
-			
+
+			String latestSigningSessionID = null;
+
 			for (ImmutableFlowInstanceEvent event : new ReverseListIterator<ImmutableFlowInstanceEvent>(events)) {
-				
+
 				if (event.getEventType() == EventType.SIGNED) {
+
+					String eventSigningSessionID = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
 					
-					signEvents.add(event);
+					if (eventSigningSessionID != null) {
 					
-					if (event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
-						
-						break; // Found start of sign event chain, stop
+						String signingEventType = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT);
+						boolean isSigningCompleteEvent = Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(signingEventType);
+	
+						if (latestSigningSessionID == null) {
+	
+								latestSigningSessionID = eventSigningSessionID;
+	
+								if (!isSigningCompleteEvent) {
+	
+									signEvents.add(event);
+								}
+	
+						} else if (latestSigningSessionID.equals(eventSigningSessionID) && !isSigningCompleteEvent) {
+							
+							signEvents.add(event);
+						}
 					}
-					
-				} else if (event.getEventType() == EventType.PAYED) {
-					
-					continue;
-					
-				} else if (event.getEventType() == EventType.SUBMITTED && skipImmediateSubmitEvent && firstSubmitEvent) {
-					
-					firstSubmitEvent = false;
-					continue;
-					
-				} else { // Other event types, stop
-					
-					break;
 				}
 			}
-			
+
 			if (!signEvents.isEmpty()) {
-				
+
 				return signEvents;
 			}
 		}
-		
+
 		return null;
 	}
 	

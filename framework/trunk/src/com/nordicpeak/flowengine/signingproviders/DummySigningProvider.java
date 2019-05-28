@@ -26,30 +26,24 @@ import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.hash.HashAlgorithms;
 import se.unlogic.standardutils.hash.HashUtils;
-import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.SigningConfirmedResponse;
-import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.beans.SimpleSigningResponse;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.interfaces.GenericSigningProvider;
 import com.nordicpeak.flowengine.interfaces.GenericSigningRequest;
-import com.nordicpeak.flowengine.interfaces.MultiSigningCallback;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.SigningResponse;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 public class DummySigningProvider extends AnnotatedForegroundModule implements SigningProvider, GenericSigningProvider {
@@ -204,83 +198,6 @@ public class DummySigningProvider extends AnnotatedForegroundModule implements S
 				
 				log.error("Error generating temporary PDF for flow instance " + instanceManager + " submitted by user " + user, e);
 			}
-		}
-		
-		log.info("User " + user + " requested sign form for flow instance " + instanceManager);
-		
-		if (fragmentTransformer != null) {
-			
-			Document doc = XMLUtils.createDomDocument();
-			Element document = doc.createElement("Document");
-			doc.appendChild(document);
-			
-			Element signElement = doc.createElement("SignForm");
-			document.appendChild(signElement);
-			
-			XMLUtils.appendNewElement(doc, signElement, "signingURL", signingURL);
-			
-			try {
-				
-				return fragmentTransformer.createViewFragment(doc);
-				
-			} catch (Exception e) {
-				
-				res.sendRedirect(signingCallback.getSignFailURL(instanceManager, req));
-				
-				return null;
-			}
-		}
-		
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		stringBuilder.append("<div>");
-		stringBuilder.append("<h1>Dummy signer</h1>");
-		stringBuilder.append("<p><a href=\"" + signingCallback.getSigningURL(instanceManager, req) + "&idp=1\">Click here to sign flow instance " + instanceManager.getFlowInstance().getFlow().getName() + " #" + instanceManager.getFlowInstanceID() + "</a></p>");
-		stringBuilder.append("<p><a href=\"" + signingCallback.getSigningURL(instanceManager, req) + "&fail=1\">Click here to simulate a failed signing</a></p>");
-		stringBuilder.append("</div>");
-		
-		return new SimpleViewFragment(stringBuilder.toString());
-	}
-	
-	@Override
-	public ViewFragment sign(HttpServletRequest req, HttpServletResponse res, User user, ImmutableFlowInstanceManager instanceManager, MultiSigningCallback signingCallback, SigningParty signingParty) throws Exception {
-		
-		String signingURL = signingCallback.getSigningURL(instanceManager, req);
-		
-		if (req.getParameter("idp") != null) {
-			
-			log.info("User " + user + " signed flow instance " + instanceManager);
-			
-			FlowInstance flowInstance = (FlowInstance) instanceManager.getFlowInstance();
-
-			FlowInstanceEvent signingEvent = new FlowInstanceEvent();
-			signingEvent.setFlowInstance(flowInstance);
-			signingEvent.setEventType(EventType.SIGNED);
-			signingEvent.setPoster(user);
-			signingEvent.setStatus(flowInstance.getStatus().getName());
-			signingEvent.setStatusDescription(flowInstance.getStatus().getDescription());
-			signingEvent.setAdded(TimeUtils.getCurrentTimestamp());
-
-			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_PROVIDER, this.getClass().getName());
-			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_DATA, "user " + user + " has signed this");
-			signingEvent.getAttributeHandler().setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM, HashUtils.hash(signingCallback.getSigningPDF(instanceManager), HashAlgorithms.SHA1));
-			signingEvent.getAttributeHandler().setAttribute(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signingCallback.getSigningChainID(instanceManager));
-
-			daoFactory.getFlowInstanceEventDAO().add(signingEvent, EVENT_ATTRIBUTE_RELATION_QUERY);
-
-			signingCallback.signingComplete(instanceManager, signingEvent, signingParty, user, req);
-
-			res.sendRedirect(signingCallback.getSignSuccessURL(instanceManager, req));
-			return null;
-			
-		} else if (req.getParameter("fail") != null) {
-			
-			log.info("Signing of flow instance " + instanceManager + " by user " + user + " failed.");
-			
-			signingCallback.abortSigning(instanceManager);
-			
-			res.sendRedirect(signingCallback.getSignFailURL(instanceManager, req));
-			return null;
 		}
 		
 		log.info("User " + user + " requested sign form for flow instance " + instanceManager);
