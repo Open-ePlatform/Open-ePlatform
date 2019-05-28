@@ -169,7 +169,7 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 			HTTPResponse response = HTTPUtils.sendHTTPGetRequest(simpleRequest, endpoint.getCharset());
 
 			try {
-				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), false, false));
+				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), endpoint.getCharset().toString(), false, false));
 
 				List<XMLParser> items = parser.getNodes("/Response/Child");
 
