@@ -41,7 +41,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.utils.SigningUtils;
 
 
 public class XMLProviderModule extends AnnotatedForegroundModule implements XMLProvider {
@@ -218,32 +217,6 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 				if (CollectionUtils.isEmpty(signEvents)) {
 					
 					log.warn("Signing session ID set on " + event + " but no matching sign events found for " + flowInstance);
-				}
-				
-			} else {
-				
-				String signChainID = event.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
-				
-				if (!StringUtils.isEmpty(signChainID)) {
-					
-					signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
-					
-					if (!CollectionUtils.isEmpty(signEvents)) {
-						
-						for (ImmutableFlowInstanceEvent signEvent : signEvents) {
-							
-							if (!signChainID.equals(signEvent.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
-								
-								log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + flowInstance);
-								signEvents.remove(signEvent);
-							}
-						}
-					}
-					
-					if (CollectionUtils.isEmpty(signEvents)) {
-						
-						log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + flowInstance);
-					}
 				}
 			}
 			

@@ -1546,7 +1546,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 			if (!requiresPayment) {
 
-				sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
+				sendSubmitEvent(instanceManager, event, actionID, siteProfile);
 			}
 
 		} catch (SQLException e) {
