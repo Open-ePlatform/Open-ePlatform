@@ -386,7 +386,7 @@
 	<xsl:variable name="i18n.Flow.useSequentialSigning">Sekventiell signering</xsl:variable>
 	<xsl:variable name="i18n.Flow.skipPosterSigning">Hoppa över signering för första parten</xsl:variable>
 	<xsl:variable name="i18n.Flow.skipPosterSigning.description">(bör endast användas vid flerpartsignering)</xsl:variable>
-	<xsl:variable name="i18n.Flow.appendSigningSignatureToPDF">Bifoga signeringsunderlag och fullständiga signaturer i ärende PDF</xsl:variable>
+	<xsl:variable name="i18n.Flow.appendSigningSignatureToPDF">Bifoga signeringsunderlag i PDF</xsl:variable>
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
