@@ -98,7 +98,6 @@ import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 import com.nordicpeak.flowengine.utils.PDFFileAttachment;
-import com.nordicpeak.flowengine.utils.SigningUtils;
 import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
@@ -369,36 +368,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							
 							XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
 						}
-						
-					} else {
-					
-						String signChainID = event.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE);
-						
-						if (!StringUtils.isEmpty(signChainID)) {
-							
-							signEvents = SigningUtils.getLastestSignEvents(flowInstanceEvents, true);
-							
-							if (!CollectionUtils.isEmpty(signEvents)) {
-								
-								for (ImmutableFlowInstanceEvent signEvent : signEvents) {
-									
-									if (!signChainID.equals(signEvent.getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE))) {
-										
-										log.warn("Sign chain ID set on " + event + " does not match ID on sign event " + signEvent + " found for " + instanceManager.getFlowInstance());
-										signEvents.remove(signEvent);
-									}
-								}
-							}
-							
-							if (CollectionUtils.isEmpty(signEvents)) {
-								
-								log.warn("Sign chain ID set on " + event + " but no matching sign events found for " + instanceManager.getFlowInstance());
-								
-							} else {
-								
-								XMLUtils.append(doc, documentElement, "SignEvents", signEvents);
-							}
-						}
 					}
 					
 					ImmutableFlowInstanceEvent paymentEvent = FlowInstanceUtils.getLastestPaymentEvent(flowInstanceEvents, true);
@@ -526,8 +495,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFInputStreamAttachment(new ByteArrayInputStream(signData.getBytes("ISO-8859-1")), name + ".txt", name));
 					}
 					
-					if (Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(signEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
-							|| (signEvent.getAttributeHandler().isSet(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE) && "true".equals(signEvent.getAttributeHandler().getString("pdf")))) {
+					if (Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(signEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
 						
 						File signingPDF = getPDF(instanceManager.getFlowInstanceID(), signEvent.getEventID());
 						
@@ -881,7 +849,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				return;
 			}
 			
-			if (event.getEvent().getEventType() != EventType.SUBMITTED || event.getActionID() == null || !supportedActionIDs.contains(event.getActionID()) || (event.getFlowInstanceManager().getFlowInstance().getFlow().requiresSigning() && !event.isForcePDF())) {
+			if (event.getEvent().getEventType() != EventType.SUBMITTED || event.getActionID() == null || !supportedActionIDs.contains(event.getActionID())) {
 				
 				return;
 			}
