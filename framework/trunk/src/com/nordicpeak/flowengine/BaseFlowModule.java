@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -923,7 +922,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					if (enableSaving) {
 
-						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager), false);
+						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager));
 					}
 
 					removeFlowInstanceManagerFromSession(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req.getSession(false));
@@ -1678,9 +1677,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected void sendSubmitEvent(FlowInstanceManager instanceManager, FlowInstanceEvent event, String actionID, SiteProfile siteProfile, boolean forcePDF) {
+	protected void sendSubmitEvent(FlowInstanceManager instanceManager, FlowInstanceEvent event, String actionID, SiteProfile siteProfile) {
 
-		eventHandler.sendEvent(FlowInstanceManager.class, new SubmitEvent(instanceManager, event, moduleDescriptor, actionID, siteProfile, forcePDF), EventTarget.ALL);
+		eventHandler.sendEvent(FlowInstanceManager.class, new SubmitEvent(instanceManager, event, moduleDescriptor, actionID, siteProfile), EventTarget.ALL);
 	}
 
 	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
@@ -2329,22 +2328,21 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
 
-		if(flowInstance.getEvents() != null){
+		if (flowInstance.getEvents() != null) {
 
-			for(FlowInstanceEvent event : flowInstance.getEvents()){
+			for (FlowInstanceEvent event : flowInstance.getEvents()) {
 
-				if(event.getEventID().equals(eventID)){
+				if (event.getEventID().equals(eventID)) {
 
 					String eventSignature = event.getAttributeHandler().getString("signingData");
 
-					if(eventSignature != null){
+					if (eventSignature != null) {
 
 						log.info("Sending signature for flow instance " + flowInstance + ", event " + eventID + " to user " + user);
 
-						//Follows RFC6266 filename encoding
 						String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - signature - " + eventID + ".txt";
 
-						res.setHeader("Content-Disposition", ContentDisposition.ATTACHMENT + "; filename=\"" + FileUtils.toValidHttpFilename(filename) + "\"; filename*=UTF-8''" + URLEncoder.encode(filename, "UTF-8").replace("+", "%20"));
+						res.setHeader("Content-Disposition", ContentDisposition.ATTACHMENT + ";" + FileUtils.toContentDispositionFilename(filename));
 						res.setContentType("text/plain");
 
 						res.getWriter().write(eventSignature);
@@ -2373,7 +2371,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		if (!requiresMultiSigning && !requiresPayment(instanceManager)) {
 			
-			sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
+			sendSubmitEvent(instanceManager, event, actionID, siteProfile);
 			
 		} else if (requiresMultiSigning) {
 			
@@ -2389,12 +2387,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		Map<String, String> submitEventAttributes = null;
 		
-		List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSignEvents(getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance()), true);
+		List<ImmutableFlowInstanceEvent> signEvents = SigningUtils.getLastestSigningSessionEvents(getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance()));
 		
 		if (!CollectionUtils.isEmpty(signEvents)) {
 			
 			submitEventAttributes = new HashMap<String, String>();
-			submitEventAttributes.put(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, signEvents.get(signEvents.size() - 1).getAttributeHandler().getString(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE));
+			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signEvents.get(signEvents.size() - 1).getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION));
+			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF);
 		}
 		
 		return submitEventAttributes;
@@ -2432,7 +2431,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		FlowInstanceEvent event = flowInstanceEventGenerator.addFlowInstanceEvent(instanceManager.getFlowInstance(), EventType.SUBMITTED, null, user, null, getPaymentCompleteSubmitEventAttributes(instanceManager));
 		
-		sendSubmitEvent(instanceManager, event, actionID, siteProfile, true);
+		sendSubmitEvent(instanceManager, event, actionID, siteProfile);
 		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
 	}

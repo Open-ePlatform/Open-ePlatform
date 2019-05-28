@@ -39,9 +39,6 @@ public class Constants {
 	
 	public static final String FLOW_INSTANCE_SUPPRESS_ARCHIVED_NOTIFICATION_ATTRIBUTE = "suppressNotificationArchived";
 	
-	//TODO @Deprecated
-	public static final String SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE = "signingChainID";
-	
 	public static final String FLOW_INSTANCE_EVENT_SIGNING_PROVIDER = "signingProvider";
 	public static final String FLOW_INSTANCE_EVENT_SIGNING_CHECKSUM = "signingChecksum";
 	public static final String FLOW_INSTANCE_EVENT_SIGNING_DATA = "signingData";

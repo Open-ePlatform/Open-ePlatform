@@ -25,7 +25,7 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 	private final EventType submitEventType;
 	private final SiteProfile siteProfile;
 	private final boolean addSubmitEvent;
-	private final long signingChainID;
+	private final String signingSessionID;
 	private User poster;
 	
 	public BaseFlowModuleSigningCallback(BaseFlowModule baseFlowModule, User poster, String actionID, EventType submitEventType, SiteProfile siteProfile, boolean addSubmitEvent) {
@@ -38,7 +38,7 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		this.addSubmitEvent = addSubmitEvent;
 		this.poster = poster;
 		
-		signingChainID = System.currentTimeMillis();
+		signingSessionID = "single-" + Long.toString(System.currentTimeMillis());
 	}
 
 	@Override
@@ -47,22 +47,27 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		FlowInstanceEvent signingEvent = null;
 		FlowInstanceEvent submitEvent = null;
 		
-		Map<String,String> eventAttributes = new HashMap<String, String>();
-		eventAttributes.put(Constants.SIGNING_CHAIN_ID_FLOW_INSTANCE_EVENT_ATTRIBUTE, Long.toString(signingChainID));
+		Map<String,String> signingEventAttributes = new HashMap<String, String>();
+		signingEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+		signingEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF);
 		
-		if(poster == null && user != null) {
+		if (poster == null && user != null) {
 			poster = user;
 		}
 		
 		if (addSubmitEvent) {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, eventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes);
 			
-			submitEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, submitEventType, eventAttributes);
+			Map<String,String> submitEventAttributes = new HashMap<String, String>();
+			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF);
+			
+			submitEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, submitEventType, submitEventAttributes);
 			
 		} else {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, eventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes);
 		}
 		
 		return new SigningConfirmedResponse(signingEvent, submitEvent);

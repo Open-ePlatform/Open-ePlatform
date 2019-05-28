@@ -17,9 +17,8 @@ public class SubmitEvent implements Serializable {
 	private final ForegroundModuleDescriptor moduleDescriptor;
 	private final String actionID;
 	private final SiteProfile siteProfile;
-	private final boolean forcePDF;
 
-	public SubmitEvent(FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, ForegroundModuleDescriptor moduleDescriptor, String actionID, SiteProfile siteProfile, boolean forcePDF) {
+	public SubmitEvent(FlowInstanceManager flowInstanceManager, FlowInstanceEvent event, ForegroundModuleDescriptor moduleDescriptor, String actionID, SiteProfile siteProfile) {
 
 		super();
 		this.flowInstanceManager = flowInstanceManager;
@@ -27,7 +26,6 @@ public class SubmitEvent implements Serializable {
 		this.moduleDescriptor = moduleDescriptor;
 		this.actionID = actionID;
 		this.siteProfile = siteProfile;
-		this.forcePDF = forcePDF;
 	}
 
 	public FlowInstanceManager getFlowInstanceManager() {
@@ -53,11 +51,6 @@ public class SubmitEvent implements Serializable {
 	public SiteProfile getSiteProfile() {
 
 		return siteProfile;
-	}
-
-	public boolean isForcePDF() {
-
-		return forcePDF;
 	}
 	
 	@Override
