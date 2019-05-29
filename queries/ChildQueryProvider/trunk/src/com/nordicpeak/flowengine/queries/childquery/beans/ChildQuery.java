@@ -122,6 +122,12 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@XMLElement(fixCase = true)
 	private ChildQueryFilterEndpoint filterEndpoint;
 	
+	@TextTagReplace
+	@DAOManaged
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String emptyFilterDescription;
+	
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@XMLElement(fixCase = true)
@@ -447,6 +453,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		maxAge = XMLValidationUtils.validateParameter("maxAge", xmlParser, false, IntegerPopulator.getPopulator(), errors);
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		emptyFilterDescription = XMLValidationUtils.validateParameter("emptyFilterDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		
 		if (attributeName != null) {
 			
@@ -529,7 +536,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	}
 
 	public void setAttributeName(String attributeName) {
-	
+
 		this.attributeName = attributeName;
 	}
 
@@ -547,6 +554,14 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 
 	public void setSelectedChildAttributes(List<SelectedChildAttribute> selectedChildAttributes) {
 		this.selectedChildAttributes = selectedChildAttributes;
+	}
+
+	public String getEmptyFilterDescription() {
+		return emptyFilterDescription;
+	}
+
+	public void setEmptyFilterDescription(String emptyFilterDescription) {
+		this.emptyFilterDescription = emptyFilterDescription;
 	}
 
 }

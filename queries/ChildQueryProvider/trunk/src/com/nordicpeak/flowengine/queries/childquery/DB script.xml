@@ -280,4 +280,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="20">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `emptyFilterDescription` TEXT NULL DEFAULT NULL AFTER `filterEndpointID`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

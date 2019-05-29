@@ -91,6 +91,7 @@ import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
 import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpointAdminModule;
 import com.nordicpeak.flowengine.queries.childquery.filterapi.FilterAPIChild;
+import com.nordicpeak.flowengine.queries.childquery.filterapi.IncompleteFilterAPIDataException;
 import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
@@ -719,6 +720,11 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 								
 								queryInstance.setFetchChildrenException(new CommunicationException("Got no response from filterAPIModule"));
 								return null;
+								
+							} else if (apiChildren.isEmpty()) {
+								
+								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("Empty response from filterAPIModule"));
+								return null;
 							}
 						}
 						
@@ -741,7 +747,13 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 							
 							storedChildMap.put(entry.getKey(), child);
 						}
-						
+
+						if (apiChildren != null && storedChildMap.isEmpty()) {
+
+							queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("No matching children with filterAPIModule"));
+							return null;
+						}
+
 						return storedChildMap;
 						
 					} else {

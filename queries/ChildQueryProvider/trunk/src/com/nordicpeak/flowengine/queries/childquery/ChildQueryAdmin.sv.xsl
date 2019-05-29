@@ -64,6 +64,7 @@
 	
 	<xsl:variable name="i18n.FilterEndpoint.title">Välj API-källa för filtrering och extra information</xsl:variable>
 	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa</xsl:variable>
+	<xsl:variable name="i18n.EmptyFilterDescription">Text vid avsaknad av data från API-källan (Tomt svar eller inga barn kvar efter filtrering)</xsl:variable>
 
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.Query.setAsAttribute">Spara valt barn som attribut</xsl:variable>

@@ -265,7 +265,7 @@
 						<xsl:value-of select="ChildQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
 					</h2>
 					
-					<xsl:if test="ChildQueryInstance/ChildQuery/helpText">		
+					<xsl:if test="ChildQueryInstance/ChildQuery/helpText">
 						<xsl:apply-templates select="ChildQueryInstance/ChildQuery/helpText" />
 					</xsl:if>
 				
@@ -314,12 +314,21 @@
 						</xsl:when>
 						<xsl:otherwise>	<!-- No list from provider -->
 						
-							<xsl:choose>
-								<xsl:when test="ChildQueryInstance/FetchChildrenException/CommunicationException"><xsl:value-of select="$i18n.Error.Provider.CommunicationError"/></xsl:when>
-								<xsl:when test="ChildQueryInstance/FetchChildrenException/IncompleteDataException"><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></xsl:when>
-								<xsl:when test="ChildQueryInstance/FetchChildrenException/InvalidCitizenIdentifierException"><xsl:value-of select="$i18n.Error.Provider.InvalidCitizenIdentifier"/></xsl:when>
-								<xsl:otherwise><xsl:value-of select="$i18n.Error.Provider.Unknown"/></xsl:otherwise>
-							</xsl:choose>
+							<span class="italic html-description">
+								<p class="error">
+									<xsl:choose>
+										<xsl:when test="ChildQueryInstance/FetchChildrenException/IncompleteFilterAPIDataException and ChildQueryInstance/ChildQuery/emptyFilterDescription">
+											<xsl:call-template name="replaceLineBreak">
+												<xsl:with-param name="string" select="ChildQueryInstance/ChildQuery/emptyFilterDescription" />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:when test="ChildQueryInstance/FetchChildrenException/CommunicationException"><xsl:value-of select="$i18n.Error.Provider.CommunicationError"/></xsl:when>
+										<xsl:when test="ChildQueryInstance/FetchChildrenException/IncompleteDataException or ChildQueryInstance/FetchChildrenException/IncompleteFilterAPIDataException"><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></xsl:when>
+										<xsl:when test="ChildQueryInstance/FetchChildrenException/InvalidCitizenIdentifierException"><xsl:value-of select="$i18n.Error.Provider.InvalidCitizenIdentifier"/></xsl:when>
+										<xsl:otherwise><xsl:value-of select="$i18n.Error.Provider.Unknown"/></xsl:otherwise>
+									</xsl:choose>
+								</p>
+							</span>
 							
 						</xsl:otherwise>
 					</xsl:choose>

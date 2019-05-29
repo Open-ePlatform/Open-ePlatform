@@ -315,8 +315,20 @@
 					</div>
 				</xsl:for-each>
 				
+				<div id="emptyFilterDescriptionContainer" class="floatleft full bigmarginbottom">
+					<label for="emptyFilterDescription" class="floatleft clearboth"><xsl:value-of select="$i18n.EmptyFilterDescription" /></label>
+					<div class="floatleft full">
+						<xsl:call-template name="createTextArea">
+							<xsl:with-param name="id" select="'emptyFilterDescription'" />
+							<xsl:with-param name="name" select="'emptyFilterDescription'" />
+							<xsl:with-param name="element" select="ChildQuery" />
+							<xsl:with-param name="rows">4</xsl:with-param>
+						</xsl:call-template>
+					</div>
+				</div>
+				
 			</xsl:if>
-						
+			
 			<div class="floatleft full bigmargintop">
 				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
 			</div>
@@ -333,7 +345,7 @@
 					<label for="setAsAttribute">
 						<xsl:value-of select="$i18n.Query.setAsAttribute" />
 					</label>
-			    </div>
+				</div>
 			</div>
 			
 			<div id="attributeContainer">
@@ -349,7 +361,7 @@
 							<xsl:with-param name="element" select="ChildQuery" />
 							<xsl:with-param name="maxlength" select="'255'"/>
 						</xsl:call-template>
-				  </div>
+					</div>
 				</div>
 	
 				<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
@@ -376,7 +388,6 @@
 				</table>
 				
 			</div>
-			
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
@@ -455,6 +466,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'filterEndpointID'">
 				<xsl:value-of select="$i18n.FilterEndpoint.title" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'emptyFilterDescription'">
+				<xsl:value-of select="$i18n.EmptyFilterDescription" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

@@ -45,12 +45,12 @@ $(function() {
 		
 		if (endpointID != "") {
 			
-			$("#endpoint-attributes").show();
+			$("#endpoint-attributes, #emptyFilterDescriptionContainer").show();
 			$("#endpoint-" + endpointID).show().find("select").prop("disabled", false);
 			
 		} else {
 			
-			$("#endpoint-attributes").hide();
+			$("#endpoint-attributes, #emptyFilterDescriptionContainer").hide();
 		}
 		
 	}).change();
