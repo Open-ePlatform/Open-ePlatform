@@ -1504,7 +1504,7 @@
 							<thead>	
 								<tr>
 									<th><xsl:value-of select="$i18n.Events.message" /></th>
-									<th><xsl:value-of select="$i18n.version.title" /></th>
+									<th class="nowrap"><xsl:value-of select="$i18n.version.title" /></th>
 									<th><xsl:value-of select="$i18n.Events.poster" /></th>
 									<th><xsl:value-of select="$i18n.Events.added" /></th>
 								</tr>
