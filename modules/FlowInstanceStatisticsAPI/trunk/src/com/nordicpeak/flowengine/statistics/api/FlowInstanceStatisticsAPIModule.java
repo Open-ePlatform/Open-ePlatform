@@ -16,6 +16,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -405,6 +406,10 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 					XMLUtils.writeXML(doc, res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
 				}
 				
+			} catch (TransformerException e) {
+				
+				log.warn("Error sending flow instance statistics to " + user, e);
+				
 			} catch (IOException e) {
 				
 				log.warn("Error sending flow instance statistics to " + user, e);
@@ -493,7 +498,11 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							XMLUtils.appendNewElement(doc, flowElement, "Changed", changed);
 							XMLUtils.appendNewElement(doc, flowElement, "Internal", flow.isInternal());
 							XMLUtils.appendNewElement(doc, flowElement, "Visible", !flow.isHideFromOverview());
-
+							
+							if(flow.getFlowFamily().getStatisticsMode() != null) {
+								XMLUtils.appendNewElement(doc, flowElement, "StatisticsMode", flow.getFlowFamily().getStatisticsMode());
+							}
+							
 							responseElement.appendChild(flowElement);
 						}
 
@@ -509,16 +518,27 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 				XMLUtils.append(doc, responseElement, "ValidationErrors", validationErrors);
 			}
 
-			if (charset != null) {
+			try {
+			
+				if (charset != null) {
+	
+					res.setCharacterEncoding(charset.name());
+					XMLUtils.writeXML(doc, res.getOutputStream(), true, charset.name());
+	
+				} else {
+	
+					XMLUtils.writeXML(doc, res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
+				}
 
-				res.setCharacterEncoding(charset.name());
-				XMLUtils.writeXML(doc, res.getOutputStream(), true, charset.name());
-
-			} else {
-
-				XMLUtils.writeXML(doc, res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
+			} catch (TransformerException e) {
+				
+				log.warn("Error sending flow instance statistics to " + user, e);
+				
+			} catch (IOException e) {
+				
+				log.warn("Error sending flow instance statistics to " + user, e);
 			}
-
+			
 		} else {
 
 			// Invalid requested response type
