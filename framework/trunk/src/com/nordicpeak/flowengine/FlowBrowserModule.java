@@ -1479,10 +1479,13 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			eventType = EventType.SUBMITTED;
 		}
 
-		Status nextStatus = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(actionID);
-
-		if (nextStatus == null) {
-
+		Status nextStatus;
+		
+		try {
+			nextStatus = getNextFlowStatus(instanceManager, actionID, eventType, null);
+			
+		} catch (FlowDefaultStatusNotFound e) {
+			
 			log.error("Unable to find status for actionID " + actionID + " for flow instance " + instanceManager + ", flow instance will be left with wrong status.");
 			return;
 		}

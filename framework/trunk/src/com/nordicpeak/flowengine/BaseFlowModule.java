@@ -95,6 +95,7 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.FlowAction;
 import com.nordicpeak.flowengine.enums.FlowDirection;
 import com.nordicpeak.flowengine.enums.ShowMode;
+import com.nordicpeak.flowengine.events.FlowInstanceSaveStatusOverrideEvent;
 import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
@@ -141,7 +142,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
-import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
@@ -660,7 +660,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
 
-						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
 
 						// Check if we need to redirect to new url
 						if (!previouslySaved && enableSaving) {
@@ -678,7 +678,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
 
-						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+						save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
 
 						// Check if we need to redirect to new url
 						if (!previouslySaved) {
@@ -754,7 +754,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 							
 							boolean previouslySaved = instanceManager.isPreviouslySaved();
 							
-							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
 							
 							if (!previouslySaved) {
 								
@@ -785,22 +785,22 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 								
 								if (instanceManager.getFlowInstance().getFlow().isSkipPosterSigning()) {
 									
-									FlowInstanceEvent saveEvent = save(instanceManager, user, poster, req, callback.getMultiSigningActionID(), EventType.SIGNING_SKIPPED, null);
+									FlowInstanceEvent saveEvent = save(instanceManager, user, poster, req, callback.getMultiSigningActionID(), EventType.SIGNING_SKIPPED, null, requestMetadata);
 									signingComplete(instanceManager, saveEvent, req, instanceProfile, callback.getMultiSigningActionID());
 									
 									res.sendRedirect(getSignSuccessURL(instanceManager, req));
 									return null;
 								}
 
-								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, false);
+								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, requestMetadata, false);
 
 							} else if (requiresPayment(instanceManager)) {
 
-								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getPaymentActionID(), instanceProfile, false);
+								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getPaymentActionID(), instanceProfile, requestMetadata, false);
 
 							} else {
 
-								signingCallback = getSigningCallback(instanceManager, poster, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, true);
+								signingCallback = getSigningCallback(instanceManager, poster, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, requestMetadata, true);
 							}
 
 							ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
@@ -860,13 +860,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 							if (paymentStatus != null) {
 								
-								save(instanceManager, user, poster, req, callback.getPaymentActionID(), EventType.UPDATED, null);
+								save(instanceManager, user, poster, req, callback.getPaymentActionID(), EventType.UPDATED, null, requestMetadata);
 								
 								removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
 								
 							} else {
 								
-								save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+								save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
 							}
 							
 							savedFlowInstanceForPayment(instanceManager, user, req);
@@ -918,7 +918,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					log.info("User " + user + " saving and submitting flow instance " + instanceManager.getFlowInstance());
 
-					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null);
+					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null, requestMetadata);
 
 					if (enableSaving) {
 
@@ -937,7 +937,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 					log.info("User " + user + " saving and closing flow instance " + instanceManager.getFlowInstance());
 
-					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null);
+					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
 
@@ -1001,9 +1001,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		instanceManager.close(queryHandler);
 	}
 
-	protected SigningCallback getSigningCallback(MutableFlowInstanceManager instanceManager, User poster, EventType eventType, String actionID, SiteProfile siteProfile, boolean addSubmitEvent) {
+	protected SigningCallback getSigningCallback(MutableFlowInstanceManager instanceManager, User poster, EventType eventType, String actionID, SiteProfile siteProfile, RequestMetadata requestMetadata, boolean addSubmitEvent) {
 
-		return new BaseFlowModuleSigningCallback(this, poster, actionID, eventType, siteProfile, addSubmitEvent);
+		return new BaseFlowModuleSigningCallback(this, poster, actionID, eventType, siteProfile, requestMetadata, addSubmitEvent);
 	}
 
 	protected void redirectToSignError(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, MutableFlowInstanceManager instanceManager) throws IOException {
@@ -1177,7 +1177,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return req.getContextPath() + this.getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
 	}
 	
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
+	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
 
 		HttpSession session = null;
 
@@ -1191,7 +1191,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		Timestamp previousStatusChange = instanceManager.getFlowInstance().getLastStatusChange();
 		
-		setFlowStatus(instanceManager, actionID);
+		setFlowStatus(instanceManager, actionID, eventType, requestMetadata);
 
 		Timestamp saveTimestamp = null;
 		
@@ -1230,52 +1230,44 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		return event;
 	}
+	
+	protected void setFlowStatus(MutableFlowInstanceManager instanceManager, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
+		
+		Status nextStatus = getNextFlowStatus(instanceManager, actionID, eventType, requestMetadata);
+		
+		if (nextStatus != null) {
+			
+			instanceManager.setFlowState(nextStatus);
+		}
+	}
+	
+	protected Status getNextFlowStatus(FlowInstanceManager instanceManager, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
 
-	protected void setFlowStatus(MutableFlowInstanceManager instanceManager, String actionID) throws FlowDefaultStatusNotFound {
+		FlowInstanceSaveStatusOverrideEvent statusOverrideEvent = new FlowInstanceSaveStatusOverrideEvent(instanceManager, actionID, eventType, requestMetadata);
+		
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, statusOverrideEvent, EventTarget.ALL);
+		
+		Status overrideStatus = statusOverrideEvent.getOverrideStatus();
 
+		if (overrideStatus != null) {
+
+			log.info("Using flow status override for actionID " + actionID + " to flow status " + overrideStatus);
+			return overrideStatus;
+		}
+		
 		if (actionID != null) {
 			
-			if (instanceManager.getFlowInstance().getAttributeHandler() != null && instanceManager.getFlowInstance().getAttributeHandler().isSet(actionID + ".override")) {
-				
-				Integer statusID = instanceManager.getFlowInstance().getAttributeHandler().getInt(actionID + ".override");
-				
-				if (statusID != null) {
-					
-					if (instanceManager.getFlowInstance().getFlow().getStatuses() != null) {
-						
-						Status overrideStatus = null;
-						
-						for (ImmutableStatus status : instanceManager.getFlowInstance().getFlow().getStatuses()) {
-							
-							if (status.getStatusID().equals(statusID)) {
-								
-								overrideStatus = (Status) status;
-								break;
-							}
-						}
-						
-						if (overrideStatus != null && overrideStatus.getContentType() != ContentType.NEW) {
-							
-							log.info("Using flow status override for actionID " + actionID + " to flow status " + overrideStatus);
-							instanceManager.setFlowState(overrideStatus);
-							return;
-						}
-						
-					} else {
-						
-						log.error("Found no statuses for flow " + instanceManager.getFlowInstance().getFlow() + ". You need to add the relation Flow.Statuses somewhere.");
-					}
-				}
-			}
+			Status status = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(actionID);
 
-			instanceManager.setFlowState((Status) instanceManager.getFlowInstance().getFlow().getDefaultState(actionID));
-
-			if (instanceManager.getFlowState() == null) {
+			if (status == null) {
 
 				throw new FlowDefaultStatusNotFound(actionID, instanceManager.getFlowInstance().getFlow());
 			}
-
+			
+			return status;
 		}
+		
+		return null;
 	}
 
 	protected void rebindFlowInstance(HttpSession session, MutableFlowInstanceManager instanceManager) {
@@ -2410,7 +2402,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 		
-		Status nextStatus = flowInstance.getFlow().getDefaultState(actionID);
+		Status nextStatus = getNextFlowStatus(instanceManager, actionID, EventType.SUBMITTED, null);
 		
 		if (nextStatus == null) {
 			

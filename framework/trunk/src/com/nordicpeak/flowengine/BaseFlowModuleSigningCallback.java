@@ -10,6 +10,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceManagerClosedException;
@@ -24,11 +25,12 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 	private final String actionID;
 	private final EventType submitEventType;
 	private final SiteProfile siteProfile;
+	private final RequestMetadata requestMetadata;
 	private final boolean addSubmitEvent;
 	private final String signingSessionID;
 	private User poster;
 	
-	public BaseFlowModuleSigningCallback(BaseFlowModule baseFlowModule, User poster, String actionID, EventType submitEventType, SiteProfile siteProfile, boolean addSubmitEvent) {
+	public BaseFlowModuleSigningCallback(BaseFlowModule baseFlowModule, User poster, String actionID, EventType submitEventType, SiteProfile siteProfile, RequestMetadata requestMetadata, boolean addSubmitEvent) {
 
 		super();
 		this.baseFlowModule = baseFlowModule;
@@ -37,6 +39,7 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		this.siteProfile = siteProfile;
 		this.addSubmitEvent = addSubmitEvent;
 		this.poster = poster;
+		this.requestMetadata = requestMetadata;
 		
 		signingSessionID = "single-" + Long.toString(System.currentTimeMillis());
 	}
@@ -57,17 +60,17 @@ public class BaseFlowModuleSigningCallback implements SigningCallback {
 		
 		if (addSubmitEvent) {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes, requestMetadata);
 			
 			Map<String,String> submitEventAttributes = new HashMap<String, String>();
 			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
 			submitEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF);
 			
-			submitEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, submitEventType, submitEventAttributes);
+			submitEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, submitEventType, submitEventAttributes, requestMetadata);
 			
 		} else {
 			
-			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes);
+			signingEvent = baseFlowModule.save(instanceManager, user, poster, req, actionID, EventType.SIGNED, signingEventAttributes, requestMetadata);
 		}
 		
 		return new SigningConfirmedResponse(signingEvent, submitEvent);

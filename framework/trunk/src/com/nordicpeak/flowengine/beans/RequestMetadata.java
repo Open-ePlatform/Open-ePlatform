@@ -60,5 +60,10 @@ public class RequestMetadata extends GeneratedElementable implements Serializabl
 		
 		attributes.add(new SimpleAttribute(name, value));
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " (manager=" + manager + ")";
+	}
 	
 }

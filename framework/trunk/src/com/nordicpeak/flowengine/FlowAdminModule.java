@@ -172,6 +172,7 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
@@ -3363,7 +3364,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@Override
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
+	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
 
 		return null;
 	}
