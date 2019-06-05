@@ -18,6 +18,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.InvalidFileNameException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -99,8 +100,15 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 				FileItem fileItem = fileIterator.next();
 
-				if (StringUtils.isEmpty(fileItem.getName()) || fileItem.getSize() == 0) {
+				try {
+					if (StringUtils.isEmpty(fileItem.getName()) || fileItem.getSize() == 0) {
 
+						fileIterator.remove();
+						continue;
+					}
+					
+				} catch (InvalidFileNameException e) {
+					
 					fileIterator.remove();
 					continue;
 				}
