@@ -134,7 +134,6 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
-import com.nordicpeak.flowengine.interfaces.AdminFlowInstanceProvider;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
@@ -275,7 +274,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> listOverviewExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> flowInstanceOverviewTabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
-	protected CopyOnWriteArrayList<AdminFlowInstanceProvider> adminFlowInstanceProviders = new CopyOnWriteArrayList<AdminFlowInstanceProvider>();
 
 	protected ExternalMessageCRUD externalMessageCRUD;
 	protected InternalMessageCRUD internalMessageCRUD;
@@ -326,7 +324,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		listOverviewExtensionLinkProviders.clear();
 		flowInstanceOverviewTabExtensionProviders.clear();
-		adminFlowInstanceProviders.clear();
 
 		super.unload();
 	}
@@ -437,27 +434,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			filterRestrictedFlowInstances(bookmarkedFlows, user);
 			filterRestrictedFlowInstances(activeFlowInstances, user);
-		}
-
-		if (!adminFlowInstanceProviders.isEmpty()) {
-
-			int activeFlowInstanceCount = CollectionUtils.getSize(activeFlowInstances);
-
-			for (AdminFlowInstanceProvider adminFlowInstanceProvider : adminFlowInstanceProviders) {
-
-				try {
-					activeFlowInstances = CollectionUtils.addAndInstantiateIfNeeded(activeFlowInstances, adminFlowInstanceProvider.getActiveFlowInstances(user));
-
-				} catch (RuntimeException e) {
-
-					log.error("Error getting flow instances from provider " + adminFlowInstanceProvider, e);
-				}
-			}
-
-			if (activeFlowInstances != null && CollectionUtils.getSize(activeFlowInstances) != activeFlowInstanceCount) {
-
-				//TODO sort
-			}
 		}
 
 		if (CollectionUtils.isEmpty(activeFlowInstances) && CollectionUtils.isEmpty(bookmarkedFlows)) {
@@ -1882,16 +1858,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	public boolean removeFlowInstanceOverviewExtensionProvider(FlowInstanceOverviewExtensionProvider provider) {
 
 		return flowInstanceOverviewTabExtensionProviders.remove(provider);
-	}
-
-	public boolean addFlowInstanceProvider(AdminFlowInstanceProvider flowInstanceProvider) {
-
-		return adminFlowInstanceProviders.add(flowInstanceProvider);
-	}
-
-	public boolean removeFlowInstanceProvider(AdminFlowInstanceProvider flowInstanceProvider) {
-
-		return adminFlowInstanceProviders.remove(flowInstanceProvider);
 	}
 
 	@Override
