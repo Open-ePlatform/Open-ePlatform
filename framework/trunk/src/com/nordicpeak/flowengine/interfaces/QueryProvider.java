@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.interfaces;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
@@ -17,7 +19,7 @@ public interface QueryProvider {
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 	
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable;
 
 	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws Throwable;
 
@@ -48,5 +50,5 @@ public interface QueryProvider {
 
 	public boolean deleteQueryInstance(ImmutableQueryInstanceDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws Exception;
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Exception;
 }

@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.queries.manualmultisignquery;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,7 @@ import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MultiSigningQueryProvider;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
@@ -253,7 +255,7 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 	}
 
 	@Override
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws SQLException {
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws SQLException {
 
 		ManualMultiSignQuery query = getQuery(sourceQueryDescriptor.getQueryID(), transactionHandler);
 
@@ -344,7 +346,7 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 	}
 	
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
 
 		ManualMultiSignQuery query = new ManualMultiSignQuery();
 

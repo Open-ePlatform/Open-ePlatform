@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
@@ -358,7 +360,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 	}
 
 	@Override
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws QueryProviderErrorException, QueryProviderNotFoundException {
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderErrorException, QueryProviderNotFoundException {
 
 		QueryProvider queryProvider = queryProviderMap.get(sourceQueryDescriptor.getQueryTypeID());
 
@@ -366,7 +368,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 
 			try{
 
-				queryProvider.copyQuery(sourceQueryDescriptor, copyQueryDescriptor, transactionHandler);
+				queryProvider.copyQuery(sourceQueryDescriptor, copyQueryDescriptor, transactionHandler, statusConversionMap);
 
 				return;
 
@@ -380,7 +382,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 	}
 	
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryProviderErrorException {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderNotFoundException, QueryProviderErrorException {
 
 		QueryProvider queryProvider = queryProviderMap.get(descriptor.getQueryTypeID());
 
@@ -390,7 +392,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 		}
 
 		try{
-			return queryProvider.importQuery(descriptor, transactionHandler);
+			return queryProvider.importQuery(descriptor, transactionHandler, statusConversionMap);
 		}catch(Throwable t){
 			throw new QueryProviderErrorException("Exception thrown by query provider for query type " + queryProvider.getQueryType() + " while importing query " + descriptor, t, queryProvider);
 		}

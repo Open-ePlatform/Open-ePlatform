@@ -69,6 +69,7 @@ import com.nordicpeak.flowengine.formatvalidation.FormatValidationHandler;
 import com.nordicpeak.flowengine.formatvalidation.FormatValidator;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
@@ -164,7 +165,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
 
 		TextFieldQuery query = new TextFieldQuery();
 
@@ -783,7 +784,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 
 	@Override
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws SQLException {
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws SQLException {
 
 		TextFieldQuery query = getQuery(sourceQueryDescriptor.getQueryID(), transactionHandler);
 

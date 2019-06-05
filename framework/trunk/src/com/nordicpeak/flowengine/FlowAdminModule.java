@@ -1586,7 +1586,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 							QueryDescriptor queryDescriptor = step.getQueryDescriptors().get(queryIndex);
 
-							queryHandler.copyQuery(queryDescriptor, flowCopy.getSteps().get(stepIndex).getQueryDescriptors().get(queryIndex), transactionHandler);
+							queryHandler.copyQuery(queryDescriptor, flowCopy.getSteps().get(stepIndex).getQueryDescriptors().get(queryIndex), transactionHandler, statusConversionMap);
 
 							if (queryDescriptor.getEvaluatorDescriptors() != null) {
 
@@ -4187,7 +4187,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 								try {
 									queryDescriptor.setStep(null);
-									importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler));
+									importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler, statusConversionMap));
 
 								} catch (Exception e) {
 
@@ -4476,7 +4476,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 						try {
 							queryDescriptor.setStep(null);
-							queryHandler.importQuery(queryDescriptor, transactionHandler);
+							queryHandler.importQuery(queryDescriptor, transactionHandler, Collections.emptyMap());
 
 						} catch (Exception e) {
 

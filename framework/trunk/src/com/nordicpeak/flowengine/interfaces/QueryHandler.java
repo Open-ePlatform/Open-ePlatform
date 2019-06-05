@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine.interfaces;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,7 +27,7 @@ public interface QueryHandler {
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryProviderErrorException;
 	
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryProviderErrorException;
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderNotFoundException, QueryProviderErrorException;
 
 	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws QueryProviderNotFoundException, QueryNotFoundInQueryProviderException, QueryProviderErrorException;
 
@@ -56,7 +57,7 @@ public interface QueryHandler {
 
 	public void deleteQueryInstance(ImmutableQueryInstanceDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderErrorException, QueryProviderNotFoundException, QueryInstanceNotFoundInQueryProviderException;
 
-	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler) throws QueryProviderErrorException, QueryProviderNotFoundException;
+	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderErrorException, QueryProviderNotFoundException;
 
 	public QueryTypeDescriptor getQueryType(String queryTypeID);
 }
