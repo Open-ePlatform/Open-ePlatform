@@ -9,6 +9,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 
 import com.nordicpeak.flowengine.beans.SigningParty;
 import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.MultiSignQueryinstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
@@ -28,7 +29,7 @@ public class MultiSignUtils {
 					
 					List<? extends SigningParty> querySigningParties = multiSignQueryinstance.getSigningParties();
 					
-					if(!CollectionUtils.isEmpty(querySigningParties)) {
+					if (!CollectionUtils.isEmpty(querySigningParties)) {
 					
 						for (SigningParty signingParty : multiSignQueryinstance.getSigningParties()) {
 							
@@ -62,7 +63,7 @@ public class MultiSignUtils {
 					
 					List<? extends SigningParty> querySigningParties = multiSignQueryinstance.getSigningParties();
 					
-					if(!CollectionUtils.isEmpty(querySigningParties)) {
+					if (!CollectionUtils.isEmpty(querySigningParties)) {
 						
 						for (SigningParty signingParty : querySigningParties) {
 							
@@ -80,12 +81,17 @@ public class MultiSignUtils {
 	}
 	
 	private static boolean isSigningInitiator(SigningParty signingParty, FlowInstanceManager instanceManager) {
-		
+
+		ImmutableFlow flow = instanceManager.getFlowInstance().getFlow();
+
+		if (flow.isSkipPosterSigning() && flow.isAllowPosterMultipartSigning()) {
+			return false;
+		}
+
 		if (!signingParty.isUnsecure() && signingParty.getSocialSecurityNumber().equals(getCurrentInstanceUserCitizenIdentifier(instanceManager))) {
-			
 			return true;
 		}
-		
+
 		return false;
 	}
 	

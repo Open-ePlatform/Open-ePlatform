@@ -2205,4 +2205,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="122">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `allowPosterMultipartSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `skipPosterSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

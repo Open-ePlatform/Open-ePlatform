@@ -204,6 +204,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean allowPosterMultipartSigning;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean appendSigningSignatureToPDF;
 	
 	@DAOManaged
@@ -934,6 +939,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
 		skipPosterSigning = xmlParser.getPrimitiveBoolean("skipPosterSigning");
+		allowPosterMultipartSigning = xmlParser.getPrimitiveBoolean("allowPosterMultipartSigning");
 		appendSigningSignatureToPDF = xmlParser.getPrimitiveBoolean("appendSigningSignatureToPDF");
 		allowForeignIDs = xmlParser.getPrimitiveBoolean("allowForeignIDs");
 		
@@ -1197,6 +1203,15 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.skipPosterSigning = skipPosterSigningInMultiSigning;
 	}
 
+	public boolean isAllowPosterMultipartSigning() {
+		return allowPosterMultipartSigning;
+	}
+
+	public void setAllowPosterMultipartSigning(boolean allowPosterMultipartSigning) {
+		this.allowPosterMultipartSigning = allowPosterMultipartSigning;
+	}
+
+	@Override
 	public boolean isAppendSigningSignatureToPDF() {
 		return appendSigningSignatureToPDF;
 	}

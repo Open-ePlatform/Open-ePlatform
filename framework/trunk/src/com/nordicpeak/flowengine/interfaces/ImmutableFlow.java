@@ -45,6 +45,8 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	
 	public boolean isSkipPosterSigning();
 	
+	public boolean isAllowPosterMultipartSigning();
+	
 	public boolean showsSubmitSurvey();
 
 	public abstract Blob getIcon();

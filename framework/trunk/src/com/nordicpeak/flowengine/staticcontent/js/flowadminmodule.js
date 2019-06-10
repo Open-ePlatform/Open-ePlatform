@@ -95,12 +95,23 @@ $(document).ready(function() {
 			
 		}).trigger("change");
 		
+		$("#skipPosterSigning").change(function(e) {
+			
+			var checkbox = $(this);
+			var checked = checkbox.prop("checked") && checkbox.parent().parent().css('display') !== 'none';
+			var fields = $("#allowPosterMultipartSigning");
+			
+			fields.parent().parent().toggle(checked);
+		})
+		
 		$("#requireSigning").change(function(e) {
 			
 			var checked = $(this).prop("checked");
 			var fields = $("#useSequentialSigning, #skipPosterSigning, #appendSigningSignatureToPDF");
 			
 			fields.parent().parent().toggle(checked);
+			
+			$("#skipPosterSigning").trigger("change");
 			
 		}).trigger("change");
 		
