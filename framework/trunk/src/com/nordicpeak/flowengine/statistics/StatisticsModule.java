@@ -1250,6 +1250,11 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	@WebPublic(alias = "unsubmitcount")
 	public ForegroundModuleResponse downloadStepUnsubmitCount(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
+		if (flowFamilyStatisticsMap == null) {
+			
+			return showStatisticsLoading(req, uriParser);
+		}
+		
 		FlowFamilyStatistics familyStatistics = this.flowFamilyStatisticsMap.get(uriParser.getInt(2));
 
 		if (familyStatistics == null) {
