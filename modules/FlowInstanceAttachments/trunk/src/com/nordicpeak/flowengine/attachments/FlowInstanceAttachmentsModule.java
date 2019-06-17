@@ -163,6 +163,11 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.WARN);
 		
+		if (!StringUtils.isEmpty(tempDir) && !FileUtils.isReadable(tempDir)) {
+			
+			log.error("Filestore not found/readable");
+		}
+		
 		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		viewFragmentTransformer.setDebugXML(debugFragmententXML);
 	}

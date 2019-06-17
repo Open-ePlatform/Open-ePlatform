@@ -179,6 +179,28 @@
 	
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='UnableToParseRequest']">
+		
+		<p class="error">
+			<xsl:value-of select="$i18n.UnableToParseRequest"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.FileSizeLimitExceeded.part1"/>
+			<xsl:value-of select="filename"/>
+			<xsl:value-of select="$i18n.FileSizeLimitExceeded.part2"/>
+			<xsl:value-of select="size"/>
+			<xsl:value-of select="$i18n.FileSizeLimitExceeded.part3"/>
+			<xsl:value-of select="maxFileSize"/>
+			<xsl:value-of select="$i18n.FileSizeLimitExceeded.part4"/>
+		</p>
+			
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		
 		<xsl:if test="fieldName and validationErrorType">

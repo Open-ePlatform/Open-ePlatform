@@ -34,6 +34,13 @@
 	<xsl:variable name="i18n.validationError.unknownValidationErrorType">Ett okänt fel har uppstått</xsl:variable>
 	<xsl:variable name="i18n.validationError.unknownMessageKey">Ett okänt fel har uppstått</xsl:variable>
 	
+	<xsl:variable name="i18n.UnableToParseRequest">Det gick inte att tolka informationen från din webbläsare.</xsl:variable>
+	
+	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
+	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>
+	<xsl:variable name="i18n.FileSizeLimitExceeded.part3"> vilket överskrider den maximalt tillåtna filstorleken på </xsl:variable>
+	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
+	
 	<xsl:variable name="i18n.NewAttachment">Nya handlingar</xsl:variable>
 	<xsl:variable name="i18n.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Attachment">Handling</xsl:variable>
@@ -46,4 +53,5 @@
 	<xsl:variable name="i18n.Cancel">Avbryt</xsl:variable>
 	<xsl:variable name="i18n.Attachments">Handlingar</xsl:variable>
 	<xsl:variable name="i18n.NoAttachments">Inga handlingar hittades.</xsl:variable>
+	
 </xsl:stylesheet>
