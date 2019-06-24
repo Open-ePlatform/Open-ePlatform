@@ -186,6 +186,9 @@
 	<xsl:variable name="i18n.managingTime">Handläggningstid</xsl:variable>
 	<xsl:variable name="i18n.required">obligatorisk</xsl:variable>
 	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
+	<xsl:variable name="i18n.addExternalMessage">Kräv att handläggaren lägger till ett meddelande vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.defaultExternalMessageTemplate">Förvald meddelandemall</xsl:variable>
+	<xsl:variable name="i18n.defaultExternalMessageTemplate.None">Ingen förvald meddelandemall</xsl:variable>
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>

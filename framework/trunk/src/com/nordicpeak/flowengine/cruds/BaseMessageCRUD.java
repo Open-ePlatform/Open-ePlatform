@@ -145,7 +145,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 	}
 
-	protected HttpServletRequest parseRequest(HttpServletRequest req, List<ValidationError> errors) {
+	public HttpServletRequest parseRequest(HttpServletRequest req, List<ValidationError> errors) {
 
 		if (MultipartRequest.isMultipartRequest(req)) {
 

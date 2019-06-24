@@ -2213,4 +2213,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="123">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses`
+					ADD COLUMN `addExternalMessage` TINYINT(1) NOT NULL AFTER `managingTime`,
+					ADD COLUMN `defaultExternalMessageTemplateID` INT(10) UNSIGNED AFTER `addExternalMessage`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

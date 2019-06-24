@@ -50,7 +50,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	private Integer statusID;
 
 	@DAOManaged
-	@OrderBy(priority=1)
+	@OrderBy(priority = 1)
 	@StringTag
 	@WebPopulate(required = true, maxLength = 255)
 	@XMLElement
@@ -66,6 +66,16 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer managingTime;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean addExternalMessage;
+
+	@DAOManaged
+	@WebPopulate(paramName = "defaultExternalMessageTemplate")
+	@XMLElement
+	private Integer defaultExternalMessageTemplateID;
 
 	@DAOManaged
 	@WebPopulate
@@ -86,9 +96,9 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@WebPopulate
 	@XMLElement
 	private boolean isAdminDeletable;
-	
+
 	@DAOManaged
-	@OrderBy(priority=0)
+	@OrderBy(priority = 0)
 	@XMLElement
 	private Integer sortIndex;
 
@@ -109,17 +119,17 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<DefaultStatusMapping> defaultStatusMappings;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean requireSigning;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean useAccessCheck;
-	
+
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_statuses_manager_groups", remoteValueColumnName = "groupID")
@@ -136,7 +146,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 
 	@XMLElement
 	private Integer flowInstanceCount;
-	
+
 	@XMLElement
 	private Integer flowSubmittedInstanceCount;
 
@@ -177,20 +187,44 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 
 	@Override
 	public String getDescription() {
+
 		return description;
 	}
 
 	public void setDescription(String description) {
+
 		this.description = description;
 	}
 
 	@Override
 	public Integer getManagingTime() {
+
 		return managingTime;
 	}
 
 	public void setManagingTime(Integer managingTime) {
+
 		this.managingTime = managingTime;
+	}
+
+	public boolean isAddExternalMessage() {
+
+		return addExternalMessage;
+	}
+
+	public void setAddExternalMessage(boolean addExternalMessage) {
+
+		this.addExternalMessage = addExternalMessage;
+	}
+
+	public Integer getDefaultExternalMessageTemplateID() {
+
+		return defaultExternalMessageTemplateID;
+	}
+
+	public void setDefaultExternalMessageTemplateID(Integer defaultExternalMessageTemplateID) {
+
+		this.defaultExternalMessageTemplateID = defaultExternalMessageTemplateID;
 	}
 
 	@Override
@@ -296,42 +330,46 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 
 		this.flowInstanceCount = flowInstanceCount;
 	}
-	
+
 	public Integer getFlowSubmittedInstanceCount() {
-	
+
 		return flowSubmittedInstanceCount;
 	}
-	
+
 	public void setFlowSubmittedInstanceCount(Integer flowSubmittedInstanceCount) {
 
 		this.flowSubmittedInstanceCount = flowSubmittedInstanceCount;
 	}
-	
+
 	public boolean isRequireSigning() {
+
 		return requireSigning;
 	}
-	
+
 	public void setRequireSigning(boolean requireSigning) {
+
 		this.requireSigning = requireSigning;
 	}
-	
+
 	public boolean isUseAccessCheck() {
+
 		return useAccessCheck;
 	}
-	
+
 	public void setUseAccessCheck(boolean useAccessCheck) {
+
 		this.useAccessCheck = useAccessCheck;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((statusID == null) ? 0 : statusID.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 
@@ -374,8 +412,8 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.contentType = XMLValidationUtils.validateParameter("contentType", xmlParser, true, new EnumPopulator<ContentType>(ContentType.class), errors);
 
 		this.sortIndex = xmlParser.getInt("sortIndex");
-		
-		if(!errors.isEmpty()){
+
+		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
@@ -383,15 +421,15 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	}
 
 	public Integer getSortIndex() {
-	
+
 		return sortIndex;
 	}
 
 	public void setSortIndex(Integer sortIndex) {
-	
+
 		this.sortIndex = sortIndex;
 	}
-	
+
 	public List<Integer> getManagerGroupIDs() {
 
 		return managerGroupIDs;
@@ -401,7 +439,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 
 		return managerUserIDs;
 	}
-	
+
 	public void setManagerGroupIDs(List<Integer> managerGroupIDs) {
 
 		this.managerGroupIDs = managerGroupIDs;

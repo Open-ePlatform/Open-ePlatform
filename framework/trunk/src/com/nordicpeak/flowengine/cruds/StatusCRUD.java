@@ -166,6 +166,10 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		XMLUtils.append(doc, typeElement, "FlowActions", callback.getDAOFactory().getFlowActionDAO().getAll());
 		
+		FlowFamily flowFamily = getFlowFamily(flow);
+
+		XMLUtils.append(doc, typeElement, "ExternalMessageTemplates", flowFamily.getExternalMessageTemplates());
+		
 		typeElement.appendChild(flow.toXML(doc));
 	}
 	

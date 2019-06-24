@@ -268,6 +268,13 @@ $(document).ready(function() {
 		}
     });
 	
+	// Update status
+	$('#addExternalMessage').change(function(){
+		
+		$('#defaultExternalMessageTemplateContainer').toggle(this.checked);
+		
+	}).change();
+	
 });
 
 function updateSortOrder(obj) {
