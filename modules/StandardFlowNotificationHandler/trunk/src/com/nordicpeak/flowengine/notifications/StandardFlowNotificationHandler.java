@@ -455,6 +455,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF size limit for flow instance submitted emails (global)", description = "The size limit in megabyte for PDF documents attached to email messages when new flow instances are submitted. If this size is exceeded no PDF is attached. No value set means no size limit.")
 	private Integer flowInstanceSubmittedGlobalEmailPDFSizeLimit;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when flow instances are assigned new managers", description = "Controls if email messages are the sent to specified address when flow instances are assigned new managers.")
+	private boolean sendFlowInstanceAssignedGlobalEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow instance assigned email subject (global)", description = "The subject of emails sent when a new flow instance is assigned", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceAssignedGlobalEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow instance assigned email message (global)", description = "The message of emails sent when a new flow instance is assigned", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceAssignedGlobalEmailMessage;
+	
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Flow instance assigned email address (global)", description = "Global address to be notified when new flow instances are assigned", formatValidator = EmailPopulator.class)
+	private List<String> flowInstanceAssignedGlobalEmailAddress;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are archived", description = "Controls if email messages are the sent to specified address when new flow instances are archived.")
@@ -967,8 +985,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailAddresses(flowInstanceSubmittedGlobalEmailAddress);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailMessage(flowInstanceSubmittedGlobalEmailMessage);
+		
+		notificationSettings.setSendFlowInstanceAssignedGlobalEmail(sendFlowInstanceAssignedGlobalEmail);
 
-notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArchivedGlobalEmail);
+		notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArchivedGlobalEmail);
 		
 		notificationSettings.setExternalMessageReceivedGlobalEmailAddresses(externalMessageReceivedGlobalEmailAddresses);
 		notificationSettings.setManagerExpiredGlobalEmailAddresses(managerExpiredGlobalEmailAddresses);
@@ -1660,7 +1680,7 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
-		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail()) {
+		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail()) {
 
 			List<User> excludedManagers = new ArrayList<User>();
 
@@ -1683,8 +1703,21 @@ notificationSettings.setSendFlowInstanceArchivedGlobalEmail(sendFlowInstanceArch
 
 				log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
 			}
-
-			sendManagerEmails(flowInstance, getPosterContact(flowInstance), notificationSettings.getFlowInstanceAssignedManagerEmailSubject(), notificationSettings.getFlowInstanceAssignedManagerEmailMessage(), excludedManagers, false);
+			
+			Contact posterContact = getPosterContact(flowInstance);
+			
+			if (notificationSettings.isSendFlowInstanceAssignedManagerEmail()) {
+				
+				sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceAssignedManagerEmailSubject(), notificationSettings.getFlowInstanceAssignedManagerEmailMessage(), excludedManagers, false);
+			}
+			
+			if (notificationSettings.isSendFlowInstanceAssignedGlobalEmail() && !CollectionUtils.isEmpty(notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses())) {
+				
+				for (String email : notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses()) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
+				}
+			}
 		}
 	}
 

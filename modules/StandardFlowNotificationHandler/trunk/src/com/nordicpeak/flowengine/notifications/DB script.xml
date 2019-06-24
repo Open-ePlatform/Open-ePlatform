@@ -278,4 +278,30 @@
 		</Query>
 	</Script>
 	
+		
+	<Script version="20">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceAssignedGlobalEmail` TINYINT(1) NOT NULL AFTER `flowInstanceSubmittedGlobalEmailMessage`,
+					ADD COLUMN `flowInstanceAssignedGlobalEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceAssignedGlobalEmail`,
+					ADD COLUMN `flowInstanceAssignedGlobalEmailMessage` TEXT NULL AFTER `flowInstanceAssignedGlobalEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_assignedglobal` (
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `email` VARCHAR(255) NOT NULL,
+				  PRIMARY KEY (`flowFamilyID`,`email`),
+				  CONSTRAINT `FK_flow_familiy_notification_setting_assignedglobal_1` FOREIGN KEY `FK_flow_familiy_notification_setting_assignedglobal_1` (`flowFamilyID`)
+				    REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

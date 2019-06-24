@@ -137,6 +137,12 @@
 						<xsl:value-of select="$i18n.SendFlowInstanceSubmittedGlobalEmail"/>
 					</li>
 				</xsl:if>
+
+				<xsl:if test="NotificationSettings/sendFlowInstanceAssignedGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceAssignedGlobalEmail"/>
+					</li>
+				</xsl:if>
 				
 				<xsl:if test="NotificationSettings/sendFlowInstanceArchivedGlobalEmail = 'true'">
 					<li>
@@ -216,6 +222,11 @@
 			function toggleGlobalSubmit(){
 				
 				$("#global-submit-subject, #global-submit-message").toggleClass("hidden");
+			}
+			
+			function toggleGlobalAssigned(){
+				
+				$("#global-assigned-subject, #global-assigned-message").toggleClass("hidden");
 			}
 			
 			function toggleGlobalArchived(){
@@ -916,6 +927,85 @@
 				<label for="flowInstanceSubmittedGlobalEmailAttachXML">
 					<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailAttachXML" />
 				</label>
+			</div>
+		</div>
+		
+		<!-- FlowInstanceAssignedGlobalEmail -->
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceAssignedGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceAssignedGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceAssignedGlobalEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceAssignedGlobalEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGlobalAssigned();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-assigned-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceAssignedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceAssignedGlobalEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceAssignedGlobalEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedGlobalEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-assigned-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedGlobalEmailSubject') and not($errFieldNames = 'flowInstanceAssignedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceAssignedGlobalEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceAssignedGlobalEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedGlobalEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="flowInstanceAssignedGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceAssignedGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/FlowInstanceAssignedGlobalEmailAddresses/address" />
+				</xsl:call-template>
 			</div>
 		</div>
 		

@@ -213,6 +213,21 @@
 	
 	</xsl:variable>
 	
+	<xsl:variable name="java.flowInstanceAssignedGlobalEmailSubject">Nya handläggare på ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceAssignedGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har tilldelats nya handläggare&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.flowInstanceArchivedGlobalEmailSubject">Avslutat ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceArchivedGlobalEmailMessage">
 	
@@ -331,6 +346,11 @@
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachXML">Bifoga ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately">Bifoga bilagor separat</xsl:variable>
+
+	<xsl:variable name="i18n.SendFlowInstanceAssignedGlobalEmail">E-post när ärenden tilldelats handläggare</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid tilldelning av handläggare</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid  tilldelning av handläggare</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailAddresses">E-postadresser för notifiering om tilldelning av handläggare (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.SendFlowInstanceArchivedGlobalEmail">E-post när ärenden avslutas</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAddresses">E-postadresser för notifiering om avslutade ärenden (en adress per rad)</xsl:variable>

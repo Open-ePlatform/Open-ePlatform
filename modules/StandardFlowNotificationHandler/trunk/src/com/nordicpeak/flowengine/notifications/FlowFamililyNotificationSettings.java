@@ -224,6 +224,33 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean sendFlowInstanceAssignedGlobalEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedGlobalEmailSubject;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedGlobalEmailMessage;
+	
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flow_familiy_notification_setting_assignedglobal", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@RequiredIfSet(paramNames = "sendFlowInstanceAssignedGlobalEmail")
+	@SplitOnLineBreak
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
+	@XMLElement(fixCase=true, childName="address")
+	private List<String> flowInstanceAssignedGlobalEmailAddresses;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean sendFlowInstanceArchivedGlobalEmail;
 
 	@DAOManaged
@@ -499,7 +526,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
 
-		if (sendFlowInstanceSubmittedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail) {
+		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGlobalNotifications");
 		}
@@ -573,6 +600,54 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setFlowInstanceSubmittedGlobalEmailAddresses(List<String> flowInstanceSubmittedGlobalEmailAddresses) {
 
 		this.flowInstanceSubmittedGlobalEmailAddresses = flowInstanceSubmittedGlobalEmailAddresses;
+	}
+
+	
+	public boolean isSendFlowInstanceAssignedGlobalEmail() {
+	
+		return sendFlowInstanceAssignedGlobalEmail;
+	}
+
+	
+	public void setSendFlowInstanceAssignedGlobalEmail(boolean sendFlowInstanceAssignedGlobalEmail) {
+	
+		this.sendFlowInstanceAssignedGlobalEmail = sendFlowInstanceAssignedGlobalEmail;
+	}
+
+	
+	public String getFlowInstanceAssignedGlobalEmailSubject() {
+	
+		return flowInstanceAssignedGlobalEmailSubject;
+	}
+
+	
+	public void setFlowInstanceAssignedGlobalEmailSubject(String flowInstanceAssignedGlobalEmailSubject) {
+	
+		this.flowInstanceAssignedGlobalEmailSubject = flowInstanceAssignedGlobalEmailSubject;
+	}
+
+	
+	public String getFlowInstanceAssignedGlobalEmailMessage() {
+	
+		return flowInstanceAssignedGlobalEmailMessage;
+	}
+
+	
+	public void setFlowInstanceAssignedGlobalEmailMessage(String flowInstanceAssignedGlobalEmailMessage) {
+	
+		this.flowInstanceAssignedGlobalEmailMessage = flowInstanceAssignedGlobalEmailMessage;
+	}
+
+	
+	public List<String> getFlowInstanceAssignedGlobalEmailAddresses() {
+	
+		return flowInstanceAssignedGlobalEmailAddresses;
+	}
+
+	
+	public void setFlowInstanceAssignedGlobalEmailAddresses(List<String> flowInstanceAssignedGlobalEmailAddresses) {
+	
+		this.flowInstanceAssignedGlobalEmailAddresses = flowInstanceAssignedGlobalEmailAddresses;
 	}
 
 	public boolean isSendFlowInstanceArchivedGlobalEmail() {
