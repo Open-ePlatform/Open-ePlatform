@@ -5733,7 +5733,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		FlowFamily flowFamily;
 		ImmutableFlow flow;
 
-		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = getFlowFamily(flowFamilyID)) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
+		if (uriParser.size() >= 4 && (flowFamilyID = NumberUtils.toInt(uriParser.get(2))) != null && (flowID = NumberUtils.toInt(uriParser.get(3))) != null && (flowFamily = SerializationUtils.cloneSerializable(getFlowFamily(flowFamilyID))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 
 			if (!AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && !AccessUtils.checkAccess(user, this)) {
 
@@ -5901,10 +5901,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					} finally {
 						TransactionHandler.autoClose(transactionHandler);
 					}
-					
-				} else {
-					
-					cacheFlowFamilies(Collections.singletonList(flowFamily.getFlowFamilyID()));
 				}
 			}
 			
