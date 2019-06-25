@@ -580,6 +580,7 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.title">Automatisk tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.description">Här väljer du vilka handläggare som ska tilldelas ärenden automatiskt och när det ska ske.</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.On.Submit">Regler vid nytt ärende</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelade handläggare om attribut har specificerat värde</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeName">Attribut</xsl:variable>
@@ -587,7 +588,7 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Inverted">Inverterad</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Users">Användare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Groups">Grupper</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Row">Rad</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Row">rad</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Update">Ändra regel</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Save">Spara</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Delete">Ta bort regel</xsl:variable>
@@ -599,6 +600,18 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper med begränsad behörighet</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Always">Handläggare som alltid tilldelas</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.NoMatch">Tilldelade handläggare om ingen regel matchar</xsl:variable>
+	
+	<xsl:variable name="i18n.AutoManagerAssignment.On.StatusChange">Regler vid statusbyte</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules">Tilldelade handläggare vid statusbyte</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.StatusName">Status</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.AddManagers">Lägg till handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers">Ta bort befintliga handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.StatusName">Status</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.AddManagers">Lägg till handläggare vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.RemovePreviousManagers">Ta bort befintliga handläggare vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.DuplicateStatusRule">Du kan bara skapa en regel per status</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.NoActionsSelected">Du måste välja att antingen lägga till eller ta bort handläggare, eller både och.</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.ExternalMessageTemplates.title">Meddelandemallar</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageTemplates.add">Lägg till meddelandemall</xsl:variable>

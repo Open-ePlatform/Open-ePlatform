@@ -67,6 +67,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysGroupIDs");
 	public static final Field AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentNoMatchUserIDs");
 	public static final Field AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentNoMatchGroupIDs");
+	public static final Field AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentStatusRules");
 	
 	public static final Field USE_LOGIN_HELP_LINK_FIELD = ReflectionUtils.getField(FlowFamily.class, "useLoginHelpLink");
 	public static final Field LOGIN_HELP_LINK_NAME_FIELD = ReflectionUtils.getField(FlowFamily.class, "loginHelpLinkName");
@@ -204,6 +205,11 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@OneToMany
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_nomatch_groups", remoteValueColumnName = "groupID")
 	private List<Integer> autoManagerAssignmentNoMatchGroupIDs;
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement(fixCase = true)
+	private List<AutoManagerAssignmentStatusRule> autoManagerAssignmentStatusRules;
 	
 	@DAOManaged
 	@OneToMany
@@ -722,10 +728,19 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public void setAutoManagerAssignmentNoMatchGroupIDs(List<Integer> autoManagerAssignmentNoMatchGroupIDs) {
 		this.autoManagerAssignmentNoMatchGroupIDs = autoManagerAssignmentNoMatchGroupIDs;
 	}
+	
+	@Override
+	public List<AutoManagerAssignmentStatusRule> getAutoManagerAssignmentStatusRules() {
+		return autoManagerAssignmentStatusRules;
+	}
+	
+	public void setAutoManagerAssignmentStatusRules(List<AutoManagerAssignmentStatusRule> autoManagerAssignmentStatusRules) {
+		this.autoManagerAssignmentStatusRules = autoManagerAssignmentStatusRules;
+	}
 
 	public boolean usesAutoManagerAssignment() {
 
-		return !ObjectUtils.isNull(autoManagerAssignmentRules, autoManagerAssignmentAlwaysUserIDs, autoManagerAssignmentAlwaysGroupIDs, autoManagerAssignmentNoMatchUserIDs, autoManagerAssignmentNoMatchGroupIDs);
+		return !ObjectUtils.isNull(autoManagerAssignmentRules, autoManagerAssignmentAlwaysUserIDs, autoManagerAssignmentAlwaysGroupIDs, autoManagerAssignmentNoMatchUserIDs, autoManagerAssignmentNoMatchGroupIDs, autoManagerAssignmentStatusRules);
 	}
 
 	public List<ExternalMessageTemplate> getExternalMessageTemplates() {

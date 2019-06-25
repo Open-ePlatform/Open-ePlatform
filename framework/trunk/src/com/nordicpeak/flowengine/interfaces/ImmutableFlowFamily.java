@@ -6,6 +6,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.xml.Elementable;
 
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
@@ -41,6 +42,8 @@ public interface ImmutableFlowFamily extends Elementable {
 	public List<Integer> getAutoManagerAssignmentNoMatchUserIDs();
 	
 	public List<Integer> getAutoManagerAssignmentNoMatchGroupIDs();
+
+	public List<AutoManagerAssignmentStatusRule> getAutoManagerAssignmentStatusRules();
 
 	public boolean checkManagerRestrictedAccess(User user);
 	

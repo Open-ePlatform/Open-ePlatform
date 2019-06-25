@@ -692,7 +692,9 @@ function openAutoManagerAssignmentRuleModal(button, event) {
 				
 				if (row.hasClass("new_row")) {
 					content.find("input[name='attribute']").focus();
+					content.find('#updateAutoManagerModalHeader').children().toggle();
 				}
+				
 			},
 			
 			beforeClose: function() {
@@ -800,6 +802,260 @@ function refreshAutoManagerAssignmentRule(row, ruleID) {
 	row.find(".auto-manager-groups > span").text(ruleGroups.length);	
 }
 
+function addAutoManagerAssignmentStatusRule(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var clone = $("#auto-manager-status-rule-template").clone();
+	var ruleID = (function() {
+		var chars = '0123456789abcdef'.split('');
+		var uuid = [], rnd = Math.random;
+		var r;
+		uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+		uuid[14] = '4';
+		for (var i = 0; i < 36; i++) {
+			if (!uuid[i]) {
+				r = 0 | rnd()*16;
+				uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+			}
+		}
+		return uuid.join('');
+	})();
+	
+	clone.attr("id", "");
+	clone.find("input[name='auto-manager-status-rule']").val(ruleID);
+	
+	clone.find("input").prop("disabled", false).each(function() {
+		
+		var input = $(this);
+		
+		if (input.attr("name").lastIndexOf("auto-manager-status-rule-", 0) === 0) { // Starts with
+			
+			input.attr("name", input.attr("name") + "-" + ruleID);
+		}
+	});
+	
+	clone.insertBefore($("#auto-manager-status-rule-template"));
+	clone.show();
+	
+	clone.find("a.open-auto-manager-status-modal").click();
+}
+
+function removeAutoManagerAssignmentStatusRule(button, event, text) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (confirm(text)) {
+		$(button).closest(".auto-manager-status-rule").remove();
+	}
+}
+
+function openAutoManagerAssignmentStatusRuleModal(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var modalContainer = $("#updateAutoManagerStatusModal"); 
+	var modal = modalContainer.find(".auto-manager-status-modal");
+	var row = $(button).closest("tr.auto-manager-status-rule");
+	
+	var ruleID = row.find("input[name='auto-manager-status-rule']").val();
+	
+	var config = {
+			otherClose: '.close',
+			
+			beforeOpen: function() {
+				
+				modal.find("input.ui-autocomplete-input").autocomplete("destroy");
+				
+				modal.find("input, select, textarea").each(function() {
+					
+					var input = $(this);
+					var savedInput = row.find("input[name^='auto-manager-status-rule-" + input.prop("name") + "-" + ruleID + "']");
+					
+					if (savedInput.length > 0) {
+						
+						if (input.attr("type") == "checkbox") {
+							input.prop("checked", savedInput.val() == "true");
+							
+						} else if (input.attr("type") == "textarea") {
+							input.text(avedInput.val());
+							
+						} else {
+							input.val(savedInput.val());
+						}
+					}
+				});
+				
+				// Move user-group-list data
+				var userList = $("#status-template-user-list");
+				var groupList = $("#status-template-group-list");
+				userList.find(".status-template-user-list-entry").remove();
+				groupList.find(".status-template-group-list-entry").remove();
+				
+				row.find(".auto-manager-users .status-template-user-list-entry").appendTo(userList);
+				row.find(".auto-manager-groups .status-template-group-list-entry").appendTo(groupList);
+			},
+			
+			afterContent: function() {
+				var feather = this;
+				var content = feather.$content; 
+				content.removeClass("no-sections");
+				feather.$instance.addClass("ui-front");
+				
+				modal.detach();
+				
+				content.find(".usergroup-list").each(function() {
+					initUserGroupList($(this));
+				});
+				
+				var $statusName = content.find("#statusName");
+				
+				if (row.hasClass("new_row")) {
+					
+					content.find('#updateAutoManagerStatusModalHeader').children().toggle();
+				}
+				
+				var url = $statusName.parent().data('connectorUrl');
+				 
+				$statusName.autocomplete({
+					source: function(request, response) {
+						return getStatuses(response, url, $statusName);
+					},
+					select: function( event, ui ) {
+						
+						$statusName.val(ui.item.value);
+						return false;
+					},
+					focus: function(event, ui) {
+				       event.preventDefault();
+				   }
+				});
+				 
+				$statusName.on('focus', function(){
+						
+					$(this).autocomplete('search', ' ');
+				});
+				 
+				content.find('#addManagers').change(function(){
+					
+					 content.find('#updateAutoManagerStatusManagerContainer').toggle(this.checked);
+					 
+				}).change();
+			},
+			
+			beforeClose: function() {
+				var feather = this;
+				var content = feather.$content;
+				var addManagers = content.find('#addManagers');
+				
+				// Destroy and remove listeners
+				content.find("input.ui-autocomplete-input").autocomplete("destroy");
+				content.find(".usergroup-list").off("change");
+				
+				var users = content.find(".status-template-user-list-entry"); 
+				var groups = content.find(".status-template-group-list-entry");
+				
+				if (!users.length && !groups.length) {
+					
+					addManagers.prop('checked', false);
+				}
+				
+				users.find("a.delete").off("click");
+				groups.find("a.delete").off("click");
+				
+				// Copy values to row
+				if (row.hasClass("new_row") && content.find("input[name='statusName']").val() == "") {
+					
+					row.remove();
+					
+				} else {
+					
+					row.removeClass("new_row");
+					
+					content.find("input, select, textarea").each(function() {
+						
+						var input = $(this);
+						var val;
+						
+						if (input.attr("type") == "checkbox") {
+							val = input.prop("checked");
+							
+						} else if (input.attr("type") == "textarea") {
+							val = input.text();
+							
+						} else {
+							val = input.val();
+						}
+						
+						row.find("input[name^='auto-manager-status-rule-" + input.prop("name") + "-" + ruleID + "']").val(val);
+					});
+					
+					// Move user-group-list data
+					var rowUserList = row.find(".auto-manager-users > div");
+					var rowGroupList = row.find(".auto-manager-groups > div");
+					rowUserList.find(".status-template-user-list-entry").remove();
+					rowGroupList.find(".status-template-group-list-entry").remove();
+					
+					users.find("input").attr("disabled", true);
+					groups.find("input").attr("disabled", true);
+					
+					var userIDs = "";
+					var groupIDs = "";
+
+					if (addManagers.is(':checked')) {
+						
+						users = users.appendTo(rowUserList);
+						groups = groups.appendTo(rowGroupList);
+
+						users.find("input[name='status-template-user']").each(function(index){
+							var input = $(this);
+							
+							if (index > 0) {
+								userIDs += ",";
+							}
+							
+							userIDs += input.val();
+						});
+						
+						groups.find("input[name='status-template-group']").each(function(index){
+							var input = $(this);
+							
+							if (index > 0) {
+								groupIDs += ",";
+							}
+							
+							groupIDs += input.val();
+						});
+					}
+					
+					row.find("input[name='auto-manager-status-rule-users-" + ruleID + "']").val(userIDs);
+					row.find("input[name='auto-manager-status-rule-groups-" + ruleID + "']").val(groupIDs);
+					
+					refreshAutoManagerAssignmentStatusRule(row, ruleID);
+				}
+				
+				modalContainer.append(modal);
+			},
+	};
+	
+	$.featherlight(modal, config);
+}
+
+function refreshAutoManagerAssignmentStatusRule(row, ruleID) {
+	
+	var ruleStatusName = row.find("input[name='auto-manager-status-rule-statusName-" + ruleID + "']").val();
+	var ruleAddManagers = row.find("input[name='auto-manager-status-rule-addManagers-" + ruleID + "']").val();
+	var ruleUsers = row.find(".auto-manager-users .status-template-user-list-entry");
+	var ruleGroups = row.find(".auto-manager-groups .status-template-group-list-entry");
+	var ruleRemovePreviousManagers = row.find("input[name='auto-manager-status-rule-removePreviousManagers-" + ruleID + "']").val();
+	
+	row.find(".auto-manager-status-name").text(ruleStatusName);
+	row.find(".auto-manager-add-managers > span").toggle(ruleAddManagers == "true");
+	row.find(".auto-manager-users > span").text(ruleUsers.length);
+	row.find(".auto-manager-groups > span").text(ruleGroups.length);	
+	row.find(".auto-manager-remove-previous-managers > span").toggle(ruleRemovePreviousManagers == "true");
+}
+
 function generateUUID() {
 	
 	var chars = '0123456789abcdef'.split('');
@@ -870,3 +1126,35 @@ function deleteOverviewAttribute(button, event) {
 	}
 }
 
+function getStatuses(response, searchURL, searchInput) {
+	
+	searchInput.addClass("ui-autocomplete-loading");
+	
+	$.ajax({
+		url : searchURL,
+		dataType : "json",
+		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+		success : function(data) {
+			
+			if (data.hits != undefined && data.hits.length > 0) {
+				
+				response($.map(data.hits, function(item) {
+					
+					return {
+						label : item,
+						value : item,
+					}
+				}));
+			} else {
+				response(null);
+			}
+			
+			searchInput.removeClass("ui-autocomplete-loading");
+			
+		},
+		error : function() {
+			
+			searchInput.removeClass("ui-autocomplete-loading");
+		}
+	});
+}

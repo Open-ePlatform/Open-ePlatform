@@ -2223,4 +2223,51 @@
 		</Query>
 	</Script>
 	
+	<Script version="124">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_status_rules` (
+					`ruleID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`statusName` VARCHAR(255) NOT NULL,
+					`addManagers` TINYINT UNSIGNED NOT NULL,
+					`removePreviousManagers` TINYINT UNSIGNED NOT NULL,
+					PRIMARY KEY (`ruleID`),
+					INDEX `FK_flowengine_flow_family_automanager_status_rules_1` (`flowFamilyID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_status_rules_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_status_rule_users` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`ruleID`, `userID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_status_rule_users_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_status_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_status_rule_groups` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`ruleID`, `groupID`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_status_rule_groups_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_status_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

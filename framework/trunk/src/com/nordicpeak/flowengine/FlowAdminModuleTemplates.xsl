@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=4
+		/js/flowadminmodule.js?v=5
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -6227,13 +6227,19 @@
 		<p><xsl:value-of select="$i18n.AutoManagerAssignment.description"/></p>
 
 		<xsl:apply-templates select="ValidationErrors/validationError" />
-
+		
+		<br/>
+		
 		<form class="automanagerassignment" method="post" action="{/Document/requestinfo/uri}">
-			
+
+			<h2 class="bigmargintop bigmarginbottom">
+				<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
+			</h2>
+
 			<fieldset id="auto-manager-rules" class="clearboth">
 				<legend><xsl:value-of select="$i18n.AutoManagerAssignment.Rules"/></legend>
 				
-				<table class="full oep-table">
+				<table class="full oep-table word-break-all">
 					<thead>
 						<tr>
 							<th class="twenty"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.AttributeName" /></th>
@@ -6298,9 +6304,12 @@
 				<div class="auto-manager-modal contentitem">
 					<div class="modal-content">
 					
-						<div class="modal-header bigmarginbottom">
+						<div id="updateAutoManagerModalHeader" class="modal-header bigmarginbottom">
 							<h1>
 								<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Update" />
+							</h1>
+							<h1 class="hidden">
+								<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Add" />
 							</h1>
 						</div>
 						
@@ -6496,7 +6505,189 @@
 				</div>
 			</fieldset>
 			
-			<div class="floatright">
+			<br/>
+			
+			<h2 class="bigmargintop bigmarginbottom">
+				<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+			</h2>
+			
+			<fieldset id="auto-manager-status-rules" class="clearboth">
+				<legend><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules"/></legend>
+				
+				<table class="full oep-table word-break-all">
+					<thead>
+						<tr>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.StatusName" /></th>
+							<th style="width: 150px;"><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" /></th>
+							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
+							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
+							<th style="width: 220px;"><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" /></th>
+							<th style="width: 37px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						
+						<xsl:apply-templates select="FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule" />
+						
+						<tr id="auto-manager-status-rule-template" class="auto-manager-status-rule new_row" style="display: none;">
+				
+							<td class="auto-manager-status-name" />
+							<td class="auto-manager-add-managers">
+								<span>
+									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" />
+								</span>
+							</td>
+							<td class="auto-manager-users">
+								<span />
+								<div style="display: none;" />
+							</td>
+							<td class="auto-manager-groups">
+								<span />
+								<div style="display: none;" />
+							</td>
+							<td class="auto-manager-remove-previous-managers">
+								<span>
+									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" />
+								</span>
+							</td>
+							
+							<td>
+								<input type="hidden" disabled="true" name="auto-manager-status-rule" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-statusName" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-addManagers" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-users" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-groups" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-removePreviousManagers" value="" />
+							
+								<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
+									<img src="{$imgPath}/pen.png" alt="" />
+								</a>
+								<a class="" href="#" onclick="removeAutoManagerAssignmentStatusRule(this, event, '{$i18n.AutoManagerAssignment.Rule.DeleteConfirm}?')" title="{$i18n.AutoManagerAssignment.Rule.Delete}">
+									<img src="{$imgPath}/delete.png"/>
+								</a>
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+				
+				<a class="floatright marginright" href="#" onclick="addAutoManagerAssignmentStatusRule(this, event)" title="{$i18n.AutoManagerAssignment.Rules.Add}">
+					<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Add"/>
+					<img class="marginleft vertical-align-middle" src="{$imgPath}/add.png" alt="" />
+				</a>
+				
+			</fieldset>
+			
+			<div id="updateAutoManagerStatusModal" style="display: none;" >
+				
+				<div class="auto-manager-status-modal contentitem">
+					<div class="modal-content">
+					
+						<div id="updateAutoManagerStatusModalHeader" class="modal-header bigmarginbottom">
+							<h1>
+								<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Update" />
+							</h1>
+							<h1 class="hidden">
+								<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Add" />
+							</h1>
+						</div>
+						
+						<div class="modal-body">
+						
+							<div class="floatleft full bigmarginbottom">
+							
+								<label for="attribute" class="floatleft full">
+									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.StatusName" />
+								</label>
+								
+								<div class="floatleft full" data-connector-url="{/Document/requestinfo/currentURI}/{/Document/module/alias}/statuses/{Flow/flowID}">
+									<xsl:call-template name="createTextField">
+										<xsl:with-param name="id" select="'statusName'"/>
+										<xsl:with-param name="name" select="'statusName'"/>
+									</xsl:call-template>
+								</div>
+							</div>
+							
+							<div class="floatleft full bigmarginbottom">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'addManagers'" />
+										<xsl:with-param name="id" select="'addManagers'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="addManagers">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.AddManagers" />
+									</label>
+								</div>
+							</div>
+							
+							<div id="updateAutoManagerStatusManagerContainer" class="floatleft full usergrouplist-split marginbottom hidden">
+				
+								<div class="floatleft bigmarginright">
+									
+									<label class="">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Users" />
+									</label>
+									
+									<xsl:call-template name="UserList">
+										<xsl:with-param name="connectorURL">
+											<xsl:value-of select="/Document/requestinfo/currentURI"/>
+											<xsl:text>/</xsl:text>
+											<xsl:value-of select="/Document/module/alias"/>
+											<xsl:text>/managerusers/</xsl:text>
+											<xsl:value-of select="Flow/flowID"/>
+										</xsl:with-param>
+										<xsl:with-param name="name" select="'status-template-user'"/>
+									</xsl:call-template>
+								
+								</div>
+								
+								<div class="floatleft">
+								
+									<label class="">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+									</label>
+													
+									<xsl:call-template name="GroupList">
+										<xsl:with-param name="connectorURL">
+											<xsl:value-of select="/Document/requestinfo/currentURI"/>
+											<xsl:text>/</xsl:text>
+											<xsl:value-of select="/Document/module/alias"/>
+											<xsl:text>/managergroups/</xsl:text>
+											<xsl:value-of select="Flow/flowID"/>
+										</xsl:with-param>
+										<xsl:with-param name="name" select="'status-template-group'"/>
+									</xsl:call-template>
+									
+								</div>
+								
+							</div>
+														
+							<div class="floatleft full bigmarginbottom">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'removePreviousManagers'" />
+										<xsl:with-param name="id" select="'removePreviousManagers'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="removePreviousManagers">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.RemovePreviousManagers" />
+									</label>
+								</div>
+							</div>
+							
+							<input class="close bigmargintop floatright" type="button" value="{$i18n.AutoManagerAssignment.Rule.Save}" />
+							
+						</div>
+						
+					</div>
+				</div>
+			
+			</div>			
+			
+			<div class="floatright bigmargintop">
 				<input type="submit" value="{$i18n.AutoManagerAssignment.submit}" />
 			</div>
 		
@@ -6653,6 +6844,124 @@
 					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
 				<a class="" href="#" onclick="removeAutoManagerAssignmentRule(this, event, '{$i18n.AutoManagerAssignment.Rule.DeleteConfirm}?')" title="{$i18n.AutoManagerAssignment.Rule.Delete}">
+					<img src="{$imgPath}/delete.png"/>
+				</a>
+			</td>
+			
+		</tr>
+	
+	</xsl:template>
+	
+	<xsl:template match="AutoManagerAssignmentStatusRule">
+		<xsl:param name="requestparameters" select="../../../requestparameters"/>
+		
+		<tr class="auto-manager-status-rule">
+		
+			<xsl:variable name="ruleID">
+				<xsl:choose>
+					<xsl:when test="ruleID">
+						<xsl:value-of select="ruleID"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="generatedRuleID"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+		
+			<xsl:variable name="statusName">
+				<xsl:choose>
+					<xsl:when test="$requestparameters">
+						<xsl:value-of select="$requestparameters/parameter[name = concat('auto-manager-status-rule-statusName-', $ruleID)]/value" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="statusName" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<td class="auto-manager-status-name">
+				<xsl:value-of select="$statusName" />
+			</td>
+			<td class="auto-manager-add-managers">
+				<span>
+					<xsl:if test="not(addManagers = 'true')">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" />
+				</span>
+			</td>
+			<td class="auto-manager-users">
+				<span>
+					<xsl:value-of select="count(UserIDs/*)" />
+				</span>
+				<div style="display: none;">
+					<xsl:apply-templates select="Users/user" mode="userlist-fromXML">
+						<xsl:with-param name="prefix" select="'status-template-user'" />
+						<xsl:with-param name="showEmail" select="false()" />
+						<xsl:with-param name="showUsername" select="true()" />
+						<xsl:with-param name="document" select="/Document" />
+						<xsl:with-param name="showUserURL" select="null" />
+						<xsl:with-param name="useExternalIcons" select="null"/>
+					</xsl:apply-templates>
+				</div>
+			</td>
+			<td class="auto-manager-groups">
+				<span>
+					<xsl:value-of select="count(GroupIDs/*)" />
+				</span>
+				<div style="display: none;">
+					<xsl:apply-templates select="Groups/group" mode="grouplist-fromXML">
+						<xsl:with-param name="prefix" select="'status-template-group'" />
+						<xsl:with-param name="document" select="/Document" />
+						<xsl:with-param name="useExternalIcons" select="null"/>
+					</xsl:apply-templates>
+				</div>
+			</td>
+			<td class="auto-manager-remove-previous-managers">
+				<span>
+					<xsl:if test="not(removePreviousManagers = 'true')">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" />
+				</span>
+			</td>
+			
+			<td>
+				<xsl:variable name="userIDs">
+					<xsl:for-each select="UserIDs/*">
+						
+						<xsl:if test="position() > 1">
+							<xsl:text>,</xsl:text>
+						</xsl:if>
+						
+						<xsl:value-of select="."/>
+						
+					</xsl:for-each>
+				</xsl:variable>
+				
+				<xsl:variable name="groupIDs">
+					<xsl:for-each select="GroupIDs/*">
+					
+						<xsl:if test="position() > 1">
+							<xsl:text>,</xsl:text>
+						</xsl:if>
+						
+						<xsl:value-of select="."/>
+					
+					</xsl:for-each>
+				</xsl:variable>
+				
+				<input type="hidden" name="auto-manager-status-rule" value="{$ruleID}" />
+				<input type="hidden" name="auto-manager-status-rule-statusName-{$ruleID}" value="{$statusName}" />
+				<input type="hidden" name="auto-manager-status-rule-addManagers-{$ruleID}" value="{addManagers}" />
+				<input type="hidden" name="auto-manager-status-rule-users-{$ruleID}" value="{$userIDs}" />
+				<input type="hidden" name="auto-manager-status-rule-groups-{$ruleID}" value="{$groupIDs}" />
+				<input type="hidden" name="auto-manager-status-rule-removePreviousManagers-{$ruleID}" value="{removePreviousManagers}" />
+			
+				<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
+					<img src="{$imgPath}/pen.png" alt="" />
+				</a>
+				<a class="" href="#" onclick="removeAutoManagerAssignmentStatusRule(this, event, '{$i18n.AutoManagerAssignment.Rule.DeleteConfirm}?')" title="{$i18n.AutoManagerAssignment.Rule.Delete}">
 					<img src="{$imgPath}/delete.png"/>
 				</a>
 			</td>
@@ -7491,6 +7800,38 @@
 		</p>
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='DuplicateStatusRule']">
+		<p class="error">
+					
+			<xsl:variable name="id" select="substring(fieldName, 37)" />
+			
+			<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+			<xsl:text>:&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.DuplicateStatusRule"/>
+						
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='NoActionsSelected']">
+		<p class="error">
+					
+			<xsl:variable name="id" select="substring(fieldName, 26)" />
+			
+			<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+			<xsl:text>:&#160;</xsl:text>
+			<xsl:value-of select="$i18n.ValidationError.NoActionsSelected"/>
+						
+		</p>
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
 			<p class="error">
@@ -7679,6 +8020,8 @@
 					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-attribute-')">
 						<xsl:variable name="id" select="substring(fieldName, 29)" />
 						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
+						<xsl:text>&#160;</xsl:text>						
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7689,6 +8032,8 @@
 					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-values-')">
 						<xsl:variable name="id" select="substring(fieldName, 26)" />
 						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
+						<xsl:text>&#160;</xsl:text>							
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7700,7 +8045,9 @@
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-users-')">
 						<xsl:variable name="id" select="substring(fieldName, 25)" />
-						
+							
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
+						<xsl:text>&#160;</xsl:text>						
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7713,6 +8060,8 @@
 					<xsl:when test="starts-with(fieldName, 'auto-manager-rule-groups-')">
 						<xsl:variable name="id" select="substring(fieldName, 26)" />
 						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
+						<xsl:text>&#160;</xsl:text>							
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7720,6 +8069,19 @@
 						<xsl:value-of select="../../requestparameters/parameter[name = concat('auto-manager-rule-attribute-', $id)]/value" />
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
+						
+					</xsl:when>
+					
+					<xsl:when test="starts-with(fieldName, 'auto-manager-status-rule-statusName-')">
+						<xsl:variable name="id" select="substring(fieldName, 37)" />
+			
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.StatusName" />
 						
 					</xsl:when>
 					

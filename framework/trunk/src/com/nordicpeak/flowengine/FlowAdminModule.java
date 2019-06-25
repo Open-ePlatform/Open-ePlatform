@@ -111,6 +111,7 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.base64.Base64;
+import se.unlogic.standardutils.bool.BooleanUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -129,6 +130,9 @@ import se.unlogic.standardutils.image.ImageUtils;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
+import se.unlogic.standardutils.json.JsonArray;
+import se.unlogic.standardutils.json.JsonObject;
+import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
@@ -157,6 +161,7 @@ import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.accesscontrollers.AdminUserFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
 import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
@@ -269,6 +274,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
 			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
 	};
 	
@@ -301,6 +307,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
+			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
 			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
 			
 			FlowType.CATEGORIES_RELATION,
@@ -4747,6 +4754,61 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		throw new URINotFoundException(uriParser);
 	}
 
+	@WebPublic(alias = "statuses")
+	public ForegroundModuleResponse getStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		Integer flowID;
+		Flow flow;
+
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
+
+			flowCRUD.checkAccess(user, flow);
+
+			if (CollectionUtils.isEmpty(flow.getStatuses())) {
+
+				sendEmptyJSONResponse(res);
+				return null;
+			}
+			
+			Set<String> statusNames = new HashSet<>();
+
+			for (Status status : flow.getStatuses()) {
+				
+				statusNames.add(status.getName());
+			}
+
+			log.info("User " + user + " getting statuses for flow " + flow + ", found " + statusNames.size() + " hits");
+			
+			List<String> sortedStatusNames = new ArrayList<>(statusNames);
+			Collections.sort(sortedStatusNames);
+			
+			JsonArray jsonArray = new JsonArray();
+
+			sortedStatusNames.forEach(jsonArray::addNode);
+			
+			sendJSONResponse(jsonArray, res);
+			return null;
+		}
+
+		sendEmptyJSONResponse(res);
+		return null;
+	}
+
+	protected static void sendEmptyJSONResponse(HttpServletResponse res) throws IOException {
+		
+		JsonObject jsonObject = new JsonObject(1);
+		jsonObject.putField("hitCount", "0");
+		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
+	}
+	
+	protected void sendJSONResponse(JsonArray jsonArray, HttpServletResponse res) throws IOException {
+		
+		JsonObject jsonObject = new JsonObject(2);
+		jsonObject.putField("hitCount", Integer.toString(jsonArray.size()));
+		jsonObject.putField("hits", jsonArray);
+		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
+	}
+
 	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws IOException, ModuleConfigurationException, URINotFoundException {
 
 		if (!StringUtils.isEmpty(flowForm.getExternalURL())) {
@@ -5685,14 +5747,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			List<Group> noMatchGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null);
 			List<User> alwaysUsers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null);
 			List<Group> alwaysGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null);
-			
-			if (flowFamily.getAutoManagerAssignmentRules() != null) {
-				
-				for (AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
-					
-					rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
-				}
-			}
+
+			setRuleUsersAndGroups(flowFamily, allowedManagers, allowedManagerGroups);
 			
 			List<ValidationError> validationErrors = null;
 			
@@ -5820,6 +5876,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
 				}
 				
+				setAutoManagerAssignmentStatusRules(req, flowFamily, allowedManagers, allowedManagerGroups, validationErrors);
+				
 				if (validationErrors.isEmpty()) {
 
 					log.info("User " + user + " updating auto manager assignment settings for " + flow);
@@ -5829,7 +5887,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					try {
 						transactionHandler = daoFactory.getFlowFamilyDAO().createTransaction();
 
-						RelationQuery updateQuery = new RelationQuery(FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION);
+						RelationQuery updateQuery = new RelationQuery(FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION);
 						daoFactory.getFlowFamilyDAO().update(flowFamily, transactionHandler, updateQuery);
 						
 						transactionHandler.commit();
@@ -5843,6 +5901,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					} finally {
 						TransactionHandler.autoClose(transactionHandler);
 					}
+					
+				} else {
+					
+					cacheFlowFamilies(Collections.singletonList(flowFamily.getFlowFamilyID()));
 				}
 			}
 			
@@ -5874,6 +5936,145 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		throw new URINotFoundException(uriParser);
+	}
+	
+	private void setRuleUsersAndGroups(FlowFamily flowFamily, List<User> allowedManagers, List<Group> allowedManagerGroups) {
+		
+		if (flowFamily.getAutoManagerAssignmentRules() != null) {
+			
+			for (AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
+				
+				rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
+			}
+		}
+		
+		if (flowFamily.getAutoManagerAssignmentStatusRules() != null) {
+			
+			for (AutoManagerAssignmentStatusRule rule : flowFamily.getAutoManagerAssignmentStatusRules()) {
+				
+				rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
+			}
+		}
+	}
+	
+	private void setAutoManagerAssignmentStatusRules(HttpServletRequest req, FlowFamily flowFamily, List<User> allowedManagers, List<Group> allowedManagerGroups, List<ValidationError> validationErrors) {
+		
+		String[] ruleIDs = req.getParameterValues("auto-manager-status-rule");
+		List<AutoManagerAssignmentStatusRule> rules = null;
+		
+		if (ruleIDs != null) {
+			
+			rules = new ArrayList<AutoManagerAssignmentStatusRule>();
+			
+			for (String ruleID : ruleIDs) {
+				
+				AutoManagerAssignmentStatusRule rule = new AutoManagerAssignmentStatusRule();
+				
+				rule.setGeneratedRuleID(ruleID);
+				
+				String statusName = ValidationUtils.validateParameter("auto-manager-status-rule-statusName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
+				boolean addManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-addManagers-" + ruleID));
+				boolean removePreviousManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-removePreviousManagers-" + ruleID));
+				
+				if (containsRuleWithStatusName(rules, statusName)) {
+					
+					validationErrors.add(new ValidationError("auto-manager-status-rule-statusName-" + ruleID, ValidationErrorType.Other, "DuplicateStatusRule"));
+				}
+				
+				if (BooleanUtils.isFalse(addManagers, removePreviousManagers)) {
+					
+					validationErrors.add(new ValidationError("auto-manager-status-rule-" + ruleID, ValidationErrorType.Other, "NoActionsSelected"));
+				}
+			
+				rule.setStatusName(statusName);
+				rule.setAddManagers(addManagers);
+				rule.setRemovePreviousManagers(removePreviousManagers);
+				
+				if (addManagers) {
+					
+					String usersIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
+					String groupIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
+					
+					List<Integer> userIDs = new ArrayList<Integer>();
+					List<Integer> groupIDs = new ArrayList<Integer>();
+					
+					if (!StringUtils.isEmpty(usersIDsString)) {
+						
+						String[] splitUsersIDs = usersIDsString.split(",");
+						
+						for (String userIDS : splitUsersIDs) {
+							
+							Integer userID = NumberUtils.toInt(userIDS);
+							
+							if (userID != null) {
+								
+								userIDs.add(userID);
+								
+							} else {
+								
+								validationErrors.add(new ValidationError("auto-manager-status-rule-users-" + ruleID, ValidationErrorType.InvalidFormat));
+							}
+						}
+					}
+					
+					if (!StringUtils.isEmpty(groupIDsString)) {
+						
+						String[] splitGroupIDs = groupIDsString.split(",");
+						
+						for (String groupIDS : splitGroupIDs) {
+							
+							Integer groupID = NumberUtils.toInt(groupIDS);
+							
+							if (groupID != null) {
+								
+								groupIDs.add(groupID);
+								
+							} else {
+								
+								validationErrors.add(new ValidationError("auto-manager-status-rule-groups-" + ruleID, ValidationErrorType.InvalidFormat));
+							}
+						}
+					}
+					
+					userIDs = CollectionUtils.removeDuplicates(userIDs);
+					groupIDs = CollectionUtils.removeDuplicates(groupIDs);
+					
+					List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
+					List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
+					
+					FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, users, userIDs, validationErrors);
+					FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, groups, groupIDs, validationErrors);
+					
+					rule.setUsers(users);
+					rule.setGroups(groups);
+					
+				} else {
+					
+					rule.setUsers(null);
+					rule.setGroups(null);
+				}
+				
+				rules.add(rule);
+			}		
+		}
+		
+		flowFamily.setAutoManagerAssignmentStatusRules(rules);
+	}
+
+	private boolean containsRuleWithStatusName(List<AutoManagerAssignmentStatusRule> rules, String statusName) {
+		
+		if (!CollectionUtils.isEmpty(rules)) {
+			
+			for (AutoManagerAssignmentStatusRule rule : rules) {
+				
+				if (rule.getStatusName() != null && rule.getStatusName().equalsIgnoreCase(statusName)) {
+					
+					return true;
+				}
+			}			
+		}
+		
+		return false;
 	}
 	
 	@WebPublic(requireLogin = true)

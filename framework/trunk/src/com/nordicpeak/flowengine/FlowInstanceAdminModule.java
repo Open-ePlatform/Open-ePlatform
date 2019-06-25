@@ -86,6 +86,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.accesscontrollers.ManagerFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
+import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
@@ -2211,6 +2212,125 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			} catch (SQLException e) {
 
 				log.error("Error getting flow instance with managers and events for " + event.getFlowInstanceManager(), e);
+			}
+		}
+	}
+
+	@se.unlogic.hierarchy.core.annotations.EventListener(channel = FlowInstance.class)
+	public void processEvent(StatusChangedByManagerEvent event, EventSource source) {
+
+		log.debug("Received status changed by manager event regarding " + event.getFlowInstance());
+
+		if (source == EventSource.LOCAL) {
+
+			FlowInstance flowInstance;
+			try {
+
+				flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION);
+
+			} catch (SQLException e) {
+
+				log.error("Error getting flow instance with managers and events for " + event, e);
+				return;
+			}
+			
+			ImmutableFlowFamily flowFamily = flowInstance.getFlow().getFlowFamily();
+
+			if (!CollectionUtils.isEmpty(flowFamily.getAutoManagerAssignmentStatusRules())) {
+
+				AutoManagerAssignmentStatusRule matchingRule = null;
+				
+				for (AutoManagerAssignmentStatusRule rule : flowFamily.getAutoManagerAssignmentStatusRules()) {
+
+					if (flowInstance.getStatus().getName().equalsIgnoreCase(rule.getStatusName())) {
+					
+						matchingRule = rule;
+						break;
+					}
+				}
+				
+				if (matchingRule != null) {
+					
+					try {
+						
+						if (!matchingRule.isAddManagers() && !matchingRule.isRemovePreviousManagers()) {
+							
+							return;
+						}
+						
+						List<User> previousManagers = flowInstance.getManagers();
+						List<Group> previousManagerGroups = flowInstance.getManagerGroups();
+						
+						if (matchingRule.isAddManagers()) {
+							
+							List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, systemInterface.getUserHandler());
+							List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
+							
+							Set<User> managers = new HashSet<User>();
+							Set<Group> managerGroups = new HashSet<Group>();
+
+							if (!matchingRule.isRemovePreviousManagers()) {
+								
+								CollectionUtils.add(managers, previousManagers);
+								CollectionUtils.add(managerGroups, previousManagerGroups);
+							}
+							
+							List<User> newManagers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, matchingRule.getUserIDs(), null);
+							List<Group> newManagerGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, matchingRule.getGroupIDs(), null);
+							
+							CollectionUtils.add(managers, newManagers);
+							CollectionUtils.add(managerGroups, newManagerGroups);
+							
+							flowInstance.setManagers(new ArrayList<User>(managers));
+							flowInstance.setManagerGroups(new ArrayList<Group>(managerGroups));
+							
+							Collections.sort(flowInstance.getManagers(), UserNameComparator.getInstance());
+							Collections.sort(flowInstance.getManagerGroups(), GroupNameComparator.getInstance());
+							
+						} else if (matchingRule.isRemovePreviousManagers()) {
+							
+							if (ObjectUtils.isNull(previousManagers, previousManagerGroups)) {
+								
+								return;
+							}
+							
+							flowInstance.setManagers(null);
+							flowInstance.setManagerGroups(null);
+						}
+						
+						if (CollectionUtils.equals(previousManagers, flowInstance.getManagers()) && CollectionUtils.equals(previousManagerGroups, flowInstance.getManagerGroups())) {
+							
+							return;
+						}
+						
+						String detailString = null;
+						
+						if (CollectionUtils.isEmpty(flowInstance.getManagers()) && CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
+							
+							log.warn("Removing managers of instance " + flowInstance);
+							
+						} else {
+							
+							detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
+							
+							log.warn("Automatically setting managers of instance " + flowInstance + " to " + detailString);
+						}
+						
+						RelationQuery updateQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
+						updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
+						daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
+						
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
+						
+						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, null), EventTarget.ALL);
+						
+					} catch (SQLException e) {
+						
+						log.error("Error updating flow instance with new managers for " + matchingRule, e);
+						
+					}	
+				}
 			}
 		}
 	}
