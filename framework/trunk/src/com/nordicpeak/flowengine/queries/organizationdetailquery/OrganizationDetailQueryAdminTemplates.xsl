@@ -10,7 +10,12 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
-	</xsl:variable>	
+	</xsl:variable>
+	
+	<xsl:variable name="scripts">
+		/js/organizationdetailqueryadmin.js
+	</xsl:variable>
+		
 
 	<xsl:template match="Document">	
 		
@@ -39,6 +44,18 @@
 			
 				<label class="floatleft clearboth"><xsl:value-of select="$i18n.ContactChannelSettings" /></label>
 							
+			</div>			
+
+			<div class="floatleft full marginbottom">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'hideNotificationChannelSettings'" />
+					<xsl:with-param name="name" select="'hideNotificationChannelSettings'" />
+					<xsl:with-param name="value" select="'true'" />
+					<xsl:with-param name="element" select="OrganizationDetailQuery" />
+				</xsl:call-template>
+				<label for="hideNotificationChannelSettings">
+					<xsl:value-of select="$i18n.HideNotificationChannelSettings" />
+				</label>
 			</div>
 			
 			<div class="floatleft full marginbottom">

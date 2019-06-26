@@ -671,7 +671,7 @@
 				
 				</xsl:if>
 				
-				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN')">
+				<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/hideNotificationChannelSettings = 'false' and (not(ContactDetailQueryInstance/ContactDetailQuery/fieldEmail = 'HIDDEN') or not(ContactDetailQueryInstance/ContactDetailQuery/fieldMobilePhone = 'HIDDEN'))">
 				
 					<fieldset class="notification-channel-settings">
 					

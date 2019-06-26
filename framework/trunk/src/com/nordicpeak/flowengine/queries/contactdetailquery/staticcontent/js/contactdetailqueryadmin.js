@@ -5,16 +5,17 @@ $(document).ready(function() {
 	var fieldAddress = $("#fieldAddress");
 	var fieldEmail = $("#fieldEmail");
 	var allowSMS = $("#allowSMS");
+	var hideNotificationChannelSettings = $("#hideNotificationChannelSettings");
 	
 	var showHideRequireAtLeastOneContactWay = function() {
 		
-		var visible = !allowSMS.prop("disabled") && allowSMS.prop("checked") && fieldMobilePhone.val() != "HIDDEN" && fieldEmail.val() == "VISIBLE";
+		var visible = !allowSMS.prop("disabled") && allowSMS.prop("checked") && fieldMobilePhone.val() != "HIDDEN" && fieldEmail.val() == "VISIBLE" && !hideNotificationChannelSettings.prop("checked");
 		$("#requireAtLeastOneContactWay").prop("disabled", !visible).parent().toggle(visible);
 	}
 	
 	var showHideAllowSMS = function() {
 	
-		var visible = fieldMobilePhone.val() != "HIDDEN";
+		var visible = fieldMobilePhone.val() != "HIDDEN" && !hideNotificationChannelSettings.prop("checked");
 		allowSMS.prop("disabled", !visible).parent().toggle(visible);
 		
 		showHideRequireAtLeastOneContactWay();
@@ -39,5 +40,7 @@ $(document).ready(function() {
 	fieldAddress.change(showHideLockAddress);
 	allowSMS.change(showHideRequireAtLeastOneContactWay);
 	fieldEmail.change(showHideRequireAtLeastOneContactWay);
+	hideNotificationChannelSettings.change(showHideAllowSMS);
+	hideNotificationChannelSettings.change(showHideRequireAtLeastOneContactWay);
 });
 

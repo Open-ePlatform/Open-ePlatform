@@ -287,5 +287,13 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="26">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_queries` ADD COLUMN `hideNotificationChannelSettings` BOOLEAN NOT NULL AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

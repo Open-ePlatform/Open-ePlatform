@@ -245,6 +245,18 @@
 			
 			<div class="floatleft full marginbottom">
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'hideNotificationChannelSettings'" />
+					<xsl:with-param name="name" select="'hideNotificationChannelSettings'" />
+					<xsl:with-param name="value" select="'true'" />
+					<xsl:with-param name="element" select="ContactDetailQuery" />
+				</xsl:call-template>
+				<label for="hideNotificationChannelSettings">
+					<xsl:value-of select="$i18n.HideNotificationChannelSettings" />
+				</label>
+			</div>
+			
+			<div class="floatleft full marginbottom">
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="id" select="'allowSMS'" />
 					<xsl:with-param name="name" select="'allowSMS'" />
 					<xsl:with-param name="value" select="'true'" />

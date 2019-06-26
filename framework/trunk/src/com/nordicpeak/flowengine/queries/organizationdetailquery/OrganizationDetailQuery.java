@@ -34,8 +34,13 @@ public class OrganizationDetailQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean allowSMS;
+	private boolean hideNotificationChannelSettings;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean allowSMS;
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -73,11 +78,23 @@ public class OrganizationDetailQuery extends BaseQuery {
 	}
 
 	public boolean isAllowSMS() {
+
 		return allowSMS;
 	}
 
 	public void setAllowSMS(boolean allowSMS) {
+
 		this.allowSMS = allowSMS;
+	}
+	
+	public boolean isHideNotificationChannelSettings() {
+
+		return hideNotificationChannelSettings;
+	}
+
+	public void setHideNotificationChannelSettings(boolean hideNotificationChannelSettings) {
+
+		this.hideNotificationChannelSettings = hideNotificationChannelSettings;
 	}
 
 	@Override
@@ -100,20 +117,20 @@ public class OrganizationDetailQuery extends BaseQuery {
 	@Override
 	public void toXSD(Document doc) {
 
-		Element complexTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:complexType");
+		Element complexTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:complexType");
 		complexTypeElement.setAttribute("name", getXSDTypeName());
 
-		Element complexContentElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:complexContent");
+		Element complexContentElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:complexContent");
 		complexTypeElement.appendChild(complexContentElement);
 
-		Element extensionElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:extension");
+		Element extensionElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:extension");
 		extensionElement.setAttribute("base", "Query");
 		complexContentElement.appendChild(extensionElement);
 
-		Element sequenceElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:sequence");
+		Element sequenceElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:sequence");
 		extensionElement.appendChild(sequenceElement);
 
-		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+		Element nameElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		nameElement.setAttribute("name", "Name");
 		nameElement.setAttribute("type", "xs:string");
 		nameElement.setAttribute("minOccurs", "1");
@@ -132,7 +149,7 @@ public class OrganizationDetailQuery extends BaseQuery {
 		appendFieldDefenition("Email", false, doc, sequenceElement);
 		appendFieldDefenition("MobilePhone", false, doc, sequenceElement);
 
-		Element smsElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+		Element smsElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		smsElement.setAttribute("name", "ContactBySMS");
 		smsElement.setAttribute("type", "xs:boolean");
 		smsElement.setAttribute("minOccurs", "1");
@@ -144,7 +161,7 @@ public class OrganizationDetailQuery extends BaseQuery {
 
 	private void appendFieldDefenition(String name, boolean required, Document doc, Element sequenceElement) {
 
-		Element fieldElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema","xs:element");
+		Element fieldElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		fieldElement.setAttribute("name", name);
 		fieldElement.setAttribute("type", "xs:string");
 		fieldElement.setAttribute("minOccurs", required ? "1" : "0");
@@ -161,10 +178,11 @@ public class OrganizationDetailQuery extends BaseQuery {
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 
+		hideNotificationChannelSettings = xmlParser.getPrimitiveBoolean("hideNotificationChannelSettings");
 		allowSMS = xmlParser.getPrimitiveBoolean("allowSMS");
 		requireAddress = xmlParser.getPrimitiveBoolean("requireAddress");
 
-		if(!errors.isEmpty()){
+		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
@@ -172,12 +190,13 @@ public class OrganizationDetailQuery extends BaseQuery {
 	}
 
 	public boolean requiresAddress() {
-		
+
 		return requireAddress;
 	}
-	
+
 	public void setRequireAddress(boolean requireAddress) {
-	
+
 		this.requireAddress = requireAddress;
 	}
+
 }

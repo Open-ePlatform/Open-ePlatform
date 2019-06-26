@@ -22,6 +22,7 @@
 	
 	<xsl:variable name="i18n.ContactDetailQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	
+	<xsl:variable name="i18n.HideNotificationChannelSettings">Dölj notifikationsinställningarna</xsl:variable>
 	<xsl:variable name="i18n.AllowSMS">Tillåt notifieringar via SMS</xsl:variable>
 	
 	<xsl:variable name="i18n.ContactChannelSettings">Inställningar</xsl:variable>

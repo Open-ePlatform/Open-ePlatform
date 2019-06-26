@@ -108,4 +108,12 @@
 		</Query>
 	</Script>	
 	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries` ADD COLUMN `hideNotificationChannelSettings` BOOLEAN NOT NULL AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

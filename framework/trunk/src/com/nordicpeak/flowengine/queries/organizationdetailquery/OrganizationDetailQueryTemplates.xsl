@@ -574,44 +574,49 @@
 						</div>
 						
 					</fieldset>
+	
+					<xsl:if test="OrganizationDetailQueryInstance/OrganizationDetailQuery/hideNotificationChannelSettings = 'false'">
 					
-					<fieldset>
-					
-						<div>
-							<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
-						</div>
+						<fieldset>
 						
-						<div>
+							<div>
+								<strong class="block"><xsl:value-of select="$i18n.ChooseContactChannels" /></strong>
+							</div>
 							
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="id" select="concat($shortQueryID, '_contactByEmail')" />
-								<xsl:with-param name="name" select="concat($shortQueryID, '_contactByEmail')" />
-								<xsl:with-param name="value" select="'true'" />
-								<xsl:with-param name="disabled" select="'disabled'" />
-								<xsl:with-param name="checked">
-									<xsl:if test="OrganizationDetailQueryInstance/email != ''">true</xsl:if>
-								</xsl:with-param>
-							</xsl:call-template>
-							<label for="{concat($shortQueryID, '_contactByEmail')}" class="checkbox disabled"><xsl:value-of select="$i18n.AllowContactByEmail" /></label><br/>
-							
-						</div>
-						
-						<div>
-							
-							<xsl:if test="OrganizationDetailQueryInstance/OrganizationDetailQuery/allowSMS = 'true'">
+							<div>
+								
 								<xsl:call-template name="createCheckbox">
-									<xsl:with-param name="id" select="concat($shortQueryID, '_contactBySMS')" />
-									<xsl:with-param name="name" select="concat($shortQueryID, '_contactBySMS')" />
+									<xsl:with-param name="id" select="concat($shortQueryID, '_contactByEmail')" />
+									<xsl:with-param name="name" select="concat($shortQueryID, '_contactByEmail')" />
 									<xsl:with-param name="value" select="'true'" />
 									<xsl:with-param name="disabled" select="'disabled'" />
-									<xsl:with-param name="checked" select="OrganizationDetailQueryInstance/contactBySMS"/>
+									<xsl:with-param name="checked">
+										<xsl:if test="OrganizationDetailQueryInstance/email != ''">true</xsl:if>
+									</xsl:with-param>
 								</xsl:call-template>
-								<label for="{concat($shortQueryID, '_contactBySMS')}" class="checkbox"><xsl:value-of select="$i18n.AllowContactBySMS" /></label><br/>
-							</xsl:if>
+								<label for="{concat($shortQueryID, '_contactByEmail')}" class="checkbox disabled"><xsl:value-of select="$i18n.AllowContactByEmail" /></label><br/>
+								
+							</div>
 							
-						</div>
-						
-					</fieldset>
+							<div>
+								
+								<xsl:if test="OrganizationDetailQueryInstance/OrganizationDetailQuery/allowSMS = 'true'">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="id" select="concat($shortQueryID, '_contactBySMS')" />
+										<xsl:with-param name="name" select="concat($shortQueryID, '_contactBySMS')" />
+										<xsl:with-param name="value" select="'true'" />
+										<xsl:with-param name="disabled" select="'disabled'" />
+										<xsl:with-param name="checked" select="OrganizationDetailQueryInstance/contactBySMS"/>
+									</xsl:call-template>
+									<label for="{concat($shortQueryID, '_contactBySMS')}" class="checkbox"><xsl:value-of select="$i18n.AllowContactBySMS" /></label><br/>
+								</xsl:if>
+								
+							</div>
+							
+						</fieldset>
+					
+					</xsl:if>	
+					
 				
 					<xsl:if test="OrganizationDetailQueryInstance/isUserOrganizationsMutableWithAccess = 'true'">
 						<fieldset>
