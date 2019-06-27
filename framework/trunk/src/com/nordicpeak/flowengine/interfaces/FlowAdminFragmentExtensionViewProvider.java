@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.interfaces;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -21,7 +22,7 @@ public interface FlowAdminFragmentExtensionViewProvider extends Prioritized {
 	public String getExtensionViewLinkName();
 
 	// Return null for AdminModule to redirect out of this module
-	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception;
+	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception;
 
 	public int getModuleID();
 }
