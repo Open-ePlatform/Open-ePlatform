@@ -22,7 +22,6 @@ import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.EventSource;
-import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
@@ -43,6 +42,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
@@ -240,7 +240,7 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 	}
 
 	@Override
-	public ViewFragment getShowView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
+	public FlowAdminExtensionShowView getShowView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
 		if (!AccessUtils.checkAccess(user, this.moduleDescriptor)) {
 
@@ -252,11 +252,19 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 		Element showViewElement = doc.createElement("ShowView");
 		doc.getDocumentElement().appendChild(showViewElement);
 
-		XMLUtils.append(doc, showViewElement, getConfiguration(flow));
+		IntegrationConfiguration integrationConfiguration = getConfiguration(flow);
+		
+		boolean enabled = false;
+		
+		if(integrationConfiguration != null) {
+		
+			XMLUtils.append(doc, showViewElement, getConfiguration(flow));
+			enabled = integrationConfiguration.isEnabled();
+		}
 
 		showViewElement.appendChild(flow.toXML(doc));
 
-		return viewFragmentTransformer.createViewFragment(doc);
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc), enabled);
 	}
 
 	@Override
@@ -294,6 +302,12 @@ public class TEISIntegrationProviderModule extends AnnotatedForegroundModule imp
 		doc.appendChild(document);
 
 		return doc;
+	}
+	
+	@Override
+	public int getModuleID() {
+
+		return moduleDescriptor.getModuleID();
 	}
 	
 	//Configure flow
