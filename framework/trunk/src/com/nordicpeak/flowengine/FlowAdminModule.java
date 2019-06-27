@@ -6132,7 +6132,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
 			
-			ViewFragment viewFragment = fragmentExtension.processRequest(getFragmentExtensionViewProviderURL(fragmentExtension, flow), flow, req, user, uriParser);
+			ViewFragment viewFragment = fragmentExtension.processRequest(getFragmentExtensionViewProviderURL(fragmentExtension, flow), flow, req, res, user, uriParser);
+			
+			if (res.isCommitted()) {
+				return null;
+			}
 			
 			if (viewFragment == null) {
 				
