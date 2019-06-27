@@ -86,6 +86,7 @@ import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowBrowserExtensionViewProvider;
@@ -283,7 +284,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
+	public FlowAdminExtensionShowView getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
 		Document doc = createDocument(req, uriParser, user);
 
@@ -295,14 +296,17 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
+		boolean enabled = false;
+		
 		if (informerSettings != null) {
 
 			TextTagReplacer.replaceTextTags(informerSettings, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()));
+			XMLUtils.append(doc, showViewElement, informerSettings);
+			
+			enabled = true;
 		}
 
-		XMLUtils.append(doc, showViewElement, informerSettings);
-
-		return viewFragmentTransformer.createViewFragment(doc);
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc), enabled);
 	}
 
 	public SiteProfile getCurrentSiteProfile(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowFamily flowFamily) {
