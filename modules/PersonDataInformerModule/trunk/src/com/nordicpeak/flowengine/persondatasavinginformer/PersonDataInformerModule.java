@@ -397,7 +397,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		String method = uriParser.get(4);
 
