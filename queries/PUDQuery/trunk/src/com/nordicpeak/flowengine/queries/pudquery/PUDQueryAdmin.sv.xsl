@@ -6,6 +6,9 @@
 	<xsl:include href="PUDQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Ange adress eller fastighetsbeteckning</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Ange adress eller fastighetsbeteckning har koppling till Lantmäteriet och används för att baserat på adress och/eller fastighetsbeteckning söka fram giltig fastighetsbeteckning från Lantmäteriets register.
+	</xsl:variable>
 	<xsl:variable name="java.lmUserSettingName">Användare Lantmäteriet</xsl:variable>
 	<xsl:variable name="java.lmUserSettingDescription">Användare som används för anrop mot lantmäteriet via Search LM</xsl:variable>
 	<xsl:variable name="java.searchPrefixSettingName">Sökprefix</xsl:variable>

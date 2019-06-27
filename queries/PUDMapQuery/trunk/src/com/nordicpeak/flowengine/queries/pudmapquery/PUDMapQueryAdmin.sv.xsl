@@ -7,6 +7,9 @@
 	<xsl:include href="PUDMapQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Markera punkt på karta</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Eldstads-fråga är en användningsfallsspecifik fråga för anmälan om eldstad. Används för att via en karta i e-tjänsten markera ut vilken fastighet och position som eldstaden skall placeras.
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.MinimumScale">Minsta skala för att markera punkt på kartan</xsl:variable>
 	<xsl:variable name="i18n.minimumScale">minsta skala för att markera punkt på kartan</xsl:variable>

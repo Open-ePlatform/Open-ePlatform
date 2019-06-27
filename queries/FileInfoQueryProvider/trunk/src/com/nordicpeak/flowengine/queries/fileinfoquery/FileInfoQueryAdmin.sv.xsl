@@ -8,6 +8,10 @@
 	<xsl:include href="FileInfoQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Informationsfråga med filer</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Informationsfråga med filer används när det finns behov av att i e-tjänsten kunna presentera en eller flera filer som ska kunna laddas ner av användaren.
+Filerna laddas upp under frågans inställningar.
+	</xsl:variable>
 	
 	<xsl:variable name="java.pdfAttachmentDescriptionPrefix">En fil från fråga:</xsl:variable>
 	

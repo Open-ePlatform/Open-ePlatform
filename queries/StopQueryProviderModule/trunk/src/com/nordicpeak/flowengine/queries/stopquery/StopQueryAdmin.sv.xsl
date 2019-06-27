@@ -8,6 +8,9 @@
 	<xsl:include href="StopQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Stoppfråga</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Stoppfråga används för att blockera användaren från att gå vidare i e-tjänsten. När frågan visas är det inte möjligt att gå vidare till nästa steg eller skicka in ärendet.
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateQuery">Ändra fråga</xsl:variable>
 	
