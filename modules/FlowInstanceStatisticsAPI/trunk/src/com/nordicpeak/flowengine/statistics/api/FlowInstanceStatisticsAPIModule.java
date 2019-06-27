@@ -182,7 +182,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							flowInstancesQuery.addParameter(flowInstanceAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
 						}
 
-						QueryResultsStreamer<FlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstance, Integer>(flowAdminModule.getDAOFactory().getFlowInstanceDAO(), FlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
+						QueryResultsStreamer<FlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstance, Integer>(flowInstanceDAO, FlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
 
 						SwedishSocialSecurityPopulator citizenIDValidatorHyphen = new SwedishSocialSecurityPopulator(true, true, true, false);
 						SwedishSocialSecurityPopulator citizenIDValidatorNoHyphen = new SwedishSocialSecurityPopulator(true, true, true, true);
@@ -281,7 +281,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 							flowInstancesQuery.addParameter(abortedFlowInstanceAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
 						}
 
-						QueryResultsStreamer<AbortedFlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<AbortedFlowInstance, Integer>(flowAdminModule.getDAOFactory().getAbortedFlowInstanceDAO(), AbortedFlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
+						QueryResultsStreamer<AbortedFlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<AbortedFlowInstance, Integer>(abortedFlowInstanceDAO, AbortedFlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
 
 						List<AbortedFlowInstance> flowInstances = resultsStreamer.getBeans();
 
