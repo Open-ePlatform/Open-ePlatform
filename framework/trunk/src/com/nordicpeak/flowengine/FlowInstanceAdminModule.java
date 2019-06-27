@@ -576,7 +576,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					} else {
 
-						log.warn("User " + user + " tried to add external message for flow instance " + flowInstance + " which has no poster set.");
+						log.warn("User " + user + " tried to add external message for flow instance " + flowInstance + " which has no owners.");
 					}
 
 				} else if (req.getParameter("internalmessage") != null) {
