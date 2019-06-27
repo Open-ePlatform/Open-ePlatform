@@ -16,34 +16,36 @@ $(document).ready(function() {
 
 function initPUDMapQuery(queryID, providerURI, startExtent, lmSearchURL, lmUser, preview) {
 	
-	if(!(typeof MapClientInstance === "undefined")) {
+	 setTimeout(function() {
+		 if(!(typeof MapClientInstance === "undefined")) {
 	
-		var mapID = "q" + queryID;
+			var mapID = "q" + queryID;
+			
+			var instance = new MapClientInstance(queryID, mapID);		
+			
+			var customConfig = {
+				"search": {
+					renderTo : mapID + "_search",
+					basePath: lmSearchURL,
+					lmUser: lmUser
+				},
+			};
+			
+			if($("#" + mapID + "_extent").val() != "") {
+				customConfig.extent = $("#" + mapID + "_extent").val();
+			} else if(startExtent && startExtent != '') {
+				customConfig.extent = startExtent;
+			}
+			
+			customConfig.basePathMapFish = providerURI + "/clientprint";
+			
+			instance.mapLoadedEventCallback = mapLoaded;
+			instance.mapMovedCallback = mapMoved;
+			
+			instance.init(providerURI + "/mapconfiguration", null, customConfig, preview);
 		
-		var instance = new MapClientInstance(queryID, mapID);		
-		
-		var customConfig = {
-			"search": {
-				renderTo : mapID + "_search",
-				basePath: lmSearchURL,
-				lmUser: lmUser
-			},
-		};
-		
-		if($("#" + mapID + "_extent").val() != "") {
-			customConfig.extent = $("#" + mapID + "_extent").val();
-		} else if(startExtent && startExtent != '') {
-			customConfig.extent = startExtent;
-		}
-		
-		customConfig.basePathMapFish = providerURI + "/clientprint";
-		
-		instance.mapLoadedEventCallback = mapLoaded;
-		instance.mapMovedCallback = mapMoved;
-		
-		instance.init(providerURI + "/mapconfiguration", null, customConfig, preview);
-		
-	}
+	 	}
+	 }, 1000);
 	
 }
 
