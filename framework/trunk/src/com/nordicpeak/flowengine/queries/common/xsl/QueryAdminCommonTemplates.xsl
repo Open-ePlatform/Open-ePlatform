@@ -79,12 +79,12 @@
 					<xsl:with-param name="id" select="'visible'"/>
 					<xsl:with-param name="name" select="'defaultQueryState'"/>
 					<xsl:with-param name="value" select="'VISIBLE'"/>
-					<xsl:with-param name="element" select="$element/QueryDescriptor" />       
+					<xsl:with-param name="element" select="$element/QueryDescriptor" />
 				</xsl:call-template>
 				
 				<label for="visible">
 					<xsl:value-of select="$i18n.QueryState.VISIBLE" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 	
@@ -94,13 +94,13 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'visible_required'"/>
 					<xsl:with-param name="name" select="'defaultQueryState'"/>
-					<xsl:with-param name="value" select="'VISIBLE_REQUIRED'"/>   
+					<xsl:with-param name="value" select="'VISIBLE_REQUIRED'"/>
 					<xsl:with-param name="element" select="$element/QueryDescriptor" />     
 				</xsl:call-template>
 				
 				<label for="visible_required">
 					<xsl:value-of select="$i18n.QueryState.VISIBLE_REQUIRED" />
-				</label>					
+				</label>
 			</div>
 		</div>	
 	
@@ -116,7 +116,7 @@
 				
 				<label for="hidden">
 					<xsl:value-of select="$i18n.QueryState.HIDDEN" />
-				</label>					
+				</label>
 			</div>
 		</div>
 
@@ -136,7 +136,7 @@
 				
 				<label for="mergeWithPreviousQuery">
 					<xsl:value-of select="$i18n.mergeWithPreviousQuery" />
-				</label>					
+				</label>
 			</div>
 		</div>
 
@@ -187,7 +187,7 @@
 			<label class="floatleft clearboth"><xsl:value-of select="$i18n.Name" /></label>
 			<div class="floatleft full">
 				<xsl:value-of select="$element/QueryDescriptor/name" />
-		    </div>
+			</div>
 		</div>
 	
 		<xsl:if test="$element/description">
@@ -204,7 +204,7 @@
 				<label class="floatleft clearboth"><xsl:value-of select="$i18n.HelpText" /></label>
 				<div class="floatleft full">
 					<xsl:value-of select="$element/helpText" disable-output-escaping="yes" />
-			    </div>
+				</div>
 			</div>
 		</xsl:if>
 	
@@ -222,7 +222,7 @@
 						<xsl:value-of select="$i18n.QueryState.HIDDEN" />
 					</xsl:otherwise>
 				</xsl:choose>
-		    </div>
+			</div>
 		</div>
 	
 	</xsl:template>
@@ -595,8 +595,28 @@
 			<xsl:when test="starts-with($fieldName, 'alternative_')">
 				<xsl:value-of select="$i18n.validationError.alternative" />
 				<xsl:text>&#160;</xsl:text>
-				<xsl:variable name="id" select="substring($fieldName,13)" />
+				<xsl:variable name="id" select="substring($fieldName, 13)" />
 				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />
+			</xsl:when>
+			<xsl:when test="starts-with($fieldName, 'alternative-xml-value_')">
+				<xsl:value-of select="$i18n.validationError.alternative" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:variable name="id" select="substring($fieldName, 23)" />
+				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />
+				<xsl:text>&#160;"</xsl:text>
+				<xsl:value-of select="../../../requestparameters/parameter[name = concat('alternative_', $id)]/value" />
+				<xsl:text>":&#160;</xsl:text>
+				<xsl:value-of select="$i18n.AlternativeXMLValue" />
+			</xsl:when>
+			<xsl:when test="starts-with($fieldName, 'alternative-attribute-value_')">
+				<xsl:value-of select="$i18n.validationError.alternative" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:variable name="id" select="substring($fieldName, 29)" />
+				<xsl:value-of select="../../../requestparameters/parameter[name = concat('sortorder_', $id)]/value + 1" />
+				<xsl:text>&#160;"</xsl:text>
+				<xsl:value-of select="../../../requestparameters/parameter[name = concat('alternative_', $id)]/value" />
+				<xsl:text>":&#160;</xsl:text>
+				<xsl:value-of select="$i18n.AlternativeAttributeValue" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:apply-templates select="$fieldName" />
@@ -619,7 +639,7 @@
 			
 			<xsl:if test="/Document/ckConnectorModuleAlias">
 				fckSettings.filebrowserBrowseUri = basePath + 'filemanager/index.html?Connector=<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="/Document/ckConnectorModuleAlias" />/connector/<xsl:value-of select="$flowTypeID" />';
-		       	fckSettings.filebrowserImageBrowseUri = basePath + 'filemanager/index.html?Connector=<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="/Document/ckConnectorModuleAlias" />/connector/<xsl:value-of select="$flowTypeID" />';
+				fckSettings.filebrowserImageBrowseUri = basePath + 'filemanager/index.html?Connector=<xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="/Document/ckConnectorModuleAlias" />/connector/<xsl:value-of select="$flowTypeID" />';
 			</xsl:if>
 	
 			<xsl:if test="/Document/cssPath">
