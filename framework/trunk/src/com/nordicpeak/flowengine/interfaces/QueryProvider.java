@@ -16,6 +16,8 @@ public interface QueryProvider {
 	 * @return The query type that this class provides
 	 */
 	public QueryTypeDescriptor getQueryType();
+	
+	public String getQueryDescription();
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 	

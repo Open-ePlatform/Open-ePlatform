@@ -13,10 +13,11 @@ import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 
 public interface FlowAdminFragmentExtensionViewProvider extends Prioritized {
 
-	public ViewFragment getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException;
+	public FlowAdminExtensionShowView getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException;
 
 	public String getExtensionViewTitle();
 	public String getExtensionViewLinkName();

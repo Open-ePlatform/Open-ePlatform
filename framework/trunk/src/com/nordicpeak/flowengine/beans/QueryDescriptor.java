@@ -51,6 +51,11 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 	private String name;
 
 	@DAOManaged
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String comment;
+	
+	@DAOManaged
 	@OrderBy
 	@XMLElement
 	private Integer sortIndex;
@@ -125,6 +130,18 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 		this.name = name;
 	}
 
+	@Override
+	public String getComment() {
+
+		return comment;
+	}
+
+	@Override
+	public void setComment(String comment) {
+
+		this.comment = comment;
+	}
+	
 	@Override
 	public Integer getSortIndex() {
 
@@ -250,4 +267,5 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 
 		this.importParser = xmlParser;
 	}
+
 }

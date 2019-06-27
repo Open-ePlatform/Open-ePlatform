@@ -8,7 +8,11 @@
 	<xsl:include href="DropDownQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Rullistafråga</xsl:variable>
-		<xsl:variable name="java.countText">Antal</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Rullistafråga används när användaren skall kunna välja mellan olika alternativ. Användaren kan endast välja ett alternativ.
+	</xsl:variable>
+	
+	<xsl:variable name="java.countText">Antal</xsl:variable>
 	<xsl:variable name="java.alternativesText">Alternativ</xsl:variable>
 	
 	<xsl:variable name="i18n.ShortDescription">Kort beskrivning</xsl:variable>

@@ -164,6 +164,7 @@
 	<xsl:variable name="i18n.AddQueryDescriptor.title">Lägg till fråga</xsl:variable>
 	<xsl:variable name="i18n.step">Steg</xsl:variable>
 	<xsl:variable name="i18n.queryType">Frågetyp</xsl:variable>
+	<xsl:variable name="i18n.queryTypeDescription">Beskrivning för vald frågetyp</xsl:variable>
 	<xsl:variable name="i18n.AddQueryDescriptor.submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.SelectedStepNotFound">Det valda steget hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.SelectedQueryTypeNotFound">Den valda frågetypen hittades inte.</xsl:variable>
@@ -308,7 +309,8 @@
 	<xsl:variable name="i18n.testFlow">Testa e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.downloadxsd.title">Ladda ner XSD schema</xsl:variable>
 	
-	<xsl:variable name="i18n.tags">Extra sökord (ett per rad)</xsl:variable>
+	<xsl:variable name="i18n.tags.title">Extra sökord (ett per rad)</xsl:variable>
+	<xsl:variable name="i18n.tags">Extra sökord</xsl:variable>
 	<xsl:variable name="i18n.checks.title">Krav för e-tjänsten (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.checks">Krav för e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.administrateFlowTypes">Adm. kategorier</xsl:variable>
@@ -383,6 +385,7 @@
 	<xsl:variable name="i18n.FlowTypeQueryTypeAccessDenied">Den här typen av e-tjänster har inte behörighet att använda den valda frågetypen.</xsl:variable>
 	<xsl:variable name="i18n.requireAuthentication">Kräv inloggning</xsl:variable>
 	<xsl:variable name="i18n.requirersAuthentication">Kräver inloggning</xsl:variable>
+	<xsl:variable name="i18n.requirersNoAuthentication">Kräver inte inloggning</xsl:variable>
 	<xsl:variable name="i18n.Flow.showLoginQuestion">Fråga om inloggning</xsl:variable>
 	<xsl:variable name="i18n.requireSigning">Kräv signering</xsl:variable>
 	<xsl:variable name="i18n.Flow.allowForeignIDs">Tillåt användare inloggade med eIDAS</xsl:variable>
@@ -392,6 +395,7 @@
 	<xsl:variable name="i18n.Flow.allowPosterMultipartSigning">Tillåt första parten att flerpartsignera ärendet</xsl:variable>
 	<xsl:variable name="i18n.Flow.appendSigningSignatureToPDF">Bifoga signeringsunderlag i PDF</xsl:variable>
 	<xsl:variable name="i18n.requiresSigning">Kräver signering</xsl:variable>
+	<xsl:variable name="i18n.requiresNoSigning">Kräver inte signering</xsl:variable>
 	<xsl:variable name="i18n.MissingDefaultStatusMapping">E-tjänsten går inte att publicera då dess statusar inte innehåller samtliga obligatoriska statusmappningar. Klicka ur "Aktivera" e-tjänsten" och spara gå sedan tillbaka till e-tjänstöversikten för att kontrollera statusarna.</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidationError.InUseManagerUserError.Part1">Användaren</xsl:variable>
@@ -476,6 +480,7 @@
 	<xsl:variable name="i18n.FlowFamilyAliasAlreadyInUseBySystem">används redan av en annan del av systemet.</xsl:variable>
 	<xsl:variable name="i18n.aliases.title">Kortnamn för e-tjänsten (ett per rad ex. bygga eller skola, giltiga tecken är A-Z a-z 0-9 _- )</xsl:variable>
 	<xsl:variable name="i18n.aliases">Kortnamn för e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.aliases.url">Kortadress</xsl:variable>
 	<xsl:variable name="i18n.LacksPublishAccess">Du saknar publiceringsrättigheter och kan därför inte ändra publiceringsdatum eller aktivera e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.Filter">Sök</xsl:variable>
 	<xsl:variable name="i18n.link">länk</xsl:variable>
@@ -539,6 +544,8 @@
 	<xsl:variable name="i18n.Unpublished">Ej publicerade</xsl:variable>
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
 	
+	<xsl:variable name="i18n.hiddenFromOverview">Dold på förstasidan</xsl:variable>
+	<xsl:variable name="i18n.shownOnOverview">Visas på förstasidan</xsl:variable>
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
@@ -557,10 +564,9 @@
 	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
 	
-	<xsl:variable name="i18n.SortEvaluators.title">Sortera regler i frågan</xsl:variable>
 	<xsl:variable name="i18n.MoveEvaluator">Flytta regel</xsl:variable>
-	
 	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>
+	
 	<xsl:variable name="i18n.PreviewEnabled">Förhandsgranskning</xsl:variable>
 	<xsl:variable name="i18n.PaymentEnabled">Betalstöd</xsl:variable>
 	
@@ -633,6 +639,31 @@
 	
 	<xsl:variable name="i18n.ExtensionErrors">Ett validerings fel har uppstått i ett tillägg, kolla längre ner efter vad som är fel.</xsl:variable>
 	
+	<xsl:variable name="i18n.ShowMore">Visa mer</xsl:variable>
+	<xsl:variable name="i18n.ShowLess">Visa mindre</xsl:variable>
+	<xsl:variable name="i18n.ShowOldVersions">Visa äldre versioner</xsl:variable>
+	<xsl:variable name="i18n.ExtensionProviders">Tillägg och extrafunktioner</xsl:variable>
+	<xsl:variable name="i18n.ShowInactiveExtensionProviders">Visa inaktiva tillägg</xsl:variable>
+	<xsl:variable name="i18n.HideInactiveExtensionProviders">Dölj inaktiva tillägg</xsl:variable>
+	
+	<xsl:variable name="i18n.ExtensionProviders.by">av</xsl:variable>
+	<xsl:variable name="i18n.ExtensionProviders.activated">aktiverade</xsl:variable>
+
 	<xsl:variable name="i18n.Row">Rad</xsl:variable>
+	<xsl:variable name="i18n.AddQueryInStep.title">Lägg till fråga i steget</xsl:variable>
+	<xsl:variable name="i18n.ImportQueriesInStep.title">Importera frågor i steget</xsl:variable>
+	<xsl:variable name="i18n.SortEvaluators.title">Sortera regler kopplad till frågan</xsl:variable>
+	<xsl:variable name="i18n.PreviewQuery.title">Förhandsgranska frågan</xsl:variable>
+	
+	<xsl:variable name="i18n.Comment">Kommentar</xsl:variable>
+	<xsl:variable name="i18n.commentVisibility">visas endast för e-tjänstbyggaren</xsl:variable>
+	<xsl:variable name="i18n.comment">kommentar</xsl:variable>
+	<xsl:variable name="i18n.ShowAllComments">Visa kommentarer</xsl:variable>
+	<xsl:variable name="i18n.HideAllComments">Dölj kommentarer</xsl:variable>
+	
+	<xsl:variable name="i18n.ExtensionEnabled">Tillägg aktiverat</xsl:variable>
+	<xsl:variable name="i18n.ExtensionDisabled">Tillägg inaktiverat</xsl:variable>
+	
+	<xsl:variable name="i18n.PreviewQueries">Förhandsgranska frågor</xsl:variable>
 	
 </xsl:stylesheet>

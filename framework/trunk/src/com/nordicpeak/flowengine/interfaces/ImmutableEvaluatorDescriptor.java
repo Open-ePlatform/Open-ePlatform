@@ -10,6 +10,8 @@ public interface ImmutableEvaluatorDescriptor extends Serializable, Elementable 
 	public Integer getEvaluatorID();
 
 	public String getName();
+	
+	public String getComment();
 
 	public Integer getSortIndex();
 

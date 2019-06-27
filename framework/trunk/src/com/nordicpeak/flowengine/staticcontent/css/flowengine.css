@@ -385,3 +385,259 @@ only screen and (max-device-width: 1004px)  {
 	.signingstatustable td:nth-of-type(5):before { content: attr(data-name); }
 	.signingstatustable td:nth-of-type(6):before { content: attr(data-name); }
 }
+
+aside.narrow {
+	width: 17.063%;
+	margin-right: 0.9%;
+}
+
+aside.narrow + .content.omega {
+	/* width: 76.0375%; */
+	width: 82.037%;
+}
+
+@media screen and (max-width: 1004px) {
+
+	aside.narrow section {
+		width: 100%;
+	}
+
+}
+
+@media screen and (max-width: 767px) {
+
+	aside.narrow {
+		width: 95%;
+		margin: 0 2.5%;
+		margin-top: 15px;
+	}
+
+	aside.narrow + .content.omega {
+		width: 100%;
+		margin-left: 2.5%;
+	}
+
+	#flowMenu ul {
+		margin: 0;
+	}
+
+	#flowMenu.fixed {
+		position: initial;
+	}
+
+}
+
+#flowMenu {
+	padding-bottom: 10px;
+}
+
+#flowMenu ul {
+	padding-top: 10px;
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+#flowMenu ul li a {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#flowMenu.fixed {
+	position: fixed;
+	top: 5px;
+}
+
+.flowadmin.showflow {
+	background: transparent;
+	padding: 0;
+	border: none;
+}
+
+.flowadmin.showflow .showflow-wrapper {
+	background-color: #FFF;
+	font-size: 14px;
+	box-sizing: border-box;
+	float: left;
+	border-right: 1px solid #cfcfcf;
+	border-bottom: 1px solid #cfcfcf;
+	margin-bottom: 12px;
+	width: 100%;
+}
+
+.flowadmin.showflow .showflow-wrapper h2.title {
+	font-size: 16px;
+	padding: 12px 2% 12px;
+	border-bottom: 1px solid #ECECEC;
+}
+
+.flowadmin.showflow .showflow-wrapper .showflow-content {
+	padding: 16px 2% 19px;
+	box-sizing: border-box;
+	float: left;
+	width: 100%;
+}
+
+.flowadmin.showflow .showflow-moreinfo-footer {
+	width: 100%;
+	float: left;
+	text-align: center;
+	padding: 7px 0px;
+	font-size: 16px;
+	border-top: 1px solid #ECECEC;
+	background-color: #F7F7F7;
+}
+
+.flowadmin.showflow .showflow-moreinfo-footer + a:hover {
+	background-color: #ECECEC;
+}
+
+.flowadmin.showflow .oep-table thead th {
+	font-size: 15px;
+}
+
+.flowadmin.showflow .extensionproviders-wrapper {
+	float: left;
+	width: 100%;
+	margin-bottom: 15px;
+	margin-top: 10px;
+}
+
+.flowadmin.showflow .extensionproviders-wrapper h2 {
+	font-size: 18px;
+}
+
+.flowadmin.showflow .extensionproviders-wrapper a {
+	font-size: 15px;
+}
+
+.flowadmin.showflow .showflow-wrapper .showflow-content .textsetting {
+	background-color: #F7F7F7;
+	box-sizing: border-box;
+	margin-top: 10px;
+	float: left;
+	width: 100%;
+	margin-bottom: 10px;
+	padding: 0 10px 10px 10px;
+}
+
+.flowadmin.showflow .showflow-wrapper .showflow-content .textsetting.fifty {
+	width: 49%;
+}
+
+.flowadmin.showflow .showflow-wrapper .showflow-content .textsetting.floatright {
+	float: right;
+}
+
+.flowadmin.showflow .showflow-wrapper .showflow-content .textsetting .whitebackground {
+	background-color: #FFF;
+}
+
+.flowadmin ul.steps {
+}
+
+.flowadmin ul.steps, .flowadmin ul.steps ul {
+	padding: 0;
+	list-style: none;
+	margin: 0;
+}
+
+.flowadmin ul li div.title {
+	padding: 6px 10px;
+}
+
+.flowadmin ul li div.title .tools {
+	float: right;
+}
+
+.flowadmin ul.steps li.step {
+	border: 1px solid #E0DFDF;
+}
+
+.flowadmin ul.steps li.step:not(:last-child) {
+	margin-bottom: 5px;
+}
+
+.flowadmin ul.steps li.step > div.title {
+	background-color: #E7E7E7;
+	padding: 12px 10px;
+	font-weight: bold;
+	font-size: 15px;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.flowadmin ul.steps li.step > div.title:hover {
+	background-color: #e0dfdf;
+}
+
+.flowadmin ul.steps li.querydescriptor:not(:last-child) {
+	/* border-left: 1px solid #F7F7F7;
+	border-right: 1px solid #F7F7F7; */
+	border-bottom: 1px solid #E0DFDF;
+}
+
+.flowadmin ul.steps li.querydescriptor > div.title {
+	background-color: #F7F7F7;
+	font-weight: 600;
+} 
+
+.flowadmin ul.steps li.querydescriptor > div.title:hover {
+	background-color: #f0f0f0;
+} 
+
+.flowadmin ul.steps li div.step-title .index {
+	
+}
+
+.flowadmin ul.steps > li > div.title > .index {
+	background-color: #424242;
+	color: #FFF;
+	border-radius: 50%;
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-bottom: 1px;
+	padding-top: 1px;
+}
+
+.flowadmin ul.steps li .index {
+	margin-right: 7px;
+}
+
+.flowadmin ul.querydescriptors {
+	margin-top: 0;
+}
+
+.flowadmin ul.evaluators li > div.title {
+	padding-left: 6px;
+	padding-bottom: 4px;
+	padding-top: 4px;
+} 
+
+.flowadmin ul li div.title .comment {
+	display: none;
+	font-size: 12.5px;
+	width: 100%;
+	font-weight: normal;
+	font-style: italic;
+}
+
+.flowadmin ul.show-comments li div.title .comment {
+	display: inline-block;
+}
+
+.flowadmin ul.evaluators li > div.title:hover {
+	background-color: #f5f5f5;	
+}
+
+.flowadmin ul.evaluators li > div.title .icon {
+	margin-right: 10px;
+}
+
+.flowadmin .comments-btn {
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.flowadmin #queryTypeDescription {
+	line-height: 1.6;
+}

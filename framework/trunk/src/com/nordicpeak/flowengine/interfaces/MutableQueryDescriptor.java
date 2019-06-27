@@ -9,6 +9,8 @@ public interface MutableQueryDescriptor extends ImmutableQueryDescriptor{
 	public XMLParser getImportParser();
 	
 	public void setName(String name);
+	
+	public void setComment(String comment);
 
 	public void setDefaultQueryState(QueryState defaultQueryState);
 

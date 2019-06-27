@@ -6,6 +6,11 @@
 	<xsl:include href="ContactDetailQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Kontaktuppgiftsfråga (privatperson)</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Kontaktuppgiftsfråga (privatperson) används för att samla in uppgifter om användaren. Under frågans inställningar är det möjligt att välja vilka uppgifter som skall samlas in
+och vilka som är valfria respektive obligatoriska. I det fall installationen har koppling till Navet folkbokföring och användaren är inloggad förifylls användarens folkbokföringsadress.
+Om användaren har skyddad identitet hämtas inga folkbokföringsuppgifter.
+	</xsl:variable>
 	
 	<xsl:variable name="java.exportFirstName">Förnamn</xsl:variable>
 	<xsl:variable name="java.exportLastName">Efternamn</xsl:variable>

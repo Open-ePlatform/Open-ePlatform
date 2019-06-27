@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPath;
@@ -333,7 +335,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	private static final StepSortIndexComparator STEP_COMPARATOR = new StepSortIndexComparator();
 	private static final QueryDescriptorSortIndexComparator QUERY_DESCRIPTOR_COMPARATOR = new QueryDescriptorSortIndexComparator();
-	private static final FlowVersionComparator FLOW_VERSION_COMPARATOR = new FlowVersionComparator();
+	private static final FlowVersionComparator ASC_FLOW_VERSION_COMPARATOR = new FlowVersionComparator(Order.ASC);
+	private static final FlowVersionComparator DESC_FLOW_VERSION_COMPARATOR = new FlowVersionComparator(Order.DESC);
 
 	private final AdminUserFlowInstanceAccessController updateAccessController = new AdminUserFlowInstanceAccessController(this, true);
 	private final AdminUserFlowInstanceAccessController previewAccessController = new AdminUserFlowInstanceAccessController(this, false);
@@ -1323,6 +1326,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		return flowCRUD.show(req, res, user, uriParser);
+		
 	}
 	
 	@Override
@@ -1711,7 +1715,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		addFlowFamilyEvent(eventCopyFlowMessage + " " + flow.getVersion() + " \"" + flow.getName() + "\"", flowCopy, user);
-		
+
 		redirectToMethod(req, res, "/showflow/" + flowCopy.getFlowID());
 
 		return null;
@@ -1911,7 +1915,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse sortEvaluators(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
@@ -1948,7 +1952,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 			
-			validationErrors = new ArrayList<>();
+			validationErrors = new ArrayList<ValidationError>();
 
 			for (EvaluatorDescriptor evaluatorDescription : queryDescriptor.getEvaluatorDescriptors()) {
 
@@ -1983,7 +1987,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-
+	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse sortStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
@@ -3233,8 +3237,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return flowCache.getFlowFamilyCacheMap().get(flowFamilyID);
 	}
 
-	public List<Flow> getFlowVersions(FlowFamily flowFamily) {
-
+	public List<Flow> getFlowVersions(FlowFamily flowFamily, Order sortOrder) {
+		
 		List<Flow> flows = new ArrayList<Flow>(flowFamily.getVersionCount());
 
 		for (Flow flow : flowCache.getFlowCacheMap().values()) {
@@ -3247,10 +3251,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (!flows.isEmpty()) {
 
-			Collections.sort(flows, FLOW_VERSION_COMPARATOR);
+			if(sortOrder == Order.ASC) {
+
+				Collections.sort(flows, ASC_FLOW_VERSION_COMPARATOR);
+				
+			} else {
+				
+				Collections.sort(flows, DESC_FLOW_VERSION_COMPARATOR);
+				
+			}
+			
 		}
 
 		return flows;
+	}
+	
+	public List<Flow> getFlowVersions(FlowFamily flowFamily) {
+
+		return getFlowVersions(flowFamily, Order.ASC);
 	}
 
 	public List<Flow> getFlows(int flowTypeID) {
@@ -3968,11 +3986,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				
 				flowFamily.setExternalMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", ExternalMessageTemplate.class, errors));
 
+				//TODO Import flowfamily settings
+				
 				if (!errors.isEmpty()) {
 
 					throw new ValidationException(errors);
 				}
-
+				
 				flow.setFlowFamily(flowFamily);
 
 			} else {
@@ -4547,6 +4567,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		importQueriesElement.appendChild(flow.toXML(doc));
 
+		if(NumberUtils.isInt(req.getParameter("step"))) {
+			
+			XMLUtils.appendNewElement(doc, importQueriesElement, "SelectedStep", req.getParameter("step"));
+		}
+		
 		if (validationException != null) {
 			importQueriesElement.appendChild(validationException.toXML(doc));
 		}
@@ -6256,11 +6281,27 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	public FlowFamilyCRUD getFlowFamilyCRUD() {
+		
+		
 		return flowFamilyCRUD;
 	}
 
 	public FlowCache getFlowCache() {
 		return flowCache;
 	}
-
+	
+	public Transformer getModuleTransformer() {
+		
+		try {
+			
+			return sectionInterface.getForegroundModuleXSLTCache().getModuleTranformer(moduleDescriptor);
+			
+		} catch (TransformerConfigurationException e) {
+			
+			log.error("Unable to get module transformer");
+		}	
+		
+		return null;
+	}
+	
 }

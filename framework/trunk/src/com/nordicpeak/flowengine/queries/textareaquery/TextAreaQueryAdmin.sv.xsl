@@ -6,6 +6,9 @@
 	<xsl:include href="TextAreaQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Textareafråga</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Textareafråga används när användaren skall ange information i ett textfält och kunna skriva in flera rader.
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.MaxLength">Tillåten längd på textinnehåll</xsl:variable>
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>

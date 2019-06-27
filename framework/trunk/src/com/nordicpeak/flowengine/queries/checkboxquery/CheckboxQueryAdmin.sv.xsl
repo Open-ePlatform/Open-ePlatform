@@ -6,6 +6,10 @@
 	<xsl:include href="CheckboxQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Kryssrutefråga</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Kryssrutefråga används när användaren skall kunna välja mellan olika alternativ. Användaren kan välja ett eller flera alternativ beroende på inställningarna.
+	</xsl:variable>
+	
 	<xsl:variable name="java.countText">Antal</xsl:variable>
 	<xsl:variable name="java.alternativesText">Alternativ</xsl:variable>
 	

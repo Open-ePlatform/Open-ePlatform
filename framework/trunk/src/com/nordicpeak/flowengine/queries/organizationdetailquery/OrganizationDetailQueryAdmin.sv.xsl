@@ -17,6 +17,10 @@
 	<xsl:variable name="java.exportMobilePhone">Mobiltelefon</xsl:variable>
 	
 	<xsl:variable name="java.queryTypeName">Kontaktuppgiftsfråga (organisation)</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Kontaktuppgiftsfråga (organisation) är en skräddarsydd frågetyp när användaren skall manuellt ange uppgifter om organisation. 
+Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina organisationer på Mina sidor.
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>
 	

@@ -12,6 +12,8 @@ public interface ImmutableQueryDescriptor extends Serializable, Elementable {
 	public Integer getQueryID();
 
 	public String getName();
+	
+	public String getComment();
 
 	public Integer getSortIndex();
 

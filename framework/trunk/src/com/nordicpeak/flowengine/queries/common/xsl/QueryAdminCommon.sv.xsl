@@ -8,6 +8,9 @@
 	
 	<xsl:variable name="i18n.Name">Namn</xsl:variable>
 	<xsl:variable name="i18n.name">namn</xsl:variable>
+	<xsl:variable name="i18n.Comment">Kommentar</xsl:variable>
+	<xsl:variable name="i18n.comment">kommentar</xsl:variable>
+	<xsl:variable name="i18n.commentVisibility">visas endast för e-tjänstbyggaren</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.description">beskrivning</xsl:variable>
 	<xsl:variable name="i18n.HelpText">Hjälptext</xsl:variable>

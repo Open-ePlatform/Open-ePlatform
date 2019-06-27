@@ -6,6 +6,10 @@
 	<xsl:include href="TextFieldQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Textfältsfråga</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Textfältsfråga används när användaren skall ange information i textfält. En fråga kan innehålla flera textfält och skapas under frågans inställningar.
+	</xsl:variable>
+	
 	<xsl:variable name="java.fieldLayoutNewLine">En kolumn</xsl:variable>
 	<xsl:variable name="java.fieldLayoutFloat">Två kolumner</xsl:variable>
 	

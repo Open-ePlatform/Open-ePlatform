@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-		
+	
+	<xsl:include href="classpath://com/nordicpeak/flowengine/evaluators/common/xsl/EvaluatorAdminCommon.sv.xsl"/>
 	<xsl:include href="QueryStateEvaluationProviderModuleTemplates.xsl"/>
 	
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 	
 	<xsl:variable name="java.evaluatorTypeName">Ändra standardläge</xsl:variable>
 	
-	<xsl:variable name="i18n.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.UpdateEvaluatorDescriptor.title">Uppdatera regel</xsl:variable>
 	<xsl:variable name="i18n.UpdateQueryStateEvaluator.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.selectionMode.title">Aktiveringsläge</xsl:variable>
@@ -34,6 +34,5 @@
 	<xsl:variable name="i18n.validation.unknownError" select="'Okänt fel på fältet:'"/>
 	<xsl:variable name="i18n.validation.unknownFault" select="'Ett okänt valideringsfel har uppstått.'"/>
 
-	<xsl:variable name="i18n.enabled">Aktivera regeln</xsl:variable>
 	<xsl:variable name="i18n.doNotResetQueryState">Återställ INTE frågornas standardläge automatiskt (användbart när flera regler påverkar samma frågor).</xsl:variable>
 </xsl:stylesheet>

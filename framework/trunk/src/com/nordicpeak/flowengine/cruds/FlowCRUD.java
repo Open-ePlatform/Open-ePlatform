@@ -5,6 +5,7 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -15,6 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
+import se.unlogic.hierarchy.core.beans.SimpleBackgroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
@@ -33,6 +35,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
@@ -58,6 +61,7 @@ import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowOverviewAttribute;
@@ -713,7 +717,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void appendShowFormData(Flow flow, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
 		
-		XMLUtils.append(doc, showTypeElement, "FlowVersions", callback.getFlowVersions(flow.getFlowFamily()));
+		XMLUtils.append(doc, showTypeElement, "FlowVersions", callback.getFlowVersions(flow.getFlowFamily(), Order.DESC));
 		
 		XMLUtils.append(doc, showTypeElement, "EvaluatorTypes", callback.getEvaluationHandler().getAvailableEvaluatorTypes());
 		
@@ -722,6 +726,15 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		flow.getFlowFamily().setManagerUsersAndGroups(callback.getUserHandler(), callback.getGroupHandler());
 		XMLUtils.append(doc, showTypeElement, "ManagerGroups", flow.getFlowFamily().getManagerGroups());
 		XMLUtils.append(doc, showTypeElement, "ManagerUsers", flow.getFlowFamily().getManagers());
+		
+		Document menuDoc = XMLUtils.createDomDocument();
+		Element menuDocElement = menuDoc.createElement("Document");
+		menuDoc.appendChild(menuDocElement);
+		
+		Element showFlowMenuElement = XMLUtils.appendNewElement(menuDoc, menuDocElement, "ShowFlowMenu");
+		
+		XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "TestFlowURI", req.getContextPath() + callback.getFullAlias() + "/overview/" + flow.getFlowID());
+		XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "PreviewQueriesURI", req.getContextPath() + callback.getFullAlias() + "/testflowallsteps/" + flow.getFlowID());
 		
 		FlowSubmitSurveyProvider submitSurveyProvider = callback.getSystemInterface().getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
 		
@@ -736,26 +749,66 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				req.setAttribute("ShowFlowSurveysFragment", viewFragment);
 				
 				XMLUtils.appendNewElement(doc, showTypeElement, "ShowFlowSurveysHTML", viewFragment.getHTML());
+				XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "ShowFlowSurveys", true);
 			}
+		}
+		
+		if (callback.getNotificationHandler() != null) {
+
+			try {
+			
+				ViewFragment viewFragment = callback.getNotificationHandler().getCurrentSettingsView(flow, req, user, uriParser);
+
+				if (viewFragment != null) {
+
+					req.setAttribute("NotificationsFragment", viewFragment);
+
+					Element notificationsElement = viewFragment.toXML(doc);
+					showTypeElement.appendChild(notificationsElement);
+					doc.renameNode(notificationsElement, "", "Notifications");
+
+					XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "ShowNotifications", true);
+				}
+
+			} catch (Exception e) {
+
+				log.error("Error getting view fragment from notification handler for flow " + flow, e);
+			}
+		}
+		
+		if(flow.getExternalLink() == null) {
+			XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "IsInternal", true);
 		}
 		
 		List<FlowAdminExtensionViewProvider> extensionProviders = callback.getExtensionViewProviders();
 		
 		if (extensionProviders != null) {
 			
-			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(extensionProviders.size());
+			List<FlowAdminExtensionShowView> showViews = new ArrayList<FlowAdminExtensionShowView>(extensionProviders.size());
 			
 			for (FlowAdminExtensionViewProvider extensionProvider : extensionProviders) {
 				
 				try {
-					ViewFragment viewFragment = extensionProvider.getShowView(flow, req, user, uriParser);
+					FlowAdminExtensionShowView showView = extensionProvider.getShowView(flow, req, user, uriParser);
 					
-					if (viewFragment != null) {
+					if (showView != null && showView.getViewFragment() != null) {
+
+						ViewFragment viewFragment = showView.getViewFragment();
 						
 						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", extensionProvider.getExtensionViewTitle());
-						viewFragments.add(viewFragment);
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "ID", extensionProvider.getModuleID());
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "Enabled", showView.isEnabled());
+						
+						if(showView.isEnabled()) {
+							
+							Element element = XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "ExtensionProvider");
+							XMLUtils.appendNewElement(menuDoc, element, "Title", extensionProvider.getExtensionViewTitle());
+							XMLUtils.appendNewElement(menuDoc, element, "ID", extensionProvider.getModuleID());
+						}
+						
+						showViews.add(showView);
 						
 						if (viewFragment instanceof SimpleViewFragment) {
 							
@@ -775,9 +828,9 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				}
 			}
 			
-			if (!viewFragments.isEmpty()) {
+			if (!showViews.isEmpty()) {
 				
-				req.setAttribute("ExtensionProviderFragments", viewFragments);
+				req.setAttribute("ExtensionProviderShowViews", showViews);
 			}
 		}
 		
@@ -785,19 +838,31 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		if (fragmentExtensionProviders != null) {
 			
-			List<ViewFragment> viewFragments = new ArrayList<ViewFragment>(fragmentExtensionProviders.size());
+			List<FlowAdminExtensionShowView> showViews = new ArrayList<FlowAdminExtensionShowView>(fragmentExtensionProviders.size());
 			
 			for (FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider : fragmentExtensionProviders) {
 				
 				try {
-					ViewFragment viewFragment = fragmentExtensionProvider.getShowView(callback.getFragmentExtensionViewProviderURL(fragmentExtensionProvider, flow), flow, req, user, uriParser);
+					FlowAdminExtensionShowView showView = fragmentExtensionProvider.getShowView(callback.getFragmentExtensionViewProviderURL(fragmentExtensionProvider, flow), flow, req, user, uriParser);
 					
-					if (viewFragment != null) {
+					if (showView != null && showView.getViewFragment() != null) {
+						
+						ViewFragment viewFragment = showView.getViewFragment();
 						
 						Element extensionProviderElement = XMLUtils.appendNewElement(doc, showTypeElement, "ExtensionProvider");
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "HTML", viewFragment.getHTML());
 						XMLUtils.appendNewElement(doc, extensionProviderElement, "Title", fragmentExtensionProvider.getExtensionViewTitle());
-						viewFragments.add(viewFragment);
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "ID", fragmentExtensionProvider.getModuleID());
+						XMLUtils.appendNewElement(doc, extensionProviderElement, "Enabled", showView.isEnabled());
+						
+						if(showView.isEnabled()) {
+							
+							Element element = XMLUtils.appendNewElement(menuDoc, showFlowMenuElement, "ExtensionProvider");
+							XMLUtils.appendNewElement(menuDoc, element, "Title", fragmentExtensionProvider.getExtensionViewTitle());
+							XMLUtils.appendNewElement(menuDoc, element, "ID", fragmentExtensionProvider.getModuleID());
+						}
+						
+						showViews.add(showView);
 						
 						if (viewFragment instanceof SimpleViewFragment) {
 							
@@ -817,11 +882,13 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				}
 			}
 			
-			if (!viewFragments.isEmpty()) {
+			if (!showViews.isEmpty()) {
 				
-				req.setAttribute("FragmentExtensionProviderFragments", viewFragments);
+				req.setAttribute("FragmentExtensionProviderShowViews", showViews);
 			}
 		}
+		
+		req.setAttribute("FlowMenuDocument", menuDoc);
 		
 		List<FlowAdminShowFlowExtensionLinkProvider> showExtensionLinkProviders = callback.getFlowShowExtensionLinkProviders();
 		
@@ -890,33 +957,51 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 		SimpleForegroundModuleResponse moduleResponse = super.createShowBeanModuleResponse(bean, doc, req, user, uriParser);
 
-		ViewFragment viewFragment = (ViewFragment) req.getAttribute("ShowFlowSurveysFragment");
+		ViewFragment surveysFragment = (ViewFragment) req.getAttribute("ShowFlowSurveysFragment");
 
-		if (viewFragment != null) {
+		if (surveysFragment != null) {
 
-			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
+			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, surveysFragment);
+		}
+		
+		ViewFragment notificationsFragment = (ViewFragment) req.getAttribute("NotificationsFragment");
+
+		if (notificationsFragment != null) {
+
+			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, notificationsFragment);
 		}
 
-		List<ViewFragment> extensionViewFragments = (List<ViewFragment>) req.getAttribute("ExtensionProviderFragments");
+		List<FlowAdminExtensionShowView> extensionShowViews = (List<FlowAdminExtensionShowView>) req.getAttribute("ExtensionProviderShowViews");
 
-		if (extensionViewFragments != null) {
+		if (extensionShowViews != null) {
 
-			for (ViewFragment fragment : extensionViewFragments) {
+			for (FlowAdminExtensionShowView showView : extensionShowViews) {
 
-				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, fragment);
+				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, showView.getViewFragment());
 			}
 		}
 		
-		List<ViewFragment> fragmentExtensionViewFragments = (List<ViewFragment>) req.getAttribute("FragmentExtensionProviderFragments");
+		List<FlowAdminExtensionShowView> fragmentExtensionViewShowViews = (List<FlowAdminExtensionShowView>) req.getAttribute("FragmentExtensionProviderShowViews");
 
-		if (fragmentExtensionViewFragments != null) {
+		if (fragmentExtensionViewShowViews != null) {
 
-			for (ViewFragment fragment : fragmentExtensionViewFragments) {
+			for (FlowAdminExtensionShowView showView : fragmentExtensionViewShowViews) {
 
-				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, fragment);
+				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, showView.getViewFragment());
 			}
 		}
 
+		Document menuDoc = (Document) req.getAttribute("FlowMenuDocument");
+
+		if(menuDoc != null) {
+			
+			SimpleBackgroundModuleResponse backgroundModuleResponse = new SimpleBackgroundModuleResponse(menuDoc, callback.getModuleTransformer());
+			backgroundModuleResponse.setSlots(Collections.singletonList("left-content-container.flowmenu"));
+
+			moduleResponse.addBackgroundModuleResponse(backgroundModuleResponse);
+			
+		}
+		
 		return moduleResponse;
 	}
 
@@ -946,26 +1031,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		}
 
 		SimpleForegroundModuleResponse moduleResponse = createShowBeanModuleResponse(bean, doc, req, user, uriParser);
-
-		if (callback.getNotificationHandler() != null) {
-
-			try {
-				ViewFragment viewFragment = callback.getNotificationHandler().getCurrentSettingsView(bean, req, user, uriParser);
-
-				if (viewFragment != null) {
-
-					Element notificationsElement = viewFragment.toXML(doc);
-					showTypeElement.appendChild(notificationsElement);
-					doc.renameNode(notificationsElement, "", "Notifications");
-
-					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
-				}
-
-			} catch (Exception e) {
-
-				log.error("Error getting view fragment from notification handler for flow " + bean, e);
-			}
-		}
 
 		List<Breadcrumb> breadcrumbs = getShowBreadcrumbs(bean, req, user, uriParser);
 

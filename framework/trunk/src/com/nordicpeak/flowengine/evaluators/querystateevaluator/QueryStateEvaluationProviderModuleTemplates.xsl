@@ -25,36 +25,9 @@
 
 		<form method="post" action="{/Document/requestinfo/uri}">
 
-			<div class="floatleft full bigmarginbottom">
-
-				<label for="name" class="floatleft full">
-					<xsl:value-of select="$i18n.name" />
-				</label>
-
-				<div class="floatleft full">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'name'" />
-						<xsl:with-param name="name" select="'name'" />
-						<xsl:with-param name="element" select="QueryStateEvaluator/EvaluatorDescriptor" />
-					</xsl:call-template>
-				</div>
-			</div>
-
-			<div class="floatleft full marginbottom">
-	
-				<div class="floatleft full">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="id" select="'enabled'" />
-						<xsl:with-param name="name" select="'enabled'" />
-						<xsl:with-param name="value" select="'true'" />
-						<xsl:with-param name="element" select="QueryStateEvaluator/EvaluatorDescriptor" />
-					</xsl:call-template>
-	
-					<label for="enabled">
-						<xsl:value-of select="$i18n.enabled" />
-					</label>
-				</div>
-			</div>
+			<xsl:call-template name="createCommonFieldsForm">
+				<xsl:with-param name="element" select="QueryStateEvaluator" />
+			</xsl:call-template>		
 
 			<label class="floatleft">
 				<xsl:value-of select="$i18n.selectionMode.title" />

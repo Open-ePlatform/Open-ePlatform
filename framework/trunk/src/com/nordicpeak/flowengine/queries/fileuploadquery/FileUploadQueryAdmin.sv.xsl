@@ -6,6 +6,9 @@
 	<xsl:include href="FileUploadQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Filuppladdningsfråga</xsl:variable>
+	<xsl:variable name="java.queryDescription">
+Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller flera filer i e-tjänsten.
+	</xsl:variable>
 	
 	<xsl:variable name="java.pdfAttachmentDescriptionPrefix">En fil från fråga:</xsl:variable>
 	

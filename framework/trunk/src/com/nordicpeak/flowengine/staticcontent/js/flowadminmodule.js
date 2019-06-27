@@ -174,6 +174,18 @@ $(document).ready(function() {
 	
 	checkCheckboxState();	
 	
+	$("select[name='queryTypeID']").change(function (e){
+		
+		var description = $("input[name = 'queryTypeDescription_" + $(this).val() + "']").val();
+		
+		if(description) {
+			$("#queryTypeDescription").text(description);
+		} else {
+			$("#queryTypeDescription").text("Den valda frågetypen har ännu ingen beskrivning");
+		}
+			
+	}).trigger("change");
+	
 	$(".flowtype-icon-preview a").click(function(e) {
 		
 		e.preventDefault();
@@ -229,6 +241,123 @@ $(document).ready(function() {
 		  $(".btn-readmore").remove();
 	}
 	
+	var $flowMenu = $("#flowMenu");
+	
+	if ($flowMenu.length > 0) {
+		
+		$flowMenu.closest("aside").addClass("narrow");
+		
+		$(window).scroll(checkFlowMenuPosition);
+		$(window).resize(checkFlowMenuPosition);
+		
+	}
+	
+	$("#show-inactive-providers").click(function(e) {
+		
+		e.preventDefault();
+		
+		$("#hide-inactive-providers").show();
+		
+		$(this).hide();
+		$(".showflow-wrapper.extension.hidden").removeClass("hidden");
+		
+	});
+	
+	$("#hide-inactive-providers").click(function(e) {
+		
+		e.preventDefault();
+		
+		$("#show-inactive-providers").show();
+		
+		$(this).hide();
+		$(".showflow-wrapper.extension.inactive").addClass("hidden");
+		
+	});
+	
+	$(document).on("click", ".showflow-moreinfo-footer a.show-more", function(e) {
+		
+		e.preventDefault();
+		
+		var $this = $(this);
+		$this.hide();
+		$this.parent().find("a.show-less").show();
+		
+		$("[data-rel = '" + $this.data("rel") + "']").removeClass("hidden");
+	});
+	
+	$(document).on("click", ".showflow-moreinfo-footer a.show-less", function(e) {
+		
+		e.preventDefault();
+		
+		var $this = $(this);
+		$this.hide();
+		$this.parent().find("a.show-more").show();
+		
+		$("[data-rel = '" + $this.data("rel") + "']").addClass("hidden");
+	});
+	
+	$(document).on("click", "ul.steps li.step > .title", function(e) {
+		
+		if($(e.target).closest("a").length) {
+			return;
+		}
+		
+		var $step = $(this).parent();
+		var $queries = $step.find("ul.querydescriptors");
+		
+		if($queries.is(":visible")) {
+			$queries.slideUp("fast");
+			$.cookie("oep.flowSteps." + $step.data("cookiesuffix"), "false");
+		} else {
+			$queries.slideDown("fast");
+			$.cookie("oep.flowSteps." + $step.data("cookiesuffix"), "true");
+		}
+		
+	});
+	
+	var $steps = $("ul.steps");
+	
+	$(document).on("click", ".comments-btn", function(e) {
+		
+		e.preventDefault();
+		
+		var $this = $(this);
+		
+		if($this.hasClass("show-all-comments")) {
+			$steps.addClass("show-comments");
+			$(".hide-all-comments").show();
+			$.cookie("oep.qeComments." + $steps.data("flowid"), "true");
+		} else {
+			$steps.removeClass("show-comments");
+			$(".show-all-comments").show();
+			$.cookie("oep.qeComments." + $steps.data("flowid"), "false");
+		}
+
+		$this.hide();
+		
+	});
+	
+	if($.cookie("oep.qeComments." + $steps.data("flowid")) == "true") {
+		$steps.addClass("show-comments");
+		$(".hide-all-comments").show();
+		$(".show-all-comments").hide();
+		
+	}
+	
+	$steps.find("li.step").each(function() {
+		
+		var $this = $(this);
+		
+		var expanded = $.cookie("oep.flowSteps." + $this.data("cookiesuffix"));
+		
+		if(expanded == "true") {
+			$this.find("ul.querydescriptors").show();
+		} else {
+			$this.find("ul.querydescriptors").hide();
+		}
+		
+	});
+
 	// Copied from flowinstancebrowser.js
 	$(".section-inside div.description .use-expandable .readmore-text").expander({
 		slicePoint : 110,
@@ -276,6 +405,33 @@ $(document).ready(function() {
 	}).change();
 	
 });
+
+function checkFlowMenuPosition() {
+	
+	var win = $(this);
+	
+	var $flowMenu = $("#flowMenu");
+	
+	var headerHeight = ($("header").height() + 30);
+	
+	if (win.scrollTop() >= headerHeight) {
+		
+		var width = $flowMenu.width();
+		$flowMenu.css("width", width);
+		$flowMenu.addClass("fixed");
+		
+	} else if (win.scrollTop() < headerHeight) {
+		
+		$flowMenu.css("width", "");
+		$flowMenu.removeClass("fixed");
+		
+	}
+	
+	if($(window).width() < 767) {
+		$flowMenu.removeClass("fixed");
+	}
+	
+}
 
 function updateSortOrder(obj) {
 	obj.children().each(function(i) {

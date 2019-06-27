@@ -15,11 +15,14 @@ public final class QueryTypeDescriptor extends GeneratedElementable implements N
 
 	@XMLElement
 	private final String name;
-	
+
+	@XMLElement
+	private final String description;
+
 	@XMLElement
 	private final Class<? extends QueryInstance> queryInstanceClass;
 
-	public QueryTypeDescriptor(String queryTypeID, String name, Class<? extends QueryInstance> queryInstanceClass) {
+	public QueryTypeDescriptor(String queryTypeID, String name, String description, Class<? extends QueryInstance> queryInstanceClass) {
 
 		super();
 
@@ -30,6 +33,7 @@ public final class QueryTypeDescriptor extends GeneratedElementable implements N
 
 		this.queryTypeID = queryTypeID;
 		this.name = name;
+		this.description = description;
 		this.queryInstanceClass = queryInstanceClass;
 	}
 
@@ -42,6 +46,11 @@ public final class QueryTypeDescriptor extends GeneratedElementable implements N
 	public String getName() {
 
 		return name;
+	}
+
+	public String getDescription() {
+
+		return description;
 	}
 
 	@Override
@@ -82,9 +91,8 @@ public final class QueryTypeDescriptor extends GeneratedElementable implements N
 		return name + " (ID: " + queryTypeID + ")";
 	}
 
-	
 	public Class<? extends QueryInstance> getQueryInstanceClass() {
-	
+
 		return queryInstanceClass;
 	}
 }

@@ -210,6 +210,11 @@ public class QueryDescriptorCRUD extends IntegerBasedCRUD<QueryDescriptor, FlowA
 
 			XMLUtils.append(doc, addTypeElement, "QueryTypes", callback.getQueryHandler().getQueryTypes(flow.getFlowType().getAllowedQueryTypes()));
 		}
+		
+		if(NumberUtils.isInt(req.getParameter("step"))) {
+			
+			XMLUtils.appendNewElement(doc, addTypeElement, "SelectedStep", req.getParameter("step"));
+		}
 	}
 
 

@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=5
+		/js/flowadminmodule.js?v=6
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -36,10 +36,11 @@
 		/js/UserGroupList.js
 		/js/featherlight.min.js
 		/js/colorpicker/jquery.minicolors.min.js
+		/js/jquery.cookie.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/flowengine.css
+		/css/flowengine.css?v=6
 		/css/UserGroupList.css
 		/css/featherlight.min.css
 		/js/colorpicker/jquery.minicolors.css
@@ -53,14 +54,24 @@
 				<xsl:apply-templates select="ViewFragmentExtension" />
 				
 			</xsl:when>
+			<xsl:when test="ShowFlowMenu">
+				
+				<div class="contentitem">
+					<xsl:apply-templates select="ShowFlowMenu" />
+				</div>
+				
+			</xsl:when>
 			<xsl:otherwise>
 				
 				<div class="contentitem errands-wrapper flowadmin">
 					
-					<xsl:if test="FlowInstanceManagerForm or FlowInstanceManagerPreview or FlowInstanceManagerSubmitted or ShowFlowOverview">
-						<xsl:attribute name="class">contentitem</xsl:attribute>
-						<xsl:attribute name="id">FlowBrowser</xsl:attribute>
-					</xsl:if>
+					<xsl:choose>
+						<xsl:when test="FlowInstanceManagerForm or FlowInstanceManagerPreview or FlowInstanceManagerSubmitted or ShowFlowOverview">
+							<xsl:attribute name="class">contentitem</xsl:attribute>
+							<xsl:attribute name="id">FlowBrowser</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="ShowFlow"><xsl:attribute name="class">contentitem errands-wrapper flowadmin showflow</xsl:attribute></xsl:when>
+					</xsl:choose>
 					
 					<xsl:apply-templates select="ListFlows" />
 					<xsl:apply-templates select="ShowFlow" />
@@ -335,6 +346,56 @@
 	
 	</xsl:template>
 	
+	<xsl:template match="ShowFlowMenu">
+		
+		<section id="flowMenu" class="nomargin">
+		
+			<ul class="list-table">
+				
+				<li><a href="#baseinfo" title="{$i18n.baseInfo}"><xsl:value-of select="$i18n.baseInfo" /></a></li>
+				<xsl:if test="IsInternal">
+					<li><a href="#steps" title="{$i18n.stepsAndQueries}"><xsl:value-of select="$i18n.stepsAndQueries" /></a></li>
+					<li><a href="{PreviewQueriesURI}" title="{$i18n.PreviewQueries}" target="_blank"><xsl:value-of select="$i18n.PreviewQueries"/></a></li>
+					<li><a href="{TestFlowURI}" title="{$i18n.testFlow}" target="_blank"><xsl:value-of select="$i18n.testFlow"/></a></li>
+				</xsl:if>
+				
+				<li><a href="#pdfform" title="{$i18n.FlowForm}"><xsl:value-of select="$i18n.FlowForm" /></a></li>
+				
+				<xsl:if test="IsInternal">
+					<li><a href="#statuses" title="{$i18n.statuses}"><xsl:value-of select="$i18n.statuses" /></a></li>
+					<li><a href="#managers" title="{$i18n.Managers}"><xsl:value-of select="$i18n.Managers" /></a></li>
+				</xsl:if>
+				
+				<xsl:if test="ShowNotifications">
+					<li><a href="#notifications" title="{$i18n.Notifications}"><xsl:value-of select="$i18n.Notifications" /></a></li>
+				</xsl:if>
+				
+				<xsl:if test="ShowFlowSurveys">
+					<li><a href="#flowsurveys" title="{$i18n.FlowSurveysTitle}"><xsl:value-of select="$i18n.FlowSurveysTitle" /></a></li>
+				</xsl:if>
+
+				<li><a href="#externalmessagetemplates" title="{$i18n.ExternalMessageTemplates.title}"><xsl:value-of select="$i18n.ExternalMessageTemplates.title" /></a></li>
+
+				<li><a href="#versions" title="{$i18n.versions}"><xsl:value-of select="$i18n.versions" /></a></li>
+				
+				<li><a href="#extensions" title="{$i18n.ExtensionProviders}"><xsl:value-of select="$i18n.ExtensionProviders" /></a></li>
+				
+				<xsl:apply-templates select="ExtensionProvider" mode="menu" />
+				
+				<li><a href="#events" title="{$i18n.Events.Title}"><xsl:value-of select="$i18n.Events.Title" /></a></li>
+				
+			</ul>
+		
+		</section>
+		
+	</xsl:template>
+	
+	<xsl:template match="ExtensionProvider" mode="menu">
+		
+		<li><a href="#extension-{ID}"><xsl:value-of select="Title" /></a></li>
+		
+	</xsl:template>
+	
 	<xsl:template match="ShowFlow">
 	
 		<xsl:variable name="disableStructureManipulation" select="Flow/flowInstanceCount > 0 or (Flow/published = 'true' and Flow/enabled = 'true')"/>
@@ -343,658 +404,179 @@
 			<xsl:if test="not(Flow/externalLink)">true</xsl:if>
 		</xsl:variable>
 		
-		<h1>
-			<xsl:value-of select="Flow/name"/>
-			<xsl:text>&#x20;(</xsl:text>
-			<xsl:value-of select="$i18n.flowVersion"/>
-			<xsl:text>&#x20;</xsl:text>
-			<xsl:value-of select="Flow/version"/>
-			<xsl:text>)</xsl:text>
-		</h1>
-		
 		<xsl:apply-templates select="validationError"/>
+		
+		<xsl:variable name="updateBaseInfoLink">
+			<xsl:value-of select="/Document/requestinfo/currentURI" />/<xsl:value-of select="/Document/module/alias" />/updateflow/<xsl:value-of select="Flow/flowID" />
+		</xsl:variable>
 		
 		<a name="baseinfo"/>
 		
-		<fieldset>
-			<legend><xsl:value-of select="$i18n.baseInfo"/></legend>
-	
-			<div class="floatleft full bigmarginbottom adminicons">
-
-					<div class="floatright">
-					
-						<xsl:if test="/Document/user/admin = 'true'">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/recacheflow/{Flow/flowID}" title="{$i18n.ReCacheFlow}">
-								<img src="{$imgPath}/reload.png" alt="" />
-							</a>
-						</xsl:if>
-					
-						<xsl:variable name="extensionLinks" select="ExtensionLink[slot='top-right']"/>
-					
-						<xsl:if test="$extensionLinks">
-							<xsl:apply-templates select="$extensionLinks" mode="top-right">
-								<xsl:with-param name="flowID" select="Flow/flowID"/>
-							</xsl:apply-templates>
-						</xsl:if>
-					
-						<xsl:if test="$isInternal = 'true'">
-							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
-								<img src="{$imgPath}/xsd.png" alt="" />
-							</a>
-						</xsl:if>
-					
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
-							<img src="{$imgPath}/folder_edit.png" alt="" />
-						</a>
+		<div class="showflow-wrapper">
+			
+			<h2 class="title">
+				<xsl:value-of select="$i18n.baseInfo"/>
+				
+				<div class="floatright adminicons">
 						
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
-							<img src="{$imgPath}/photo_edit.png" alt="" />
+					<xsl:if test="/Document/user/admin = 'true'">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/recacheflow/{Flow/flowID}" title="{$i18n.ReCacheFlow}">
+							<img src="{$imgPath}/reload.png" alt="" />
 						</a>
-					
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateflow/{Flow/flowID}" title="{$i18n.updateFlowBaseInfo.title}">
-							<img src="{$imgPath}/pen.png" alt="" />
+					</xsl:if>
+				
+					<xsl:variable name="extensionLinks" select="ExtensionLink[slot='top-right']"/>
+				
+					<xsl:if test="$extensionLinks">
+						<xsl:apply-templates select="$extensionLinks" mode="top-right">
+							<xsl:with-param name="flowID" select="Flow/flowID"/>
+						</xsl:apply-templates>
+					</xsl:if>
+				
+					<xsl:if test="$isInternal = 'true'">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/generatexsd/{Flow/flowID}" title="{$i18n.downloadxsd.title}">
+							<img src="{$imgPath}/xsd.png" alt="" />
 						</a>
+					</xsl:if>
+				
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/changeflowtype/{Flow/flowID}" title="{$i18n.ChangeFlowType.linkTitle}">
+						<img src="{$imgPath}/folder_edit.png" alt="" />
+					</a>
 					
-						<xsl:choose>
-							<xsl:when test="$disableStructureManipulation = false()">
-							
-								<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
-									<img src="{$imgPath}/delete.png" alt="" />
-								</a>
-							
-							</xsl:when>
-							<xsl:otherwise>
-							
-								<xsl:choose>
-									<xsl:when test="Flow/flowInstanceCount > 0">
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateicon/{Flow/flowID}" title="{$i18n.updateFlowIcon.link.title}">
+						<img src="{$imgPath}/photo_edit.png" alt="" />
+					</a>
 				
-										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
-											<img src="{$imgPath}/delete_gray.png" alt="" />
-										</a>
+					<a class="marginleft" href="{$updateBaseInfoLink}" title="{$i18n.updateFlowBaseInfo.title}">
+						<img src="{$imgPath}/pen.png" alt="" />
+					</a>
 				
-									</xsl:when>
-									<xsl:when test="Flow/published = 'true'">
-				
-										<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
-											<img src="{$imgPath}/delete_gray.png" alt="" />
-										</a>
-				
-									</xsl:when>
-								</xsl:choose>
-							
-							</xsl:otherwise>
-						</xsl:choose>
-					
-					</div>
-				
-				<label class="floatleft">
-					<xsl:value-of select="$i18n.name" />
-				</label>
-				
-				<div class="floatleft clearboth">
-					<xsl:value-of select="Flow/name" />
-				</div>
-			</div>
-			
-			<xsl:if test="Flow/externalLink">
-				
-				<div class="floatleft full bigmarginbottom">
-				
-					<label class="floatleft clearboth">
-						<xsl:value-of select="$i18n.externalLink" />
-					</label>
-					
-					<div class="floatleft clearboth  word-break-all">
-						<a href="{Flow/externalLink}" target="_blank" title="{$i18n.OpenExternalFlow}" data-icon-after="e"><xsl:value-of select="Flow/externalLink" /></a>
-					</div>
-				</div>
-				
-			</xsl:if>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom">
-				
-				<label class="floatleft">
-					<xsl:value-of select="$i18n.icon" />
-				</label>
-				
-				<div class="floatleft clearboth">
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
-				</div>
-			</div>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom">
-				
-				<label class="floatleft full">
-					<xsl:value-of select="$i18n.status" />
-				</label>
-				
-				<div class="floatleft full">
-						<xsl:choose>
-						<xsl:when test="Flow/enabled = 'false'">
-							<xsl:value-of select="$i18n.disabled" />
-						</xsl:when>
-						<xsl:when test="Flow/published = 'true'">
-							<xsl:value-of select="$i18n.published" />
+					<xsl:choose>
+						<xsl:when test="$disableStructureManipulation = false()">
+						
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
+								<img src="{$imgPath}/delete.png" alt="" />
+							</a>				
+						
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="$i18n.notPublished" />
+						
+							<xsl:choose>
+								<xsl:when test="Flow/flowInstanceCount > 0">
+			
+									<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowDisabledHasInstances}">
+										<img src="{$imgPath}/delete_gray.png" alt="" />
+									</a>
+			
+								</xsl:when>
+								<xsl:when test="Flow/published = 'true'">
+			
+									<a class="marginleft" href="#" onclick="alert('{$i18n.deleteFlowDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowDisabledIsPublished}">
+										<img src="{$imgPath}/delete_gray.png" alt="" />
+									</a>
+			
+								</xsl:when>
+							</xsl:choose>
+						
 						</xsl:otherwise>
 					</xsl:choose>
-				</div>
-			</div>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom">
-				<div class="floatleft full">
-					<label><xsl:value-of select="$i18n.FlowFamilyID" /></label>
-					<div><xsl:value-of select="Flow/FlowFamily/flowFamilyID" /></div>
-				</div>
-			</div>
-			
-			<xsl:if test="Flow/publishDate">
-				<div class="floatleft min-width-thirtytree">
 				
+				</div>
+				
+			</h2>
+	
+			<div class="showflow-content">
+	
+				<div class="floatleft full bigmarginbottom">
+	
+					<h3 class="floatleft clearboth">
+						<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" class="bigmarginright" width="25px" />
+						<xsl:value-of select="Flow/name" />
+						<xsl:text>&#x20;(</xsl:text>
+						<xsl:value-of select="$i18n.flowVersion"/>
+						<xsl:text>&#x20;</xsl:text>
+						<xsl:value-of select="Flow/version"/>
+						<xsl:text>)</xsl:text>
+					</h3>
+					
+				</div>
+				
+				<xsl:if test="Flow/externalLink">
+					
+					<div class="floatleft full bigmarginbottom">
+					
+						<label class="floatleft clearboth">
+							<xsl:value-of select="$i18n.externalLink" />
+						</label>
+						
+						<div class="floatleft clearboth  word-break-all">
+							<a href="{Flow/externalLink}" target="_blank" title="{$i18n.OpenExternalFlow}" data-icon-after="e"><xsl:value-of select="Flow/externalLink" /></a>
+						</div>
+					</div>
+					
+				</xsl:if>
+				
+				<div class="floatleft min-width-thirtytree bigmarginbottom">
+					
+					<label class="floatleft full">
+						<xsl:value-of select="$i18n.status" />
+					</label>
+					
+					<div class="floatleft full">
+							<xsl:choose>
+							<xsl:when test="Flow/enabled = 'false'">
+								<img src="{$imgPath}/disabled.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" />
+								<xsl:value-of select="$i18n.disabled" />
+							</xsl:when>
+							<xsl:when test="Flow/published = 'true'">
+								<img src="{$imgPath}/play.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" />
+								<xsl:value-of select="$i18n.published" />
+								<xsl:text> (</xsl:text>
+								<xsl:value-of select="Flow/publishDate" />
+								<xsl:if test="Flow/unPublishDate">
+									<xsl:text> - </xsl:text>
+									<xsl:value-of select="Flow/unPublishDate" />
+								</xsl:if>
+								<xsl:text>)</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<img src="{$imgPath}/stop.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" />
+								<xsl:value-of select="$i18n.notPublished" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+				</div>
+				
+				<div class="floatleft min-width-thirtytree bigmarginbottom">
+					<div class="floatleft full">
+						<label><xsl:value-of select="$i18n.FlowFamilyID" /></label>
+						<div><xsl:value-of select="Flow/FlowFamily/flowFamilyID" /></div>
+					</div>
+				</div>
+				
+				<div class="floatright min-width-thirtytree">
 					<div class="floatleft fifty">
-						
-						<label class="floatleft">
-							<xsl:value-of select="$i18n.publishDate" />
-						</label>
-						
-						<div class="floatleft clearboth">
-							<xsl:value-of select="Flow/publishDate" />
-						</div>
-					</div>
-					
-					<xsl:if test="Flow/unPublishDate">
-						<div class="floatleft fifty">
-							
-							<label class="floatleft">
-								<xsl:value-of select="$i18n.unPublishDate" />
-							</label>
-							
-							<div class="floatleft clearboth">
-								<xsl:value-of select="Flow/unPublishDate" />
-							</div>
-						</div>
-					</xsl:if>
-				</div>
-			</xsl:if>
-			
-			<div class="floatright min-width-thirtytree">
-				<div class="floatleft fifty">
-					<label><xsl:value-of select="$i18n.FlowID" /></label>
-					<div><xsl:value-of select="Flow/flowID" /></div>
-				</div>
-			</div>
-			
-			<div class="full clearboth"/>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'enabled'" />
-						<xsl:with-param name="id" select="'enabled'" />
-						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="disabled" select="'true'" />
-					</xsl:call-template>
-					
-					<label for="enabled">
-						<xsl:value-of select="$i18n.enabled" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'skipOverview'" />
-						<xsl:with-param name="id" select="'skipOverview'" />
-						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="disabled" select="'true'" />
-					</xsl:call-template>
-					
-					<label for="skipOverview">
-						<xsl:value-of select="$i18n.skipOverview" />
-					</label>
-				</div>
-			</div>
-			
-			<xsl:if test="$isInternal = 'true'">
-			
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'usePreview'" />
-							<xsl:with-param name="id" select="'usePreview'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="usePreview">
-							<xsl:value-of select="$i18n.PreviewEnabled" />
-						</label>
+						<label><xsl:value-of select="$i18n.FlowID" /></label>
+						<div><xsl:value-of select="Flow/flowID" /></div>
 					</div>
 				</div>
 				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop internal">
+				<div class="full clearboth"/>
 				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'paymentSupportEnabled'" />
-							<xsl:with-param name="id" select="'paymentSupportEnabled'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="paymentSupportEnabled">
-							<xsl:value-of select="$i18n.PaymentEnabled" />
-						</label>
+				<div class="floatleft min-width-thirtytree">
+					<div class="floatleft fifty">
+						<label><xsl:value-of select="$i18n.flowType" /></label>
+						<div><xsl:value-of select="Flow/FlowType/name" /></div>
 					</div>
 				</div>
 				
-			</xsl:if>
-			
-			<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'requireAuthentication'" />
-						<xsl:with-param name="id" select="'requireAuthentication'" />
-						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="disabled" select="'true'" />
-					</xsl:call-template>
-					
-					<label for="requireAuthentication">
-						<xsl:value-of select="$i18n.requirersAuthentication" />
-					</label>
-				</div>
-			</div>
-				
-			<xsl:if test="ForeignIDsBlocked and Flow/requireAuthentication = 'true'">
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'allowForeignIDs'" />
-							<xsl:with-param name="id" select="'allowForeignIDs'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="allowForeignIDs">
-							<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
-						</label>
-					</div>
-				</div>
-			</xsl:if>
-				
-			<xsl:if test="$isInternal = 'true'">
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'requireSigning'" />
-							<xsl:with-param name="id" select="'requireSigning'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="requireSigning">
-							<xsl:value-of select="$i18n.requiresSigning" />
-						</label>
-					</div>
-				</div>
-				
-				<xsl:if test="SupportsSequentialSigning and Flow/requireSigning = 'true'">
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-						<div class="floatleft">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'useSequentialSigning'" />
-								<xsl:with-param name="id" select="'useSequentialSigning'" />
-								<xsl:with-param name="element" select="Flow" />
-								<xsl:with-param name="disabled" select="'true'" />
-							</xsl:call-template>
-							
-							<label for="useSequentialSigning">
-								<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
-							</label>
-						</div>
-					</div>
-					
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-						<div class="floatleft">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'skipPosterSigning'" />
-								<xsl:with-param name="id" select="'skipPosterSigning'" />
-								<xsl:with-param name="element" select="Flow" />
-								<xsl:with-param name="disabled" select="'true'" />
-							</xsl:call-template>
-							
-							<label for="skipPosterSigning">
-								<xsl:value-of select="$i18n.Flow.skipPosterSigning" />
-							</label>
-						</div>
-					</div>
-					
-					<xsl:if test="Flow/skipPosterSigning = 'true'">
-						
-						<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-						
-							<div class="floatleft">
-								<xsl:call-template name="createCheckbox">
-									<xsl:with-param name="name" select="'allowPosterMultipartSigning'" />
-									<xsl:with-param name="id" select="'allowPosterMultipartSigning'" />
-									<xsl:with-param name="element" select="Flow" />
-									<xsl:with-param name="disabled" select="'true'" />
-								</xsl:call-template>
-								
-								<label for="allowPosterMultipartSigning">
-									<xsl:value-of select="$i18n.Flow.allowPosterMultipartSigning" />
-								</label>
-							</div>
-						</div>
-					</xsl:if>
-					
-					
-				</xsl:if>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'appendSigningSignatureToPDF'" />
-							<xsl:with-param name="id" select="'appendSigningSignatureToPDF'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="appendSigningSignatureToPDF">
-							<xsl:value-of select="$i18n.Flow.appendSigningSignatureToPDF" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideManagerDetails'" />
-							<xsl:with-param name="id" select="'hideManagerDetails'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideManagerDetails">
-							<xsl:value-of select="$i18n.hideManagerDetails" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideFromOverview'" />
-							<xsl:with-param name="id" select="'hideFromOverview'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideFromOverview">
-							<xsl:value-of select="$i18n.hideFromOverview" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideFromUser'" />
-							<xsl:with-param name="id" select="'hideFromUser'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideFromUser">
-							<xsl:value-of select="$i18n.Flow.hideFromUser" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideFlowInstanceIDFromUser'" />
-							<xsl:with-param name="id" select="'hideFlowInstanceIDFromUser'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideFlowInstanceIDFromUser">
-							<xsl:value-of select="$i18n.Flow.hideFlowInstanceIDFromUser" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideExternalMessages'" />
-							<xsl:with-param name="id" select="'hideExternalMessages'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideExternalMessages">
-							<xsl:value-of select="$i18n.hideExternalMessages" />
-						</label>
-					</div>
-				</div>
-				
-				<xsl:if test="not(Flow/hideExternalMessages = 'true')">
-					
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-						
-						<div class="floatleft">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'hideExternalMessagesOnArchivedFlowInstances'" />
-								<xsl:with-param name="id" select="'hideExternalMessagesOnArchivedFlowInstances'" />
-								<xsl:with-param name="element" select="Flow" />
-								<xsl:with-param name="disabled" select="'true'" />
-							</xsl:call-template>
-							
-							<label for="hideExternalMessagesOnArchivedFlowInstances">
-								<xsl:value-of select="$i18n.hideExternalMessagesOnArchivedFlowInstances" />
-							</label>
-						</div>
-					</div>
-
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-						
-						<div class="floatleft">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
-								<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
-								<xsl:with-param name="element" select="Flow" />
-								<xsl:with-param name="disabled" select="'true'" />
-							</xsl:call-template>
-							
-							<label for="hideExternalMessageAttachments">
-								<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
-							</label>
-						</div>
-					</div>
-					
-				</xsl:if>
-				
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideInternalMessages'" />
-							<xsl:with-param name="id" select="'hideInternalMessages'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideInternalMessages">
-							<xsl:value-of select="$i18n.hideInternalMessages" />
-						</label>
-					</div>
-				</div>
-				
-				<xsl:if test="SubmitSurveyEnabled">
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-						<div class="floatleft">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'showSubmitSurvey'" />
-								<xsl:with-param name="id" select="'showSubmitSurvey'" />
-								<xsl:with-param name="element" select="Flow" />
-								<xsl:with-param name="disabled" select="'true'" />
-							</xsl:call-template>
-							
-							<label for="showSubmitSurvey">
-								<xsl:value-of select="$i18n.showSubmitSurvey" />
-							</label>
-						</div>
-					</div>
-				</xsl:if>
-
-				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideSubmitStepText'" />
-							<xsl:with-param name="id" select="'hideSubmitStepText'" />
-							<xsl:with-param name="element" select="Flow" />
-							<xsl:with-param name="disabled" select="'true'" />
-						</xsl:call-template>
-						
-						<label for="hideSubmitStepText">
-							<xsl:value-of select="$i18n.hideSubmitStepText" />
-						</label>
-					</div>
-				</div>
-
-			
-			</xsl:if>
-			
-			<div class="floatleft full bigmarginbottom">
-				
-				<label class="floatleft full">
-					<xsl:value-of select="$i18n.shortDescription" />
-				</label>
-				
-				<div class="floatleft full border">
-					<div class="padding">
-						<xsl:value-of select="Flow/shortDescription" disable-output-escaping="yes"/>
-					</div>
-				</div>
-			</div>
-			
-			<xsl:if test="Flow/longDescription">
-			
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full">
-						<xsl:value-of select="$i18n.longDescription" />
-					</label>
-					
-					<div class="floatleft full border">
-						<div class="padding">
-							<xsl:value-of select="Flow/longDescription" disable-output-escaping="yes"/>	
-						</div>
-					</div>
-				</div>
-			
-			</xsl:if>
-			
-			<xsl:if test="$isInternal = 'true'">
-			
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full">
-						<xsl:value-of select="$i18n.submittedMessage" />
-					</label>
-					
-					<div class="floatleft full border">
-						<div class="padding">
-							<xsl:value-of select="Flow/submittedMessage" disable-output-escaping="yes"/>
-						</div>
-					</div>
-				</div>
-			
-			</xsl:if>
-
-			<xsl:if test="Flow/Tags">
-			
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full">
-						<xsl:value-of select="$i18n.tags" />
-					</label>
-					
-					<div class="floatleft full border">
-						<div class="padding">
-							<ul>
-								<xsl:for-each select="Flow/Tags/tag">
-									<li>
-										<xsl:value-of select="."/>
-									</li>
-								</xsl:for-each>
-							</ul>
-						</div>
-					</div>
-				</div>
-				
-			</xsl:if>
-
-			<xsl:if test="Flow/Checks">
-			
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full">
-						<xsl:value-of select="$i18n.checks" />
-					</label>
-					
-					<div class="floatleft full border">
-						<div class="padding">
-							<ul>
-								<xsl:for-each select="Flow/Checks/check">
-									<li>
-										<xsl:value-of select="."/>
-									</li>
-								</xsl:for-each>
-							</ul>
-						</div>
-					</div>
-				</div>
-				
-			</xsl:if>
-			
-			<xsl:if test="Flow/FlowFamily/Aliases">
-			
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full">
-						<xsl:value-of select="$i18n.aliases" />
-					</label>
-					
-					<div class="floatleft full border">
-						<div class="padding">
-							<ul>
-								<xsl:for-each select="Flow/FlowFamily/Aliases/Alias">
-									<li>
-										
+				<div class="floaleft min-width-thirtytree">
+					<div class="floatleft fifty">
+						<label><xsl:value-of select="$i18n.aliases.url" /></label>
+						<div>
+							<xsl:choose>
+								<xsl:when test="Flow/FlowFamily/Aliases/Alias">
+									<xsl:for-each select="Flow/FlowFamily/Aliases/Alias">
 										<xsl:variable name="url">
 											<xsl:value-of select="'https://'"/>
 											<xsl:value-of select="/Document/requestinfo/servername"/>
@@ -1002,196 +584,327 @@
 											<xsl:value-of select="'/'"/>
 											<xsl:value-of select="."/>
 										</xsl:variable>
-										
 										<a href="{$url}">
 											<xsl:value-of select="$url"/>
 										</a>
-									</li>
-								</xsl:for-each>
-							</ul>
+										<xsl:if test="position() != last()"><br/></xsl:if>
+									</xsl:for-each>
+								</xsl:when>
+								<xsl:otherwise>-</xsl:otherwise>
+							</xsl:choose>
 						</div>
 					</div>
 				</div>
 				
-			</xsl:if>
-			
-			<xsl:if test="Flow/FlowFamily/contactName">
+				<div class="full clearboth"/>
 				
-				<div class="floatleft full bigmarginbottom">
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					<div class="floatleft">
+						<label>
+							<xsl:choose>
+								<xsl:when test="Flow/requireAuthentication = 'true'"><img src="{$imgPath}/lock.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requirersAuthentication" /></xsl:when>
+								<xsl:otherwise><img src="{$imgPath}/lock_open.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.requirersNoAuthentication" /></xsl:otherwise>
+							</xsl:choose>
+						</label>
+					</div>
+				</div>
 					
-					<label class="floatleft full"><xsl:value-of select="$i18n.contact.title" /></label>
+				<xsl:if test="$isInternal = 'true'">
+				
+					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+						<div class="floatleft">
+							<label>
+								<xsl:choose>
+									<xsl:when test="Flow/requireSigning = 'true'"><img src="{$imgPath}/page_edit.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requiresSigning" /></xsl:when>
+									<xsl:otherwise><img src="{$imgPath}/page_edit.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.requiresNoSigning" /></xsl:otherwise>
+								</xsl:choose>
+							</label>
+						</div>
+					</div>
+				
+					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
 					
-					<div class="floatleft full border">
+						<div class="floatleft">
+							<label for="hideFromOverview">
+								<xsl:choose>
+									<xsl:when test="Flow/hideFromOverview = 'true'"><img src="{$imgPath}/invisible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" width="16px" /><xsl:value-of select="$i18n.hiddenFromOverview" /></xsl:when>
+									<xsl:otherwise><img src="{$imgPath}/visible.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.shownOnOverview" /></xsl:otherwise>
+								</xsl:choose>
+							</label>
+						</div>
+					</div>
 					
-						<div class="padding">
-					
-							<div class="floatleft">
+				</xsl:if>
+				
+				<div class="showflow-moreinfo-wrapper">
+				
+					<div class="showflow-moreinfo-content hidden" data-rel="baseinfo">
+				
+						<div class="textsetting">
+							
+							<label class="floatleft full bigmarginbottom">
+								<xsl:value-of select="$i18n.shortDescription" />
+								<a class="floatright" href="{$updateBaseInfoLink}#shortdescription" title="{$i18n.updateFlowBaseInfo.title}">
+									<img src="{$imgPath}/pen.png" alt="" />
+								</a>
+							</label>
+							
+							<div class="floatleft full">
+								<div class="padding border whitebackground">
+									<xsl:value-of select="Flow/shortDescription" disable-output-escaping="yes"/>
+								</div>
+							</div>
+						</div>
 						
-								<label class="floatleft full nomargin">
-									<xsl:value-of select="$i18n.contact.name" />
+						<xsl:if test="Flow/longDescription">
+						
+							<div class="textsetting">
+								
+								<label class="floatleft full bigmarginbottom">
+									<xsl:value-of select="$i18n.longDescription" />
+									<a class="floatright" href="{$updateBaseInfoLink}#longdescription" title="{$i18n.updateFlowBaseInfo.title}">
+										<img src="{$imgPath}/pen.png" alt="" />
+									</a>
 								</label>
 								
 								<div class="floatleft full">
-									<xsl:value-of select="Flow/FlowFamily/contactName" />
+									<div class="padding border whitebackground">
+										<xsl:value-of select="Flow/longDescription" disable-output-escaping="yes"/>
+									</div>
 								</div>
-							
 							</div>
-							
-							<xsl:if test="Flow/FlowFamily/contactEmail">
-								<div class="floatleft">
-							
-									<label class="floatleft full nomargin">
-										<xsl:value-of select="$i18n.contact.email" />
-									</label>
-									
-									<div class="floatleft full">
-										<xsl:value-of select="Flow/FlowFamily/contactEmail" />
-									</div>
-								
-								</div>
-							</xsl:if>
-							
-							<xsl:if test="Flow/FlowFamily/contactPhone">
-								<div class="floatleft">
-							
-									<label class="floatleft full nomargin">
-										<xsl:value-of select="$i18n.contact.phone" />
-									</label>
-									
-									<div class="floatleft full">
-										<xsl:value-of select="Flow/FlowFamily/contactPhone" />
-									</div>
-								
-								</div>
-							</xsl:if>
-					
-						</div>
-					
-					</div>
-					
-				</div>
-				
-			</xsl:if>
-			
-			<xsl:if test="Flow/FlowFamily/ownerName">
-				
-				<div class="floatleft full bigmarginbottom">
-					
-					<label class="floatleft full"><xsl:value-of select="$i18n.owner.title" /></label>
-					
-					<div class="floatleft full border">
-					
-						<div class="padding">
-					
-							<div class="floatleft">
 						
-								<label class="floatleft full nomargin">
-									<xsl:value-of select="$i18n.owner.name" />
+						</xsl:if>
+						
+						<xsl:if test="$isInternal = 'true'">
+						
+							<div class="textsetting">
+								
+								<label class="floatleft full bigmarginbottom">
+									<xsl:value-of select="$i18n.submittedMessage" />
+									<a class="floatright" href="{$updateBaseInfoLink}#submittedmessage" title="{$i18n.updateFlowBaseInfo.title}">
+										<img src="{$imgPath}/pen.png" alt="" />
+									</a>
 								</label>
 								
 								<div class="floatleft full">
-									<xsl:value-of select="Flow/FlowFamily/ownerName" />
+									<div class="padding border whitebackground">
+										<xsl:value-of select="Flow/submittedMessage" disable-output-escaping="yes"/>
+									</div>
 								</div>
-							
+							</div>
+						
+						</xsl:if>
+			
+						<xsl:if test="Flow/Tags">
+						
+							<div class="textsetting fifty">
+								
+								<label class="floatleft full bigmarginbottom">
+									<xsl:value-of select="$i18n.tags" />
+									<a class="floatright" href="{$updateBaseInfoLink}#tags" title="{$i18n.updateFlowBaseInfo.title}">
+										<img src="{$imgPath}/pen.png" alt="" />
+									</a>
+								</label>
+								
+								<div class="floatleft full">
+									<div class="padding border whitebackground">
+										<xsl:for-each select="Flow/Tags/tag">
+											<xsl:value-of select="."/>
+											<xsl:if test="position() != last()"><xsl:text>, </xsl:text></xsl:if>
+										</xsl:for-each>
+									</div>
+								</div>
 							</div>
 							
-							<xsl:if test="Flow/FlowFamily/ownerEmail">
-								<div class="floatleft">
-							
-									<label class="floatleft full nomargin">
-										<xsl:value-of select="$i18n.owner.email" />
-									</label>
-									
-									<div class="floatleft full">
-										<xsl:value-of select="Flow/FlowFamily/ownerEmail" />
-									</div>
-								
-								</div>
-							</xsl:if>
-							
-						</div>
-					
-					</div>
-					
-				</div>
-				
-			</xsl:if>
+						</xsl:if>
 			
-		</fieldset>
+						<xsl:if test="Flow/Checks">
+						
+							<div class="textsetting fifty floatright">
+								
+								<label class="floatleft full bigmarginbottom">
+									<xsl:value-of select="$i18n.checks" />
+									<a class="floatright" href="{$updateBaseInfoLink}#checks" title="{$i18n.updateFlowBaseInfo.title}">
+										<img src="{$imgPath}/pen.png" alt="" />
+									</a>
+								</label>
+								
+								<div class="floatleft full">
+									<div class="padding border whitebackground">
+										<xsl:for-each select="Flow/Checks/check">
+											<span data-icon-before="c"><xsl:value-of select="."/></span>
+											<xsl:if test="position() != last()"><br /></xsl:if>
+										</xsl:for-each>
+									</div>
+								</div>
+							</div>
+							
+						</xsl:if>
+						
+					</div>
+				
+				</div>
+			
+			</div>
+			
+			<div class="showflow-moreinfo-footer"><a href="#" class="show-more" data-rel="baseinfo"><xsl:value-of select="$i18n.ShowMore" /></a><a href="#" class="show-less hidden" data-rel="baseinfo"><xsl:value-of select="$i18n.ShowLess" /></a></div>
+			
+		</div>
 		
 		<xsl:if test="$isInternal = 'true'">
 		
-			<a name="steps"/>
-		
-			<fieldset>
-				<legend><xsl:value-of select="$i18n.stepsAndQueries"/></legend>
-				
-				<xsl:if test="$disableStructureManipulation = true()">
-					<xsl:choose>
-						<xsl:when test="Flow/flowInstanceCount > 0">
-	
-							<p><xsl:value-of select="$i18n.stepAndQueryManipulationDisabledHasInstances"/></p>
-	
-						</xsl:when>
-						<xsl:when test="Flow/published = 'true'">
-	
-							<p><xsl:value-of select="$i18n.stepAndQueryManipulationDisabledIsPublished"/></p>
-	
-						</xsl:when>
-					</xsl:choose>
-				</xsl:if>
-				
-				<xsl:choose>
-					<xsl:when test="Flow/Steps/Step">
-						<ol>
-							<xsl:apply-templates select="Flow/Steps/Step" mode="list">
-								<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-							</xsl:apply-templates>
-						</ol>
-					</xsl:when>
-					<xsl:otherwise>
-						<p><xsl:value-of select="$i18n.flowContainsNoSteps"/></p>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				
-				<xsl:if test="$disableStructureManipulation = false()">
-					<br/>
-					
-					<div class="floatright marginright">
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstep/{Flow/flowID}" title="{$i18n.addStep}">
-							<xsl:value-of select="$i18n.addStep"/>
-							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+			<div class="showflow-wrapper">
+			
+				<a name="steps"/>
+			
+				<h2 class="title">
+					<xsl:value-of select="$i18n.stepsAndQueries"/>
+					<div class="floatright">
+						<a class="comments-btn show-all-comments" href="#" title="{$i18n.ShowAllComments}">
+							<xsl:value-of select="$i18n.ShowAllComments"/><img class="marginleft" src="{$imgPath}/visible.png" alt="" />
+						</a>
+						<a class="comments-btn hide-all-comments hidden" href="#" title="{$i18n.HideAllComments}">
+							<xsl:value-of select="$i18n.HideAllComments"/><img class="marginleft" src="{$imgPath}/invisible.png" alt="" />
 						</a>
 					</div>
+				</h2>
+			
+				<div class="showflow-content">
+				
+					<xsl:if test="$disableStructureManipulation = true()">
+						<xsl:choose>
+							<xsl:when test="Flow/flowInstanceCount > 0">
+		
+								<p><xsl:value-of select="$i18n.stepAndQueryManipulationDisabledHasInstances"/></p>
+		
+							</xsl:when>
+							<xsl:when test="Flow/published = 'true'">
+		
+								<p><xsl:value-of select="$i18n.stepAndQueryManipulationDisabledIsPublished"/></p>
+		
+							</xsl:when>
+						</xsl:choose>
+					</xsl:if>
+					
+					<xsl:choose>
+						<xsl:when test="Flow/Steps/Step">
+							<ul class="steps" data-flowid="{flowID}">
+								<xsl:apply-templates select="Flow/Steps/Step" mode="list">
+									<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
+								</xsl:apply-templates>
+							</ul>
+						</xsl:when>
+						<xsl:otherwise>
+							<p><xsl:value-of select="$i18n.flowContainsNoSteps"/></p>
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					
+					<xsl:if test="$disableStructureManipulation = false()">
+						
+						<br/>
+						
+						<div class="floatright marginright">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstep/{Flow/flowID}" title="{$i18n.addStep}">
+								<xsl:value-of select="$i18n.addStep"/>
+								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+							</a>
+						</div>
+						
+						<xsl:if test="Flow/Steps/Step">
+							<div class="floatright marginright clearboth">
+								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addquery/{Flow/flowID}" title="{$i18n.addQuery}">
+									<xsl:value-of select="$i18n.addQuery"/>
+									<img class="marginleft" src="{$imgPath}/form_add.png" alt="" />
+								</a>
+							</div>
+							
+							<div class="floatright marginright clearboth">
+								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importqueries/{Flow/flowID}" title="{$i18n.ImportQueries}">
+									<xsl:value-of select="$i18n.ImportQueries"/>
+									<img class="marginleft" src="{$imgPath}/form_import.png" alt="" />
+								</a>
+							</div>
+							
+							<div class="floatright marginright clearboth">
+								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortflow/{Flow/flowID}" title="{$i18n.sortStepsAndQueries}">
+									<xsl:value-of select="$i18n.sortStepsAndQueries"/>
+									<img class="marginleft" src="{$imgPath}/move.png" alt="" />
+								</a>
+							</div>
+						</xsl:if>
+				
+					</xsl:if>
 					
 					<xsl:if test="Flow/Steps/Step">
+						<br/>
 						<div class="floatright marginright clearboth">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addquery/{Flow/flowID}" title="{$i18n.addQuery}">
-								<xsl:value-of select="$i18n.addQuery"/>
-								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/testflowallsteps/{Flow/flowID}" title="{$i18n.PreviewQueries}" target="_blank">
+								<xsl:value-of select="$i18n.PreviewQueries"/>
+								<img class="marginleft" src="{$imgPath}/magnifying_glass.png" alt="" />
 							</a>
 						</div>
-						
 						<div class="floatright marginright clearboth">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importqueries/{Flow/flowID}" title="{$i18n.ImportQueries}">
-								<xsl:value-of select="$i18n.ImportQueries"/>
-								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-							</a>
-						</div>
-						
-						<div class="floatright marginright clearboth">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortflow/{Flow/flowID}" title="{$i18n.sortStepsAndQueries}">
-								<xsl:value-of select="$i18n.sortStepsAndQueries"/>
-								<img class="marginleft" src="{$imgPath}/move.png" alt="" />
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
+								<xsl:value-of select="$i18n.testFlow"/>
+								<img class="marginleft" src="{$imgPath}/play.png" alt="" />
 							</a>
 						</div>
 					</xsl:if>
-			
-				</xsl:if>
 				
-				<xsl:if test="Flow/Steps/Step">
-					<br/>
+				</div>
+				
+			</div>
+			
+		</xsl:if>
+			
+		<div class="showflow-wrapper">
+	
+			<a name="pdfform"/>
+			
+			<h2 class="title">
+				<xsl:value-of select="$i18n.FlowForm"/>
+			</h2>
+			
+			<div class="showflow-content">
+			
+				<xsl:choose>
+					<xsl:when test="Flow/FlowForms/FlowForm">
+					
+						<div>
+							<xsl:apply-templates select="Flow/FlowForms/FlowForm" mode="list"/>
+						</div>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<xsl:value-of select="$i18n.hasNoFlowForm"/>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				<div class="clearboth floatright marginright">
+					
+					<xsl:choose>
+						<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForFlowForms)">
+						
+							<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
+						
+						</xsl:when>
+						<xsl:otherwise>
+						
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowform/{Flow/flowID}" title="{$i18n.addFlowForm.link.title}">
+								<xsl:value-of select="$i18n.addFlowForm.link.title"/>
+								<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+							</a>
+							
+						</xsl:otherwise>
+					</xsl:choose>
+					
+				</div>
+				
+				<xsl:if test="Flow/FlowForms/FlowForm">
 					
 					<div class="floatright marginright clearboth">
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
@@ -1199,324 +912,345 @@
 							<img class="marginleft" src="{$imgPath}/play.png" alt="" />
 						</a>
 					</div>
+					
 				</xsl:if>
-				
-			</fieldset>
 			
-		</xsl:if>
-			
-		<a name="pdfform"/>
-		
-		<fieldset>
-			<legend><xsl:value-of select="$i18n.FlowForm"/></legend>
-			
-			<xsl:choose>
-				<xsl:when test="Flow/FlowForms/FlowForm">
-				
-					<div>
-						<xsl:apply-templates select="Flow/FlowForms/FlowForm" mode="list"/>
-					</div>
-				
-				</xsl:when>
-				<xsl:otherwise>
-				
-					<xsl:value-of select="$i18n.hasNoFlowForm"/>
-					
-				</xsl:otherwise>
-			</xsl:choose>
-			
-			<div class="clearboth floatright marginright">
-				
-				<xsl:choose>
-					<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForFlowForms)">
-					
-						<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
-					
-					</xsl:when>
-					<xsl:otherwise>
-					
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflowform/{Flow/flowID}" title="{$i18n.addFlowForm.link.title}">
-							<xsl:value-of select="$i18n.addFlowForm.link.title"/>
-							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-						</a>
-						
-					</xsl:otherwise>
-				</xsl:choose>
-				
 			</div>
 			
-			<xsl:if test="Flow/FlowForms/FlowForm">
-				
-				<div class="floatright marginright clearboth">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{Flow/flowID}" title="{$i18n.testFlow}" target="_blank">
-						<xsl:value-of select="$i18n.testFlow"/>
-						<img class="marginleft" src="{$imgPath}/play.png" alt="" />
-					</a>
-				</div>
-				
-			</xsl:if>
-			
-		</fieldset>
+		</div>
 		
 		<xsl:if test="$isInternal = 'true'">
 		
-			<a name="statuses"/>
-		
-			<fieldset>
-				<legend><xsl:value-of select="$i18n.statuses"/></legend>
-				
-				<xsl:choose>
-					<xsl:when test="Flow/Statuses/Status">
-					
-						<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
-							<thead>	
-								<tr>
-									<th><xsl:value-of select="$i18n.name" /></th>
-									<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
-									<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
-									<th width="37" />
-								</tr>
-							</thead>
-							<tbody>
-							
-								<xsl:apply-templates select="Flow/Statuses/Status" mode="list"/>
-										
-							</tbody>
-						</table>
-					
-					</xsl:when>
-					<xsl:otherwise>
-						<p><xsl:value-of select="$i18n.flowHasNoStatuses"/></p>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstatus/{Flow/flowID}" title="{$i18n.addStatus}">
-						<xsl:value-of select="$i18n.addStatus"/>
-						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-					</a>
-				</div>
-				
-				<xsl:if test="Flow/Statuses/Status">
-					<div class="floatright marginright clearboth">
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstatuses/{Flow/flowID}" title="{$i18n.sortStatuses}">
-							<xsl:value-of select="$i18n.sortStatuses"/>
-							<img class="marginleft" src="{$imgPath}/move.png" alt="" />
-						</a>
-					</div>
-				</xsl:if>
-			</fieldset>
-		
-			<a name="managers"/>
-		
-			<fieldset>
-				<legend><xsl:value-of select="$i18n.Managers"/></legend>
-				
-				<xsl:choose>
-					<xsl:when test="ManagerGroups or ManagerUsers">
-					
-						<p class="nomargin">
-							<xsl:value-of select="$i18n.ManagersDescription"/>
-							
-							<xsl:if test="UsesAutoManagerAssignment">
-								<xsl:text> </xsl:text>
-								<xsl:value-of select="$i18n.FlowFamily.UsesAutoManagerAssignment"/>
-							</xsl:if>
-						</p>
-						
-						<xsl:if test="ManagerGroups">
-							<span class="floatleft bold">
-								<xsl:value-of select="$i18n.allowedGroups"/>
-							</span>
-							
-							<xsl:apply-templates select="ManagerGroups/FlowFamilyManagerGroup[group]" mode="list"/>
-						</xsl:if>
-					
-						<xsl:if test="ManagerUsers">
-							<span class="floatleft bold">
-								<xsl:value-of select="$i18n.allowedUsers"/>
-							</span>
-							
-							<xsl:apply-templates select="ManagerUsers/FlowFamilyManager[user]" mode="list"/>
-						</xsl:if>
-					
-					</xsl:when>
-					<xsl:otherwise>
-						
-						<span class="floatleft">
-							<xsl:value-of select="$i18n.NoManagers"/>
-						</span>
-						
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagers/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateFlowFamilyManagers}">
-						<xsl:value-of select="$i18n.UpdateFlowFamilyManagers"/>
-						<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
-					</a>
-				</div>
-				
-				<div class="floatright marginright clearboth">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateautomanagerassignment/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateAutoManagerAssignment}">
-						<xsl:value-of select="$i18n.UpdateAutoManagerAssignment"/>
-						<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
-					</a>
-				</div>
-				
-			</fieldset>
-	
-			<xsl:if test="Notifications">
+			<div class="showflow-wrapper">
 			
-				<a name="notifications"/>
+				<a name="statuses"/>
 			
-				<fieldset>
-					<legend><xsl:value-of select="$i18n.Notifications"/></legend>
-					
-					<xsl:value-of select="Notifications/HTML" disable-output-escaping="yes"/>
+				<h2 class="title">
+					<xsl:value-of select="$i18n.statuses"/>
+				</h2>
+			
+				<div class="showflow-content">
+				
+					<xsl:choose>
+						<xsl:when test="Flow/Statuses/Status">
+						
+							<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
+								<thead>	
+									<tr>
+										<th><xsl:value-of select="$i18n.name" /></th>
+										<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
+										<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
+										<th width="37" />
+									</tr>
+								</thead>
+								<tbody>
+								
+									<xsl:apply-templates select="Flow/Statuses/Status" mode="list"/>
+											
+								</tbody>
+							</table>
+						
+						</xsl:when>
+						<xsl:otherwise>
+							<p><xsl:value-of select="$i18n.flowHasNoStatuses"/></p>
+						</xsl:otherwise>
+					</xsl:choose>
 					
 					<div class="floatright marginright">
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatenotifications/{Flow/flowID}" title="{$i18n.UpdateNotificationSettings}">
-							<xsl:value-of select="$i18n.UpdateNotificationSettings"/>
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstatus/{Flow/flowID}" title="{$i18n.addStatus}">
+							<xsl:value-of select="$i18n.addStatus"/>
+							<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+						</a>
+					</div>
+					
+					<xsl:if test="Flow/Statuses/Status">
+						<div class="floatright marginright clearboth">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstatuses/{Flow/flowID}" title="{$i18n.sortStatuses}">
+								<xsl:value-of select="$i18n.sortStatuses"/>
+								<img class="marginleft" src="{$imgPath}/move.png" alt="" />
+							</a>
+						</div>
+					</xsl:if>
+				
+				</div>
+				
+			</div>
+		
+			<div class="showflow-wrapper">
+			
+				<a name="managers"/>
+			
+				<h2 class="title">
+					<xsl:value-of select="$i18n.Managers"/>
+				</h2>
+			
+				<div class="showflow-content">
+				
+					<xsl:choose>
+						<xsl:when test="ManagerGroups or ManagerUsers">
+						
+							<p class="nomargin">
+								<xsl:value-of select="$i18n.ManagersDescription"/>
+								
+								<xsl:if test="UsesAutoManagerAssignment">
+									<xsl:text> </xsl:text>
+									<xsl:value-of select="$i18n.FlowFamily.UsesAutoManagerAssignment"/>
+								</xsl:if>
+							</p>
+							
+							<xsl:if test="ManagerGroups">
+								<span class="floatleft bold">
+									<xsl:value-of select="$i18n.allowedGroups"/>
+								</span>
+								
+								<xsl:apply-templates select="ManagerGroups/FlowFamilyManagerGroup[group]" mode="list"/>
+							</xsl:if>
+						
+							<xsl:if test="ManagerUsers">
+								<span class="floatleft bold">
+									<xsl:value-of select="$i18n.allowedUsers"/>
+								</span>
+								
+								<xsl:apply-templates select="ManagerUsers/FlowFamilyManager[user]" mode="list"/>
+							</xsl:if>
+						
+						</xsl:when>
+						<xsl:otherwise>
+							
+							<span class="floatleft">
+								<xsl:value-of select="$i18n.NoManagers"/>
+							</span>
+							
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					<div class="floatright marginright">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagers/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateFlowFamilyManagers}">
+							<xsl:value-of select="$i18n.UpdateFlowFamilyManagers"/>
 							<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 						</a>
 					</div>
 					
-				</fieldset>
+					<div class="floatright marginright clearboth">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateautomanagerassignment/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" title="{$i18n.UpdateAutoManagerAssignment}">
+							<xsl:value-of select="$i18n.UpdateAutoManagerAssignment"/>
+							<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
+						</a>
+					</div>
+				
+				</div>
+				
+			</div>
+	
+			<xsl:if test="Notifications">
+			
+				<div class="showflow-wrapper">
+
+					<a name="notifications"/>
+			
+					<h2 class="title">
+						<xsl:value-of select="$i18n.Notifications"/>
+					</h2>
+			
+					<div class="showflow-content">
+					
+						<xsl:value-of select="Notifications/HTML" disable-output-escaping="yes"/>
+						
+						<div class="floatright marginright">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatenotifications/{Flow/flowID}" title="{$i18n.UpdateNotificationSettings}">
+								<xsl:value-of select="$i18n.UpdateNotificationSettings"/>
+								<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
+							</a>
+						</div>
+					
+					</div>
+					
+				</div>
 			
 			</xsl:if>
 	
 			<xsl:if test="ShowFlowSurveysHTML">
 				
-				<fieldset>
+				<div class="showflow-wrapper">
+			
+					<a name="flowsurveys"/>
+			
+					<h2 class="title">
+						<xsl:value-of select="$i18n.FlowSurveysTitle"/>
+					</h2>
 					
-					<legend><xsl:value-of select="$i18n.FlowSurveysTitle"/></legend>
+					<div class="showflow-content">
 					
-					<xsl:value-of select="ShowFlowSurveysHTML" disable-output-escaping="yes"/>
+						<xsl:value-of select="ShowFlowSurveysHTML" disable-output-escaping="yes"/>
 					
-				</fieldset>
+					</div>
+					
+				</div>
 				
 			</xsl:if>
+	
+			<div class="showflow-wrapper">
+				
+				<a name="externalmessagetemplates"/>
 			
-			<a name="externalmessagetemplates"/>
-		
-			<fieldset>
-				<legend><xsl:value-of select="$i18n.ExternalMessageTemplates.title"/></legend>
+				<h2 class="title">
+					<xsl:value-of select="$i18n.ExternalMessageTemplates.title"/>
+				</h2>
 				
-				<xsl:choose>
-					<xsl:when test="Flow/FlowFamily/ExternalMessageTemplates">
-						
-						<table class="full coloredtable sortabletable oep-table" cellspacing="0">
-							<thead>
-								<tr>
-									<th><xsl:value-of select="$i18n.ExternalMessageTemplate.name" /></th>
-									<th width="37" />
-								</tr>
-							</thead>
-							<tbody>
-								
-								<xsl:apply-templates select="Flow/FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate" mode="list"/>
-								
-							</tbody>
-						</table>
-						
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$i18n.ExternalMessageTemplates.noExternalMessageTemplates" />
-					</xsl:otherwise>
-				</xsl:choose>
+				<div class="showflow-content">
 				
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addexternalmessagetemplate/{Flow/flowID}" class="floatright">
-					<xsl:value-of select="$i18n.ExternalMessageTemplates.add" />
-					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>
+					<xsl:choose>
+						<xsl:when test="Flow/FlowFamily/ExternalMessageTemplates">
+							
+							<table class="full coloredtable sortabletable oep-table" cellspacing="0">
+								<thead>
+									<tr>
+										<th><xsl:value-of select="$i18n.ExternalMessageTemplate.name" /></th>
+										<th width="37" />
+									</tr>
+								</thead>
+								<tbody>
+									
+									<xsl:apply-templates select="Flow/FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate" mode="list"/>
+									
+								</tbody>
+							</table>
+							
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.ExternalMessageTemplates.noExternalMessageTemplates" />
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addexternalmessagetemplate/{Flow/flowID}" class="floatright">
+						<xsl:value-of select="$i18n.ExternalMessageTemplates.add" />
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+					</a>
 				
-			</fieldset>
+				</div>
+				
+			</div>
 	
 		</xsl:if>
 
-		<xsl:apply-templates select="ExtensionProvider" />
-	
-		<a name="versions"/>
-	
-		<fieldset>
-			<legend><xsl:value-of select="$i18n.versions"/></legend>
+		<div class="showflow-wrapper">
 			
-			<p class="nomargin"><xsl:value-of select="$i18n.versions.description"/></p>
-	
-			<form method="post" action="{/Document/requestinfo/currentURI}/{/Document/module/alias}/copyflow">
+			<a name="versions"/>
 			
-				<xsl:choose>
-					<xsl:when test="FlowVersions">
-					
-						<table id="flowversionlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
-							<thead>	
-								<tr>
-									<th width="10"></th>
-									<th width="25"></th>
-									<th><xsl:value-of select="$i18n.name" /></th>
-									
-									<xsl:if test="/Document/UseCategories">
-										<th><xsl:value-of select="$i18n.flowCategory" /></th>
-									</xsl:if>
-									
-									<th><xsl:value-of select="$i18n.version.title" /></th>
-									
-									<xsl:if test="$isInternal = 'true'">
-										<th width="25"><xsl:value-of select="$i18n.steps" /></th>
-										<th width="25"><xsl:value-of select="$i18n.queries" /></th>
-										<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
-										<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
-									</xsl:if>
-									
-									<th width="75"><xsl:value-of select="$i18n.status" /></th>
-									<th width="37" >
-										<xsl:if test="PublishAccess">
-											<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
-												<img class="alignmiddle marginright" src="{$imgPath}/disabled.png" alt="" />
-											</a>
-										</xsl:if>
-									
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<xsl:apply-templates select="FlowVersions/Flow" mode="list-versions">
-									<xsl:with-param name="isInternal" select="$isInternal" />	
-								</xsl:apply-templates>
-							</tbody>
-						</table>
-	
-					</xsl:when>
-					<xsl:otherwise>
-						<p><xsl:value-of select="$i18n.flowHasNoOtherVersions"/></p>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<br/>
-				
-				<div class="floatright marginright">
-					<input type="button" value="{$i18n.importNewFlowVersion}" title="{$i18n.importNewFlowVersion}" onclick="window.location = '{/Document/requestinfo/currentURI}/{/Document/module/alias}/importversion/{Flow/flowID}'"/>
-				</div>
-				
-				<div class="floatright margintop marginright hidden clearboth" id="add_new_version">
-					<input type="submit" value="{$i18n.addNewVersion}"/>
-				</div>
-				
-				<div class="floatright marginright margintop clearboth hidden" id="create_copy">
-					<input type="submit" name="new_family" value="{$i18n.createNewFlow}"/>
-				</div>
+			<h2 class="title">
+				<xsl:value-of select="$i18n.versions"/>
+			</h2>
 			
-			</form>
+			<div class="showflow-content">
 			
-		</fieldset>
+				<p class="nomargin"><xsl:value-of select="$i18n.versions.description"/></p>
 		
-		<a name="events"/>	
-	
-		<fieldset>
-			<legend><xsl:value-of select="$i18n.Events.Title"/></legend>
+				<form method="post" action="{/Document/requestinfo/currentURI}/{/Document/module/alias}/copyflow">
+				
+					<xsl:choose>
+						<xsl:when test="FlowVersions">
+						
+							<table id="flowversionlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
+								<thead>	
+									<tr>
+										<th width="10"></th>
+										<th width="16">#</th>
+										<th><xsl:value-of select="$i18n.name" /></th>
+										
+										<xsl:if test="/Document/UseCategories">
+											<th><xsl:value-of select="$i18n.flowCategory" /></th>
+										</xsl:if>
+										
+										<xsl:if test="$isInternal = 'true'">
+											<th width="25"><xsl:value-of select="$i18n.steps" /></th>
+											<th width="25"><xsl:value-of select="$i18n.queries" /></th>
+											<th width="100"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
+											<th width="115"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
+										</xsl:if>
+										
+										<th width="75"><xsl:value-of select="$i18n.status" /></th>
+										<th width="37" >
+											<xsl:if test="PublishAccess">
+												<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
+													<img class="alignmiddle marginright" src="{$imgPath}/disabled.png" alt="" />
+												</a>
+											</xsl:if>
+										
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<xsl:apply-templates select="FlowVersions/Flow" mode="list-versions">
+										<xsl:with-param name="isInternal" select="$isInternal" />	
+									</xsl:apply-templates>
+								</tbody>
+							</table>
+		
+						</xsl:when>
+						<xsl:otherwise>
+							<p><xsl:value-of select="$i18n.flowHasNoOtherVersions"/></p>
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					<br/>
+					
+					<div class="floatright marginright">
+						<input type="button" value="{$i18n.importNewFlowVersion}" title="{$i18n.importNewFlowVersion}" onclick="window.location = '{/Document/requestinfo/currentURI}/{/Document/module/alias}/importversion/{Flow/flowID}'"/>
+					</div>
+					
+					<div class="floatright margintop marginright hidden clearboth" id="add_new_version">
+						<input type="submit" value="{$i18n.addNewVersion}"/>
+					</div>
+					
+					<div class="floatright marginright margintop clearboth hidden" id="create_copy">
+						<input type="submit" name="new_family" value="{$i18n.createNewFlow}"/>
+					</div>
+				
+				</form>
 			
-			<p class="nomargin"><xsl:value-of select="$i18n.Events.Description"/></p>
+			</div>
+			
+			<xsl:if test="count(FlowVersions/Flow) > 5">
+				<div class="showflow-moreinfo-footer"><a href="#" class="show-more" data-rel="versions"><xsl:value-of select="$i18n.ShowOldVersions" /></a></div>
+			</xsl:if>
+			
+		</div>
+		
+		<div class="extensionproviders-wrapper">
+		
+			<a name="extensions" />
+		
+			<h2>
+				<xsl:value-of select="$i18n.ExtensionProviders" />
+				<xsl:text> (</xsl:text>
+				<xsl:value-of select="count(ExtensionProvider[Enabled = 'true'])" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="$i18n.ExtensionProviders.by" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="count(ExtensionProvider)" />
+				<xsl:text>&#160;<xsl:value-of select="$i18n.ExtensionProviders.activated" /></xsl:text>
+				<xsl:text>)</xsl:text>
+				<div class="floatright">
+					<a id="show-inactive-providers" href="#"><xsl:value-of select="$i18n.ShowInactiveExtensionProviders" /></a>
+					<a id="hide-inactive-providers" class="hidden" href="#"><xsl:value-of select="$i18n.HideInactiveExtensionProviders" /></a>
+				</div>
+			</h2>
+		
+		</div>
+		
+		<xsl:apply-templates select="ExtensionProvider" />
+		
+		<div class="showflow-wrapper">
+			
+			<a name="events"/>
+		
+			<h2 class="title">
+				<xsl:value-of select="$i18n.Events.Title"/>
+			</h2>
+			
+			<div class="showflow-content">
+			
+				<p class="nomargin"><xsl:value-of select="$i18n.Events.Description"/></p>
 	
 				<xsl:choose>
 					<xsl:when test="FlowFamilyEvents/FlowFamilyEvent">
@@ -1555,19 +1289,36 @@
 						<xsl:value-of select="$i18n.Events.ShowAll"/>
 					</a>
 				</div>
-		</fieldset>
+			
+			</div>
+				
+		</div>
 		
 	</xsl:template>
 	
 	<xsl:template match="ExtensionProvider">
 		
-		<fieldset>
-					
-			<legend><xsl:value-of select="Title"/></legend>
+		<div class="showflow-wrapper extension">
 			
-			<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+			<xsl:if test="Enabled != 'true'"><xsl:attribute name="class">showflow-wrapper extension inactive hidden</xsl:attribute></xsl:if>
 			
-		</fieldset>
+			<a name="extension-{ID}" />
+			
+			<h2 class="title">
+				<xsl:value-of select="Title"/>
+				<xsl:choose>
+					<xsl:when test="Enabled = 'true'"><img src="{$imgPath}/check.png" alt="" class="floatright" title="{$i18n.ExtensionEnabled}" /></xsl:when>
+					<xsl:otherwise><img src="{$imgPath}/disabled.png" alt="" class="floatright" title="{$i18n.ExtensionDisabled}" /></xsl:otherwise>
+				</xsl:choose>
+			</h2>
+			
+			<div class="showflow-content">
+			
+				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+			
+			</div>
+			
+		</div>
 		
 	</xsl:template>
 	
@@ -1603,7 +1354,7 @@
 				<span class="bigmarginleft">
 					<xsl:value-of select="$i18n.Manager.restricted"/>
 				</span>
-				
+			
 				<xsl:if test="allowUpdatingManagers = 'true'">
 					
 					<span class="bigmarginleft">
@@ -1680,7 +1431,7 @@
 				<span class="bigmarginleft">
 					<xsl:value-of select="$i18n.Manager.restricted"/>
 				</span>
-				
+			
 				<xsl:if test="allowUpdatingManagers = 'true'">
 					
 					<span class="bigmarginleft">
@@ -1815,15 +1566,16 @@
 		
 		<xsl:param name="isInternal" />
 			
-		<tr>
-			<xsl:if test="published = 'false' or enabled = 'false'">
-				<xsl:attribute name="class">disabled</xsl:attribute>
-			</xsl:if>
-			<td>
+		<tr data-rel="versions">
+			<xsl:attribute name="class">
+				<xsl:if test="published = 'false' or enabled = 'false'">disabled </xsl:if>
+				<xsl:if test="position() > 5">hidden</xsl:if>
+			</xsl:attribute>
+			<td style="padding-right: 0px;">
 				<input type="radio" name="flowID" value="{flowID}" onclick="$('#add_new_version').show();$('#create_copy').show();"/>
 			</td>
-			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="25" alt="" />
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="version" /></a>
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="name" /></a>
@@ -1837,9 +1589,6 @@
 				</td>
 			</xsl:if>
 			
-			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="version" /></a>
-			</td>
 			<xsl:if test="$isInternal = 'true'">
 				<td>
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="count(Steps/Step)" /></a>
@@ -1907,27 +1656,37 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>
-			<span class="bold"><xsl:value-of select="name"/></span>
-		
-			<span class="bigmarginleft">
-				<xsl:if test="$disableStructureManipulation = false()">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestep/{stepID}" title="{$i18n.updateStep.title}: {name}">
-						<img src="{$imgPath}/pen.png" alt="" />
-					</a>
-
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
-						<img src="{$imgPath}/delete.png" alt="" />
-					</a>
-				</xsl:if>
-			</span>
+		<li class="step" data-cookiesuffix="{../../flowID}-{stepID}">
+			
+			<div class="title">
+				<span class="index"><xsl:value-of select="position()" /></span>
+				<span class="name">
+					<xsl:value-of select="name"/>
+				</span>
+				<span class="tools">
+					<xsl:if test="$disableStructureManipulation = false()">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importqueries/{../../flowID}?step={stepID}" title="{$i18n.ImportQueriesInStep.title}: {name}">
+							<img src="{$imgPath}/form_import.png" alt="" />
+						</a>
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addquery/{../../flowID}?step={stepID}" title="{$i18n.AddQueryInStep.title}: {name}">
+							<img src="{$imgPath}/form_add.png" alt="" />
+						</a>
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestep/{stepID}" title="{$i18n.updateStep.title}: {name}">
+							<img src="{$imgPath}/pen.png" alt="" />
+						</a>
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
+							<img src="{$imgPath}/delete.png" alt="" />
+						</a>
+					</xsl:if>
+				</span>		
+			</div>
 		
 			<xsl:if test="QueryDescriptors/QueryDescriptor">
-				<ol>
+				<ul class="querydescriptors">
 					<xsl:apply-templates select="QueryDescriptors/QueryDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-					</xsl:apply-templates>
-				</ol>
+					</xsl:apply-templates>				
+				</ul>
 			</xsl:if>
 		</li>
 	
@@ -1937,62 +1696,88 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>
-			<xsl:value-of select="name"/>
-			
-			<span class="tiny">
-				<xsl:text>&#x20;(</xsl:text>
-				
-				<xsl:variable name="queryTypeID" select="queryTypeID"/>
-				
-				<xsl:variable name="queryType" select="../../../../../QueryTypes/QueryTypeDescriptor[queryTypeID=$queryTypeID]/name"/>
-				
-				<xsl:choose>
-					<xsl:when test="$queryType">
-						<xsl:value-of select="$queryType"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$i18n.unknownQueryType"/>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<xsl:text>)</xsl:text>
-			</span>
-			
-			<span class="bigmarginleft">
-			
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
-					<img src="{$imgPath}/download.png" alt="" />
-				</a>
-			
-				<xsl:if test="$disableStructureManipulation = false()">
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
-						<img src="{$imgPath}/cog_add.png" alt="" />
-					</a>
-				
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
-						<img src="{$imgPath}/pen.png" alt="" />
-					</a>
+		<li class="querydescriptor" data-queryid="{queryID}">	
+			<div class="title">
+				<span class="index"><xsl:value-of select="position()" /><xsl:text>.</xsl:text></span>
+				<span class="name">
+					<xsl:value-of select="name"/>
+					<span class="tiny">
+						<xsl:text>&#x20;(</xsl:text>
+						
+						<xsl:variable name="queryTypeID" select="queryTypeID"/>
+						
+						<xsl:variable name="queryType" select="../../../../../QueryTypes/QueryTypeDescriptor[queryTypeID=$queryTypeID]/name"/>
+						
+						<xsl:choose>
+							<xsl:when test="$queryType">
+								<xsl:value-of select="$queryType"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.unknownQueryType"/>
+							</xsl:otherwise>
+						</xsl:choose>
+						
+						<xsl:text>)</xsl:text>
+					</span>
+				</span>
+				<span class="tools">
 					
-					<xsl:if test="count(EvaluatorDescriptors/EvaluatorDescriptor) > 1">
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortevaluators/{queryID}" title="{$i18n.SortEvaluators.title}: {name}">
-							<img src="{$imgPath}/move.png" alt="" />
-						</a>
-					</xsl:if>
-					
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
-						<img src="{$imgPath}/delete.png" alt="" />
-					</a>
+					<xsl:choose>
+						<xsl:when test="$disableStructureManipulation = false()">
+							
+							<xsl:if test="count(EvaluatorDescriptors/EvaluatorDescriptor) > 1">
+								<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortevaluators/{queryID}" title="{$i18n.SortEvaluators.title}: {name}">
+									<img src="{$imgPath}/cog_move.png" alt="" />
+								</a>
+							</xsl:if>
+							
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addevaluator/{queryID}" title="{$i18n.addEvaluator.title}: {name}">
+								<img src="{$imgPath}/cog_add.png" alt="" />
+							</a>				
+	
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
+								<img src="{$imgPath}/download.png" alt="" />
+							</a>
+	
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/testflowallsteps/{../../../../flowID}#query_{queryID}" title="{$i18n.PreviewQuery.title}: {name}" target="_blank">
+								<img src="{$imgPath}/magnifying_glass.png" alt="" />
+							</a>
+	
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatequery/{queryID}" title="{$i18n.updateQuery.title}: {name}">
+								<img src="{$imgPath}/pen.png" alt="" />
+							</a>
+							
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
+								<img src="{$imgPath}/delete.png" alt="" />
+							</a>
+							
+						</xsl:when>
+						<xsl:otherwise>
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/testflowallsteps/{../../../../flowID}#query_{queryID}" title="{$i18n.PreviewQuery.title}: {name}" target="_blank">
+								<img src="{$imgPath}/magnifying_glass.png" alt="" />
+							</a>
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/exportquery/{queryID}" title="{$i18n.ExportQuery.title}: {name}">
+								<img src="{$imgPath}/download.png" alt="" />
+							</a>
+						</xsl:otherwise>
+					</xsl:choose>
+
+				</span>
+				
+				<xsl:if test="comment">
+					<span class="comment">
+						<xsl:value-of select="comment" />
+					</span>
 				</xsl:if>
-			</span>
+			</div>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
-				<ul>
+				<ul class="evaluators">
 					<xsl:apply-templates select="EvaluatorDescriptors/EvaluatorDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
-					</xsl:apply-templates>
+					</xsl:apply-templates>				
 				</ul>
-			</xsl:if>
+			</xsl:if>					
 		</li>
 	
 	</xsl:template>
@@ -2001,52 +1786,69 @@
 	
 		<xsl:param name="disableStructureManipulation"/>
 	
-		<li>
-			<xsl:value-of select="name"/>
+		<li>	
 			
-			<span class="tiny">
+			<div class="title">
 			
-				<xsl:text>&#x20;(</xsl:text>
+				<span class="icon">
+					<xsl:choose>
+						<xsl:when test="enabled = 'true'"><img src="{$imgPath}/cog.png" alt="" /></xsl:when>
+						<xsl:otherwise><img src="{$imgPath}/cog_disabled.png" alt="" /></xsl:otherwise>
+					</xsl:choose>
+				</span>
 			
-				<xsl:variable name="evaluatorTypeID" select="evaluatorTypeID"/>
+				<xsl:value-of select="name"/>
 				
-				<xsl:variable name="evaluatorType" select="../../../../../../../EvaluatorTypes/EvaluatorTypeDescriptor[evaluatorTypeID=$evaluatorTypeID]/name"/>
+				<span class="tiny">
 				
-				<xsl:choose>
-					<xsl:when test="$evaluatorType">
-						<xsl:value-of select="$evaluatorType"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$i18n.unknownEvaluatorType"/>
-					</xsl:otherwise>
-				</xsl:choose>
+					<xsl:text>&#x20;(</xsl:text>
 				
-				<xsl:text>)</xsl:text>
-				
-			</span>
-			
-			<span class="bigmarginleft">
-				<xsl:if test="$disableStructureManipulation = false()">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateevaluator/{evaluatorID}" title="{$i18n.updateEvaluator.title}: {name}">
-						<img src="{$imgPath}/pen.png" alt="" />
-					</a>
+					<xsl:variable name="evaluatorTypeID" select="evaluatorTypeID"/>
 					
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
-						<img src="{$imgPath}/delete.png" alt="" />
-					</a>
+					<xsl:variable name="evaluatorType" select="../../../../../../../EvaluatorTypes/EvaluatorTypeDescriptor[evaluatorTypeID=$evaluatorTypeID]/name"/>
+					
+					<xsl:choose>
+						<xsl:when test="$evaluatorType">
+							<xsl:value-of select="$evaluatorType"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.unknownEvaluatorType"/>
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					<xsl:text>)</xsl:text>
+					
+				</span>
+				
+				<span class="tools">
+					<xsl:if test="$disableStructureManipulation = false()">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateevaluator/{evaluatorID}" title="{$i18n.updateEvaluator.title}: {name}">
+							<img src="{$imgPath}/pen.png" alt="" />
+						</a>
+						
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
+							<img src="{$imgPath}/delete.png" alt="" />
+						</a>
+					</xsl:if>
+				</span>
+			
+				<xsl:if test="comment">
+					<span class="comment">
+						<xsl:value-of select="comment" />
+					</span>
 				</xsl:if>
-			</span>
+			</div>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
-				<ol>
+				<ul class="evaluators">
 					<xsl:apply-templates select="EvaluatorDescriptors/EvaluatorDescriptor" mode="list">
 						<xsl:with-param name="disableStructureManipulation" select="$disableStructureManipulation"/>
 					</xsl:apply-templates>
-				</ol>
+				</ul>
 			</xsl:if>
 		</li>
 	
-	</xsl:template>
+	</xsl:template>	
 		
 	<xsl:template match="Status" mode="list">
 	
@@ -2824,6 +2626,8 @@
 		
 		<div class="floatleft full bigmarginbottom">
 			
+			<a name="shortdescription" />
+			
 			<label for="shortDescription" class="floatleft full">
 				<xsl:value-of select="$i18n.shortDescription" />
 			</label>
@@ -2840,6 +2644,8 @@
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
+			
+			<a name="longdescription" />
 			
 			<label for="longDescription" class="floatleft full">
 				<xsl:value-of select="$i18n.longDescription" />
@@ -2859,6 +2665,8 @@
 		<xsl:if test="$isInternal = 'true'">
 			
 			<div class="floatleft full bigmarginbottom internal">
+				
+				<a name="submittedmessade" />
 				
 				<label for="submittedMessage" class="floatleft full">
 					<xsl:value-of select="$i18n.submittedMessage" />
@@ -2923,8 +2731,10 @@
 		
 		<div class="floatleft fifty bigmarginbottom paddingright border-box">
 			
+			<a name="tags" />
+			
 			<label for="tags" class="floatleft full">
-				<xsl:value-of select="$i18n.tags" />
+				<xsl:value-of select="$i18n.tags.title" />
 			</label>
 			
 			<div class="floatleft full">
@@ -2940,6 +2750,8 @@
 		</div>
 		
 		<div class="paddingleft floatleft fifty bigmarginbottom border-box">
+			
+			<a name="checks" />
 			
 			<label for="checks" class="floatleft full">
 				<xsl:value-of select="$i18n.checks.title" />
@@ -3423,38 +3235,67 @@
 
 		<form method="post" action="{/Document/requestinfo/uri}">
 		
-			<div class="floatleft full bigmarginbottom">
-				
-				<label for="flowtype" class="floatleft full">
-					<xsl:value-of select="$i18n.step" />
-				</label>
-				
-				<div class="floatleft full">
-					<xsl:call-template name="createDropdown">
-						<xsl:with-param name="name" select="'stepID'"/>
-						<xsl:with-param name="valueElementName" select="'stepID'" />
-						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="Steps/Step" />
-					</xsl:call-template>
-				</div>
-			</div>	
+			<div class="thirty floatleft">
 		
-			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full bigmarginbottom">
+					
+					<label for="flowtype" class="floatleft full">
+						<xsl:value-of select="$i18n.step" />
+					</label>
+					
+					<div class="floatleft full">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="name" select="'stepID'"/>
+							<xsl:with-param name="valueElementName" select="'stepID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="element" select="Steps/Step" />
+							<xsl:with-param name="selectedValue" select="SelectedStep" />
+						</xsl:call-template>
+					</div>
+				</div>	
+			
+				<div class="floatleft full bigmarginbottom">
+					
+					<label for="flowtype" class="floatleft full">
+						<xsl:value-of select="$i18n.queryType" />
+					</label>
+					
+					<div class="floatleft full">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="name" select="'queryTypeID'"/>
+							<xsl:with-param name="valueElementName" select="'queryTypeID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="element" select="QueryTypes/QueryTypeDescriptor" />
+						</xsl:call-template>
+						<xsl:for-each select="QueryTypes/QueryTypeDescriptor">
+							<xsl:if test="description != ''">
+								<xsl:call-template name="createHiddenField">
+									<xsl:with-param name="id" select="concat('queryTypeDescription_', queryTypeID)" />
+									<xsl:with-param name="name" select="concat('queryTypeDescription_', queryTypeID)" />
+									<xsl:with-param name="disabled" select="'true'" />
+									<xsl:with-param name="value" select="description" />
+								</xsl:call-template>
+							</xsl:if>
+						</xsl:for-each>
+					</div>
+				</div>
+				
+			</div>
+				
+			<div class="floatleft seventy bigmarginbottom">
 				
 				<label for="flowtype" class="floatleft full">
-					<xsl:value-of select="$i18n.queryType" />
+					<xsl:value-of select="$i18n.queryTypeDescription" />
 				</label>
 				
-				<div class="floatleft full">
-					<xsl:call-template name="createDropdown">
-						<xsl:with-param name="name" select="'queryTypeID'"/>
-						<xsl:with-param name="valueElementName" select="'queryTypeID'" />
-						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="QueryTypes/QueryTypeDescriptor" />
-					</xsl:call-template>
+				<div id="queryTypeDescription">
+				
 				</div>
-			</div>
-					
+				
+			</div>	
+			
+			<div class="clearboth" />
+			
 			<div class="floatleft full bigmarginbottom">
 				
 				<label for="name" class="floatleft full">
@@ -3467,7 +3308,22 @@
 						<xsl:with-param name="name" select="'name'"/>     
 					</xsl:call-template>
 				</div>
-			</div>					
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+			
+				<label for="comment" class="floatleft full">
+					<xsl:value-of select="$i18n.Comment" /><xsl:text> (</xsl:text><xsl:value-of select="$i18n.commentVisibility" /><xsl:text>)</xsl:text>
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'comment'"/>
+						<xsl:with-param name="name" select="'comment'"/>
+						<xsl:with-param name="rows" select="1" />       
+					</xsl:call-template>
+				</div>
+			</div>	
 			
 			<h2><xsl:value-of select="$i18n.defaultQueryState.title"/></h2>
 			
@@ -3565,6 +3421,21 @@
 					<xsl:call-template name="createTextField">
 						<xsl:with-param name="id" select="'name'"/>
 						<xsl:with-param name="name" select="'name'"/>     
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+			
+				<label for="comment" class="floatleft full">
+					<xsl:value-of select="$i18n.Comment" /><xsl:text> (</xsl:text><xsl:value-of select="$i18n.commentVisibility" /><xsl:text>)</xsl:text>
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'comment'"/>
+						<xsl:with-param name="name" select="'comment'"/>
+						<xsl:with-param name="rows" select="1" />       
 					</xsl:call-template>
 				</div>
 			</div>
@@ -4297,7 +4168,7 @@
 		<div id="step_{stepID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			<div class="padding bold">
 				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveStep}" alt="" />
-				<xsl:value-of select="name" />
+				<xsl:value-of select="position()" /><xsl:text>. </xsl:text><xsl:value-of select="name" />
 				<xsl:call-template name="createHiddenField">
 					<xsl:with-param name="name" select="concat('step', stepID)" />
 					<xsl:with-param name="class" select="'sortorder'" />
@@ -4317,7 +4188,7 @@
 			
 			<div class="padding">
 				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveQuery}" alt="" />
-				<xsl:value-of select="name" />
+				<xsl:value-of select="position()" /><xsl:text>. </xsl:text><xsl:value-of select="name" />
 				<xsl:call-template name="createHiddenField">
 					<xsl:with-param name="name" select="concat('query', queryID)" />
 					<xsl:with-param name="class" select="'sortorder'" />
@@ -4354,18 +4225,18 @@
 		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full sortable">
-				
+							
 				<xsl:apply-templates select="Flow/Statuses/Status" mode="sort" />
-				
+							
 			</div>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SortFlow.submit}" />
 			</div>
 
-		</form>
+		</form>	
 	
-	</xsl:template>
+	</xsl:template>	
 	
 	<xsl:template match="Status" mode="sort">
 	
@@ -4379,9 +4250,9 @@
 					<xsl:with-param name="value" select="sortIndex" />
 				</xsl:call-template>
 			</div>
-		</div>
+		</div>	
 	
-	</xsl:template>
+	</xsl:template>	
 	
 	<xsl:template match="SortEvaluators">
 	
@@ -6072,7 +5943,8 @@
 						<xsl:with-param name="name" select="'stepID'"/>
 						<xsl:with-param name="valueElementName" select="'stepID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="Flow/Steps/Step" />      
+						<xsl:with-param name="element" select="Flow/Steps/Step" />
+						<xsl:with-param name="selectedValue" select="SelectedStep" /> 
 					</xsl:call-template>
 				</div>
 			</div>		
@@ -7861,6 +7733,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'name'">
 						<xsl:value-of select="$i18n.name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'comment'">
+						<xsl:value-of select="$i18n.comment"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'shortDescription'">
 						<xsl:value-of select="$i18n.shortDescription"/>

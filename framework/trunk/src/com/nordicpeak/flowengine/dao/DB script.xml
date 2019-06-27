@@ -2270,4 +2270,17 @@
 		</Query>
 	</Script>
 	
+	<Script version="125">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_query_descriptors` ADD COLUMN `comment` VARCHAR(1024) AFTER `name`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_evaluator_descriptors` ADD COLUMN `comment` VARCHAR(1024) AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

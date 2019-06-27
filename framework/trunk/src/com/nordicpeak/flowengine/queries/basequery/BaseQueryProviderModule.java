@@ -66,6 +66,9 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	@XSLVariable(prefix = "java.")
 	protected String queryTypeName = "This variable should be set by your stylesheet";
 
+	@XSLVariable(prefix = "java.")
+	protected String queryDescription = "";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Query XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the HTML of queries", required = true)
 	protected String queryStyleSheet;
@@ -112,7 +115,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		
 		if(queryTypeDescriptor == null){
 			
-			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, getQueryInstanceClass());
+			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, queryDescription, getQueryInstanceClass());
 			
 			//Rename legacy integer based queryTypeID's on module startup
 			oldQueryTypeID = this.moduleDescriptor.getModuleID().toString();
@@ -132,7 +135,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 				queryHandler.removeQueryProvider(queryTypeDescriptor, this);
 			}
 			
-			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, getQueryInstanceClass());
+			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, queryDescription, getQueryInstanceClass());
 			
 			if(queryHandler != null){
 
@@ -436,7 +439,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		XMLUtils.appendNewElement(doc, documentElement, "cssPath", cssPath);
 		XMLUtils.appendNewElement(doc, documentElement, "useCKEditorForDescription", true);
 		XMLUtils.appendNewElement(doc, documentElement, "ckConnectorModuleAlias", ckConnectorModuleAlias);
-
+		
 		doc.appendChild(documentElement);
 		return doc;
 	}
@@ -526,5 +529,10 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	public String getQueryTypeName() {
 	
 		return queryTypeName;
+	}
+	
+	public String getQueryDescription() {
+		
+		return queryDescription;
 	}
 }

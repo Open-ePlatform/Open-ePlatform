@@ -9,6 +9,34 @@
 		<xsl:param name="element" />
 		<xsl:param name="flowTypeID" select="$element/../flowTypeID" />
 	
+		<div class="panel-wrapper follow" style="display: none">
+	 		<div class="inner">
+	 			<div class="title"></div>
+	 			<div class="buttons">
+	 				<a href="#" data-action="save_errand" class="btn btn-green" onclick="event.preventDefault(); $(this).closest('form').submit()"><xsl:value-of select="$i18n.SaveChanges" /></a>
+	 			</div>
+	 		</div>
+	 	</div>
+	 	
+	 	<script type="text/javascript">
+	 		
+	 		$(window).on('scroll touchmove', function() {
+		
+		        if ($(window).scrollTop() > $('header').height()) {
+		            $('.follow').attr('style', 'display: block !important');
+		            return;
+		        }
+		
+		        $('.follow').attr('style', 'display: none !important');
+		
+		    });
+			
+			var $savePanel = $('.panel-wrapper.follow');
+			
+			$savePanel.find('.title').text($savePanel.closest('.contentitem').find('> h1:first').text());
+	 		
+	 	</script>
+	
 		<div class="floatleft full bigmarginbottom">
 			<label for="name" class="floatleft clearboth"><xsl:value-of select="$i18n.Name" /></label>
 			<div class="floatleft full">
@@ -19,6 +47,22 @@
 					<xsl:with-param name="element" select="$element/QueryDescriptor" />
 				</xsl:call-template>
 		    </div>
+		</div>
+	
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="comment" class="floatleft full">
+				<xsl:value-of select="$i18n.Comment" /><xsl:text> (</xsl:text><xsl:value-of select="$i18n.commentVisibility" /><xsl:text>)</xsl:text>
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'comment'"/>
+					<xsl:with-param name="name" select="'comment'"/>
+					<xsl:with-param name="element" select="$element/QueryDescriptor" />
+					<xsl:with-param name="rows" select="1" />    
+				</xsl:call-template>
+			</div>
 		</div>
 	
 		<xsl:call-template name="appendCreateCommonFieldsFormConterAfterName"/>	
@@ -582,6 +626,9 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'name'">
 				<xsl:value-of select="$i18n.name" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'comment'">
+				<xsl:value-of select="$i18n.comment"/>
 			</xsl:when>
 			<xsl:when test="$fieldName = 'xsdElementName'">
 				<xsl:value-of select="$i18n.xsdElementName" />
