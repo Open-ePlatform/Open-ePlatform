@@ -117,7 +117,7 @@
 				</h1>
 			</div>
 			
-			<form method="POST" action="{/document/requestinfo/uri}" name="userform">
+			<form method="POST" action="{/Document/requestinfo/uri}" name="userform">
 				
 				<xsl:call-template name="organizationForm" />
 			
@@ -143,7 +143,7 @@
 				</h1>
 			</div>
 			
-			<form method="POST" action="{/document/requestinfo/uri}" name="userform">
+			<form method="POST" action="{/Document/requestinfo/uri}" name="userform">
 				
 				<xsl:call-template name="organizationForm">
 					<xsl:with-param name="organization" select="Organization" />
