@@ -18,8 +18,11 @@ import se.unlogic.standardutils.string.StringUtils;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.Contact;
+import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
@@ -617,4 +620,37 @@ public class FlowInstanceUtils {
 
 		return totalSum;
 	}
+	
+	public static boolean isExternalMessagesEnabled(FlowInstance flowInstance) {
+		
+		return flowInstance != null && isExternalMessagesEnabled(flowInstance, flowInstance.getStatus());
+	}
+	
+	public static boolean isExternalMessagesEnabled(FlowInstance flowInstance, Status status) {
+		
+		Flow flow = flowInstance.getFlow();
+		
+		if (flow == null || status == null) {
+			
+			return false;
+		}
+		
+		if (flow.isHideExternalMessages()) {
+			
+			return false;
+		}
+		
+		if (flow.isHideExternalMessagesOnArchivedFlowInstances() && status.getContentType() == ContentType.ARCHIVED) {
+			
+			return false;
+		}
+
+		if (CollectionUtils.isEmpty(flowInstance.getOwners())) {
+			
+			return false;
+		}
+		
+		return true;
+	}
+	
 }

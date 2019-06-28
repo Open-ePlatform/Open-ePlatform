@@ -3595,42 +3595,48 @@
 				</xsl:call-template>
 			</div>
 		</div>
-		
-		<div class="floatleft full bigmarginbottom">
 
-			<div class="floatleft full">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'addExternalMessage'" />
-					<xsl:with-param name="id" select="'addExternalMessage'" />
-					<xsl:with-param name="element" select="Status" />
-				</xsl:call-template>
-				
-				<label for="addExternalMessage">
-					<xsl:value-of select="$i18n.addExternalMessage" />
-				</label>
-			</div>
-			
-			<div id="defaultExternalMessageTemplateContainer" class="floatleft full bigmarginbottom hidden">
-			
-				<label for="defaultExternalMessageTemplate" class="floatleft full">
-					<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
-				</label>
+		<div>
+
+			<xsl:if test="Flow/hideExternalMessages = 'true'">
+				<xsl:attribute name="class">hidden</xsl:attribute>
+			</xsl:if>
+
+			<div class="floatleft full bigmarginbottom">
 	
 				<div class="floatleft full">
-					<xsl:call-template name="createDropdown">
-						<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
-						<xsl:with-param name="valueElementName" select="'templateID'" />
-						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
-						<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'addExternalMessage'" />
+						<xsl:with-param name="id" select="'addExternalMessage'" />
+						<xsl:with-param name="element" select="Status" />
 					</xsl:call-template>
+					
+					<label for="addExternalMessage">
+						<xsl:value-of select="$i18n.addExternalMessage" />
+					</label>
+				</div>
+				
+				<div id="defaultExternalMessageTemplateContainer" class="floatleft full bigmarginbottom hidden">
+				
+					<label for="defaultExternalMessageTemplate" class="floatleft full">
+						<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
+					</label>
+		
+					<div class="floatleft full">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
+							<xsl:with-param name="valueElementName" select="'templateID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
+						</xsl:call-template>
+					</div>
 				</div>
 			</div>
 		</div>
-		
-		
+
 		<h2><xsl:value-of select="$i18n.permissions"/></h2>
 		
 		<div class="floatleft full bigmarginbottom margintop">

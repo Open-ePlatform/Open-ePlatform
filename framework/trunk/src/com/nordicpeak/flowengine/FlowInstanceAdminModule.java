@@ -152,6 +152,7 @@ import com.nordicpeak.flowengine.internalnotifications.beans.NotificationMetadat
 import com.nordicpeak.flowengine.internalnotifications.interfaces.Notification;
 import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSource;
+import com.nordicpeak.flowengine.listeners.FlowInstanceExternalMessageElementableListener;
 import com.nordicpeak.flowengine.listeners.FlowStatusManagerAccessElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -557,26 +558,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 				if (req.getParameter("externalmessage") != null && flowInstance.isExternalMessagesEnabled()) {
 
-					if (flowInstance.getOwners() != null) {
+					ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
 
-						ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
+					if (externalMessage != null) {
 
-						if (externalMessage != null) {
+						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
-							FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
-							systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 
-							systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 
-							res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
-
-							return null;
-						}
-
-					} else {
-
-						log.warn("User " + user + " tried to add external message for flow instance " + flowInstance + " which has no owners.");
+						return null;
 					}
 
 				} else if (req.getParameter("internalmessage") != null) {
@@ -720,7 +714,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
-		Element showFlowInstanceElement = flowInstance.toXML(doc);
+		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+		genDoc.addElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
+		
+		Element showFlowInstanceElement = flowInstance.toXML(genDoc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
 
 		return showFlowInstanceElement;
