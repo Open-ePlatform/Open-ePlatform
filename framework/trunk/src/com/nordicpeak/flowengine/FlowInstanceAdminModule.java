@@ -2307,13 +2307,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						
 						if (CollectionUtils.isEmpty(flowInstance.getManagers()) && CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
 							
-							log.warn("Removing managers of instance " + flowInstance);
+							log.info("Removing managers of instance " + flowInstance);
 							
 						} else {
 							
 							detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
 							
-							log.warn("Automatically setting managers of instance " + flowInstance + " to " + detailString);
+							log.info("Automatically setting managers of instance " + flowInstance + " to " + detailString);
 						}
 						
 						RelationQuery updateQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
