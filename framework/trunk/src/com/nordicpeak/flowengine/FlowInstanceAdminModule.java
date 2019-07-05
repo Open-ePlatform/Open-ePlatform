@@ -1882,7 +1882,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD, InternalMessageAttachment.DATA_FIELD), getFlowInstanceOverviewRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
+		if (uriParser.size() >= 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD, InternalMessageAttachment.DATA_FIELD), getFlowInstanceOverviewRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			getGeneralAccessController().checkFlowInstanceAccess(flowInstance, user);
 
@@ -2326,7 +2326,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						
 						log.error("Error updating flow instance with new managers for " + matchingRule, e);
 						
-					}	
+					}
 				}
 			}
 		}
