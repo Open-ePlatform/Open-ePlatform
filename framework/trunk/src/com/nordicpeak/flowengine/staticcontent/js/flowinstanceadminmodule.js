@@ -27,10 +27,6 @@ $(document).ready(function() {
 		
 	});
 	
-	initMessageTab("#messages", "#new-message");
-	
-	initMessageTab("#notes", "#new-note");
-	
 	$("#new-message, #notes").find("form").on("submit", function(e) {
 		
 		var $this = $(this);
@@ -114,84 +110,6 @@ function updateListRowColors($list) {
 	$list.find("li:visible:odd").attr("class", "odd");
 	$list.find("li:visible:even").attr("class", "even");
 	
-}
-
-function initMessageTab(tabID, messagePanelID) {
-	
-	$(tabID + " a.open_message").click(function(e) {
-		e.preventDefault();
-		
-		$(messagePanelID).show();
-		scrollToMessages(messagePanelID);
-		$("#message").focus();
-	});
-
-	$(messagePanelID + " a.close_message").click(function(e) {
-		e.preventDefault();
-		$(messagePanelID).hide();
-	});
-	
-	if($(tabID + " div.info-box.error").length > 0) {
-		var $tabs = $("#tabs");
-		var idx = $tabs.find(tabID).index();
-		$tabs.tabs("option", "active", idx-1);
-		$(tabID + " a.open_message").trigger("click");
-	}
-
-	if(window.location.hash == messagePanelID) {
-		var $tabs = $("#tabs");
-		var idx = $tabs.find(tabID).index();
-		$tabs.tabs("option", "active", idx-1);
-		scrollToMessages(tabID + " ul.messages li");
-	}
-	
-	setActiveTab(tabID);
-	
-	$(window).bind('hashchange', function () {
-		
-		setActiveTab(tabID);
-	});
-}
-
-function setActiveTab(tabID) {
-	
-	var hash = window.location.hash;
-	
-	if(hash) {
-		
-		var hashArr = hash.split("-");
-
-		if(hashArr[0] == tabID) {
-		
-			var $tabs = $("#tabs");
-			var idx = $tabs.find("li[data-tabid = '" + tabID + "']").index();
-			$tabs.tabs("option", "active", idx);
-	
-			if(hashArr[1]) {
-	
-				scrollToMessages(hash);
-			
-			} else {
-			
-				scrollToMessages(tabID + " ul.messages li");
-			}
-			
-			window.location.hash = "";
-		}
-	}
-
-}
-
-function scrollToMessages(selector) {
-	
-	var $element = $(selector);
-	
-	if ($element.length) {
-		
-		$('html, body').animate({
-			scrollTop : ($element.last().offset().top - 43)
-		}, 'fast');
-	}
 }
 
 function toggleBookmark(e, trigger, uri) {

@@ -20,15 +20,18 @@
 		/js/flowengine.step-navigator.js
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
-		/js/flowinstanceadminmodule.js?v=1
+		/js/flowinstanceadminmodule.js?v=2
 		/js/jquery.qloader-init.js
 		/js/UserGroupList.js
+		/js/js.cookie-2.0.4.min.js
+		/js/messages.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css
 		/js/mentionable/mentionable.css
 		/css/UserGroupList.css
+		/css/messages.css
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -1037,8 +1040,11 @@
 		  					
 		  					<xsl:choose>
 		  						<xsl:when test="externalMessages/ExternalMessage">
+
+									<xsl:call-template name="sortMessagesButton" />
+
 		  							<ul class="messages">
-		  								<xsl:apply-templates select="externalMessages/ExternalMessage" />
+		  								<xsl:apply-templates select="externalMessages/ExternalMessage" mode="admin" />
 		  							</ul>
 		  						</xsl:when>
 		  						<xsl:otherwise>
@@ -1144,8 +1150,11 @@
 		  					
 		  					<xsl:choose>
 		  						<xsl:when test="internalMessages/InternalMessage">
+
+	  								<xsl:call-template name="sortMessagesButton" />
+
 		  							<ul class="messages show-mentions">
-		  								<xsl:apply-templates select="internalMessages/InternalMessage" />
+		  								<xsl:apply-templates select="internalMessages/InternalMessage" mode="admin" />
 		  							</ul>
 		  						</xsl:when>
 		  						<xsl:otherwise>
@@ -1295,108 +1304,6 @@
 		</xsl:if>
 		
 		<xsl:if test="position() != last()"><xsl:text>,&#160;</xsl:text></xsl:if>
-		
-	</xsl:template>
-	
-	<xsl:template match="ExternalMessage">
-	
-		<xsl:call-template name="createMessage">
-			<xsl:with-param name="message" select="." />
-			<xsl:with-param name="attachments" select="attachments/ExternalMessageAttachment" />
-			<xsl:with-param name="prefix" select="'messages'" />
-		</xsl:call-template>
-		
-	</xsl:template>	
-	
-	<xsl:template match="InternalMessage">
-	
-		<xsl:call-template name="createMessage">
-			<xsl:with-param name="message" select="." />
-			<xsl:with-param name="attachments" select="attachments/InternalMessageAttachment" />
-			<xsl:with-param name="prefix" select="'notes'" />
-		</xsl:call-template>
-		
-	</xsl:template>
-	
-	<xsl:template name="createMessage">
-		
-		<xsl:param name="message" />
-		<xsl:param name="attachments" />
-		<xsl:param name="prefix" />
-		
-		<li id="{$prefix}-{$message/messageID}" class="official">
-			
-			<xsl:attribute name="class">
-			
-				<!-- TODO check if this message is unread -->
-				<xsl:if test="false()">unread</xsl:if>
-				
-				<xsl:choose>
-					<!-- External message -->
-					<xsl:when test="postedByManager">
-						<xsl:choose>
-							<xsl:when test="postedByManager = 'false'"> official</xsl:when>
-							<xsl:otherwise> me</xsl:otherwise>
-						</xsl:choose>
-					</xsl:when>
-					
-					<!-- Internal message -->
-					<xsl:otherwise>
-						<xsl:choose>
-							<xsl:when test="../../../user/userID = poster/userID">me</xsl:when>
-							<xsl:otherwise> official</xsl:otherwise>
-						</xsl:choose>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-			</xsl:attribute>
-
-			<div class="user">
-				<figure><img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/profile-standard.png" /></figure>
-			</div>
-			
-			<div class="message">
-				<xsl:choose>
-					<xsl:when test="postedByManager = 'true'">
-						<xsl:call-template name="replaceLineBreaksAndLinks">
-							<xsl:with-param name="string" select="message"/>
-							<xsl:with-param name="target" select="'_blank'"/>
-						</xsl:call-template>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:call-template name="replaceLineBreak">
-							<xsl:with-param name="string" select="message" />
-						</xsl:call-template>					
-					</xsl:otherwise>
-				</xsl:choose>
-				<span class="author">
-					<i data-icon-before="m"/>
-					<xsl:call-template name="printUser">
-						<xsl:with-param name="user" select="$message/poster" />
-					</xsl:call-template>
-				 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/added" /></span>
-				 </span>
-				 <xsl:if test="$attachments">
-					<div class="files">
-						<xsl:apply-templates select="$attachments" />
-					</div>
-				</xsl:if>
-			</div>
-			<div class="marker"></div>
-			
-		</li>
-	
-	</xsl:template>
-	
-	<xsl:template match="ExternalMessageAttachment">
-		
-		<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/externalattachment/{../../messageID}/{attachmentID}" class="btn btn-file"><i data-icon-before="d"></i><xsl:value-of select="filename" /><xsl:text>&#160;</xsl:text><span class="size">(<xsl:value-of select="FormatedSize" />)</span></a>
-		
-	</xsl:template>
-	
-	<xsl:template match="InternalMessageAttachment">
-		
-		<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/internalattachment/{../../messageID}/{attachmentID}" class="btn btn-file"><i data-icon-before="d"></i><xsl:value-of select="filename" /><xsl:text>&#160;</xsl:text><span class="size">(<xsl:value-of select="FormatedSize" />)</span></a>
 		
 	</xsl:template>
 	
@@ -1783,50 +1690,6 @@
 		</div>
 		
 	</xsl:template>						
-	
-	<xsl:template match="validationError[fieldName='externalmessage']">
-		
-		<div class="info-box error">
-			<span>
-				<strong data-icon-before="!">
-					<xsl:choose>
-						<xsl:when test="validationErrorType='RequiredField'">
-							<xsl:value-of select="$i18n.ValidationError.ExternalMessageRequired" />
-						</xsl:when>
-						<xsl:when test="validationErrorType='TooShort'">
-							<xsl:value-of select="$i18n.ValidationError.ExternalMessageToShort" />
-						</xsl:when>
-						<xsl:when test="validationErrorType='TooLong'">
-							<xsl:value-of select="$i18n.ValidationError.ExternalMessageToLong" />
-						</xsl:when>
-					</xsl:choose>
-				</strong>
-			</span>
-		</div>
-		
-	</xsl:template>
-	
-	<xsl:template match="validationError[fieldName='internalmessage']">
-		
-		<div class="info-box error">
-			<span>
-				<strong data-icon-before="!">
-					<xsl:choose>
-						<xsl:when test="validationErrorType='RequiredField'">
-							<xsl:value-of select="$i18n.ValidationError.InternalMessageRequired" />
-						</xsl:when>
-						<xsl:when test="validationErrorType='TooShort'">
-							<xsl:value-of select="$i18n.ValidationError.InternalMessageToShort" />
-						</xsl:when>
-						<xsl:when test="validationErrorType='TooLong'">
-							<xsl:value-of select="$i18n.ValidationError.InternalMessageToLong" />
-						</xsl:when>
-					</xsl:choose>
-				</strong>
-			</span>
-		</div>
-		
-	</xsl:template>
 	
 	<xsl:template name="createHelpDialog">
 		
