@@ -93,7 +93,11 @@
   				<div class="section noborder">
   					<xsl:if test="Checks/check or FlowFamily/useLoginHelpLink = 'true'">
 	  					<xsl:attribute name="class">section yellow</xsl:attribute>
-	  					<h2 class="bordered"><xsl:value-of select="$i18n.ChecklistTitle" /></h2>
+
+	  					<xsl:if test="Checks/check">
+		  					<h2 class="bordered"><xsl:value-of select="$i18n.ChecklistTitle" /></h2>
+	  					</xsl:if>
+	  					
 	  					<ul class="checklist">
 	  						<xsl:apply-templates select="Checks/check" mode="overview" />
 	  						

@@ -102,7 +102,7 @@
 	<xsl:variable name="i18n.usePreview">Aktivera förhandsgranskning</xsl:variable>
 
 	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställningar gäller för samtliga versioner av e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk i "Krav för e-tjänsten" (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk på översiktssidan (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.Name">Länknamn</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.popularity.boost">Extra antal ärenden vid beräkning av popularitet</xsl:variable>
