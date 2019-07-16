@@ -1848,7 +1848,7 @@
 			</xsl:if>
 		</li>
 	
-	</xsl:template>	
+	</xsl:template>
 		
 	<xsl:template match="Status" mode="list">
 	
@@ -3320,10 +3320,10 @@
 					<xsl:call-template name="createTextArea">
 						<xsl:with-param name="id" select="'comment'"/>
 						<xsl:with-param name="name" select="'comment'"/>
-						<xsl:with-param name="rows" select="1" />       
+						<xsl:with-param name="rows" select="1" />
 					</xsl:call-template>
 				</div>
-			</div>	
+			</div>
 			
 			<h2><xsl:value-of select="$i18n.defaultQueryState.title"/></h2>
 			
@@ -3335,12 +3335,12 @@
 					<xsl:call-template name="createRadio">
 						<xsl:with-param name="id" select="'visible'"/>
 						<xsl:with-param name="name" select="'defaultQueryState'"/>
-						<xsl:with-param name="value" select="'VISIBLE'"/>        
+						<xsl:with-param name="value" select="'VISIBLE'"/>
 					</xsl:call-template>
 					
 					<label for="visible">
 						<xsl:value-of select="$i18n.queryState.VISIBLE" />
-					</label>					
+					</label>
 				</div>
 			</div>	
 		
@@ -3350,12 +3350,12 @@
 					<xsl:call-template name="createRadio">
 						<xsl:with-param name="id" select="'visible_required'"/>
 						<xsl:with-param name="name" select="'defaultQueryState'"/>
-						<xsl:with-param name="value" select="'VISIBLE_REQUIRED'"/>        
+						<xsl:with-param name="value" select="'VISIBLE_REQUIRED'"/>
 					</xsl:call-template>
 					
 					<label for="visible_required">
 						<xsl:value-of select="$i18n.queryState.VISIBLE_REQUIRED" />
-					</label>					
+					</label>
 				</div>
 			</div>	
 		
@@ -3365,15 +3365,15 @@
 					<xsl:call-template name="createRadio">
 						<xsl:with-param name="id" select="'hidden'"/>
 						<xsl:with-param name="name" select="'defaultQueryState'"/>
-						<xsl:with-param name="value" select="'HIDDEN'"/>        
+						<xsl:with-param name="value" select="'HIDDEN'"/>
 					</xsl:call-template>
 					
 					<label for="hidden">
 						<xsl:value-of select="$i18n.queryState.HIDDEN" />
-					</label>					
+					</label>
 				</div>
-			</div>			
-					
+			</div>
+			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.AddQueryDescriptor.submit}" />
 			</div>
@@ -3780,8 +3780,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'new'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'NEW'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'NEW'"/>
 				</xsl:call-template>
 				
 				<label for="new">
@@ -3797,7 +3797,7 @@
 					<xsl:with-param name="id" select="'waiting_for_multisign'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
 					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>        
+					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_multisign">
@@ -3812,8 +3812,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_payment'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_payment">
@@ -3828,8 +3828,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'submitted'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'SUBMITTED'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'SUBMITTED'"/>
 				</xsl:call-template>
 				
 				<label for="submitted">
@@ -3844,8 +3844,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'in_progress'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'IN_PROGRESS'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'IN_PROGRESS'"/>
 				</xsl:call-template>
 				
 				<label for="in_progress">
@@ -3860,8 +3860,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_completion'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>
 				</xsl:call-template>
 				
 				<label for="waiting_for_completion">
@@ -3876,8 +3876,8 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'archived'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
-					<xsl:with-param name="value" select="'ARCHIVED'"/>        
+					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="value" select="'ARCHIVED'"/>
 				</xsl:call-template>
 				
 				<label for="archived">
@@ -3904,7 +3904,7 @@
 		
 			<xsl:variable name="id">
 				<xsl:value-of select="'action_'"/>
-				<xsl:value-of select="position()"/>			
+				<xsl:value-of select="position()"/>
 			</xsl:variable>
 		
 			<div class="floatleft">
@@ -3951,7 +3951,7 @@
 				</label>
 				
 				<div class="floatleft clearboth">
-					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" id="icon" alt="" />							
+					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" id="icon" alt="" />
 				</div>
 			</div>
 			
@@ -4231,18 +4231,18 @@
 		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full sortable">
-							
+				
 				<xsl:apply-templates select="Flow/Statuses/Status" mode="sort" />
-							
+				
 			</div>
 			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SortFlow.submit}" />
 			</div>
 
-		</form>	
+		</form>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="Status" mode="sort">
 	
@@ -4256,9 +4256,9 @@
 					<xsl:with-param name="value" select="sortIndex" />
 				</xsl:call-template>
 			</div>
-		</div>	
+		</div>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="SortEvaluators">
 	
@@ -5949,7 +5949,7 @@
 						<xsl:with-param name="name" select="'stepID'"/>
 						<xsl:with-param name="valueElementName" select="'stepID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="element" select="Flow/Steps/Step" />
+						<xsl:with-param name="element" select="Flow/Steps/Step" />      
 						<xsl:with-param name="selectedValue" select="SelectedStep" /> 
 					</xsl:call-template>
 				</div>
@@ -6992,49 +6992,45 @@
 	
 		<xsl:apply-templates select="validationError"/>
 
-		<section class="service has-navigator">
+		<section class="service has-navigator testing">
 			
-			<form method="post" action="{/Document/requestinfo/uri}" enctype="multipart/form-data">
+			<xsl:call-template name="createFlowInstanceManagerFormHeader">
+				<xsl:with-param name="showSaveButton">false</xsl:with-param>
+			</xsl:call-template>
+			
+			<xsl:for-each select="ManagerResponses/ManagerResponse">
 				
-				<input id="submitmode" type="hidden" value="true" />
+				<xsl:variable name="currentStepID" select="currentStepID" />
+				<xsl:variable name="currentStepIndex" select="currentStepIndex" />
 				
-				<xsl:call-template name="createFlowInstanceManagerFormHeader">
-					<xsl:with-param name="showSaveButton">false</xsl:with-param>
-				</xsl:call-template>
-				
-				<xsl:for-each select="ManagerResponses/ManagerResponse">
-					
-					<xsl:variable name="currentStepID" select="currentStepID" />
-					<xsl:variable name="currentStepIndex" select="currentStepIndex" />
-					
-					<div class="service-navigator-wrap">
-						<div>
-							<ul class="service-navigator primary">
-								<xsl:for-each select="../../FlowInstance/Flow/Steps/Step">
-								
-									<li>
-										<xsl:choose>
-											<xsl:when test="$currentStepID = stepID"><xsl:attribute name="class">active</xsl:attribute></xsl:when>
-											<xsl:when test="$currentStepIndex >= sortIndex">
-												<xsl:attribute name="class">
-													<xsl:text>completed</xsl:text>
-												</xsl:attribute>
-											</xsl:when>
-										</xsl:choose>
-										
-										<span data-step="{position()}">
-											<xsl:value-of select="name"/>
-										</span>
-									</li>
+				<div class="service-navigator-wrap">
+					<div>
+						<ul class="service-navigator primary">
+							<xsl:for-each select="../../FlowInstance/Flow/Steps/Step">
+							
+								<li>
+									<xsl:choose>
+										<xsl:when test="$currentStepID = stepID"><xsl:attribute name="class">active</xsl:attribute></xsl:when>
+										<xsl:when test="$currentStepIndex >= sortIndex">
+											<xsl:attribute name="class">
+												<xsl:text>completed</xsl:text>
+											</xsl:attribute>
+										</xsl:when>
+									</xsl:choose>
 									
-								</xsl:for-each>
-							</ul>
-						</div>
+									<span data-step="{position()}">
+										<xsl:value-of select="name"/>
+									</span>
+								</li>
+								
+							</xsl:for-each>
+						</ul>
 					</div>
+				</div>
+				
+				<div class="section-full">
 					
-					<div class="section-full">
-						
-						<div class="queries">
+					<div class="queries">
 						
 						<xsl:apply-templates select="QueryResponses/QueryResponse"/>
 						
@@ -7043,7 +7039,7 @@
 						</xsl:if>
 						
 					</div>
-					
+				
 				</div>
 				
 			</xsl:for-each>
@@ -7051,19 +7047,17 @@
 			<div id="ajaxLoadingMessage" style="display: none">
 				<h1><xsl:value-of select="$i18n.AjaxLoading" />..</h1><p class="tiny"><a href="javascript:void(0)" onclick="cancelAjaxPost()"><xsl:value-of select="$i18n.AjaxCancel" />.</a></p>
 			</div>
-		
+			
 			<div id="submitLoadingMessage" style="display: none">
 				<h1><xsl:value-of select="$i18n.SubmitLoading" />..</h1>
 			</div>
-		
+			
 			<div id="ajaxErrorMessage" style="display: none">
 				<h1><xsl:value-of select="$i18n.UnExpectedAjaxError" /></h1>
 				<p><xsl:value-of select="$i18n.UnExpectedAjaxErrorDescription" /></p>
 				<input id="AjaxRetryButton" type="button" value="{$i18n.AjaxRetry}" onclick="retryAjaxPost()" class="marginright btn btn-blue" /> 
 				<input id="AjaxReloadButton" type="button" value="{$i18n.AjaxReload}" onclick="reloadCurrentStep()" class="btn btn-blue" />
 			</div>
-					
-			</form>
 			
 		</section>
 		
@@ -7073,7 +7067,7 @@
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.NoManagersSet" />
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='EvaluatorImportException']">
@@ -7084,7 +7078,7 @@
 			<xsl:value-of select="EvaluatorDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.EvaluatorImportException.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='QueryImportException']">
@@ -7095,7 +7089,7 @@
 			<xsl:value-of select="QueryDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.QueryImportException.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='QueryTypeNotAllowedInFlowTypeValidationError']">
@@ -7110,7 +7104,7 @@
 			<xsl:value-of select="FlowType/name" />
 			<xsl:text>&#160;</xsl:text>
 			<xsl:value-of select="$i18n.QueryTypeNotAllowedInFlowTypeValidationError.Part3" />			
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='EvaluatorTypeNotFound']">
@@ -7121,7 +7115,7 @@
 			<xsl:value-of select="EvaluatorDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.EvaluatorTypeNotFound.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='QueryTypeNotFound']">
@@ -7132,7 +7126,7 @@
 			<xsl:value-of select="QueryDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.QueryTypeNotFound.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='EvaluatorExportException']">
@@ -7143,7 +7137,7 @@
 			<xsl:value-of select="EvaluatorDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.EvaluatorExportException.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='QueryExportException']">
@@ -7154,84 +7148,84 @@
 			<xsl:value-of select="QueryDescriptor/name" />
 			<xsl:text>"&#160;</xsl:text>
 			<xsl:value-of select="$i18n.QueryExportException.Part2" />
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='MissingDefaultStatusMapping']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.MissingDefaultStatusMapping"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='MissingDefaultStatusMappingForMultiSigning']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.MissingDefaultStatusMappingForMultiSigning"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='MissingDefaultStatusMappingForPayment']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.MissingDefaultStatusMappingForPayment"/>
-		</p>	
-	</xsl:template>	
+		</p>
+	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='SelectedFlowTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.SelectedFlowTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowTypeAccessDenied']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowTypeAccessDenied"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='SelectedStepNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.SelectedStepNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='SelectedQueryTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.SelectedQueryTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UnableToParseRequest']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UnableToParseRequest"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UnableToParseIcon']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UnableToParseIcon"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='InvalidIconFileFormat']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.InvalidIconFileFormat"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UnableToStoreFile']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UnableToStoreFile"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='InvalidFlowFormFileFormat']">
@@ -7242,14 +7236,14 @@
 			<xsl:value-of select="displayName"/>
 			<xsl:text> </xsl:text>
 			<xsl:value-of select="$i18n.InvalidFlowFormFileFormat.part2"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='NoAttachedFile']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.NoAttachedFile"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
@@ -7282,224 +7276,224 @@
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.NoStepSortindex"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='NoQueryDescriptorSortindex']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.NoQueryDescriptorSortindex"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UnableToFindStepsForAllQueries']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UnableToFindStepsForAllQueries"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='SelectedEvaluatorTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.SelectedEvaluatorTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='ShowFailedFlowNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='UpdateFailedFlowNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='DeleteFailedFlowNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowNotFound"/>
-		</p>	
-	</xsl:template>	
+		</p>
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='DeleteFailedFlowFormNotFound' or messageKey='UpdateFailedFlowFormNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowFormNotFound" />
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='InvalidQuerySortIndex']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.InvalidQuerySortIndex"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='RequestedFlowFamilyNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.RequestedFlowFamilyNotFound"/>
-		</p>	
-	</xsl:template>		
+		</p>
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowFamilyCannotBeDeleted']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowFamilyCannotBeDeleted"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowNotFound"/>
-		</p>	
-	</xsl:template>		
+		</p>
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='AddCategoryFailedFlowTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.AddCategoryFailedFlowTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedCategoryNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedCategoryNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedCategoryNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedCategoryNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedFlowTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedFlowTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedFlowTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedFlowTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='ShowFailedFlowTypeNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.ShowFailedFlowTypeNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedStepNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedStepNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedStepNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedStepNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedQueryDescriptorNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedQueryDescriptorNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedQueryDescriptorNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedQueryDescriptorNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='ExportFailedQueryDescriptorNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.ExportFailedQueryDescriptorNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedEvaluatorDescriptorNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedEvaluatorDescriptorNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedEvaluatorDescriptorNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedEvaluatorDescriptorNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedStatusNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedStatusNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedStatusNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedStatusNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='UpdateFailedStandardStatusNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.UpdateFailedStandardStatusNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='DeleteFailedStandardStatusNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.DeleteFailedStandardStatusNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowTypeQueryTypeAccessDenied']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowTypeQueryTypeAccessDenied"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='CategoryNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.AddFlowCategoryNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FlowImportFlowFamlilyNotFound']">
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.FlowImportFlowFamlilyNotFound"/>
-		</p>	
+		</p>
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='MayNotRemoveFlowFormIfNoSteps']">
@@ -7696,7 +7690,7 @@
 	
 	<xsl:template match="validationError[messageKey='NoActionsSelected']">
 		<p class="error">
-					
+			
 			<xsl:variable name="id" select="substring(fieldName, 26)" />
 			
 			<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
@@ -7706,7 +7700,7 @@
 			<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
 			<xsl:text>:&#160;</xsl:text>
 			<xsl:value-of select="$i18n.ValidationError.NoActionsSelected"/>
-						
+			
 		</p>
 	</xsl:template>
 	
@@ -7902,7 +7896,7 @@
 						<xsl:variable name="id" select="substring(fieldName, 29)" />
 						
 						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
-						<xsl:text>&#160;</xsl:text>						
+						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7914,7 +7908,7 @@
 						<xsl:variable name="id" select="substring(fieldName, 26)" />
 						
 						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
-						<xsl:text>&#160;</xsl:text>							
+						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7928,7 +7922,7 @@
 						<xsl:variable name="id" select="substring(fieldName, 25)" />
 							
 						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
-						<xsl:text>&#160;</xsl:text>						
+						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />
@@ -7942,7 +7936,7 @@
 						<xsl:variable name="id" select="substring(fieldName, 26)" />
 						
 						<xsl:value-of select="$i18n.AutoManagerAssignment.On.Submit" />
-						<xsl:text>&#160;</xsl:text>							
+						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
 						<xsl:text>&#160;</xsl:text>
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentRules/AutoManagerAssignmentRule[generatedRuleID = $id]/preceding-sibling::*)" />

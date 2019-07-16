@@ -9,9 +9,11 @@ var flowEngineDOMListeners = new Array();
 
 $(document).ready(function() {
 	
-	var queryAnchorName = $(".validationerrors").first().attr("id");
+	var firstValidationError = $(".validationerrors").first();
+	var queryAnchorName = firstValidationError.attr("id");
 	
-	if(queryAnchorName) {
+	if (queryAnchorName && !firstValidationError.closest("section").hasClass("testing")) {
+		
 		window.location.hash = queryAnchorName.split("-")[0];
 	}
 	
