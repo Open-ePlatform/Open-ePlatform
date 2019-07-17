@@ -193,6 +193,12 @@
 					</xsl:call-template>
 					
 					<xsl:call-template name="createHiddenField">
+						<xsl:with-param name="id" select="concat($shortQueryID, '_propertyUnitNumber')" />
+						<xsl:with-param name="name" select="concat($shortQueryID, '_propertyUnitNumber')" />
+						<xsl:with-param name="value" select="PUDQueryInstance/propertyUnitNumber"/>
+					</xsl:call-template>
+					
+					<xsl:call-template name="createHiddenField">
 						<xsl:with-param name="id" select="concat($shortQueryID, '_propertyObjectIdentity')" />
 						<xsl:with-param name="name" select="concat($shortQueryID, '_propertyObjectIdentity')" />
 						<xsl:with-param name="value" select="PUDQueryInstance/propertyObjectIdentity"/>

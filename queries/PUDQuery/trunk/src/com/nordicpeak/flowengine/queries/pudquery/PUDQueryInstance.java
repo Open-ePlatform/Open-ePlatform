@@ -120,6 +120,7 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 		attributeHandler.removeAttribute(query.getAttributeName() + ".address");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitDesignation");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitDesignationNoMunicipality");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyUnitNumber");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".propertyObjectIdentity");
 	}
 	
@@ -135,6 +136,7 @@ public class PUDQueryInstance extends BaseQueryInstance implements FixedAlternat
 		}
 		
 		attributeHandler.setAttribute(query.getAttributeName() + ".address", address);
+		attributeHandler.setAttribute(query.getAttributeName() + ".propertyUnitNumber", propertyUnitNumber);
 		attributeHandler.setAttribute(query.getAttributeName() + ".propertyObjectIdentity", propertyObjectIdentity);
 		
 		if (!StringUtils.isEmpty(propertyUnitDesignation)) {

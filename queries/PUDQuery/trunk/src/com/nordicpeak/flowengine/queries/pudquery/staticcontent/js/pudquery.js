@@ -19,6 +19,7 @@ function initPUDQuery(queryID) {
 	var $select = query.find("select");
 	var $input = $("#q" + queryID + "_searchInput");
 	var pudField = $("#q" + queryID + "_propertyUnitDesignation");
+	var punField = $("#q" + queryID + "_propertyUnitNumber");
 	var poidField = $("#q" + queryID + "_propertyObjectIdentity");
 	var addressField = $("#q" + queryID + "_address");
 	var useAddressAsResult = $select.closest(".search-select").data("useaddressasresult");
@@ -76,7 +77,7 @@ function initPUDQuery(queryID) {
 						
 					} else {
 						
-						searchPUDFromFnr(ui.item.estateID, queryID, $input, $select, pudField, $selectedOption);
+						searchPUDFromFnr(ui.item.estateID, queryID, $input, $select, pudField, punField, $selectedOption);
 					}
 				}
 			});
@@ -181,7 +182,7 @@ function searchAddress(request, response, queryID, $input, $selectedOption) {
 	});
 }
 
-function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, $selectedOption) {
+function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, punField, $selectedOption) {
 	
 	$input.addClass("ui-autocomplete-loading");
 	
@@ -203,11 +204,14 @@ function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, $selecte
 			} else if (data.features.length == 1) {
 				
 				var pud = data.features[0].properties.name;
+				var pun = data.features[0].properties.deprecatedfnr;
 				
 				pudField.val(pud);
 				pudField.parent().find("span").text(pud);
 				pudField.parent().show();
 				pudField.change();
+
+				punField.val(pun)
 				
 			} else {
 				

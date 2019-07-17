@@ -125,6 +125,10 @@
 						<td>prefix.propertyObjectIdentity</td>
 						<td><xsl:value-of select="$i18n.attributes.propertyObjectIdentity" /></td>
 					</tr>
+					<tr>
+						<td>prefix.propertyUnitNumber</td>
+						<td><xsl:value-of select="$i18n.attributes.propertyUnitNumber" /></td>
+					</tr>
 					<tr class="notforaddress">
 						<td>prefix.propertyUnitDesignation</td>
 						<td><xsl:value-of select="$i18n.attributes.propertyUnitDesignation" /></td>

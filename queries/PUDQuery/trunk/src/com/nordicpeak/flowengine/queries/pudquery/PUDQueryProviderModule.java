@@ -42,6 +42,7 @@ import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.BeanStringPopulator;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.QueryParameterPopulator;
@@ -452,6 +453,7 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 		Integer queryID = query.getQueryID();
 		
 		String pud = req.getParameter("q" + queryID + "_propertyUnitDesignation");
+		String pun = req.getParameter("q" + queryID + "_propertyUnitNumber");
 		String poid = req.getParameter("q" + queryID + "_propertyObjectIdentity");
 		String address = req.getParameter("q" + queryID + "_address");
 		
@@ -484,8 +486,11 @@ public class PUDQueryProviderModule extends BaseQueryProviderModule<PUDQueryInst
 			return;
 		}
 		
+		//TODO Validate submitted values against search
+		
 		queryInstance.setAddress(address);
 		queryInstance.setPropertyUnitDesignation(pud);
+		queryInstance.setPropertyUnitNumber(NumberUtils.toInt(pun));
 		queryInstance.setPropertyObjectIdentity(poid);
 		
 		queryInstance.getQueryInstanceDescriptor().setPopulated(true);

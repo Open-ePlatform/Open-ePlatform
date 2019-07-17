@@ -38,5 +38,6 @@ Frågetypen Ange adress eller fastighetsbeteckning har koppling till Lantmäteriet
 	<xsl:variable name="i18n.attributes.propertyUnitDesignation">Fastighetsbeteckning</xsl:variable>
 	<xsl:variable name="i18n.attributes.propertyUnitDesignationNoMunicipality">Fastighetsbeteckning utan kommunnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.propertyObjectIdentity">Fastighetens objektsidentitet</xsl:variable>
+	<xsl:variable name="i18n.attributes.propertyUnitNumber">Fastighetsnyckel</xsl:variable>
 	
 </xsl:stylesheet>
