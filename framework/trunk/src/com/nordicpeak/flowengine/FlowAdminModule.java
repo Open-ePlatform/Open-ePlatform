@@ -1730,7 +1730,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -1874,7 +1874,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -1935,7 +1935,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		Flow flow = queryDescriptor.getStep().getFlow();
 
-		if (!hasFlowTypeAccess(user, flow)) {
+		if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -1997,7 +1997,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -2056,7 +2056,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -2116,7 +2116,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -3186,7 +3186,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			throw new AccessDeniedException("Requested flow is external and cannot be structure manipulated");
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -3721,7 +3721,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 
@@ -3785,7 +3785,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -4360,7 +4360,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, flow)) {
+		} else if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
@@ -4608,7 +4608,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Flow flow = queryDescriptor.getStep().getFlow();
 
-		if (!hasFlowTypeAccess(user, flow)) {
+		if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + queryDescriptor.getStep().getFlow().getFlowType());
 
@@ -5150,7 +5150,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 			
-			if (!hasFlowTypeAccess(user, flow)) {
+			if (!hasFlowAccess(user, flow)) {
 				
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
@@ -5176,7 +5176,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 
-			if (!hasFlowTypeAccess(user, flow)) {
+			if (!hasFlowAccess(user, flow)) {
 
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
@@ -5395,7 +5395,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowNotFound"));
 
-		} else if (!hasFlowTypeAccess(user, requestedFlow)) {
+		} else if (!hasFlowAccess(user, requestedFlow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + requestedFlow.getFlowType());
 		}
@@ -6123,7 +6123,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@Override
-	public boolean hasFlowTypeAccess(User user, Flow flow) {
+	public boolean hasFlowAccess(User user, Flow flow) {
 		
 		return AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
 	}
@@ -6152,7 +6152,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (extensionModuleID = uriParser.getInt(3)) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null && (fragmentExtension = getFragmentExtensionViewProvider(extensionModuleID)) != null) {
 
-			if (!hasFlowTypeAccess(user, flow)) {
+			if (!hasFlowAccess(user, flow)) {
 				
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}

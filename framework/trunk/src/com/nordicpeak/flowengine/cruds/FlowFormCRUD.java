@@ -103,7 +103,7 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 	
 	public void checkFlowTypeAccess(User user, Flow flow) throws AccessDeniedException {
 		
-		if (!callback.hasFlowTypeAccess(user, flow)) {
+		if (!callback.hasFlowAccess(user, flow)) {
 			
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}

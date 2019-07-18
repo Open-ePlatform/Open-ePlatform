@@ -49,7 +49,7 @@ public interface FlowAdminCRUDCallback extends AdvancedCRUDCallback<User> {
 
 	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception;
 
-	public boolean hasFlowTypeAccess(User user, Flow flow);
+	public boolean hasFlowAccess(User user, Flow flow);
 
 	public List<String> getAllowedFlowFormFileExtensions();
 

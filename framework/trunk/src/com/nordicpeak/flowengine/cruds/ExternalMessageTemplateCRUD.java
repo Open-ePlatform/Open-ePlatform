@@ -65,7 +65,7 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 			throw new URINotFoundException(uriParser);
 		}
 
-		if (!callback.hasFlowTypeAccess(user, flow)) {
+		if (!callback.hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
