@@ -49,6 +49,8 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	
 	public boolean showsSubmitSurvey();
 
+	public boolean isHideSaveButton();
+
 	public abstract Blob getIcon();
 
 	public abstract String getIconFileName();

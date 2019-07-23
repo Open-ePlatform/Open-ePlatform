@@ -448,6 +448,8 @@
 	
 	<xsl:variable name="i18n.showSubmitSurvey">Visa användarundersökning</xsl:variable>
 	<xsl:variable name="i18n.hideSubmitStepText">Dölj steget "Skicka in" i stegöverblicken</xsl:variable>
+
+	<xsl:variable name="i18n.hideSaveButton">Dölj sparaknappen</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowSurveysTitle">Användarundersökningar</xsl:variable>
 	

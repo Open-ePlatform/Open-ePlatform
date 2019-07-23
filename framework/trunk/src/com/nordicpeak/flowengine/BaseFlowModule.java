@@ -656,7 +656,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 				} else if (flowAction == FlowAction.SAVE) {
 
-					if (user != null) {
+					if (user != null && !instanceManager.getFlowInstance().getFlow().isHideSaveButton()) {
 
 						boolean previouslySaved = instanceManager.isPreviouslySaved();
 

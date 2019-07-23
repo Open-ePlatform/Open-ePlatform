@@ -224,6 +224,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean hideSaveButton;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean showLoginQuestion;
 	
 	@FCKContent
@@ -1203,6 +1208,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.skipPosterSigning = skipPosterSigningInMultiSigning;
 	}
 
+	@Override
 	public boolean isAllowPosterMultipartSigning() {
 		return allowPosterMultipartSigning;
 	}
@@ -1226,6 +1232,16 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 	public void setOverviewAttributes(List<FlowOverviewAttribute> overviewAttributes) {
 		this.overviewAttributes = overviewAttributes;
+	}
+
+	public boolean isHideSaveButton() {
+
+		return hideSaveButton;
+	}
+
+	public void setHideSaveButton(boolean hideSaveButton) {
+
+		this.hideSaveButton = hideSaveButton;
 	}
 	
 }

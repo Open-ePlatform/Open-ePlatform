@@ -509,9 +509,11 @@
 					<xsl:text>:&#160;</xsl:text>
 					<xsl:value-of select="FlowInstance/Flow/Steps/Step[stepID = $currentStepID]/name" />
 	 			</div>
-	 			<div class="buttons">
-	 				<a href="#" data-action="save_errand" class="btn btn-green" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /><span class="hide-mobile"><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.saveBtnSuffix" /></span></a>
-	 			</div>
+ 				<xsl:if test="not(FlowInstance/Flow/hideSaveButton = 'true')">
+		 			<div class="buttons">
+		 				<a href="#" data-action="save_errand" class="btn btn-green" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /><span class="hide-mobile"><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.saveBtnSuffix" /></span></a>
+		 			</div>
+ 				</xsl:if>
 	 		</div>
 	 	</div>
 	
@@ -682,7 +684,7 @@
 			</div>
 		</div>
 		
-		<xsl:if test="loggedIn and $showSaveButton = 'true'">
+		<xsl:if test="loggedIn and $showSaveButton = 'true' and not(FlowInstance/Flow/hideSaveButton = 'true')">
 			<div class="aside-inside step hide-mobile hide-tablet">
 				<div class="section yellow">
 					<div class="inner">
@@ -714,9 +716,11 @@
 	 			<div class="current-step">
 	 				<xsl:value-of select="$i18n.ShortSaveBoxDescription" />
 	 			</div>
-	 			<div class="buttons">
-	 				<a class="btn btn-green force-submit" data-action="save_errand" href="#" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /></a>
-	 			</div>
+	 			<xsl:if test="not(FlowInstance/Flow/hideSaveButton = 'true')">
+		 			<div class="buttons">
+		 				<a class="btn btn-green force-submit" data-action="save_errand" href="#" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /></a>
+		 			</div>
+	 			</xsl:if>
 	 		</div>
 	 	</div>
 		

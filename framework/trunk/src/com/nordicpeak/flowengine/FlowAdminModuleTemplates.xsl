@@ -2600,6 +2600,21 @@
 				</div>
 			</div>
 			
+			<div class="floatleft full bigmarginbottom margintop internal">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideSaveButton'" />
+						<xsl:with-param name="id" select="'hideSaveButton'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="hideSaveButton">
+						<xsl:value-of select="$i18n.hideSaveButton" />
+					</label>
+				</div>
+			</div>
+			
 		</xsl:if>
 			
 		<xsl:if test="$isInternal = 'true'">	

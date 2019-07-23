@@ -2283,4 +2283,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="126">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideSaveButton` BOOLEAN AFTER `hideSubmitStepText`;
+			]]> 
+		</Query>
+	</Script>
+	
 </DBScripts>
