@@ -214,6 +214,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean showPreviousSignaturesToSigners;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean showSubmitSurvey;
 	
 	@DAOManaged
@@ -936,16 +941,17 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		//this.publishDate = XMLValidationUtils.validateParameter("publishDate", xmlParser, false, datePopulator, errors);
 		//this.unPublishDate = XMLValidationUtils.validateParameter("unPublishDate", xmlParser, false, datePopulator, errors);
 		
-		this.usePreview = xmlParser.getPrimitiveBoolean("usePreview");
-		this.paymentSupportEnabled = xmlParser.getPrimitiveBoolean("paymentSupportEnabled");
-		this.requireAuthentication = xmlParser.getPrimitiveBoolean("requireAuthentication");
+		usePreview = xmlParser.getPrimitiveBoolean("usePreview");
+		paymentSupportEnabled = xmlParser.getPrimitiveBoolean("paymentSupportEnabled");
+		requireAuthentication = xmlParser.getPrimitiveBoolean("requireAuthentication");
 		showLoginQuestion = xmlParser.getPrimitiveBoolean("showLoginQuestion");
 		loginQuestionText = XMLValidationUtils.validateParameter("loginQuestionText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
+		requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		useSequentialSigning = xmlParser.getPrimitiveBoolean("useSequentialSigning");
 		skipPosterSigning = xmlParser.getPrimitiveBoolean("skipPosterSigning");
 		allowPosterMultipartSigning = xmlParser.getPrimitiveBoolean("allowPosterMultipartSigning");
 		appendSigningSignatureToPDF = xmlParser.getPrimitiveBoolean("appendSigningSignatureToPDF");
+		showPreviousSignaturesToSigners = xmlParser.getPrimitiveBoolean("showPreviousSignaturesToSigners");
 		allowForeignIDs = xmlParser.getPrimitiveBoolean("allowForeignIDs");
 		
 		this.tags = XMLValidationUtils.validateParameters("Tags/tag", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -1226,6 +1232,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.appendSigningSignatureToPDF = appendSigningSignatureToPDF;
 	}
 
+	public boolean isShowPreviousSignaturesToSigners() {
+		return showPreviousSignaturesToSigners;
+	}
+
+	public void setShowPreviousSignaturesToSigners(boolean showPreviousSignaturesToSigners) {
+		this.showPreviousSignaturesToSigners = showPreviousSignaturesToSigners;
+	}
+
 	public List<FlowOverviewAttribute> getOverviewAttributes() {
 		return overviewAttributes;
 	}
@@ -1234,6 +1248,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		this.overviewAttributes = overviewAttributes;
 	}
 
+	@Override
 	public boolean isHideSaveButton() {
 
 		return hideSaveButton;
@@ -1243,5 +1258,5 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 		this.hideSaveButton = hideSaveButton;
 	}
-	
+
 }

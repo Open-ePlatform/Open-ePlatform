@@ -1451,7 +1451,7 @@
 			<![CDATA[
 				UPDATE `flowengine_flows` SET `hideManagerDetails` = false WHERE `hideManagerDetails` IS NULL;
 			]]>
-		</Query>	    
+		</Query>
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` MODIFY COLUMN `flowID` INT(10) UNSIGNED NOT NULL,
@@ -2274,7 +2274,7 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_query_descriptors` ADD COLUMN `comment` VARCHAR(1024) AFTER `name`;
-			]]> 
+			]]>
 		</Query>
 		<Query>
 			<![CDATA[
@@ -2287,7 +2287,34 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` ADD COLUMN `hideSaveButton` BOOLEAN AFTER `hideSubmitStepText`;
-			]]> 
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="127">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ALTER `hideSaveButton` DROP DEFAULT;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowengine_flows` SET `hideSaveButton` = 0 WHERE `hideSaveButton` IS NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` 
+					CHANGE COLUMN `enabled` `enabled` TINYINT(1) UNSIGNED NOT NULL AFTER `categoryID`,
+					CHANGE COLUMN `usePreview` `usePreview` TINYINT(1) UNSIGNED NOT NULL AFTER `enabled`,
+					CHANGE COLUMN `requireAuthentication` `requireAuthentication` TINYINT(1) UNSIGNED NOT NULL AFTER `version`,
+					CHANGE COLUMN `hideManagerDetails` `hideManagerDetails` TINYINT(1) UNSIGNED NOT NULL AFTER `skipOverview`,
+					CHANGE COLUMN `hideFromOverview` `hideFromOverview` TINYINT(1) UNSIGNED NOT NULL AFTER `hideManagerDetails`,
+					CHANGE COLUMN `hideSaveButton` `hideSaveButton` TINYINT(1) UNSIGNED NOT NULL AFTER `hideSubmitStepText`,
+					CHANGE COLUMN `paymentSupportEnabled` `paymentSupportEnabled` TINYINT(1) UNSIGNED NOT NULL AFTER `hideFlowInstanceIDFromUser`,
+					CHANGE COLUMN `showLoginQuestion` `showLoginQuestion` TINYINT(1) UNSIGNED NOT NULL AFTER `paymentSupportEnabled`,
+					ADD COLUMN `showPreviousSignaturesToSigners` TINYINT(1) UNSIGNED NOT NULL AFTER `appendSigningSignatureToPDF`;
+			]]>
 		</Query>
 	</Script>
 	

@@ -2443,6 +2443,21 @@
 			
 				<div class="floatleft">
 					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'showPreviousSignaturesToSigners'" />
+						<xsl:with-param name="id" select="'showPreviousSignaturesToSigners'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="showPreviousSignaturesToSigners">
+						<xsl:value-of select="$i18n.Flow.showPreviousSignaturesToSigners" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom margintop internal">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="name" select="'hideManagerDetails'" />
 						<xsl:with-param name="id" select="'hideManagerDetails'" />
 						<xsl:with-param name="element" select="Flow" />
