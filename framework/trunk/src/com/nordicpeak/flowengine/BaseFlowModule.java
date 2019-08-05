@@ -1261,7 +1261,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			if (status == null) {
 
-				throw new FlowDefaultStatusNotFound(actionID, instanceManager.getFlowInstance().getFlow());
+				throw new FlowDefaultStatusNotFound(actionID, instanceManager.getFlowInstance());
 			}
 			
 			return status;
