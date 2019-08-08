@@ -6,6 +6,10 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDenied;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFound;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
+
 
 /**
  * This object contains factory methods for each 

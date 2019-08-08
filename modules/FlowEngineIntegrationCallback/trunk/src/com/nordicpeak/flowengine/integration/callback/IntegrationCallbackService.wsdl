@@ -67,8 +67,8 @@
 
 		</wsdl:part>
 
-	</wsdl:message>	
-
+	</wsdl:message>
+	
 	<wsdl:message name="StatusNotFoundException">
 
 		<wsdl:part element="impl:StatusNotFoundFault" name="fault">
@@ -255,14 +255,10 @@
 
 			</wsdl:output>
 
-			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException">
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException" />
 
-			</wsdl:fault>
-
-			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException">
-
-			</wsdl:fault>
-
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException" />
+			
 		</wsdl:operation>
 		
 		<wsdl:operation name="setAttribute">
@@ -472,7 +468,7 @@
 				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
 
 			</wsdl:fault>
-
+			
 		</wsdl:operation>
 		
 		<wsdl:operation name="setAttribute">

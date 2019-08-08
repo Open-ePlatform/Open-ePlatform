@@ -1,5 +1,5 @@
 
-package com.nordicpeak.flowengine.integration.callback;
+package com.nordicpeak.flowengine.integration.callback.exceptions;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

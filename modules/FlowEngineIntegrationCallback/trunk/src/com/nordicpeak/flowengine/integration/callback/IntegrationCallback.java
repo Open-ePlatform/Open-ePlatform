@@ -2,6 +2,7 @@
 package com.nordicpeak.flowengine.integration.callback;
 
 import java.util.List;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -10,6 +11,10 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
+
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDeniedException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFoundException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 
 
 /**
@@ -184,7 +189,9 @@ public interface IntegrationCallback {
         @WebParam(name = "externalID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
         ExternalID externalID,
         @WebParam(name = "managers", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
-        List<Principal> managers)
+        List<Principal> managers,
+        @WebParam(name = "managerGroups", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        List<PrincipalGroup> managerGroups)
         throws AccessDeniedException, FlowInstanceNotFoundException
     ;
 

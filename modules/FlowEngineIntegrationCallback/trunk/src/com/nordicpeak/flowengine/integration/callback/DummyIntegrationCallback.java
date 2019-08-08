@@ -10,6 +10,13 @@ import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleCallback;
 import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleInstanceResolver;
 import se.unlogic.standardutils.random.RandomUtils;
 
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDenied;
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDeniedException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFound;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFoundException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
+
 @WebService(endpointInterface="com.nordicpeak.flowengine.integration.callback.IntegrationCallback", name="IntegrationCallback",serviceName="IntegrationCallback")
 @WSModuleInstanceResolver
 public class DummyIntegrationCallback extends BaseWSModuleService implements IntegrationCallback {
@@ -101,7 +108,7 @@ public class DummyIntegrationCallback extends BaseWSModuleService implements Int
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers) throws AccessDeniedException, FlowInstanceNotFoundException {
+	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers, List<PrincipalGroup> managerGroups) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		log.info("User " + callback.getUser() + " requested setManagers");
 		

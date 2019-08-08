@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.integration.callback;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="externalID" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}ExternalID"/>
  *         &lt;/choice>
  *         &lt;element name="managers" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}Principal" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="managerGroup" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}PrincipalGroup" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,7 +38,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "flowInstanceID",
     "externalID",
-    "managers"
+    "managers",
+    "managerGroups"
 })
 @XmlRootElement(name = "setManagers")
 public class SetManagers {
@@ -44,6 +47,7 @@ public class SetManagers {
     protected Integer flowInstanceID;
     protected ExternalID externalID;
     protected List<Principal> managers;
+    protected List<PrincipalGroup> managerGroups;
 
     /**
      * Gets the value of the flowInstanceID property.
@@ -51,7 +55,7 @@ public class SetManagers {
      * @return
      *     possible object is
      *     {@link Integer }
-     *     
+     * 
      */
     public Integer getFlowInstanceID() {
         return flowInstanceID;
@@ -63,7 +67,7 @@ public class SetManagers {
      * @param value
      *     allowed object is
      *     {@link Integer }
-     *     
+     * 
      */
     public void setFlowInstanceID(Integer value) {
         this.flowInstanceID = value;
@@ -75,7 +79,7 @@ public class SetManagers {
      * @return
      *     possible object is
      *     {@link ExternalID }
-     *     
+     * 
      */
     public ExternalID getExternalID() {
         return externalID;
@@ -87,7 +91,7 @@ public class SetManagers {
      * @param value
      *     allowed object is
      *     {@link ExternalID }
-     *     
+     * 
      */
     public void setExternalID(ExternalID value) {
         this.externalID = value;
@@ -120,6 +124,13 @@ public class SetManagers {
             managers = new ArrayList<>();
         }
         return this.managers;
+    }
+    
+     public List<PrincipalGroup> getManagerGroups() {
+        if (managerGroups == null) {
+            managerGroups = new ArrayList<>();
+        }
+        return this.managerGroups;
     }
 
 }

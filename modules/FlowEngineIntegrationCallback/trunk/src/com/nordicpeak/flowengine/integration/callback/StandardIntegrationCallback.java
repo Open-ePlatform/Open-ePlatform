@@ -15,6 +15,7 @@ import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleCallback;
 import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleInstanceResolver;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.SettingDescriptor;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
@@ -36,6 +37,7 @@ import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.Status;
@@ -46,14 +48,23 @@ import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.integration.callback.events.DeliveryConfirmationEvent;
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDenied;
+import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDeniedException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFound;
+import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFoundException;
+import com.nordicpeak.flowengine.integration.callback.exceptions.InvalidManagers;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
+import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 
 @WebService(endpointInterface="com.nordicpeak.flowengine.integration.callback.IntegrationCallback", name="IntegrationCallback",serviceName="IntegrationCallback")
 @WSModuleInstanceResolver
 public class StandardIntegrationCallback extends BaseWSModuleService implements IntegrationCallback, InstanceListener<FlowAdminModule>, SettingProvider{
 	
 	protected static final RelationQuery FLOW_INSTANCE_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION);
-	protected static final RelationQuery FLOW_INSTANCE_MANAGERS_RELATION_QUERY = new RelationQuery(FlowInstance.MANAGERS_RELATION);
+	protected static final RelationQuery FLOW_INSTANCE_MANAGERS_RELATION_QUERY = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
 	protected static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 	
 	@ModuleSetting
@@ -376,99 +387,167 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers) throws AccessDeniedException, FlowInstanceNotFoundException {
-		
+	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers, List<PrincipalGroup> managerGroups) throws AccessDeniedException, FlowInstanceNotFoundException {
+
 		try {
 			checkDependencies();
-			
+
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
-			
+
 			log.info("User " + callback.getUser() + " requested set managers for flow instance " + flowInstance);
-			
-			List<User> previousManagers = flowInstance.getManagers();
-			
+
 			String detailString;
-			
-			if (!CollectionUtils.isEmpty(managers)) {
-				
-				ArrayList<User> managerUsers = new ArrayList<>(managers.size());
-				
-				StringBuilder stringBuilder = new StringBuilder();
-				
-				for (Principal principal : managers) {
-					
-					User managerUser = getPrincipalUser(principal);
-					
-					if (managerUser != null) {
-						
-						managerUsers.add(managerUser);
-						
-						if (stringBuilder.length() > 0) {
-							
-							stringBuilder.append(", ");
-						}
-						
-						stringBuilder.append(managerUser.getFirstname());
-						stringBuilder.append(" ");
-						stringBuilder.append(managerUser.getLastname());
-						
-					} else {
-						
-						log.warn("Unable to find local user matching principal " + principal);
-					}
+
+			List<User> previousManagers = flowInstance.getManagers();
+			List<Group> previousManagerGroups = flowInstance.getManagerGroups();
+
+			if (!CollectionUtils.isEmpty(managers) || !CollectionUtils.isEmpty(managerGroups)) {
+
+				List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getUserHandler());
+				List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getGroupHandler());
+
+				InvalidManagers invalidManagers = new InvalidManagers();
+
+				flowInstance.setManagers(filterSelectedManagerUsers(allowedManagers, managers, invalidManagers));
+				flowInstance.setManagerGroups(filterSelectedManagerGroups(allowedManagerGroups, managerGroups, invalidManagers));
+
+				if (invalidManagers.getManagers() != null || invalidManagers.getManagerGroups() != null) {
+
+					log.warn("Invalid users/groups when setting managers for flow instance " + flowInstanceID + ": " + invalidManagers);
+
+					throw new AccessDeniedException("The following users/groups are not valid managers for this flow: " + invalidManagers.toString(), new AccessDenied());
 				}
-				
-				detailString = stringBuilder.toString();
-				flowInstance.setManagers(managerUsers);
-				
+
+				detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
+
 			} else {
-				
+
+				detailString = null; //TODO FlowInstanceAdminModule.noManagersSelected
 				flowInstance.setManagers(null);
-				detailString = null;
+				flowInstance.setManagerGroups(null);
 			}
-			
-			if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers())) {
-				
-				log.info("User " + callback.getUser() + " setting managers of instance " + flowInstance + " to " + flowInstance.getManagers());
-				
+
+			if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers()) || !CollectionUtils.equals(previousManagerGroups, flowInstance.getManagerGroups())) {
+
+				log.info("User " + callback.getUser() + " setting managers of instance " + flowInstance + " to " + detailString);
+
 				try {
 					daoFactory.getFlowInstanceDAO().update(flowInstance, FLOW_INSTANCE_MANAGERS_RELATION_QUERY);
-					
+
 				} catch (SQLException e) {
-					
+
 					throw new RuntimeException(e);
 				}
-				
+
 				User eventUser;
-				
-				if(setUserOnEvents) {
-					
+
+				if (setUserOnEvents) {
+
 					eventUser = callback.getUser();
-					
-				}else {
-					
+
+				} else {
+
 					eventUser = null;
 				}
-				
+
 				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null);
-				
+
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, flowInstance.getManagerGroups(), null), EventTarget.ALL);
-				
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, previousManagerGroups, eventUser), EventTarget.ALL);
+
 				return flowInstanceEvent.getEventID();
-				
+
 			} else {
-				
+
 				log.info("No change in managers detected in request from user " + callback.getUser() + " for flow instance " + flowInstance + ", ignoring request.");
-				
+
 				return 0;
 			}
-			
+
 		} catch (RuntimeException e) {
-			
+
 			log.error("Error setting managers", e);
-			
+
 			throw e;
+		}
+	}
+	
+	private List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Principal> selectedUsers, InvalidManagers invalidManagers) {
+		
+		if (!CollectionUtils.isEmpty(selectedUsers)) {
+			
+			List<Principal> missingManagers = null;
+			List<User> selectedManagers = new ArrayList<User>();
+
+			for (Principal principal : selectedUsers) {
+				
+				boolean found = false;
+
+				if (allowedManagers != null) {
+					for (User manager : allowedManagers) {
+
+						if (manager.getUsername() != null && manager.getUsername().equalsIgnoreCase(principal.getUserID())) {
+							
+							found = true;
+							selectedManagers.add(manager);
+							break;
+						}
+					}
+				}
+
+				if (!found) {
+					missingManagers = CollectionUtils.addAndInstantiateIfNeeded(missingManagers, principal);
+				}
+			}
+
+			if (missingManagers != null) {
+				invalidManagers.setManagers(missingManagers);
+			}
+			
+			return selectedManagers;
+			
+		} else {
+			
+			return null;
+		}
+	}
+
+	private List<Group> filterSelectedManagerGroups(List<Group> allowedManagerGroups, List<PrincipalGroup> selectedGroups, InvalidManagers invalidManagers) {
+
+		if (!CollectionUtils.isEmpty(selectedGroups)) {
+
+			List<PrincipalGroup> missingManagerGroups = null;
+			List<Group> selectedManagerGroups = new ArrayList<Group>();
+
+			for (PrincipalGroup principalGroup : selectedGroups) {
+				
+				boolean found = false;
+
+				if (allowedManagerGroups != null) {
+					for (Group managerGroup : allowedManagerGroups) {
+
+						if (managerGroup.getName() != null && managerGroup.getName().equalsIgnoreCase(principalGroup.getName())) {
+							
+							found = true;
+							selectedManagerGroups.add(managerGroup);
+							break;
+						}
+					}
+				}
+				if (!found) {
+					missingManagerGroups = CollectionUtils.addAndInstantiateIfNeeded(missingManagerGroups, principalGroup);
+				}
+			}
+
+			if (missingManagerGroups != null) {
+				invalidManagers.setManagerGroups(missingManagerGroups);
+			}
+
+			return selectedManagerGroups;
+
+		} else {
+
+			return null;
 		}
 	}
 
@@ -499,7 +578,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		if(flowInstanceID != null){
 			
 			try {
-				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION);
+				flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
 				
 			} catch (SQLException e) {
 
@@ -585,8 +664,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	
 	private User getPrincipalUser(Principal principal) {
 
-		if(principal != null && principal.getUserID() != null){
-			
+		if (principal != null && principal.getUserID() != null) {
+
 			return callback.getSystemInterface().getUserHandler().getUserByUsername(principal.getUserID(), false, true);
 		}
 
