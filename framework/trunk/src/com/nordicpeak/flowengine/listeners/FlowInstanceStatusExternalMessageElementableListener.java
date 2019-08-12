@@ -24,9 +24,9 @@ public class FlowInstanceStatusExternalMessageElementableListener implements Ele
 	@Override
 	public void elementGenerated(Document doc, Element element, Status status) {
 
-		if (!FlowInstanceUtils.isExternalMessagesEnabled(flowInstance, status)) {
+		if (!FlowInstanceUtils.isNewExternalMessagesAllowed(flowInstance, status)) {
 			
-			XMLUtils.appendNewElement(doc, element, "hideExternalMessages", true);
+			XMLUtils.appendNewElement(doc, element, "hideSendExternalMessage", true);
 		}
 	}
 

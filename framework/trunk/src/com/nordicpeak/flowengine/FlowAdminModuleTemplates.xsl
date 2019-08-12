@@ -2533,21 +2533,6 @@
 				
 				<div class="floatleft">
 					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideExternalMessagesOnArchivedFlowInstances'" />
-						<xsl:with-param name="id" select="'hideExternalMessagesOnArchivedFlowInstances'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideExternalMessagesOnArchivedFlowInstances">
-						<xsl:value-of select="$i18n.hideExternalMessagesOnArchivedFlowInstances" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-				
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
 						<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
 						<xsl:with-param name="element" select="Flow" />
@@ -3626,6 +3611,8 @@
 			</div>
 		</div>
 
+		<h2><xsl:value-of select="$i18n.externalMessages"/></h2>
+		
 		<div>
 
 			<xsl:if test="Flow/hideExternalMessages = 'true'">
@@ -3633,6 +3620,31 @@
 			</xsl:if>
 
 			<div class="floatleft full bigmarginbottom">
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'newExternalMessagesDisallowed'" />
+						<xsl:with-param name="id" select="'newExternalMessagesDisallowed'" />
+						<xsl:with-param name="element" select="Status" />
+					</xsl:call-template>
+					
+					<label for="newExternalMessagesDisallowed">
+						<xsl:value-of select="$i18n.newExternalMessagesDisallowed" />
+					</label>
+				</div>
+				
+				<div class="floatleft full">
+					
+					<label for="newExternalMessagesAllowedDays" class="floatleft full">
+						<xsl:value-of select="$i18n.newExternalMessagesAllowedDays" />
+					</label>
+		
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'newExternalMessagesAllowedDays'"/>
+						<xsl:with-param name="name" select="'newExternalMessagesAllowedDays'"/>
+						<xsl:with-param name="element" select="Status" />
+					</xsl:call-template>
+				</div>
 	
 				<div class="floatleft full">
 					<xsl:call-template name="createCheckbox">
@@ -3646,23 +3658,21 @@
 					</label>
 				</div>
 				
-				<div id="defaultExternalMessageTemplateContainer" class="floatleft full bigmarginbottom hidden">
+				<div class="floatleft full bigmarginbottom hidden">
 				
 					<label for="defaultExternalMessageTemplate" class="floatleft full">
 						<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
 					</label>
 		
-					<div class="floatleft full">
-						<xsl:call-template name="createDropdown">
-							<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
-							<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
-							<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
-							<xsl:with-param name="valueElementName" select="'templateID'" />
-							<xsl:with-param name="labelElementName" select="'name'" />
-							<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
-							<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
-						</xsl:call-template>
-					</div>
+					<xsl:call-template name="createDropdown">
+						<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
+						<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
+						<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
+						<xsl:with-param name="valueElementName" select="'templateID'" />
+						<xsl:with-param name="labelElementName" select="'name'" />
+						<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
+						<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
+					</xsl:call-template>
 				</div>
 			</div>
 		</div>
@@ -4498,7 +4508,7 @@
 				</label>
 			</div>
 			
-			<div id="defaultExternalMessageTemplateContainer" class="floatleft full bigmarginbottom hidden">
+			<div class="floatleft full bigmarginbottom">
 			
 				<label for="defaultExternalMessageTemplate" class="floatleft full">
 					<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
@@ -7811,6 +7821,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'managingTime'">
 						<xsl:value-of select="$i18n.managingTime"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'newExternalMessagesAllowedDays'">
+						<xsl:value-of select="$i18n.newExternalMessagesAllowedDays"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'group'">
 						<xsl:value-of select="$i18n.allowedGroups"/>

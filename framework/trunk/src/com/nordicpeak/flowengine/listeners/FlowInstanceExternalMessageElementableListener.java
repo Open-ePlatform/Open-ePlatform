@@ -17,6 +17,11 @@ public class FlowInstanceExternalMessageElementableListener implements Elementab
 			
 			XMLUtils.appendNewElement(doc, element, "hideExternalMessages", true);
 		}
+		
+		if (!flowInstance.isNewExternalMessagesAllowed()) {
+			
+			XMLUtils.appendNewElement(doc, element, "hideSendExternalMessage", true);
+		}
 	}
 
 }

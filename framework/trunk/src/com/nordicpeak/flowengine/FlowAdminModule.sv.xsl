@@ -187,6 +187,8 @@
 	<xsl:variable name="i18n.managingTime">Handläggningstid</xsl:variable>
 	<xsl:variable name="i18n.required">obligatorisk</xsl:variable>
 	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
+	<xsl:variable name="i18n.newExternalMessagesDisallowed">Tillåt ej nya meddelanden på ärenden med denna status</xsl:variable>
+	<xsl:variable name="i18n.newExternalMessagesAllowedDays">Antal dagar som nya meddelanden är tillåtna efter byte till denna status</xsl:variable>		
 	<xsl:variable name="i18n.addExternalMessage">Kräv att handläggaren lägger till ett meddelande vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.defaultExternalMessageTemplate">Förvald meddelandemall</xsl:variable>
 	<xsl:variable name="i18n.defaultExternalMessageTemplate.None">Ingen förvald meddelandemall</xsl:variable>
@@ -215,8 +217,9 @@
 	<xsl:variable name="i18n.contentType.WAITING_FOR_COMPLETION">Väntar på komplettering</xsl:variable>
 	<xsl:variable name="i18n.contentType.ARCHIVED">Avslutade ärenden</xsl:variable>
 
-	<xsl:variable name="i18n.contentType">Innehåll</xsl:variable>
+	<xsl:variable name="i18n.externalMessages">Meddelanden</xsl:variable>
 	<xsl:variable name="i18n.permissions">Behörigheter</xsl:variable>
+	<xsl:variable name="i18n.contentType">Innehåll</xsl:variable>
 	
 	<xsl:variable name="i18n.updateFlowIcon.link.title">Uppdatera ikon</xsl:variable>
 	
@@ -552,7 +555,6 @@
 	<xsl:variable name="i18n.hideFromOverview">Dölj e-tjänsten på e-tjänsteportalens förstasida</xsl:variable>
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
-	<xsl:variable name="i18n.hideExternalMessagesOnArchivedFlowInstances">Stäng av meddelandefunktionen på avslutade ärenden</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av filuppladdningen i meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFlowInstanceIDFromUser">Dölj ärendenummer från mina sidor och kvittens</xsl:variable>

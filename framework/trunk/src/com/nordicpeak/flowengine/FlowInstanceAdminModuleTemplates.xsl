@@ -1035,7 +1035,10 @@
 		  					
 		  					<div class="heading-wrapper">
 		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-								<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+
+								<xsl:if test="not(hideSendExternalMessage)">
+									<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+								</xsl:if>
 		  					</div>
 		  					
 		  					<xsl:choose>

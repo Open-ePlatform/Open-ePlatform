@@ -117,7 +117,7 @@ $(document).ready(function() {
 		
 		$('#hideExternalMessages').change(function() {
 
-			$('#hideExternalMessageAttachments, #hideExternalMessagesOnArchivedFlowInstances').parent().parent().toggle(!this.checked);
+			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
 		
 		}).trigger('change');
 		
@@ -397,10 +397,27 @@ $(document).ready(function() {
 		}
     });
 	
-	// Update status
-	$('#addExternalMessage').change(function(){
+	var $newExternalMessagesDisallowed = $('#newExternalMessagesDisallowed');
+	var $newExternalMessagesAllowedDays = $('#newExternalMessagesAllowedDays');
+	var $addExternalMessage = $('#addExternalMessage');
+	var $defaultExternalMessageTemplate = $('#defaultExternalMessageTemplate');
+	
+	$newExternalMessagesDisallowed.change(function(){
 		
-		$('#defaultExternalMessageTemplateContainer').toggle(this.checked);
+		if (this.checked) {
+			
+			$addExternalMessage.prop('checked', false).change();
+		}
+		
+		$newExternalMessagesAllowedDays.prop('disabled', this.checked);
+		
+		$addExternalMessage.prop('disabled', this.checked);
+		
+	}).change();
+	
+	$addExternalMessage.change(function(){
+		
+		$defaultExternalMessageTemplate.parent().toggle(this.checked);
 		
 	}).change();
 	

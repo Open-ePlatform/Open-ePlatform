@@ -2318,4 +2318,32 @@
 		</Query>
 	</Script>
 	
+	<Script version="128">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` 
+					ADD COLUMN `newExternalMessagesDisallowed` TINYINT(1) NOT NULL AFTER `managingTime`,
+					ADD COLUMN `newExternalMessagesAllowedDays` INT(10) UNSIGNED AFTER `newExternalMessagesDisallowed`;
+			]]> 
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowengine_flow_statuses`
+					SET `newExternalMessagesDisallowed` = 1
+					WHERE `contentType` = 'ARCHIVED' 
+					AND `flowID` IN (
+						SELECT `flowID`
+						FROM `flowengine_flows`
+						WHERE `hideExternalMessagesOnArchivedFlowInstances` = 1
+					);
+			]]> 
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows`
+					DROP COLUMN `hideExternalMessagesOnArchivedFlowInstances`;
+			]]> 
+		</Query>
+	</Script>
+	
 </DBScripts>

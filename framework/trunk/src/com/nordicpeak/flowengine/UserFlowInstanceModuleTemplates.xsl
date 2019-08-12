@@ -692,7 +692,7 @@
 						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
 					</li>
 					
-					<xsl:if test="not(Flow/hideExternalMessages = 'true' or (Flow/hideExternalMessagesOnArchivedFlowInstances = 'true' and Status/contentType = 'ARCHIVED'))">
+					<xsl:if test="not(hideExternalMessages)">
 						<li data-tabid="#messages">
 							<a data-icon-before="m" href="#messages">
 								<xsl:value-of select="$i18n.ExternalMessages" />
@@ -711,7 +711,7 @@
 					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
 				</ul>
 				
-				<xsl:if test="not(Flow/hideExternalMessages = 'true' or (Flow/hideExternalMessagesOnArchivedFlowInstances = 'true' and Status/contentType = 'ARCHIVED'))">
+				<xsl:if test="not(hideExternalMessages)">
 	  				<div id="messages">
 	  					
 	  					<div id="new-message" class="tabs-content">
@@ -767,7 +767,10 @@
 		  					
 		  					<div class="heading-wrapper">
 		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
-		  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+
+								<xsl:if test="not(hideSendExternalMessage)">
+			  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+								</xsl:if>
 		  					</div>
 		  					
 		  					<xsl:choose>

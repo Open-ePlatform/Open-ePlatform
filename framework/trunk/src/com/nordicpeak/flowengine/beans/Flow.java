@@ -92,7 +92,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public static final Field HIDE_FROM_OVERVIEW_FIELD = ReflectionUtils.getField(Flow.class, "hideFromOverview");
 	public static final Field HIDE_INTERNAL_MESSAGES_FIELD = ReflectionUtils.getField(Flow.class, "hideInternalMessages");
 	public static final Field HIDE_EXTERNAL_MESSAGES_FIELD = ReflectionUtils.getField(Flow.class, "hideExternalMessages");
-	public static final Field HIDE_EXTERNAL_MESSAGES_ON_ARCHIVED_FLOW_INSTANCES_FIELD = ReflectionUtils.getField(Flow.class, "hideExternalMessagesOnArchivedFlowInstances");
 	public static final Field HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD = ReflectionUtils.getField(Flow.class, "hideExternalMessageAttachments");
 	public static final Field EXTERNAL_LINK_FIELD = ReflectionUtils.getField(Flow.class, "externalLink");
 	
@@ -303,11 +302,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideExternalMessages;
-	
-	@DAOManaged
-	@WebPopulate
-	@XMLElement
-	private boolean hideExternalMessagesOnArchivedFlowInstances;
 	
 	@DAOManaged
 	@WebPopulate
@@ -991,7 +985,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		hideFlowInstanceIDFromUser = xmlParser.getPrimitiveBoolean("hideFlowInstanceIDFromUser");
 		hideInternalMessages = xmlParser.getPrimitiveBoolean("hideInternalMessages");
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
-		hideExternalMessagesOnArchivedFlowInstances = xmlParser.getPrimitiveBoolean("hideExternalMessagesOnArchivedFlowInstances");
 		hideExternalMessageAttachments = xmlParser.getPrimitiveBoolean("hideExternalMessageAttachments");
 		
 		this.userDescriptionTemplate = XMLValidationUtils.validateParameter("userDescriptionTemplate", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
@@ -1085,16 +1078,6 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 	public void setHideExternalMessages(boolean hideExternalMessages) {
 		this.hideExternalMessages = hideExternalMessages;
-	}
-
-	public boolean isHideExternalMessagesOnArchivedFlowInstances() {
-	
-		return hideExternalMessagesOnArchivedFlowInstances;
-	}
-
-	public void setHideExternalMessagesOnArchivedFlowInstances(boolean hideExternalMessagesOnArchivedFlowInstances) {
-	
-		this.hideExternalMessagesOnArchivedFlowInstances = hideExternalMessagesOnArchivedFlowInstances;
 	}
 
 	public boolean isHideExternalMessageAttachments() {

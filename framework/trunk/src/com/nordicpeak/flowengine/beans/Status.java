@@ -66,6 +66,16 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer managingTime;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean newExternalMessagesDisallowed;
+	
+	@DAOManaged
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
+	@XMLElement
+	private Integer newExternalMessagesAllowedDays;
 
 	@DAOManaged
 	@WebPopulate
@@ -205,6 +215,26 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	public void setManagingTime(Integer managingTime) {
 
 		this.managingTime = managingTime;
+	}
+	
+	public boolean isNewExternalMessagesDisallowed() {
+
+		return newExternalMessagesDisallowed;
+	}
+
+	public void setNewExternalMessagesDisallowed(boolean newExternalMessagesDisallowed) {
+
+		this.newExternalMessagesDisallowed = newExternalMessagesDisallowed;
+	}
+
+	public Integer getNewExternalMessagesAllowedDays() {
+
+		return newExternalMessagesAllowedDays;
+	}
+
+	public void setNewExternalMessagesAllowedDays(Integer newExternalMessagesAllowedDays) {
+
+		this.newExternalMessagesAllowedDays = newExternalMessagesAllowedDays;
 	}
 
 	public boolean isAddExternalMessage() {

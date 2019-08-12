@@ -556,7 +556,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
-				if (req.getParameter("externalmessage") != null && flowInstance.isExternalMessagesEnabled()) {
+				if (req.getParameter("externalmessage") != null && flowInstance.isNewExternalMessagesAllowed()) {
 
 					ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
 

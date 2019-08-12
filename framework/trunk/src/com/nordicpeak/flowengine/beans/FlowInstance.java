@@ -589,7 +589,12 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	public boolean isExternalMessagesEnabled() {
 		
-		return FlowInstanceUtils.isExternalMessagesEnabled(this);
+		return FlowInstanceUtils.isExternalMessagesEnabled(this, getStatus());
+	}
+	
+	public boolean isNewExternalMessagesAllowed() {
+		
+		return FlowInstanceUtils.isNewExternalMessagesAllowed(this, getStatus());
 	}
 	
 }

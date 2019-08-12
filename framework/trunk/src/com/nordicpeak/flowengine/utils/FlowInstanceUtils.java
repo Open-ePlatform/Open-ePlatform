@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,6 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
@@ -620,37 +620,50 @@ public class FlowInstanceUtils {
 
 		return totalSum;
 	}
-	
-	public static boolean isExternalMessagesEnabled(FlowInstance flowInstance) {
-		
-		return flowInstance != null && isExternalMessagesEnabled(flowInstance, flowInstance.getStatus());
-	}
-	
+
 	public static boolean isExternalMessagesEnabled(FlowInstance flowInstance, Status status) {
-		
+
 		Flow flow = flowInstance.getFlow();
-		
+
 		if (flow == null || status == null) {
-			
-			return false;
-		}
-		
-		if (flow.isHideExternalMessages()) {
-			
-			return false;
-		}
-		
-		if (flow.isHideExternalMessagesOnArchivedFlowInstances() && status.getContentType() == ContentType.ARCHIVED) {
-			
+
 			return false;
 		}
 
 		if (CollectionUtils.isEmpty(flowInstance.getOwners())) {
-			
+
 			return false;
 		}
-		
-		return true;
+
+		return !flow.isHideExternalMessages();
+	}
+
+	public static boolean isNewExternalMessagesAllowed(FlowInstance flowInstance, Status status) {
+
+		if (flowInstance == null || status == null) {
+
+			return false;
+		}
+
+		if (!isExternalMessagesEnabled(flowInstance, status)) {
+
+			return false;
+		}
+
+		boolean isChangingStatus = !status.equals(flowInstance.getStatus());
+
+		if (!isChangingStatus && status.getNewExternalMessagesAllowedDays() != null && flowInstance.getLastStatusChange() != null) {
+
+			LocalDateTime lastStatusChange = flowInstance.getLastStatusChange().toLocalDateTime();
+			LocalDateTime lastAllowedDate = lastStatusChange.plusDays(status.getNewExternalMessagesAllowedDays());
+
+			if (LocalDateTime.now().isAfter(lastAllowedDate)) {
+
+				return false;
+			}
+		}
+
+		return !status.isNewExternalMessagesDisallowed();
 	}
 	
 }
