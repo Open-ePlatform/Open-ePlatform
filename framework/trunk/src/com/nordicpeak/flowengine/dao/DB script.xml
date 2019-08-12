@@ -2324,7 +2324,7 @@
 				ALTER TABLE `flowengine_flow_statuses` 
 					ADD COLUMN `newExternalMessagesDisallowed` TINYINT(1) NOT NULL AFTER `managingTime`,
 					ADD COLUMN `newExternalMessagesAllowedDays` INT(10) UNSIGNED AFTER `newExternalMessagesDisallowed`;
-			]]> 
+			]]>
 		</Query>
 		<Query>
 			<![CDATA[
@@ -2336,13 +2336,21 @@
 						FROM `flowengine_flows`
 						WHERE `hideExternalMessagesOnArchivedFlowInstances` = 1
 					);
-			]]> 
+			]]>
 		</Query>
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flows`
 					DROP COLUMN `hideExternalMessagesOnArchivedFlowInstances`;
-			]]> 
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="129">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_overview_attributes` CHANGE COLUMN `value` `value` VARCHAR(1024) NOT NULL AFTER `name`;
+			]]>
 		</Query>
 	</Script>
 	

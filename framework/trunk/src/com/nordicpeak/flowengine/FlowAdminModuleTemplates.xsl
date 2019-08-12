@@ -3195,7 +3195,7 @@
 				<xsl:with-param name="name" select="concat('overviewAttributeName_', $id)"/>
 				<xsl:with-param name="value" select="$name"/>
 				<xsl:with-param name="class" select="'marginright'"/>
-				<xsl:with-param name="width" select="'calc(50% - 24px)'"/>
+				<xsl:with-param name="width" select="'calc(37% - 24px)'"/>
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>
@@ -3203,7 +3203,7 @@
 				<xsl:with-param name="id" select="concat('overviewAttributeValue_', $id)"/>
 				<xsl:with-param name="name" select="concat('overviewAttributeValue_', $id)"/>
 				<xsl:with-param name="value" select="$value"/>
-				<xsl:with-param name="width" select="'calc(50% - 24px)'"/>
+				<xsl:with-param name="width" select="'calc(63% - 24px)'"/>
 				<xsl:with-param name="requestparameters" select="//requestparameters" />
 				<xsl:with-param name="disabled" select="$disabled"/>
 			</xsl:call-template>

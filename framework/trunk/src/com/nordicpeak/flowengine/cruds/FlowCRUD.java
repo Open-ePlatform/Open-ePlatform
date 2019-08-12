@@ -535,7 +535,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			for (String alternativeID : attributeIDs) {
 
 				String name = ValidationUtils.validateParameter("overviewAttributeName_" + alternativeID, req, true, 1, 50, validationErrors);
-				String value = ValidationUtils.validateParameter("overviewAttributeValue_" + alternativeID, req, true, 1, 255, validationErrors);
+				String value = ValidationUtils.validateParameter("overviewAttributeValue_" + alternativeID, req, true, 1, 1024, validationErrors);
 				Integer sortIndex = ValidationUtils.validateParameter("overviewAttributeSortIndex_" + alternativeID, req, true, NonNegativeStringIntegerPopulator.getPopulator(), validationErrors);
 
 				if (name == null || value == null || sortIndex == null) {

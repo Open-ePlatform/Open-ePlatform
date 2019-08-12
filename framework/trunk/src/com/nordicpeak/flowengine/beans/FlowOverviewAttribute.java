@@ -86,7 +86,7 @@ public class FlowOverviewAttribute extends GeneratedElementable implements Seria
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		name = XMLValidationUtils.validateParameter("name", xmlParser, false, 1, 50, StringPopulator.getPopulator(), errors);
-		value = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		value = XMLValidationUtils.validateParameter("value", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
 		sortIndex = xmlParser.getInteger("sortIndex");
 
 		if (!errors.isEmpty()) {
