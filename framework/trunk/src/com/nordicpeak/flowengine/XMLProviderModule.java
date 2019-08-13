@@ -115,7 +115,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 			generateXML(flowInstance, event.getFlowInstanceManager(), event.getEvent(), event.getEvent().getAdded(), getFile(flowInstance.getFlowInstanceID(), event.getEvent().getEventID()));
 
 			event.getEvent().getAttributeHandler().setAttribute("xml", "true");
-			daoFactory.getFlowInstanceEventDAO().update(event.getEvent(), EVENT_ATTRIBUTE_RELATION_QUERY);
+			daoFactory.getFlowInstanceEventDAO().update(event.getEvent(), EVENT_ATTRIBUTE_RELATION_QUERY, 10);
 
 		}catch(Exception e){
 

@@ -547,7 +547,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private void setEventAttributes(FlowInstanceEvent event) throws SQLException {
 		
 		event.getAttributeHandler().setAttribute("pdf", "true");
-		daoFactory.getFlowInstanceEventDAO().update(event, EVENT_ATTRIBUTE_RELATION_QUERY);
+		daoFactory.getFlowInstanceEventDAO().update(event, EVENT_ATTRIBUTE_RELATION_QUERY, 10);
 	}
 	
 	@SuppressWarnings("deprecation")
