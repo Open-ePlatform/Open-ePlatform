@@ -406,6 +406,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getUserHandler());
 				List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getGroupHandler());
 
+				//TODO Cleanup, use FlowFamilyUtils.filterSelectedManagerUsers and FlowFamilyUtils.filterSelectedManagerGroups instead to reduce code duplication
 				InvalidManagers invalidManagers = new InvalidManagers();
 
 				flowInstance.setManagers(filterSelectedManagerUsers(allowedManagers, managers, invalidManagers));
