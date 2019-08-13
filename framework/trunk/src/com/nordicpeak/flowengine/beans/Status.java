@@ -15,6 +15,7 @@ import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.EnumPopulator;
+import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
@@ -433,15 +434,22 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		this.description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		this.managingTime = XMLValidationUtils.validateParameter("managingTime", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
+		
+		this.newExternalMessagesDisallowed = xmlParser.getPrimitiveBoolean("newExternalMessagesDisallowed");
+		this.newExternalMessagesAllowedDays = XMLValidationUtils.validateParameter("newExternalMessagesAllowedDays", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
+		this.addExternalMessage = xmlParser.getPrimitiveBoolean("addExternalMessage");
+		this.defaultExternalMessageTemplateID = XMLValidationUtils.validateParameter("defaultExternalMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
 
 		this.isUserMutable = xmlParser.getPrimitiveBoolean("isUserMutable");
 		this.isUserDeletable = xmlParser.getPrimitiveBoolean("isUserDeletable");
 		this.isAdminMutable = xmlParser.getPrimitiveBoolean("isAdminMutable");
 		this.isAdminDeletable = xmlParser.getPrimitiveBoolean("isAdminDeletable");
 
+		this.sortIndex = xmlParser.getInt("sortIndex");
+
 		this.contentType = XMLValidationUtils.validateParameter("contentType", xmlParser, true, new EnumPopulator<ContentType>(ContentType.class), errors);
 
-		this.sortIndex = xmlParser.getInt("sortIndex");
+		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 
 		if (!errors.isEmpty()) {
 
