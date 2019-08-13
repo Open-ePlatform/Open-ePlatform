@@ -52,7 +52,6 @@ import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDenied;
 import com.nordicpeak.flowengine.integration.callback.exceptions.AccessDeniedException;
 import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFound;
 import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNotFoundException;
-import com.nordicpeak.flowengine.integration.callback.exceptions.InvalidManagers;
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -406,17 +405,14 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getUserHandler());
 				List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowInstance.getFlow().getFlowFamily(), callback.getSystemInterface().getGroupHandler());
 
-				//TODO Cleanup, use FlowFamilyUtils.filterSelectedManagerUsers and FlowFamilyUtils.filterSelectedManagerGroups instead to reduce code duplication
-				InvalidManagers invalidManagers = new InvalidManagers();
-
-				flowInstance.setManagers(filterSelectedManagerUsers(allowedManagers, managers, invalidManagers));
-				flowInstance.setManagerGroups(filterSelectedManagerGroups(allowedManagerGroups, managerGroups, invalidManagers));
-
-				if (invalidManagers.getManagers() != null || invalidManagers.getManagerGroups() != null) {
-
-					log.warn("Invalid users/groups when setting managers for flow instance " + flowInstanceID + ": " + invalidManagers);
-
-					throw new AccessDeniedException("The following users/groups are not valid managers for this flow: " + invalidManagers.toString(), new AccessDenied());
+				try {
+				flowInstance.setManagers(filterSelectedManagerUsers(allowedManagers, managers));
+				flowInstance.setManagerGroups(filterSelectedManagerGroups(allowedManagerGroups, managerGroups));
+				
+				} catch (AccessDeniedException e) {
+					
+					log.warn("Invalid users/groups when setting managers for flow instance " + flowInstanceID);
+					throw e;
 				}
 
 				detailString = FlowInstanceUtils.getManagersString(flowInstance.getManagers(), flowInstance.getManagerGroups());
@@ -473,75 +469,62 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 	}
 	
-	private List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Principal> selectedUsers, InvalidManagers invalidManagers) {
+	private List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Principal> selectedUsers) throws AccessDeniedException {
 		
 		if (!CollectionUtils.isEmpty(selectedUsers)) {
 			
-			List<Principal> missingManagers = null;
 			List<User> selectedManagers = new ArrayList<User>();
 
 			for (Principal principal : selectedUsers) {
-				
-				boolean found = false;
 
 				if (allowedManagers != null) {
 					for (User manager : allowedManagers) {
 
 						if (manager.getUsername() != null && manager.getUsername().equalsIgnoreCase(principal.getUserID())) {
-							
-							found = true;
+
 							selectedManagers.add(manager);
 							break;
 						}
 					}
 				}
-
-				if (!found) {
-					missingManagers = CollectionUtils.addAndInstantiateIfNeeded(missingManagers, principal);
-				}
 			}
 
-			if (missingManagers != null) {
-				invalidManagers.setManagers(missingManagers);
+			if (CollectionUtils.getSize(selectedManagers) != selectedUsers.size()) {
+
+				throw new AccessDeniedException("One or more of the specified users are not valid managers for this flow", new AccessDenied());
 			}
-			
+
 			return selectedManagers;
-			
+
 		} else {
-			
+
 			return null;
 		}
 	}
 
-	private List<Group> filterSelectedManagerGroups(List<Group> allowedManagerGroups, List<PrincipalGroup> selectedGroups, InvalidManagers invalidManagers) {
+	private List<Group> filterSelectedManagerGroups(List<Group> allowedManagerGroups, List<PrincipalGroup> selectedGroups) throws AccessDeniedException {
 
 		if (!CollectionUtils.isEmpty(selectedGroups)) {
 
-			List<PrincipalGroup> missingManagerGroups = null;
 			List<Group> selectedManagerGroups = new ArrayList<Group>();
 
 			for (PrincipalGroup principalGroup : selectedGroups) {
 				
-				boolean found = false;
-
 				if (allowedManagerGroups != null) {
 					for (Group managerGroup : allowedManagerGroups) {
 
 						if (managerGroup.getName() != null && managerGroup.getName().equalsIgnoreCase(principalGroup.getName())) {
 							
-							found = true;
 							selectedManagerGroups.add(managerGroup);
 							break;
 						}
 					}
 				}
-				if (!found) {
-					missingManagerGroups = CollectionUtils.addAndInstantiateIfNeeded(missingManagerGroups, principalGroup);
-				}
 			}
 
-			if (missingManagerGroups != null) {
-				invalidManagers.setManagerGroups(missingManagerGroups);
+			if (CollectionUtils.getSize(selectedManagerGroups) != selectedGroups.size()) {
+				
+				throw new AccessDeniedException("One or more of the specified groups are not valid managers for this flow", new AccessDenied());
 			}
 
 			return selectedManagerGroups;
