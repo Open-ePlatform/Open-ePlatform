@@ -187,31 +187,39 @@
 				<xsl:text>invalid input-error</xsl:text>
 			</xsl:if>
 			<xsl:choose>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHEXValidator'">
-						<xsl:text> color color-hex</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorRGBValidator'">
-						<xsl:text> color color-rgb</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSLValidator'">
-						<xsl:text> color color-hsl</xsl:text>
-					</xsl:when>
-					<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSVValidator'">
-						<xsl:text> color color-hsv</xsl:text>
-					</xsl:when>
-					<xsl:otherwise/>
-				</xsl:choose>
+				<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHEXValidator'">
+					<xsl:text> color color-hex</xsl:text>
+				</xsl:when>
+				<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorRGBValidator'">
+					<xsl:text> color color-rgb</xsl:text>
+				</xsl:when>
+				<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSLValidator'">
+					<xsl:text> color color-hsl</xsl:text>
+				</xsl:when>
+				<xsl:when test="formatValidator = 'se.unlogic.standardutils.validation.StringColorHSVValidator'">
+					<xsl:text> color color-hsv</xsl:text>
+				</xsl:when>
+				<xsl:otherwise/>
+			</xsl:choose>
 		</xsl:variable>
 
 		<div class="split break {$class}">
 			
-			<xsl:if test="../../layout = 'FLOAT'">
-				<xsl:attribute name="class">
-					<xsl:text>split </xsl:text>
-					<xsl:if test="$odd">odd </xsl:if>
-					<xsl:value-of select="$class" />
-				</xsl:attribute>
-			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="../../layout = 'FLOAT'">
+					<xsl:attribute name="class">
+						<xsl:text>split </xsl:text>
+						<xsl:if test="$odd">odd </xsl:if>
+						<xsl:value-of select="$class" />
+					</xsl:attribute>
+				</xsl:when>
+				<xsl:when test="../../layout = 'NEW_LINE_FULL_WIDTH'">
+					<xsl:attribute name="class">
+						<xsl:text>split break full </xsl:text>
+						<xsl:value-of select="$class" />
+					</xsl:attribute>
+				</xsl:when>
+			</xsl:choose>
 
 			<label>
 				<xsl:if test="required = 'true'">
@@ -222,6 +230,9 @@
 
 			<xsl:variable name="size">
 				<xsl:choose>
+					<xsl:when test="../../layout = 'NEW_LINE_FULL_WIDTH'">
+						<!-- No size, defaults to 100% width -->
+					</xsl:when>
 					<xsl:when test="width">
 						<xsl:value-of select="width"/>
 					</xsl:when>

@@ -87,6 +87,9 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 	@XSLVariable(prefix = "java.")
 	protected String fieldLayoutNewLine = "This variable should be set by your stylesheet";
+	
+	@XSLVariable(prefix = "java.")
+	protected String fieldLayoutNewLineFullWidth = "This variable should be set by your stylesheet";
 
 	@XSLVariable(prefix = "java.")
 	protected String fieldLayoutFloat = "This variable should be set by your stylesheet";
@@ -758,6 +761,8 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			return fieldLayoutFloat;
 		} else if (layout.equals(FieldLayout.NEW_LINE)) {
 			return fieldLayoutNewLine;
+		} else if (layout.equals(FieldLayout.NEW_LINE_FULL_WIDTH)) {
+			return fieldLayoutNewLineFullWidth;
 		}
 
 		return layout.toString();
