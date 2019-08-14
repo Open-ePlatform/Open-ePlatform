@@ -113,7 +113,7 @@ public class FlowFamilyUtils {
 				}
 			}
 			
-			if (validationErrors != null && CollectionUtils.getSize(selectedManagers) < selectedUserIDs.size()) {
+			if (validationErrors != null && CollectionUtils.getSize(selectedManagers) != selectedUserIDs.size()) {
 				
 				validationErrors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
 			}
@@ -145,7 +145,7 @@ public class FlowFamilyUtils {
 				}
 			}
 			
-			if (validationErrors != null && CollectionUtils.getSize(selectedManagerGroups) < selectedGroupIDs.size()) {
+			if (validationErrors != null && CollectionUtils.getSize(selectedManagerGroups) != selectedGroupIDs.size()) {
 				
 				validationErrors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR);
 			}
