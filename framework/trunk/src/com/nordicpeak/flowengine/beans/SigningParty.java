@@ -124,9 +124,10 @@ public final class SigningParty extends GeneratedElementable {
 		result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
 		result = prime * result + ((mobilePhone == null) ? 0 : mobilePhone.hashCode());
 		result = prime * result + ((socialSecurityNumber == null) ? 0 : socialSecurityNumber.hashCode());
+		result = prime * result + (unsecure ? 1231 : 1237);
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -161,9 +162,11 @@ public final class SigningParty extends GeneratedElementable {
 				return false;
 		} else if (!socialSecurityNumber.equals(other.socialSecurityNumber))
 			return false;
+		if (unsecure != other.unsecure)
+			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		
