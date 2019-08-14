@@ -820,7 +820,7 @@ function openAutoManagerAssignmentRuleModal(button, event) {
 							input.prop("checked", savedInput.val() == "true");
 							
 						} else if (input.attr("type") == "textarea") {
-							input.text(avedInput.val());
+							input.text(savedInput.val());
 							
 						} else {
 							input.val(savedInput.val());
@@ -1025,7 +1025,7 @@ function openAutoManagerAssignmentStatusRuleModal(button, event) {
 							input.prop("checked", savedInput.val() == "true");
 							
 						} else if (input.attr("type") == "textarea") {
-							input.text(avedInput.val());
+							input.text(savedInput.val());
 							
 						} else {
 							input.val(savedInput.val());
@@ -1063,7 +1063,7 @@ function openAutoManagerAssignmentStatusRuleModal(button, event) {
 				}
 				
 				var url = $statusName.parent().data('connectorUrl');
-				 
+				
 				$statusName.autocomplete({
 					source: function(request, response) {
 						return getStatuses(response, url, $statusName);
@@ -1074,19 +1074,25 @@ function openAutoManagerAssignmentStatusRuleModal(button, event) {
 						return false;
 					},
 					focus: function(event, ui) {
-				       event.preventDefault();
-				   }
+						event.preventDefault();
+					}
 				});
-				 
+				
 				$statusName.on('focus', function(){
 						
 					$(this).autocomplete('search', ' ');
 				});
-				 
+				
 				content.find('#addManagers').change(function(){
 					
-					 content.find('#updateAutoManagerStatusManagerContainer').toggle(this.checked);
-					 
+					content.find('#updateAutoManagerStatusManagerContainer').toggle(this.checked);
+					
+				}).change();
+				
+				content.find('#sendNotification').change(function(){
+					
+					content.find('#updateAutoManagerStatusNotificationContainer').toggle(this.checked);
+					
 				}).change();
 			},
 			
@@ -1195,12 +1201,14 @@ function refreshAutoManagerAssignmentStatusRule(row, ruleID) {
 	var ruleUsers = row.find(".auto-manager-users .status-template-user-list-entry");
 	var ruleGroups = row.find(".auto-manager-groups .status-template-group-list-entry");
 	var ruleRemovePreviousManagers = row.find("input[name='auto-manager-status-rule-removePreviousManagers-" + ruleID + "']").val();
+	var sendNotification = row.find("input[name='auto-manager-status-rule-sendNotification-" + ruleID + "']").val();
 	
 	row.find(".auto-manager-status-name").text(ruleStatusName);
 	row.find(".auto-manager-add-managers > span").toggle(ruleAddManagers == "true");
 	row.find(".auto-manager-users > span").text(ruleUsers.length);
-	row.find(".auto-manager-groups > span").text(ruleGroups.length);	
+	row.find(".auto-manager-groups > span").text(ruleGroups.length);
 	row.find(".auto-manager-remove-previous-managers > span").toggle(ruleRemovePreviousManagers == "true");
+	row.find(".auto-manager-send-notification > span").toggle(sendNotification == "true");
 }
 
 function generateUUID() {

@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -50,6 +51,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import se.unlogic.cron4jutils.CronStringValidator;
+import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
@@ -5996,6 +5998,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				String statusName = ValidationUtils.validateParameter("auto-manager-status-rule-statusName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
 				boolean addManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-addManagers-" + ruleID));
 				boolean removePreviousManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-removePreviousManagers-" + ruleID));
+				boolean sendNotification = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-sendNotification-" + ruleID));
 				
 				if (containsRuleWithStatusName(rules, statusName)) {
 					
@@ -6010,6 +6013,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				rule.setStatusName(statusName);
 				rule.setAddManagers(addManagers);
 				rule.setRemovePreviousManagers(removePreviousManagers);
+				rule.setSendNotification(sendNotification);
 				
 				if (addManagers) {
 					
@@ -6075,8 +6079,51 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					rule.setGroups(null);
 				}
 				
+				if (sendNotification) {
+					
+					String fieldName = "auto-manager-status-rule-emailRecipients-" + ruleID;
+					
+					ArrayList<String> emailRecipients = StringUtils.splitOnLineBreak(req.getParameter(fieldName), true);
+					
+					if (emailRecipients == null) {
+						
+						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
+						
+					} else {
+						
+						ListIterator<String> iterator = emailRecipients.listIterator();
+						
+						while (iterator.hasNext()) {
+							
+							String email = iterator.next().trim();
+							
+							if (email.isEmpty()) {
+								
+								iterator.remove();
+
+							} else {
+
+								iterator.set(email);
+
+								if (email.length() > 255) {
+
+									validationErrors.add(new ValidationError(fieldName, ValidationErrorType.TooLong));
+									break;
+
+								} else if (!EmailPopulator.getPopulator().validateFormat(email)) {
+
+									validationErrors.add(new ValidationError(fieldName, ValidationErrorType.InvalidFormat));
+									break;
+								}
+							}
+						}
+						
+						rule.setEmailRecipients(emailRecipients);
+					}
+				}
+				
 				rules.add(rule);
-			}		
+			}
 		}
 		
 		flowFamily.setAutoManagerAssignmentStatusRules(rules);
@@ -6092,7 +6139,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					return true;
 				}
-			}			
+			}
 		}
 		
 		return false;
@@ -6299,7 +6346,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		} catch (TransformerConfigurationException e) {
 			
 			log.error("Unable to get module transformer");
-		}	
+		}
 		
 		return null;
 	}

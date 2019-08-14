@@ -20,6 +20,7 @@ public class ManagersChangedEvent implements Serializable {
 	private final List<User> previousManagers;
 	private final List<Group> previousManagerGroups;
 	private final User user;
+	private List<String> additionalGlobalEmailRecipients;
 
 	public ManagersChangedEvent(FlowInstance flowInstance, FlowInstanceEvent event,  SiteProfile siteProfile, List<User> previousManagers, List<Group> previousManagerGroups, User user) {
 
@@ -56,14 +57,23 @@ public class ManagersChangedEvent implements Serializable {
 		
 		return previousManagers;
 	}
-	
+
 	public List<Group> getPreviousManagerGroups() {
-		
+
 		return previousManagerGroups;
 	}
-	
+
 	public User getUser() {
-		
+
 		return user;
 	}
+
+	public List<String> getAdditionalGlobalEmailRecipients() {
+		return additionalGlobalEmailRecipients;
+	}
+
+	public void setAdditionalGlobalEmailRecipients(List<String> additionalGlobalEmailRecipients) {
+		this.additionalGlobalEmailRecipients = additionalGlobalEmailRecipients;
+	}
+
 }

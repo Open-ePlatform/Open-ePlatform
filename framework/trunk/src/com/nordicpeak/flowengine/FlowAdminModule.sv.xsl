@@ -620,6 +620,9 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.StatusName">Status</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.AddManagers">Lägg till handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.RemovePreviousManagers">Ta bort befintliga handläggare vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotification">Skicka e-post när ärenden tilldelats handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotificationColumnTitle">E-post notifikation</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.EmailRecipients">E-postadresser för notifiering (en adress per rad)</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.DuplicateStatusRule">Du kan bara skapa en regel per status</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.NoActionsSelected">Du måste välja att antingen lägga till eller ta bort handläggare, eller både och.</xsl:variable>
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>

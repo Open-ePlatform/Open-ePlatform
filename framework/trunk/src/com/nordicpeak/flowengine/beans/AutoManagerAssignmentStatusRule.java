@@ -30,7 +30,7 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 	@Key
 	@XMLElement
 	private Integer ruleID;
-	
+
 	@XMLElement
 	private String generatedRuleID;
 
@@ -47,6 +47,10 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 	private boolean addManagers;
 
 	@DAOManaged
+	@XMLElement
+	private boolean removePreviousManagers;
+
+	@DAOManaged
 	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowengine_flow_family_automanager_status_rule_users", remoteValueColumnName = "userID")
 	@XMLElement(fixCase = true)
@@ -58,15 +62,21 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 	@XMLElement(fixCase = true)
 	private List<Integer> groupIDs;
 
+	@DAOManaged
+	@XMLElement
+	private boolean sendNotification;
+
+	@DAOManaged
+	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_status_rule_emails", remoteValueColumnName = "email")
+	@XMLElement(fixCase = true)
+	private List<String> emailRecipients;
+
 	@XMLElement(fixCase = true)
 	private List<User> users;
 
 	@XMLElement(fixCase = true)
 	private List<Group> groups;
-
-	@DAOManaged
-	@XMLElement
-	private boolean removePreviousManagers;
 
 	public Integer getRuleID() {
 
@@ -212,10 +222,26 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 
 		this.removePreviousManagers = removePreviousManagers;
 	}
-	
+
+	public boolean isSendNotification() {
+		return sendNotification;
+	}
+
+	public void setSendNotification(boolean sendNotification) {
+		this.sendNotification = sendNotification;
+	}
+
+	public List<String> getEmailRecipients() {
+		return emailRecipients;
+	}
+
+	public void setEmailRecipients(List<String> emailRecipients) {
+		this.emailRecipients = emailRecipients;
+	}
+
 	@Override
 	public String toString() {
-	
+
 		return "ID: " + ruleID + "(FlowFamily" + flowFamily + ", statusName: " + statusName + ")";
 	}
 

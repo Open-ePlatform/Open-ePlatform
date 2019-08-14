@@ -2320,7 +2320,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-						eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, null), EventTarget.ALL);
+						
+						ManagersChangedEvent managersChangedEvent = new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, null);
+						
+						if (matchingRule.isSendNotification() && matchingRule.getEmailRecipients() != null) {
+							
+							managersChangedEvent.setAdditionalGlobalEmailRecipients(matchingRule.getEmailRecipients());
+						}
+						
+						eventHandler.sendEvent(FlowInstance.class, managersChangedEvent, EventTarget.ALL);
 						
 					} catch (SQLException e) {
 						

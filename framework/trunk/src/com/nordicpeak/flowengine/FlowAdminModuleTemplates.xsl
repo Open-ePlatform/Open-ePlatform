@@ -6440,6 +6440,7 @@
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.SendNotificationColumnTitle" /></th>
 							<th></th>
 						</tr>
 					</thead>
@@ -6468,6 +6469,11 @@
 									<xsl:value-of select="$i18n.Yes" />
 								</span>
 							</td>
+							<td class="auto-manager-send-notification">
+								<span>
+									<xsl:value-of select="$i18n.Yes" />
+								</span>
+							</td>
 							
 							<td>
 								<input type="hidden" disabled="true" name="auto-manager-status-rule" value="" />
@@ -6476,6 +6482,8 @@
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-users" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-groups" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-removePreviousManagers" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-sendNotification" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-emailRecipients" value="" />
 							
 								<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
 									<img src="{$imgPath}/pen.png" alt="" />
@@ -6581,7 +6589,7 @@
 								</div>
 								
 							</div>
-														
+							
 							<div class="floatleft full bigmarginbottom">
 							
 								<div class="floatleft">
@@ -6593,6 +6601,36 @@
 									<label class="marginleft" for="removePreviousManagers">
 										<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.RemovePreviousManagers" />
 									</label>
+								</div>
+							</div>
+							
+							<div class="floatleft full bigmarginbottom">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'sendNotification'" />
+										<xsl:with-param name="id" select="'sendNotification'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="sendNotification">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.SendNotification" />
+									</label>
+								</div>
+							</div>
+							
+							<div id="updateAutoManagerStatusNotificationContainer" class="floatleft full bigmarginbottom hidden">
+							
+								<label for="emailRecipients" class="floatleft full">
+									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.EmailRecipients" />
+								</label>
+								
+								<div class="floatleft full">
+									<xsl:call-template name="createTextArea">
+										<xsl:with-param name="id" select="'emailRecipients'"/>
+										<xsl:with-param name="name" select="'emailRecipients'"/>
+										<xsl:with-param name="rows" select="5"/>
+										<xsl:with-param name="separateListValues" select="'true'"/>
+									</xsl:call-template>
 								</div>
 							</div>
 							
@@ -6843,7 +6881,14 @@
 					<xsl:value-of select="$i18n.Yes" />
 				</span>
 			</td>
-			
+			<td class="auto-manager-send-notification">
+				<span>
+					<xsl:if test="not(sendNotification = 'true')">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="$i18n.Yes" />
+				</span>
+			</td>
 			<td>
 				<xsl:variable name="userIDs">
 					<xsl:for-each select="UserIDs/*">
@@ -6869,12 +6914,23 @@
 					</xsl:for-each>
 				</xsl:variable>
 				
+				<xsl:variable name="emailRecipients">
+					<xsl:for-each select="EmailRecipients/value">
+						
+						<xsl:value-of select="."/>
+						<xsl:text>&#13;</xsl:text>
+					
+					</xsl:for-each>
+				</xsl:variable>
+				
 				<input type="hidden" name="auto-manager-status-rule" value="{$ruleID}" />
 				<input type="hidden" name="auto-manager-status-rule-statusName-{$ruleID}" value="{$statusName}" />
 				<input type="hidden" name="auto-manager-status-rule-addManagers-{$ruleID}" value="{addManagers}" />
 				<input type="hidden" name="auto-manager-status-rule-users-{$ruleID}" value="{$userIDs}" />
 				<input type="hidden" name="auto-manager-status-rule-groups-{$ruleID}" value="{$groupIDs}" />
 				<input type="hidden" name="auto-manager-status-rule-removePreviousManagers-{$ruleID}" value="{removePreviousManagers}" />
+				<input type="hidden" name="auto-manager-status-rule-sendNotification-{$ruleID}" value="{sendNotification}" />
+				<input type="hidden" name="auto-manager-status-rule-emailRecipients-{$ruleID}" value="{$emailRecipients}" />
 			
 				<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
 					<img src="{$imgPath}/pen.png" alt="" />
@@ -7989,7 +8045,6 @@
 						<xsl:value-of select="$i18n.AutoManagerAssignment.Groups" />
 						
 					</xsl:when>
-					
 					<xsl:when test="starts-with(fieldName, 'auto-manager-status-rule-statusName-')">
 						<xsl:variable name="id" select="substring(fieldName, 37)" />
 			
@@ -8000,6 +8055,18 @@
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.StatusName" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-status-rule-emailRecipients-')">
+						<xsl:variable name="id" select="substring(fieldName, 42)" />
+			
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.EmailRecipients" />
 						
 					</xsl:when>
 					
