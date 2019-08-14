@@ -6161,11 +6161,11 @@
 					<thead>
 						<tr>
 							<th class="twenty"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.AttributeName" /></th>
-							<th style="width: 75px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Inverted" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Inverted" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.AttributeValues" /></th>
-							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
-							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
-							<th style="width: 37px;"></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -6436,11 +6436,11 @@
 					<thead>
 						<tr>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.StatusName" /></th>
-							<th style="width: 150px;"><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" /></th>
-							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
-							<th style="width: 95px;"><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
-							<th style="width: 220px;"><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" /></th>
-							<th style="width: 37px;"></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" /></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -6452,7 +6452,7 @@
 							<td class="auto-manager-status-name" />
 							<td class="auto-manager-add-managers">
 								<span>
-									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" />
+									<xsl:value-of select="$i18n.Yes" />
 								</span>
 							</td>
 							<td class="auto-manager-users">
@@ -6465,7 +6465,7 @@
 							</td>
 							<td class="auto-manager-remove-previous-managers">
 								<span>
-									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" />
+									<xsl:value-of select="$i18n.Yes" />
 								</span>
 							</td>
 							
@@ -6805,7 +6805,7 @@
 					<xsl:if test="not(addManagers = 'true')">
 						<xsl:attribute name="style">display: none;</xsl:attribute>
 					</xsl:if>
-					<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.AddManagers" />
+					<xsl:value-of select="$i18n.Yes" />
 				</span>
 			</td>
 			<td class="auto-manager-users">
@@ -6840,7 +6840,7 @@
 					<xsl:if test="not(removePreviousManagers = 'true')">
 						<xsl:attribute name="style">display: none;</xsl:attribute>
 					</xsl:if>
-					<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" />
+					<xsl:value-of select="$i18n.Yes" />
 				</span>
 			</td>
 			
