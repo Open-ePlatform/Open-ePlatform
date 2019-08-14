@@ -1485,6 +1485,15 @@
 					<xsl:when test="fieldName = 'flowInstanceSubmittedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedGlobalEmailAddresses"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedGlobalEmailAddresses'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailAddresses"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedGlobalEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceAssignedGlobalEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceAssignedGlobalEmailMessage"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceArchivedGlobalEmailSubject'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailSubject"/>
 					</xsl:when>

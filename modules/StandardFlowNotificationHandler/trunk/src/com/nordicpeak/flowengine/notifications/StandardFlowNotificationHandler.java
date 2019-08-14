@@ -1680,7 +1680,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
-		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail()) {
+		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail() || event.getAdditionalGlobalEmailRecipients() != null) {
 
 			List<User> excludedManagers = new ArrayList<User>();
 
@@ -1714,6 +1714,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (notificationSettings.isSendFlowInstanceAssignedGlobalEmail() && !CollectionUtils.isEmpty(notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses())) {
 				
 				for (String email : notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses()) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
+				}
+			}
+			
+			if (event.getAdditionalGlobalEmailRecipients() != null) {
+				
+				for (String email : event.getAdditionalGlobalEmailRecipients()) {
 					
 					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
 				}
