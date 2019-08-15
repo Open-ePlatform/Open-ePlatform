@@ -347,7 +347,7 @@
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachXML">Bifoga ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately">Bifoga bilagor separat</xsl:variable>
 
-	<xsl:variable name="i18n.SendFlowInstanceAssignedGlobalEmail">E-post när ärenden tilldelats handläggare (används även vid automatisk tilldelning vid statusbyte)</xsl:variable>
+	<xsl:variable name="i18n.SendFlowInstanceAssignedGlobalEmail">E-post när ärenden tilldelats handläggare</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid  tilldelning av handläggare</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedGlobalEmailAddresses">E-postadresser för notifiering om tilldelning av handläggare (en adress per rad)</xsl:variable>

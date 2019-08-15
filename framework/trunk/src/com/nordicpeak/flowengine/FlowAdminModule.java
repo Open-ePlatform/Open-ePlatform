@@ -6085,11 +6085,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					ArrayList<String> emailRecipients = StringUtils.splitOnLineBreak(req.getParameter(fieldName), true);
 					
-					if (emailRecipients == null) {
-						
-						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
-						
-					} else {
+					if(emailRecipients != null) {
 						
 						ListIterator<String> iterator = emailRecipients.listIterator();
 						
@@ -6117,9 +6113,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 								}
 							}
 						}
-						
-						rule.setEmailRecipients(emailRecipients);
 					}
+					
+					if (CollectionUtils.isEmpty(emailRecipients)) {
+						
+						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
+						
+					}
+					
+					rule.setEmailRecipients(emailRecipients);
 				}
 				
 				rules.add(rule);
