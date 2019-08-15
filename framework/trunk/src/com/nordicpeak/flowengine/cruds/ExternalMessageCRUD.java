@@ -40,7 +40,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 		req = parseRequest(req, validationErrors);
 		
-		ExternalMessage externalMessage = create(req, res, uriParser, user, doc, element, flowInstance, postedByManager, validationErrors);
+		ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors);
 
 		if (externalMessage != null) {
 
@@ -55,7 +55,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 	}
 
-	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
+	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
 
 		try {
 

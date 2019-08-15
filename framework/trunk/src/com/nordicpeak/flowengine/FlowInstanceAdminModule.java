@@ -87,7 +87,6 @@ import se.unlogic.webutils.http.URIParser;
 import com.nordicpeak.flowengine.accesscontrollers.ManagerFlowInstanceAccessController;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
-import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -552,7 +551,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			Element showFlowInstanceOverviewElement = doc.createElement("ShowFlowInstanceOverview");
 			doc.getDocumentElement().appendChild(showFlowInstanceOverviewElement);
 
-			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormatedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
+			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormattedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
@@ -648,27 +647,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
 			}
 
-			if (flowInstance.getOwners() != null) {
+			if (!FlowInstanceUtils.isOwnersContactable(flowInstance)) {
 
-				boolean contactable = false;
-				List<Contact> contacts = FlowInstanceUtils.getContacts(flowInstance);
-
-				if (contacts != null) {
-
-					for (Contact contact : contacts) {
-
-						if ((contact.getEmail() != null && contact.isContactByEmail()) || (contact.getMobilePhone() != null && contact.isContactBySMS())) {
-
-							contactable = true;
-							break;
-						}
-					}
-				}
-
-				if (!contactable) {
-
-					XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "NoContactWay");
-				}
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "NoContactWay");
 			}
 			
 			try {

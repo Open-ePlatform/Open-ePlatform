@@ -666,4 +666,23 @@ public class FlowInstanceUtils {
 		return !status.isNewExternalMessagesDisallowed();
 	}
 	
+	public static boolean isOwnersContactable(FlowInstance flowInstance) {
+
+		boolean contactable = false;
+		List<Contact> contacts = getContacts(flowInstance);
+
+		if (contacts != null) {
+
+			for (Contact contact : contacts) {
+
+				if ((contact.getEmail() != null && contact.isContactByEmail()) || (contact.getMobilePhone() != null && contact.isContactBySMS())) {
+
+					contactable = true;
+					break;
+				}
+			}
+		}
+
+		return contactable;
+	}
 }

@@ -599,7 +599,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			Element showFlowInstanceOverviewElement = doc.createElement("ShowFlowInstanceOverview");
 			doc.getDocumentElement().appendChild(showFlowInstanceOverviewElement);
 
-			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormatedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
+			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormattedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 
 			if(enableDescriptionColumn){
 				

@@ -34,7 +34,7 @@
 						<xsl:value-of select="$i18n.ChooseFiles" />
 						<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
 					</span>
-					<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormatedMaxFileSize" /></span>
+					<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
 				</div>
 				
 				<ul id="external-message-qloader-filelist" class="files" />
