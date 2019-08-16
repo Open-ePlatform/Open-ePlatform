@@ -358,7 +358,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			// Check if the user already has an instance of this flow open in
 			// his session
-			MutableFlowInstanceManager instanceManager = (MutableFlowInstanceManager) session.getAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + null);
+			MutableFlowInstanceManager instanceManager = (MutableFlowInstanceManager) session.getAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + null);
 
 			if (instanceManager != null) {
 
@@ -421,7 +421,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, poster, instanceMetadata, requestMetadata, getAbsoluteFileURL(uriParser, flow));
 
-			session.setAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + null, instanceManager);
+			session.setAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + null, instanceManager);
 
 			return instanceManager;
 		}
@@ -515,14 +515,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, null, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), null);
 	}
 	
-	public static void addMutableFlowInstanceManagerToSession(int flowID, Integer flowInstanceID, MutableFlowInstanceManager instanceManager, HttpSession session) {
+	public void addMutableFlowInstanceManagerToSession(int flowID, Integer flowInstanceID, MutableFlowInstanceManager instanceManager, HttpSession session) {
 
-		session.setAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID, instanceManager);
+		session.setAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + flowInstanceID, instanceManager);
 	}
 
-	public static MutableFlowInstanceManager getMutableFlowInstanceManagerFromSession(int flowID, Integer flowInstanceID, HttpSession session) {
+	public MutableFlowInstanceManager getMutableFlowInstanceManagerFromSession(int flowID, Integer flowInstanceID, HttpSession session) {
 
-		return (MutableFlowInstanceManager) session.getAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID);
+		return (MutableFlowInstanceManager) session.getAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + flowInstanceID);
 	}
 
 	public void removeMutableFlowInstanceManagerFromSession(MutableFlowInstanceManager instanceManager, HttpSession session) {
@@ -535,14 +535,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	public static void removeFlowInstanceManagerFromSession(int flowID, Integer flowInstanceID, HttpSession session) {
+	public void removeFlowInstanceManagerFromSession(int flowID, Integer flowInstanceID, HttpSession session) {
 
 		if (session == null) {
 
 			return;
 		}
 
-		SessionUtils.removeAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + flowID + ":" + flowInstanceID, session);
+		SessionUtils.removeAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + flowInstanceID, session);
 	}
 
 	public ForegroundModuleResponse processFlowRequest(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, FlowInstanceAccessController accessController, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, boolean enableSaving, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceFormHTMLException, SQLException, IOException, UnableToGetQueryInstanceShowHTMLException, ModuleConfigurationException, FlowInstanceManagerClosedException, FlowDefaultStatusNotFound, EvaluationException, SubmitCheckException {
@@ -1281,8 +1281,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		try {
 			registery.addNonSessionBoundInstance(instanceManager);
-			SessionUtils.removeAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + instanceManager.getFlowID() + ":" + null, session);
-			SessionUtils.setAttribute(Constants.FLOW_INSTANCE_SESSION_PREFIX + instanceManager.getFlowID() + ":" + instanceManager.getFlowInstanceID(), instanceManager, session);
+			SessionUtils.removeAttribute(getFlowInstanceSessionPrefix() + instanceManager.getFlowID() + ":" + null, session);
+			SessionUtils.setAttribute(getFlowInstanceSessionPrefix() + instanceManager.getFlowID() + ":" + instanceManager.getFlowInstanceID(), instanceManager, session);
 		} finally {
 			registery.removeNonSessionBoundInstance(instanceManager);
 		}
@@ -2508,5 +2508,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	public FlowInstanceEventGenerator getFlowInstanceEventGenerator() {
 	
 		return flowInstanceEventGenerator;
+	}
+	
+	public String getFlowInstanceSessionPrefix() {
+		return Constants.FLOW_INSTANCE_SESSION_PREFIX;
 	}
 }
