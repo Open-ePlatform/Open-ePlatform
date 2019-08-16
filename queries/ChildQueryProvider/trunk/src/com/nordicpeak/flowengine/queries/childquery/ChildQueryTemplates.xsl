@@ -122,43 +122,47 @@
 							<h3><xsl:value-of select="$i18n.Guardians"/></h3>
 							
 							<table class="full">
-								<tr>
-									<th>
-										<xsl:value-of select="$i18n.Column.Firstname"/>
-									</th>
-									<th>
-										<xsl:value-of select="$i18n.Column.Lastname"/>
-									</th>
-									
-									<xsl:if test="ChildQueryInstance/ChildQuery/hideSSNForOtherGuardians = 'false'">
+								<thead>
+									<tr>
 										<th>
-											<xsl:value-of select="$i18n.Column.SocialSecurityNumber"/>
-										</th>
-									</xsl:if>
-									
-									<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true'">
-										<th>
-											<xsl:value-of select="$i18n.Column.Email"/>
+											<xsl:value-of select="$i18n.Column.Firstname"/>
 										</th>
 										<th>
-											<xsl:value-of select="$i18n.Column.Phone"/>
+											<xsl:value-of select="$i18n.Column.Lastname"/>
 										</th>
-									</xsl:if>
-									
-									<xsl:if test="ChildQueryInstance/ChildQuery/showGuardianAddress = 'true'">
-										<th>
-											<xsl:value-of select="$i18n.Column.Address"/>
-										</th>
-										<th>
-											<xsl:value-of select="$i18n.Column.Zipcode"/>
-										</th>
-										<th>
-											<xsl:value-of select="$i18n.Column.PostalAddress"/>
-										</th>
-									</xsl:if>
-								</tr>
+										
+										<xsl:if test="ChildQueryInstance/ChildQuery/hideSSNForOtherGuardians = 'false'">
+											<th>
+												<xsl:value-of select="$i18n.Column.SocialSecurityNumber"/>
+											</th>
+										</xsl:if>
+										
+										<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true'">
+											<th>
+												<xsl:value-of select="$i18n.Column.Email"/>
+											</th>
+											<th>
+												<xsl:value-of select="$i18n.Column.Phone"/>
+											</th>
+										</xsl:if>
+										
+										<xsl:if test="ChildQueryInstance/ChildQuery/showGuardianAddress = 'true'">
+											<th>
+												<xsl:value-of select="$i18n.Column.Address"/>
+											</th>
+											<th>
+												<xsl:value-of select="$i18n.Column.Zipcode"/>
+											</th>
+											<th>
+												<xsl:value-of select="$i18n.Column.PostalAddress"/>
+											</th>
+										</xsl:if>
+									</tr>
+								</thead>
 								
-								<xsl:apply-templates select="ChildQueryInstance/Guardians/Guardian" mode="show"/>
+								<tbody>
+									<xsl:apply-templates select="ChildQueryInstance/Guardians/Guardian" mode="show"/>
+								</tbody>
 								
 							</table>
 							
@@ -183,37 +187,61 @@
 	<xsl:template match="Guardian" mode="show">
 	
 		<tr>
-			<td>
-				<xsl:value-of select="firstname"/>
+			<td data-title="{$i18n.Column.Firstname}">
+				<xsl:choose>
+					<xsl:when test="firstname"><xsl:value-of select="firstname"/></xsl:when>
+					<xsl:otherwise>-</xsl:otherwise>
+				</xsl:choose>
 			</td>
-			<td>
-				<xsl:value-of select="lastname"/>
+			<td data-title="{$i18n.Column.Lastname}">
+				<xsl:choose>
+					<xsl:when test="lastname"><xsl:value-of select="lastname"/></xsl:when>
+					<xsl:otherwise>-</xsl:otherwise>
+				</xsl:choose>
 			</td>
 			
 			<xsl:if test="../../ChildQuery/hideSSNForOtherGuardians = 'false'">
-				<td>
-					<xsl:value-of select="citizenIdentifier"/>
+				<td data-title="{$i18n.Column.SocialSecurityNumber}">
+					<xsl:choose>
+						<xsl:when test="citizenIdentifier"><xsl:value-of select="citizenIdentifier"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
 			</xsl:if>
 			
 			<xsl:if test="../../ChildQuery/useMultipartSigning = 'true'">
-				<td>
-					<xsl:value-of select="email"/>
+				<td data-title="{$i18n.Column.Email}">
+					<xsl:choose>
+						<xsl:when test="email"><xsl:value-of select="email"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
-				<td>
-					<xsl:value-of select="phone"/>
+				<td data-title="{$i18n.Column.Phone}">
+					<xsl:choose>
+						<xsl:when test="phone"><xsl:value-of select="phone"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
 			</xsl:if>
 			
 			<xsl:if test="../../ChildQuery/showGuardianAddress = 'true'">
-				<td>
-					<xsl:value-of select="address"/>
+				<td data-title="{$i18n.Column.Address}">
+					<xsl:choose>
+						<xsl:when test="address"><xsl:value-of select="address"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
-				<td>
-					<xsl:value-of select="zipcode"/>
+				<td data-title="{$i18n.Column.Zipcode}">
+					<xsl:choose>
+						<xsl:when test="zipcode"><xsl:value-of select="zipcode"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
-				<td>
-					<xsl:value-of select="postalAddress"/>
+				<td data-title="{$i18n.Column.PostalAddress}">
+					<xsl:choose>
+						<xsl:when test="postalAddress"><xsl:value-of select="postalAddress"/></xsl:when>
+						<xsl:otherwise>-</xsl:otherwise>
+					</xsl:choose>
 				</td>
 			</xsl:if>
 		</tr>
