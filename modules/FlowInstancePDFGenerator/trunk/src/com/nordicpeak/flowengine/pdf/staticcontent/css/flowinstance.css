@@ -13,6 +13,7 @@
 }
 
 @page {
+    size: A4;
     @bottom-right {
         content: element(pagenumber-container);
     }
