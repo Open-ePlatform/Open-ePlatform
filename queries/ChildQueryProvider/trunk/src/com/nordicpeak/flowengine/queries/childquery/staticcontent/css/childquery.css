@@ -49,36 +49,36 @@
 	.childquery.show-mode table > thead,
 	.childquery.show-mode table > thead > th {
 		position: absolute;
-    top: -9999px;
-    left: -9999px;
+		top: -9999px;
+		left: -9999px;
 	}
 	.childquery.show-mode table > tbody {
 		width: 100%;
 	}
 	.childquery.show-mode table > tbody > tr {
-    width: 100%;
-    border: 1px solid #e7e7e7;
-    margin-bottom: 16px;
-    box-shadow: 0 -3px #424242;
-  }
-  .childquery.show-mode table > tbody > tr > td {
-    width: 96%;
-    padding: 13px 2%;
-    border: 0;
-    background: #f7f7f7;
-    font-weight: 400;
-  }
-  .childquery.show-mode table > tbody > tr > td[data-title]:before {
-    float: left;
-    display: block;
-    content: attr(data-title);
-    width: 45%;
-    font-weight: 600;
-  }
-  .childquery.show-mode table > tbody > tr > td div {
-    overflow: hidden;
-  }
-  .childquery.show-mode table > tbody > tr > td:nth-child(2n+1) {
-    background: #fff;
-  }
+		width: 100%;
+		border: 1px solid #e7e7e7;
+		margin-bottom: 16px;
+		box-shadow: 0 -3px #424242;
+	}
+	.childquery.show-mode table > tbody > tr > td {
+		width: 96%;
+		padding: 8px 2%;
+		border: 0;
+		background: #f7f7f7;
+		font-weight: 400;
+	}
+	.childquery.show-mode table > tbody > tr > td[data-title]:before {
+		float: left;
+		display: block;
+		content: attr(data-title);
+		width: 45%;
+		font-weight: 600;
+	}
+	.childquery.show-mode table > tbody > tr > td div {
+		overflow: hidden;
+	}
+	.childquery.show-mode table > tbody > tr > td:nth-child(2n+1) {
+		background: #fff;
+	}
 }
