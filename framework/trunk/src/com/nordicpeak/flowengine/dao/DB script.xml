@@ -2387,14 +2387,19 @@
 				UPDATE `flowengine_standard_statuses`
 				SET `sortIndex` = 
 					CASE `statusID`
-						WHEN 1 THEN 0
-						WHEN 2 THEN 1
-						WHEN 6 THEN 2
-						WHEN 4 THEN 3
-						WHEN 5 THEN 4
-						WHEN 3 THEN 5
-						ELSE 65535
-					END;
+						WHEN 1 THEN 1
+						WHEN 2 THEN 2
+						WHEN 6 THEN 3
+						WHEN 4 THEN 4
+						WHEN 5 THEN 5
+						WHEN 3 THEN 6
+					END
+				WHERE	(`statusID` = 1 AND `name` = 'Sparat')
+				OR 		(`statusID` = 2 AND `name` = 'Inskickat')
+				OR		(`statusID` = 6 AND `name` = 'Väntar på komplettering')
+				OR		(`statusID` = 4 AND `name` = 'Kompletterat')
+				OR		(`statusID` = 5 AND `name` = 'Under behandling')
+				OR		(`statusID` = 3 AND `name` = 'Arkiverat');
 			]]>
 		</Query>
 	</Script>
