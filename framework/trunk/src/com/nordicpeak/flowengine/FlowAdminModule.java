@@ -2048,6 +2048,48 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+		
+		List<StandardStatus> statuses = daoFactory.getStandardStatusDAO().getAll();
+		
+		if (CollectionUtils.isEmpty(statuses)) {
+			
+			log.info("User " + user + " requested sort standard statuses but there are none.");
+			redirectToMethod(req, res, "/standardstatuses");
+		}
+		
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			
+			for (StandardStatus status : statuses) {
+				
+				String sortIndex = req.getParameter("sortorder_" + status.getStatusID());
+				
+				if (NumberUtils.isInt(sortIndex)) {
+					
+					status.setSortIndex(NumberUtils.toInt(sortIndex));
+				}
+			}
+			
+			daoFactory.getStandardStatusDAO().update(statuses, null);
+			
+			getEventHandler().sendEvent(StandardStatus.class, new CRUDEvent<StandardStatus>(StandardStatus.class, CRUDAction.UPDATE, statuses), EventTarget.ALL);
+			
+			redirectToMethod(req, res, "/standardstatuses");
+			return null;
+		}
+		
+		log.info("User " + user + " requesting sort standard status form");
+		
+		Document doc = createDocument(req, uriParser, user);
+		
+		Element sortStandardStatusesElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "SortStandardStatuses");
+		
+		XMLUtils.append(doc, sortStandardStatusesElement, "StandardStatuses", statuses);
+		
+		return new SimpleForegroundModuleResponse(doc);
+	}
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateNotifications(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {

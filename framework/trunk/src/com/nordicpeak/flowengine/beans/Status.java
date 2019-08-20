@@ -171,7 +171,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isAdminMutable = standardStatus.isAdminMutable();
 		this.isUserDeletable = standardStatus.isUserDeletable();
 		this.isUserMutable = standardStatus.isUserMutable();
-		this.sortIndex = 0;
+		this.sortIndex = standardStatus.getSortIndex();
 	}
 
 	@Override

@@ -2375,4 +2375,28 @@
 		</Query>
 	</Script>
 	
+	<Script version="131">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses`
+					ADD COLUMN `sortIndex` SMALLINT UNSIGNED NOT NULL AFTER `contentType`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowengine_standard_statuses`
+				SET `sortIndex` = 
+					CASE `statusID`
+						WHEN 1 THEN 0
+						WHEN 2 THEN 1
+						WHEN 6 THEN 2
+						WHEN 4 THEN 3
+						WHEN 5 THEN 4
+						WHEN 3 THEN 5
+						ELSE 65535
+					END;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

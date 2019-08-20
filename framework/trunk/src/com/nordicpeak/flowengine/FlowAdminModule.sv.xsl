@@ -302,6 +302,7 @@
 	<xsl:variable name="i18n.noStandardStatusesFound">Inga standardstatusar hittades.</xsl:variable>
 	<xsl:variable name="i18n.addStandardStatus">Lägg till standardstatus</xsl:variable>
 	<xsl:variable name="i18n.AddStandardStatus.title">Lägg till standardstatus</xsl:variable>
+	<xsl:variable name="i18n.SortStandardStatuses">Sortera standardstatusar</xsl:variable>
 	<xsl:variable name="i18n.UpdateStandardStatus.title">Uppdatera standardstatus</xsl:variable>
 	<xsl:variable name="i18n.updateStandardStatus.link.title">Uppdatera standardstatus</xsl:variable>
 	<xsl:variable name="i18n.deleteStandardStatus.confirm">Ta bort standardstatus</xsl:variable>

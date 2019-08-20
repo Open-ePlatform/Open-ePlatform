@@ -31,7 +31,6 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	private Integer statusID;
 
 	@DAOManaged
-	@OrderBy
 	@WebPopulate(required = true, maxLength = 255)
 	@XMLElement
 	private String name;
@@ -40,12 +39,12 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String description;
-	
+
 	@DAOManaged
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer managingTime;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -70,6 +69,11 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	@WebPopulate(required = true)
 	@XMLElement
 	private ContentType contentType;
+
+	@DAOManaged
+	@OrderBy
+	@XMLElement
+	private Integer sortIndex;
 
 	@DAOManaged
 	@OneToMany
@@ -100,6 +104,7 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	 * @return the description
 	 */
 	public String getDescription() {
+
 		return description;
 	}
 
@@ -107,6 +112,7 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
+
 		this.description = description;
 	}
 
@@ -114,6 +120,7 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	 * @return the managingTime
 	 */
 	public Integer getManagingTime() {
+
 		return managingTime;
 	}
 
@@ -121,6 +128,7 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	 * @param managingTime the managingTime to set
 	 */
 	public void setManagingTime(Integer managingTime) {
+
 		this.managingTime = managingTime;
 	}
 
@@ -170,6 +178,16 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 		this.contentType = contentType;
 	}
 
+	public Integer getSortIndex() {
+
+		return sortIndex;
+	}
+
+	public void setSortIndex(Integer sortIndex) {
+
+		this.sortIndex = sortIndex;
+	}
+
 	public boolean isAdminDeletable() {
 
 		return isAdminDeletable;
@@ -212,12 +230,10 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 		return true;
 	}
 
-
 	public List<DefaultStandardStatusMapping> getDefaultStandardStatusMappings() {
 
 		return defaultStandardStatusMappings;
 	}
-
 
 	public void setDefaultStandardStatusMappings(List<DefaultStandardStatusMapping> defaultStandardStatusMappings) {
 

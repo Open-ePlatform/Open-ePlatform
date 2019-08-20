@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +25,8 @@ import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.dao.querys.ObjectQuery;
+import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -113,6 +116,25 @@ public class StandardStatusCRUD extends IntegerBasedCRUD<StandardStatus, FlowAdm
 	protected void appendUpdateFormData(StandardStatus bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		XMLUtils.append(doc, updateTypeElement, "FlowActions", callback.getDAOFactory().getFlowActionDAO().getAll());
+	}
+	
+	@Override
+	protected StandardStatus populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+	
+		StandardStatus status = super.populateFromAddRequest(req, user, uriParser);
+		
+		status.setSortIndex(getCurrentMaxSortIndex() + 1);
+		
+		return status;
+	}
+	
+	private int getCurrentMaxSortIndex() throws SQLException {
+
+		ObjectQuery<Integer> query = new ObjectQuery<>(callback.getDataSource(), "SELECT MAX(sortIndex) FROM " + callback.getDAOFactory().getStandardStatusDAO().getTableName(), IntegerPopulator.getPopulator());
+
+		Integer sortIndex = query.executeQuery();
+
+		return sortIndex != null ? sortIndex : 0;
 	}
 
 	@Override

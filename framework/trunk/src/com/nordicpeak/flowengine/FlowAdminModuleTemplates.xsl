@@ -96,6 +96,7 @@
 					<xsl:apply-templates select="ListStandardStatuses" />
 					<xsl:apply-templates select="AddStandardStatus" />
 					<xsl:apply-templates select="UpdateStandardStatus" />
+					<xsl:apply-templates select="SortStandardStatuses" />
 					
 					<xsl:apply-templates select="FlowInstanceManagerForm"/>
 					<xsl:apply-templates select="FlowInstanceManagerPreview"/>
@@ -4286,6 +4287,18 @@
 	
 	<xsl:template match="Status" mode="sort">
 	
+		<xsl:call-template name="sortStatuses" />
+	
+	</xsl:template>
+	
+	<xsl:template match="StandardStatus" mode="sort">
+	
+		<xsl:call-template name="sortStatuses" />
+	
+	</xsl:template>
+	
+	<xsl:template name="sortStatuses">
+	
 		<div id="status_{statusID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			<div class="padding">
 				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.MoveStatus}" alt="" />
@@ -4381,6 +4394,15 @@
 					<img class="alignbottom" src="{$imgPath}/add.png" alt="" />
 				</a>
 			</div>	
+								
+			<xsl:if test="StandardStatuses/StandardStatus">
+				<div class="floatright marginright clearboth">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstandardstatuses" title="{$i18n.SortStandardStatuses}">
+						<xsl:value-of select="$i18n.SortStandardStatuses"/>
+						<img class="marginleft" src="{$imgPath}/move.png" alt="" />
+					</a>
+				</div>
+			</xsl:if>
 		
 	</xsl:template>	
 	
@@ -4716,6 +4738,28 @@
 			<xsl:apply-templates select="FlowActions/FlowAction" mode="standardStatusForm"/>
 		
 		</xsl:if>
+	
+	</xsl:template>
+		
+	<xsl:template match="SortStandardStatuses">
+	
+		<h1>
+			<xsl:value-of select="$i18n.SortStandardStatuses" />
+		</h1>
+		
+		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
+		
+			<div class="floatleft full sortable">
+				
+				<xsl:apply-templates select="StandardStatuses/StandardStatus" mode="sort" />
+				
+			</div>
+			
+			<div class="floatright margintop clearboth">
+				<input type="submit" value="{$i18n.SortFlow.submit}" />
+			</div>
+
+		</form>
 	
 	</xsl:template>
 	
