@@ -23,10 +23,11 @@ public class FlowFamilyManagerGroupComparator implements Comparator<FlowFamilyMa
 			
 			return -1;
 			
-		} else {
+		} else if (o2.getGroup() != null) {
 			
 			return 1;
 		}
+		
+		return 0;
 	}
-	
 }
