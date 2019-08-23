@@ -6,7 +6,7 @@
 	
 	<xsl:variable name="i18n.CitizenID">Personnummer</xsl:variable>
 	
-	<xsl:variable name="i18n.FirstnameAndLastname">För- &amp; Efternamn</xsl:variable>
+	<xsl:variable name="i18n.FirstnameAndLastname">För- och efternamn</xsl:variable>
 	<xsl:variable name="i18n.CareOf">c/o</xsl:variable>
 	<xsl:variable name="i18n.Address">Adress</xsl:variable>
 	
