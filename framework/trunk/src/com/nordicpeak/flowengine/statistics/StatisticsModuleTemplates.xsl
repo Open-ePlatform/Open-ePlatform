@@ -156,12 +156,14 @@
 		<xsl:value-of select="Message" disable-output-escaping="yes"/>
 		
 		<xsl:if test="FlowInstanceCountWeeks or not(ExternalFlowRedirectCountWeeks)">
-		
-			<h2>
-				<xsl:value-of select="$i18n.FlowInstancesPerWeek"/>
+			
+			<div class="d-flex align-items-center">
+				<h2>
+					<xsl:value-of select="$i18n.FlowInstancesPerWeek"/>
+				</h2>
 				
 				<xsl:if test="/Document/ExportSupportEnabled">
-					<div class="floatright tiny margintop">
+					<div class="ml-auto">
 						<xsl:text>(</xsl:text>
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/familiyinstancecount/{flowFamilyID}" title="{$i18n.DownloadChartDataInCSVFormat}">
 								<xsl:value-of select="$i18n.DownloadChartData"/>
@@ -169,7 +171,7 @@
 						<xsl:text>)</xsl:text>
 					</div>
 				</xsl:if>
-			</h2>
+			</div>
 			
 			<xsl:choose>
 				<xsl:when test="FlowInstanceCountWeeks">
@@ -188,11 +190,13 @@
 		
 		<xsl:if test="ExternalFlowRedirectCountWeeks">
 			
-			<h2>
-				<xsl:value-of select="$i18n.RedirectsPerWeek"/>
+			<div class="d-flex align-items-center">
+				<h2>
+					<xsl:value-of select="$i18n.RedirectsPerWeek"/>
+				</h2>
 				
 				<xsl:if test="/Document/ExportSupportEnabled">
-					<div class="floatright tiny margintop">
+					<div class="ml-auto">
 						<xsl:text>(</xsl:text>
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/redirectcount/{flowFamilyID}" title="{$i18n.DownloadChartDataInCSVFormat}">
 								<xsl:value-of select="$i18n.DownloadChartData"/>
@@ -200,7 +204,7 @@
 						<xsl:text>)</xsl:text>
 					</div>
 				</xsl:if>
-			</h2>
+			</div>
 			
 			<div class="border-box full">
 				<div id="redirectCountChart"/>	
@@ -212,11 +216,13 @@
 		
 			<br/><br/>
 			
-			<h2>
-				<xsl:value-of select="$i18n.RatingPerWeek"/>
+			<div class="d-flex align-items-center">
+				<h2>
+					<xsl:value-of select="$i18n.RatingPerWeek"/>
+				</h2>
 				
 				<xsl:if test="/Document/ExportSupportEnabled">
-					<div class="floatright tiny margintop">
+					<div class="ml-auto">
 						<xsl:text>(</xsl:text>
 						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/ratings/{flowFamilyID}" title="{$i18n.DownloadChartDataInCSVFormat}">
 								<xsl:value-of select="$i18n.DownloadChartData"/>
@@ -224,7 +230,7 @@
 						<xsl:text>)</xsl:text>
 					</div>
 				</xsl:if>				
-			</h2>
+			</div>
 			
 			<div id="ratingChart"/>				
 			
@@ -232,36 +238,40 @@
 		
 		<br/><br/>
 		
-		<xsl:if test="count(Versions/FlowStatistics) > 1">
+		<div class="d-flex align-items-center">
+			<h2>
+				<xsl:value-of select="$i18n.FlowStepAbortCountChartLabel"/>
+			</h2>
 			
-			<div class="floatright bigmarginleft">
-				<xsl:call-template name="createDropdown">
-					<xsl:with-param name="id" select="'abortVersion'"/>
-					<xsl:with-param name="element" select="Versions/FlowStatistics"/>
-					<xsl:with-param name="labelElementName" select="'version'"/>
-					<xsl:with-param name="valueElementName" select="'flowID'"/>
-					<xsl:with-param name="labelPrefix" select="$i18n.Version"/>
-				</xsl:call-template>			
+			<div class="d-flex ml-auto align-items-center">
+				<xsl:if test="/Document/ExportSupportEnabled">
+					<div>
+					
+						<input type="hidden" id="abortbaseurl" value="{/Document/requestinfo/currentURI}/{/Document/module/alias}/stepabortcount/{flowFamilyID}/"/>
+					
+						<xsl:text>(</xsl:text>
+						<a id="abortlink" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/stepabortcount/{flowFamilyID}/{Versions/FlowStatistics/flowID}" title="{$i18n.DownloadChartDataInCSVFormat}">
+								<xsl:value-of select="$i18n.DownloadChartData"/>
+						</a>
+						<xsl:text>)</xsl:text>
+					</div>
+				</xsl:if>
+				
+				<xsl:if test="count(Versions/FlowStatistics) > 1">
+				
+					<div class="bigmarginleft">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'abortVersion'"/>
+							<xsl:with-param name="element" select="Versions/FlowStatistics"/>
+							<xsl:with-param name="labelElementName" select="'version'"/>
+							<xsl:with-param name="valueElementName" select="'flowID'"/>
+							<xsl:with-param name="labelPrefix" select="$i18n.Version"/>
+						</xsl:call-template>			
+					</div>
+					
+				</xsl:if>
 			</div>
-			
-		</xsl:if>		
-		
-		<h2>
-			<xsl:value-of select="$i18n.FlowStepAbortCountChartLabel"/>
-			
-			<xsl:if test="/Document/ExportSupportEnabled">
-				<div class="floatright tiny margintop">
-				
-					<input type="hidden" id="abortbaseurl" value="{/Document/requestinfo/currentURI}/{/Document/module/alias}/stepabortcount/{flowFamilyID}/"/>
-				
-					<xsl:text>(</xsl:text>
-					<a id="abortlink" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/stepabortcount/{flowFamilyID}/{Versions/FlowStatistics/flowID}" title="{$i18n.DownloadChartDataInCSVFormat}">
-							<xsl:value-of select="$i18n.DownloadChartData"/>
-					</a>
-					<xsl:text>)</xsl:text>
-				</div>
-			</xsl:if>		
-		</h2>
+		</div>
 		
 		<xsl:choose>
 			<xsl:when test="StepAbortCount">
@@ -278,36 +288,40 @@
 		
 		<br/><br/>
 		
-		<xsl:if test="count(Versions/FlowStatistics) > 1">
+		<div class="d-flex align-items-center">
+			<h2>
+				<xsl:value-of select="$i18n.FlowStepUnsubmittedCountChartLabel"/>
+			</h2>
 			
-			<div class="floatright bigmarginleft">
-				<xsl:call-template name="createDropdown">
-					<xsl:with-param name="id" select="'unsubmittedVersion'"/>
-					<xsl:with-param name="element" select="Versions/FlowStatistics"/>
-					<xsl:with-param name="labelElementName" select="'version'"/>
-					<xsl:with-param name="valueElementName" select="'flowID'"/>
-					<xsl:with-param name="labelPrefix" select="$i18n.Version"/>
-				</xsl:call-template>			
+			<div class="d-flex ml-auto align-items-center">
+				<xsl:if test="/Document/ExportSupportEnabled">
+					<div>
+						
+						<input type="hidden" id="unsubmitbaseurl" value="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unsubmitcount/{flowFamilyID}/"/>
+						
+						<xsl:text>(</xsl:text>
+						<a id="unsubmitlink" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unsubmitcount/{flowFamilyID}/{Versions/FlowStatistics/flowID}" title="{$i18n.DownloadChartDataInCSVFormat}">
+								<xsl:value-of select="$i18n.DownloadChartData"/>
+						</a>
+						<xsl:text>)</xsl:text>
+					</div>
+				</xsl:if>
+				
+				<xsl:if test="count(Versions/FlowStatistics) > 1">
+			
+					<div class="bigmarginleft">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'unsubmittedVersion'"/>
+							<xsl:with-param name="element" select="Versions/FlowStatistics"/>
+							<xsl:with-param name="labelElementName" select="'version'"/>
+							<xsl:with-param name="valueElementName" select="'flowID'"/>
+							<xsl:with-param name="labelPrefix" select="$i18n.Version"/>
+						</xsl:call-template>			
+					</div>
+					
+				</xsl:if>
 			</div>
-			
-		</xsl:if>
-		
-		<h2>
-			<xsl:value-of select="$i18n.FlowStepUnsubmittedCountChartLabel"/>
-			
-			<xsl:if test="/Document/ExportSupportEnabled">
-				<div class="floatright tiny margintop">
-					
-					<input type="hidden" id="unsubmitbaseurl" value="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unsubmitcount/{flowFamilyID}/"/>
-					
-					<xsl:text>(</xsl:text>
-					<a id="unsubmitlink" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unsubmitcount/{flowFamilyID}/{Versions/FlowStatistics/flowID}" title="{$i18n.DownloadChartDataInCSVFormat}">
-							<xsl:value-of select="$i18n.DownloadChartData"/>
-					</a>
-					<xsl:text>)</xsl:text>
-				</div>
-			</xsl:if>
-		</h2>
+		</div>
 		
 		<xsl:choose>
 			<xsl:when test="StepUnsubmittedCount">
