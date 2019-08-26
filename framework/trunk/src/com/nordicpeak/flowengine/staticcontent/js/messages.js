@@ -22,9 +22,24 @@ $(document).ready(function() {
 	
 	if (Cookies.get('reversedMessages.external') === 'true') $('.sortMessages[data-type="external"]').click();
 	if (Cookies.get('reversedMessages.internal') === 'true') $('.sortMessages[data-type="internal"]').click();
+
+	if ($("#tabs").hasClass('ui-tabs')) { //Is tabs plugin initialized
+		
+		initMessageTabs();
+		
+	} else {
+		
+		$("#tabs").on('tabscreate', function(){
+			
+			initMessageTabs();
+		});
+	}
 	
-	initMessageTab("#messages", "#new-message");
-	initMessageTab("#notes", "#new-note");
+	function initMessageTabs() {
+		
+		initMessageTab("#messages", "#new-message");
+		initMessageTab("#notes", "#new-note");
+	}
 	
 });
 
