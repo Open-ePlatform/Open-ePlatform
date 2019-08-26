@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URLDecoder;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -45,8 +46,11 @@ import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.MySQLRowLimiter;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.QueryResultsStreamer;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
@@ -70,6 +74,7 @@ import com.nordicpeak.flowengine.search.events.AddUpdateFlowInstanceEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowFamilyEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
+import com.nordicpeak.flowengine.search.events.InitialFlowInstanceIndexingEvent;
 import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
 
 public class FlowInstanceIndexer {
@@ -99,6 +104,8 @@ public class FlowInstanceIndexer {
 	
 	private static final String[] SEARCH_FIELDS = new String[] { ID_FIELD, EXTERNAL_ID_FIELD, POSTER_FIELD, OWNERS_FIELD, MANAGER_FIELD, FLOW_NAME_FIELD, STATUS_NAME_FIELD, FIRST_SUBMITTED_FIELD, CITIZEN_IDENTIFIER, CHILD_CITIZEN_IDENTIFIER, ORGANIZATION_NUMBER, INTERNAL_MESSAGES, EXTERNAL_MESSAGES, MANAGER_DESCRIPTION};
 
+	private static final int STREAMER_CHUNK_SIZE = 300;
+	
 	protected Logger log = Logger.getLogger(this.getClass());
 
 	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer(Version.LUCENE_44);
@@ -109,10 +116,12 @@ public class FlowInstanceIndexer {
 
 	protected final SystemInterface systemInterface;
 	protected final FlowEngineDAOFactory daoFactory;
-	protected final QueryParameterFactory<FlowFamily, Integer> flowFamilyIDParamFactory;
 	protected final QueryParameterFactory<Flow, Boolean> flowEnabledParamFactory;
-	protected final QueryParameterFactory<Flow, Integer> flowIDParamFactory;
+	protected final QueryParameterFactory<Flow, FlowFamily> flowFlowFamilyParamFactory;
+	
 	protected final QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
+	protected final QueryParameterFactory<FlowInstance, Flow> flowInstanceFlowParamFactory;
+	protected final QueryParameterFactory<FlowInstance, Timestamp> flowInstanceFirstSubmittedParamFactory;
 
 	protected int maxHitCount;
 
@@ -129,12 +138,12 @@ public class FlowInstanceIndexer {
 		this.maxHitCount = maxHitCount;
 		this.systemInterface = systemInterface;
 
-		flowFamilyIDParamFactory = daoFactory.getFlowFamilyDAO().getParamFactory("flowFamilyID", Integer.class);
-
-		flowIDParamFactory = daoFactory.getFlowDAO().getParamFactory("flowID", Integer.class);
 		flowEnabledParamFactory = daoFactory.getFlowDAO().getParamFactory("enabled", boolean.class);
+		flowFlowFamilyParamFactory = daoFactory.getFlowDAO().getParamFactory("flowFamily", FlowFamily.class);
 
 		flowInstanceIDParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flowInstanceID", Integer.class);
+		flowInstanceFlowParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flow", Flow.class);
+		flowInstanceFirstSubmittedParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("firstSubmitted", Timestamp.class);
 
 		indexWriter = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_44, analyzer));
 
@@ -146,26 +155,8 @@ public class FlowInstanceIndexer {
 
 	public void cacheFlowInstances() {
 
-		List<FlowFamily> families;
-
-		try{
-			families = getFlowFamilies();
-
-		}catch(SQLException e){
-
-			log.error("Error gettings enabled flow families from DB", e);
-
-			return;
-		}
-
-		if(families != null){
-
-			for(FlowFamily flowFamily : families){
-
-				eventQueue.add(new AddFlowFamilyEvent(flowFamily));
-				checkQueueState(false);
-			}
-		}
+		eventQueue.add(new InitialFlowInstanceIndexingEvent(getAllFlowInstancesStreamer()));
+		checkQueueState(false);
 	}
 
 	public void close() {
@@ -296,20 +287,30 @@ public class FlowInstanceIndexer {
 
 	public void addFlowFamilies(List<FlowFamily> beans) {
 
-		for(FlowFamily flowFamily : beans){
+		for (FlowFamily flowFamily : beans) {
 
-			eventQueue.add(new AddFlowFamilyEvent(flowFamily));
-			checkQueueState(false);
+			try {
+				eventQueue.add(new AddFlowFamilyEvent(flowFamily, getFlowInstanceStreamerForFlowFamily(flowFamily)));
+				checkQueueState(false);
+
+			} catch (SQLException e) {
+				log.error("Error queuing " + flowFamily + " for indexing");
+			}
 		}
 	}
 
 	public void updateFlowFamilies(List<FlowFamily> beans) {
 
-		for(FlowFamily flowFamily : beans){
+		for (FlowFamily flowFamily : beans) {
 
-			eventQueue.add(new DeleteFlowFamilyEvent(flowFamily));
-			eventQueue.add(new AddFlowFamilyEvent(flowFamily));
-			checkQueueState(false);
+			try {
+				eventQueue.add(new DeleteFlowFamilyEvent(flowFamily));
+				eventQueue.add(new AddFlowFamilyEvent(flowFamily, getFlowInstanceStreamerForFlowFamily(flowFamily)));
+				checkQueueState(false);
+
+			} catch (SQLException e) {
+				log.error("Error queuing " + flowFamily + " for indexing");
+			}
 		}
 	}
 
@@ -326,8 +327,10 @@ public class FlowInstanceIndexer {
 
 		for(Flow flow : beans){
 
-			eventQueue.add(new AddFlowEvent(flow));
-			checkQueueState(false);
+			if (flow.isEnabled()) {
+				eventQueue.add(new AddFlowEvent(flow, getFlowInstanceStreamerForFlow(flow)));
+				checkQueueState(false);
+			}
 		}
 	}
 
@@ -336,7 +339,11 @@ public class FlowInstanceIndexer {
 		for(Flow flow : beans){
 
 			eventQueue.add(new DeleteFlowEvent(flow));
-			eventQueue.add(new AddFlowEvent(flow));
+			
+			if (flow.isEnabled()) {
+				eventQueue.add(new AddFlowEvent(flow, getFlowInstanceStreamerForFlow(flow)));
+			}
+			
 			checkQueueState(false);
 		}
 	}
@@ -389,10 +396,10 @@ public class FlowInstanceIndexer {
 			try {
 				if (commit) {
 
-					if(logIndexing){
+					if (logIndexing) {
 						log.info("Committing index changes from last event.");
 					}
-					
+
 					this.indexWriter.commit();
 					this.indexReader = DirectoryReader.open(index);
 					this.searcher = new IndexSearcher(indexReader);
@@ -402,22 +409,31 @@ public class FlowInstanceIndexer {
 				log.error("Unable to commit index", e);
 			}
 
-			while(true){
+			while (true) {
 
-				QueuedIndexEvent nextEvent = eventQueue.poll();
+				QueuedIndexEvent nextEvent = eventQueue.peek();
 
 				if (nextEvent == null) {
 
 					log.debug("No queued search events found, thread pool idle.");
 					return;
 				}
-				if(logIndexing){
+				
+				if (logIndexing) {
 					log.info("Processing " + nextEvent);
 				}
 
 				int tasks = nextEvent.queueTasks(threadPoolExecutor, this);
+				
+				if (!nextEvent.hasRemainingTasks()) {
+					eventQueue.remove();
+				}
 
-				if(tasks > 0){
+				if (tasks > 0) {
+
+					if (logIndexing) {
+						log.info("Queued " + tasks + " tasks for " + nextEvent);
+					}
 
 					return;
 				}
@@ -655,44 +671,59 @@ public class FlowInstanceIndexer {
 		return daoFactory.getFlowInstanceDAO().get(query);
 	}
 
-	public Flow getFlow(Integer flowID) throws SQLException {
-
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(Flow.FLOW_INSTANCES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
-		query.addCachedRelations(Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
-
-		query.addParameter(flowEnabledParamFactory.getParameter(true));
-		query.addParameter(flowIDParamFactory.getParameter(flowID));
-
-		return daoFactory.getFlowDAO().get(query);
-	}
-
-	public FlowFamily getFlowFamily(Integer flowFamilyID) throws SQLException {
-
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
-		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
+	public QueryResultsStreamer<FlowInstance, Integer> getFlowInstanceStreamerForFlow(Flow flow) {
 		
-		query.addParameter(flowFamilyIDParamFactory.getParameter(flowFamilyID));
-		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
-
-		return daoFactory.getFlowFamilyDAO().get(query);
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		
+		query.addParameter(flowInstanceFlowParamFactory.getParameter(flow));
+		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
+		
+		query.setRowLimiter(new MySQLRowLimiter(STREAMER_CHUNK_SIZE));
+		
+		return new QueryResultsStreamer<FlowInstance, Integer>(daoFactory.getFlowInstanceDAO(), FlowInstance.ID_FIELD, Integer.class, Order.ASC, query);
 	}
-
-	private List<FlowFamily> getFlowFamilies() throws SQLException {
-
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
-		query.addCachedRelations(FlowFamily.FLOWS_RELATION, Flow.FLOW_INSTANCES_RELATION, FlowInstance.STATUS_RELATION);
-
-		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
-
-		return daoFactory.getFlowFamilyDAO().getAll(query);
-	}
-
 	
+	public QueryResultsStreamer<FlowInstance, Integer> getFlowInstanceStreamerForFlowFamily(FlowFamily flowFamily) throws SQLException {
+		
+		HighLevelQuery<Flow> getFlowsQueries = new HighLevelQuery<>();
+		getFlowsQueries.addParameter(flowFlowFamilyParamFactory.getParameter(flowFamily));
+		getFlowsQueries.addParameter(flowEnabledParamFactory.getParameter(true));
+		
+		List<Flow> flows = daoFactory.getFlowDAO().getAll(getFlowsQueries);
+		
+		if (flows == null) {
+			return null;
+		}
+
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		
+		query.addParameter(flowInstanceFlowParamFactory.getWhereInParameter(flows));
+		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
+		
+		query.setRowLimiter(new MySQLRowLimiter(STREAMER_CHUNK_SIZE));
+		
+		return new QueryResultsStreamer<FlowInstance, Integer>(daoFactory.getFlowInstanceDAO(), FlowInstance.ID_FIELD, Integer.class, Order.ASC, query);
+	}
+
+	public QueryResultsStreamer<FlowInstance, Integer> getAllFlowInstancesStreamer() {
+		
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
+		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		
+		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
+		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
+		
+		query.setRowLimiter(new MySQLRowLimiter(STREAMER_CHUNK_SIZE));
+		
+		return new QueryResultsStreamer<FlowInstance, Integer>(daoFactory.getFlowInstanceDAO(), FlowInstance.ID_FIELD, Integer.class, Order.ASC, query);
+	}
+
 	public boolean isLogIndexing() {
 	
 		return logIndexing;
 	}
-
 	
 	public void setLogIndexing(boolean logIndexing) {
 	

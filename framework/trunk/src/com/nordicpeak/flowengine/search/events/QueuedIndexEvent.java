@@ -11,4 +11,6 @@ public abstract class QueuedIndexEvent {
 	protected final Logger log = Logger.getLogger(this.getClass());
 	
 	public abstract int queueTasks(ThreadPoolExecutor executor, FlowInstanceIndexer flowInstanceIndexer);
+	
+	public boolean hasRemainingTasks() { return false; };
 }

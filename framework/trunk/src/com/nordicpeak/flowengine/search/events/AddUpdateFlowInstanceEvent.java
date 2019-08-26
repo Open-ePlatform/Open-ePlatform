@@ -9,7 +9,6 @@ import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.search.tasks.AddUpdateFlowInstanceTask;
 import com.nordicpeak.flowengine.search.tasks.DeleteFlowInstanceTask;
 
-
 public class AddUpdateFlowInstanceEvent extends FlowInstanceEvent {
 
 	public AddUpdateFlowInstanceEvent(FlowInstance flowInstance) {
@@ -27,32 +26,32 @@ public class AddUpdateFlowInstanceEvent extends FlowInstanceEvent {
 		} catch (SQLException e) {
 
 			log.error("Error getting flow instance " + flowInstance + " from DB", e);
-			
+
 			return 0;
 		}
 
-		if(dbInstance != null){
+		if (dbInstance != null) {
 
-			try{
-				if(!flowInstanceIndexer.isIndexable(flowInstance)){
+			try {
+				if (!flowInstanceIndexer.isIndexable(flowInstance) || !flowInstance.getFlow().isEnabled()) {
 
 					executor.execute(new DeleteFlowInstanceTask(flowInstanceIndexer, dbInstance));
-					
-				}else{
-					
+
+				} else {
+
 					executor.execute(new AddUpdateFlowInstanceTask(flowInstanceIndexer, dbInstance));
 				}
-				
+
 				return 1;
 			} catch (RejectedExecutionException e) {}
 		}
 
 		return 0;
 	}
-	
+
 	@Override
-	public String toString(){
-		
+	public String toString() {
+
 		return "add/update event for flow instance " + flowInstance;
-	}	
+	}
 }

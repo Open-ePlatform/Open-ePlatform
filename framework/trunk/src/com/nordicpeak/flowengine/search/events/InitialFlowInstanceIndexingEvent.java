@@ -8,27 +8,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 import se.unlogic.standardutils.dao.QueryResultsStreamer;
 import se.unlogic.standardutils.time.TimeUtils;
 
-import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.search.tasks.AddUpdateFlowInstanceTask;
 
+public class InitialFlowInstanceIndexingEvent extends QueuedIndexEvent {
 
-public class AddFlowEvent extends QueuedIndexEvent {
-
-	private Flow flow;
 	protected QueryResultsStreamer<FlowInstance, Integer> resultsStreamer;
 	private boolean moreResults = true;
-
-	long start = System.currentTimeMillis();
 	
-	public AddFlowEvent(Flow flow, QueryResultsStreamer<FlowInstance, Integer> resultsStreamer) {
+	long start = System.currentTimeMillis();
+
+	public InitialFlowInstanceIndexingEvent(QueryResultsStreamer<FlowInstance, Integer> resultsStreamer) {
 
 		super();
-		this.flow = flow;
 		this.resultsStreamer = resultsStreamer;
 	}
-	
+
 	@Override
 	public int queueTasks(ThreadPoolExecutor executor, FlowInstanceIndexer flowInstanceIndexer) {
 
@@ -39,7 +35,7 @@ public class AddFlowEvent extends QueuedIndexEvent {
 
 		} catch (SQLException e) {
 
-			log.error("Error getting flow instances for " + flow + " from DB.", e);
+			log.error("Error getting flow instances from DB.", e);
 
 			moreResults = false;
 			return 0;
@@ -51,7 +47,7 @@ public class AddFlowEvent extends QueuedIndexEvent {
 
 			for (FlowInstance flowInstance : flowInstances) {
 
-				if (!flowInstanceIndexer.isIndexable(flowInstance)) {
+				if (flowInstance.getFlow() == null || !flowInstanceIndexer.isIndexable(flowInstance)) {
 					continue;
 				}
 
@@ -64,11 +60,8 @@ public class AddFlowEvent extends QueuedIndexEvent {
 			return taskCount;
 		}
 
-		if (flowInstanceIndexer.isLogIndexing()) {
-			
-			start = System.currentTimeMillis() - start;
-			log.info("Flow instance indexing for " + flow + " took " + TimeUtils.millisecondsToString(start));
-		}
+		start = System.currentTimeMillis() - start;
+		log.info("Initial flow instance indexing took " + TimeUtils.millisecondsToString(start));
 		
 		moreResults = false;
 		return 0;
@@ -80,8 +73,8 @@ public class AddFlowEvent extends QueuedIndexEvent {
 	}
 
 	@Override
-	public String toString(){
-		
-		return "add event for flow " + flow;
+	public String toString() {
+
+		return "initial flow instance indexing event";
 	}
 }
