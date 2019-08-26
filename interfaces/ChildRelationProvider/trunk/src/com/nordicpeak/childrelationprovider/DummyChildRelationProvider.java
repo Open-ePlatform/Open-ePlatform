@@ -72,29 +72,32 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 	}
 	
 	@Override
-	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException {
+	public ChildrenResponse getChildren(String citizenIdentifier, boolean withGuardians, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException {
 		
 		Map<String, Child> children = new HashMap<String, Child>();
 		
 		if (child1 && !secret1) {
 			
 			SimpleChild child1 = new SimpleChild("kalle", "kula", childID1, "gatan", "12345", "orten", "1234");
-			
-			if (ensam1) {
+
+			if (withGuardians) {
 				
-				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier) }));
-			
-			}  else if (noID1) {
-				
-				if (requireCitizenIDsForGuardians) {
-					throw new IncompleteDataException("Guardian without person number");
+				if (ensam1) {
+
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier) }));
+
+				} else if (noID1) {
+
+					if (requireCitizenIDsForGuardians) {
+						throw new IncompleteDataException("Guardian without person number");
+					}
+
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", null) }));
+
+				} else {
+
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
 				}
-				
-				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", null) }));
-				
-			} else {
-				
-				child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
 			}
 			
 			children.put(child1.getCitizenIdentifier(), child1);
@@ -103,7 +106,10 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 		if (child2 && !secret2) {
 			
 			SimpleChild child2 = new SimpleChild("lisa", "kula", childID2, "gatan", "12345", "orten", "4321");
-			child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
+			
+			if (withGuardians) {
+				child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
+			}
 			
 			children.put(child2.getCitizenIdentifier(), child2);
 		}

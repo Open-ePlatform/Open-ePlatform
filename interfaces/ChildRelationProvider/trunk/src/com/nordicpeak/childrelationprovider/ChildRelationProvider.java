@@ -7,6 +7,6 @@ public interface ChildRelationProvider {
 	/**
 	 * Never returns null. If no children are found an empty ChildrenResponse is returned.
 	 */
-	public ChildrenResponse getChildrenWithGuardians(String citizenIdentifier, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException;
+	public ChildrenResponse getChildren(String citizenIdentifierString, boolean withGuardians, boolean requireCitizenIDsForGuardians) throws ChildRelationProviderException;
 	
 }
