@@ -9,7 +9,7 @@
 	<xsl:variable name="i18n.Error.NoChildren">Du är inte vårdnadshavare för något barn och kan därför inte välja ett barn.</xsl:variable>
 	
 	<xsl:variable name="i18n.Error.Provider.CommunicationError">Det går inte att komma åt personuppgiftstjänsten, vänligen försök igen senare.</xsl:variable>
-	<xsl:variable name="i18n.Error.Provider.IncompleteData">Det går inte att hämta komplett data från personuppgiftstjänsten. Vänligen kontakta administratören för mer information.</xsl:variable>
+	<xsl:variable name="i18n.Error.Provider.IncompleteData">Din ansökan kan inte slutföras. Vänligen kontakta kommunen för mer hjälp.</xsl:variable>
 	<xsl:variable name="i18n.Error.Provider.InvalidCitizenIdentifier">Ditt personnummer accepterades inte av personuppgiftstjänsten. Vänligen kontakta administratören för mer information.</xsl:variable>
 	<xsl:variable name="i18n.Error.Provider.Unknown">Ett okänt fel uppstod under bearbetning av information från personuppgiftstjänsten, vänligen försök igen senare.</xsl:variable>
 	
@@ -20,7 +20,6 @@
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part3"> tecken!</xsl:variable>
-	<xsl:variable name="i18n.Error.SecretGuardian">Din ansökan kan inte slutföras. Vänligen kontakta kommunen för mer hjälp.</xsl:variable>
 	<xsl:variable name="i18n.Error.EmailOrPhoneRequired">Du måste fylla i e-post eller mobiltelefon för den andra vårdnadshavaren.</xsl:variable>
 	<xsl:variable name="i18n.Error.EmailVerificationMismatch">De angivna e-postaddresserna överenstämmer inte</xsl:variable>
 	<xsl:variable name="i18n.Error.PhoneVerificationMismatch">De angivna mobiltelefonnumren överenstämmer inte</xsl:variable>

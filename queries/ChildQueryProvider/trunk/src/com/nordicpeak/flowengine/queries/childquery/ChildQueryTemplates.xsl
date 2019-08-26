@@ -605,7 +605,7 @@
 			<xsl:choose>
 				<xsl:when test="$useMultipartSigning = 'true' and not(citizenIdentifier)">
 					
-					<span><xsl:value-of select="$i18n.Error.SecretGuardian"/></span>
+					<span><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></span>
 					
 				</xsl:when>
 				<xsl:otherwise>
@@ -875,7 +875,7 @@
 	
 			<xsl:choose>
 				<xsl:when test="not(citizenIdentifier)">
-					<span><xsl:value-of select="$i18n.Error.SecretGuardian"/></span>
+					<span><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></span>
 				</xsl:when>
 				<xsl:otherwise>
 					
@@ -1090,11 +1090,11 @@
 		
 	</xsl:template>
 		
-	<xsl:template match="validationError[messageKey = 'SecretGuardian']">
+	<xsl:template match="validationError[messageKey = 'Provider.IncompleteData']">
 		
 		<span>
 			<strong data-icon-before="!">
-				<xsl:value-of select="$i18n.Error.SecretGuardian"/>
+				<xsl:value-of select="$i18n.Error.Provider.IncompleteData"/>
 			</strong>
 		</span>
 		

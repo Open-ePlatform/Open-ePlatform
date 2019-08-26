@@ -544,7 +544,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 				if (storedGuardian.getCitizenIdentifier() == null) {
 
-					validationErrors.add(new ValidationError("SecretGuardian"));
+					validationErrors.add(new ValidationError("Provider.IncompleteData"));
 
 				} else if (storedGuardian.getCitizenIdentifier().equals(posterCitizienIdentifier)) {
 
@@ -695,7 +695,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				log.info("Getting children information for user " + poster);
 
 				try {
-					ChildrenResponse childrenResponse = childRelationProvider.getChildrenWithGuardians(citizenIdentifier, queryInstance.getQuery().isUseMultipartSigning());
+					ChildrenResponse childrenResponse = childRelationProvider.getChildren(citizenIdentifier, true, queryInstance.getQuery().isUseMultipartSigning());
 					
 					if (childrenResponse != null) {
 						
