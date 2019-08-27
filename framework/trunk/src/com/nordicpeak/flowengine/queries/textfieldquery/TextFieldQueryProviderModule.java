@@ -402,7 +402,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 			} else {
 
 				try {
-					Map<String, String> valuesFromAPI = apiModule.getAPIFieldValues(query.getEndpoint(), poster);
+					Map<String, String> valuesFromAPI = apiModule.getAPIFieldValues(query.getEndpoint(), poster, attributeHandler);
 
 					if (!CollectionUtils.isEmpty(valuesFromAPI)) {
 

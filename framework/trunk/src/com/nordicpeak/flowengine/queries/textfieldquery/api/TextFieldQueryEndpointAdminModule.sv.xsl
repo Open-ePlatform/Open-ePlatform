@@ -53,5 +53,6 @@
 	<xsl:variable name="i18n.UserUsernameTag">Användarens användarnamn (endast medarbetarkonto)</xsl:variable>
 	<xsl:variable name="i18n.UserUserIDTag">Användarens användar-ID</xsl:variable>
 	<xsl:variable name="i18n.UserCitizenIdentifierTag">Användarens personnummer</xsl:variable>
+	<xsl:variable name="i18n.Tags.Attribute">Värde på attribut från ärende</xsl:variable>
 	
 </xsl:stylesheet>

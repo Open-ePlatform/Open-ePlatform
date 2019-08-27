@@ -24,9 +24,12 @@ import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
@@ -234,7 +237,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		return doc;
 	}
 
-	public Map<String, String> getAPIFieldValues(TextFieldQueryEndpoint endpoint, User user) throws TextFieldAPIRequestException {
+	public Map<String, String> getAPIFieldValues(TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) throws TextFieldAPIRequestException {
 		
 		if (endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
 			return null;
@@ -242,17 +245,23 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 
 		String address = endpoint.getAddress();
 
-		if (user != null) {
-
-			address = UserAttributeTagUtils.replaceTags(address, user);
-
-			TagReplacer tagReplacer = new TagReplacer();
-			tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(user));
-
-			address = tagReplacer.replace(address);
+		User usedPoster = poster;
+		
+		if (usedPoster == null) {
+			
+			usedPoster = new SimpleUser();
 		}
 		
-		log.info("User " + user + " getting field values for api endpoint " + endpoint + " from: " + address);
+		TagReplacer tagReplacer = new TagReplacer();
+		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(usedPoster));
+		
+		address = tagReplacer.replace(address);
+
+		address = UserAttributeTagUtils.replaceTags(address, usedPoster);
+		
+		address = AttributeTagUtils.replaceTags(address, attributeHandler);
+		
+		log.info("User " + poster + " getting field values for api endpoint " + endpoint + " from: " + address);
 
 		SimpleRequest simpleRequest = new SimpleRequest(address);
 
