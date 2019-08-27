@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+
+table tr.activitygroup td {
+	border-top: 1px solid black;	
+	border-top-color: black !important;
+}
+
+table tr.activity.last td {
+	border-bottom-color: black !important;
+}

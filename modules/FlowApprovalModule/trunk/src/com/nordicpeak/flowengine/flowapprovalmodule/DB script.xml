@@ -1,0 +1,107 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups` (
+					`activityGroupID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`startStatus` VARCHAR(255) NOT NULL,
+					`completeStatus` VARCHAR(255) NOT NULL,
+					`denyStatus` VARCHAR(255) NULL DEFAULT NULL,
+					`useApproveDeny` TINYINT UNSIGNED NOT NULL,
+					`appendCommentsToExternalMessages` TINYINT UNSIGNED NOT NULL,
+					`sendActivityGroupStartedEmail` TINYINT UNSIGNED NOT NULL,
+					`activityGroupStartedEmailSubject` VARCHAR(255) NULL DEFAULT NULL,
+					`activityGroupStartedEmailMessage` TEXT NULL,
+					`userDescriptionTemplate` VARCHAR(255) NULL DEFAULT NULL,
+					PRIMARY KEY (`activityGroupID`),
+					INDEX `flowFamilyID` (`flowFamilyID`)
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activities` (
+					`activityID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`description` TEXT NULL,
+					`attributeName` VARCHAR(255) NULL DEFAULT NULL,
+					`invert` TINYINT(1) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`),
+					INDEX `FK_flowapproval_activities_1` (`activityGroupID`),
+					CONSTRAINT `FK_flowapproval_activities_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_groups` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`groupID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `groupID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_groups_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_attribute_values` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`value` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `value`),
+					CONSTRAINT `FK_flowapproval_activity_attribute_values_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`completed` DATETIME NULL DEFAULT NULL,
+					`denied` TINYINT UNSIGNED NOT NULL,
+					`completingUserID` INT(10) UNSIGNED NULL DEFAULT NULL,
+					`comment` TEXT NULL,
+					PRIMARY KEY (`activityProgressID`),
+					INDEX `FK_flowapproval_activity_progress_1` (`activityID`),
+					INDEX `flowInstanceID` (`flowInstanceID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`	ADD COLUMN `globalEmailAddress` VARCHAR(255) NULL AFTER `invert`;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>
