@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -457,7 +456,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 	private void cacheExternalOperatingMessages() {
 
-		List<ExternalOperatingMessage> operatingMessages = new ArrayList<ExternalOperatingMessage>();
+		List<ExternalOperatingMessage> newExternalOperatingMessages = new ArrayList<ExternalOperatingMessage>();
 
 		for (ExternalOperatingMessageSource source : externalMessageSources) {
 
@@ -481,7 +480,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 							OperatingMessageType type = OperatingMessageType.valueOf(item.getString("Type"));
 							String message = item.getString("Text");
 
-							operatingMessages.add(new ExternalOperatingMessage(source, type, message));
+							newExternalOperatingMessages.add(new ExternalOperatingMessage(source, type, message));
 						}
 
 					} catch (Exception e) {
@@ -495,19 +494,26 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			}
 		}
 
-		if (operatingMessages.size() > 0 && log.isDebugEnabled()) {
+		if (newExternalOperatingMessages.size() > 0 && log.isDebugEnabled()) {
 
-			log.debug("Cached " + operatingMessages.size() + " external operating messages");
+			log.debug("Cached " + newExternalOperatingMessages.size() + " external operating messages");
 		}
 
-		Collection<ExternalOperatingMessage> oldExternalOperatingMessageCache = externalOperatingMessageCache;
+		if(newExternalOperatingMessages.isEmpty() && CollectionUtils.isEmpty(this.externalOperatingMessageCache)) {
+			
+			//No new or old messages, nothing to do
+			return;
+		}
+		
+		List<ExternalOperatingMessage> oldExternalOperatingMessageCache = this.externalOperatingMessageCache;
 
-		externalOperatingMessageCache = Collections.unmodifiableList(operatingMessages);
+		//Cache messages
+		this.externalOperatingMessageCache = newExternalOperatingMessages;
 
 		sendNotifications(externalOperatingMessageCache, oldExternalOperatingMessageCache);
 	}
 
-	private void sendNotifications(Collection<ExternalOperatingMessage> newOperatingMessages, Collection<ExternalOperatingMessage> oldOperatingMessages) {
+	private void sendNotifications(List<ExternalOperatingMessage> newOperatingMessages, Collection<ExternalOperatingMessage> oldOperatingMessages) {
 
 		try {
 			OperatingMessageNotificationSettings notificationSettings = getNotificationSettings(true);
