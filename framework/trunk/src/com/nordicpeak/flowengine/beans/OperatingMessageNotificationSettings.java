@@ -21,6 +21,7 @@ public class OperatingMessageNotificationSettings extends GeneratedElementable {
 	@Key
 	private Integer dummyID = 1;
 
+	//TODO change from Integer to User
 	@DAOManaged
 	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowengine_operating_message_notification_users", remoteValueColumnName = "userID")
