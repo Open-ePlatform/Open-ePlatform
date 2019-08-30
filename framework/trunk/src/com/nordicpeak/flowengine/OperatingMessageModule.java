@@ -460,6 +460,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 		for (ExternalOperatingMessageSource source : externalMessageSources) {
 
+			if(systemInterface.getSystemStatus() != SystemStatus.STARTED) {
+				
+				return;
+			}
+			
 			try {
 				SimpleRequest listRequest = new SimpleRequest(source.getURL());
 
