@@ -33,7 +33,7 @@ public class AddUpdateFlowInstanceEvent extends FlowInstanceEvent {
 		if (dbInstance != null) {
 
 			try {
-				if (!flowInstanceIndexer.isIndexable(flowInstance) || !flowInstance.getFlow().isEnabled()) {
+				if (!flowInstanceIndexer.isIndexable(dbInstance) || !dbInstance.getFlow().isEnabled()) {
 
 					executor.execute(new DeleteFlowInstanceTask(flowInstanceIndexer, dbInstance));
 
