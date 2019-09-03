@@ -265,6 +265,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	protected void moduleConfigured() throws Exception {
 
 		viewFragmentTransformer.setDebugXML(debugFragmentXML);
+		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
 	}
 
 	@Override
@@ -407,10 +408,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			XMLUtils.append(doc, showViewElement, "ValidationErrors", validationErrors);
 		}
 
-		SimpleViewFragment viewFragment = (SimpleViewFragment) viewFragmentTransformer.createViewFragment(doc);
-		
-		return new FlowAdminExtensionShowView(viewFragment, enabled);
-		
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), enabled);
 	}
 
 	@Override
@@ -489,6 +487,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			} else {
 
+				log.warn("Scripts and links have not been modified for FlowAdminFragmentExtensionViewProviderProcessRequest");
 				return new SimpleViewFragment(foregroundModuleResponse.getHtml(), debugFragmentXML ? foregroundModuleResponse.getDocument() : null, foregroundModuleResponse.getScripts(), foregroundModuleResponse.getLinks());
 			}
 		}

@@ -29,13 +29,13 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.flowapprovalmodule.FlowApprovalAdminModule;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
-import com.nordicpeak.flowengine.flowapprovalmodule.populators.FlowApprovalBeanIDParser;
+import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
 public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActivityGroup, Integer, User, FlowApprovalAdminModule> {
 
 	public FlowApprovalActivityGroupCRUD(CRUDDAO<FlowApprovalActivityGroup, Integer> crudDAO, FlowApprovalAdminModule callback) {
 
-		super(FlowApprovalBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowApprovalActivityGroup>(FlowApprovalActivityGroup.class), "ActivityGroup", "activity group", "", callback);
+		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowApprovalActivityGroup>(FlowApprovalActivityGroup.class), "ActivityGroup", "activity group", "", callback);
 	}
 
 	@Override

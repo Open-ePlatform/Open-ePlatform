@@ -200,6 +200,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonList(activityProgress.getActivity()), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
 		}
 		
+		//TODO show notification that reminder was sent
 		res.sendRedirect(RequestUtils.getFullContextPathURL(req) + flowInstanceAdminModule.getFullAlias() + "/overview/" + flowInstance.getFlowInstanceID() + "#flow-approval");
 		return null;
 	}
