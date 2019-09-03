@@ -109,6 +109,14 @@
 			</tbody>
 		</table>
 		
+		<xsl:if test="../FlowOverviewExtensionError">
+			<div class="floatleft">
+				<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/toflow" title="{$i18n.BackToFlow}">
+					<xsl:value-of select="$i18n.BackToFlow"/>
+				</a>
+			</div>
+		</xsl:if>
+		
 		<div class="floatright">
 			
 			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/add" title="{$i18n.AddOperatingMessage}">
@@ -123,22 +131,34 @@
 	<xsl:template match="OperatingMessage" mode="list-fragment">
 		
 		<xsl:variable name="extensionImgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../extensionRequestURL" />/static/pics</xsl:variable>
+		<xsl:variable name="href">
+			<xsl:choose>
+				<xsl:when test="ReadOnly">#</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="/Document/requestinfo/contextpath"/>
+					<xsl:value-of select="../../extensionRequestURL"/>
+					<xsl:text>/update/</xsl:text>
+					<xsl:value-of select="messageID"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		
+		</xsl:variable>
 		
 		<tr>
 			<td class="icon">
 				<i data-icon-after="!"></i>
 			</td>
 			<td data-title="{$i18n.Message}">
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="message" /></a>
+				<a href="{$href}"><xsl:value-of select="message" /></a>
 			</td>
 			<td data-title="{$i18n.Publish}">
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" /></a>
+				<a href="{$href}"><xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" /></a>
 			</td>
 			<td data-title="{$i18n.UnPublish}">
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
+				<a href="{$href}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
 			</td>
 			<td data-title="{$i18n.MessageType}">
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+				<a href="{$href}">
 					<xsl:choose>
 						<xsl:when test="messageType = 'WARNING'">
 							<xsl:value-of select="$i18n.MessageTypeWarning" />
@@ -152,7 +172,7 @@
 			<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
 			
 				<td data-title="{$i18n.Profiles}">
-					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+					<a href="{$href}">
 						<xsl:choose>
 							<xsl:when test="profileIDs/profileID">
 								<xsl:value-of select="count(profileIDs/profileID)" />
@@ -177,7 +197,7 @@
 			
 			</xsl:if>
 			<td data-title="{$i18n.DisableFlows}">
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+				<a href="{$href}">
 					<xsl:choose>
 						<xsl:when test="disableFlows = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
 						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
@@ -185,12 +205,14 @@
 				</a>
 			</td>
 			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
-					<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
-				</a>
-				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
-					<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
-				</a>
+				<xsl:if test="not(ReadOnly)">
+					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
+						<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
+					</a>
+					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+						<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
+					</a>
+				</xsl:if>
 			</td>
 		</tr>
 		
@@ -1057,6 +1079,9 @@
 					</xsl:when>
 					<xsl:when test="messageKey='NoMessageTypeChosen'">
 						<xsl:value-of select="$i18n.Validation.NoMessageTypeChosen"/>
+					</xsl:when>
+					<xsl:when test="messageKey='UpdateFailedOperatingMessageNotFound' or messageKey='DeleteFailedOperatingMessageNotFound'">
+						<xsl:value-of select="$i18n.Validation.InvalidMessage"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.UnknownFault"/>

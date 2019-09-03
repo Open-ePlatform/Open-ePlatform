@@ -47,11 +47,16 @@
 	
 	<xsl:variable name="i18n.Submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.BackToFlow">Bakåt</xsl:variable>
 	
 	<xsl:variable name="i18n.Validation.RequiredField" select="'Du måste fylla i fältet'"/>
 	<xsl:variable name="i18n.Validation.InvalidFormat" select="'Felaktigt format på fältet'"/>
 	<xsl:variable name="i18n.Validation.TooShort" select="'För kort innehåll i fältet'"/>
-		
+	<xsl:variable name="i18n.Validation.TooLong.Part1">Innehållet i fältet </xsl:variable>
+	<xsl:variable name="i18n.Validation.TooLong.Part2"> är </xsl:variable>
+	<xsl:variable name="i18n.Validation.TooLong.Part3"> tecken, vilket överskrider maxgränsen på </xsl:variable>
+	<xsl:variable name="i18n.Validation.TooLong.Part4"> tecken</xsl:variable>
+	<xsl:variable name="i18n.Validation.InvalidMessage">Det begärda driftmeddelandet hittades inte</xsl:variable>
 	<xsl:variable name="i18n.Validation.UnknownError" select="'Okänt fel på fältet'"/>
 	<xsl:variable name="i18n.UnknownFault" select="'Ett okänt fel inträffade'"/>
 	
@@ -70,10 +75,6 @@
 	<xsl:variable name="i18n.Validation.NoFlowFamilyChosen">Du har inte valt några e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.Validation.NoMessageTypeChosen">Du har inte valt meddelandetyp</xsl:variable>
 	
-	<xsl:variable name="i18n.Validation.TooLong.Part1">Innehållet i fältet </xsl:variable>
-	<xsl:variable name="i18n.Validation.TooLong.Part2"> är </xsl:variable>
-	<xsl:variable name="i18n.Validation.TooLong.Part3"> tecken, vilket överskrider maxgränsen på </xsl:variable>
-	<xsl:variable name="i18n.Validation.TooLong.Part4"> tecken</xsl:variable>
 	<xsl:variable name="i18n.AllowManagingOfInstancesLabel">Tillåt handläggning av ärenden under driftstoppet</xsl:variable>
 	<xsl:variable name="i18n.AllowUserHandlingOfSubmittedInstancesLabel">Tillåt medborgare att hantera inskickade ärenden under driftstoppet</xsl:variable>
 	<xsl:variable name="i18n.OperatingMessage.allowFlowForms">Tillåt medborgare att hämta blanketter under driftstoppet</xsl:variable>

@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -815,7 +814,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	public String getExtensionViewLinkName() {
 		return "operatingmessages";
 	}
-	
+
 	@Override
 	public FlowAdminExtensionShowView getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
@@ -824,33 +823,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		Element showViewElement = doc.createElement("FlowOverviewExtension");
 		doc.getDocumentElement().appendChild(showViewElement);
 
-		showViewElement.appendChild(flow.toXML(doc));
-		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
+		boolean enabled = appendFlowOverviewExtension(doc, showViewElement, extensionRequestURL, flow, req, user, uriParser);
 
-		HighLevelQuery<OperatingMessage> getQuery = new HighLevelQuery<>();
-		getQuery.addParameter(operatingMessageGlobalParamFactory.getParameter(false));
-		
-		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(getQuery);
-		
-		if (operatingMessages != null) {
-			
-			Iterator<OperatingMessage> it = operatingMessages.iterator();
-			
-			while(it.hasNext()) {
-				
-				OperatingMessage operatingMessage = it.next();
-				
-				if (operatingMessage.getFlowFamilyIDs().size() > 1 || !operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
-					it.remove();
-				}
-			}
-			
-			XMLUtils.append(doc, showViewElement, "OperatingMessages", operatingMessages);
-		}
-
-		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), !CollectionUtils.isEmpty(operatingMessages));
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), enabled);
 	}
-	
+
 	public ForegroundModuleResponse processRequestError(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws SQLException {
 
 		Document doc = createDocument(req, uriParser, user);
@@ -858,35 +835,46 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		Element showViewElement = doc.createElement("FlowOverviewExtensionError");
 		doc.getDocumentElement().appendChild(showViewElement);
 
-		showViewElement.appendChild(flow.toXML(doc));
-		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
+		appendFlowOverviewExtension(doc, showViewElement, extensionRequestURL, flow, req, user, uriParser);
 
-		HighLevelQuery<OperatingMessage> getQuery = new HighLevelQuery<>();
-		getQuery.addParameter(operatingMessageGlobalParamFactory.getParameter(false));
-		
-		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(getQuery);
-		
-		if (operatingMessages != null) {
-			
-			Iterator<OperatingMessage> it = operatingMessages.iterator();
-			
-			while(it.hasNext()) {
-				
-				OperatingMessage operatingMessage = it.next();
-				
-				if (operatingMessage.getFlowFamilyIDs().size() > 1 || !operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
-					it.remove();
-				}
-			}
-			
-			XMLUtils.append(doc, showViewElement, "OperatingMessages", operatingMessages);
-		}
-		
 		XMLUtils.appendNewElement(doc, showViewElement, "Title", getExtensionViewTitle());
 
 		XMLUtils.append(doc, showViewElement, "ValidationErrors", validationErrors);
 
 		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
+	}
+
+	private boolean appendFlowOverviewExtension(Document doc, Element showViewElement, String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws SQLException {
+
+		showViewElement.appendChild(flow.toXML(doc));
+		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
+
+		HighLevelQuery<OperatingMessage> getQuery = new HighLevelQuery<>();
+		getQuery.addParameter(operatingMessageGlobalParamFactory.getParameter(false));
+
+		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(getQuery);
+
+		if (operatingMessages != null) {
+
+			Element operatingMessagesElement = XMLUtils.appendNewElement(doc, showViewElement, "OperatingMessages");
+
+			for (OperatingMessage operatingMessage : operatingMessages) {
+
+				if (operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
+
+					Element operatingMessageElement = operatingMessage.toXML(doc);
+
+					if (operatingMessage.getFlowFamilyIDs().size() > 1) {
+
+						XMLUtils.appendNewElement(doc, operatingMessageElement, "ReadOnly");
+					}
+
+					operatingMessagesElement.appendChild(operatingMessageElement);
+				}
+			}
+		}
+
+		return !CollectionUtils.isEmpty(operatingMessages);
 	}
 
 	@Override
