@@ -30,7 +30,6 @@ import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
-import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
@@ -169,8 +168,6 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
-	private List<ScriptTag> updateGlobalScriptTags;
-
 	private String defaultComplaintDescription = "";
 	private String defaultReasonDescription = "";
 	private String defaultStorageDescription = "";
@@ -270,15 +267,19 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 	protected void moduleConfigured() throws Exception {
 
 		viewFragmentTransformer.setDebugXML(debugFragmententXML);
-
+		
 		XSLVariableReader variableReader = ModuleUtils.getXSLVariableReader(moduleDescriptor, sectionInterface.getSystemInterface());
 
 		if (variableReader != null) {
 
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("globalscripts", "updateglobalscripts");
-			updateGlobalScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, map));
+			
+			List<ScriptTag> updateGlobalScriptTags = ModuleUtils.getGlobalScripts(new XSLVariableReaderRenamer(variableReader, map));
+			
+			viewFragmentTransformer.modifyScriptsAndLinks(true, null, updateGlobalScriptTags, getLinkTags());
 		}
+		
 
 		cacheStandardTexts();
 	}
@@ -306,7 +307,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			enabled = true;
 		}
 
-		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc), enabled);
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), enabled);
 	}
 
 	public SiteProfile getCurrentSiteProfile(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowFamily flowFamily) {
@@ -634,8 +635,7 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
 
-		SimpleViewFragment viewFragment = (SimpleViewFragment) viewFragmentTransformer.createViewFragment(doc);
-		return new SimpleViewFragment(viewFragment.getHTML(), viewFragment.getDebugXML(), updateGlobalScriptTags, viewFragment.getLinks());
+		return viewFragmentTransformer.createViewFragment(doc);
 	}
 
 	private ViewFragment deleteFlowSettings(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
