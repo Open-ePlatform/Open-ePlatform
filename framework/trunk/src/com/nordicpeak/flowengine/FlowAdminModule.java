@@ -90,6 +90,7 @@ import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
 import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.menu.BundleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
+import se.unlogic.hierarchy.core.interfaces.modules.Module;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.settings.SettingHandler;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
@@ -110,6 +111,7 @@ import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidatio
 import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
+import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -594,6 +596,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
+	
+	@InstanceManagerDependency(required = true)
+	protected StaticContentModule staticContentModule;
 	
 	protected AnnotatedDAO<ExternalMessageTemplate> externalMessageTemplateDAO;
 	
@@ -6248,7 +6253,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
 			
-			ViewFragment viewFragment = fragmentExtension.processRequest(getFragmentExtensionViewProviderURL(fragmentExtension, flow), flow, req, res, user, uriParser);
+			String extensionRequestURL = getFragmentExtensionViewProviderURL(fragmentExtension, flow);
+			
+			if (uriParser.size() >= 4 && "static".equals(uriParser.get(4))) {
+				
+				return staticContentModule.processRequest((Module<?>) fragmentExtension, fragmentExtension.getModuleDescriptor(), req, res, user, uriParser.getNextLevel(4));
+			}
+			
+			ViewFragment viewFragment = fragmentExtension.processRequest(extensionRequestURL, flow, req, res, user, uriParser);
 			
 			if (res.isCommitted()) {
 				return null;
@@ -6267,7 +6279,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			updateUserElement.appendChild(viewFragment.toXML(doc));
 			
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc);
-			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
+			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment, extensionRequestURL);
 			
 			return moduleResponse;
 		}

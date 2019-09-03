@@ -6,12 +6,15 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Level;
 import org.w3c.dom.Document;
@@ -28,21 +31,29 @@ import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.LinkTag;
+import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
+import se.unlogic.hierarchy.core.beans.SimpleViewFragment;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.ResponseType;
 import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.listeners.ServerStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
+import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileFilterModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
@@ -53,6 +64,7 @@ import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.StringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -64,21 +76,28 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.beans.ExternalOperatingMessage;
 import com.nordicpeak.flowengine.beans.ExternalOperatingMessageSource;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 import com.nordicpeak.flowengine.beans.OperatingMessage;
 import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
 import com.nordicpeak.flowengine.cruds.OperatingMessageCRUD;
+import com.nordicpeak.flowengine.cruds.OperatingMessageFragmentExtensionCRUD;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.OperatingMessageType;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidator;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, ServerStartupListener {
+public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, ServerStartupListener, FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	private static final AnnotatedRequestPopulator<OperatingMessageNotificationSettings> EXTERNAL_SETTINGS_POPULATOR = new AnnotatedRequestPopulator<OperatingMessageNotificationSettings>(OperatingMessageNotificationSettings.class);
 
+	@XSLVariable(prefix = "java.")
+	private String adminExtensionViewTitle = "Operating message settings";
+	
 	@ModuleSetting
 	@XSLVariable(prefix = "java.")
 	@TextFieldSettingDescriptor(name = "New external operating message email subject", description = "The subject of emails sent to the selected users when a new external operating message is found", required = true)
@@ -122,18 +141,25 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read Timeout", description = "Read timeout in seconds", formatValidator = StringIntegerValidator.class, required = true)
 	protected Integer readTimeout = 5;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
+	private boolean debugFragmentXML;
 
 	private OperatingMessageCRUD messageCRUD;
+	private OperatingMessageFragmentExtensionCRUD messageViewFragmentCRUD;
 
 	private AnnotatedDAO<OperatingMessage> operatingMessageDAO;
 	private AnnotatedDAO<OperatingMessageNotificationSettings> externalSettingsDAO;
 
 	private QueryParameterFactory<OperatingMessage, Timestamp> endTimeParameterFactory;
+	private QueryParameterFactory<OperatingMessage, Boolean> operatingMessageGlobalParamFactory;
+	
+	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
 	private CopyOnWriteArraySet<OperatingMessage> internalOperatingMessageCache;
 	private List<ExternalOperatingMessage> externalOperatingMessageCache;
 
-	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
 
 	@InstanceManagerDependency
@@ -148,6 +174,8 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
+		
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
 		if (!systemInterface.getInstanceHandler().addInstance(OperatingMessageModule.class, this)) {
@@ -163,6 +191,44 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		}
 
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
+	}
+	
+	@Override
+	protected void createDAOs(DataSource dataSource) throws Exception {
+
+		super.createDAOs(dataSource);
+
+		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
+
+		externalSettingsDAO = daoFactory.getDAO(OperatingMessageNotificationSettings.class);
+
+		FlowEngineDAOFactory flowDaoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+
+		operatingMessageDAO = flowDaoFactory.getOperatingMessageDAO();
+		operatingMessageGlobalParamFactory = operatingMessageDAO.getParamFactory("global", boolean.class);
+
+		endTimeParameterFactory = operatingMessageDAO.getParamFactory("endTime", Timestamp.class);
+
+		AdvancedAnnotatedDAOWrapper<OperatingMessage, Integer> operatingMessageDAOWrapper = operatingMessageDAO.getAdvancedWrapper("messageID", Integer.class);
+		
+		messageCRUD = new OperatingMessageCRUD(operatingMessageDAOWrapper, this);
+		messageViewFragmentCRUD = new OperatingMessageFragmentExtensionCRUD(operatingMessageDAOWrapper, this);
+	}
+	
+	@InstanceManagerDependency(required = true)
+	public void setFlowAdminModule(FlowAdminModule flowAdminModule) {
+
+		if (this.flowAdminModule != null) {
+
+			this.flowAdminModule.removeFragmentExtensionViewProvider(this);
+		}
+
+		this.flowAdminModule = flowAdminModule;
+
+		if (flowAdminModule != null) {
+
+			flowAdminModule.addFragmentExtensionViewProvider(this);
+		}
 	}
 
 	@Override
@@ -223,6 +289,9 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			}
 		}
 
+		viewFragmentTransformer.setDebugXML(debugFragmentXML);
+		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
+		
 		super.moduleConfigured();
 	}
 
@@ -234,24 +303,6 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		systemInterface.getInstanceHandler().removeInstance(OperatingMessageModule.class, this);
 
 		super.unload();
-	}
-
-	@Override
-	protected void createDAOs(DataSource dataSource) throws Exception {
-
-		super.createDAOs(dataSource);
-
-		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
-
-		externalSettingsDAO = daoFactory.getDAO(OperatingMessageNotificationSettings.class);
-
-		FlowEngineDAOFactory flowDaoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
-
-		operatingMessageDAO = flowDaoFactory.getOperatingMessageDAO();
-
-		endTimeParameterFactory = operatingMessageDAO.getParamFactory("endTime", Timestamp.class);
-
-		messageCRUD = new OperatingMessageCRUD(operatingMessageDAO.getAdvancedWrapper("messageID", Integer.class), this);
 	}
 
 	private void cacheComingOperatingMessages() throws SQLException {
@@ -753,6 +804,161 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	public int getPriority() {
 
 		return 0;
+	}
+	
+	@Override
+	public String getExtensionViewTitle() {
+		return adminExtensionViewTitle;
+	}
+
+	@Override
+	public String getExtensionViewLinkName() {
+		return "operatingmessages";
+	}
+	
+	@Override
+	public FlowAdminExtensionShowView getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element showViewElement = doc.createElement("FlowOverviewExtension");
+		doc.getDocumentElement().appendChild(showViewElement);
+
+		showViewElement.appendChild(flow.toXML(doc));
+		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
+
+		HighLevelQuery<OperatingMessage> getQuery = new HighLevelQuery<>();
+		getQuery.addParameter(operatingMessageGlobalParamFactory.getParameter(false));
+		
+		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(getQuery);
+		
+		if (operatingMessages != null) {
+			
+			Iterator<OperatingMessage> it = operatingMessages.iterator();
+			
+			while(it.hasNext()) {
+				
+				OperatingMessage operatingMessage = it.next();
+				
+				if (operatingMessage.getFlowFamilyIDs().size() > 1 || !operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
+					it.remove();
+				}
+			}
+			
+			XMLUtils.append(doc, showViewElement, "OperatingMessages", operatingMessages);
+		}
+
+		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), !CollectionUtils.isEmpty(operatingMessages));
+	}
+	
+	public ForegroundModuleResponse processRequestError(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws SQLException {
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element showViewElement = doc.createElement("FlowOverviewExtensionError");
+		doc.getDocumentElement().appendChild(showViewElement);
+
+		showViewElement.appendChild(flow.toXML(doc));
+		XMLUtils.appendNewElement(doc, showViewElement, "extensionRequestURL", extensionRequestURL);
+
+		HighLevelQuery<OperatingMessage> getQuery = new HighLevelQuery<>();
+		getQuery.addParameter(operatingMessageGlobalParamFactory.getParameter(false));
+		
+		List<OperatingMessage> operatingMessages = operatingMessageDAO.getAll(getQuery);
+		
+		if (operatingMessages != null) {
+			
+			Iterator<OperatingMessage> it = operatingMessages.iterator();
+			
+			while(it.hasNext()) {
+				
+				OperatingMessage operatingMessage = it.next();
+				
+				if (operatingMessage.getFlowFamilyIDs().size() > 1 || !operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
+					it.remove();
+				}
+			}
+			
+			XMLUtils.append(doc, showViewElement, "OperatingMessages", operatingMessages);
+		}
+		
+		XMLUtils.appendNewElement(doc, showViewElement, "Title", getExtensionViewTitle());
+
+		XMLUtils.append(doc, showViewElement, "ValidationErrors", validationErrors);
+
+		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
+	}
+
+	@Override
+	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		String method = uriParser.get(4);
+
+		req.setAttribute("extensionRequestURL", extensionRequestURL);
+		req.setAttribute("flow", flow);
+
+		//TODO use methodMap with a new FlowAdminFragmentExtensionViewProviderProcessRequest annotation
+
+		if ("add".equals(method)) {
+
+			return getViewFragmentResponse(messageViewFragmentCRUD.add(req, res, user, uriParser));
+
+		} else if ("update".equals(method)) {
+
+			return getViewFragmentResponse(messageViewFragmentCRUD.update(req, res, user, uriParser));
+
+		} else if ("delete".equals(method)) {
+
+			return getViewFragmentResponse(messageViewFragmentCRUD.delete(req, res, user, uriParser));
+
+		} else if ("toflow".equals(method)) {
+
+			return null;
+		}
+
+		throw new URINotFoundException(uriParser);
+	}
+
+	private ViewFragment getViewFragmentResponse(ForegroundModuleResponse foregroundModuleResponse) throws TransformerConfigurationException, TransformerException {
+
+		if (foregroundModuleResponse != null) {
+
+			if (foregroundModuleResponse.getResponseType() == ResponseType.XML_FOR_SEPARATE_TRANSFORMATION) {
+
+				return viewFragmentTransformer.createViewFragment(foregroundModuleResponse.getDocument());
+
+			} else {
+
+				log.warn("Scripts and links have not been modified for FlowAdminFragmentExtensionViewProviderProcessRequest");
+				return new SimpleViewFragment(foregroundModuleResponse.getHtml(), debugFragmentXML ? foregroundModuleResponse.getDocument() : null, foregroundModuleResponse.getScripts(), foregroundModuleResponse.getLinks());
+			}
+		}
+
+		return null;
+	}
+	
+	@Override
+	public ForegroundModuleDescriptor getModuleDescriptor() {
+
+		return moduleDescriptor;
+	}
+
+	@Override
+	public int getModuleID() {
+
+		return moduleDescriptor.getModuleID();
+	}
+
+	@Override
+	public List<LinkTag> getLinkTags() {
+
+		return links;
+	}
+
+	@Override
+	public List<ScriptTag> getScriptTags() {
+
+		return scripts;
 	}
 
 }

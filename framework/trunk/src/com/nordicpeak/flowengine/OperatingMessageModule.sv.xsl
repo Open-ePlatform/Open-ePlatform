@@ -6,6 +6,8 @@
 
 	<xsl:include href="OperatingMessageModuleTemplates.xsl"/>
 	
+	<xsl:variable name="java.adminExtensionViewTitle">Driftmeddelanden</xsl:variable>
+	
 	<xsl:variable name="java.newExternalOperatingMessageEmailSubject">Nytt externt driftmeddelande publicerat för $name</xsl:variable>
 	<xsl:variable name="java.newExternalOperatingMessageEmailMessage">
 		&lt;p&gt;Följande driftmeddelande har publicerats för $name:&lt;/p&gt;

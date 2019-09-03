@@ -6,7 +6,10 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -838,7 +841,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		if (fragmentExtensionProviders != null) {
 			
-			List<FlowAdminExtensionShowView> showViews = new ArrayList<FlowAdminExtensionShowView>(fragmentExtensionProviders.size());
+			Map<FlowAdminFragmentExtensionViewProvider, FlowAdminExtensionShowView> showViews = new HashMap<>(fragmentExtensionProviders.size());
 			
 			for (FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider : fragmentExtensionProviders) {
 				
@@ -862,7 +865,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 							XMLUtils.appendNewElement(menuDoc, element, "ID", fragmentExtensionProvider.getModuleID());
 						}
 						
-						showViews.add(showView);
+						showViews.put(fragmentExtensionProvider, showView);
 						
 						if (viewFragment instanceof SimpleViewFragment) {
 							
@@ -953,9 +956,9 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected SimpleForegroundModuleResponse createShowBeanModuleResponse(Flow bean, Document doc, HttpServletRequest req, User user, URIParser uriParser) {
+	protected SimpleForegroundModuleResponse createShowBeanModuleResponse(Flow flow, Document doc, HttpServletRequest req, User user, URIParser uriParser) {
 
-		SimpleForegroundModuleResponse moduleResponse = super.createShowBeanModuleResponse(bean, doc, req, user, uriParser);
+		SimpleForegroundModuleResponse moduleResponse = super.createShowBeanModuleResponse(flow, doc, req, user, uriParser);
 
 		ViewFragment surveysFragment = (ViewFragment) req.getAttribute("ShowFlowSurveysFragment");
 
@@ -981,13 +984,18 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			}
 		}
 		
-		List<FlowAdminExtensionShowView> fragmentExtensionViewShowViews = (List<FlowAdminExtensionShowView>) req.getAttribute("FragmentExtensionProviderShowViews");
+		Map<FlowAdminFragmentExtensionViewProvider, FlowAdminExtensionShowView> fragmentExtensionViewShowViews = (Map<FlowAdminFragmentExtensionViewProvider, FlowAdminExtensionShowView>) req.getAttribute("FragmentExtensionProviderShowViews");
 
 		if (fragmentExtensionViewShowViews != null) {
 
-			for (FlowAdminExtensionShowView showView : fragmentExtensionViewShowViews) {
+			for (Entry<FlowAdminFragmentExtensionViewProvider, FlowAdminExtensionShowView> entry : fragmentExtensionViewShowViews.entrySet()) {
 
-				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, showView.getViewFragment());
+				FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider = entry.getKey();
+				FlowAdminExtensionShowView showView = entry.getValue();
+				
+				String extensionRequestURL = callback.getFragmentExtensionViewProviderURL(fragmentExtensionProvider, flow);
+				
+				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, showView.getViewFragment(), extensionRequestURL);
 			}
 		}
 

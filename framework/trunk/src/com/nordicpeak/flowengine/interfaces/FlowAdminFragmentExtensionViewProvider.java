@@ -10,6 +10,7 @@ import javax.xml.transform.TransformerException;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.Prioritized;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.VisibleModuleDescriptor;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
@@ -26,4 +27,5 @@ public interface FlowAdminFragmentExtensionViewProvider extends Prioritized {
 	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception;
 
 	public int getModuleID();
+	public VisibleModuleDescriptor getModuleDescriptor();
 }

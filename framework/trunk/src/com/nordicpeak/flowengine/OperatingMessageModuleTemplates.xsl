@@ -33,14 +33,166 @@
 
 	<xsl:template match="Document">
 		
-		<div id="OperatingMessageModule" class="contentitem errands-wrapper">
+		<xsl:choose>
+			<xsl:when test="FlowOverviewExtension">
+				
+				<xsl:apply-templates select="FlowOverviewExtension" />
+				
+			</xsl:when>
+			<xsl:otherwise>
+				
+				<div id="OperatingMessageModule" class="contentitem errands-wrapper">
+					
+					<xsl:apply-templates select="ListOperatingMessages" />
+					<xsl:apply-templates select="AddOperatingMessage" />
+					<xsl:apply-templates select="UpdateOperatingMessage" />
+					<xsl:apply-templates select="UpdateNotificationSettings" />
+					
+					<xsl:apply-templates select="FlowOverviewExtensionError" />
+					
+				</div>
+				
+			</xsl:otherwise>
+		</xsl:choose>
 		
-			<xsl:apply-templates select="ListOperatingMessages" />
-			<xsl:apply-templates select="AddOperatingMessage" />
-			<xsl:apply-templates select="UpdateOperatingMessage" />
-			<xsl:apply-templates select="UpdateNotificationSettings" />
+	</xsl:template>
+	
+	<xsl:template match="FlowOverviewExtensionError">
+	
+		<xsl:call-template name="FlowOverviewExtension" />
+	
+	</xsl:template>
+	
+	<xsl:template match="FlowOverviewExtension" name="FlowOverviewExtension">
 		
+		<xsl:variable name="extensionImgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="extensionRequestURL" />/static/pics</xsl:variable>
+		
+		<div id="operatingmessages" />
+		
+		<xsl:if test="Title">
+			<h1><xsl:value-of select="Title" /></h1>
+		</xsl:if>
+		
+		<xsl:apply-templates select="ValidationErrors/validationError" />
+		
+		<table id="messageList" class="full coloredtable oep-table" cellspacing="0">
+			<thead>
+				<tr>
+					<th width="16" class="no-sort"></th>
+					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
+					<th width="120" class="default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Publish" /></span></th>
+					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.UnPublish" /></span></th>
+					<th width="120"><span data-icon-after="_"><xsl:value-of select="$i18n.MessageType" /></span></th>
+					<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
+						<th width="110"><span data-icon-after="_"><xsl:value-of select="$i18n.Profiles" /></span></th>
+					</xsl:if>
+					<th width="130"><span data-icon-after="_"><xsl:value-of select="$i18n.DisableFlows" /></span></th>
+					<th width="37" class="no-sort" />
+				</tr>
+			</thead>
+			<tbody>
+				<xsl:choose>
+					<xsl:when test="not(OperatingMessages/OperatingMessage)">
+						<tr>
+							<td class="icon"></td>
+							<td colspan="8">
+								<xsl:value-of select="$i18n.NoOperatingMessagesFound" />
+							</td>
+						</tr>
+					</xsl:when>
+					<xsl:otherwise>
+						
+						<xsl:apply-templates select="OperatingMessages/OperatingMessage" mode="list-fragment" />
+						
+					</xsl:otherwise>
+				</xsl:choose>
+			</tbody>
+		</table>
+		
+		<div class="floatright">
+			
+			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/add" title="{$i18n.AddOperatingMessage}">
+				<xsl:value-of select="$i18n.AddOperatingMessage"/>
+				<img class="marginleft" src="{$extensionImgPath}/add.png" alt="" />
+			</a>
+			
 		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="OperatingMessage" mode="list-fragment">
+		
+		<xsl:variable name="extensionImgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../extensionRequestURL" />/static/pics</xsl:variable>
+		
+		<tr>
+			<td class="icon">
+				<i data-icon-after="!"></i>
+			</td>
+			<td data-title="{$i18n.Message}">
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="message" /></a>
+			</td>
+			<td data-title="{$i18n.Publish}">
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="startDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="startTime" /></a>
+			</td>
+			<td data-title="{$i18n.UnPublish}">
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}"><xsl:value-of select="endDate" /><xsl:text>&#160;</xsl:text><xsl:value-of select="endTime" /></a>
+			</td>
+			<td data-title="{$i18n.MessageType}">
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+					<xsl:choose>
+						<xsl:when test="messageType = 'WARNING'">
+							<xsl:value-of select="$i18n.MessageTypeWarning" />
+						</xsl:when>
+						<xsl:when test="messageType = 'INFO'">
+							<xsl:value-of select="$i18n.MessageTypeInfo" />
+						</xsl:when>
+					</xsl:choose>
+				</a>
+			</td>
+			<xsl:if test="/Document/enableSiteProfileSupport = 'true'">
+			
+				<td data-title="{$i18n.Profiles}">
+					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+						<xsl:choose>
+							<xsl:when test="profileIDs/profileID">
+								<xsl:value-of select="count(profileIDs/profileID)" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.All" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</a>
+					<xsl:if test="profileIDs/profileID">
+						<img src="{$imgPath}/info.png" class="marginleft vertical-align-middle pointer">
+							<xsl:attribute name="title">
+								<xsl:for-each select="profileIDs/profileID">
+									<xsl:variable name="profileID" select="." />
+									<xsl:value-of select="../../../../Profile[profileID = $profileID]/name" />
+									<xsl:if test="position() != last()"><xsl:text>,&#160;</xsl:text></xsl:if>
+								</xsl:for-each>
+							</xsl:attribute>
+						</img>
+					</xsl:if>
+				</td>
+			
+			</xsl:if>
+			<td data-title="{$i18n.DisableFlows}">
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}">
+					<xsl:choose>
+						<xsl:when test="disableFlows = 'true'"><xsl:value-of select="$i18n.Yes" /></xsl:when>
+						<xsl:otherwise><xsl:value-of select="$i18n.No" /></xsl:otherwise>
+					</xsl:choose>
+				</a>
+			</td>
+			<td>
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
+					<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
+				</a>
+				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+					<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
+				</a>
+			</td>
+		</tr>
 		
 	</xsl:template>
 	
@@ -661,49 +813,60 @@
 			</div>
 
 		</xsl:if>
-
-		<div class="floatleft full">
-				
-			<div class="floatleft">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'global1'" />
-					<xsl:with-param name="name" select="'global'" />
-					<xsl:with-param name="element" select="$operatingMessage" />
-					<xsl:with-param name="value" select="'true'" />
-				</xsl:call-template>
-				
-				<label for="global1">
-					<xsl:value-of select="$i18n.Global" />
-				</label>
-			</div>
-			
-		</div>
 		
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full bigmarginbottom">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'global2'" />
-					<xsl:with-param name="name" select="'global'" />
-					<xsl:with-param name="element" select="$operatingMessage" />
-					<xsl:with-param name="value" select="'false'" />
-				</xsl:call-template>
+		<xsl:choose>
+			<xsl:when test="extensionRequestURL">
 				
-				<label for="global2">
-					<xsl:value-of select="$i18n.ChooseFlowFamilies" />
-				</label>
-			</div>
-			
-			<div class="floatleft full">
-
-				<div id="chooseFlowFamilies" class="hidden">
-					<xsl:apply-templates select="FlowFamily">
-						<xsl:with-param name="operatingMessage" select="$operatingMessage" />
-					</xsl:apply-templates>
+				<input type="hidden" name="global" value="true" />
+				
+			</xsl:when>
+			<xsl:otherwise>
+				
+				<div class="floatleft full">
+						
+					<div class="floatleft">
+						<xsl:call-template name="createRadio">
+							<xsl:with-param name="id" select="'global1'" />
+							<xsl:with-param name="name" select="'global'" />
+							<xsl:with-param name="element" select="$operatingMessage" />
+							<xsl:with-param name="value" select="'true'" />
+						</xsl:call-template>
+						
+						<label for="global1">
+							<xsl:value-of select="$i18n.Global" />
+						</label>
+					</div>
+					
 				</div>
 				
-			</div>
-		</div>
+				<div class="floatleft full bigmarginbottom">
+					
+					<div class="floatleft full bigmarginbottom">
+						<xsl:call-template name="createRadio">
+							<xsl:with-param name="id" select="'global2'" />
+							<xsl:with-param name="name" select="'global'" />
+							<xsl:with-param name="element" select="$operatingMessage" />
+							<xsl:with-param name="value" select="'false'" />
+						</xsl:call-template>
+						
+						<label for="global2">
+							<xsl:value-of select="$i18n.ChooseFlowFamilies" />
+						</label>
+					</div>
+					
+					<div class="floatleft full">
+		
+						<div id="chooseFlowFamilies" class="hidden">
+							<xsl:apply-templates select="FlowFamily">
+								<xsl:with-param name="operatingMessage" select="$operatingMessage" />
+							</xsl:apply-templates>
+						</div>
+						
+					</div>
+				</div>
+				
+			</xsl:otherwise>
+		</xsl:choose>
 		
 	</xsl:template>
 	

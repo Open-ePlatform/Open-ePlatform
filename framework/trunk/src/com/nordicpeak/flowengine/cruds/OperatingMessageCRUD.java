@@ -33,15 +33,19 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.OperatingMessageModule;
-import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.OperatingMessage;
+import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
 
 public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, OperatingMessageModule> {
 	
+	protected static final UnixTimeDatePopulator DATE_POPULATOR = new UnixTimeDatePopulator();
 	
-	private static final UnixTimeDatePopulator DATE_POPULATOR = new UnixTimeDatePopulator();
+	public OperatingMessageCRUD(CRUDDAO<OperatingMessage, Integer> crudDAO, OperatingMessageModule callback) {
+		
+		super(crudDAO, new AnnotatedRequestPopulator<OperatingMessage>(OperatingMessage.class), "OperatingMessage", "operating message", "/", callback);
+	}
 	
 	@Override
 	protected OperatingMessage populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
@@ -83,9 +87,9 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		
 		if (startDate != null && endDate != null) {
 			
-			startTime = this.getTime("startTime", req, startDate, errors);
+			startTime = getTime("startTime", req, startDate, errors);
 			
-			endTime = this.getTime("endTime", req, endDate, errors);
+			endTime = getTime("endTime", req, endDate, errors);
 			
 			if (startTime != null && endTime != null) {
 				
@@ -121,30 +125,25 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		return bean;
 	}
 	
-	public OperatingMessageCRUD(CRUDDAO<OperatingMessage, Integer> crudDAO, OperatingMessageModule callback) {
-		
-		super(crudDAO, new AnnotatedRequestPopulator<OperatingMessage>(OperatingMessage.class), "OperatingMessage", "operating message", "/", callback);
-	}
-	
 	@Override
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
 		appendFlowFamilies(doc, addTypeElement);
-		appendProfiles(doc, addTypeElement, user, req, uriParser);
+		appendProfiles(callback, doc, addTypeElement, user, req, uriParser);
 	}
 	
 	@Override
 	protected void appendUpdateFormData(OperatingMessage bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
 		appendFlowFamilies(doc, updateTypeElement);
-		appendProfiles(doc, updateTypeElement, user, req, uriParser);
+		appendProfiles(callback, doc, updateTypeElement, user, req, uriParser);
 	}
 	
 	@Override
 	protected void appendListFormData(Document doc, Element listTypeElement, User user, HttpServletRequest req, URIParser uriParser, List<ValidationError> validationError) throws SQLException {
 		
 		appendFlowFamilies(doc, listTypeElement);
-		appendProfiles(doc, listTypeElement, user, req, uriParser);
+		appendProfiles(callback, doc, listTypeElement, user, req, uriParser);
 		
 		XMLUtils.append(doc, listTypeElement, "ExternalOperatingMessages", callback.getExternalOperatingMessages());
 		XMLUtils.append(doc, listTypeElement, "ExternalOperatingMessageSources", callback.getExternalOperatingMessageSources());
@@ -178,7 +177,7 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		}
 	}
 	
-	private void appendProfiles(Document doc, Element element, User user, HttpServletRequest req, URIParser uriParser) {
+	protected static void appendProfiles(OperatingMessageModule callback, Document doc, Element element, User user, HttpServletRequest req, URIParser uriParser) {
 		
 		Collection<? extends SiteProfile> profiles = callback.getFlowAdminModule().getSiteProfileHandler().getProfiles();
 		
@@ -217,7 +216,7 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		return super.beanDeleted(bean, req, res, user, uriParser);
 	}
 	
-	private Timestamp getTime(String fieldname, HttpServletRequest req, Date date, List<ValidationError> errors) {
+	protected static Timestamp getTime(String fieldname, HttpServletRequest req, Date date, List<ValidationError> errors) {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
