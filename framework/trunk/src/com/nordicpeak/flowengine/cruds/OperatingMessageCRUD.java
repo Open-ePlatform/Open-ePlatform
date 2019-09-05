@@ -73,7 +73,7 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 		return operatingMessage;
 	}
 	
-	private OperatingMessage populateFromRequest(OperatingMessage bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+	private OperatingMessage populateFromRequest(OperatingMessage operatingMessage, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
 		
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
@@ -105,12 +105,12 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 			
 		}
 		
-		if (!bean.isGlobal() && bean.getFlowFamilyIDs() == null) {
+		if (!operatingMessage.isGlobal() && operatingMessage.getFlowFamilyIDs() == null) {
 			
 			errors.add(new ValidationError("NoFlowFamilyChosen"));
 		}
 		
-		if (bean.getMessageType() == null) {
+		if (operatingMessage.getMessageType() == null) {
 			
 			errors.add(new ValidationError("NoMessageTypeChosen"));
 		}
@@ -119,24 +119,28 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 			throw new ValidationException(errors);
 		}
 		
-		bean.setStartTime(startTime);
-		bean.setEndTime(endTime);
+		operatingMessage.setStartTime(startTime);
+		operatingMessage.setEndTime(endTime);
 		
-		return bean;
+		return operatingMessage;
 	}
 	
 	@Override
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
-		appendFlowFamilies(doc, addTypeElement);
-		appendProfiles(callback, doc, addTypeElement, user, req, uriParser);
+		appendFormData(null, doc, addTypeElement, user, req, uriParser);
 	}
 	
 	@Override
-	protected void appendUpdateFormData(OperatingMessage bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+	protected void appendUpdateFormData(OperatingMessage operatingMessage, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
-		appendFlowFamilies(doc, updateTypeElement);
-		appendProfiles(callback, doc, updateTypeElement, user, req, uriParser);
+		appendFormData(operatingMessage, doc, updateTypeElement, user, req, uriParser);
+	}
+	
+	protected void appendFormData(OperatingMessage operatingMessage, Document doc, Element typeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+		
+		appendFlowFamilies(doc, typeElement);
+		appendProfiles(callback, doc, typeElement, user, req, uriParser);
 	}
 	
 	@Override

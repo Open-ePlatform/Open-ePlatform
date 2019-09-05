@@ -143,6 +143,11 @@ public class OperatingMessageFragmentExtensionCRUD extends ModularCRUD<Operating
 		operatingMessage.setGlobal(false);
 		operatingMessage.setFlowFamilyIDs(Collections.singletonList(flow.getFlowFamily().getFlowFamilyID()));
 
+		if (callback.getForceOperatingMessageTypeInViewFragmentExtension() != null) {
+			
+			operatingMessage.setMessageType(callback.getForceOperatingMessageTypeInViewFragmentExtension());
+		}
+		
 		if (operatingMessage.getMessageType() == null) {
 
 			errors.add(new ValidationError("NoMessageTypeChosen"));
@@ -176,6 +181,11 @@ public class OperatingMessageFragmentExtensionCRUD extends ModularCRUD<Operating
 		XMLUtils.appendNewElement(doc, typeElement, "extensionRequestURL", req.getAttribute("extensionRequestURL"));
 		
 		OperatingMessageCRUD.appendProfiles(callback, doc, typeElement, user, req, uriParser);
+		
+		if (callback.getForceOperatingMessageTypeInViewFragmentExtension() != null) {
+			
+			XMLUtils.appendNewElement(doc, typeElement, "ForcedMessageType", callback.getForceOperatingMessageTypeInViewFragmentExtension().name());
+		}
 	}
 
 	@Override

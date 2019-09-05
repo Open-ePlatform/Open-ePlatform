@@ -699,6 +699,15 @@
 						<xsl:with-param name="name" select="'messageType'" />
 						<xsl:with-param name="element" select="$operatingMessage" />
 						<xsl:with-param name="value" select="'WARNING'" />
+						<xsl:with-param name="checked">
+							<xsl:choose>
+								<xsl:when test="ForcedMessageType = 'WARNING'">true</xsl:when>
+								<xsl:when test="$operatingMessage/messageType = 'WARNING'">true</xsl:when>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="disabled">
+							<xsl:if test="ForcedMessageType">true</xsl:if>
+						</xsl:with-param>
 					</xsl:call-template>
 					
 					<label for="messageTypeWarning">
@@ -716,6 +725,15 @@
 						<xsl:with-param name="name" select="'messageType'" />
 						<xsl:with-param name="element" select="$operatingMessage" />
 						<xsl:with-param name="value" select="'INFO'" />
+						<xsl:with-param name="checked">
+							<xsl:choose>
+								<xsl:when test="ForcedMessageType = 'INFO'">true</xsl:when>
+								<xsl:when test="$operatingMessage/messageType = 'INFO'">true</xsl:when>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="disabled">
+							<xsl:if test="ForcedMessageType">true</xsl:if>
+						</xsl:with-param>
 					</xsl:call-template>
 					
 					<label for="messageTypeInfo">

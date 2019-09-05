@@ -23,6 +23,7 @@ import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -144,6 +145,10 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmentXML;
+	
+	@ModuleSetting(allowsNull = true)
+	@EnumDropDownSettingDescriptor(name = "Force message type in extension", description = "Force a operating message type when editing from flow admin extension")
+	private OperatingMessageType forceOperatingMessageTypeInViewFragmentExtension;
 
 	private OperatingMessageCRUD messageCRUD;
 	private OperatingMessageFragmentExtensionCRUD messageViewFragmentCRUD;
@@ -947,6 +952,10 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	public List<ScriptTag> getScriptTags() {
 
 		return scripts;
+	}
+
+	public OperatingMessageType getForceOperatingMessageTypeInViewFragmentExtension() {
+		return forceOperatingMessageTypeInViewFragmentExtension;
 	}
 
 }
