@@ -44,6 +44,7 @@
 	<xsl:variable name="i18n.No">Nej</xsl:variable>
 	<xsl:variable name="i18n.DeleteOperatingMessageConfirm">Är du säker på att du vill ta bort driftmeddelandet</xsl:variable>
 	<xsl:variable name="i18n.DeleteOperatingMessageTitle">Ta bort driftmeddelande</xsl:variable>
+	<xsl:variable name="i18n.DisabledAffectsMultipleFlows">Du får inte ändra på det här driftmeddelandet då det påverkar flera e-tjänster.</xsl:variable>
 	
 	<xsl:variable name="i18n.Submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>

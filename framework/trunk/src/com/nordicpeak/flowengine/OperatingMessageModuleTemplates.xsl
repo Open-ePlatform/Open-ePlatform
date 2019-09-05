@@ -205,14 +205,24 @@
 				</a>
 			</td>
 			<td>
-				<xsl:if test="not(ReadOnly)">
-					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
-						<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
-					</a>
-					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
-						<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
-					</a>
-				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="ReadOnly">
+						<a href="#" class="marginright" onclick="alert('{$i18n.DisabledAffectsMultipleFlows}'); return false;" title="{$i18n.DisabledAffectsMultipleFlows}">
+							<img class="alignbottom" src="{$extensionImgPath}/pen_gray.png" alt="" />
+						</a>
+						<a href="#" onclick="alert('{$i18n.DisabledAffectsMultipleFlows}'); return false;" title="{$i18n.DisabledAffectsMultipleFlows}">
+							<img class="alignbottom" src="{$extensionImgPath}/delete_gray.png" alt="" />
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
+							<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
+						</a>
+						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+							<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
+						</a>
+					</xsl:otherwise>
+				</xsl:choose>
 			</td>
 		</tr>
 		
