@@ -51,12 +51,19 @@
 						
 						<xsl:if test="$operatingMessage/global = 'false'">
 						
+							<xsl:variable name="messageWithClickableLinks">
+								<xsl:call-template name="replaceLineBreaksAndLinks">
+									<xsl:with-param name="string" select="$operatingMessage/message"/>
+									<xsl:with-param name="target" select="'_blank'"/>
+								</xsl:call-template>
+							</xsl:variable>
+						
 							<xsl:choose>
 								<xsl:when test="$operatingMessage/messageType = 'INFO'">
-									<section class="modal info floatleft clearboth border-box full" style=""><xsl:value-of select="$operatingMessage/message" /></section>
+									<section class="modal info floatleft clearboth border-box full" style=""><xsl:copy-of select="$messageWithClickableLinks" /></section>
 								</xsl:when>
 								<xsl:otherwise>
-									<section class="modal warning floatleft clearboth border-box full" style=""><i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);">!</i><xsl:value-of select="$operatingMessage/message" /></section>
+									<section class="modal warning floatleft clearboth border-box full" style=""><i class="icon" style="font-size: 16px; margin-right: 4px; color: rgb(199, 52, 52);">!</i><xsl:copy-of select="$messageWithClickableLinks" /></section>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:if>
