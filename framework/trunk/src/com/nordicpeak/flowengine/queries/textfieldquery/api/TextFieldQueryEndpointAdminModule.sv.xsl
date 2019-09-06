@@ -15,7 +15,7 @@
 	<!-- Internationalization -->
 	
 	<xsl:variable name="i18n.ListEndpoints">API-källor för textfältsfrågor</xsl:variable>
-	<xsl:variable name="i18n.NoEndpoints">Det finns inga API-källor upplagda ännu</xsl:variable>
+	<xsl:variable name="i18n.NoEndpoints">Det finns inga API-källor upplagda</xsl:variable>
 	
 	<xsl:variable name="i18n.ShowEndpoint">API-källa</xsl:variable>
 	<xsl:variable name="i18n.Add">Ny API-källa</xsl:variable>
@@ -43,7 +43,7 @@
 	<xsl:variable name="i18n.NoQueries">API-källan används inte i några e-tjänster</xsl:variable>
 	
 	<xsl:variable name="i18n.TagsTable.description.part1">Exempel på en attributfiltrerad url som utnyttjar attribut/taggar:</xsl:variable>
-	<xsl:variable name="i18n.DynamicURLExample">http://www.siten.com/api/hämtasaker?fastparam=fastvärde&amp;dynamiskparam1=$attribute{mitt_attributnamn}&amp;dynamiskparam2=$user.attribute{citizenIdentifier}&amp;dynamiskparam3=$user.email</xsl:variable>
+	<xsl:variable name="i18n.DynamicURLExample">https://www.siten.com/api/hämtasaker?fastparam=fastvärde&amp;dynamiskparam1=$attribute{mitt_attributnamn}&amp;dynamiskparam2=$user.attribute{citizenIdentifier}&amp;dynamiskparam3=$user.email</xsl:variable>
 	<xsl:variable name="i18n.TagsTable.description.part2">Följande taggar kan användas (kan finnas fler):</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
