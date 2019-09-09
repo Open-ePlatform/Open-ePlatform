@@ -237,7 +237,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		return doc;
 	}
 
-	public Map<String, String> getAPIFieldValues(TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) throws TextFieldAPIRequestException {
+	public String getEndpointURL(TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) {
 		
 		if (endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
 			return null;
@@ -252,6 +252,8 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 			usedPoster = new SimpleUser();
 		}
 		
+		//TODO URLEncoder.encode(s, "UTF-8") all parameter values
+		
 		TagReplacer tagReplacer = new TagReplacer();
 		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(usedPoster));
 		
@@ -261,6 +263,15 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		
 		address = AttributeTagUtils.replaceTags(address, attributeHandler);
 		
+		return address;
+	}
+	
+	public Map<String, String> getAPIFieldValues(String address, TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) throws TextFieldAPIRequestException {
+		
+		if (address == null || endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
+			return null;
+		}
+
 		log.info("User " + poster + " getting field values for api endpoint " + endpoint + " from: " + address);
 
 		SimpleRequest simpleRequest = new SimpleRequest(address);
@@ -286,7 +297,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 			try {
 				XMLParser parser = new XMLParser(XMLUtils.parseXML(response.getValue(), endpoint.getCharset().toString(), false, false));
 
-				List<XMLParser> fields = parser.getNodes("/Fields/Field");
+				List<XMLParser> fields = parser.getNodes("/Fields/Field", true);
 
 				Map<String, String> fieldValues = new HashMap<String, String>(endpoint.getFields().size());
 				
@@ -346,60 +357,4 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		return endpointDAO.get(query);
 	}
 	
-//	@WebPublic(alias = "usage")
-//	public ForegroundModuleResponse showListUsage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-//
-//		Integer sourceID;
-//		WeightAPISource source;
-//
-//		if (uriParser.size() >= 3 && PositiveStringIntegerPopulator.getPopulator().validateFormat(uriParser.get(2)) && (sourceID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (source = apiSourceDAOWrapper.get(sourceID)) != null) {
-//
-//			Document doc = createDocument(req, uriParser, user);
-//			Element showAlternativeListUsageElement = doc.createElement("ShowSourceFlowUsage");
-//			doc.getDocumentElement().appendChild(showAlternativeListUsageElement);
-//
-//			showAlternativeListUsageElement.appendChild(source.toXML(doc));
-//
-//			List<WeightAPIEvaluator> evaluators = getEvaluatorsUsingAPISource(source);
-//
-//			if (!CollectionUtils.isEmpty(evaluators)) {
-//
-//				Element evaluatorsElement = XMLUtils.appendNewElement(doc, showAlternativeListUsageElement, "Evaluators");
-//
-//				Map<Integer, Element> flowElements = new HashMap<Integer, Element>();
-//				Map<Integer, Element> stepElements = new HashMap<Integer, Element>();
-//
-//				for (WeightAPIEvaluator evaluator : evaluators) {
-//
-//					ImmutableFlow flow = evaluator.getEvaluatorDescriptor().getQueryDescriptor().getStep().getFlow();
-//					Element flowElement = flowElements.get(flow.getFlowID());
-//
-//					if (flowElement == null) {
-//
-//						flowElement = (Element) evaluatorsElement.appendChild(flow.toXML(doc));
-//						flowElements.put(flow.getFlowID(), flowElement);
-//					}
-//
-//					ImmutableStep step = evaluator.getEvaluatorDescriptor().getQueryDescriptor().getStep();
-//					Element stepElement = stepElements.get(step.getStepID());
-//
-//					if (stepElement == null) {
-//
-//						stepElement = (Element) flowElement.appendChild(step.toXML(doc));
-//						stepElements.put(step.getStepID(), stepElement);
-//					}
-//
-//					Element queryElement = XMLUtils.appendNewElement(doc, stepElement, "Query");
-//
-//					queryElement.appendChild(evaluator.getEvaluatorDescriptor().getQueryDescriptor().toXML(doc));
-//					queryElement.appendChild(evaluator.getEvaluatorDescriptor().toXML(doc));
-//				}
-//			}
-//
-//			return new SimpleForegroundModuleResponse(doc, getTitlePrefix(), getDefaultBreadcrumb(), new Breadcrumb(this, source.getName(), "/show/" + source.getSourceID()));
-//		}
-//
-//		throw new URINotFoundException(uriParser);
-//	}
-
 }

@@ -50,6 +50,8 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	@DAOManaged
 	private boolean initialized;
+	
+	private transient String lastUsedEndpointURL;
 
 	public Integer getQueryInstanceID() {
 
@@ -344,6 +346,14 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
+	}
+
+	public String getLastUsedEndpointURL() {
+		return lastUsedEndpointURL;
+	}
+
+	public void setLastUsedEndpointURL(String lastUsedURL) {
+		this.lastUsedEndpointURL = lastUsedURL;
 	}
 
 }

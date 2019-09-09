@@ -353,10 +353,10 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 		TextFieldQuery query = queryInstance.getQuery();
 
 		if (query.getEndpoint() != null) {
-
+			
 			List<ValidationError> apiErrors = getFromAPI(queryInstance, poster, attributeHandler);
 
-			if (validationErrors instanceof AbstractList) { // Fix for unmodifiable list
+			if ((apiErrors != null || validationErrors != null) && validationErrors instanceof AbstractList) { // Fix for unmodifiable list
 				validationErrors = new ArrayList<>(validationErrors);
 			}
 
@@ -401,27 +401,33 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 			} else {
 
-				try {
-					Map<String, String> valuesFromAPI = apiModule.getAPIFieldValues(query.getEndpoint(), poster, attributeHandler);
+				String endpointURL = apiModule.getEndpointURL(query.getEndpoint(), poster, attributeHandler);
+				
+				if (queryInstance.getLastUsedEndpointURL() == null || !queryInstance.getLastUsedEndpointURL().equals(endpointURL)) {
 
-					if (!CollectionUtils.isEmpty(valuesFromAPI)) {
+					try {
+						Map<String, String> valuesFromAPI = apiModule.getAPIFieldValues(endpointURL, query.getEndpoint(), poster, attributeHandler);
+						
+						if (!CollectionUtils.isEmpty(valuesFromAPI)) {
 
-						for (TextField textField : query.getFields()) {
+							for (TextField textField : query.getFields()) {
 
-							if (!StringUtils.isEmpty(textField.getEndpointField())) {
+								if (!StringUtils.isEmpty(textField.getEndpointField())) {
 
-								String valueFromAPI = valuesFromAPI.get(textField.getEndpointField());
+									String valueFromAPI = valuesFromAPI.get(textField.getEndpointField());
 
-								queryInstance.setFieldValue(textField.getTextFieldID(), valueFromAPI, (MutableAttributeHandler) attributeHandler);
+									queryInstance.setFieldValue(textField.getTextFieldID(), valueFromAPI, (MutableAttributeHandler) attributeHandler);
+								}
 							}
 						}
+
+						queryInstance.setInitialized(true);
+						queryInstance.setLastUsedEndpointURL(endpointURL);
+
+					} catch (TextFieldAPIRequestException e) {
+
+						validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("APIRequestException"));
 					}
-
-					queryInstance.setInitialized(true);
-					
-				} catch (TextFieldAPIRequestException e) {
-
-					validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("APIRequestException"));
 				}
 			}
 
