@@ -352,7 +352,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		TextFieldQuery query = queryInstance.getQuery();
 
-		if (query.getEndpoint() != null && !queryInstance.isInitialized()) {
+		if (query.getEndpoint() != null) {
 
 			List<ValidationError> apiErrors = getFromAPI(queryInstance, poster, attributeHandler);
 
