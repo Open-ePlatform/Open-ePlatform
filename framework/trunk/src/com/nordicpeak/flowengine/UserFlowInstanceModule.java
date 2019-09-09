@@ -1060,13 +1060,17 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			try {
 				sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
 	
+				return null;
+				
 			} catch (FlowDisabledException e) {
 	
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
+			
+		}else{
+			
+			throw new URINotFoundException(uriParser);
 		}
-
-		return null;
 	}
 
 	@WebPublic(alias = "signature")
