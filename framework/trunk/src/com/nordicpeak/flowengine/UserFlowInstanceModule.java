@@ -196,6 +196,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show new flow instance events in list", description = "Controls if new since last login events are shown in the list view")
 	protected boolean showNewEventsInList = false;
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Hide event XML from user", description = "Controls if event XML is hidden from user in flow instance history or not")
+	protected boolean hideEventXMLFromUser = false;
 	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Excluded flow types", description = "Flow instances from these flow types will be excluded", formatValidator = NonNegativeStringIntegerValidator.class)
@@ -614,6 +618,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			if(hideManagerEmailInOverview) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideManagerEmailInOverview");
+			}
+			
+			if(hideEventXMLFromUser) {
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "hideEventXMLFromUser");
 			}
 			
 			if (req.getMethod().equalsIgnoreCase("POST") && flowInstance.isNewExternalMessagesAllowed()) {
@@ -1046,12 +1055,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "xml")
 	public ForegroundModuleResponse getEventXML(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 
-		try {
-			sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
-
-		} catch (FlowDisabledException e) {
-
-			return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
+		if(!hideEventXMLFromUser) {
+			
+			try {
+				sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
+	
+			} catch (FlowDisabledException e) {
+	
+				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
+			}
 		}
 
 		return null;

@@ -883,7 +883,7 @@
 					</xsl:choose>
 				</xsl:if>
 				
-				<xsl:if test="Attributes/Attribute[Name='xml']/Value = 'true'">
+				<xsl:if test="Attributes/Attribute[Name='xml']/Value = 'true' and not(../../../hideEventXMLFromUser)">
 					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/xml/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceXML}">
 						<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xml.png" />
 					</a>
