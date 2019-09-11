@@ -2404,4 +2404,39 @@
 		</Query>
 	</Script>
 	
+	<Script version="132">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_manager_groups`
+					ADD CONSTRAINT `FK_flowengine_flow_family_manager_groups_1` UNIQUE (`flowFamilyID`, `groupID`);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_manager_groups`
+					DROP PRIMARY KEY;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_manager_groups`
+					ADD COLUMN `managerGroupID` INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT FIRST;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_manager_group_notification_addresses` (
+				  `managerGroupID` INTEGER UNSIGNED NOT NULL,
+				  `email` VARCHAR(255) NOT NULL,
+				  PRIMARY KEY (`managerGroupID`, `email`),
+				  CONSTRAINT `FK_flowengine_flow_family_manager_group_not_addresses_1` FOREIGN KEY `FK_flowengine_flow_family_manager_group_not_addresses_1` (`managerGroupID`)
+				    REFERENCES `flowengine_flow_family_manager_groups` (`managerGroupID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

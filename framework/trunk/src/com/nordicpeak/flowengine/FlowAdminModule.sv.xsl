@@ -361,6 +361,7 @@
 	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedUser">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.restrictedGroup">Begränsad (kan endast se tilldelade ärenden)</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.allowUpdatingManagers">Tillåt byte av handläggare</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.notificationEmailAddresses">E-postadresser för notifiering</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>

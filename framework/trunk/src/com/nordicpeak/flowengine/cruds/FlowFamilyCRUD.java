@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
@@ -22,12 +23,14 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedIntegerBasedCRUD;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.DatePopulator;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -160,26 +163,40 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 			
 		} else {
 			
-			List<FlowFamilyManagerGroup> managerGroups = new ArrayList<FlowFamilyManagerGroup>(managerGroupIDs.size());
+			List<FlowFamilyManagerGroup> managerGroups = new ArrayList<>(managerGroupIDs.size());
 			
 			for (Integer groupID : managerGroupIDs) {
-				
+
 				Group group = callback.getGroupHandler().getGroup(groupID, false);
 			
 				if (group != null) {
 					
 					boolean restricted = "true".equals(req.getParameter("manager-group-restricted" + groupID));
 					boolean allowUpdatingManagers = restricted && "true".equals(req.getParameter("manager-group-allowUpdatingManagers" + groupID));
-					
+					List<String> notificationEmailAddresses = StringUtils.splitOnLineBreak(req.getParameter("manager-group-notificationEmailAddresses" + groupID), true);
+
 					FlowFamilyManagerGroup managerGroup = new FlowFamilyManagerGroup(group);
 					managerGroup.setRestricted(restricted);
 					managerGroup.setAllowUpdatingManagers(allowUpdatingManagers);
+
+					if (!CollectionUtils.isEmpty(notificationEmailAddresses)) {
+
+						for (String address : notificationEmailAddresses) {
+							
+							if (!EmailUtils.isValidEmailAddress(address)) {
+								
+								validationErrors.add(new ValidationError("manager-group-notificationEmailAddresses" + groupID, ValidationErrorType.InvalidFormat));
+							}
+						}
+						
+						managerGroup.setNotificationEmailAddresses(notificationEmailAddresses);
+					}
 					
 					managerGroups.add(managerGroup);
 					
 				} else {
 					
-					validationErrors.add(new ValidationError("manager", ValidationErrorType.InvalidFormat));
+					validationErrors.add(new ValidationError("group", ValidationErrorType.InvalidFormat));
 				}
 			}
 			

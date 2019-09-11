@@ -686,7 +686,7 @@ function openUpdateManagerGroupModal(button, event) {
 				var h1 = modal.find(".modal-header").find("h1");
 				h1.text(h1.data("title") + " " + groupName);
 				
-				modal.find("input, select").each(function(){
+				modal.find("input, select, textarea").each(function(){
 					
 					var input = $(this);
 					var savedInput = row.find("input[name='manager-group-" + input.prop("name") + groupID + "']");
@@ -730,7 +730,7 @@ function openUpdateManagerGroupModal(button, event) {
 			beforeClose: function(){
 				var feather = this;
 				
-				feather.$content.find("input, select").each(function(){
+				feather.$content.find("input, select, textarea").each(function(){
 					
 					var input = $(this);
 					var val;

@@ -5674,6 +5674,22 @@
 								<xsl:value-of select="$i18n.UpdateManagers.Modal.allowUpdatingManagers" />
 							</label>
 						</div>
+								
+						<div class="floatleft full bigmarginbottom">
+						
+							<label for="notificationEmailAddresses" class="floatleft full">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.notificationEmailAddresses" />
+							</label>
+							
+							<div class="floatleft full">
+								<xsl:call-template name="createTextArea">
+									<xsl:with-param name="id" select="'notificationEmailAddresses'"/>
+									<xsl:with-param name="name" select="'notificationEmailAddresses'"/>
+									<xsl:with-param name="rows" select="5"/>
+									<xsl:with-param name="separateListValues" select="'true'"/>
+								</xsl:call-template>
+							</div>
+						</div>
 						
 						<input class="close bigmargintop clearboth floatright" type="button" value="{$i18n.UpdateManagers.Modal.Close}" />
 						
@@ -5838,6 +5854,12 @@
 					<xsl:with-param name="value" select="''" />
 				</xsl:call-template>
 				
+				<xsl:call-template name="grouplist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'notificationEmailAddresses'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
 			</xsl:when>
 		</xsl:choose>
 	
@@ -5862,6 +5884,20 @@
 					<xsl:with-param name="requestparameters" select="$requestparameters" />
 					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
 					<xsl:with-param name="value" select="../allowUpdatingManagers" />
+				</xsl:call-template>
+				
+				<xsl:variable name="notificationEmailAddressesString">
+					<xsl:for-each select="../notificationEmailAddresses/address">
+					    <xsl:value-of select="." />
+					    <xsl:if test="position() != last()"><xsl:text>&#xa;</xsl:text></xsl:if>
+					</xsl:for-each>
+				</xsl:variable>
+				
+				<xsl:call-template name="grouplist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'notificationEmailAddresses'" />
+					<xsl:with-param name="value" select="$notificationEmailAddressesString" />
 				</xsl:call-template>
 			
 			</xsl:when>
@@ -8032,6 +8068,15 @@
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.UpdateManagers.Modal.validToDate" />
 						
+					</xsl:when>
+					
+					<!-- Manager groups -->
+					<xsl:when test="starts-with(fieldName, 'manager-group-notificationEmailAddresses')">
+						<xsl:variable name="id" select="substring(fieldName, 41)" />
+
+						<xsl:value-of select="../../requestparameters/parameter[name = concat('manager-group-name', $id)]/value" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.UpdateManagers.Modal.notificationEmailAddresses"/>
 					</xsl:when>
 					
 					<!-- Auto manager assignment -->
