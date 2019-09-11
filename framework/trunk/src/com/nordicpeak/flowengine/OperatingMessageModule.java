@@ -283,7 +283,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			if (!CollectionUtils.isEmpty(subscriptions)) {
 				for (String subscription : subscriptions) {
 
-					String[] splits = subscription.split("(?<!https?):");
+					String[] splits = subscription.split(":", 2);
 
 					String name = splits[0];
 					String url = splits[1];
@@ -525,7 +525,6 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 				listRequest.setConnectionTimeout(connectionTimeout * MillisecondTimeUnits.SECOND);
 				listRequest.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
-
 				String response = HTTPUtils.sendHTTPGetRequest(listRequest, Charset.forName(subscriptionFileEncoding)).getValue();
 
 				if (!StringUtils.isEmpty(response)) {
