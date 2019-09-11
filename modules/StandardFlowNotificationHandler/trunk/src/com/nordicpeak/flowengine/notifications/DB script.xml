@@ -277,7 +277,6 @@
 			]]>
 		</Query>
 	</Script>
-	
 		
 	<Script version="20">
 		<Query>
@@ -300,6 +299,17 @@
 				    ON UPDATE CASCADE
 				)
 				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+		
+	<Script version="21">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceAssignedGroupEmail` TINYINT(1) NOT NULL AFTER `sendFlowInstanceSubmittedManagerEmail`,
+					ADD COLUMN `flowInstanceAssignedGroupEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceAssignedGroupEmail`,
+					ADD COLUMN `flowInstanceAssignedGroupEmailMessage` TEXT NULL AFTER `flowInstanceAssignedGroupEmailSubject`;
 			]]>
 		</Query>
 	</Script>

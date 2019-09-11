@@ -179,6 +179,23 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceSubmittedManagerEmail;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendFlowInstanceAssignedGroupEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedGroupEmailSubject;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String flowInstanceAssignedGroupEmailMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -509,6 +526,40 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setSendFlowInstanceSubmittedManagerEmail(boolean sendFlowInstanceSubmittedManagerEmail) {
 
 		this.sendFlowInstanceSubmittedManagerEmail = sendFlowInstanceSubmittedManagerEmail;
+	}
+
+	public boolean isSendFlowInstanceAssignedGroupEmail() {
+
+		return sendFlowInstanceAssignedGroupEmail;
+	}
+
+	public void setSendFlowInstanceAssignedGroupEmail(boolean sendFlowInstanceAssignedGroupEmail) {
+
+		this.sendFlowInstanceAssignedGroupEmail = sendFlowInstanceAssignedGroupEmail;
+	}
+
+	
+	public String getFlowInstanceAssignedGroupEmailSubject() {
+	
+		return flowInstanceAssignedGroupEmailSubject;
+	}
+
+	
+	public void setFlowInstanceAssignedGroupEmailSubject(String flowInstanceAssignedGroupEmailSubject) {
+	
+		this.flowInstanceAssignedGroupEmailSubject = flowInstanceAssignedGroupEmailSubject;
+	}
+
+	
+	public String getFlowInstanceAssignedGroupEmailMessage() {
+	
+		return flowInstanceAssignedGroupEmailMessage;
+	}
+
+	
+	public void setFlowInstanceAssignedGroupEmailMessage(String flowInstanceAssignedGroupEmailMessage) {
+	
+		this.flowInstanceAssignedGroupEmailMessage = flowInstanceAssignedGroupEmailMessage;
 	}
 
 	@Override

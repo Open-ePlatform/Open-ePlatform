@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,7 @@ import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleAccessInterface;
@@ -97,6 +100,7 @@ import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
@@ -141,7 +145,7 @@ import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 
 public class StandardFlowNotificationHandler extends AnnotatedForegroundModule implements FlowNotificationHandler, ViewFragmentModule<ForegroundModuleDescriptor> {
 
-	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.OWNERS_RELATION };
+	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.OWNERS_RELATION };
 
 	private static final AnnotatedRequestPopulator<FlowFamililyNotificationSettings> POPULATOR = new AnnotatedRequestPopulator<FlowFamililyNotificationSettings>(FlowFamililyNotificationSettings.class);
 
@@ -424,6 +428,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Manager mentioned email message", description = "The message of emails sent to manager mentioned in internal message", required = true)
 	@XSLVariable(prefix = "java.")
 	private String managerMentionedEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to groups when they are assigned new flow instances", description = "Controls if email messages are sent to groups when they are assigned new flow instances.")
+	private boolean sendFlowInstanceAssignedGroupEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Assigned new flow instance email subject (groups)", description = "The subject of emails sent to the groups when they are assigned new flow instances", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceAssignedGroupEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Assigned new flow instance email message (groups)", description = "The message of emails sent to the users when they are assigned new flow instances", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceAssignedGroupEmailMessage;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are submitted", description = "Controls if email messages are the sent to specified address when new flow instances are submitted.")
@@ -1680,13 +1698,19 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
-		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail() || event.getAdditionalGlobalEmailRecipients() != null) {
+		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGroupEmail()  || notificationSettings.isSendFlowInstanceAssignedGlobalEmail() || event.getAdditionalGlobalEmailRecipients() != null) {
 
-			List<User> excludedManagers = new ArrayList<User>();
+			List<User> excludedManagers = new ArrayList<>();
+			List<Group> excludedManagerGroups = new ArrayList<>();
 
 			if (event.getPreviousManagers() != null) {
 
 				excludedManagers.addAll(event.getPreviousManagers());
+			}
+			
+			if (event.getPreviousManagerGroups() != null) {
+				
+				excludedManagerGroups.addAll(event.getPreviousManagerGroups());
 			}
 
 			if (event.getUser() != null) {
@@ -1711,6 +1735,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceAssignedManagerEmailSubject(), notificationSettings.getFlowInstanceAssignedManagerEmailMessage(), excludedManagers, false);
 			}
 			
+			if (notificationSettings.isSendFlowInstanceAssignedGroupEmail()) {
+				
+				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance, excludedManagerGroups);
+				
+				for (String email : managerGroupEmailRecipientAddresses) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGroupEmailSubject(), notificationSettings.getFlowInstanceAssignedGroupEmailMessage(), null, false);
+				}
+			}
+			
 			if (notificationSettings.isSendFlowInstanceAssignedGlobalEmail() && !CollectionUtils.isEmpty(notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses())) {
 				
 				for (String email : notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses()) {
@@ -1727,6 +1761,34 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				}
 			}
 		}
+	}
+
+	private Set<String> getManagerGroupEmailRecipientAddresses(FlowInstance flowInstance, List<Group> excludedManagerGroups) {
+
+		List<Group> managerGroups = flowInstance.getManagerGroups();
+		List<FlowFamilyManagerGroup> flowFamilyManagerGroups = flowInstance.getFlow().getFlowFamily().getManagerGroups();
+		
+		if (!CollectionUtils.isEmpty(managerGroups) && !CollectionUtils.isEmpty(flowFamilyManagerGroups)) {
+			
+			Set<String> addresses = new HashSet<>();
+			
+			managerGroups.removeAll(excludedManagerGroups);
+			
+			for (Group managerGroup : managerGroups) {
+				
+				for (FlowFamilyManagerGroup flowFamilyManagerGroup : flowFamilyManagerGroups) {
+					
+					if (managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID())) {
+						
+						addresses.addAll(flowFamilyManagerGroup.getNotificationEmailAddresses());
+					}
+				}
+			}
+			
+			return addresses;
+		}
+		
+		return Collections.emptySet();
 	}
 
 	@EventListener(channel = FlowInstance.class, priority = 100)

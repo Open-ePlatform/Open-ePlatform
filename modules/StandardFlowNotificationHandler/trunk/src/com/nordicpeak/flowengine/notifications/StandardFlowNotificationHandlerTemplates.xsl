@@ -219,6 +219,11 @@
 				$("#manager-assign-subject, #manager-assign-message").toggleClass("hidden");
 			}
 			
+			function toggleGroupAssignMessage(){
+				
+				$("#group-assign-subject, #group-assign-message").toggleClass("hidden");
+			}
+			
 			function toggleGlobalSubmit(){
 				
 				$("#global-submit-subject, #global-submit-message").toggleClass("hidden");
@@ -804,6 +809,72 @@
 		<div class="clearboth marginbottom">
 			<br/>
 		</div>
+		
+		<h2><xsl:value-of select="$i18n.GroupNotifications"/></h2>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceAssignedGroupEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceAssignedGroupEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceAssignedGroupEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceAssignedGroupEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGroupAssignMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-assign-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedGroupEmailSubject') and not($errFieldNames = 'flowInstanceAssignedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceAssignedGroupEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedGroupEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceAssignedGroupEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedGroupEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-assign-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceAssignedGroupEmailSubject') and not($errFieldNames = 'flowInstanceAssignedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceAssignedGroupEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceAssignedGroupEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceAssignedGroupEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceAssignedGroupEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>
+		
+		<div class="clearboth marginbottom">
+			<br/>
+		</div>		
 	
 		<h2><xsl:value-of select="$i18n.GlobalNotifications"/></h2>
 		

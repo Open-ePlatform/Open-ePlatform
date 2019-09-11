@@ -198,6 +198,21 @@
 	
 	</xsl:variable>
 	
+	<xsl:variable name="java.flowInstanceAssignedGroupEmailSubject">Tilldelad ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceAssignedGroupEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Du har fått tillgång till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.flowInstanceSubmittedGlobalEmailSubject">Nytt ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceSubmittedGlobalEmailMessage">
 	
@@ -309,6 +324,12 @@
 	<xsl:variable name="i18n.FlowInstanceArchivedUserEmailSubject">Rubrik på e-postmeddelande vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedUserEmailMessage">Innehåll i e-postmeddelande vid avslutat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedNotLoggedInUserEmailMessage">Innehåll i e-postmeddelande vid avslutat ärende (ej inloggad användare)</xsl:variable>
+	
+	<xsl:variable name="i18n.GroupNotifications">Notifikationer till handläggargrupper</xsl:variable>
+	
+	<xsl:variable name="i18n.SendFlowInstanceAssignedGroupEmail">E-post vid tilldelning av ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedGroupEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceAssignedGroupEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>
 	
 	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet:'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet:'"/>
