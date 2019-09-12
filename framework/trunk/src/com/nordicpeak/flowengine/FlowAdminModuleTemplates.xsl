@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=6
+		/js/flowadminmodule.js?v=7
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
