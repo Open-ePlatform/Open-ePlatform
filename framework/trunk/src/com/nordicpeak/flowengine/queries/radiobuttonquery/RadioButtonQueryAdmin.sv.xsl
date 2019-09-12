@@ -9,7 +9,6 @@
 	<xsl:variable name="java.queryDescription">
 Frågetypen Radioknappfråga används när användaren skall kunna välja mellan olika alternativ. Användaren kan endast välja ett alternativ.
 	</xsl:variable>
-	
 	<xsl:variable name="java.countText">Antal</xsl:variable>
 	<xsl:variable name="java.alternativesText">Alternativ</xsl:variable>
 	
@@ -25,5 +24,6 @@ Frågetypen Radioknappfråga används när användaren skall kunna välja mellan olika
 	<xsl:variable name="i18n.Columns.Three">Tre kolumner</xsl:variable>
 	
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
+	<xsl:variable name="i18n.Query.lockForManagerUpdate">Lås fråga vid ändring av handläggare</xsl:variable>
 	
 </xsl:stylesheet>

@@ -75,6 +75,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 	@XMLElement
 	private boolean hideTitle;
 	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockForManagerUpdate;
+	
 	@Override
 	public Integer getQueryID() {
 		
@@ -156,6 +161,7 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
+		lockForManagerUpdate = xmlParser.getPrimitiveBoolean("lockForManagerUpdate");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
@@ -175,38 +181,45 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery {
 			
 			throw new ValidationException(errors);
 		}
-		
 	}
 	
 	public boolean isSetAsAttribute() {
 		
 		return setAsAttribute;
 	}
-	
+
 	public void setSetAsAttribute(boolean setAsAttribute) {
-		
+
 		this.setAsAttribute = setAsAttribute;
 	}
-	
+
 	public String getAttributeName() {
-		
+
 		return attributeName;
 	}
-	
+
 	public void setAttributeName(String attributeName) {
-		
+
 		this.attributeName = attributeName;
 	}
 
-	
 	public boolean isHideTitle() {
-	
+
 		return hideTitle;
 	}
 
-	
 	public void setHideTitle(boolean hideTitle) {
-	
+
 		this.hideTitle = hideTitle;
+	}
+
+	public boolean isLockForManagerUpdate() {
+
+		return lockForManagerUpdate;
+	}
+
+	public void setLockForManagerUpdate(boolean lockForManagerUpdate) {
+
+		this.lockForManagerUpdate = lockForManagerUpdate;
 	}
 }

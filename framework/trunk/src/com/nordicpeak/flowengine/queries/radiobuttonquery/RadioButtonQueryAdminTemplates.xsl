@@ -77,7 +77,7 @@
 						<xsl:with-param name="element" select="exsl:node-set($options)/option" />
 						<xsl:with-param name="selectedValue" select="RadioButtonQuery/columns" />
 					</xsl:call-template>
-		    </div>
+				</div>
 			</div>
 				
 			<div class="floatleft full bigmarginbottom">
@@ -89,14 +89,14 @@
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="id" select="'setAsAttribute'" />
 						<xsl:with-param name="name" select="'setAsAttribute'" />
-						<xsl:with-param name="element" select="RadioButtonQuery" /> 
+						<xsl:with-param name="element" select="RadioButtonQuery" />
 						<xsl:with-param name="class" select="'vertical-align-middle'" />
 					</xsl:call-template>
 						
 					<label for="setAsAttribute">
 						<xsl:value-of select="$i18n.setAsAttribute" />
 					</label>
-			    </div>
+				</div>
 			</div>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -109,9 +109,9 @@
 						<xsl:with-param name="element" select="RadioButtonQuery" />
 						<xsl:with-param name="maxlength" select="'255'"/>
 					</xsl:call-template>
-			    </div>
+				</div>
 			</div>
-				
+			
 			<div class="floatleft full bigmarginbottom">
 
 				<div class="floatleft full">
@@ -127,8 +127,25 @@
 					</label>
 				</div>
 
-			</div>				
-				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'lockForManagerUpdate'" />
+						<xsl:with-param name="name" select="'lockForManagerUpdate'" />
+						<xsl:with-param name="value" select="'true'" />
+						<xsl:with-param name="element" select="RadioButtonQuery" />
+					</xsl:call-template>
+					
+					<label for="lockForManagerUpdate">
+						<xsl:value-of select="$i18n.Query.lockForManagerUpdate" />
+					</label>
+				</div>
+
+			</div>
+			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
 			</div>

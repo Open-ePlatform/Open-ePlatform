@@ -249,11 +249,17 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
-
+	
 	@Override
 	public void populate(RadioButtonQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
-		List<RadioButtonAlternative> availableAlternatives = queryInstance.getQuery().getAlternatives();
+		RadioButtonQuery query = queryInstance.getQuery();
+		
+		if (query.isLockForManagerUpdate() && requestMetadata.isManager()) {
+			return;
+		}
+		
+		List<RadioButtonAlternative> availableAlternatives = query.getAlternatives();
 
 		if (CollectionUtils.isEmpty(availableAlternatives)) {
 
@@ -262,7 +268,7 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 			return;
 		}
 
-		Integer alternativeID = NumberUtils.toInt(req.getParameter("q" + queryInstance.getQuery().getQueryID() + "_alternative"));
+		Integer alternativeID = NumberUtils.toInt(req.getParameter("q" + query.getQueryID() + "_alternative"));
 
 		boolean alternativeSelected = false;
 
@@ -285,13 +291,13 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 
 		String freeTextAlternativeValue = null;
 		
-		if(queryInstance.getQuery().getFreeTextAlternative() != null && !alternativeSelected){
+		if (query.getFreeTextAlternative() != null && !alternativeSelected) {
 			
-			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(queryInstance.getQuery().getQueryID(), "_alternative", req, validationErrors);
+			freeTextAlternativeValue = FreeTextAlternativePopulator.populate(query.getQueryID(), "_alternative", req, validationErrors);
 
-			if(freeTextAlternativeValue != null){
+			if (freeTextAlternativeValue != null) {
 				
-				if(!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)){
+				if (!validationErrors.isEmpty() && !ValidationUtils.containsValidationErrorWithMessageKey("FreeTextAlternativeValueRequired", validationErrors)) {
 					
 					allowPartialPopulation = false;
 				}
@@ -307,7 +313,7 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 			queryInstance.setFreeTextAlternativeValue(freeTextAlternativeValue);
 			queryInstance.getQueryInstanceDescriptor().setPopulated(alternativeSelected);
 			
-			if(queryInstance.getQuery().isSetAsAttribute()){
+			if (query.isSetAsAttribute()) {
 				
 				queryInstance.resetAttribute(attributeHandler);
 				queryInstance.setAttribute(attributeHandler);
@@ -322,7 +328,7 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 			validationErrors.add(new ValidationError("RequiredQuery"));
 		}
 
-		if(!validationErrors.isEmpty()) {
+		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
 
@@ -330,7 +336,7 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 		queryInstance.setAlternative(selectedAlternative);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(alternativeSelected);
 		
-		if(queryInstance.getQuery().isSetAsAttribute()){
+		if (query.isSetAsAttribute()) {
 			
 			queryInstance.resetAttribute(attributeHandler);
 			queryInstance.setAttribute(attributeHandler);
