@@ -223,7 +223,7 @@
 					<xsl:choose>
 						<xsl:when test="Locked">
 							
-							<xsl:if test="CheckboxQueryInstance/CheckboxQuery/freeTextAlternative">
+							<xsl:if test="CheckboxQueryInstance/freeTextAlternativeValue">
 								<div class="freeTextAlternativeValue">
 									<xsl:call-template name="createTextField">
 										<xsl:with-param name="name" select="concat($freeTextAlternativeName,'Value')" />
@@ -240,7 +240,6 @@
 								<xsl:call-template name="createTextField">
 									<xsl:with-param name="id" select="concat($freeTextAlternativeName,'Value')" />
 									<xsl:with-param name="name" select="concat($freeTextAlternativeName,'Value')" />
-									<xsl:with-param name="disabled" select="Locked" />
 									<xsl:with-param name="value" select="CheckboxQueryInstance/freeTextAlternativeValue" />
 								</xsl:call-template>
 							</div>
@@ -276,7 +275,7 @@
 				<xsl:value-of select="'q'"/>
 				<xsl:value-of select="../../queryID"/>
 				<xsl:value-of select="'_alternative'"/>
-				<xsl:value-of select="alternativeID"/>		
+				<xsl:value-of select="alternativeID"/>
 			</xsl:variable>
 		
 			<xsl:call-template name="createCheckbox">
