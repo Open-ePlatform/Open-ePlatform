@@ -405,7 +405,7 @@
 						<xsl:choose>
 							<xsl:when test="ChildQueryInstance/Children">
 							
-								<!-- TODO Do the filtering server side instead and don't append unnecessary information to the XML document  -->
+								<!-- TODO Do the filtering in java instead and don't append unnecessary information to the XML document  -->
 								<xsl:apply-templates select="ChildQueryInstance/Children/Child/Guardians/Guardian[not(citizenIdentifier=../../preceding-sibling::Child/Guardians/Guardian/citizenIdentifier) and not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
 									<xsl:with-param name="useMultipartSigning" select="ChildQueryInstance/ChildQuery/useMultipartSigning"/>
 								</xsl:apply-templates>
@@ -511,7 +511,16 @@
 			
 			<div class="guardians" style="display: none;">
 				<xsl:for-each select="Guardians/Guardian[not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
-					<div><xsl:value-of select="citizenIdentifier"/></div>
+					<div>
+						<xsl:choose>
+							<xsl:when test="citizenIdentifier">
+								<xsl:value-of select="citizenIdentifier"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="generate-id(.)"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
 				</xsl:for-each>
 			</div>
 			
@@ -596,11 +605,22 @@
 	</xsl:template>
 	
 	<xsl:template match="Guardian">
+		<xsl:param name="useMultipartSigning" />
 	
 		<xsl:variable name="citizenIdentifier" select="citizenIdentifier"/>
-		<xsl:variable name="useMultipartSigning" />
+		
+		<xsl:variable name="jsCitizenID">
+			<xsl:choose>
+				<xsl:when test="citizenIdentifier">
+					<xsl:value-of select="citizenIdentifier"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="generate-id(.)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 	
-		<div class="guardian clearboth floatleft" data-citizenid="{citizenIdentifier}">
+		<div class="guardian clearboth floatleft" data-citizenid="{$jsCitizenID}">
 	
 			<xsl:choose>
 				<xsl:when test="$useMultipartSigning = 'true' and not(citizenIdentifier)">
