@@ -89,7 +89,10 @@ public class PUDMapQueryProvider extends BaseMapQueryProviderModule<PUDMapQuery,
 					@SuppressWarnings("unchecked")
 					Map<String, String> properties = (Map<String, String>) root.get("properties");
 					
-					propertyObjectIdentity = properties.get("fnr");
+					if(properties != null) {
+						
+						propertyObjectIdentity = properties.get("fnr");
+					}
 					
 					if (propertyObjectIdentity == null || propertyObjectIdentity.length() != 36) {
 
