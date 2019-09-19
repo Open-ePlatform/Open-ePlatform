@@ -523,11 +523,20 @@
 	
 		<xsl:variable name="currentStepID" select="ManagerResponse/currentStepID" />
 		<xsl:variable name="stepCount" select="count(FlowInstance/Flow/Steps/Step)" />
-		<xsl:variable name="totalStepCount">
+		<xsl:variable name="usePreviewStepCount">
 			<xsl:choose>
-				<xsl:when test="usePreview = 'true'"><xsl:value-of select="$stepCount + 2" /></xsl:when>
-				<xsl:otherwise><xsl:value-of select="$stepCount + 1" /></xsl:otherwise>
+				<xsl:when test="FlowInstance/Flow/usePreview = 'true'">1</xsl:when>
+				<xsl:otherwise>0</xsl:otherwise>
 			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="hideSubmitStepTextStepCount">
+			<xsl:choose>
+				<xsl:when test="FlowInstance/Flow/hideSubmitStepText = 'true'">0</xsl:when>
+				<xsl:otherwise>1</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="totalStepCount">
+			<xsl:value-of select="$stepCount + $usePreviewStepCount + $hideSubmitStepTextStepCount" />
 		</xsl:variable>
 	
 		<xsl:if test="loggedIn">
