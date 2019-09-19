@@ -864,7 +864,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 			for (OperatingMessage operatingMessage : operatingMessages) {
 
-				if (operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
+				if (operatingMessage.getFlowFamilyIDs() != null && operatingMessage.getFlowFamilyIDs().contains(flow.getFlowFamily().getFlowFamilyID())) {
 
 					Element operatingMessageElement = operatingMessage.toXML(doc);
 
