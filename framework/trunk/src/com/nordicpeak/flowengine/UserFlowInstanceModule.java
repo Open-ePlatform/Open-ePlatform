@@ -191,7 +191,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Hide manager email address in flow instance overview", description = "Controls if manager email address is shown in flow instance overview")
-	protected boolean hideManagerEmailInOverview;
+	protected boolean hideManagerEmailInOverview = true;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show new flow instance events in list", description = "Controls if new since last login events are shown in the list view")
