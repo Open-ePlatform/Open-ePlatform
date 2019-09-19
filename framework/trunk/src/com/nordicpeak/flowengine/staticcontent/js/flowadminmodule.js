@@ -32,21 +32,7 @@ $(document).ready(function() {
 		start: function(e, ui) {
 			
 			highlightAffectedQueries(ui.item);
-			
-		}}).children().each(function(i) {
-			if(validationError) {
-				var item = $(this);
-				var itemSortOrder = item.find('input[type="hidden"].sortorder').val();
-				if(i != itemSortOrder) {
-					item.parent().children().each(function(i) {
-						if(itemSortOrder == i) {l
-							$(this).before(item.detach());
-							return;
-						}
-					});
-				}
-			}
-	});
+	}});
 	
 	$(".sortable").each(function() {
 		updateSortOrder($(this));
