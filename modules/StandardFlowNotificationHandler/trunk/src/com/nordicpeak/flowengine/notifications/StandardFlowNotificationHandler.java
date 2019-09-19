@@ -999,6 +999,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		notificationSettings.setSendFlowInstanceSubmittedManagerEmail(sendFlowInstanceSubmittedManagerEmail);
 
+		notificationSettings.setSendFlowInstanceAssignedGroupEmail(sendFlowInstanceAssignedGroupEmail);
+
 		notificationSettings.setSendFlowInstanceSubmittedGlobalEmail(sendFlowInstanceSubmittedGlobalEmail);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailAddresses(flowInstanceSubmittedGlobalEmailAddress);
 		notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
