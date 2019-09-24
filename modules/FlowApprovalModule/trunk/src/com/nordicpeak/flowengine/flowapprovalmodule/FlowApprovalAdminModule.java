@@ -6,6 +6,7 @@ import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
@@ -30,6 +32,7 @@ import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
@@ -62,6 +65,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
@@ -107,7 +111,9 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 
-public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User> {
+import it.sauronsoftware.cron4j.Scheduler;
+
+public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
 	private static final AnnotatedBeanTagSourceFactory<FlowApprovalActivityGroup> ACTIVITY_GROUP_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowApprovalActivityGroup>(FlowApprovalActivityGroup.class, "$activityGroup.");
 	private static final AnnotatedBeanTagSourceFactory<User> MANAGER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$manager.");
@@ -176,6 +182,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@TextFieldSettingDescriptor(name = "Activity reminder email subject prefix", description = "The subject prefix of emails sent to remind users of an activity", required = true)
 	@XSLVariable(prefix = "java.")
 	private String reminderEmailPrefix;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Check for expiring managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
+	private String managersUpdateInterval = "0 0 * * *";
 
 	private AnnotatedDAO<FlowApprovalActivity> activityDAO;
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
@@ -201,6 +211,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	private FlowApprovalActivityCRUD activityCRUD;
 	private FlowApprovalActivityGroupCRUD activityGroupCRUD;
+	
+	private Scheduler scheduler;
+	private String updateManagersScheduleID;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -215,6 +228,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowApprovalAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+		
+		initScheduler();
 	}
 
 	@Override
@@ -251,7 +266,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activityCRUD = new FlowApprovalActivityCRUD(activityDAOWrapper, this);
 		activityGroupCRUD = new FlowApprovalActivityGroupCRUD(activityGroupDAOWrapper, this);
 	}
-
+	
 	@InstanceManagerDependency(required = true)
 	public void setFlowAdminModule(FlowAdminModule flowAdminModule) {
 
@@ -267,6 +282,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			flowAdminModule.addFragmentExtensionViewProvider(this);
 		}
 	}
+	
+	@Override
+	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
+		
+		super.update(descriptor, dataSource);
+		
+		scheduler.reschedule(updateManagersScheduleID, managersUpdateInterval);
+	}
 
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -274,10 +297,40 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		viewFragmentTransformer.setDebugXML(debugFragmentXML);
 		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
 	}
+	
+	protected synchronized void initScheduler() {
+		
+		if (scheduler != null) {
+			
+			log.warn("Invalid state, scheduler already running!");
+			stopScheduler();
+		}
+		
+		scheduler = new Scheduler();
+		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, this);
+		
+		scheduler.start();
+	}
+	
+	protected synchronized void stopScheduler() {
+		
+		try {
+			if (scheduler != null) {
+				
+				scheduler.stop();
+				scheduler = null;
+			}
+			
+		} catch (IllegalStateException e) {
+			log.error("Error stopping scheduler", e);
+		}
+	}
 
 	@Override
 	public void unload() throws Exception {
 
+		stopScheduler();
+		
 		systemInterface.getInstanceHandler().removeInstance(FlowApprovalAdminModule.class, this);
 
 		super.unload();
@@ -1299,5 +1352,57 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	public GroupHandler getGroupHandler() {
 		return systemInterface.getGroupHandler();
+	}
+
+	@Override
+	public void run() {
+
+		try {
+			log.info("Sending reminders for flow approval activities..");
+			
+			// @formatter:off
+		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(
+				"SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
+				+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
+				+" INNER JOIN " + activityGroupDAO.getTableName() + " ag ON ag.activityGroupID = a.activityGroupID AND ag.reminderAfterXDays IS NOT NULL"
+				+" WHERE ap.automaticReminderSent = 0 AND DATEDIFF(NOW(), ap.added) >= ag.reminderAfterXDays"
+		);
+		// @formatter:on
+
+		query.addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+		query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+
+		List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
+		
+		if (activityProgresses != null) {
+			for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+				
+				FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+				
+				if (flowInstance != null) {
+					sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+				}
+				
+				activityProgress.setAutomaticReminderSent(true);
+			}
+			
+			activityProgressDAO.update(activityProgresses, null);
+		}
+
+		} catch (Throwable t) {
+			log.error("Error sending reminders for flow approval activities", t);
+		}
+	}
+	
+	@WebPublic(requireLogin = true)
+	public ForegroundModuleResponse sendReminders(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
+		
+		if (user.isAdmin()) {
+			
+			run();
+			return new SimpleForegroundModuleResponse("See log", getDefaultBreadcrumb());
+		}
+		
+		throw new URINotFoundException(uriParser);
 	}
 }

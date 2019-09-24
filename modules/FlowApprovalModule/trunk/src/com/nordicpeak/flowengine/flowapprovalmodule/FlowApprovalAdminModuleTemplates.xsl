@@ -381,6 +381,22 @@
 			</div>
 		</div>
 		
+		<div class="floatleft full bigmarginbottom">
+
+			<label class="floatleft full" for="reminderAfterXDays">
+				<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'reminderAfterXDays'" />
+					<xsl:with-param name="name" select="'reminderAfterXDays'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+			</div>
+
+		</div>
+		
 		<xsl:call-template name="initializeFCKEditor">
 			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
 			<xsl:with-param name="customConfig">config.js</xsl:with-param>
@@ -504,6 +520,18 @@
 						<xsl:text>:&#160;</xsl:text>
 					</strong>
 					<xsl:value-of select="$i18n.Yes" />
+					
+				</xsl:if>
+				
+				<xsl:if test="ActivityGroup/reminderAfterXDays">
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="ActivityGroup/reminderAfterXDays" />
 					
 				</xsl:if>
 				
@@ -1529,6 +1557,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'responsibleUserAttributeName'">
 						<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeName"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'reminderAfterXDays'">
+						<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

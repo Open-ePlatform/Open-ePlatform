@@ -127,4 +127,17 @@
 		</Query>
 	</Script>
 	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `reminderAfterXDays` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `sendActivityGroupStartedEmail`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `automaticReminderSent` TINYINT UNSIGNED NOT NULL AFTER `comment`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

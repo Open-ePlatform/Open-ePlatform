@@ -61,6 +61,10 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@DAOManaged
 	@XMLElement
 	private String comment;
+	
+	@DAOManaged
+	@XMLElement
+	private boolean automaticReminderSent;
 
 	public Integer getActivityProgressID() {
 		return activityProgressID;
@@ -132,6 +136,14 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 
 	public void setResponsibleAttributedUser(User responsibleAttributedUser) {
 		this.responsibleAttributedUser = responsibleAttributedUser;
+	}
+
+	public boolean isAutomaticReminderSent() {
+		return automaticReminderSent;
+	}
+
+	public void setAutomaticReminderSent(boolean automaticReminderSent) {
+		this.automaticReminderSent = automaticReminderSent;
 	}
 
 	@Override

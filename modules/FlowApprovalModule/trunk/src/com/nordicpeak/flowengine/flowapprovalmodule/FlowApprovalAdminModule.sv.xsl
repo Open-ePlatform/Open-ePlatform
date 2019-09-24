@@ -97,6 +97,7 @@
 	<xsl:variable name="i18n.ActivityGroup.startStatus2">Aktivitetsgruppen påbörjas när ärendet hamnar i denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.completeStatus2">Om alla aktiviteter i gruppen är klarmarkerade/godkända så får ärendet denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.denyStatus2">Om någon aktivitet i gruppen inte blir godkänd så får ärendet denna status.</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.reminderAfterXDays">Skicka automatisk påminnelse om aktivitet inte är klarmarkerad inom x dagar</xsl:variable>
 	
 	<xsl:variable name="i18n.TagsTable.Description.Email">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>

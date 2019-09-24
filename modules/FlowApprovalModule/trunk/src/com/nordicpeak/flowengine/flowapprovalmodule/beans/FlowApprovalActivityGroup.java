@@ -11,6 +11,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.xml.GeneratedElementable;
@@ -85,12 +86,17 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String activityGroupStartedEmailMessage;
+	
+	@DAOManaged
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
+	@XMLElement
+	private Integer reminderAfterXDays;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String userDescriptionTemplate;
-
+	
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
@@ -217,6 +223,14 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 
 	public void setSortIndex(Integer sortIndex) {
 		this.sortIndex = sortIndex;
+	}
+
+	public Integer getReminderAfterXDays() {
+		return reminderAfterXDays;
+	}
+
+	public void setReminderAfterXDays(Integer reminderAfterXDays) {
+		this.reminderAfterXDays = reminderAfterXDays;
 	}
 
 	@Override
