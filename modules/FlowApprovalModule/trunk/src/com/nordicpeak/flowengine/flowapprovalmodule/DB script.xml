@@ -104,4 +104,27 @@
 		</Query>
 	</Script>
 	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `sortIndex` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `flowFamilyID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `responsibleUserAttributeName` VARCHAR(255) NULL DEFAULT NULL AFTER `attributeName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_users` ADD COLUMN `fallback` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `userID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `responsibleAttributedUserID` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `completingUserID`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

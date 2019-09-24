@@ -175,7 +175,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 	@Override
 	protected ForegroundModuleResponse beanAdded(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityGroupAddedMessage() + " \"" + activityGroup.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityGroupAddedMessage() + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		beanEvent(activityGroup, req, res, CRUDAction.ADD);
 
@@ -186,7 +186,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 	@Override
 	protected ForegroundModuleResponse beanUpdated(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityGroupUpdatedMessage() + " \"" + activityGroup.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityGroupUpdatedMessage() + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		beanEvent(activityGroup, req, res, CRUDAction.UPDATE);
 
@@ -197,7 +197,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 	@Override
 	protected ForegroundModuleResponse beanDeleted(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityGroupDeletedMessage() + " \"" + activityGroup.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityGroupDeletedMessage() + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		beanEvent(activityGroup, req, res, CRUDAction.DELETE);
 

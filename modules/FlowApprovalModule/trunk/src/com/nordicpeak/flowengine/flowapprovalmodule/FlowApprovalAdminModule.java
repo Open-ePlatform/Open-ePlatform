@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,6 +70,7 @@ import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
+import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.SingleTagSource;
@@ -95,6 +98,7 @@ import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
@@ -121,6 +125,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupDeleted;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityGroupsSorted;
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityAdded;
@@ -432,6 +439,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		} else if ("updateactivitygroup".equals(method)) {
 
 			return getViewFragmentResponse(activityGroupCRUD.update(req, res, user, uriParser));
+			
+		} else if ("sortactivitygroups".equals(method)) {
+
+			return sortActivityGroups(extensionRequestURL, flow, req, res, user, uriParser);
 
 		} else if ("deleteactivitygroup".equals(method)) {
 
@@ -552,6 +563,45 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		jsonObject.putField("hitCount", Integer.toString(jsonArray.size()));
 		jsonObject.putField("hits", jsonArray);
 		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
+	}
+	
+	private ViewFragment sortActivityGroups(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, TransformerConfigurationException, TransformerException  {
+
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flow.getFlowFamily().getFlowFamilyID(), FlowApprovalActivityGroup.ACTIVITIES_RELATION);
+
+		if (activityGroups == null) {
+			return null;
+		}
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+
+			for (FlowApprovalActivityGroup activityGroup : activityGroups) {
+
+				String sortIndex = req.getParameter("sortorder_" + activityGroup.getActivityGroupID());
+
+				if (NumberUtils.isInt(sortIndex)) {
+
+					activityGroup.setSortIndex(NumberUtils.toInt(sortIndex));
+				}
+			}
+
+			activityGroupDAO.update(activityGroups, null);
+
+			flowAdminModule.addFlowFamilyEvent(eventActivityGroupsSorted, flow.getFlowFamily(), user);
+
+			return null;
+		}
+
+		log.info("User " + user + " requesting sort activity groups form for flow " + flow);
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element sortActivityGroupsElement = doc.createElement("SortActivityGroups");
+		doc.getDocumentElement().appendChild(sortActivityGroupsElement);
+
+		XMLUtils.append(doc, sortActivityGroupsElement, "ActivityGroups", activityGroups);
+
+		return viewFragmentTransformer.createViewFragment(doc);
 	}
 
 	public void checkApprovalCompletion(FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException {
@@ -767,7 +817,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 					try {
 
-						List<FlowApprovalActivity> createdActivities = new ArrayList<>(activityGroup.getActivities().size());
+						Map<FlowApprovalActivity, FlowApprovalActivityProgress> createdActivities = new HashMap<>(activityGroup.getActivities().size());
 
 						for (FlowApprovalActivity activity : activityGroup.getActivities()) {
 
@@ -817,9 +867,19 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 									progress.setActivity(activity);
 									progress.setAdded(now);
 
+									if (activity.getResponsibleUserAttributeName() != null) {
+
+										User responsibleUser = getResponsibleUserFromAttribute(activity, flowInstance);
+
+										if (responsibleUser != null) {
+
+											progress.setResponsibleAttributedUser(responsibleUser);
+										}
+									}
+
 									activityProgressDAO.add(progress, transactionHandler, null);
 
-									createdActivities.add(activity);
+									createdActivities.put(activity, progress);
 								}
 							}
 						}
@@ -854,8 +914,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 	}
-
-	public void sendActivityGroupStartedNotifications(List<FlowApprovalActivity> createdActivities, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance, boolean reminder) throws SQLException {
+	
+	public void sendActivityGroupStartedNotifications(Map<FlowApprovalActivity, FlowApprovalActivityProgress> createdActivities, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance, boolean reminder) throws SQLException {
 
 		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailSubject(), activityGroupStartedEmailSubject);
 		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailMessage(), activityGroupStartedEmailMessage);
@@ -876,11 +936,30 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		HashSet<User> managers = new HashSet<>();
 		HashSet<String> globalRecipients = new HashSet<>();
 
-		for (FlowApprovalActivity activity : createdActivities) {
+		for (FlowApprovalActivity activity : createdActivities.keySet()) {
+
+			boolean useFallbackUsers = true;
+
+			if (activity.getResponsibleUserAttributeName() != null) {
+
+				User user = getResponsibleUserFromAttribute(activity, flowInstance);
+
+				if (user != null) {
+
+					useFallbackUsers = false;
+					managers.add(user);
+				}
+			}
 
 			if (activity.getResponsibleUsers() != null) {
 
-				managers.addAll(activity.getResponsibleUsers());
+				for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
+
+					if (!responsibleUser.isFallback() || useFallbackUsers) {
+
+						managers.add(responsibleUser.getUser());
+					}
+				}
 			}
 
 			if (activity.getResponsibleGroups() != null) {
@@ -914,9 +993,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				activitiesStringBuilder.setLength(0);
 
-				for (FlowApprovalActivity activity : createdActivities) {
+				for (Entry<FlowApprovalActivity, FlowApprovalActivityProgress> entry : createdActivities.entrySet()) {
+					FlowApprovalActivity activity = entry.getKey();
+					FlowApprovalActivityProgress activityProgress = entry.getValue();
 
-					if (AccessUtils.checkAccess(manager, activity)) {
+					if (AccessUtils.checkAccess(manager, activityProgress)) {
 
 						if (activitiesStringBuilder.length() > 0) {
 							activitiesStringBuilder.append("<br/>");
@@ -964,7 +1045,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				activitiesStringBuilder.setLength(0);
 
-				for (FlowApprovalActivity activity : createdActivities) {
+				for (FlowApprovalActivity activity : createdActivities.keySet()) {
 
 					if (emailAdress.equals(activity.getGlobalEmailAddress())) {
 
@@ -1061,6 +1142,18 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 	}
+	
+	private User getResponsibleUserFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
+
+		String username = flowInstance.getAttributeHandler().getString(activity.getResponsibleUserAttributeName());
+
+		if (username != null) {
+
+			return systemInterface.getUserHandler().getUserByUsername(username, false, true);
+		}
+
+		return null;
+	}
 
 	public FlowApprovalActivityGroup getActivityGroup(Integer activityGroupID) throws SQLException {
 
@@ -1123,7 +1216,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return doc;
 	}
-
+	
 	@Override
 	public String getTitlePrefix() {
 		return adminExtensionViewTitle;
@@ -1171,9 +1264,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return scripts;
 	}
 
-	public void addFlowFamilyEvent(String message, Flow flow, User user) {
+	public void addFlowFamilyEvent(String message, FlowFamily flowFamily, User user) {
 
-		flowAdminModule.addFlowFamilyEvent(message, flow, user);
+		flowAdminModule.addFlowFamilyEvent(message, flowFamily, user);
 	}
 
 	public String getEventActivityGroupAddedMessage() {

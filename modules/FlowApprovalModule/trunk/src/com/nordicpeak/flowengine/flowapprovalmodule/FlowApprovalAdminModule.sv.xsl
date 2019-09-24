@@ -13,6 +13,7 @@
 	
 	<xsl:variable name="java.eventActivityGroupAdded">Skapade aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupUpdated">Ändrade aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="java.eventActivityGroupsSorted">Sorterat aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupDeleted">Tog bort aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityAdded">Skapade aktivitet</xsl:variable>
 	<xsl:variable name="java.eventActivityUpdated">Ändrade aktivitet</xsl:variable>
@@ -51,6 +52,7 @@
 	<xsl:variable name="i18n.Validation.ActivityNotFound">Den begärda aktiviteten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupNotFound">Den begärda aktivitetsgruppen hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleRequired">Aktiviteten måste ha någon ansvarig</xsl:variable>
+	<xsl:variable name="i18n.Validation.ResponsibleFallbackRequired">Aktiviteten måste ha någon reserv eller vanlig ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Validation.MultipleCompletionStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika målstatusar!</xsl:variable>
 	<xsl:variable name="i18n.Validation.MultipleDenyStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika nekadstatusar!</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.1">Aktivitetsgruppen</xsl:variable>
@@ -60,12 +62,14 @@
 	
 	<xsl:variable name="i18n.BackToFlow">Bakåt</xsl:variable>
 	<xsl:variable name="i18n.BackToActivityGroup">Bakåt</xsl:variable>
+	<xsl:variable name="i18n.Move">Flytta</xsl:variable>
 	
 	<xsl:variable name="i18n.name">Namn</xsl:variable>
 	
 	<xsl:variable name="i18n.ShowActivityGroup">Visa aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.AddActivityGroup">Lägg till ny aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.UpdateActivityGroup">Ändra aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="i18n.SortActivityGroups">Sortera aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup">Ta bort aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup.Confirm">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
 	
@@ -78,6 +82,8 @@
 	<xsl:variable name="i18n.Activity.AttributeFilter">Aktivering vid attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeFilterDescription">Här kan du ställa in om aktiviteten bara ska användas när ärendet har ett attribut med ett visst värde.</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn (lämna tom för att alltid använda aktiviteten)</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeName">Attributnamn för användarnamn för ansvarig användare</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNameDescription">Om ingen användare hittas med användarnamnet i attributet så kommer användare valda ovan som reserv att få aktiviteten istället.</xsl:variable>
 	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värderna matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
@@ -102,6 +108,9 @@
 	<xsl:variable name="i18n.Tag.Manager.Lastname">Efternamn</xsl:variable>
 	<xsl:variable name="i18n.Tag.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>
+	
+	<xsl:variable name="i18n.ResponsibleUser.fallback">Reserv</xsl:variable>
+	<xsl:variable name="i18n.ResponsibleUser.ToggleFallback">Växla reserv ansvarig</xsl:variable>
 	
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	<xsl:variable name="i18n.row">rad</xsl:variable>

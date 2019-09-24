@@ -18,7 +18,7 @@
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js
+		/js/flowapprovaladmin.js?v=1
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -35,6 +35,7 @@
 		<xsl:apply-templates select="ShowActivityGroup" />
 		<xsl:apply-templates select="AddActivityGroup" />
 		<xsl:apply-templates select="UpdateActivityGroup" />
+		<xsl:apply-templates select="SortActivityGroups" />
 		
 		<xsl:apply-templates select="ShowActivity" />
 		<xsl:apply-templates select="AddActivity" />
@@ -75,14 +76,17 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		
-		<div class="floatright">
-			
-			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivitygroup" title="{$i18n.AddActivityGroup}">
-				<xsl:value-of select="$i18n.AddActivityGroup"/>
-				<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+		<a class="floatright" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivitygroup" title="{$i18n.AddActivityGroup}">
+			<xsl:value-of select="$i18n.AddActivityGroup"/>
+			<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+		</a>
+		
+		<xsl:if test="ActivityGroups">
+			<a class="floatright clearboth" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/sortactivitygroups" title="{$i18n.SortActivityGroups}">
+				<xsl:value-of select="$i18n.SortActivityGroups"/>
+				<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 			</a>
-			
-		</div>
+		</xsl:if>
 		
 	</xsl:template>
 	
@@ -126,20 +130,21 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			
-			<div class="floatright">
-				
-				<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivitygroup" title="{$i18n.AddActivityGroup}">
-					<xsl:value-of select="$i18n.AddActivityGroup"/>
-					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>
-				
-			</div>
+			<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/toflow" title="{$i18n.BackToFlow}">
+				<xsl:value-of select="$i18n.BackToFlow"/>
+			</a>
 			
-			<div class="floatleft">
-				<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/toflow" title="{$i18n.BackToFlow}">
-					<xsl:value-of select="$i18n.BackToFlow"/>
+			<a class="floatright" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivitygroup" title="{$i18n.AddActivityGroup}">
+				<xsl:value-of select="$i18n.AddActivityGroup"/>
+				<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+			</a>
+			
+			<xsl:if test="ActivityGroups">
+				<a class="floatright clearboth" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/sortactivitygroups" title="{$i18n.SortActivityGroups}">
+					<xsl:value-of select="$i18n.SortActivityGroups"/>
+					<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 				</a>
-			</div>
+			</xsl:if>
 			
 		</div>
 		
@@ -559,15 +564,25 @@
 			<td>
 				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
 					<xsl:choose>
-						<xsl:when test="ResponsibleUsers or ResponsibleGroups">
+						<xsl:when test="ResponsibleUsers or ResponsibleGroups or responsibleUserAttributeName">
 						
-							<xsl:apply-templates select="ResponsibleUsers/user" mode="inline-list"/>
+							<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser" mode="inline-list"/>
 							
 							<xsl:if test="ResponsibleUsers and ResponsibleGroups">
 									<xsl:text>, </xsl:text>
 							</xsl:if>
 							
 							<xsl:apply-templates select="ResponsibleGroups/group" mode="inline-list"/>
+							
+							<xsl:if test="responsibleUserAttributeName">
+								<xsl:if test="ResponsibleUsers or ResponsibleGroups">
+										<xsl:text>, </xsl:text>
+								</xsl:if>
+								
+								<xsl:text>$attribute{</xsl:text>
+								<xsl:value-of select="responsibleUserAttributeName" />
+								<xsl:text>}</xsl:text>
+							</xsl:if>
 						
 						</xsl:when>
 						<xsl:otherwise>
@@ -618,14 +633,14 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="user" mode="inline-list">
+	<xsl:template match="ResponsibleUser" mode="inline-list">
 		
 		<xsl:if test="position() > 1">
 			<xsl:text>, </xsl:text>
 		</xsl:if>
-	
+		
 		<xsl:choose>
-			<xsl:when test="enabled='true'">
+			<xsl:when test="user/enabled='true'">
 				<img class="marginright" src="{$imgPath}/user.png" alt="" />
 			</xsl:when>
 			<xsl:otherwise>
@@ -633,20 +648,28 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		
-		<xsl:value-of select="firstname"/>
+		<xsl:value-of select="user/firstname"/>
 		
 		<xsl:text>&#x20;</xsl:text>
 		
-		<xsl:value-of select="lastname"/>
+		<xsl:value-of select="user/lastname"/>
 		
-		<xsl:if test="username">
+		<xsl:if test="user/username">
 			<xsl:text>&#x20;</xsl:text>
 			
 			<xsl:text>(</xsl:text>
-				<xsl:value-of select="username"/>
+				<xsl:value-of select="user/username"/>
 			<xsl:text>)</xsl:text>
 		</xsl:if>
+		
+		<xsl:if test="fallback = 'true'">
+			<xsl:text>&#x20;</xsl:text>
 			
+			<xsl:text>[</xsl:text>
+				<xsl:value-of select="$i18n.ResponsibleUser.fallback"/>
+			<xsl:text>]</xsl:text>
+		</xsl:if>
+		
 	</xsl:template>
 	
 	<xsl:template match="group" mode="inline-list">
@@ -666,6 +689,50 @@
 		
 		<xsl:value-of select="name"/>
 		
+	</xsl:template>
+	
+	<xsl:template match="SortActivityGroups">
+		
+		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
+		
+			<h1>
+				<xsl:value-of select="$i18n.SortActivityGroups" />
+				<xsl:text>:&#160;</xsl:text>
+				<xsl:value-of select="Flow/name" />
+			</h1>
+			
+			<form id="activityGroupsSortingForm" method="POST" action="{/Document/requestinfo/uri}">
+				
+				<div class="floatleft full sortable">
+					
+					<xsl:apply-templates select="ActivityGroups/ActivityGroup" mode="sort" />
+					
+				</div>
+				
+				<div class="floatright margintop clearboth">
+					<input type="submit" value="{$i18n.SortActivityGroups}" />
+				</div>
+				
+			</form>
+			
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="ActivityGroup" mode="sort">
+	
+		<div id="activityGroup_{activityGroupID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
+			<div class="padding">
+				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.Move}" alt="" />
+				<xsl:value-of select="name" />
+				<xsl:call-template name="createHiddenField">
+					<xsl:with-param name="name" select="concat('sortorder_', activityGroupID)" />
+					<xsl:with-param name="class" select="'sortorder'" />
+					<xsl:with-param name="value" select="sortIndex" />
+				</xsl:call-template>
+			</div>
+		</div>
+	
 	</xsl:template>
 	
 	<xsl:template match="ShowActivity">
@@ -755,6 +822,61 @@
 			</xsl:if>
 			
 		</div>
+		
+	</xsl:template>
+	
+	<xsl:template name="userlist-extension-buttons">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'responsible-user'">
+				
+				<span class="bigmarginleft fallback" style="display: none;">
+					<xsl:value-of select="$i18n.ResponsibleUser.fallback" />
+				</span>
+				
+				<a class="floatright marginright" href="#" onclick="toggleResponsibleUserFallback(this, event)" title="{$i18n.ResponsibleUser.ToggleFallback}">
+					<img class="vertical-align-middle" src="{$imgPath}/check.png" alt="{$i18n.ResponsibleUser.ToggleFallback}" />
+				</a>
+			
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template name="userlist-extension-defaults">
+		<xsl:param name="listname"/>
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'responsible-user'">
+			
+				<xsl:call-template name="userlist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'fallback'" />
+					<xsl:with-param name="value" select="'false'" />
+				</xsl:call-template>
+			
+			</xsl:when>
+		</xsl:choose>
+	
+	</xsl:template>
+	
+	<xsl:template match="user" mode="userlist-extension">
+		<xsl:param name="listname"/>
+		<xsl:param name="requestparameters" />
+		
+		<xsl:choose>
+			<xsl:when test="$listname = 'responsible-user'">
+			
+				<xsl:call-template name="userlist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'fallback'" />
+					<xsl:with-param name="value" select="../fallback" />
+				</xsl:call-template>
+				
+			</xsl:when>
+		</xsl:choose>
 		
 	</xsl:template>
 	
@@ -896,10 +1018,39 @@
 					<xsl:value-of select="extensionRequestURL"/>
 					<xsl:text>/users</xsl:text>
 				</xsl:with-param>
-				<xsl:with-param name="name" select="'responsibleUser'"/>
-				<xsl:with-param name="users" select="Activity/ResponsibleUsers" />
+				<xsl:with-param name="name" select="'responsible-user'"/>
+				<xsl:with-param name="users" select="Activity/ResponsibleUsers/ResponsibleUser" />
 			</xsl:call-template>
 		</div>
+		
+		<script type="text/javascript">
+				$(document).ready(function() {
+				
+					$("#responsible-user-list").children("li.responsible-user-list-entry").each(function(){
+						responsibleUserShowHideRowExtra($(this));
+					});
+					
+				});
+			</script>
+		
+		<div class="floatleft full bigmarginbottom">
+				
+				<label for="responsibleUserAttributeName" class="floatleft full">
+					<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeName" />
+				</label>
+				
+				<p>
+					<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeNameDescription" />
+				</p>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'responsibleUserAttributeName'"/>
+						<xsl:with-param name="name" select="'responsibleUserAttributeName'"/>
+						<xsl:with-param name="element" select="Activity" />
+					</xsl:call-template>
+				</div>
+			</div>
 		
 		<div class="floatleft full bigmarginbottom">
 			
@@ -1231,6 +1382,14 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='ResponsibleFallbackRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleFallbackRequired"/>
+		</p>
+		
+	</xsl:template>
+	
 	<xsl:template match="validationError[messageKey='MultipleCompletionStatusesForSameStartStatus']">
 	
 		<p class="error">
@@ -1350,10 +1509,10 @@
 					<xsl:when test="fieldName = 'description'">
 						<xsl:value-of select="$i18n.Activity.description"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'responsibleUsers'">
+					<xsl:when test="fieldName = 'responsible-user'">
 						<xsl:value-of select="$i18n.Activity.responsibleUsers"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'responsibleGroups'">
+					<xsl:when test="fieldName = 'responsibleGroup'">
 						<xsl:value-of select="$i18n.Activity.responsibleGroups"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'attributeName'">
@@ -1367,6 +1526,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'globalEmailAddress'">
 						<xsl:value-of select="$i18n.Activity.globalEmailAddress"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'responsibleUserAttributeName'">
+						<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeName"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

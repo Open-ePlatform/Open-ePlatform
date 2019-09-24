@@ -33,6 +33,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.flowapprovalmodule.FlowApprovalAdminModule;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
 import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
 public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, Integer, User, FlowApprovalAdminModule> {
@@ -142,7 +143,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 
-		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsibleUser", req, false, IntegerPopulator.getPopulator(), validationErrors);
+		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
 		if (responsibleUserIDs == null) {
 
@@ -150,7 +151,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		} else {
 
-			List<User> responsibleUsers = new ArrayList<User>(responsibleUserIDs.size());
+			List<FlowApprovalActivityResponsibleUser> responsibleUsers = new ArrayList<>(responsibleUserIDs.size());
 
 			for (Integer userID : responsibleUserIDs) {
 
@@ -158,11 +159,11 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 				if (responsibleUser != null) {
 
-					responsibleUsers.add(responsibleUser);
+					responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, "true".equals(req.getParameter("responsible-user-fallback" + userID))));
 
 				} else {
 
-					validationErrors.add(new ValidationError("responsibleUser", ValidationErrorType.InvalidFormat));
+					validationErrors.add(new ValidationError("responsible-user", ValidationErrorType.InvalidFormat));
 				}
 			}
 
@@ -196,10 +197,21 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 			activity.setResponsibleGroups(responsibleGroups);
 		}
 
-		if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
-
-			validationErrors.add(new ValidationError("ResponsibleRequired"));
+		if (activity.getResponsibleUserAttributeName() != null) {
+			
+			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
+				
+				validationErrors.add(new ValidationError("ResponsibleFallbackRequired"));
+			}
+			
+		} else {
+			
+			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
+				
+				validationErrors.add(new ValidationError("ResponsibleRequired"));
+			}
 		}
+		
 
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
@@ -209,7 +221,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 	@Override
 	protected ForegroundModuleResponse beanAdded(FlowApprovalActivity activity, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityAddedMessage() + " \"" + activity.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityAddedMessage() + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		return beanEvent(activity, req, res, CRUDAction.ADD);
 	}
@@ -217,7 +229,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 	@Override
 	protected ForegroundModuleResponse beanUpdated(FlowApprovalActivity activity, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityUpdatedMessage() + " \"" + activity.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityUpdatedMessage() + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		return beanEvent(activity, req, res, CRUDAction.UPDATE);
 	}
@@ -225,7 +237,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 	@Override
 	protected ForegroundModuleResponse beanDeleted(FlowApprovalActivity activity, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventActivityDeletedMessage() + " \"" + activity.getName() + "\"", (Flow) req.getAttribute("flow"), user);
+		callback.addFlowFamilyEvent(callback.getEventActivityDeletedMessage() + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		return beanEvent(activity, req, res, CRUDAction.DELETE);
 	}

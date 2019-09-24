@@ -1,14 +1,10 @@
 package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.List;
 
 import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
 import se.unlogic.hierarchy.core.beans.Group;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.interfaces.AccessInterface;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
@@ -26,7 +22,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 @Table(name = "flowapproval_activities")
 @XMLElement(name = "Activity")
-public class FlowApprovalActivity extends GeneratedElementable implements AccessInterface {
+public class FlowApprovalActivity extends GeneratedElementable {
 
 	public static final Field ACTIVITY_GROUP_RELATION = ReflectionUtils.getField(FlowApprovalActivity.class, "activityGroup");
 	public static final Field ACTIVITY_PROGRESSES_RELATION = ReflectionUtils.getField(FlowApprovalActivity.class, "activityProgresses");
@@ -56,15 +52,19 @@ public class FlowApprovalActivity extends GeneratedElementable implements Access
 
 	@DAOManaged
 	@OneToMany
-	@SimplifiedRelation(table = "flowapproval_activity_users", remoteValueColumnName = "userID")
 	@XMLElement(fixCase = true)
-	private List<User> responsibleUsers;
+	private List<FlowApprovalActivityResponsibleUser> responsibleUsers;
 
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowapproval_activity_groups", remoteValueColumnName = "groupID")
 	@XMLElement(fixCase = true)
 	private List<Group> responsibleGroups;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String responsibleUserAttributeName;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
@@ -128,11 +128,11 @@ public class FlowApprovalActivity extends GeneratedElementable implements Access
 		this.description = description;
 	}
 
-	public List<User> getResponsibleUsers() {
+	public List<FlowApprovalActivityResponsibleUser> getResponsibleUsers() {
 		return responsibleUsers;
 	}
 
-	public void setResponsibleUsers(List<User> responsibleUsers) {
+	public void setResponsibleUsers(List<FlowApprovalActivityResponsibleUser> responsibleUsers) {
 		this.responsibleUsers = responsibleUsers;
 	}
 
@@ -184,34 +184,17 @@ public class FlowApprovalActivity extends GeneratedElementable implements Access
 		this.globalEmailAddress = globalEmailAddress;
 	}
 
+	public String getResponsibleUserAttributeName() {
+		return responsibleUserAttributeName;
+	}
+
+	public void setResponsibleUserAttributeName(String responsibleUserAttributeName) {
+		this.responsibleUserAttributeName = responsibleUserAttributeName;
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " (activityID=" + activityID + ", activityGroup=" + (activityGroup == null ? null : activityGroup.getActivityGroupID()) + ", name=" + name + ")";
-	}
-
-	@Override
-	public boolean allowsAdminAccess() {
-		return false;
-	}
-
-	@Override
-	public boolean allowsUserAccess() {
-		return false;
-	}
-
-	@Override
-	public boolean allowsAnonymousAccess() {
-		return false;
-	}
-
-	@Override
-	public Collection<Integer> getAllowedGroupIDs() {
-		return UserUtils.getGroupIDs(responsibleGroups);
-	}
-
-	@Override
-	public Collection<Integer> getAllowedUserIDs() {
-		return UserUtils.getUserIDs(responsibleUsers);
 	}
 
 }

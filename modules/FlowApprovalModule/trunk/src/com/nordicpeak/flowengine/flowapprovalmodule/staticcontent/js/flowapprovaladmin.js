@@ -41,6 +41,26 @@ $(document).ready(function() {
 			
 		}).change();
 	}
+	
+	if( $("#activityGroupsSortingForm").length > 0) {
+		
+		var updateSortOrder = function(obj) {
+			obj.children().each(function(i) {
+				$(this).find("input[type='hidden'].sortorder").val(i);
+			});
+		};
+		
+		$(".sortable").sortable({
+			cursor: 'move',
+			update: function(event, ui) {
+				updateSortOrder($(this));
+			},
+		});
+		
+		$(".sortable").each(function() {
+			updateSortOrder($(this));
+		});
+	}
 });
 
 function searchFlows(request, response, searchURL, searchInput) {
@@ -77,4 +97,30 @@ function searchFlows(request, response, searchURL, searchInput) {
 			searchInput.removeClass("ui-autocomplete-loading");
 		}
 	});
+}
+
+function responsibleUserShowHideRowExtra(row) {
+	
+	var userID = row.find("input[name='responsible-user']").val();
+	row.find(".fallback").toggle(row.find("input[name='responsible-user-fallback" + userID + "']").val() == "true");
+}
+
+function toggleResponsibleUserFallback(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var row = $(button).closest(".responsible-user-list-entry");
+	var userID = row.find("input[name='responsible-user']").val();
+	var fallback = row.find("input[name='responsible-user-fallback" + userID + "']");
+	
+	if (fallback.val() == "true") {
+		
+		fallback.val("false");
+		
+	} else {
+		
+		fallback.val("true");
+	}
+	
+	responsibleUserShowHideRowExtra(row);
 }

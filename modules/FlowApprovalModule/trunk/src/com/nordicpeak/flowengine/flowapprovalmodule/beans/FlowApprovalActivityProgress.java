@@ -2,8 +2,14 @@ package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.hierarchy.core.utils.UserUtils;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -14,7 +20,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 @Table(name = "flowapproval_activity_progress")
 @XMLElement(name = "ActivityProgress")
-public class FlowApprovalActivityProgress extends GeneratedElementable {
+public class FlowApprovalActivityProgress extends GeneratedElementable implements AccessInterface {
 
 	public static final Field ACTIVITY_RELATION = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "activity");
 
@@ -47,6 +53,10 @@ public class FlowApprovalActivityProgress extends GeneratedElementable {
 	@DAOManaged(columnName = "completingUserID")
 	@XMLElement(name = "CompletingUser")
 	private User completingUser;
+
+	@DAOManaged(columnName = "responsibleAttributedUserID")
+	@XMLElement(name = "ResponsibleAttributedUser")
+	private User responsibleAttributedUser;
 
 	@DAOManaged
 	@XMLElement
@@ -116,9 +126,61 @@ public class FlowApprovalActivityProgress extends GeneratedElementable {
 		this.comment = comment;
 	}
 
+	public User getResponsibleAttributedUser() {
+		return responsibleAttributedUser;
+	}
+
+	public void setResponsibleAttributedUser(User responsibleAttributedUser) {
+		this.responsibleAttributedUser = responsibleAttributedUser;
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " (activityProgressID=" + activityProgressID + ", activity=" + (activity == null ? null : activity.getActivityID()) + ", flowInstanceID=" + flowInstanceID + ", added=" + added + ", completed=" + completed + ", denied=" + denied + ", completingUser=" + completingUser + ")";
 	}
 
+	@Override
+	public boolean allowsAdminAccess() {
+		return false;
+	}
+
+	@Override
+	public boolean allowsUserAccess() {
+		return false;
+	}
+
+	@Override
+	public boolean allowsAnonymousAccess() {
+		return false;
+	}
+
+	@Override
+	public Collection<Integer> getAllowedGroupIDs() {
+		return UserUtils.getGroupIDs(activity.getResponsibleGroups());
+	}
+
+	@Override
+	public Collection<Integer> getAllowedUserIDs() {
+
+		if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && responsibleAttributedUser == null) {
+			return null;
+		}
+
+		List<Integer> userIDs = new ArrayList<Integer>(CollectionUtils.getSize(activity.getResponsibleUsers()) + 1);
+
+		if (activity.getResponsibleUsers() != null) {
+			for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
+
+				if (!responsibleUser.isFallback() || (activity.getResponsibleUserAttributeName() != null && responsibleAttributedUser == null)) {
+					userIDs.add(responsibleUser.getUser().getUserID());
+				}
+			}
+		}
+
+		if (responsibleAttributedUser != null) {
+			userIDs.add(responsibleAttributedUser.getUserID());
+		}
+
+		return userIDs;
+	}
 }

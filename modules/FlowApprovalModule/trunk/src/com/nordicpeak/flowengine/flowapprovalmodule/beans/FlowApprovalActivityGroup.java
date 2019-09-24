@@ -28,11 +28,16 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 	private Integer activityGroupID;
 
 	@DAOManaged
-	@OrderBy
+	@OrderBy(priority = 1)
 	@WebPopulate(maxLength = 255, required = true)
 	@StringTag
 	@XMLElement
 	private String name;
+	
+	@DAOManaged
+	@OrderBy(priority = 0)
+	@XMLElement
+	private Integer sortIndex;
 
 	@DAOManaged
 	@XMLElement
@@ -205,10 +210,18 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 	public void setActivityCount(Integer activityCount) {
 		this.activityCount = activityCount;
 	}
+	
+	public Integer getSortIndex() {
+		return sortIndex;
+	}
+
+	public void setSortIndex(Integer sortIndex) {
+		this.sortIndex = sortIndex;
+	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (activityGroupID=" + activityGroupID + ", name=" + name + ", flowFamilyID=" + flowFamilyID + ", startStatus=" + startStatus + ", completeStatus=" + completeStatus + ")";
+		return getClass().getSimpleName() + " (activityGroupID=" + activityGroupID + ", name=" + name + ", flowFamilyID=" + flowFamilyID + ", sortIndex=" + sortIndex + ", startStatus=" + startStatus + ", completeStatus=" + completeStatus + ")";
 	}
 
 	@Override

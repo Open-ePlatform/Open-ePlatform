@@ -197,7 +197,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 				throw new URINotFoundException(uriParser);
 			}
 			
-			approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonList(activityProgress.getActivity()), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+			approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
 		}
 		
 		//TODO show notification that reminder was sent
