@@ -2439,4 +2439,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="133">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` ADD COLUMN `isNotRestrictedAdminDeletable` TINYINT(1) NOT NULL AFTER `isAdminDeletable`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

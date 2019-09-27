@@ -107,6 +107,11 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@WebPopulate
 	@XMLElement
 	private boolean isAdminDeletable;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean isNotRestrictedAdminDeletable;
 
 	@DAOManaged
 	@OrderBy(priority = 0)
@@ -352,6 +357,14 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isAdminDeletable = isAdminDeletable;
 	}
 
+	public boolean isNotRestrictedAdminDeletable() {
+		return isNotRestrictedAdminDeletable;
+	}
+
+	public void setNotRestrictedAdminDeletable(boolean isNotRestrictedAdminDeletable) {
+		this.isNotRestrictedAdminDeletable = isNotRestrictedAdminDeletable;
+	}
+
 	public Integer getFlowInstanceCount() {
 
 		return flowInstanceCount;
@@ -444,6 +457,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isUserDeletable = xmlParser.getPrimitiveBoolean("isUserDeletable");
 		this.isAdminMutable = xmlParser.getPrimitiveBoolean("isAdminMutable");
 		this.isAdminDeletable = xmlParser.getPrimitiveBoolean("isAdminDeletable");
+		this.isNotRestrictedAdminDeletable = xmlParser.getPrimitiveBoolean("isNotRestrictedAdminDeletable");
 
 		this.sortIndex = xmlParser.getInt("sortIndex");
 

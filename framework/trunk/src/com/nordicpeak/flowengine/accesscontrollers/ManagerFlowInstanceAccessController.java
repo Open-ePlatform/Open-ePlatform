@@ -36,7 +36,7 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance has not been submitted.");
 		}
 
-		checkManagerAccess(flowInstance, user);
+		ManagerAccess access = checkManagerAccess(flowInstance, user);
 
 		if (requireMutableState && !flowInstance.getStatus().isAdminMutable()) {
 
@@ -45,6 +45,10 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 		} else if (requireDeletableState && !flowInstance.getStatus().isAdminDeletable()) {
 
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance is not in a manager deletable state.");
+			
+		} else if (requireDeletableState && flowInstance.getStatus().isAdminDeletable() && access == ManagerAccess.RESTRICTED && flowInstance.getStatus().isNotRestrictedAdminDeletable()) {
+
+			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance is not in a restricted manager deletable state.");
 		}
 	}
 
@@ -54,7 +58,7 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 		return flowInstance.getStatus().isAdminMutable();
 	}
 
-	public void checkManagerAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
+	public ManagerAccess checkManagerAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
 
 		ManagerAccess access = flowInstance.getFlow().getFlowFamily().getManagerAccess(user);
 
@@ -79,5 +83,7 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 				throw new AccessDeniedException("User is not allowed to update flow instance managers for flow family " + flowInstance.getFlow().getFlowFamily());
 			}
 		}
+		
+		return access;
 	}
 }

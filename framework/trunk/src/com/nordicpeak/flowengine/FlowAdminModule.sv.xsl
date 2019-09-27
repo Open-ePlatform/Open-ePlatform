@@ -182,6 +182,7 @@
 	<xsl:variable name="i18n.isUserDeletable">Tillåt användare att ta bort ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.isAdminMutable">Tillåt handläggare att ändra ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.isAdminDeletable">Tillåt handläggare att ta bort ärenden med denna status</xsl:variable>
+	<xsl:variable name="i18n.isNotRestrictedAdminDeletable">Tillåt inte begränsade handläggare att ta bort ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.defaultStatusMappings.title">Statusmappningar</xsl:variable>
 	<xsl:variable name="i18n.defaultStatusMappings.description">Använd denna status vid följande händelser.</xsl:variable>
 	<xsl:variable name="i18n.managingTime">Handläggningstid</xsl:variable>

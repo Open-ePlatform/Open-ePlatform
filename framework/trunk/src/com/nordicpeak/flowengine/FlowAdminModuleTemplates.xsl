@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=7
+		/js/flowadminmodule.js?v=8
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -3529,7 +3529,7 @@
 	
 		<xsl:apply-templates select="validationException/validationError" />
 
-		<form method="post" action="{/Document/requestinfo/uri}">
+		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 				
 			<xsl:call-template name="statusForm"/>
 			
@@ -3551,7 +3551,7 @@
 
 		<xsl:apply-templates select="validationException/validationError" />
 
-		<form method="post" action="{/Document/requestinfo/uri}">
+		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 		
 			<xsl:call-template name="statusForm"/>
 			
@@ -3736,6 +3736,21 @@
 				
 				<label for="isAdminDeletable">
 					<xsl:value-of select="$i18n.isAdminDeletable" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop">
+			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'isNotRestrictedAdminDeletable'" />
+					<xsl:with-param name="id" select="'isNotRestrictedAdminDeletable'" />
+					<xsl:with-param name="element" select="Status" />
+				</xsl:call-template>
+				
+				<label for="isNotRestrictedAdminDeletable">
+					<xsl:value-of select="$i18n.isNotRestrictedAdminDeletable" />
 				</label>
 			</div>
 		</div>
