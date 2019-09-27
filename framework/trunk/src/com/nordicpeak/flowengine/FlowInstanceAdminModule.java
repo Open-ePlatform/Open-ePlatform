@@ -660,6 +660,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideUpdateManagers");
 			}
+			
+			try {
+				getDeleteAccessController().checkFlowInstanceAccess(flowInstance, user);
+				
+				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "DeleteAccess");
+
+			} catch (AccessDeniedException e) {}
 
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
 
