@@ -38,9 +38,16 @@ $(document).ready(function() {
 		updateSortOrder($(this));
 	});
 	
-	$("#useAccessCheck").on("change", function() {
-		$("#allowedManagers").toggle($(this).is(":checked"));
-	}).change();
+	if ($("#statusform").length > 0) { // Add/Update status
+		
+		$("#isAdminDeletable").on("change", function() {
+			$("#isNotRestrictedAdminDeletable").parent().parent().toggle($(this).is(":checked"));
+		}).change();
+		
+		$("#useAccessCheck").on("change", function() {
+			$("#allowedManagers").toggle($(this).is(":checked"));
+		}).change();
+	}
 	
 	if ($("#flowForm").length > 0) { // Add/Update flow
 	
