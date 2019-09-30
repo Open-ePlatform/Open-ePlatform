@@ -28,6 +28,8 @@ public interface ImmutableStatus extends Elementable{
 
 	public boolean isAdminDeletable();
 	
+	public boolean isNotRestrictedAdminDeletable();
+	
 	public ContentType getContentType();
 
 	public List<? extends ImmutableDefaultStatusMapping> getDefaulStatusMappings();
