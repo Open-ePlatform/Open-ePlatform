@@ -140,4 +140,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` MODIFY COLUMN `sortIndex` INT(10) UNSIGNED NOT NULL DEFAULT 0;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
