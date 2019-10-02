@@ -85,15 +85,13 @@
 								<xsl:value-of select="FlowInstance/flowInstanceID"/>
 								<xsl:text> | </xsl:text>
 							</xsl:if>
-							
-							<xsl:text>Inskickat av: </xsl:text>
+
 							<xsl:call-template name="PrintPostedBy" />
 							
 							<xsl:if test="SignEvents">
 								<xsl:text> (signerad)</xsl:text>
 							</xsl:if>
 							
-							<xsl:text> | Datum: </xsl:text>
 							<xsl:value-of select="SubmitDate"/>
 							
 							<xsl:if test="EditedByManager">
@@ -122,14 +120,13 @@
 					<xsl:text> | </xsl:text>
 				</xsl:if>
 			
-				<xsl:text>Inskickat av: </xsl:text>
 				<xsl:call-template name="PrintPostedBy" />
 				
 				<xsl:if test="SignEvents">
 					<xsl:text> (signerad)</xsl:text>
 				</xsl:if>
 				
-				<xsl:text> | Datum: </xsl:text>
+				<xsl:text>Datum: </xsl:text>
 				<xsl:value-of select="SubmitDate"/>
 				
 			</xsl:if>
@@ -248,26 +245,39 @@
 	<xsl:template name="showCitizenIDInSignEvents">
 		<xsl:text>true</xsl:text>
 	</xsl:template>
+
+	<xsl:template name="showPostedBy">
+		<xsl:text>true</xsl:text>
+	</xsl:template>
 	
 	<xsl:template name="PrintPostedBy">
 		<xsl:param name="citizenIDspacer" select="', '"/>
 		
-		<xsl:choose>
-			<xsl:when test="/Document/PostedBy">
-				<xsl:value-of select="/Document/PostedBy" />
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="$i18n.AnonymousUser" />
-			</xsl:otherwise>
-		</xsl:choose>
-
-		<xsl:variable name="showCitizenID">
-			<xsl:call-template name="showCitizenIDInPrintPostedBy"/>
+		<xsl:variable name="showPostedByInfo">
+			<xsl:call-template name="showPostedBy"/>
 		</xsl:variable>
 		
-		<xsl:if test="$showCitizenID = 'true' and /Document/PostedByCitizenID">
-			<xsl:value-of select="$citizenIDspacer"/>
-			<xsl:value-of select="/Document/PostedByCitizenID" />
+		
+		<xsl:if test="$showPostedByInfo = 'true'">
+			<xsl:text>Inskickat av: </xsl:text>	
+			<xsl:choose>
+				<xsl:when test="/Document/PostedBy">
+					<xsl:value-of select="/Document/PostedBy" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$i18n.AnonymousUser" />
+				</xsl:otherwise>
+			</xsl:choose>
+	
+			<xsl:variable name="showCitizenID">
+				<xsl:call-template name="showCitizenIDInPrintPostedBy"/>
+			</xsl:variable>
+			
+			<xsl:if test="$showCitizenID = 'true' and /Document/PostedByCitizenID">
+				<xsl:value-of select="$citizenIDspacer"/>
+				<xsl:value-of select="/Document/PostedByCitizenID" />
+			</xsl:if>
+			<xsl:text> | </xsl:text>
 		</xsl:if>
 	
 	</xsl:template>
