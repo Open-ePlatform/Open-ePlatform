@@ -2,6 +2,18 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 	<xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" indent="yes" encoding="ISO-8859-1"/>
+
+	<xsl:template name="showCitizenIDInPrintPostedBy">
+		<xsl:text>false</xsl:text>
+	</xsl:template>
+	
+	<xsl:template name="showCitizenIDInSignEvents">
+		<xsl:text>true</xsl:text>
+	</xsl:template>
+
+	<xsl:template name="showPostedBy">
+		<xsl:text>true</xsl:text>
+	</xsl:template>
 	
 	<xsl:template name="head">
 	
@@ -56,7 +68,11 @@
 	<xsl:template name="header">
 	
 		<div class="header">
-					
+
+			<xsl:variable name="showPostedByInfo">
+				<xsl:call-template name="showPostedBy"/>
+			</xsl:variable>
+
 			<div class="logo">
 			
 				<xsl:choose>
@@ -86,10 +102,16 @@
 								<xsl:text> | </xsl:text>
 							</xsl:if>
 
-							<xsl:call-template name="PrintPostedBy" />
+							<xsl:if test="$showPostedByInfo = 'true'">
+								<xsl:call-template name="PrintPostedBy" />
+							</xsl:if>
 							
 							<xsl:if test="SignEvents">
 								<xsl:text> (signerad)</xsl:text>
+							</xsl:if>
+							
+							<xsl:if test="$showPostedByInfo = 'true' or SignEvents">
+								<xsl:text> | </xsl:text>
 							</xsl:if>
 							
 							<xsl:value-of select="SubmitDate"/>
@@ -109,6 +131,10 @@
 	</xsl:template>
 	
 	<xsl:template name="footer">
+
+		<xsl:variable name="showPostedByInfo">
+			<xsl:call-template name="showPostedBy"/>
+		</xsl:variable>
 	
 		<div id="footer">
 			
@@ -119,11 +145,17 @@
 					<xsl:value-of select="FlowInstance/flowInstanceID"/>
 					<xsl:text> | </xsl:text>
 				</xsl:if>
-			
-				<xsl:call-template name="PrintPostedBy" />
+
+				<xsl:if test="$showPostedByInfo = 'true'">
+					<xsl:call-template name="PrintPostedBy" />
+				</xsl:if>
 				
 				<xsl:if test="SignEvents">
 					<xsl:text> (signerad)</xsl:text>
+				</xsl:if>
+				
+				<xsl:if test="$showPostedByInfo = 'true' or SignEvents">
+					<xsl:text> | </xsl:text>
 				</xsl:if>
 				
 				<xsl:text>Datum: </xsl:text>
@@ -238,27 +270,9 @@
 	
 	</xsl:template>
 	
-	<xsl:template name="showCitizenIDInPrintPostedBy">
-		<xsl:text>false</xsl:text>
-	</xsl:template>
-	
-	<xsl:template name="showCitizenIDInSignEvents">
-		<xsl:text>true</xsl:text>
-	</xsl:template>
-
-	<xsl:template name="showPostedBy">
-		<xsl:text>true</xsl:text>
-	</xsl:template>
-	
 	<xsl:template name="PrintPostedBy">
 		<xsl:param name="citizenIDspacer" select="', '"/>
 		
-		<xsl:variable name="showPostedByInfo">
-			<xsl:call-template name="showPostedBy"/>
-		</xsl:variable>
-		
-		
-		<xsl:if test="$showPostedByInfo = 'true'">
 			<xsl:text>Inskickat av: </xsl:text>	
 			<xsl:choose>
 				<xsl:when test="/Document/PostedBy">
@@ -277,8 +291,6 @@
 				<xsl:value-of select="$citizenIDspacer"/>
 				<xsl:value-of select="/Document/PostedByCitizenID" />
 			</xsl:if>
-			<xsl:text> | </xsl:text>
-		</xsl:if>
 	
 	</xsl:template>
 	
