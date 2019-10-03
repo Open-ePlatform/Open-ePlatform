@@ -232,7 +232,7 @@ public class FileUploadQuery extends BaseQuery {
 		Element fileElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		fileElement.setAttribute("name", "File");
 		fileElement.setAttribute("type", "FileType" + queryID);
-		fileElement.setAttribute("minOccurs", "1");
+		fileElement.setAttribute("minOccurs", "0");
 		fileElement.setAttribute("maxOccurs", this.maxFileCount != null ? maxFileCount.toString() : "unbounded");
 		
 		sequenceElement.appendChild(fileElement);
