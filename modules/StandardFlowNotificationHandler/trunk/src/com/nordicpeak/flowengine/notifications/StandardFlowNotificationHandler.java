@@ -1780,7 +1780,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				
 				for (FlowFamilyManagerGroup flowFamilyManagerGroup : flowFamilyManagerGroups) {
 					
-					if (managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID())) {
+					if (managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID()) && flowFamilyManagerGroup.getNotificationEmailAddresses() != null) {
 						
 						addresses.addAll(flowFamilyManagerGroup.getNotificationEmailAddresses());
 					}
