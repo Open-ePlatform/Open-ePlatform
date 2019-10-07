@@ -69,7 +69,7 @@
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.Query.setAsAttribute">Spara valt barn som attribut</xsl:variable>
 	<xsl:variable name="i18n.Query.attributeName">Attributprefix</xsl:variable>
-	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.date}</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.childCitizenIdentifier}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	
