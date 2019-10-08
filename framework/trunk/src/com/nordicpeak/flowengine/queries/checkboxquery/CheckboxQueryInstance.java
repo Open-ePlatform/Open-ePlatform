@@ -312,7 +312,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		
 		if (alternatives != null) {
 			
-			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>();
+			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(alternatives.size());
 			
 			for (CheckboxAlternative alternative : alternatives) {
 				
