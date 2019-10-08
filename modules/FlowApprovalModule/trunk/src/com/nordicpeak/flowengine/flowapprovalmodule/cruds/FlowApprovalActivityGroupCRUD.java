@@ -114,7 +114,8 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 		super.validateAddPopulation(activityGroup, req, user, uriParser);
 
 		activityGroup.setFlowFamilyID(((Flow) req.getAttribute("flow")).getFlowFamily().getFlowFamilyID());
-
+		activityGroup.setSortIndex(Integer.MAX_VALUE);
+		
 		validatePopulation(activityGroup, req, user, uriParser);
 	}
 
