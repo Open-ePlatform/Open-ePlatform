@@ -189,4 +189,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_fields` ADD COLUMN `containsPrice` BOOLEAN NOT NULL AFTER `endpointField`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

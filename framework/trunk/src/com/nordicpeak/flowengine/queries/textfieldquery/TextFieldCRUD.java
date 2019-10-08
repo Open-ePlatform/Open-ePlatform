@@ -177,5 +177,10 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 			
 			throw new ValidationException(new ValidationError("maxContentLength", ValidationErrorType.TooLong));
 		}
+		
+		if(!bean.isDisabled()) {
+			
+			bean.setContainsPrice(false);
+		}
 	}
 }

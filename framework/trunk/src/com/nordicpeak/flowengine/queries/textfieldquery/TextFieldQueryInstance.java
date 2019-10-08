@@ -15,18 +15,22 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.beans.BaseInvoiceLine;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.InvoiceLine;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 
 @Table(name = "text_field_query_instances")
 @XMLElement
-public class TextFieldQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance {
+public class TextFieldQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQuery{
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -354,6 +358,29 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	public void setLastUsedEndpointURL(String lastUsedURL) {
 		this.lastUsedEndpointURL = lastUsedURL;
+	}
+
+	@Override
+	public List<? extends InvoiceLine> getInvoiceLines() {
+
+		if (this.values != null) {
+			
+			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(values.size());
+			
+			for (TextFieldValue value : values) {
+				
+				if (value.getTextField().isContainsPrice() && NumberUtils.isInt(value.getValue())) {
+					invoiceLines.add(new BaseInvoiceLine(1, Integer.parseInt(value.getValue()), value.getTextField().getLabel(), ""));
+				}
+			}
+			
+			if (!CollectionUtils.isEmpty(invoiceLines)) {
+				
+				return invoiceLines;
+			}
+		}
+		
+		return null;
 	}
 
 }

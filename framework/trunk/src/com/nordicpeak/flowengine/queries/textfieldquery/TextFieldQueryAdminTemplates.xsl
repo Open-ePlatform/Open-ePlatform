@@ -271,6 +271,21 @@
 			</div>
 		</div>
 		
+		<div class="floatleft full bigmarginbottom" id="contains-price">
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'containsPrice'" />
+					<xsl:with-param name="name" select="'containsPrice'" />
+					<xsl:with-param name="element" select="$element" /> 
+					<xsl:with-param name="class" select="'vertical-align-middle'" />
+				</xsl:call-template>
+					
+				<label for="containsPrice">
+					<xsl:value-of select="$i18n.ContainsPrice" />
+				</label>
+			</div>
+		</div>		
+		
 		<div class="floatleft full bigmarginbottom" id="default-value">
 			<label for="defaultValue" class="floatleft clearboth"><xsl:value-of select="$i18n.DefaultValue" /></label>
 			<div class="floatleft full">

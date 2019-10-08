@@ -5,11 +5,13 @@ $(document).ready(function() {
 		if($("#disabled").is(":checked")){
 			
 			$("#default-value").show();
+			$("#contains-price").show();
 			$("#disable-hide-fields").hide();
 			
 		}else{
 			
 			$("#default-value").hide();
+			$("#contains-price").hide();
 			$("#disable-hide-fields").show();
 		}
 	});
@@ -21,6 +23,7 @@ $(document).ready(function() {
 	}else{
 		
 		$("#default-value").hide();
+		$("#contains-price").hide();
 	}
 	
 	$("#formatValidator").change(function() {

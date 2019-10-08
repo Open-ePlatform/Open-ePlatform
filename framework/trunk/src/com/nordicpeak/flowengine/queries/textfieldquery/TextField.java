@@ -126,6 +126,11 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String endpointField;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean containsPrice;
 
 	public TextField() {}
 
@@ -278,6 +283,11 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		defaultValue = XMLValidationUtils.validateParameter("defaultValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
 		disabled = xmlParser.getPrimitiveBoolean("disabled");
+		
+		if(disabled) {
+			
+			containsPrice = xmlParser.getPrimitiveBoolean("containsPrice");
+		}
 
 		if (attributeName != null) {
 
@@ -350,6 +360,18 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	public void setXSDElementName(String xsdElementName) {
 
 		this.xsdElementName = xsdElementName;
+	}
+
+	
+	public boolean isContainsPrice() {
+	
+		return containsPrice;
+	}
+
+	
+	public void setContainsPrice(boolean containsPrice) {
+	
+		this.containsPrice = containsPrice;
 	}
 
 }
