@@ -313,5 +313,16 @@
 			]]>
 		</Query>
 	</Script>
+		
+	<Script version="22">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendInternalMessageAddedManagerEmail` TINYINT(1) NOT NULL AFTER `externalMessageReceivedUserEmailMessage`,
+					ADD COLUMN `internalMessageAddedManagerSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendInternalMessageAddedManagerEmail`,
+					ADD COLUMN `internalMessageAddedManagerMessage` TEXT NULL AFTER `internalMessageAddedManagerSubject`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

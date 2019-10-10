@@ -153,6 +153,21 @@
 	
 	</xsl:variable>
 	
+	<xsl:variable name="java.internalMessageAddedManagerEmailSubject">Ny intern notering på ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.internalMessageAddedManagerEmailMessage">
+	
+		&lt;p&gt;Hej $manager.firstname,&lt;/p&gt;
+		
+		&lt;p&gt;Det har lagts till en ny notering på ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.flowInstanceAssignedManagerEmailSubject">Tilldelad ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceAssignedManagerEmailMessage">
 	
@@ -393,6 +408,12 @@
 	<xsl:variable name="i18n.ExternalMessageReceivedUserEmailMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
+	
+	<xsl:variable name="i18n.SendInternalMessageAddedManagerEmail">E-post till tilldelade handläggare vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.InternalMessageAddedUserEmailSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.InternalMessageAddedUserEmailMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.InternalMessageAddedManagerSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.InternalMessageAddedManagerMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>

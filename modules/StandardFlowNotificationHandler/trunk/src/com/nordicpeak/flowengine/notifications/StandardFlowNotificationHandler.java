@@ -114,6 +114,7 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
@@ -372,6 +373,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "New message received email message (managers)", description = "The message of emails sent to the managers when new messages are received", required = true)
 	@XSLVariable(prefix = "java.")
 	private String externalMessageReceivedManagerEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managers when new internal notes are added", description = "Controls if email messages are sent to the managers when new internal notes are added.")
+	private boolean sendInternalMessageAddedManagerEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "New internal note added email subject (managers)", description = "The subject of emails sent to the managers when new internal notes are added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageAddedManagerEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "New internal note added email message (managers)", description = "The message of emails sent to the managers when new internal notes are added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageAddedManagerEmailMessage;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when they are assigned new flow instances", description = "Controls if email messages are sent to managers when they are assigned new flow instances.")
@@ -828,6 +843,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			notificationSettings.setExternalMessageReceivedManagerMessage(null);
 		}
+		
+		if (notificationSettings.getInternalMessageAddedManagerSubject() != null && notificationSettings.getInternalMessageAddedManagerSubject().trim().equals(internalMessageAddedManagerEmailSubject.trim())) {
+			
+			notificationSettings.setInternalMessageAddedManagerSubject(null);
+		}
+		
+		if (notificationSettings.getInternalMessageAddedManagerMessage() != null && notificationSettings.getInternalMessageAddedManagerMessage().trim().equals(internalMessageAddedManagerEmailMessage.trim())) {
+			
+			notificationSettings.setInternalMessageAddedManagerMessage(null);
+		}
 
 		if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedUserEmailMessage().trim().equals(flowInstanceArchivedUserEmailMessage.trim())) {
 
@@ -946,6 +971,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
 			}
+			
+			if (notificationSettings.getInternalMessageAddedManagerSubject() == null) {
+				
+				notificationSettings.setInternalMessageAddedManagerSubject(internalMessageAddedManagerEmailSubject);
+			}
+			
+			if (notificationSettings.getInternalMessageAddedManagerMessage() == null) {
+				
+				notificationSettings.setInternalMessageAddedManagerMessage(internalMessageAddedManagerEmailMessage);
+			}
 
 			if (notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject() == null) {
 
@@ -985,6 +1020,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setFlowInstanceSubmittedUserEmailAttachPDF(flowInstanceSubmittedUserEmailAttachPDF);
 
 		notificationSettings.setSendExternalMessageReceivedManagerEmail(sendExternalMessageReceivedManagerEmail);
+		notificationSettings.setSendInternalMessageAddedManagerEmail(sendInternalMessageAddedManagerEmail);
 		notificationSettings.setSendExternalMessageReceivedUserEmail(sendExternalMessageReceivedUserEmail);
 		notificationSettings.setSendExternalMessageReceivedUserSMS(sendExternalMessageReceivedUserSMS);
 
@@ -1589,6 +1625,26 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		} else {
 
 			log.warn("External message added event received with unsupported sender type: " + event.getSenderType());
+		}
+	}
+	
+	@EventListener(channel = FlowInstance.class)
+	public void processEvent(InternalMessageAddedEvent event, EventSource eventSource) throws SQLException {
+
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
+
+			return;
+		}
+
+		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+
+		if (notificationSettings.isSendInternalMessageAddedManagerEmail()) {
+
+			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
+
+			sendManagerEmails(flowInstance, null, notificationSettings.getInternalMessageAddedManagerSubject(), notificationSettings.getInternalMessageAddedManagerMessage(), excludedManagers, false);
 		}
 	}
 
