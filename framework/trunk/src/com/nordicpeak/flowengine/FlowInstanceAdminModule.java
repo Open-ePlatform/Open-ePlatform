@@ -112,6 +112,7 @@ import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.DeletedByManagerEvent;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
@@ -615,6 +616,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#notes");
 
 						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
+						
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
 
 						return null;
 					}
