@@ -6,15 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import com.nordicpeak.flowengine.FlowInstanceAdminModule;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManager;
-import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
-import com.nordicpeak.flowengine.comparators.GroupNameComparator;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedGroupNotManagerValidationError;
-import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
-
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
@@ -24,6 +15,15 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
+
+import com.nordicpeak.flowengine.FlowInstanceAdminModule;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManager;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.comparators.GroupNameComparator;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedGroupNotManagerValidationError;
+import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
 
 public class FlowFamilyUtils {
 	
@@ -268,7 +268,6 @@ public class FlowFamilyUtils {
 		return users;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static boolean isAutoManagerRulesValid(FlowFamily flowFamily, UserHandler userHandler) {
 		
 		if (!CollectionUtils.isEmpty(flowFamily.getAutoManagerAssignmentRules()) && getActiveManagerUsers(true, flowFamily, userHandler) == null) {
