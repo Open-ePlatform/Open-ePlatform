@@ -206,6 +206,32 @@ public class FlowInstanceUtils {
 		return null;
 	}
 	
+	public static ImmutableFlowInstanceEvent getLastestSigningPDFEvent(ImmutableFlowInstance flowInstance) {
+		
+		return getLastestSigningPDFEvent(flowInstance.getEvents());
+	}
+	
+	public static ImmutableFlowInstanceEvent getLastestSigningPDFEvent(List<? extends ImmutableFlowInstanceEvent> events) {
+		
+		if (events != null) {
+			
+			for (ImmutableFlowInstanceEvent event : new ReverseListIterator<ImmutableFlowInstanceEvent>(events)) {
+				
+				if ((event.getEventType() == EventType.SIGNED || event.getEventType() == EventType.SIGNING_SKIPPED)
+				    && Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
+					
+					return event;
+					
+				} else if (event.getEventType() == EventType.UPDATED) {
+					
+					break;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	// Used when saving flow instance on submit and multipart signing complete
 	public static void setContactAttributes(FlowInstanceManager flowInstanceManager, MutableAttributeHandler flowInstanceAttributeHandler) {
 		
@@ -587,8 +613,8 @@ public class FlowInstanceUtils {
 					List<? extends InvoiceLine> queryInvoiceLines = paymentQuery.getInvoiceLines();
 					
 					if (!CollectionUtils.isEmpty(queryInvoiceLines)) {
-						
-						invoiceLines.addAll(paymentQuery.getInvoiceLines());
+
+						invoiceLines.addAll(queryInvoiceLines);
 					}
 				}
 			}
