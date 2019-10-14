@@ -447,7 +447,6 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 					} else {
 
-						// TODO Temporary handling
 						log.warn("No map tools found for map configuration " + mapConfiguration + " cant populate tools for imported query " + query);
 					}
 
@@ -455,14 +454,18 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 			} else {
 
-				// TODO Temporary handling
 				log.warn("No matching map configuration (" + query.getMapConfigurationName() + ") found for imported query " + query);
+				
+				query.setMapTools(null);
+				query.setMapPrints(null);
 			}
 
 		} else {
 
 			// TODO Temporary handling
 			log.warn("No map configuration name found for imported query " + query);
+			query.setMapTools(null);
+			query.setMapPrints(null);
 		}
 
 		if (query.getMapPrints() != null) {
