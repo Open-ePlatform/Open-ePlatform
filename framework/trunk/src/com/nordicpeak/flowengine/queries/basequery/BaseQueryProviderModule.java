@@ -243,7 +243,6 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void parseQueryXSLStyleSheet(URL styleSheetURL){
 
 		try {
