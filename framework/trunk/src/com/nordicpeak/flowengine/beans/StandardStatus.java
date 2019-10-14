@@ -64,6 +64,11 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	@WebPopulate
 	@XMLElement
 	private boolean isAdminDeletable;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean isRestrictedAdminDeletable;
 
 	@DAOManaged
 	@WebPopulate(required = true)
@@ -196,6 +201,16 @@ public class StandardStatus extends GeneratedElementable implements Serializable
 	public void setAdminDeletable(boolean isAdminDeletable) {
 
 		this.isAdminDeletable = isAdminDeletable;
+	}
+
+	public boolean isRestrictedAdminDeletable() {
+
+		return isRestrictedAdminDeletable;
+	}
+
+	public void setRestrictedAdminDeletable(boolean isRestrictedAdminDeletable) {
+
+		this.isRestrictedAdminDeletable = isRestrictedAdminDeletable;
 	}
 
 	@Override

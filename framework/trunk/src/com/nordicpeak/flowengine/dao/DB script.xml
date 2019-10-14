@@ -2447,4 +2447,30 @@
 		</Query>
 	</Script>
 	
+	<Script version="134">
+		<Query>
+			<![CDATA[
+ 				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `isNotRestrictedAdminDeletable` `isRestrictedAdminDeletable` TINYINT(1) NOT NULL; 
+ 			]]> 
+		</Query>
+		<Query>
+			<![CDATA[
+ 				UPDATE `flowengine_flow_statuses`  
+ 				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
+ 			]]> 
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses`
+					ADD COLUMN `isRestrictedAdminDeletable` TINYINT(1) NOT NULL AFTER `isAdminDeletable`;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+ 				UPDATE `flowengine_standard_statuses`  
+ 				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
+ 			]]> 
+		</Query>
+	</Script>
+	
 </DBScripts>

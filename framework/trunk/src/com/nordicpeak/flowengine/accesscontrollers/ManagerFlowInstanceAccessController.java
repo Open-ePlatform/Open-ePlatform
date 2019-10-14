@@ -46,7 +46,7 @@ public class ManagerFlowInstanceAccessController implements FlowInstanceAccessCo
 
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance is not in a manager deletable state.");
 			
-		} else if (requireDeletableState && flowInstance.getStatus().isAdminDeletable() && access == ManagerAccess.RESTRICTED && flowInstance.getStatus().isNotRestrictedAdminDeletable()) {
+		} else if (requireDeletableState && flowInstance.getStatus().isAdminDeletable() && access == ManagerAccess.RESTRICTED && !flowInstance.getStatus().isRestrictedAdminDeletable()) {
 
 			throw new AccessDeniedException("Access denied to flow instance " + flowInstance + ", the requested instance is not in a restricted manager deletable state.");
 		}

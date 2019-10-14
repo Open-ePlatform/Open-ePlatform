@@ -28,7 +28,7 @@ public interface ImmutableStatus extends Elementable{
 
 	public boolean isAdminDeletable();
 	
-	public boolean isNotRestrictedAdminDeletable();
+	public boolean isRestrictedAdminDeletable();
 	
 	public ContentType getContentType();
 

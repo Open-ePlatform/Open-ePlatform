@@ -111,7 +111,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean isNotRestrictedAdminDeletable;
+	private boolean isRestrictedAdminDeletable;
 
 	@DAOManaged
 	@OrderBy(priority = 0)
@@ -173,6 +173,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.name = standardStatus.getName();
 		this.contentType = standardStatus.getContentType();
 		this.isAdminDeletable = standardStatus.isAdminDeletable();
+		this.isRestrictedAdminDeletable = standardStatus.isRestrictedAdminDeletable();
 		this.isAdminMutable = standardStatus.isAdminMutable();
 		this.isUserDeletable = standardStatus.isUserDeletable();
 		this.isUserMutable = standardStatus.isUserMutable();
@@ -357,12 +358,13 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isAdminDeletable = isAdminDeletable;
 	}
 
-	public boolean isNotRestrictedAdminDeletable() {
-		return isNotRestrictedAdminDeletable;
+	@Override
+	public boolean isRestrictedAdminDeletable() {
+		return isRestrictedAdminDeletable;
 	}
 
-	public void setNotRestrictedAdminDeletable(boolean isNotRestrictedAdminDeletable) {
-		this.isNotRestrictedAdminDeletable = isNotRestrictedAdminDeletable;
+	public void setNotRestrictedAdminDeletable(boolean isRestrictedAdminDeletable) {
+		this.isRestrictedAdminDeletable = isRestrictedAdminDeletable;
 	}
 
 	public Integer getFlowInstanceCount() {
@@ -457,7 +459,7 @@ public class Status extends GeneratedElementable implements Serializable, Immuta
 		this.isUserDeletable = xmlParser.getPrimitiveBoolean("isUserDeletable");
 		this.isAdminMutable = xmlParser.getPrimitiveBoolean("isAdminMutable");
 		this.isAdminDeletable = xmlParser.getPrimitiveBoolean("isAdminDeletable");
-		this.isNotRestrictedAdminDeletable = xmlParser.getPrimitiveBoolean("isNotRestrictedAdminDeletable");
+		this.isRestrictedAdminDeletable = xmlParser.getPrimitiveBoolean("isRestrictedAdminDeletable");
 
 		this.sortIndex = xmlParser.getInt("sortIndex");
 

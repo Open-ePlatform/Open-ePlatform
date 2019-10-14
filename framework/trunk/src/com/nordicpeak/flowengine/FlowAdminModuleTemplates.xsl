@@ -3744,13 +3744,13 @@
 			
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'isNotRestrictedAdminDeletable'" />
-					<xsl:with-param name="id" select="'isNotRestrictedAdminDeletable'" />
+					<xsl:with-param name="name" select="'isRestrictedAdminDeletable'" />
+					<xsl:with-param name="id" select="'isRestrictedAdminDeletable'" />
 					<xsl:with-param name="element" select="Status" />
 				</xsl:call-template>
 				
-				<label for="isNotRestrictedAdminDeletable">
-					<xsl:value-of select="$i18n.isNotRestrictedAdminDeletable" />
+				<label for="isRestrictedAdminDeletable">
+					<xsl:value-of select="$i18n.isRestrictedAdminDeletable" />
 				</label>
 			</div>
 		</div>

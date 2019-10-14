@@ -41,7 +41,7 @@ $(document).ready(function() {
 	if ($("#statusform").length > 0) { // Add/Update status
 		
 		$("#isAdminDeletable").on("change", function() {
-			$("#isNotRestrictedAdminDeletable").parent().parent().toggle($(this).is(":checked"));
+			$("#isRestrictedAdminDeletable").parent().parent().toggle($(this).is(":checked"));
 		}).change();
 		
 		$("#useAccessCheck").on("change", function() {
