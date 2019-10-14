@@ -324,5 +324,15 @@
 			]]>
 		</Query>
 	</Script>
+		
+	<Script version="23">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					CHANGE COLUMN `internalMessageAddedManagerSubject` `internalMessageAddedManagerEmailSubject` VARCHAR(255) NULL DEFAULT NULL,
+					CHANGE COLUMN `internalMessageAddedManagerMessage` `internalMessageAddedManagerEmailMessage` TEXT NULL;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

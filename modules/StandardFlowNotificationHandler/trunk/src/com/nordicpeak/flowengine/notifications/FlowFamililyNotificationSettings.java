@@ -160,13 +160,15 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
+	@Templated
 	@XMLElement
-	private String internalMessageAddedManagerSubject;
+	private String internalMessageAddedManagerEmailSubject;
 	
 	@DAOManaged
 	@WebPopulate(maxLength = 65536)
+	@Templated
 	@XMLElement
-	private String internalMessageAddedManagerMessage;
+	private String internalMessageAddedManagerEmailMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -900,24 +902,24 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.sendInternalMessageAddedManagerEmail = sendInternalMessageAddedManagerEmail;
 	}
 
-	public String getInternalMessageAddedManagerSubject() {
+	public String getInternalMessageAddedManagerEmailSubject() {
 
-		return internalMessageAddedManagerSubject;
+		return internalMessageAddedManagerEmailSubject;
 	}
 
-	public void setInternalMessageAddedManagerSubject(String internalMessageAddedManagerSubject) {
+	public void setInternalMessageAddedManagerEmailSubject(String internalMessageAddedManagerEmailSubject) {
 
-		this.internalMessageAddedManagerSubject = internalMessageAddedManagerSubject;
+		this.internalMessageAddedManagerEmailSubject = internalMessageAddedManagerEmailSubject;
 	}
 
-	public String getInternalMessageAddedManagerMessage() {
+	public String getInternalMessageAddedManagerEmailMessage() {
 
-		return internalMessageAddedManagerMessage;
+		return internalMessageAddedManagerEmailMessage;
 	}
 
-	public void setInternalMessageAddedManagerMessage(String internalMessageAddedManagerMessage) {
+	public void setInternalMessageAddedManagerEmailMessage(String internalMessageAddedManagerEmailMessage) {
 
-		this.internalMessageAddedManagerMessage = internalMessageAddedManagerMessage;
+		this.internalMessageAddedManagerEmailMessage = internalMessageAddedManagerEmailMessage;
 	}
 
 }

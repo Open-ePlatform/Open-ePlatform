@@ -746,18 +746,18 @@
 	
 		<div class="floatleft full bigmarginbottom" id="manager-internal-message-subject">
 		
-			<xsl:if test="not($errFieldNames = 'internalMessageAddedManagerSubject') and not($errFieldNames = 'internalMessageAddedManagerMessage')">
+			<xsl:if test="not($errFieldNames = 'internalMessageAddedManagerEmailSubject') and not($errFieldNames = 'internalMessageAddedManagerEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 		
-			<label for="internalMessageAddedManagerSubject" class="floatleft full">
-				<xsl:value-of select="$i18n.InternalMessageAddedManagerSubject" />
+			<label for="internalMessageAddedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.internalMessageAddedManagerEmailSubject" />
 			</label>
 			
 			<div class="floatleft full">
 				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'internalMessageAddedManagerSubject'"/>
-					<xsl:with-param name="name" select="'internalMessageAddedManagerSubject'"/>
+					<xsl:with-param name="id" select="'internalMessageAddedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'internalMessageAddedManagerEmailSubject'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
 			</div>
@@ -765,19 +765,19 @@
 		
 		<div class="floatleft full bigmarginbottom" id="manager-internal-message-message">
 			
-			<xsl:if test="not($errFieldNames = 'internalMessageAddedManagerSubject') and not($errFieldNames = 'internalMessageAddedManagerMessage')">
+			<xsl:if test="not($errFieldNames = 'internalMessageAddedManagerEmailSubject') and not($errFieldNames = 'internalMessageAddedManagerEmailMessage')">
 				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
 			</xsl:if>
 			
-			<label for="internalMessageAddedManagerMessage" class="floatleft full">
-				<xsl:value-of select="$i18n.InternalMessageAddedManagerMessage" />
+			<label for="internalMessageAddedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.internalMessageAddedManagerEmailMessage" />
 			</label>
 			
 			<div class="floatleft full">
 
 				<xsl:call-template name="createTextArea">
-					<xsl:with-param name="id" select="'internalMessageAddedManagerMessage'"/>
-					<xsl:with-param name="name" select="'internalMessageAddedManagerMessage'"/>
+					<xsl:with-param name="id" select="'internalMessageAddedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'internalMessageAddedManagerEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
@@ -1616,11 +1616,11 @@
 					<xsl:when test="fieldName = 'externalMessageReceivedManagerMessage'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedManagerMessage"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'internalMessageAddedManagerSubject'">
-						<xsl:value-of select="$i18n.InternalMessageAddedManagerSubject"/>
+					<xsl:when test="fieldName = 'internalMessageAddedManagerEmailSubject'">
+						<xsl:value-of select="$i18n.internalMessageAddedManagerEmailSubject"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'internalMessageAddedManagerMessage'">
-						<xsl:value-of select="$i18n.InternalMessageAddedManagerMessage"/>
+					<xsl:when test="fieldName = 'internalMessageAddedManagerEmailMessage'">
+						<xsl:value-of select="$i18n.internalMessageAddedManagerEmailMessage"/>
 					</xsl:when>
 					
 					<!-- Global -->

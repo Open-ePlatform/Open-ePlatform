@@ -410,10 +410,8 @@
 	<xsl:variable name="i18n.ExternalMessageReceivedManagerMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 	
 	<xsl:variable name="i18n.SendInternalMessageAddedManagerEmail">E-post till tilldelade handläggare vid ny intern notering</xsl:variable>
-	<xsl:variable name="i18n.InternalMessageAddedUserEmailSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
-	<xsl:variable name="i18n.InternalMessageAddedUserEmailMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
-	<xsl:variable name="i18n.InternalMessageAddedManagerSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
-	<xsl:variable name="i18n.InternalMessageAddedManagerMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.internalMessageAddedManagerEmailSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.internalMessageAddedManagerEmailMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>

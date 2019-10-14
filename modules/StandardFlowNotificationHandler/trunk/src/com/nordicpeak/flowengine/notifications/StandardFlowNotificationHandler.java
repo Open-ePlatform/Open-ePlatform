@@ -844,16 +844,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			notificationSettings.setExternalMessageReceivedManagerMessage(null);
 		}
 		
-		if (notificationSettings.getInternalMessageAddedManagerSubject() != null && notificationSettings.getInternalMessageAddedManagerSubject().trim().equals(internalMessageAddedManagerEmailSubject.trim())) {
-			
-			notificationSettings.setInternalMessageAddedManagerSubject(null);
-		}
-		
-		if (notificationSettings.getInternalMessageAddedManagerMessage() != null && notificationSettings.getInternalMessageAddedManagerMessage().trim().equals(internalMessageAddedManagerEmailMessage.trim())) {
-			
-			notificationSettings.setInternalMessageAddedManagerMessage(null);
-		}
-
 		if (notificationSettings.getFlowInstanceArchivedUserEmailMessage() != null && notificationSettings.getFlowInstanceArchivedUserEmailMessage().trim().equals(flowInstanceArchivedUserEmailMessage.trim())) {
 
 			notificationSettings.setFlowInstanceArchivedUserEmailMessage(null);
@@ -972,16 +962,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
 			}
 			
-			if (notificationSettings.getInternalMessageAddedManagerSubject() == null) {
-				
-				notificationSettings.setInternalMessageAddedManagerSubject(internalMessageAddedManagerEmailSubject);
-			}
-			
-			if (notificationSettings.getInternalMessageAddedManagerMessage() == null) {
-				
-				notificationSettings.setInternalMessageAddedManagerMessage(internalMessageAddedManagerEmailMessage);
-			}
-
 			if (notificationSettings.getFlowInstanceSubmittedGlobalEmailSubject() == null) {
 
 				notificationSettings.setFlowInstanceSubmittedGlobalEmailSubject(flowInstanceSubmittedGlobalEmailSubject);
@@ -1644,7 +1624,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
 
-			sendManagerEmails(flowInstance, null, notificationSettings.getInternalMessageAddedManagerSubject(), notificationSettings.getInternalMessageAddedManagerMessage(), excludedManagers, false);
+			sendManagerEmails(flowInstance, null, notificationSettings.getInternalMessageAddedManagerEmailSubject(), notificationSettings.getInternalMessageAddedManagerEmailMessage(), excludedManagers, false);
 		}
 	}
 
