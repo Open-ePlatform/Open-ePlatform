@@ -13,6 +13,8 @@
 	<xsl:variable name="java.notificationCompletion">Medborgare har kompletterat ärendet</xsl:variable>
 	<xsl:variable name="java.mentionedInFlowInstance">Du har blivit omnämd i ett meddelande</xsl:variable>
 	<xsl:variable name="java.managerSignedDetailsText">Signerad av handläggare</xsl:variable>
+	<xsl:variable name="java.signStatusDescription">Byte av status på ärende $flowInstanceID till $statusName</xsl:variable>
+	<xsl:variable name="java.signStatusSigningEventDescription">Signerad av handläggare för statusbyte</xsl:variable>
 
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	

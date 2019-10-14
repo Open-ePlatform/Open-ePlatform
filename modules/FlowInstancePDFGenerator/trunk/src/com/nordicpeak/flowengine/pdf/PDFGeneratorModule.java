@@ -51,6 +51,7 @@ import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.settings.Setting;
 import se.unlogic.hierarchy.core.settings.SingleFileUploadSetting;
+import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -58,6 +59,7 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileSettingProvider;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.collections.ReverseListIterator;
+import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.io.BinarySizes;
@@ -82,6 +84,7 @@ import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.FlowInstanceEventAttribute;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
@@ -152,6 +155,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	@TextFieldSettingDescriptor(name = "XHTML debug file", description = "The file to write the generated XHTML to for debug purposes.")
 	protected String xhtmlDebugFile;
 	
+	private AnnotatedDAO<FlowInstanceEventAttribute> flowInstanceEventAttributeDAO;
+	
 	@InstanceManagerDependency(required = true)
 	private EvaluationHandler evaluationHandler;
 	
@@ -198,6 +203,10 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	protected void createDAOs(DataSource dataSource) throws Exception {
 		
 		daoFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		
+		HierarchyAnnotatedDAOFactory hdaoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
+		
+		flowInstanceEventAttributeDAO = hdaoFactory.getDAO(FlowInstanceEventAttribute.class);
 	}
 	
 	@Override
@@ -338,11 +347,20 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				
 				submitDate = event.getAdded();
 				
-				if (event.getEventType() == EventType.SUBMITTED) {
+				if (event.getEventType() == EventType.SUBMITTED || Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
 					
 					documentElement.appendChild(event.toXML(doc));
 					
-					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
+					List<? extends ImmutableFlowInstanceEvent> flowInstanceEvents;
+					
+					if (extraElements != null && extraElements.containsKey("ForceLocalFlowInstanceEvents")) {
+						
+						flowInstanceEvents = instanceManager.getFlowInstance().getEvents();
+						
+					} else {
+						
+						flowInstanceEvents = browserModule.getFlowInstanceEvents((FlowInstance) instanceManager.getFlowInstance());
+					}
 					
 					String signingSessionID = event.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
 					
@@ -545,9 +563,16 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	}
 
 	private void setEventAttributes(FlowInstanceEvent event) throws SQLException {
-		
-		event.getAttributeHandler().setAttribute("pdf", "true");
-		daoFactory.getFlowInstanceEventDAO().update(event, EVENT_ATTRIBUTE_RELATION_QUERY, 10);
+
+		if (!event.getAttributeHandler().getPrimitiveBoolean("pdf")) {
+
+			event.getAttributeHandler().setAttribute("pdf", "true");
+
+			FlowInstanceEventAttribute flowInstanceEventAttribute = new FlowInstanceEventAttribute("pdf", "true");
+			flowInstanceEventAttribute.setEvent(event);
+
+			flowInstanceEventAttributeDAO.add(flowInstanceEventAttribute);
+		}
 	}
 	
 	@SuppressWarnings("deprecation")

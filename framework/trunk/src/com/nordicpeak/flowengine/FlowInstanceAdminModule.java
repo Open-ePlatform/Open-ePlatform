@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -44,6 +45,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.events.EventListener;
 import se.unlogic.hierarchy.core.interfaces.listeners.ServerStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
@@ -57,6 +59,7 @@ import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
 import se.unlogic.hierarchy.foregroundmodules.usersessionadmin.UserNameComparator;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -220,7 +223,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	@XSLVariable(prefix = "java.")
 	private String managerSignedDetailsText = "Signed by manager";
-
+	
+	@XSLVariable(prefix = "java.")
+	private String signStatusDescription = "Signing status change";
+	
+	@XSLVariable(prefix = "java.")
+	private String signStatusSigningEventDescription = "Signing PDF";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "High priority lapsed managing time", description = "The precent of the managing time of the current status that has to have elapsed for an instance to be classified as high priority", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected int highPriorityThreshold = 90;
@@ -847,7 +856,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateStatusRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
+		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)))) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			Status status;
 
@@ -892,7 +901,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateStatusSigning");
 
-		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser), validationErrors);
+		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, req, user, uriParser), validationErrors);
 
 		signingFormElement.appendChild(flowInstance.toXML(doc));
 		signingFormElement.appendChild(status.toXML(doc));
@@ -905,17 +914,51 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return response;
 	}
 
-	private GenericSigningRequest getUpdateStatusSigningRequest(FlowInstance flowInstance, Status status, URIParser uriParser) {
+	private GenericSigningRequest getUpdateStatusSigningRequest(FlowInstance flowInstance, Status status, HttpServletRequest req, User user, URIParser uriParser) throws IOException, SQLException, FlowEngineException, AccessDeniedException {
 
-		//TODO i18n!
-		String description = "Byte av status på ärende " + flowInstance.getFlowInstanceID() + " till " + status.getName();
+		String description = signStatusDescription.replace("$flowInstanceID", flowInstance.getFlowInstanceID().toString()).replace("$statusName", status.getName());
 
-		//TODO checksum of latest available PDF
-		String dataToSign = "Change status of flow instance " + flowInstance.getFlowInstanceID() + " to " + status.getStatusID();
+		ImmutableFlowInstanceEvent latestSigningPDFEvent = FlowInstanceUtils.getLastestSigningPDFEvent(flowInstance);
+		File signingPDF = null;
+
+		if (latestSigningPDFEvent == null) {
+
+			FlowInstanceManager instanceManager = (FlowInstanceManager) req.getSession(true).getAttribute("UpdateStatusSigning:" + flowInstance.getFlowInstanceID());
+
+			if (instanceManager == null) {
+				
+				instanceManager = getImmutableFlowInstanceManager(flowInstance.getFlowInstanceID());
+				
+				try {
+					Map<String, String> extraElements = new HashMap<String, String>();
+					extraElements.put("Signing", "true");
+
+					signingPDF = pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user, extraElements);
+					req.getSession(false).setAttribute("UpdateStatusSigning:" + flowInstance.getFlowInstanceID(), instanceManager);
+
+				} catch (Exception e) {
+
+					log.error("Error generating temporary PDF for flow instance " + instanceManager, e);
+				}
+				
+			} else {
+				
+				signingPDF = pdfProvider.getTemporaryPDF(instanceManager);
+			}
+			
+		} else {
+			
+			signingPDF = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), latestSigningPDFEvent.getEventID());
+		}
+		
+		if (signingPDF == null) {
+			throw new RuntimeException("Unable to find signing PDF for " + latestSigningPDFEvent + ", " + flowInstance);
+		}
+		
 		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/signstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID();
 		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsignstatus/" + flowInstance.getFlowInstanceID() + "/" + status.getStatusID() + "?signreq=1";
 
-		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
+		return new SimpleSigningRequest(description, signingPDF, signingFormURL, processSigningURL);
 	}
 
 	@WebPublic(alias = "processsignstatus")
@@ -923,7 +966,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		FlowInstance flowInstance;
 
-		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)), null, getUpdateStatusRelations())) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
+		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(2)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(2)))) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {
 
 			String statusID = uriParser.get(3);
 
@@ -955,7 +998,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						throw new ModuleConfigurationException("genericSigningProvider is null");
 					}
 
-					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, uriParser));
+					SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, getUpdateStatusSigningRequest(flowInstance, status, req, user, uriParser));
 
 					if (res.isCommitted()) {
 						return null;
@@ -964,16 +1007,123 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					if (signingResponse != null) {
 
 						log.info("User " + user + " signed changing status of instance " + flowInstance + " from " + previousStatus + " to " + status);
+						
+						String signingSessionID = "managerUpdateStatus-" + Long.toString(System.currentTimeMillis());
 
+						FlowInstanceManager instanceManager = null;
+						FlowInstanceEvent latestSigningPDFEvent = (FlowInstanceEvent) FlowInstanceUtils.getLastestSigningPDFEvent(flowInstance);
+						
+						Map<String, String> signingEventAttributes = new HashMap<String, String>();
+						signingEventAttributes.putAll(signingResponse.getSigningAttributes());
+						signingEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+						
+						if (latestSigningPDFEvent == null)  {
+							
+							signingEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF);
+							
+						} else {
+							
+							signingEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING);
+						}
+						
+						FlowInstanceEvent signingEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.SIGNED, signStatusSigningEventDescription, user, null, signingEventAttributes);
+						
+						if (latestSigningPDFEvent == null) {
+							
+							instanceManager = (FlowInstanceManager) req.getSession(true).getAttribute("UpdateStatusSigning:" + flowInstance.getFlowInstanceID());
+
+							if (instanceManager == null) {
+								throw new NullPointerException("Session instanceManager not set");
+							}
+							
+							((FlowInstance) instanceManager.getFlowInstance()).getEvents().add(signingEvent);
+							
+							try {
+								if (!pdfProvider.saveTemporaryPDF(instanceManager, signingEvent)) {
+				
+									log.error("Unable to find temporary PDF for flow instance " + instanceManager);
+								}
+								
+							} catch (Exception e) {
+								
+								log.error("Error generating temporary PDF for flow instance " + instanceManager, e);
+							}
+							
+							req.getSession(false).removeAttribute("UpdateStatusSigning:" + flowInstance.getFlowInstanceID());
+							
+						} else {
+							
+							instanceManager = getImmutableFlowInstanceManager(flowInstance.getFlowInstanceID());
+							
+							// Update previous change status signatures so they get included in new PDF
+							for (FlowInstanceEvent event : new ReverseListIterator<FlowInstanceEvent>(((FlowInstance) instanceManager.getFlowInstance()).getEvents())) {
+								
+								MutableAttributeHandler attributeHandler = event.getAttributeHandler();
+								
+								if (event.getEventType() == EventType.SIGNED) {
+									
+									String eventSigningSessionID = attributeHandler.getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
+									String eventSingingSessionEventType = attributeHandler.getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT);
+									
+									if (eventSigningSessionID != null && eventSigningSessionID.startsWith("managerUpdateStatus-")
+									    && (Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING.equals(eventSingingSessionEventType) || Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(eventSingingSessionEventType))
+									) {
+										attributeHandler.setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+									}
+									
+								} else if (event.getEventType() == EventType.UPDATED) {
+									
+									break;
+								}
+							}
+							
+							String oldSigningSessionID = latestSigningPDFEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION);
+							
+							// Update original signature session signature events so they get included in new PDF
+							for (FlowInstanceEvent flowInstanceEvent : ((FlowInstance) instanceManager.getFlowInstance()).getEvents()) {
+								
+								MutableAttributeHandler attributeHandler = flowInstanceEvent.getAttributeHandler();
+								
+								if (flowInstanceEvent.getEventType() == EventType.SIGNED
+								    && oldSigningSessionID.equals(attributeHandler.getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION))
+								    && !Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(attributeHandler.getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
+								) {
+									attributeHandler.setAttribute(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+								}
+							}
+						}
+						
 						flowInstance.setStatus(status);
 						flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
-						this.daoFactory.getFlowInstanceDAO().update(flowInstance);
+						
+						Map<String, String> statusUpdatedEventAttributes = new HashMap<String, String>();
+						statusUpdatedEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION, signingSessionID);
+						statusUpdatedEventAttributes.put(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT, Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF);
 
-						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, managerSignedDetailsText, user, null, signingResponse.getSigningAttributes());
+						FlowInstanceEvent statusUpdatedEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, user, null, statusUpdatedEventAttributes);
+						
+						try {
+							((FlowInstance) instanceManager.getFlowInstance()).getEvents().add(statusUpdatedEvent);
+							
+							Map<String, String> extraElements = new HashMap<String, String>();
+							extraElements.put("ForceLocalFlowInstanceEvents", "true");
+							
+							pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user, extraElements, statusUpdatedEvent);
 
+							if (!pdfProvider.saveTemporaryPDF(instanceManager, statusUpdatedEvent)) {
+
+								log.error("Unable to find temporary PDF for flow instance " + instanceManager);
+							}
+
+						} catch (Exception e) {
+		
+							log.error("Error generating temporary PDF for flow instance " + instanceManager, e);
+						}
+						
+						daoFactory.getFlowInstanceDAO().update(flowInstance);
+						
 						eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-
-						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousStatus, user), EventTarget.ALL);
+						eventHandler.sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, statusUpdatedEvent, getSiteProfile(flowInstance), previousStatus, user), EventTarget.ALL);
 
 						redirectToMethod(req, res, "/overview/" + flowInstance.getFlowInstanceID());
 						return null;
