@@ -444,6 +444,10 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		TextFieldQuery query = queryInstance.getQuery();
 		
+		if (query.isLockForManagerUpdate() && requestMetadata.isManager()) {
+			return;
+		}
+		
 		if (query.getEndpoint() != null && !queryInstance.isInitialized()) {
 			
 			if (allowPartialPopulation) {

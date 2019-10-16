@@ -87,6 +87,7 @@
 	<xsl:template match="ShowQueryForm">
 	
 		<xsl:variable name="queryID" select="concat('query_', TextFieldQueryInstance/TextFieldQuery/queryID)" />
+		<xsl:variable name="locked" select="TextFieldQueryInstance/TextFieldQuery/lockForManagerUpdate = 'true' and RequestMetadata/manager = 'true'" />
 	
 		<div class="query textfieldquery" id="{$queryID}">
 			<xsl:attribute name="class">
@@ -158,7 +159,9 @@
 				</xsl:if>
 				
 				<fieldset>
-					<xsl:apply-templates select="TextFieldQueryInstance/TextFieldQuery/Fields/TextField" />
+					<xsl:apply-templates select="TextFieldQueryInstance/TextFieldQuery/Fields/TextField">
+						<xsl:with-param name="locked" select="$locked" />
+					</xsl:apply-templates>
 				</fieldset>
 		
 			</article>
@@ -177,6 +180,7 @@
 	</xsl:template>
 	
 	<xsl:template match="TextField">
+		<xsl:param name="locked" />
 
 		<xsl:variable name="textFieldID" select="textFieldID"/>
 
@@ -267,7 +271,7 @@
 					</xsl:choose>
 				</xsl:with-param>
 				<xsl:with-param name="disabled">
-					<xsl:if test="disabled = 'true' or ../../../../Locked or ../../../../ValidationErrors/validationError[messageKey = 'APIRequestException']">
+					<xsl:if test="disabled = 'true' or ../../../../Locked or ../../../../ValidationErrors/validationError[messageKey = 'APIRequestException'] or $locked">
 						<xsl:text>true</xsl:text>
 					</xsl:if>
 				</xsl:with-param>

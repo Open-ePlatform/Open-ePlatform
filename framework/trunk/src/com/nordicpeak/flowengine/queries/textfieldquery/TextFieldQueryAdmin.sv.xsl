@@ -51,6 +51,7 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 	<xsl:variable name="i18n.Disabled">Lås fältet</xsl:variable>
 	<xsl:variable name="i18n.DefaultValue">Standardvärde</xsl:variable>
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
+	<xsl:variable name="i18n.lockForManagerUpdate">Lås fråga vid ändring av handläggare</xsl:variable>
 	
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	<xsl:variable name="i18n.No">Nej</xsl:variable>

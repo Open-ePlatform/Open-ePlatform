@@ -55,6 +55,11 @@ public class TextFieldQuery extends BaseQuery {
 	@XMLElement
 	private boolean lockOnOwnershipTransfer;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockForManagerUpdate;
+
 	@DAOManaged(dontUpdateIfNull = true)
 	@OneToMany(autoUpdate = true, autoAdd = true)
 	@XMLElement(fixCase = true)
@@ -255,6 +260,7 @@ public class TextFieldQuery extends BaseQuery {
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		layout = XMLValidationUtils.validateParameter("layout", xmlParser, true, TextFieldCRUD.LAYOUT_POPULATOR, errors);
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
+		lockForManagerUpdate = xmlParser.getPrimitiveBoolean("lockForManagerUpdate");
 
 		List<XMLParser> xmlParsers = xmlParser.getNodes("Fields/TextField");
 
@@ -295,6 +301,16 @@ public class TextFieldQuery extends BaseQuery {
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
 
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
+
+	public boolean isLockForManagerUpdate() {
+
+		return lockForManagerUpdate;
+	}
+
+	public void setLockForManagerUpdate(boolean lockForManagerUpdate) {
+
+		this.lockForManagerUpdate = lockForManagerUpdate;
 	}
 
 }

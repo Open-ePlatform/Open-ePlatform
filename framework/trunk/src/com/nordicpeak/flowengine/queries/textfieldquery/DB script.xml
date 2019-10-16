@@ -197,4 +197,12 @@
 		</Query>
 	</Script>	
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_field_queries` ADD COLUMN `lockForManagerUpdate` TINYINT(1) UNSIGNED NOT NULL AFTER `lockOnOwnershipTransfer`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
