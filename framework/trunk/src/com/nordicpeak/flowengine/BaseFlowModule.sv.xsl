@@ -81,7 +81,7 @@
 	<xsl:variable name="i18n.ManagerMessageSentEvent">Meddelande skickat till kund</xsl:variable>
 	<xsl:variable name="i18n.OtherEvent">Annan händelse</xsl:variable>
 	
-	<xsl:variable name="i18n.AnonymousUser">anonym användare</xsl:variable>
+	<xsl:variable name="i18n.AnonymousUser">Ej inloggad användare</xsl:variable>
 	<xsl:variable name="i18n.RemovedUser">Borttagen användare</xsl:variable>
 	<xsl:variable name="i18n.Payment">Betala</xsl:variable>
 	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
