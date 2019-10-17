@@ -6,11 +6,11 @@ $(document).ready(function() {
 		
 		if(checked){
 			
-			$("#share-button").removeClass("disabled");
+			$(".share-button").removeClass("disabled");
 			
 		}else{
 		
-			$("#share-button").addClass("disabled");
+			$(".share-button").addClass("disabled");
 		}
 		
 	});
@@ -25,7 +25,7 @@ $(document).ready(function() {
 			
 		}else{
 		
-			$("#share-submit-button").setAttr("disabled","true");
+			$("#share-submit-button").attr("disabled","true");
 		}
 		
 	});
@@ -34,7 +34,7 @@ $(document).ready(function() {
 
 function checkState(event){
 	
-	if($("#share-button").hasClass("disabled")){
+	if($(".share-button").hasClass("disabled")){
 		
 		event.stopPropagation();
 		

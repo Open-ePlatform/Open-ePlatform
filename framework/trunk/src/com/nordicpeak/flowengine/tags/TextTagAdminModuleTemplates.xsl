@@ -72,7 +72,7 @@
 						
 						<xsl:if test="TagSharingTargets and TextTags">
 						
-							<a class="btn btn-blue btn-right disabled open-help" id="share-button" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
+							<a class="share-button btn btn-blue btn-right disabled open-help" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
 						
 						</xsl:if>
 				
@@ -156,7 +156,7 @@
 					
 					<xsl:if test="TagSharingTargets and TextTags">
 					
-						<a class="btn btn-blue btn-right disabled open-help" id="share-button" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
+						<a class="share-button btn btn-blue btn-right disabled open-help" data-help-box="tag-sharing" style="margin-right: 2px" href="#" onclick="checkState(event);"><xsl:value-of select="$i18n.ShareTextTags" /></a>
 					
 					</xsl:if>
 			
