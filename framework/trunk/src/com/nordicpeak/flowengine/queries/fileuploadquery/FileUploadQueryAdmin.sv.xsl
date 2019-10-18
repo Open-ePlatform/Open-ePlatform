@@ -22,7 +22,7 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	<xsl:variable name="i18n.maxFileSize">maximal filstorlek som får bifogas i MB</xsl:variable>
 	<xsl:variable name="i18n.MaxFileNameLength">Maximalt antal tecken i filnamnet, inklusive filändelse</xsl:variable>
 	<xsl:variable name="i18n.maxFileNameLength">maximalt antal tecken i filnamnet, maximalt värde är 255</xsl:variable>
-	<xsl:variable name="i18n.inlinePDFAttachments">Bifoga PDF filer direkt i ärendets PDF</xsl:variable>
+	<xsl:variable name="i18n.inlinePDFAttachments">Inkludera bifogade PDF filer som sidor i ärendets PDF istället för som separata bilagor</xsl:variable>
 	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 
 	<xsl:variable name="i18n.attachmentNamePrefixMode">filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>
