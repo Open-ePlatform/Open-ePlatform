@@ -166,7 +166,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User approval module URL", description = "The full URL of the user approval module", required = true)
-	protected String userApprovalModuleAlias = "not set";
+	protected String userApprovalModuleAlias = null;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Activity group started email subject", description = "The subject of emails sent to the users when an activity group is started for them", required = true)
@@ -201,7 +201,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
 
-	@InstanceManagerDependency(required = true)
 	protected StandardFlowNotificationHandler notificationHandler;
 
 	private FlowAdminModule flowAdminModule;
@@ -221,7 +220,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
-
+		
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 
 		if (!systemInterface.getInstanceHandler().addInstance(FlowApprovalAdminModule.class, this)) {
@@ -984,6 +983,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		sharedTagSources.add(ACTIVITY_GROUP_TAG_SOURCE_FACTORY.getTagSource(activityGroup));
 		sharedTagSources.add(FLOW_INSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
+		
 		sharedTagSources.add(new SingleTagSource("$myActivitiesURL", userApprovalModuleAlias));
 
 		HashSet<User> managers = new HashSet<>();
@@ -1404,5 +1404,18 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 		
 		throw new URINotFoundException(uriParser);
+	}
+
+	@InstanceManagerDependency(required = true)
+	public void setNotificationHandler(StandardFlowNotificationHandler notificationHandler) {
+		
+		if(notificationHandler != null && (this.userApprovalModuleAlias == null || this.userApprovalModuleAlias.equals("not set"))) {
+			
+			String baseURL = notificationHandler.getUserFlowInstanceModuleAlias(null);
+			
+			this.userApprovalModuleAlias = StringUtils.substringBefore(baseURL, StringUtils.substringAfterLast(baseURL, "/")) + "flowapproval";
+		}
+		
+		this.notificationHandler = notificationHandler;
 	}
 }
