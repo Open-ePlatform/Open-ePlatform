@@ -163,7 +163,7 @@
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
 		&lt;p&gt;
-			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+			&lt;a href="$flowInstance.notesUrl"&gt;$flowInstance.notesUrl&lt;/a&gt;
 		&lt;/p&gt;
 	
 	</xsl:variable>
@@ -364,7 +364,8 @@
 	<xsl:variable name="i18n.FlowInstanceIDTag">Ärende nummer</xsl:variable>
 	<xsl:variable name="i18n.Tags.FlowInstance.ExternalID">Externt ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceURLTag">Adress till ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
-	<xsl:variable name="i18n.FlowInstanceMessagesURLTag">Adress till meddelandefliken i ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceMessagesURLTag">Adress till meddelande-fliken i ärendet (kan ej användas i meddelande till ej inloggade användare)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceNotesURLTag">Adress till interna noteringar-fliken i ärendet</xsl:variable>
 	<xsl:variable name="i18n.StatusTag">Ärende status</xsl:variable>
 	<xsl:variable name="i18n.Tags.Manager.Firstname">Handläggarens förnamn</xsl:variable>
 	<xsl:variable name="i18n.Tags.Manager.Lastname">Handläggarens efternamn</xsl:variable>

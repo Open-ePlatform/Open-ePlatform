@@ -128,9 +128,29 @@
 		
 		</xsl:if>
 		
-		<xsl:if test="NotificationSettings/HasEnabledGlobalNotifications">
+		<xsl:if test="NotificationSettings/HasEnabledGroupNotifications">
 		
 			<xsl:if test="NotificationSettings/HasEnabledUserNotifications or NotificationSettings/HasEnabledManagerNotifications">
+				<br/>
+			</xsl:if>
+		
+			<span class="bold"><xsl:value-of select="$i18n.GroupNotifications"/></span>
+		
+			<ul class="nomargin">
+
+				<xsl:if test="NotificationSettings/sendFlowInstanceAssignedGroupEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceAssignedGroupEmail"/>
+					</li>
+				</xsl:if>
+
+			</ul>
+		
+		</xsl:if>
+		
+		<xsl:if test="NotificationSettings/HasEnabledGlobalNotifications">
+		
+			<xsl:if test="NotificationSettings/HasEnabledUserNotifications or NotificationSettings/HasEnabledManagerNotifications or NotificationSettings/HasEnabledGroupNotifications">
 				<br/>
 			</xsl:if>
 		
@@ -172,7 +192,7 @@
 		
 		</xsl:if>
 		
-		<xsl:if test="not(NotificationSettings/HasEnabledUserNotifications) and not(NotificationSettings/HasEnabledManagerNotifications) and not(NotificationSettings/HasEnabledGlobalNotifications)">
+		<xsl:if test="not(NotificationSettings/HasEnabledUserNotifications) and not(NotificationSettings/HasEnabledManagerNotifications) and not(NotificationSettings/HasEnabledGroupNotifications) and not(NotificationSettings/HasEnabledGlobalNotifications)">
 		
 			<p class="nomargin"><xsl:value-of select="$i18n.NoNotificationsEnabled"/></p>
 		
@@ -724,7 +744,7 @@
 				
 			</div>
 			
-			<xsl:call-template name="addUserTagsTable"/>
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
@@ -784,7 +804,7 @@
 				
 			</div>
 			
-			<xsl:call-template name="addUserTagsTable"/>
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 	
 		<div class="floatleft full bigmarginbottom margintop internal">
@@ -1484,6 +1504,14 @@
 					</td>
 					<td>
 						<xsl:value-of select="$i18n.FlowInstanceMessagesURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.notesUrl</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceNotesURLTag"/>
 					</td>
 				</tr>
 				<tr>

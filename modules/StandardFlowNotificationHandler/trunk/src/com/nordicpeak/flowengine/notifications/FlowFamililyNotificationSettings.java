@@ -589,12 +589,17 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledUserNotifications");
 		}
 
-		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail) {
+		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail || sendInternalMessageAddedManagerEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
+		
+		if (sendFlowInstanceAssignedGroupEmail) {
+			
+			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
+		}
 
-		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail) {
+		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail || sendFlowInstanceArchivedGlobalEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGlobalNotifications");
 		}

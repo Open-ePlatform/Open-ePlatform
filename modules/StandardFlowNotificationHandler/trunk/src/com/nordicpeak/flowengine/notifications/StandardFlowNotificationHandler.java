@@ -1915,8 +1915,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			sharedTagSources.add(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource(event.getFlowInstance()));
 			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource(event.getFlowInstance().getFlow()));
 			sharedTagSources.add(POSTER_TAG_SOURCE_FACTORY.getTagSource(event.getUser()));
-			sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/overview/" + event.getFlowInstance().getFlowInstanceID() + "#notes"));
+			sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/overview/" + event.getFlowInstance().getFlowInstanceID()));
 			sharedTagSources.add(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/messages/" + event.getFlowInstance().getFlowInstanceID()));
+			sharedTagSources.add(new SingleTagSource("$flowInstance.notesUrl", getFlowInstanceAdminModuleAlias(event.getFlowInstance()) + "/notes/" + event.getFlowInstance().getFlowInstanceID()));
 
 			for (User user : event.getMentionedUsers()) {
 
@@ -2072,6 +2073,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", url));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -2152,6 +2154,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstanceSign.url", url));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 
@@ -2201,6 +2204,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -2245,6 +2249,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
 
 		SimpleSMS sms = new SimpleSMS();
 
@@ -2299,6 +2304,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		sharedTagSources.add(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		sharedTagSources.add(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
 		sharedTagSources.add(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlowInstanceID()));
+		sharedTagSources.add(new SingleTagSource("$flowInstance.notesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
@@ -2357,6 +2363,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getFlowInstanceAdminModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlowInstanceID()));
 		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getFlowInstanceAdminModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlowInstanceID()));
 
 		if (contact != null) {
 
@@ -2667,6 +2674,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
 		tags.add("$flowInstance.messagesUrl");
+		tags.add("$flowInstance.notesUrl");
 
 		return tags;
 	}
@@ -2682,6 +2690,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tags.addAll(StandardFlowNotificationHandler.MANAGER_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
 		tags.add("$flowInstance.messagesUrl");
+		tags.add("$flowInstance.notesUrl");
 
 		return tags;
 	}
@@ -2696,6 +2705,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tags.addAll(StandardFlowNotificationHandler.CONTACT_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
 		tags.add("$flowInstance.messagesUrl");
+		tags.add("$flowInstance.notesUrl");
 
 		return tags;
 	}
@@ -2711,6 +2721,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		tags.addAll(StandardFlowNotificationHandler.SIGNING_PARTY_TAG_SOURCE_FACTORY.getTagsSet());
 		tags.add("$flowInstance.url");
 		tags.add("$flowInstance.messagesUrl");
+		tags.add("$flowInstance.notesUrl");
 
 		return tags;
 	}
