@@ -100,7 +100,7 @@ public class IntegrationMessage {
      */
     public List<Attachment> getAttachments() {
         if (attachments == null) {
-            attachments = new ArrayList<>();
+            attachments = new ArrayList<Attachment>();
         }
         return this.attachments;
     }

@@ -19,10 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;choice>
- *           &lt;element name="flowInstanceID" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *           &lt;element name="externalID" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}ExternalID"/>
- *         &lt;/choice>
  *         &lt;element name="managers" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}Principal" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="managerGroups" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}PrincipalGroup" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
@@ -35,66 +31,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "flowInstanceID",
-    "externalID",
     "managers",
     "managerGroups"
 })
-@XmlRootElement(name = "setManagers")
-public class SetManagers {
+@XmlRootElement(name = "getManagersResponse")
+public class GetManagersResponse {
 
-    protected Integer flowInstanceID;
-    protected ExternalID externalID;
     protected List<Principal> managers;
     protected List<PrincipalGroup> managerGroups;
-
-    /**
-     * Gets the value of the flowInstanceID property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getFlowInstanceID() {
-        return flowInstanceID;
-    }
-
-    /**
-     * Sets the value of the flowInstanceID property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setFlowInstanceID(Integer value) {
-        this.flowInstanceID = value;
-    }
-
-    /**
-     * Gets the value of the externalID property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExternalID }
-     *     
-     */
-    public ExternalID getExternalID() {
-        return externalID;
-    }
-
-    /**
-     * Sets the value of the externalID property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExternalID }
-     *     
-     */
-    public void setExternalID(ExternalID value) {
-        this.externalID = value;
-    }
 
     /**
      * Gets the value of the managers property.

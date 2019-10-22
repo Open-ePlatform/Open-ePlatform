@@ -466,6 +466,60 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			throw e;
 		}
 	}
+	
+	@Override
+	public GetManagersResponse getManagers(GetManagersRequest parameters) throws AccessDeniedException, FlowInstanceNotFoundException {
+
+		try {
+			checkDependencies();
+
+			Integer flowInstanceID = null;
+			ExternalID externalID = null;
+			
+			if(parameters != null) {
+				
+				flowInstanceID = parameters.getFlowInstanceID();
+				externalID = parameters.getExternalID();
+			}
+			
+			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+			log.info("User " + callback.getUser() + " requested get managers for flow instance " + flowInstance);
+
+			GetManagersResponse response = new GetManagersResponse();
+			
+			if(flowInstance.getManagers() != null) {
+				
+				for(User user : flowInstance.getManagers()) {
+					
+					Principal principal = new Principal();
+					
+					principal.setUserID(user.getUsername());
+					principal.setName(user.getFirstname() + " " + user.getLastname());
+					
+					response.getManagers().add(principal);
+				}
+			}
+			
+			if(flowInstance.getManagerGroups() != null) {
+				
+				for(Group group : flowInstance.getManagerGroups()) {
+					
+					PrincipalGroup principalGroup = new PrincipalGroup();
+					
+					principalGroup.setName(group.getName());
+				}
+			}
+
+			return response;
+
+		} catch (RuntimeException e) {
+
+			log.error("Error getting managers", e);
+
+			throw e;
+		}
+	}
 
 	private List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Principal> selectedUsers) throws AccessDeniedException {
 

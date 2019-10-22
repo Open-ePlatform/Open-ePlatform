@@ -45,6 +45,14 @@
 
 	</wsdl:message>
 
+	<wsdl:message name="getManagersRequest">
+
+		<wsdl:part element="impl:getManagersRequest" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
 	<wsdl:message name="confirmDeliveryRequest">
 
 		<wsdl:part element="impl:confirmDelivery" name="parameters">
@@ -88,6 +96,14 @@
 	<wsdl:message name="setManagersResponse">
 
 		<wsdl:part element="impl:setManagersResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
+	<wsdl:message name="getManagersResponse">
+
+		<wsdl:part element="impl:getManagersResponse" name="parameters">
 
 		</wsdl:part>
 
@@ -260,6 +276,24 @@
 			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException" />
 			
 		</wsdl:operation>
+		
+		<wsdl:operation name="getManagers">
+		
+			<wsdl:documentation>This method is used to get the managers currently handling the flow instance.</wsdl:documentation>
+
+			<wsdl:input message="impl:getManagersRequest" name="getManagersRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:getManagersResponse" name="getManagersResponse">
+
+			</wsdl:output>
+
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException" />
+
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException" />
+			
+		</wsdl:operation>		
 		
 		<wsdl:operation name="setAttribute">
 
@@ -470,6 +504,36 @@
 			</wsdl:fault>
 			
 		</wsdl:operation>
+		
+		<wsdl:operation name="getManagers">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="getManagersRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="getManagersResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>
+			
+		</wsdl:operation>		
 		
 		<wsdl:operation name="setAttribute">
 

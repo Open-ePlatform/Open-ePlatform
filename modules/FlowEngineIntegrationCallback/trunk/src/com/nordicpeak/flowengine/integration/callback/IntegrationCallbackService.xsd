@@ -185,6 +185,26 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="getManagersRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>	
+	
+	<xs:element name="getManagersResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="managers" type="Principal" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="managerGroups" type="PrincipalGroup" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>	
+	
 	<xs:element name="setAttribute">
 		<xs:complexType>
 			<xs:sequence>

@@ -139,4 +139,10 @@ public class DummyIntegrationCallback extends BaseWSModuleService implements Int
 
 		checkFlowInstanceID(flowInstanceID);
 	}
+
+	@Override
+	public GetManagersResponse getManagers(GetManagersRequest parameters) throws AccessDeniedException, FlowInstanceNotFoundException {
+
+		return new GetManagersResponse();
+	}
 }
