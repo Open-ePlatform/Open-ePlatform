@@ -28,7 +28,7 @@ public class StandardTextsCRUD extends ModularCRUD<InformerStandardText, Integer
 	@Override
 	protected void validateUpdatePopulation(InformerStandardText bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
-		if (bean.getType() == StandardTextType.TEXTFIELD && bean.getValue().length() > 1024) {
+		if (bean.getValue() != null && bean.getType() == StandardTextType.TEXTFIELD && bean.getValue().length() > 1024) {
 			
 			throw new ValidationException(new ValidationError("value", ValidationErrorType.TooLong));
 		}
