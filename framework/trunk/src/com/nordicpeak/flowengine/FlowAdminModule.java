@@ -3397,18 +3397,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@Override
-	public Collection<Integer> getAllowedGroupIDs() {
+	public List<Integer> getAllowedGroupIDs() {
 
 		return adminGroupIDs;
 	}
 
 	@Override
-	public Collection<Integer> getAllowedUserIDs() {
+	public List<Integer> getAllowedUserIDs() {
 
 		return adminUserIDs;
 	}
 
-	public Collection<Integer> getPublisherGroupIDs() {
+	public List<Integer> getPublisherGroupIDs() {
 
 		return publisherGroupIDs;
 	}
