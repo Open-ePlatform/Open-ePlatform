@@ -6255,7 +6255,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			String extensionRequestURL = getFragmentExtensionViewProviderURL(fragmentExtension, flow);
 			
-			if (uriParser.size() >= 4 && "static".equals(uriParser.get(4))) {
+			if (uriParser.size() >= 4 && "static".equals(uriParser.get(4)) && fragmentExtension instanceof Module) {
 				
 				return staticContentModule.processRequest((Module<?>) fragmentExtension, fragmentExtension.getModuleDescriptor(), req, res, user, uriParser.getNextLevel(4));
 			}
