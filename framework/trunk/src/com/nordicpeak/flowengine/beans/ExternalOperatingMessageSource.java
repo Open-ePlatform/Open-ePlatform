@@ -7,18 +7,21 @@ import se.unlogic.standardutils.xml.XMLElement;
 public class ExternalOperatingMessageSource extends GeneratedElementable {
 
 	@XMLElement
-	private String name;
+	private final String name;
 
-	private String url;
+	private final String url;
+
+	private final String encoding;
 
 	@XMLElement
 	private boolean enabled;
 
-	public ExternalOperatingMessageSource(String name, String url, boolean enabled) {
+	public ExternalOperatingMessageSource(String name, String url, String encoding, boolean enabled) {
 
 		super();
 		this.name = name;
 		this.url = url;
+		this.encoding = encoding;
 		this.enabled = enabled;
 	}
 
@@ -27,19 +30,9 @@ public class ExternalOperatingMessageSource extends GeneratedElementable {
 		return name;
 	}
 
-	public void setName(String name) {
-
-		this.name = name;
-	}
-
 	public String getURL() {
 
 		return url;
-	}
-
-	public void setURL(String url) {
-
-		this.url = url;
 	}
 
 	public boolean isEnabled() {
@@ -52,10 +45,14 @@ public class ExternalOperatingMessageSource extends GeneratedElementable {
 		this.enabled = enabled;
 	}
 
+	public String getEncoding() {
+
+		return encoding;
+	}
+	
 	@Override
 	public String toString() {
 
-		return name + " (name: " + name + ", url: " + url + ", enabled: " + enabled + ")";
+		return name + " (url: " + url + ", enabled: " + enabled + ")";
 	}
-
 }

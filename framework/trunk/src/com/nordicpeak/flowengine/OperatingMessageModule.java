@@ -124,11 +124,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	protected boolean enableSiteProfileSupport;
 
 	@ModuleSetting(allowsNull = true)
-	@TextAreaSettingDescriptor(name = "Subscriptions", description = "name:http|https://url", formatValidator = OperatingMessageSubscriptionValidator.class)
+	@TextAreaSettingDescriptor(name = "Subscriptions", description = "name:http|https://url#encoding (encoding is optional)", formatValidator = OperatingMessageSubscriptionValidator.class)
 	protected List<String> subscriptions;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Subscription file encoding", description = "The encoding to use when parsing subscriptions")
+	@TextFieldSettingDescriptor(name = "Default subscription file encoding", description = "The encoding to use when parsing subscriptions which have no encoding set")
 	protected String subscriptionFileEncoding = "ISO-8859-1";
 
 	@ModuleSetting
@@ -292,8 +292,20 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 					String name = splits[0];
 					String url = splits[1];
+					
+					String encoding;
+					
+					if(url.contains("#")) {
+						
+						encoding = StringUtils.substringAfter(url, "#");
+						url = StringUtils.substringBefore(url, "#");
+						
+					}else {
+						
+						encoding = this.subscriptionFileEncoding;
+					}
 
-					externalMessageSources.add(new ExternalOperatingMessageSource(name, url, moduleDescriptor.getMutableSettingHandler().getPrimitiveBoolean("source." + name)));
+					externalMessageSources.add(new ExternalOperatingMessageSource(name, url, encoding, moduleDescriptor.getMutableSettingHandler().getPrimitiveBoolean("source." + name)));
 				}
 			}
 		}
@@ -537,7 +549,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 				listRequest.setConnectionTimeout(connectionTimeout * MillisecondTimeUnits.SECOND);
 				listRequest.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
-				String response = HTTPUtils.sendHTTPGetRequest(listRequest, Charset.forName(subscriptionFileEncoding)).getValue();
+				String response = HTTPUtils.sendHTTPGetRequest(listRequest, Charset.forName(source.getEncoding())).getValue();
 
 				if (!StringUtils.isEmpty(response)) {
 
