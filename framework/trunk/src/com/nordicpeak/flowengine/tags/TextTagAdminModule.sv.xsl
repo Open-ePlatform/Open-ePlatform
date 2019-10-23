@@ -4,7 +4,11 @@
 
 	<xsl:include href="TextTagAdminModuleTemplates.xsl"/>
 	
-	<xsl:variable name="i18n.TextTagDescription">Taggar används för att kunna återanvända texter i e-tjänsteplattformen. Läs mer om hur du använder taggar under "Hjälp" nedan.</xsl:variable>
+	<xsl:variable name="i18n.TextTagDescription">
+		Taggar används för att kunna återanvända texter i e-tjänsteplattformen. Läs mer om hur du använder taggar under "Hjälp" nedan.
+		<br/>
+		<strong><font color="red">OBSERVERA:</font></strong> vid ändring i befintlig tagg slår det ändrade tagg-innehållet igenom direkt i alla berörda e-tjänster liksom alla tidigare använda versioner där taggen har använts. Om taggens värde även använts och visats i ett ärende så kommer värdet att slå igenom även i ärendet som finns på användarens Mina sidor. Det enda ställe som taggens nya värde INTE påverkar är de pdf:en som finns under ärendehistoriken.
+	</xsl:variable>
 	
 	<xsl:variable name="i18n.Name">Taggens namn</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>

@@ -59,7 +59,7 @@
 						<xsl:value-of select="/Document/module/name" />
 					</h1>
 					
-					<p class="description"><xsl:value-of select="$i18n.TextTagDescription" /></p>
+					<p class="description"><xsl:copy-of select="$i18n.TextTagDescription" /></p>
 					
 				</div>
 				
