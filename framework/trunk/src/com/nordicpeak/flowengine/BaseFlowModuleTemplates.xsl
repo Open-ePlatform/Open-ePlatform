@@ -1123,10 +1123,11 @@
 	
 	<xsl:template name="printUser">
 		<xsl:param name="user" />
+		<xsl:param name="hideUsername" select="''" />
 		
 		<xsl:value-of select="$user/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$user/lastname" />
 		
-		<xsl:if test="$user/username">
+		<xsl:if test="$hideUsername = '' and $user/username">
 			<xsl:text>&#160;(</xsl:text>
 			<xsl:value-of select="$user/username" />
 			<xsl:text>)</xsl:text>

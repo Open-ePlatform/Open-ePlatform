@@ -172,6 +172,7 @@
 	
 		<xsl:call-template name="createUserMessage">
 			<xsl:with-param name="message" select="." />
+			<xsl:with-param name="hideUsername" select="''" />
 		</xsl:call-template>
 		
 	</xsl:template>
@@ -181,6 +182,7 @@
 		<xsl:param name="message" />
 		<xsl:param name="hideManagerDetails" select="false()" />
 		<xsl:param name="repliesEnabled" select="false()" />
+		<xsl:param name="hideUsername" select="''" />
 	
 		<li id="messages-{$message/messageID}" data-message-id="{$message/messageID}">
 		
@@ -218,6 +220,7 @@
 						<span class="author">
 							<xsl:call-template name="printUser">
 								<xsl:with-param name="user" select="$message/QuotedMessage/poster" />
+								<xsl:with-param name="hideUsername" select="$hideUsername"/>
 							</xsl:call-template>
 							
 						 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/QuotedMessage/added" /></span>
@@ -255,6 +258,7 @@
 
 							<xsl:call-template name="printUser">
 								<xsl:with-param name="user" select="$message/poster" />
+								<xsl:with-param name="hideUsername" select="$hideUsername"/>
 							</xsl:call-template>
 						
 						</xsl:otherwise>

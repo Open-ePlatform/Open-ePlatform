@@ -657,6 +657,7 @@
 		  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
 		  						<xsl:call-template name="printUser">
 		  							<xsl:with-param name="user" select="editor/user" />
+		  							<xsl:with-param name="hideUsername" select="true()"/>
 		  						</xsl:call-template>
 		  					</p>
   					</xsl:if>
@@ -931,6 +932,7 @@
 				<td data-title="{$i18n.Person}" class="person">
 					<xsl:call-template name="printUser">
 						<xsl:with-param name="user" select="poster/user" />
+						<xsl:with-param name="hideUsername" select="true()"/>
 					</xsl:call-template>
 				</td>
 			</xsl:if>
@@ -940,9 +942,12 @@
 	
 	<xsl:template match="ExternalMessage" mode="user">
 	
+		<p>createUserMessage</p>
+		
 		<xsl:call-template name="createUserMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="hideManagerDetails" select="../../Flow/hideManagerDetails = 'true'" />
+			<xsl:with-param name="hideUsername" select="true()"/>
 		</xsl:call-template>
 		
 	</xsl:template>
