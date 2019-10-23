@@ -53,6 +53,7 @@ import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
@@ -1074,7 +1075,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSenderName(notificationHandler.getEmailSenderName(null));
 					email.setSenderAddress(notificationHandler.getEmailSenderAddress(null));
 					email.setSubject(tagReplacer.replace(subject));
-					email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(message)));
+					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
 					if (reminder) {
 						email.setSubject(reminderEmailPrefix + email.getSubject());
@@ -1122,7 +1123,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSenderName(notificationHandler.getEmailSenderName(null));
 					email.setSenderAddress(notificationHandler.getEmailSenderAddress(null));
 					email.setSubject(tagReplacer.replace(subject));
-					email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(message)));
+					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
 					if (reminder) {
 						email.setSubject(reminderEmailPrefix + email.getSubject());
@@ -1194,6 +1195,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				activityProgressDAO.delete(query);
 			}
 		}
+	}
+	
+	private String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
+
+		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 	
 	private User getResponsibleUserFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
