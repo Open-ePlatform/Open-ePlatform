@@ -700,7 +700,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 
 	@WebPublic(alias = "messages")
-	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException, URINotFoundException {
 
 		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2))) {
 
@@ -709,6 +709,19 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			return null;
 		}
 
+		throw new URINotFoundException(uriParser);
+	}
+	
+	@WebPublic(alias = "notes")
+	public ForegroundModuleResponse showFlowInstanceNotes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException, URINotFoundException {
+		
+		if (uriParser.size() == 3 && NumberUtils.isInt(uriParser.get(2))) {
+			
+			redirectToMethod(req, res, "/overview/" + uriParser.get(2) + "#notes");
+			
+			return null;
+		}
+		
 		throw new URINotFoundException(uriParser);
 	}
 
