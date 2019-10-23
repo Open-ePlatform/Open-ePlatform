@@ -24,6 +24,7 @@ import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -134,6 +135,10 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	@TextFieldSettingDescriptor(name = "Subscriptions update interval", description = "How often this module should update external operating messages (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String subscriptionUpdateInterval = "*/5 * * * *";
 
+	@ModuleSetting(allowsNull = true)
+	@GroupMultiListSettingDescriptor(name = "Subscriber groups", description = "Groups allowed to subscribe to notifications (if not set this setting defaults to the groups set on the module)")
+	protected List<Integer> subscriberGroupIDs;
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection Timeout", description = "Connection timeout in seconds", formatValidator = StringIntegerValidator.class, required = true)
 	protected Integer connectionTimeout = 5;
@@ -179,6 +184,8 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
 		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
+
+		userGroupListConnector = new UserGroupListConnector(sectionInterface.getSystemInterface());
 		
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
@@ -193,8 +200,6 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			
 			systemInterface.addServerStartupListener(this);
 		}
-
-		userGroupListConnector = new UserGroupListConnector(systemInterface);
 	}
 	
 	@Override
@@ -295,6 +300,13 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 		viewFragmentTransformer.setDebugXML(debugFragmentXML);
 		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
+		
+		if(this.subscriberGroupIDs == null) {
+			
+			subscriberGroupIDs = (List<Integer>) moduleDescriptor.getAllowedGroupIDs();
+		}
+		
+		userGroupListConnector.setUserGroupFilter(subscriberGroupIDs);
 		
 		super.moduleConfigured();
 	}
@@ -738,8 +750,6 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 
 	@WebPublic(alias = "users")
 	public ForegroundModuleResponse getUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-
-		userGroupListConnector.setUserGroupFilter((List<Integer>) flowAdminModule.getAllowedGroupIDs());
 
 		return userGroupListConnector.getUsers(req, res, user, uriParser);
 	}
