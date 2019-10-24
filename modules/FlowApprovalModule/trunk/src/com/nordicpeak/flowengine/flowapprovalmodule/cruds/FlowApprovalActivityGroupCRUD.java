@@ -91,7 +91,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 		super.appendAddFormData(doc, addTypeElement, user, req, uriParser);
 		
 		FlowApprovalActivityGroup dummy = new FlowApprovalActivityGroup();
-		TemplateUtils.setTemplatedFields(dummy, callback);
+		appendBean(dummy, addTypeElement, doc, user);
 
 		appendFormData(doc, addTypeElement, user, req, uriParser);
 	}
