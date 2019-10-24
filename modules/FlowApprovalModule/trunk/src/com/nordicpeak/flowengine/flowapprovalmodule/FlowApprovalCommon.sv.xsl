@@ -11,7 +11,7 @@
 	
 	<xsl:variable name="i18n.Activity">Aktivitet</xsl:variable>
 	<xsl:variable name="i18n.Activity.name">Namn för aktiviteten</xsl:variable>
-	<xsl:variable name="i18n.Activity.description">Beskrivning</xsl:variable>
+	<xsl:variable name="i18n.Activity.description">Information om aktiviteten</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsible">Ansvariga</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsibleUsers">Ansvariga användare</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsibleGroups">Ansvariga grupper</xsl:variable>

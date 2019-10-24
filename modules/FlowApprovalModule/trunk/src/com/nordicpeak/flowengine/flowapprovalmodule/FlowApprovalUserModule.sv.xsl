@@ -26,7 +26,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.ActivityProgress.complete">Klarmarkerad</xsl:variable>
-	<xsl:variable name="i18n.ActivityProgress.userDescription">Information från ärendet</xsl:variable>
+	<xsl:variable name="i18n.ActivityProgress.userDescription">Beskrivning</xsl:variable>
 	
 	<xsl:variable name="i18n.Flow.name">E-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>

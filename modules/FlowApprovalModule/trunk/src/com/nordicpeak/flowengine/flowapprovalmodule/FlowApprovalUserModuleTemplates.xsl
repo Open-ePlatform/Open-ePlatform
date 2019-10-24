@@ -117,14 +117,16 @@
 					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
 				</div>
 				
-				<div>
-					<strong>
-						<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
-						<xsl:text>: </xsl:text>
-					</strong>
-					
-					<xsl:value-of select="UserDescription"/>
-				</div>
+				<xsl:if test="UserDescription">
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="UserDescription"/>
+					</div>
+				</xsl:if>
 			</td>
 		</tr>
 		
@@ -248,14 +250,16 @@
 					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
 				</div>
 				
-				<div>
-					<strong>
-						<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
-						<xsl:text>: </xsl:text>
-					</strong>
-					
-					<xsl:value-of select="UserDescription"/>
-				</div>
+				<xsl:if test="UserDescription">
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="UserDescription"/>
+					</div>
+				</xsl:if>
 			</td>
 		</tr>
 		
@@ -324,133 +328,137 @@
 						</strong>
 						<xsl:value-of select="FlowInstance/flowInstanceID" />
 						
-						<br/>
-						
-						<strong>
-							<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
-							<xsl:text>:&#160;</xsl:text>
-						</strong>
-						<xsl:value-of select="UserDescription" />
+						<xsl:if test="UserDescription">
+							<br/>
+							
+							<strong>
+								<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
+								<xsl:text>:&#160;</xsl:text>
+							</strong>
+							<xsl:value-of select="UserDescription" />
+						</xsl:if>
 						
 					</div>
 					
-					<div class="bigmarginbottom">
-						
-						<label>
-							<xsl:value-of select="$i18n.Activity.description" />
-						</label>
-						
-						<p style="margin-top: 0;">
-							<xsl:call-template name="replaceLineBreak">
-								<xsl:with-param name="string" select="ActivityProgress/Activity/description"/>
-							</xsl:call-template>
-						</p>
-					</div>
-						
-						<xsl:choose>
-							<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'true'">
-								
-								<div>
-									
-									<xsl:call-template name="createRadio">
-										<xsl:with-param name="id" select="'approved'" />
-										<xsl:with-param name="name" select="'completed'" />
-										<xsl:with-param name="value" select="'approved'" />
-										<xsl:with-param name="checked">
-											<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'">true</xsl:if>
-										</xsl:with-param>
-										<xsl:with-param name="disabled">
-											<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-										</xsl:with-param>
-									</xsl:call-template>
-									
-									<label for="approved">
-										<xsl:attribute name="class">
-											<xsl:text>radio</xsl:text>
-											<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'"> disabled</xsl:if>
-										</xsl:attribute>
-										
-										<xsl:value-of select="$i18n.ActivityProgress.approved" />
-									</label>
-									
-								</div>
-								
-								<div>
-									
-									<xsl:call-template name="createRadio">
-										<xsl:with-param name="id" select="'denied'" />
-										<xsl:with-param name="name" select="'completed'" />
-										<xsl:with-param name="value" select="'denied'" />
-										<xsl:with-param name="checked">
-											<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'">true</xsl:if>
-										</xsl:with-param>
-										<xsl:with-param name="disabled">
-											<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-										</xsl:with-param>
-									</xsl:call-template>
-									
-									<label for="denied">
-										<xsl:attribute name="class">
-											<xsl:text>radio</xsl:text>
-											<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'"> disabled</xsl:if>
-										</xsl:attribute>
-										
-										<xsl:value-of select="$i18n.ActivityProgress.denied" />
-									</label>
-									
-								</div>
-								
-							</xsl:when>
-							<xsl:otherwise>
-								
-								<div>
-									
-									<xsl:call-template name="createCheckbox">
-										<xsl:with-param name="id" select="'completed'" />
-										<xsl:with-param name="name" select="'completed'" />
-										<xsl:with-param name="value" select="'true'" />
-										<xsl:with-param name="checked">
-											<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-										</xsl:with-param>
-										<xsl:with-param name="disabled">
-											<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-										</xsl:with-param>
-									</xsl:call-template>
-									
-									<label for="completed">
-										<xsl:attribute name="class">
-											<xsl:text>checkbox</xsl:text>
-											<xsl:if test="ActivityProgress/completed != ''"> disabled</xsl:if>
-										</xsl:attribute>
-										
-										<xsl:value-of select="$i18n.ActivityProgress.complete" />
-									</label>
-									
-								</div>
-							
-							</xsl:otherwise>
-						
-						</xsl:choose>
-						
+					<xsl:if test="ActivityProgress/Activity/description">
 						<div class="bigmarginbottom">
 							
-							<label for="comment">
-								<xsl:value-of select="$i18n.ActivityProgress.comment" />
+							<label>
+								<xsl:value-of select="$i18n.Activity.description" />
 							</label>
 							
+							<p style="margin-top: 0;">
+								<xsl:call-template name="replaceLineBreak">
+									<xsl:with-param name="string" select="ActivityProgress/Activity/description"/>
+								</xsl:call-template>
+							</p>
+						</div>
+					</xsl:if>
+						
+					<xsl:choose>
+						<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'true'">
+							
 							<div>
-								<xsl:call-template name="createTextArea">
-									<xsl:with-param name="id" select="'comment'" />
-									<xsl:with-param name="name" select="'comment'" />
-									<xsl:with-param name="element" select="ActivityProgress" />
-									<xsl:with-param name="rows" select="'4'" />
+								
+								<xsl:call-template name="createRadio">
+									<xsl:with-param name="id" select="'approved'" />
+									<xsl:with-param name="name" select="'completed'" />
+									<xsl:with-param name="value" select="'approved'" />
+									<xsl:with-param name="checked">
+										<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'">true</xsl:if>
+									</xsl:with-param>
 									<xsl:with-param name="disabled">
 										<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
 									</xsl:with-param>
 								</xsl:call-template>
+								
+								<label for="approved">
+									<xsl:attribute name="class">
+										<xsl:text>radio</xsl:text>
+										<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'"> disabled</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.ActivityProgress.approved" />
+								</label>
+								
 							</div>
+							
+							<div>
+								
+								<xsl:call-template name="createRadio">
+									<xsl:with-param name="id" select="'denied'" />
+									<xsl:with-param name="name" select="'completed'" />
+									<xsl:with-param name="value" select="'denied'" />
+									<xsl:with-param name="checked">
+										<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'">true</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="disabled">
+										<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
+									</xsl:with-param>
+								</xsl:call-template>
+								
+								<label for="denied">
+									<xsl:attribute name="class">
+										<xsl:text>radio</xsl:text>
+										<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'"> disabled</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.ActivityProgress.denied" />
+								</label>
+								
+							</div>
+							
+						</xsl:when>
+						<xsl:otherwise>
+							
+							<div>
+								
+								<xsl:call-template name="createCheckbox">
+									<xsl:with-param name="id" select="'completed'" />
+									<xsl:with-param name="name" select="'completed'" />
+									<xsl:with-param name="value" select="'true'" />
+									<xsl:with-param name="checked">
+										<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
+									</xsl:with-param>
+									<xsl:with-param name="disabled">
+										<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
+									</xsl:with-param>
+								</xsl:call-template>
+								
+								<label for="completed">
+									<xsl:attribute name="class">
+										<xsl:text>checkbox</xsl:text>
+										<xsl:if test="ActivityProgress/completed != ''"> disabled</xsl:if>
+									</xsl:attribute>
+									
+									<xsl:value-of select="$i18n.ActivityProgress.complete" />
+								</label>
+								
+							</div>
+						
+						</xsl:otherwise>
 					
+					</xsl:choose>
+					
+					<div class="bigmarginbottom">
+						
+						<label for="comment">
+							<xsl:value-of select="$i18n.ActivityProgress.comment" />
+						</label>
+						
+						<div>
+							<xsl:call-template name="createTextArea">
+								<xsl:with-param name="id" select="'comment'" />
+								<xsl:with-param name="name" select="'comment'" />
+								<xsl:with-param name="element" select="ActivityProgress" />
+								<xsl:with-param name="rows" select="'4'" />
+								<xsl:with-param name="disabled">
+									<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
+								</xsl:with-param>
+							</xsl:call-template>
 						</div>
+					
+					</div>
 					
 				</article>
 				

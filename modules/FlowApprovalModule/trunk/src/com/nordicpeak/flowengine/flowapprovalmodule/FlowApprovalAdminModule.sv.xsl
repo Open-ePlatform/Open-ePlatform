@@ -87,8 +87,9 @@
 	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värderna matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
+	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
 	
-	<xsl:variable name="i18n.ActivityGroup.attributesDescription">Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.userDescriptionHelp">Kort beskrivning av ärendet för listan av aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka epost notifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>

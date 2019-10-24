@@ -353,7 +353,7 @@
 			</label>
 			
 			<p class="nomargin marginbottom">
-				<xsl:value-of select="$i18n.ActivityGroup.attributesDescription" />
+				<xsl:value-of select="$i18n.ActivityGroup.userDescriptionHelp" />
 			</p>
 			
 			<div class="floatleft full">
@@ -1002,7 +1002,7 @@
 			</label>
 			
 			<p class="nomargin marginbottom">
-				<xsl:value-of select="$i18n.ActivityGroup.attributesDescription" />
+				<xsl:value-of select="$i18n.Activity.descriptionHelp" />
 			</p>
 	
 			<div class="floatleft full">
