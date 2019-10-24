@@ -4509,7 +4509,7 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'description'"/>
 					<xsl:with-param name="name" select="'description'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4526,7 +4526,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'managingTime'"/>
 					<xsl:with-param name="name" select="'managingTime'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 			</div>
 		</div>
@@ -4537,7 +4537,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'addExternalMessage'" />
 					<xsl:with-param name="id" select="'addExternalMessage'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="StandardStatus" />
 				</xsl:call-template>
 				
 				<label for="addExternalMessage">
@@ -4558,7 +4558,7 @@
 						<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
 						<xsl:with-param name="valueElementName" select="'templateID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
+						<xsl:with-param name="selectedValue" select="StandardStatus/defaultExternalMessageTemplateID" />
 						<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
 					</xsl:call-template>
 				</div>
