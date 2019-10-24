@@ -942,8 +942,6 @@
 	
 	<xsl:template match="ExternalMessage" mode="user">
 	
-		<p>createUserMessage</p>
-		
 		<xsl:call-template name="createUserMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="hideManagerDetails" select="../../Flow/hideManagerDetails = 'true'" />
