@@ -44,6 +44,7 @@ import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
+import se.unlogic.hierarchy.core.utils.crud.FragmentLinkScriptFilter;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -109,6 +110,7 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstan
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.interfaces.ExternalMessageExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceFilter;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
@@ -130,6 +132,7 @@ import com.nordicpeak.flowengine.internalnotifications.beans.NotificationMetadat
 import com.nordicpeak.flowengine.internalnotifications.interfaces.Notification;
 import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationHandler;
 import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSource;
+import com.nordicpeak.flowengine.listeners.ExternalMessageExtensionElementableListener;
 import com.nordicpeak.flowengine.listeners.FlowInstanceExternalMessageElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
@@ -248,6 +251,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider> tabExtensionProviders = new CopyOnWriteArrayList<FlowInstanceOverviewExtensionProvider>();
 	protected CopyOnWriteArrayList<ListFlowInstancesExtensionLinkProvider> listExtensionLinkProviders = new CopyOnWriteArrayList<ListFlowInstancesExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider> listViewFragmentExtensionProviders = new CopyOnWriteArrayList<ListFlowInstancesViewFragmentExtensionProvider>();
+	protected CopyOnWriteArrayList<ExternalMessageExtensionProvider> externalMessageExtensionProviders = new CopyOnWriteArrayList<>();
 
 	protected CopyOnWriteArrayList<UserFlowInstanceProvider> userFlowInstanceProviders = new CopyOnWriteArrayList<UserFlowInstanceProvider>();
 	
@@ -342,6 +346,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		tabExtensionProviders.clear();
 		listExtensionLinkProviders.clear();
 		listViewFragmentExtensionProviders.clear();
+		externalMessageExtensionProviders.clear();
 		flowInstanceFilters.clear();
 		
 		super.unload();
@@ -649,7 +654,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				Collections.reverse(flowInstance.getEvents());
 			}
 
-			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance);
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser);
 
 			if (enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null) {
 
@@ -666,6 +671,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 					ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 				}
 			}
+
+			moduleResponse = new FragmentLinkScriptFilter<>().filterShowBeanModuleResponse(moduleResponse, flowInstance, doc, req, user, uriParser);
 
 			return moduleResponse;
 		}
@@ -686,10 +693,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 
-	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance) {
+	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
+		genDoc.addElementableListener(ExternalMessage.class, new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
 		
 		Element showFlowInstanceElement = flowInstance.toXML(genDoc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
@@ -1211,7 +1219,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return listViewFragmentExtensionProviders.remove(provider);
 	}
-
+	
+	public boolean addExternalMessageShowExtensionProvider(ExternalMessageExtensionProvider externalMessageExtensionProvider) {
+		return externalMessageExtensionProviders.add(externalMessageExtensionProvider);
+	}
+	
+	public boolean removeExternalMessageShowExtensionProvider(ExternalMessageExtensionProvider externalMessageExtensionProvider) {
+		return externalMessageExtensionProviders.remove(externalMessageExtensionProvider);
+	}
+	
 	/**
 	 * @param flowInstanceID
 	 * @param accessController
@@ -1319,7 +1335,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		FlowInstance flowInstance;
 
-		if (uriParser.size() == 5 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
+		if (uriParser.size() >= 5 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
 
 			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
 
