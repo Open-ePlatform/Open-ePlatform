@@ -133,19 +133,19 @@
 				</xsl:if>
 			
 				<div>
-					<xsl:choose>
-						<xsl:when test="$message/postedByManager = 'true'">
-							<xsl:call-template name="replaceLineBreaksAndLinks">
-								<xsl:with-param name="string" select="$message/message"/>
-								<xsl:with-param name="target" select="'_blank'"/>
-							</xsl:call-template>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:call-template name="replaceLineBreak">
-								<xsl:with-param name="string" select="$message/message" />
-							</xsl:call-template>					
-						</xsl:otherwise>
-					</xsl:choose>
+				<xsl:choose>
+					<xsl:when test="$message/postedByManager = 'true'">
+						<xsl:call-template name="replaceLineBreaksAndLinks">
+							<xsl:with-param name="string" select="$message/message"/>
+							<xsl:with-param name="target" select="'_blank'"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="$message/message" />
+						</xsl:call-template>					
+					</xsl:otherwise>
+				</xsl:choose>
 				</div>
 				
 				<xsl:if test="ViewFragmentExtension">
@@ -217,41 +217,41 @@
 			<div class="message" data-messageid="{$message/messageID}">
 			
 				<div>
-					<xsl:call-template name="getExternalMessageTypeText"/>
+				<xsl:call-template name="getExternalMessageTypeText"/>
+			
+				<xsl:if test="$repliesEnabled and $message/QuotedMessage">
 				
-					<xsl:if test="$repliesEnabled and $message/QuotedMessage">
-					
-						<div class="quote bigmarginbottom">
-							<xsl:call-template name="replaceLineBreak">
-								<xsl:with-param name="string" select="$message/QuotedMessage/message" />
+					<div class="quote bigmarginbottom">
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="$message/QuotedMessage/message" />
+						</xsl:call-template>
+						
+						<span class="author">
+							<xsl:call-template name="printUser">
+								<xsl:with-param name="user" select="$message/QuotedMessage/poster" />
 								<xsl:with-param name="hideUsername" select="$hideUsername"/>
 							</xsl:call-template>
 							
-							<span class="author">
-								<xsl:call-template name="printUser">
-									<xsl:with-param name="user" select="$message/QuotedMessage/poster" />
-								</xsl:call-template>
-								
-							 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/QuotedMessage/added" /></span>
-							</span>
-						</div>
-						<br/>
-						
-					</xsl:if>
-				
-					<xsl:choose>
-						<xsl:when test="$message/postedByManager = 'true'">
-							<xsl:call-template name="replaceLineBreaksAndLinks">
-								<xsl:with-param name="string" select="$message/message"/>
-								<xsl:with-param name="target" select="'_blank'"/>
-							</xsl:call-template>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:call-template name="replaceLineBreak">
-								<xsl:with-param name="string" select="$message/message" />
-							</xsl:call-template>					
-						</xsl:otherwise>
-					</xsl:choose>
+						 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/QuotedMessage/added" /></span>
+						</span>
+					</div>
+					<br/>
+					
+				</xsl:if>
+			
+				<xsl:choose>
+					<xsl:when test="$message/postedByManager = 'true'">
+						<xsl:call-template name="replaceLineBreaksAndLinks">
+							<xsl:with-param name="string" select="$message/message"/>
+							<xsl:with-param name="target" select="'_blank'"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="$message/message" />
+						</xsl:call-template>					
+					</xsl:otherwise>
+				</xsl:choose>
 				</div>
 			
 				<xsl:if test="ViewFragmentExtension">
