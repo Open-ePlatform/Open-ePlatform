@@ -244,6 +244,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.StatusFormExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
 import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
 import com.nordicpeak.flowengine.listeners.FlowFormExportElementableListener;
@@ -650,6 +651,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
 	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider>();
 	
+	protected CopyOnWriteArrayList<StatusFormExtensionProvider> statusFormExtensionProviders = new CopyOnWriteArrayList<>();
+	
 	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
 	
 	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<XSDExtensionProvider>();
@@ -710,6 +713,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowListExtensionLinkProviders.clear();
 
 		flowShowExtensionLinkProviders.clear();
+		
+		statusFormExtensionProviders.clear();
 
 		super.unload();
 	}
@@ -770,7 +775,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		statusDAOWrapper.getAddQuery().addRelations(Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
 		statusDAOWrapper.getUpdateQuery().addRelations(Status.MANAGER_GROUPS_RELATION, Status.MANAGER_USERS_RELATION);
 
-		statusCRUD = new StatusCRUD(statusDAOWrapper, this);
+		statusCRUD = new StatusCRUD(statusDAOWrapper, this, statusFormExtensionProviders);
 
 		AnnotatedDAOWrapper<StandardStatus, Integer> standardStatusDAOWrapper = daoFactory.getStandardStatusDAO().getWrapper("statusID", Integer.class);
 		standardStatusDAOWrapper.addRelations(StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
@@ -5162,7 +5167,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		return flowShowExtensionLinkProviders;
 	}
-
+	
+	public void addStatusFormExtensionProvider(StatusFormExtensionProvider e) {
+		
+		if (!statusFormExtensionProviders.contains(e)) {
+			
+			statusFormExtensionProviders.add(e);
+			
+			log.info("StatusFormExtensionProvider " + e + " added");
+		}
+	}
+	
+	public void removeStatusFormExtensionProvider(StatusFormExtensionProvider e) {
+		
+		statusFormExtensionProviders.remove(e);
+		
+		log.info("StatusFormExtensionProvider " + e + " removed");
+	}
+	
 	public List<FlowFamilyEvent> getRecentFlowFamilyEvents(FlowFamily flowFamily) throws SQLException {
 
 		if (flowFamily == null) {

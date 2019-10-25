@@ -178,6 +178,7 @@
 	<xsl:variable name="i18n.AddStatus.submit">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.UpdateStatus.title">Uppdatera status: </xsl:variable>
 	<xsl:variable name="i18n.UpdateStatus.submit">Spara ändringar</xsl:variable>
+	<xsl:variable name="i18n.UpdateStatus.Advanced">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.isUserMutable">Tillåt användare att ändra ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.isUserDeletable">Tillåt användare att ta bort ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.isAdminMutable">Tillåt handläggare att ändra ärenden med denna status</xsl:variable>

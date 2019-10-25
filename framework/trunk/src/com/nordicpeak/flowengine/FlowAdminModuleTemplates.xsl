@@ -3533,6 +3533,8 @@
 				
 			<xsl:call-template name="statusForm"/>
 			
+			<xsl:call-template name="statusFragmentExtension"/>
+			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.AddStatus.submit}" />
 			</div>
@@ -3554,6 +3556,8 @@
 		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 		
 			<xsl:call-template name="statusForm"/>
+
+			<xsl:call-template name="statusFragmentExtension"/>
 			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateStatus.submit}" />
@@ -3562,6 +3566,18 @@
 		</form>
 	
 	</xsl:template>	
+	
+	<xsl:template name="statusFragmentExtension">
+	
+		<xsl:if test="ViewFragmentExtension/ViewFragment">
+						
+			<h2 class="floatleft full bigmargintop"><xsl:value-of select="$i18n.UpdateStatus.Advanced" /></h2>
+
+			<xsl:apply-templates select="ViewFragmentExtension" />
+		
+		</xsl:if>
+	
+	</xsl:template>
 	
 	<xsl:template name="statusForm">
 	

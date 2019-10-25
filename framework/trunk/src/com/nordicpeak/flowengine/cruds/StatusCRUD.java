@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -20,8 +21,11 @@ import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.IntegerBasedCRUD;
+import se.unlogic.hierarchy.core.utils.crud.FragmentLinkScriptFilter;
+import se.unlogic.hierarchy.core.utils.crud.ModuleResponseFilter;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -43,6 +47,7 @@ import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.interfaces.StatusFormExtensionProvider;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
 
@@ -56,7 +61,10 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 	private QueryParameterFactory<DefaultStatusMapping, Flow> defaultStatusMappingFlowParamFactory;
 	private QueryParameterFactory<DefaultStatusMapping, Status> defaultStatusMappingStatusParamFactory;
 	
-	public StatusCRUD(CRUDDAO<Status, Integer> crudDAO, FlowAdminModule callback) {
+	private List<StatusFormExtensionProvider> statusFormExtensionProviders;
+	private ModuleResponseFilter<Status> moduleResponseFilter;
+	
+	public StatusCRUD(CRUDDAO<Status, Integer> crudDAO, FlowAdminModule callback, List<StatusFormExtensionProvider> statusFormExtensionProviders) {
 		
 		super(crudDAO, new AnnotatedRequestPopulator<Status>(Status.class), "Status", "status", "", callback);
 		
@@ -64,6 +72,9 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		defaultStatusMappingActionIDParamFactory = callback.getDAOFactory().getDefaultStatusMappingDAO().getParamFactory("actionID", String.class);
 		defaultStatusMappingFlowParamFactory = callback.getDAOFactory().getDefaultStatusMappingDAO().getParamFactory("flow", Flow.class);
 		defaultStatusMappingStatusParamFactory = callback.getDAOFactory().getDefaultStatusMappingDAO().getParamFactory("status", Status.class);
+		
+		moduleResponseFilter = new FragmentLinkScriptFilter<>();
+		this.statusFormExtensionProviders = statusFormExtensionProviders;
 	}
 	
 	@Override
@@ -107,10 +118,86 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 	}
 	
 	@Override
+	protected Status populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+
+		List<ValidationError> validationErrors = new ArrayList<>();
+		Status status = null;
+
+		try {
+
+			status = super.populateFromAddRequest(req, user, uriParser);
+
+		} catch (ValidationException e) {
+
+			validationErrors.addAll(e.getErrors());
+		}
+
+		return populate(status, req, user, uriParser, validationErrors);
+	}
+
+	@Override
+	protected Status populateFromUpdateRequest(Status status, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+
+		List<ValidationError> validationErrors = new ArrayList<>();
+
+		try {
+
+			status = super.populateFromUpdateRequest(status, req, user, uriParser);
+
+		} catch (ValidationException e) {
+
+			validationErrors.addAll(e.getErrors());
+		}
+
+		return populate(status, req, user, uriParser, validationErrors);
+	}
+
+	protected Status populate(Status status, HttpServletRequest req, User user, URIParser uriParser, List<ValidationError> validationErrors) throws ValidationException, Exception {
+
+		if (extensionRequestsHasValidationErrors(req, user, uriParser)) {
+
+			validationErrors.add(new ValidationError("ExtensionErrors"));
+		}
+
+		if (!validationErrors.isEmpty()) {
+
+			throw new ValidationException(validationErrors);
+		}
+
+		return status;
+	}
+
+	private boolean extensionRequestsHasValidationErrors(HttpServletRequest req, User user, URIParser uriParser) {
+
+		boolean hasErrors = false;
+
+		if (!CollectionUtils.isEmpty(statusFormExtensionProviders)) {
+
+			for (StatusFormExtensionProvider extensionProvider : statusFormExtensionProviders) {
+
+				try {
+					
+					extensionProvider.validateRequest(req, user, uriParser);
+
+				} catch (ValidationException e) {
+
+					req.setAttribute(extensionProvider.getProviderID(), e);
+
+					hasErrors = true;
+				}
+			}
+		}
+
+		return hasErrors;
+	}
+	
+	@Override
 	protected ForegroundModuleResponse beanAdded(Status bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 		
 		callback.addFlowFamilyEvent(callback.getEventStatusAddedMessage() + " \"" + bean.getName() + "\"", bean.getFlow(), user);
-		
+
+		processExtensionRequests(bean, req, user, uriParser);
+
 		return beanEvent(bean, req, res, CRUDAction.ADD);
 	}
 	
@@ -119,7 +206,27 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		callback.addFlowFamilyEvent(callback.getEventStatusUpdatedMessage() + " \"" + bean.getName() + "\"", bean.getFlow(), user);
 		
+		processExtensionRequests(bean, req, user, uriParser);
+		
 		return beanEvent(bean, req, res, CRUDAction.UPDATE);
+	}
+	
+	private void processExtensionRequests(Status status, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(statusFormExtensionProviders)) {
+			
+			for (StatusFormExtensionProvider extensionProvider : statusFormExtensionProviders) {
+				
+				try {
+					
+					extensionProvider.processRequest(status, req, user, uriParser);
+
+				} catch (Exception e) {
+					
+					log.error("Error processing request for extension provider " + extensionProvider + " for user " + user, e);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -143,13 +250,13 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
 		Flow flow = (Flow) req.getAttribute("flow");
-		appendFormData(flow, doc, addTypeElement, user, req, uriParser);
+		appendFormData(flow, null, doc, addTypeElement, user, req, uriParser);
 	}
 	
 	@Override
 	protected void appendUpdateFormData(Status bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
-		appendFormData(bean.getFlow(), doc, updateTypeElement, user, req, uriParser);
+		appendFormData(bean.getFlow(), bean, doc, updateTypeElement, user, req, uriParser);
 		
 		if (bean.getManagerGroupIDs() != null) {
 			
@@ -162,7 +269,7 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		}
 	}
 	
-	protected void appendFormData(Flow flow, Document doc, Element typeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+	protected void appendFormData(Flow flow, Status status, Document doc, Element typeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 		
 		XMLUtils.append(doc, typeElement, "FlowActions", callback.getDAOFactory().getFlowActionDAO().getAll());
 		
@@ -171,6 +278,52 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		XMLUtils.append(doc, typeElement, "ExternalMessageTemplates", flowFamily.getExternalMessageTemplates());
 		
 		typeElement.appendChild(flow.toXML(doc));
+		
+		appendExtensionFormData(status, flow, doc, typeElement, user, req, uriParser);
+	}
+	
+	private void appendExtensionFormData(Status status, Flow flow, Document doc, Element targetElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(statusFormExtensionProviders)) {
+
+			Element pluginFragments = XMLUtils.appendNewElement(doc, targetElement, "ViewFragmentExtension");
+			
+			for (StatusFormExtensionProvider extensionProvider : statusFormExtensionProviders) {
+				
+				try {
+					
+					ValidationException validationException = (ValidationException) req.getAttribute(extensionProvider.getProviderID());
+					
+					ViewFragment extensionSettings = extensionProvider.getViewFragment(status, flow, req, user, uriParser, validationException);
+					
+					if (extensionSettings != null) {
+						
+						pluginFragments.appendChild(extensionSettings.toXML(doc));
+						FragmentLinkScriptFilter.addViewFragment(extensionSettings, req);
+					}
+					
+				} catch (Exception e) {
+
+					log.error("Error getting form view fragment for extension provider " + extensionProvider + " for user " + user, e);
+				}
+			}
+		}
+	}
+
+	@Override
+	protected SimpleForegroundModuleResponse createAddFormModuleResponse(Document doc, HttpServletRequest req, User user, URIParser uriParser) {
+
+		SimpleForegroundModuleResponse moduleResponse = super.createAddFormModuleResponse(doc, req, user, uriParser);
+
+		return moduleResponseFilter.filterAddFormModuleResponse(moduleResponse, doc, req, user, uriParser);
+	}
+
+	@Override
+	protected SimpleForegroundModuleResponse createUpdateFormModuleResponse(Status status, Document doc, HttpServletRequest req, User user, URIParser uriParser) {
+
+		SimpleForegroundModuleResponse moduleResponse = super.createUpdateFormModuleResponse(status, doc, req, user, uriParser);
+		
+		return moduleResponseFilter.filterUpdateFormModuleResponse(moduleResponse, status, doc, req, user, uriParser);
 	}
 	
 	@Override
