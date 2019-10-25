@@ -20,6 +20,7 @@ import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.beans.SimpleBackgroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.interfaces.BackgroundModuleResponse;
@@ -263,9 +264,48 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 	@Override
 	public void processEvent(CRUDEvent<Flow> event, EventSource source) {
 
-		cacheFlows();
+		if(!skipEvent(event.getAction(), event.getBeans())) {
+			
+			cacheFlows();
+		}
 	}
 
+	private boolean skipEvent(CRUDAction action, List<Flow> flows) {
+
+		if(action == CRUDAction.ADD) {
+			
+			for(Flow flow : flows) {
+				
+				if(flow.getPublishDate() != null) {
+					
+					return false;
+				}
+			}
+		
+		}else if(action == CRUDAction.UPDATE) {
+			
+			for(Flow flow : flows) {
+				
+				if(flow.getPublishDate() != null ||this.popularFlows.contains(flow)) {
+					
+					return false;
+				}
+			}
+		
+		}else if(action == CRUDAction.DELETE) {
+		
+			for(Flow flow : flows) {
+				
+				if(this.popularFlows.contains(flow)) {
+					
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public void run() {
 

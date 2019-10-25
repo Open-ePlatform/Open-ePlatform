@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -240,6 +241,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
 	
 	private QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
+	private QueryParameterFactory<Flow, Date> flowPublishDateParamFactory;
+	private QueryParameterFactory<FlowFamily, Integer> flowFamilyIDParamFactory;
 
 	private List<FlowType> flowTypes;
 	private Map<Integer, Flow> flowMap;
@@ -313,6 +316,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		super.createDAOs(dataSource);
 
 		flowTypeIDParamFactory = daoFactory.getFlowTypeDAO().getParamFactory("flowTypeID", Integer.class);
+		flowPublishDateParamFactory = daoFactory.getFlowDAO().getParamFactory(Flow.PUBLISH_DATE_FIELD, Date.class);
+		flowFamilyIDParamFactory = daoFactory.getFlowFamilyDAO().getParamFactory("flowFamilyID", Integer.class);
 	}
 
 	@Override
@@ -875,6 +880,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
 			
 			query.addCachedRelations(Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
+			query.addRelationParameter(Flow.class, flowPublishDateParamFactory.getIsNotNullParameter());
 			
 			if (isListAllFlowTypes()) {
 
@@ -1098,15 +1104,98 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void processEvent(CRUDEvent<?> event, EventSource source) {
 
+		if(Flow.class.isAssignableFrom(event.getBeanClass()) && skipEvent(event.getAction(), (List<Flow>) event.getBeans())) {
+			
+			return;
+		}
+		
+		if(FlowFamily.class.isAssignableFrom(event.getBeanClass())) {
+			
+			if(event.getAction() == CRUDAction.UPDATE) {
+			
+				try {
+					updateCachedFlowFamilies((List<FlowFamily>) event.getBeans());
+				} catch (SQLException e) {
+					log.error("Error updatting caching flow families", e);
+				}
+			}
+			
+			return;
+		}
+		
 		try {
-			log.info("Received crud event regarding " + event.getAction() + " of " + event.getBeans().size() + " beans with " + event.getBeanClass());
 			cacheFlows();
 		} catch (SQLException e) {
 			log.error("Error caching flows", e);
 		}
+	}
+
+	private void updateCachedFlowFamilies(List<FlowFamily> families) throws SQLException {
+
+		for(FlowFamily family : families) {
+
+			HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FlowFamily.ALIASES_RELATION);
+			
+			query.addParameter(flowFamilyIDParamFactory.getParameter(family.getFlowFamilyID()));
+			
+			FlowFamily dbFamily = daoFactory.getFlowFamilyDAO().get(query);
+			
+			if(dbFamily == null) {
+				
+				log.error("Unable to find flow family " + family + " in DB, flow will not be updated");
+				continue;
+			}
+			
+			log.info("Updating family " + family + " on cached flows");
+			
+			for(Flow flow : this.flowMap.values()) {
+				
+				if(flow.getFlowFamily().getFlowFamilyID().equals(dbFamily.getFlowFamilyID())) {
+					
+					flow.setFlowFamily(dbFamily);
+				}
+			}
+		}
+	}
+
+	private boolean skipEvent(CRUDAction action, List<Flow> flows) {
+
+		if(action == CRUDAction.ADD) {
+			
+			for(Flow flow : flows) {
+				
+				if(flow.getPublishDate() != null) {
+					
+					return false;
+				}
+			}
+		
+		}else if(action == CRUDAction.UPDATE) {
+			
+			for(Flow flow : flows) {
+							
+				if(flow.getPublishDate() != null || this.flowMap.containsKey(flow.getFlowID())) {
+					
+					return false;
+				}
+			}
+		
+		}else if(action == CRUDAction.DELETE) {
+		
+			for(Flow flow : flows) {
+				
+				if(this.flowMap.containsKey(flow.getFlowID())) {
+					
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 
 	public Collection<Flow> getLatestPublishedFlowVersions() {
@@ -1330,7 +1419,6 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@Override
 	protected Breadcrumb getFlowInstanceSubmitBreadcrumb(ImmutableFlowInstance flowInstance, HttpServletRequest req, URIParser uriParser) {
 
-		//TODO add prefix
 		return new Breadcrumb(this, flowInstance.getFlow().getName(), "/submitted/" + flowInstance.getFlowInstanceID());
 	}
 
