@@ -93,11 +93,6 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 	private Integer reminderAfterXDays;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 255)
-	@XMLElement
-	private String userDescriptionTemplate;
-	
-	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<FlowApprovalActivity> activities;
@@ -191,14 +186,6 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 
 	public void setActivityGroupStartedEmailMessage(String activityGroupStartedEmailMessage) {
 		this.activityGroupStartedEmailMessage = activityGroupStartedEmailMessage;
-	}
-
-	public String getUserDescriptionTemplate() {
-		return userDescriptionTemplate;
-	}
-
-	public void setUserDescriptionTemplate(String userDescriptionTemplate) {
-		this.userDescriptionTemplate = userDescriptionTemplate;
 	}
 
 	public List<FlowApprovalActivity> getActivities() {

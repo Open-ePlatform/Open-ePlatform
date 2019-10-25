@@ -266,15 +266,22 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					Element activityGroupElement = activityGroup.toXML(doc);
 
-					if (activityGroup.getUserDescriptionTemplate() != null) {
-
-						XMLUtils.appendNewElement(doc, activityGroupElement, "UserDescription", AttributeTagUtils.replaceTags(activityGroup.getUserDescriptionTemplate(), flowInstance.getAttributeHandler()));
-					}
-
 					List<FlowApprovalActivityProgress> activityProgresses = entry2.getValue();
 
-					XMLUtils.append(doc, activityGroupElement, "Progresses", activityProgresses);
-
+					Element progressesElement = XMLUtils.appendNewElement(doc, activityGroupElement, "Progresses");
+					
+					for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+						
+						Element activityProgressElement = activityProgress.toXML(doc);
+						
+						if (activityProgress.getActivity().getShortDescription() != null) {
+							
+							XMLUtils.appendNewElement(doc, activityProgressElement, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
+						}
+						
+						progressesElement.appendChild(activityProgressElement);
+					}
+					
 					activityGroupsElement.appendChild(activityGroupElement);
 				}
 
@@ -450,11 +457,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		showActivity.appendChild(activityProgress.toXML(doc));
 		showActivity.appendChild(flowInstance.toXML(doc));
 
-		if (activityGroup.getUserDescriptionTemplate() != null) {
-
-			XMLUtils.appendNewElement(doc, showActivity, "UserDescription", AttributeTagUtils.replaceTags(activityGroup.getUserDescriptionTemplate(), flowInstance.getAttributeHandler()));
+		if (activityProgress.getActivity().getShortDescription() != null) {
+			
+			XMLUtils.appendNewElement(doc, showActivity, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
 		}
-
+		
 		if (validationErrors != null) {
 
 			showActivity.appendChild(RequestUtils.getRequestParameters(req, doc));

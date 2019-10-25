@@ -62,6 +62,7 @@ import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -479,8 +480,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		req.setAttribute("extensionRequestURL", extensionRequestURL);
 		req.setAttribute("flow", flow);
 
-		//TODO use methodMap with a new FlowAdminFragmentExtensionViewProviderProcessRequest annotation
-
 		if ("showactivitygroup".equals(method)) {
 
 			return getViewFragmentResponse(activityGroupCRUD.show(req, res, user, uriParser));
@@ -579,6 +578,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		for (Status status : flow.getStatuses()) {
 
+			if (ArrayUtils.contains(FlowApprovalActivityGroupCRUD.INVALID_STATUS_TYPES, status.getContentType())) {
+				continue;
+			}
+			
 			if (status.getName().toLowerCase().contains(searchLower)) {
 				statusNames.add(status.getName());
 			}

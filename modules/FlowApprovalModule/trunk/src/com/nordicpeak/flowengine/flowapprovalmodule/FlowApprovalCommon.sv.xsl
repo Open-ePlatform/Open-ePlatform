@@ -6,14 +6,15 @@
 	<xsl:variable name="i18n.ActivityGroup.startStatus">Aktiveringstatus</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.completeStatus">Målstatus</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.denyStatus">Nekadstatus</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.userDescriptionTemplate">Beskrivning på mina sidor</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityCount">Antal aktiviteter</xsl:variable>
 	
 	<xsl:variable name="i18n.Activity">Aktivitet</xsl:variable>
 	<xsl:variable name="i18n.Activity.name">Namn för aktiviteten</xsl:variable>
-	<xsl:variable name="i18n.Activity.description">Information om aktiviteten</xsl:variable>
+	<xsl:variable name="i18n.Activity.shortDescription">Kort beskrivning</xsl:variable>
+	<xsl:variable name="i18n.Activity.description">Lång beskrivning</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsible">Ansvariga</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsibleUsers">Ansvariga användare</xsl:variable>
+	<xsl:variable name="i18n.Activity.responsibleUsersFallback">Ansvariga reservanvändare</xsl:variable>
 	<xsl:variable name="i18n.Activity.responsibleGroups">Ansvariga grupper</xsl:variable>
 	<xsl:variable name="i18n.Activity.noResponsibles">Inga ansvariga</xsl:variable>
 	<xsl:variable name="i18n.Activity.attributeName">Attribut</xsl:variable>

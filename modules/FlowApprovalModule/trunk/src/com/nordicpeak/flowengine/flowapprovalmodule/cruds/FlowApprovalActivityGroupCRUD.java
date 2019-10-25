@@ -16,6 +16,7 @@ import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
+import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
 import se.unlogic.standardutils.templates.TemplateUtils;
@@ -27,11 +28,14 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.flowapprovalmodule.FlowApprovalAdminModule;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
 public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActivityGroup, Integer, User, FlowApprovalAdminModule> {
+	
+	public static final ContentType[] INVALID_STATUS_TYPES = new ContentType[] {ContentType.NEW, ContentType.WAITING_FOR_PAYMENT, ContentType.WAITING_FOR_MULTISIGN};
 
 	public FlowApprovalActivityGroupCRUD(CRUDDAO<FlowApprovalActivityGroup, Integer> crudDAO, FlowApprovalAdminModule callback) {
 
@@ -140,6 +144,10 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 			for (Status status : flow.getStatuses()) {
 
+				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
+					continue;
+				}
+				
 				if (status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
 					statusFound = true;
 					break;
@@ -156,6 +164,10 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 			boolean statusFound = false;
 
 			for (Status status : flow.getStatuses()) {
+				
+				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
+					continue;
+				}
 
 				if (status.getName().equalsIgnoreCase(activityGroup.getCompleteStatus())) {
 					statusFound = true;
@@ -165,6 +177,27 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 			if (!statusFound) {
 				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "completeStatus"));
+			}
+		}
+		
+		if (activityGroup.getDenyStatus() != null) {
+
+			boolean statusFound = false;
+
+			for (Status status : flow.getStatuses()) {
+				
+				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
+					continue;
+				}
+
+				if (status.getName().equalsIgnoreCase(activityGroup.getDenyStatus())) {
+					statusFound = true;
+					break;
+				}
+			}
+
+			if (!statusFound) {
+				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "denyStatus"));
 			}
 		}
 		

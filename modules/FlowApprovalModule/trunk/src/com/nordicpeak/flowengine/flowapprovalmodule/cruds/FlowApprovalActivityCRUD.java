@@ -144,31 +144,50 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 
 		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
+		List<Integer> responsibleFallbackUserIDs = ValidationUtils.validateParameters("responsible-user-fallback", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
-		if (responsibleUserIDs == null) {
+		List<FlowApprovalActivityResponsibleUser> responsibleUsers = null;
+		
+		if (responsibleUserIDs != null || responsibleFallbackUserIDs != null) {
+			
+			responsibleUsers = new ArrayList<>(CollectionUtils.getSize(responsibleUserIDs, responsibleFallbackUserIDs));
 
-			activity.setResponsibleUsers(null);
+			if (responsibleUserIDs != null) {
 
-		} else {
+				for (Integer userID : responsibleUserIDs) {
 
-			List<FlowApprovalActivityResponsibleUser> responsibleUsers = new ArrayList<>(responsibleUserIDs.size());
+					User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
 
-			for (Integer userID : responsibleUserIDs) {
+					if (responsibleUser != null) {
 
-				User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
+						responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, false));
 
-				if (responsibleUser != null) {
+					} else {
 
-					responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, "true".equals(req.getParameter("responsible-user-fallback" + userID))));
-
-				} else {
-
-					validationErrors.add(new ValidationError("responsible-user", ValidationErrorType.InvalidFormat));
+						validationErrors.add(new ValidationError("responsible-user", ValidationErrorType.InvalidFormat));
+					}
 				}
 			}
 
-			activity.setResponsibleUsers(responsibleUsers);
+			if (responsibleFallbackUserIDs != null && activity.getResponsibleUserAttributeName() != null) {
+
+				for (Integer userID : responsibleFallbackUserIDs) {
+
+					User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
+
+					if (responsibleUser != null) {
+
+						responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, true));
+
+					} else {
+
+						validationErrors.add(new ValidationError("responsible-user-fallback", ValidationErrorType.InvalidFormat));
+					}
+				}
+			}
 		}
+		
+		activity.setResponsibleUsers(responsibleUsers);
 
 		List<Integer> responsibleGroupIDs = ValidationUtils.validateParameters("responsibleGroup", req, false, IntegerPopulator.getPopulator(), validationErrors);
 

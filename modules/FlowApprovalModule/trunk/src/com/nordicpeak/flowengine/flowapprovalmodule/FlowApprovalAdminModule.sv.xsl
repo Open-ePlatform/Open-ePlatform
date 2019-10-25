@@ -81,15 +81,18 @@
 	
 	<xsl:variable name="i18n.Activity.AttributeFilter">Aktivering vid attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeFilterDescription">Här kan du ställa in om aktiviteten bara ska användas när ärendet har ett attribut med ett visst värde.</xsl:variable>
-	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn (lämna tom för att alltid använda aktiviteten)</xsl:variable>
+	<xsl:variable name="i18n.Activity.useResponsibleUserAttributeName">Sök upp ansvarig användare via attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeName">Attributnamn för användarnamn för ansvarig användare</xsl:variable>
-	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNameDescription">Om ingen användare hittas med användarnamnet i attributet så kommer användare valda ovan som reserv att få aktiviteten istället.</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNameDescription">Om ingen användare hittas med användarnamnet från attributet så kommer nedan valda reservansvariga att få aktiviteten istället.</xsl:variable>
+	<xsl:variable name="i18n.Activity.useAttributeFilter">Använd attributfilter för att aktivera aktiviteten</xsl:variable>
+	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värderna matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
+	<xsl:variable name="i18n.Activity.globalEmailAddressHelp">Får notifikation om startad aktivitet utöver ansvariga</xsl:variable>
+	<xsl:variable name="i18n.Activity.shortDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
 	
-	<xsl:variable name="i18n.ActivityGroup.userDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka epost notifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
@@ -112,7 +115,6 @@
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>
 	
 	<xsl:variable name="i18n.ResponsibleUser.fallback">Reserv</xsl:variable>
-	<xsl:variable name="i18n.ResponsibleUser.ToggleFallback">Växla reserv ansvarig</xsl:variable>
 	
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	<xsl:variable name="i18n.row">rad</xsl:variable>

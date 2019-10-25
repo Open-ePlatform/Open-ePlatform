@@ -116,17 +116,6 @@
 					
 					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
 				</div>
-				
-				<xsl:if test="UserDescription">
-					<div>
-						<strong>
-							<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
-							<xsl:text>: </xsl:text>
-						</strong>
-						
-						<xsl:value-of select="UserDescription"/>
-					</div>
-				</xsl:if>
 			</td>
 		</tr>
 		
@@ -146,7 +135,20 @@
 				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{../../../../Flow/flowID}?{../../../../Flow/IconLastModified}" width="25" alt="" />
 			</td>
 			<td data-title="{$i18n.Activity}">
-				<xsl:value-of select="Activity/name" />
+				<div>
+					<xsl:value-of select="Activity/name" />
+				</div>
+				
+				<xsl:if test="ShortDescription">
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityProgress.shortDescription" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="ShortDescription"/>
+					</div>
+				</xsl:if>
 			</td>
 			<td class="link">
 				<a class="btn btn-green" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/show/{activityProgressID}"><xsl:value-of select="$i18n.ShowActivity" /></a>
@@ -250,14 +252,14 @@
 					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
 				</div>
 				
-				<xsl:if test="UserDescription">
+				<xsl:if test="ShortDescription">
 					<div>
 						<strong>
-							<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
+							<xsl:value-of select="$i18n.ActivityProgress.shortDescription" />
 							<xsl:text>: </xsl:text>
 						</strong>
 						
-						<xsl:value-of select="UserDescription"/>
+						<xsl:value-of select="ShortDescription"/>
 					</div>
 				</xsl:if>
 			</td>
@@ -328,14 +330,14 @@
 						</strong>
 						<xsl:value-of select="FlowInstance/flowInstanceID" />
 						
-						<xsl:if test="UserDescription">
+						<xsl:if test="ShortDescription">
 							<br/>
 							
 							<strong>
-								<xsl:value-of select="$i18n.ActivityProgress.userDescription" />
+								<xsl:value-of select="$i18n.ActivityProgress.shortDescription" />
 								<xsl:text>:&#160;</xsl:text>
 							</strong>
-							<xsl:value-of select="UserDescription" />
+							<xsl:value-of select="ShortDescription" />
 						</xsl:if>
 						
 					</div>

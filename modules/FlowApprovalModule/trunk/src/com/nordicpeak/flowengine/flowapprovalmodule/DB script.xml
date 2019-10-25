@@ -148,4 +148,22 @@
 		</Query>
 	</Script>
 	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `shortDescription` VARCHAR(255) NULL DEFAULT NULL AFTER `name`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` a JOIN `flowapproval_activitygroups` g ON (a.activityGroupID = g.activityGroupID) SET a.shortDescription = g.userDescriptionTemplate
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` DROP COLUMN `userDescriptionTemplate`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

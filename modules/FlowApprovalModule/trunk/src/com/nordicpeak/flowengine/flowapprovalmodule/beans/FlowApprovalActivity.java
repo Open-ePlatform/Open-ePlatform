@@ -44,6 +44,11 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate(maxLength = 255, required = true)
 	@XMLElement
 	private String name;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String shortDescription;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 65535)
@@ -118,6 +123,14 @@ public class FlowApprovalActivity extends GeneratedElementable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
 	}
 
 	public String getDescription() {
