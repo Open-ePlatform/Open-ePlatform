@@ -683,8 +683,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			appendBookmark(doc, showFlowInstanceOverviewElement, flowInstance, req, user);
 
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
-
+			
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
+
+			moduleResponse = new FragmentLinkScriptFilter<>().filterShowBeanModuleResponse(moduleResponse, flowInstance, doc, req, user, uriParser);
 
 			if (!CollectionUtils.isEmpty(viewFragments)) {
 				for (ViewFragment viewFragment : viewFragments) {
