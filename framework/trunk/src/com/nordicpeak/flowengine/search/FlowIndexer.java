@@ -80,6 +80,11 @@ public class FlowIndexer {
 
 		for(Flow flow : flows){
 
+			if(flow.isHideFromOverview()) {
+				
+				continue;
+			}
+			
 			try{
 				Document doc = new Document();
 				
