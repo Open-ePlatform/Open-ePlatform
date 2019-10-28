@@ -416,6 +416,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				if (completed) {
 
+					approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
+					
 					if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
 
 						log.info("Copying comment to external messages for flowinstance " + flowInstance);
@@ -435,8 +437,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 					}
-
-					approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
 
 					redirectToDefaultMethod(req, res);
 					return null;
