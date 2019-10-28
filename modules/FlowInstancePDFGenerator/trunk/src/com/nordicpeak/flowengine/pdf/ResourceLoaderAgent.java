@@ -190,7 +190,6 @@ public class ResourceLoaderAgent extends ITextUserAgent {
 	@Override
 	public byte[] getBinaryResource(String arg0) {
 
-		// TODO Auto-generated method stub
 		return super.getBinaryResource(arg0);
 	}
 }
