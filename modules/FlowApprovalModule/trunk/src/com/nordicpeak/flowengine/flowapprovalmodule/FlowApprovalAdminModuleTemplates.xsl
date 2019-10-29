@@ -801,7 +801,7 @@
 			<strong>
 				<xsl:value-of select="$i18n.Activity.description" />
 			</strong>
-			<p>
+			<p style="word-break: break-word;">
 				<xsl:call-template name="replaceLineBreak">
 					<xsl:with-param name="string" select="Activity/description" />
 				</xsl:call-template>
