@@ -1197,6 +1197,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				activityProgressDAO.delete(query);
 			}
+			
+		} else if (event.getAction() == CRUDAction.UPDATE) {
+			
+			//TODO update responsibleAttributedUser for pending activity progresses. && flowstatus != saved during completion
 		}
 	}
 	
@@ -1368,35 +1372,35 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		try {
 			log.info("Sending reminders for flow approval activities..");
-			
+
 			// @formatter:off
-		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(
-				"SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
-				+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
-				+" INNER JOIN " + activityGroupDAO.getTableName() + " ag ON ag.activityGroupID = a.activityGroupID AND ag.reminderAfterXDays IS NOT NULL"
-				+" WHERE ap.automaticReminderSent = 0 AND DATEDIFF(NOW(), ap.added) >= ag.reminderAfterXDays"
-		);
-		// @formatter:on
+			LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(
+					"SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
+					+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
+					+" INNER JOIN " + activityGroupDAO.getTableName() + " ag ON ag.activityGroupID = a.activityGroupID AND ag.reminderAfterXDays IS NOT NULL"
+					+" WHERE ap.completed IS NULL AND ap.automaticReminderSent = 0 AND DATEDIFF(NOW(), ap.added) >= ag.reminderAfterXDays"
+			);
+			// @formatter:on
 
-		query.addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
-		query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+			query.addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
 
-		List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
-		
-		if (activityProgresses != null) {
-			for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
-				
-				FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
-				
-				if (flowInstance != null) {
-					sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+			List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
+
+			if (activityProgresses != null) {
+				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+
+					FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+
+					if (flowInstance != null) {
+						sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+					}
+
+					activityProgress.setAutomaticReminderSent(true);
 				}
-				
-				activityProgress.setAutomaticReminderSent(true);
+
+				activityProgressDAO.update(activityProgresses, null);
 			}
-			
-			activityProgressDAO.update(activityProgresses, null);
-		}
 
 		} catch (Throwable t) {
 			log.error("Error sending reminders for flow approval activities", t);
