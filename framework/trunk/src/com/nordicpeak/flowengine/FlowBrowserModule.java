@@ -1156,6 +1156,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				
 				if(flow.getFlowFamily().getFlowFamilyID().equals(dbFamily.getFlowFamilyID())) {
 					
+					dbFamily.setHasTextTags(TextTagReplacer.hasTextTags(dbFamily));
 					flow.setFlowFamily(dbFamily);
 				}
 			}
