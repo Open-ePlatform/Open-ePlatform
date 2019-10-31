@@ -286,7 +286,7 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 			
 			for(Flow flow : flows) {
 				
-				if(flow.getPublishDate() != null ||this.popularFlows.contains(flow)) {
+				if(flow.getPublishDate() != null || (this.popularFlows != null && this.popularFlows.contains(flow))) {
 					
 					return false;
 				}
@@ -294,12 +294,16 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 		
 		}else if(action == CRUDAction.DELETE) {
 		
-			for(Flow flow : flows) {
-				
-				if(this.popularFlows.contains(flow)) {
+			if(this.popularFlows != null) {
+			
+				for(Flow flow : flows) {
 					
-					return false;
+					if(this.popularFlows.contains(flow)) {
+						
+						return false;
+					}
 				}
+			
 			}
 		}
 		
