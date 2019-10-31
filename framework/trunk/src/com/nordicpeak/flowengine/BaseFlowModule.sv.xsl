@@ -86,4 +86,6 @@
 	<xsl:variable name="i18n.Payment">Betala</xsl:variable>
 	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
 	
+	<xsl:variable name="i18n.SubmitSurveyTitle">Användarundersökning</xsl:variable>
+	
 </xsl:stylesheet>

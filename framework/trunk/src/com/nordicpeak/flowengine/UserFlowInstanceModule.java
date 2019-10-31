@@ -975,7 +975,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "multisign")
 	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
-		return super.showMultiSignMessage(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false);
+		return super.showMultiSignMessage(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false, ShowMode.PREVIEW);
+	}
+	
+	@WebPublic(alias = "submittedmultisign")
+	public ForegroundModuleResponse showSubmittedMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
+		
+		return super.showMultiSignMessage(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false, ShowMode.SUBMIT);
 	}
 
 	@WebPublic(alias = "pay")

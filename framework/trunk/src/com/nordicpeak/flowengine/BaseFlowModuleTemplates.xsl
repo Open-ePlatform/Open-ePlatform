@@ -179,6 +179,17 @@
 	</xsl:template>	
 
 	<xsl:template match="MultiSigningStatusForm">
+		
+		<xsl:if test="SubmitSurveyHTML">
+			<div class="info-box success">
+				<span><strong><xsl:value-of select="$i18n.SubmitSurveyTitle" /></strong><i class="icon close">x</i></span>
+				<div class="marker"></div>
+			</div>
+			<div class="info-box-message success">
+				<xsl:value-of select="SubmitSurveyHTML" disable-output-escaping="yes" />
+			</div>
+		</xsl:if>
+			
 	
 		<section class="service">
 			

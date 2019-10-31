@@ -1387,7 +1387,13 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@WebPublic(alias = "multisign")
 	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
-		return super.showMultiSignMessage(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false);
+		return super.showMultiSignMessage(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false, ShowMode.PREVIEW);
+	}
+	
+	@WebPublic(alias = "submittedmultisign")
+	public ForegroundModuleResponse showSubmittedMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
+		
+		return super.showMultiSignMessage(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false, ShowMode.SUBMIT);
 	}
 
 	@WebPublic(alias = "pay")

@@ -1592,6 +1592,20 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName(), this.getDefaultBreadcrumb());
 
+		appendSubmitSurveyFragment(flowInstanceManagerElement, moduleResponse, showMode, doc, req, user, instanceManager);
+
+		if (breadcrumb != null) {
+
+			moduleResponse.addBreadcrumbLast(breadcrumb);
+		}
+
+		appendLinksAndScripts(moduleResponse, managerResponses);
+
+		return moduleResponse;
+	}
+
+	private void appendSubmitSurveyFragment(Element flowInstanceManagerElement, SimpleForegroundModuleResponse moduleResponse, ShowMode showMode, Document doc, HttpServletRequest req, User user, FlowInstanceManager instanceManager) throws SQLException {
+
 		if (instanceManager.getFlowInstance().getFlow().showsSubmitSurvey() && showMode == ShowMode.SUBMIT) {
 
 			FlowSubmitSurveyProvider instance = systemInterface.getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
@@ -1614,17 +1628,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					log.error("Unable to get view fragment for flow submit survey", e);
 				}
 			}
-
 		}
-
-		if (breadcrumb != null) {
-
-			moduleResponse.addBreadcrumbLast(breadcrumb);
-		}
-
-		appendLinksAndScripts(moduleResponse, managerResponses);
-
-		return moduleResponse;
 	}
 
 	protected Breadcrumb getFlowInstancePreviewBreadcrumb(ImmutableFlowInstance flowInstance, HttpServletRequest req, URIParser uriParser) {
@@ -1972,7 +1976,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected abstract Icon getFlowIcon(Integer flowID) throws SQLException;
 
-	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean mananger) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
+	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean mananger, ShowMode showMode) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
 		Integer flowInstanceID = null;
 		ImmutableFlowInstanceManager instanceManager;
@@ -2045,7 +2049,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		multiSigningStatusElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
-
+		
+		appendSubmitSurveyFragment(multiSigningStatusElement, moduleResponse, showMode, doc, req, user, instanceManager);
+		
 		if (viewFragment != null) {
 
 			multiSigningStatusElement.appendChild(viewFragment.toXML(doc));
@@ -2443,7 +2449,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 
-			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/multisign/" + instanceManager.getFlowInstanceID();
+			return RequestUtils.getFullContextPathURL(req) + this.getFullAlias() + "/submittedmultisign/" + instanceManager.getFlowInstanceID();
 
 		} else if (requiresPayment(instanceManager)) {
 
