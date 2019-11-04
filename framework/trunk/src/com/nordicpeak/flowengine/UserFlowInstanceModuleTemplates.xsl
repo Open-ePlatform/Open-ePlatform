@@ -568,6 +568,20 @@
 							<span class="hide-mobile">
 								<xsl:value-of select="Status/name" />
 							</span>
+							
+							<xsl:if test="Status/description">
+								<span class="hide-mobile">
+									<xsl:if test="string-length(Status/description) > 120">
+										<xsl:attribute name="title">
+											<xsl:value-of select="Status/description" />
+										</xsl:attribute>
+									</xsl:if>
+									<xsl:call-template name="truncateWithEllipsis">
+										<xsl:with-param name="text" select="Status/description" />
+										<xsl:with-param name="maxLength" select="120" />
+									</xsl:call-template>
+								</span>
+							</xsl:if>
 						</div>
 					</div>
   				</div>
@@ -857,6 +871,23 @@
  			
 		</section>
 	
+	</xsl:template>
+	
+	<xsl:template name="truncateWithEllipsis">
+		<xsl:param name="text" />
+		<xsl:param name="maxLength" />
+		
+		<xsl:choose>
+			<xsl:when test="string-length($text) > $maxLength">
+				<xsl:text> - </xsl:text>
+				<xsl:value-of select="substring($text, 1, $maxLength)" />
+				<xsl:text>...</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text> - </xsl:text>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template match="FlowInstanceEvent">
