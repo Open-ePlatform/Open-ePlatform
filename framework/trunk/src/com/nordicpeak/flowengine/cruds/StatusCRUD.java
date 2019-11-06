@@ -332,11 +332,11 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		bean.setFlow((Flow) req.getAttribute("flow"));
 		bean.setSortIndex(Integer.MAX_VALUE);
 		
-		setDefaultStatusMappings(bean, req);
-		
 		FlowFamily flowFamily = getFlowFamily(bean.getFlow());
 		
 		validatePopulation(bean, flowFamily, req, user, uriParser);
+		
+		setDefaultStatusMappings(bean, req);
 	}
 	
 	@Override
@@ -344,11 +344,11 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		//TODO validate required action ID's
 		
-		setDefaultStatusMappings(bean, req);
-		
 		FlowFamily flowFamily = getFlowFamily(bean);
 		
 		validatePopulation(bean, flowFamily, req, user, uriParser);
+		
+		setDefaultStatusMappings(bean, req);
 	}
 	
 	protected void validatePopulation(Status bean, FlowFamily flowFamily, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
