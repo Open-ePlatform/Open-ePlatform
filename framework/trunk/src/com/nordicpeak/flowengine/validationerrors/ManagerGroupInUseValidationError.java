@@ -8,6 +8,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name = "validationError")
 public class ManagerGroupInUseValidationError extends ValidationError {
 
+	private static final long serialVersionUID = -2350703591299509892L;
 	@XMLElement
 	private final Group group;
 

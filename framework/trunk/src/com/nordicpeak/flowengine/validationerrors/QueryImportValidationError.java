@@ -9,6 +9,7 @@ import com.nordicpeak.flowengine.beans.QueryDescriptor;
 @XMLElement(name="validationError")
 public class QueryImportValidationError extends ValidationError {
 
+	private static final long serialVersionUID = 2956148262250035444L;
 	@XMLElement
 	private final QueryDescriptor queryDescriptor;
 

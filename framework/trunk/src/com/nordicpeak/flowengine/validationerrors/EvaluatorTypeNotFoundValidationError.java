@@ -9,6 +9,7 @@ import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 @XMLElement(name = "validationError")
 public class EvaluatorTypeNotFoundValidationError extends ValidationError {
 
+	private static final long serialVersionUID = 3247494896016298460L;
 	@XMLElement
 	private final EvaluatorDescriptor evaluatorDescriptor;
 

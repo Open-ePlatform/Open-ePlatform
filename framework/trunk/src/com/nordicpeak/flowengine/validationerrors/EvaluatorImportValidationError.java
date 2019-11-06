@@ -9,6 +9,7 @@ import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 @XMLElement(name="validationError")
 public class EvaluatorImportValidationError extends ValidationError {
 
+	private static final long serialVersionUID = 1825624959361748761L;
 	@XMLElement
 	private final EvaluatorDescriptor evaluatorDescriptor;
 

@@ -525,11 +525,13 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	
+	@Override
 	public String getQueryTypeName() {
 	
 		return queryTypeName;
 	}
 	
+	@Override
 	public String getQueryDescription() {
 		
 		return queryDescription;

@@ -17,6 +17,7 @@ public class SimpleSigningResponse implements SigningResponse {
 		this.signingAttributes = signingAttributes;
 	}
 	
+	@Override
 	public User getUser() {
 		return user;
 	}

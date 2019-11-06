@@ -9,6 +9,7 @@ import com.nordicpeak.flowengine.beans.FlowForm;
 @XMLElement(name = "validationError")
 public class FlowFormExportValidationError extends ValidationError {
 	
+	private static final long serialVersionUID = 4725088396330035553L;
 	@XMLElement
 	private final FlowForm flowForm;
 	

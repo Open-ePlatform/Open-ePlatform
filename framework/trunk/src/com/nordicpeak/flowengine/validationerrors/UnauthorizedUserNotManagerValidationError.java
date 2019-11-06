@@ -8,6 +8,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name = "validationError")
 public class UnauthorizedUserNotManagerValidationError extends ValidationError {
 
+	private static final long serialVersionUID = -1741147998056327591L;
 	@XMLElement
 	private final User user;
 

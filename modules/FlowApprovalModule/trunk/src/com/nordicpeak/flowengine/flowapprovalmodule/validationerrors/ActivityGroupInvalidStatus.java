@@ -6,6 +6,8 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name="validationError")
 public class ActivityGroupInvalidStatus extends ValidationError {
 
+	private static final long serialVersionUID = 4602694887963989416L;
+
 	@XMLElement
 	private String activityGroupName;
 	

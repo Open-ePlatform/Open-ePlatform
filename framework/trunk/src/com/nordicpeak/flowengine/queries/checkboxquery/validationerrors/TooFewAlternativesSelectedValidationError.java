@@ -6,6 +6,8 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name = "validationError")
 public class TooFewAlternativesSelectedValidationError extends ValidationError {
 
+	private static final long serialVersionUID = -8837205116539193383L;
+
 	@XMLElement
 	private final Integer checked;
 

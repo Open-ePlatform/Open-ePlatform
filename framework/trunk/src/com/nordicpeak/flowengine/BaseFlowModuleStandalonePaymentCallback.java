@@ -13,7 +13,6 @@ import com.nordicpeak.flowengine.exceptions.flowinstancemanager.FlowInstanceMana
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToSaveQueryInstanceException;
 import com.nordicpeak.flowengine.interfaces.FlowPaymentCallback;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 
 
 public class BaseFlowModuleStandalonePaymentCallback implements FlowPaymentCallback {
@@ -45,13 +44,13 @@ public class BaseFlowModuleStandalonePaymentCallback implements FlowPaymentCallb
 	@Override
 	public String getPaymentFailURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return baseFlowModule.getStandalonePaymentURL((ImmutableFlowInstanceManager) instanceManager, req);
+		return baseFlowModule.getStandalonePaymentURL(instanceManager, req);
 	}
 
 	@Override
 	public String getPaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
-		return baseFlowModule.getStandalonePaymentURL((ImmutableFlowInstanceManager) instanceManager, req);
+		return baseFlowModule.getStandalonePaymentURL(instanceManager, req);
 	}
 
 	@Override

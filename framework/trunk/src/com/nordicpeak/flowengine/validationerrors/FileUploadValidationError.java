@@ -7,6 +7,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name="validationError")
 public class FileUploadValidationError extends ValidationError {
 
+	private static final long serialVersionUID = -1909390103845157625L;
 	@XMLElement
 	private final int maxRequestSize;
 

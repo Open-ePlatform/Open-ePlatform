@@ -8,6 +8,7 @@ import com.nordicpeak.flowengine.beans.Step;
 @XMLElement(name = "validationError")
 public class NoStepSortindexValidationError extends ValidationError {
 
+	private static final long serialVersionUID = -1678856243990518661L;
 	@XMLElement
 	private Step step;
 

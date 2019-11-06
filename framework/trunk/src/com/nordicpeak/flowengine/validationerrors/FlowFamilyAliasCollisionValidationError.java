@@ -7,6 +7,8 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement(name = "validationError")
 public class FlowFamilyAliasCollisionValidationError extends ValidationError {
 
+	private static final long serialVersionUID = 2266897517805476869L;
+
 	@XMLElement
 	private final String alias;
 	
