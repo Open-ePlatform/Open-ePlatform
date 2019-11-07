@@ -145,9 +145,12 @@
 			
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.Email" /></strong>
-							<xsl:call-template name="printValue">
-								<xsl:with-param name="value" select="ContactDetailQueryInstance/email" />
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="ContactDetailQueryInstance/email">
+									<a href="mailto:{ContactDetailQueryInstance/email}" ><xsl:value-of select="ContactDetailQueryInstance/email" /></a>
+								</xsl:when>
+								<xsl:otherwise>-</xsl:otherwise>
+							</xsl:choose>
 						</div>
 					
 					</xsl:if>
