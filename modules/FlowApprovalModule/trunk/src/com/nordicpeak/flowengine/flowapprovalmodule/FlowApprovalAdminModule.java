@@ -199,6 +199,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	private QueryParameterFactory<FlowApprovalActivityProgress, Integer> activityProgressFlowInstanceIDParamFactory;
 	private QueryParameterFactory<FlowApprovalActivityProgress, FlowApprovalActivity> activityProgressActivityParamFactory;
 	private QueryParameterFactory<FlowApprovalActivityGroup, Integer> activityGroupFlowFamilyIDParamFactory;
+	private QueryParameterFactory<FlowApprovalActivityGroup, String> activityGroupStartStatusParamFactory;
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
@@ -263,6 +264,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activityProgressFlowInstanceIDParamFactory = activityProgressDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityProgressActivityParamFactory = activityProgressDAO.getParamFactory("activity", FlowApprovalActivity.class);
 		activityGroupFlowFamilyIDParamFactory = activityGroupDAO.getParamFactory("flowFamilyID", Integer.class);
+		activityGroupStartStatusParamFactory = activityGroupDAO.getParamFactory("startStatus", String.class);
 
 		activityCRUD = new FlowApprovalActivityCRUD(activityDAOWrapper, this);
 		activityGroupCRUD = new FlowApprovalActivityGroupCRUD(activityGroupDAOWrapper, this);
@@ -855,7 +857,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	private void triggerActivityGroups(ImmutableFlowInstance flowInstance, Status newStatus) throws SQLException {
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
 		if (activityGroups != null) {
 
@@ -865,7 +867,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			for (FlowApprovalActivityGroup activityGroup : activityGroups) {
 
-				if (newStatus.getName().equalsIgnoreCase(activityGroup.getStartStatus()) && activityGroup.getActivities() != null) {
+				if (activityGroup.getActivities() != null) {
 
 					log.debug("Starting activity group " + activityGroup + " for " + flowInstance);
 
@@ -1200,7 +1202,100 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 		} else if (event.getAction() == CRUDAction.UPDATE) {
 			
-			//TODO update responsibleAttributedUser for pending activity progresses. && flowstatus != saved during completion
+			for (FlowInstance flowInstance : event.getBeans()) {
+
+				List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+
+				if (activityGroups != null) {
+
+					for (FlowApprovalActivityGroup activityGroup : activityGroups) {
+
+						if (activityGroup.getActivities() != null) {
+
+							TransactionHandler transactionHandler = activityProgressDAO.createTransaction();
+
+							try {
+								Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(activityGroup.getActivities().size());
+
+								for (FlowApprovalActivity activity : activityGroup.getActivities()) {
+
+									if (activity.getResponsibleUserAttributeName() != null) {
+
+										boolean activeActivity = true;
+
+										if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
+
+											boolean match = false;
+
+											AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
+
+											if (attributeHandler != null) {
+
+												String value = attributeHandler.getString(activity.getAttributeName());
+
+												if (value != null) {
+
+													match = activity.getAttributeValues().contains(value);
+
+													if (!match && value.contains(",")) {
+
+														String[] values = value.split(", ?");
+
+														for (String splitValue : values) {
+
+															match = activity.getAttributeValues().contains(splitValue);
+
+															if (match) {
+																break;
+															}
+														}
+													}
+												}
+											}
+
+											activeActivity = match != activity.isInverted();
+										}
+
+										if (activeActivity) {
+
+											FlowApprovalActivityProgress progress = getActivityProgress(activity, flowInstance);
+
+											if (progress != null) {
+
+												User responsibleUser = getResponsibleUserFromAttribute(activity, flowInstance);
+
+												if ((responsibleUser == null && progress.getResponsibleAttributedUser() != null) || !responsibleUser.equals(progress.getResponsibleAttributedUser())) {
+
+													log.info("Updating responsible user for " + progress + " from " + progress.getResponsibleAttributedUser() + " to " + responsibleUser);
+													progress.setResponsibleAttributedUser(responsibleUser);
+
+													progress.setActivity(activity);
+													activityProgressDAO.update(progress, transactionHandler, null);
+
+													updatedActivities.put(activity, progress);
+												}
+											}
+										}
+									}
+								}
+
+								if (!updatedActivities.isEmpty()) {
+
+									transactionHandler.commit();
+
+									if (activityGroup.isSendActivityGroupStartedEmail()) {
+
+										sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+									}
+								}
+
+							} finally {
+								TransactionHandler.autoClose(transactionHandler);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -1231,6 +1326,20 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<FlowApprovalActivityGroup>();
 
 		query.addParameter(activityGroupFlowFamilyIDParamFactory.getParameter(flowFamilyID));
+
+		if (relations != null) {
+			query.addRelations(relations);
+		}
+
+		return activityGroupDAO.getAll(query);
+	}
+	
+	private List<FlowApprovalActivityGroup> getActivityGroups(Integer flowFamilyID, String startStatusName, Field... relations) throws SQLException {
+
+		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<FlowApprovalActivityGroup>();
+
+		query.addParameter(activityGroupFlowFamilyIDParamFactory.getParameter(flowFamilyID));
+		query.addParameter(activityGroupStartStatusParamFactory.getParameter(startStatusName));
 
 		if (relations != null) {
 			query.addRelations(relations);
