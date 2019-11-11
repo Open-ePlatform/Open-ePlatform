@@ -67,12 +67,6 @@
         <dependent-module archiveName="BouncyCastle.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/BouncyCastle/BouncyCastle">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="Xerces.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Xerces/Xerces">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="Xalan.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Xalan/Xalan">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="PDFBox.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/PDFBox/PDFBox">
             <dependency-type>uses</dependency-type>
         </dependent-module>
