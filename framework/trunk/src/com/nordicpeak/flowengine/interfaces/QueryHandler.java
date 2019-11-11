@@ -13,7 +13,6 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundI
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryNotFoundInQueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 
 public interface QueryHandler {
 
@@ -33,16 +32,6 @@ public interface QueryHandler {
 
 	public Query getQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryNotFoundInQueryProviderException, QueryProviderErrorException;
 
-	/**
-	 * @param descriptor
-	 * @param instanceManagerID the ID of the {@link MutableFlowInstanceManager} handling this query instance
-	 * @param instanceMetadata
-	 * @return
-	 * @throws QueryProviderNotFoundException
-	 * @throws QueryNotFoundInQueryProviderException
-	 * @throws QueryProviderErrorException
-	 * @throws QueryInstanceNotFoundInQueryProviderException
-	 */
 	public QueryInstance getQueryInstance(MutableQueryInstanceDescriptor descriptor, String instanceManagerID, HttpServletRequest req, User user, User poster, InstanceMetadata instanceMetadata) throws QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException;
 
 	public ImmutableQueryInstance getImmutableQueryInstance(MutableQueryInstanceDescriptor descriptor, HttpServletRequest req, InstanceMetadata instanceMetadata) throws QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException;

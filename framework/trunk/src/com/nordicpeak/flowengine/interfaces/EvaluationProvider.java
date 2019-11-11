@@ -10,9 +10,6 @@ import com.nordicpeak.flowengine.beans.EvaluatorTypeDescriptor;
 
 public interface EvaluationProvider {
 
-	/**
-	 * @return The query type that this class provides
-	 */
 	public EvaluatorTypeDescriptor getEvaluatorType();
 
 	public Evaluator createEvaluator(MutableEvaluatorDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
