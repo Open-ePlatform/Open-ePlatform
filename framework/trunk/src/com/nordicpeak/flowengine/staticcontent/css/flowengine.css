@@ -546,7 +546,9 @@ aside.narrow + .content.omega {
 }
 
 .flowadmin ul li div.title .tools {
-	float: right;
+	white-space: nowrap;
+	margin-left: auto;
+	flex: none;
 }
 
 .flowadmin ul.steps li.step {
@@ -559,11 +561,13 @@ aside.narrow + .content.omega {
 
 .flowadmin ul.steps li.step > div.title {
 	background-color: #E7E7E7;
-	padding: 12px 10px;
+	padding: 9px 10px;
 	font-weight: bold;
 	font-size: 15px;
 	cursor: pointer;
 	line-height: 1;
+	display: flex;
+	align-items: center;
 }
 
 .flowadmin ul.steps li.step > div.title:hover {
@@ -579,6 +583,7 @@ aside.narrow + .content.omega {
 .flowadmin ul.steps li.querydescriptor > div.title {
 	background-color: #F7F7F7;
 	font-weight: 600;
+	display: flex;
 } 
 
 .flowadmin ul.steps li.querydescriptor > div.title:hover {
@@ -597,6 +602,9 @@ aside.narrow + .content.omega {
 	padding-right: 7px;
 	padding-bottom: 1px;
 	padding-top: 1px;
+	display: flex;
+	height: 19px;
+	align-items: center;
 }
 
 .flowadmin ul.steps li .index {
@@ -611,6 +619,7 @@ aside.narrow + .content.omega {
 	padding-left: 6px;
 	padding-bottom: 4px;
 	padding-top: 4px;
+	display: flex;
 } 
 
 .flowadmin ul li div.title .comment {

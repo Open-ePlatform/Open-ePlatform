@@ -1797,8 +1797,10 @@
 						<xsl:otherwise><img src="{$imgPath}/cog_disabled.png" alt="" /></xsl:otherwise>
 					</xsl:choose>
 				</span>
-			
-				<xsl:value-of select="name"/>
+				
+				<span class="marginright">
+					<xsl:value-of select="name"/>
+				</span>
 				
 				<span class="tiny">
 				
