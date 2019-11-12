@@ -9,6 +9,7 @@
 	<xsl:variable name="java.queryDescription">
 Frågetypen Flerpartssigneringsfråga används när ärendet skall signeras av flera parter. Användaren får i e-tjänsten ange förnamn, efternamn, personnummer, e-post och/eller telefonnummer på den person
 som skall signera ärendet. Om flera personer skall signera ärendet skapas flera frågor av denna typ. För att flerpartssignering skall aktiveras måste &quot;Kräv signering&quot; vara aktiverad på e-tjänsten.
+Då flerpartssignering ska användas måste det finnas en status i e-tjänsten som hanterar detta.
 	</xsl:variable>
 	
 	<xsl:variable name="java.exportFirstName">Förnamn</xsl:variable>
