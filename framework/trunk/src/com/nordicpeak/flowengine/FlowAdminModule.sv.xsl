@@ -583,7 +583,7 @@
 	
 	<xsl:variable name="i18n.NoManagersSet">E-tjänsten går inte att publicera då den saknar handläggare.</xsl:variable>
 	<xsl:variable name="i18n.UnpublishFlowFamily">Avpublicera alla versioner</xsl:variable>
-	<xsl:variable name="i18n.UnpublishFlowFamilyConfirm">Är du säker på att du vill avpublicera alla versioner av e-tjänsten?</xsl:variable>
+	<xsl:variable name="i18n.UnpublishFlowFamilyConfirm">Är du säker på att du vill avpublicera alla versioner av e-tjänsten</xsl:variable>
 	
 	<xsl:variable name="i18n.ReCacheFlow">Cacha om e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowForm.externalIcon">Visa ikon för extern länk</xsl:variable>

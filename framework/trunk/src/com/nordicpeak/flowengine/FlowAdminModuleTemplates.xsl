@@ -890,6 +890,8 @@
 					<xsl:choose>
 						<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForFlowForms)">
 						
+<!-- 						TODO: Ta bort AllowSkipOverviewForFlowForms efter att Ineras blanketter.eforms.se är stängd och alla deras specialare är borta. -->
+<!-- 						TODO: Då $i18n.MayNotAddFlowFormIfOverviewSkipIsSet visas, då behöver inte  $i18n.hasNoFlowForm visas också. Fixa det efter att AllowSkipOverviewForFlowForms är borta. -->
 							<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
 						
 						</xsl:when>
@@ -1172,7 +1174,7 @@
 										<th width="75"><xsl:value-of select="$i18n.status" /></th>
 										<th width="37" >
 											<xsl:if test="PublishAccess">
-												<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm}: {name}?');" title="{$i18n.UnpublishFlowFamily}">
+												<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm} &#34;{Flow/name}&#34;?');" title="{$i18n.UnpublishFlowFamily}">
 													<img class="alignmiddle marginright" src="{$imgPath}/disabled.png" alt="" />
 												</a>
 											</xsl:if>
