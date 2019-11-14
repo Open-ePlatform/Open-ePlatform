@@ -1264,7 +1264,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 												User responsibleUser = getResponsibleUserFromAttribute(activity, flowInstance);
 
-												if ((responsibleUser == null && progress.getResponsibleAttributedUser() != null) || !responsibleUser.equals(progress.getResponsibleAttributedUser())) {
+												if ((responsibleUser == null && progress.getResponsibleAttributedUser() != null) || (responsibleUser != null && !responsibleUser.equals(progress.getResponsibleAttributedUser()))) {
 
 													log.info("Updating responsible user for " + progress + " from " + progress.getResponsibleAttributedUser() + " to " + responsibleUser);
 													progress.setResponsibleAttributedUser(responsibleUser);
