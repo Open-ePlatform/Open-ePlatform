@@ -1803,30 +1803,38 @@
 					</xsl:choose>
 				</span>
 				
-				<span class="marginright">
-					<xsl:value-of select="name"/>
-				</span>
-				
-				<span class="tiny">
-				
-					<xsl:text>&#x20;(</xsl:text>
-				
-					<xsl:variable name="evaluatorTypeID" select="evaluatorTypeID"/>
+				<div>
+					<span class="marginright">
+						<xsl:value-of select="name"/>
+					</span>
 					
-					<xsl:variable name="evaluatorType" select="../../../../../../../EvaluatorTypes/EvaluatorTypeDescriptor[evaluatorTypeID=$evaluatorTypeID]/name"/>
+					<span class="tiny">
 					
-					<xsl:choose>
-						<xsl:when test="$evaluatorType">
-							<xsl:value-of select="$evaluatorType"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$i18n.unknownEvaluatorType"/>
-						</xsl:otherwise>
-					</xsl:choose>
+						<xsl:text>&#x20;(</xsl:text>
 					
-					<xsl:text>)</xsl:text>
+						<xsl:variable name="evaluatorTypeID" select="evaluatorTypeID"/>
+						
+						<xsl:variable name="evaluatorType" select="../../../../../../../EvaluatorTypes/EvaluatorTypeDescriptor[evaluatorTypeID=$evaluatorTypeID]/name"/>
+						
+						<xsl:choose>
+							<xsl:when test="$evaluatorType">
+								<xsl:value-of select="$evaluatorType"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.unknownEvaluatorType"/>
+							</xsl:otherwise>
+						</xsl:choose>
+						
+						<xsl:text>)</xsl:text>
+						
+					</span>
 					
-				</span>
+					<xsl:if test="comment">
+						<span class="comment">
+							<xsl:value-of select="comment" />
+						</span>
+					</xsl:if>
+				</div>
 				
 				<span class="tools">
 					<xsl:if test="$disableStructureManipulation = false()">
@@ -1839,12 +1847,6 @@
 						</a>
 					</xsl:if>
 				</span>
-			
-				<xsl:if test="comment">
-					<span class="comment">
-						<xsl:value-of select="comment" />
-					</span>
-				</xsl:if>
 			</div>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
