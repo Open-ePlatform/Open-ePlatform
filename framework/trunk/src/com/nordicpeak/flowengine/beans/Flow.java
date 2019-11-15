@@ -35,6 +35,7 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.date.DateStringyfier;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
+import se.unlogic.standardutils.populators.YearLimitedDatePopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.string.StringUtils;
@@ -149,14 +150,14 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 	@StringTag
 	@DAOManaged
-	@WebPopulate
+	@WebPopulate(populator = YearLimitedDatePopulator.class)
 	@RequiredIfSet(paramNames = "unPublishDate")
 	@XMLElement(valueFormatter = DateStringyfier.class)
 	private Date publishDate;
 
 	@StringTag
 	@DAOManaged
-	@WebPopulate
+	@WebPopulate(populator = YearLimitedDatePopulator.class)
 	@XMLElement(valueFormatter = DateStringyfier.class)
 	private Date unPublishDate;
 
