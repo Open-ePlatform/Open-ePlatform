@@ -1702,29 +1702,38 @@
 		<li class="querydescriptor" data-queryid="{queryID}">	
 			<div class="title">
 				<span class="index"><xsl:value-of select="position()" /><xsl:text>.</xsl:text></span>
-				<span class="name">
-					<xsl:value-of select="name"/>
-					<span class="tiny">
-						<xsl:text>&#x20;(</xsl:text>
-						
-						<xsl:variable name="queryTypeID" select="queryTypeID"/>
-						
-						<xsl:variable name="queryType" select="../../../../../QueryTypes/QueryTypeDescriptor[queryTypeID=$queryTypeID]/name"/>
-						
-						<xsl:choose>
-							<xsl:when test="$queryType">
-								<xsl:value-of select="$queryType"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$i18n.unknownQueryType"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<xsl:text>)</xsl:text>
+				
+				<div>
+					<span class="name">
+						<xsl:value-of select="name"/>
+						<span class="tiny">
+							<xsl:text>&#x20;(</xsl:text>
+							
+							<xsl:variable name="queryTypeID" select="queryTypeID"/>
+							
+							<xsl:variable name="queryType" select="../../../../../QueryTypes/QueryTypeDescriptor[queryTypeID=$queryTypeID]/name"/>
+							
+							<xsl:choose>
+								<xsl:when test="$queryType">
+									<xsl:value-of select="$queryType"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.unknownQueryType"/>
+								</xsl:otherwise>
+							</xsl:choose>
+							
+							<xsl:text>)</xsl:text>
+						</span>
 					</span>
-				</span>
-				<span class="tools">
 					
+					<xsl:if test="comment">
+						<span class="comment">
+							<xsl:value-of select="comment" />
+						</span>
+					</xsl:if>
+				</div>
+				
+				<span class="tools">
 					<xsl:choose>
 						<xsl:when test="$disableStructureManipulation = false()">
 							
@@ -1766,12 +1775,6 @@
 					</xsl:choose>
 
 				</span>
-				
-				<xsl:if test="comment">
-					<span class="comment">
-						<xsl:value-of select="comment" />
-					</span>
-				</xsl:if>
 			</div>
 			
 			<xsl:if test="EvaluatorDescriptors/EvaluatorDescriptor">
