@@ -890,8 +890,8 @@
 					<xsl:choose>
 						<xsl:when test="Flow/skipOverview = 'true' and not(AllowSkipOverviewForFlowForms)">
 						
-<!-- 						TODO: Ta bort AllowSkipOverviewForFlowForms efter att Ineras blanketter.eforms.se är stängd och alla deras specialare är borta. -->
-<!-- 						TODO: Då $i18n.MayNotAddFlowFormIfOverviewSkipIsSet visas, då behöver inte  $i18n.hasNoFlowForm visas också. Fixa det efter att AllowSkipOverviewForFlowForms är borta. -->
+<!-- 						TODO: Rmove AllowSkipOverviewForFlowForms 2020 when support for this function ends -->
+<!-- 						TODO: When $i18n.MayNotAddFlowFormIfOverviewSkipIsSet is shown  $i18n.hasNoFlowForm doesn't have to shown. Fix when AllowSkipOverviewForFlowForms has been removed. -->
 							<xsl:value-of select="$i18n.MayNotAddFlowFormIfOverviewSkipIsSet"/>
 						
 						</xsl:when>
