@@ -578,15 +578,19 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		String searchLower = search.toLowerCase();
 
-		for (Status status : flow.getStatuses()) {
-
-			if (ArrayUtils.contains(FlowApprovalActivityGroupCRUD.INVALID_STATUS_TYPES, status.getContentType())) {
-				continue;
+		if(flow.getStatuses() != null) {
+		
+			for (Status status : flow.getStatuses()) {
+	
+				if (ArrayUtils.contains(FlowApprovalActivityGroupCRUD.INVALID_STATUS_TYPES, status.getContentType())) {
+					continue;
+				}
+				
+				if (status.getName().toLowerCase().contains(searchLower)) {
+					statusNames.add(status.getName());
+				}
 			}
-			
-			if (status.getName().toLowerCase().contains(searchLower)) {
-				statusNames.add(status.getName());
-			}
+		
 		}
 
 		log.info("User " + user + " searching for statuses using query " + search + " in flow " + flow + ", found " + CollectionUtils.getSize(statusNames) + " hits");
