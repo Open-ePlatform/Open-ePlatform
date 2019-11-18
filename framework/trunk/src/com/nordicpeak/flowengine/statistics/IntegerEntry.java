@@ -31,4 +31,11 @@ public class IntegerEntry implements NumberEntry{
 
 		this.id = id;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + id + ", " + value + ")";
+	}
+	
+	
 }

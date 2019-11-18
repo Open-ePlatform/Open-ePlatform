@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +46,9 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.BackgroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -82,6 +85,7 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.interfaces.StatisticsExtensionProvider;
 
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.Task;
@@ -90,7 +94,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 	private static final AnnotatedBeanTagSourceFactory<FlowFamilyStatistics> FAMILY_STATISTICS_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowFamilyStatistics>(FlowFamilyStatistics.class, "$family.");
 
-	private static final AnnotatedResultSetPopulator<IntegerEntry> INTEGER_ENTRY_POPULATOR = new AnnotatedResultSetPopulator<IntegerEntry>(IntegerEntry.class);
+	public static final AnnotatedResultSetPopulator<IntegerEntry> INTEGER_ENTRY_POPULATOR = new AnnotatedResultSetPopulator<IntegerEntry>(IntegerEntry.class);
 
 	private static final String GLOBAL_FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(firstSubmitted, 3)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE firstSubmitted BETWEEN ? AND ? GROUP BY id ORDER BY id ASC;";
 	private static final String GLOBAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
@@ -250,7 +254,20 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	private Scheduler scheduler;
 
 	private boolean changesDetected;
+	
+	protected CopyOnWriteArrayList<StatisticsExtensionProvider> extensions = new CopyOnWriteArrayList<>();
 
+	@Override
+	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+
+		super.init(moduleDescriptor, sectionInterface, dataSource);
+
+		if (!systemInterface.getInstanceHandler().addInstance(StatisticsModule.class, this)) {
+			
+			throw new RuntimeException("Unable to register module in global instance handler using key " + StatisticsModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+	}
+	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
@@ -275,6 +292,8 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	public void unload() throws Exception {
 
 		stopScheduler();
+		
+		systemInterface.getInstanceHandler().removeInstance(StatisticsModule.class, this);
 
 		super.unload();
 	}
@@ -321,7 +340,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 		long startTime = System.currentTimeMillis();
 
-		log.info("Generating statistics for perdiod: " + DateUtils.DATE_TIME_FORMATTER.format(startDate) + " - " + DateUtils.DATE_TIME_FORMATTER.format(endDate));
+		log.info("Generating statistics for period: " + DateUtils.DATE_TIME_FORMATTER.format(startDate) + " - " + DateUtils.DATE_TIME_FORMATTER.format(endDate));
 
 		HighLevelQuery<FlowFamily> flowFamiliesQuery = new HighLevelQuery<FlowFamily>(FlowFamily.FLOWS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION);
 		flowFamiliesQuery.addCachedRelation(Flow.FLOW_TYPE_RELATION);
@@ -341,7 +360,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 			for (FlowFamily flowFamily : flowFamilies) {
 
-				if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
+				if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
 					
 					log.info("Caching of statistics aborted...");
 					return;
@@ -366,79 +385,71 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 					List<Entry<String, List<FlowInstance>>> flowInstancesByWeek = getFlowInstancesByWeek(flowFamily.getFlowFamilyID());
 
-					if (flowInstancesByWeek != null) {
+					List<Entry<String, Integer>> totalFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
+					List<Entry<String, Integer>> femaleFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
+					List<Entry<String, Integer>> maleFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
+					List<Entry<String, Integer>> unkownFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
 
-						List<Entry<String, Integer>> totalFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
-						List<Entry<String, Integer>> femaleFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
-						List<Entry<String, Integer>> maleFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
-						List<Entry<String, Integer>> unkownFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
+					for (Entry<String, List<FlowInstance>> entry : flowInstancesByWeek) {
 
-						for (Entry<String, List<FlowInstance>> entry : flowInstancesByWeek) {
-
-							if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
-								
-								log.info("Caching of statistics aborted...");
-								return;
-							}
+						if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
 							
-							int totalCount = 0;
-							int femaleCount = 0;
-							int maleCount = 0;
-							int unkownCount = 0;
+							log.info("Caching of statistics aborted...");
+							return;
+						}
+						
+						int totalCount = 0;
+						int femaleCount = 0;
+						int maleCount = 0;
+						int unkownCount = 0;
 
-							if (entry.getValue() != null) {
+						if (entry.getValue() != null) {
 
-								totalCount = entry.getValue().size();
+							totalCount = entry.getValue().size();
 
-								for (FlowInstance flowInstance : entry.getValue()) {
+							for (FlowInstance flowInstance : entry.getValue()) {
 
-									if(systemInterface.getSystemStatus() == SystemStatus.STOPPING){
-										
-										log.info("Caching of statistics aborted...");
-										return;
-									}
+								if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
 									
-									String citizenIdentifier;
+									log.info("Caching of statistics aborted...");
+									return;
+								}
+								
+								String citizenIdentifier;
 
-									if (flowInstance.getPoster() == null || flowInstance.getPoster().getAttributeHandler() == null || (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) == null) {
-										unkownCount++;
-										continue;
-									}
-
-									String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
-
-									Integer genderPartInt = NumberUtils.toInt(genderPart);
-									
-									if(genderPartInt == null){
-										
-										unkownCount++;
-										continue;
-									}
-									
-									if (genderPartInt % 2 == 0) {
-										femaleCount++;
-									} else {
-										maleCount++;
-									}
-
+								if (flowInstance.getPoster() == null || flowInstance.getPoster().getAttributeHandler() == null || (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) == null) {
+									unkownCount++;
+									continue;
 								}
 
+								String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
+
+								Integer genderPartInt = NumberUtils.toInt(genderPart);
+								
+								if (genderPartInt == null) {
+									
+									unkownCount++;
+									continue;
+								}
+								
+								if (genderPartInt % 2 == 0) {
+									femaleCount++;
+								} else {
+									maleCount++;
+								}
 							}
-
-							totalFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), totalCount));
-							femaleFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), femaleCount));
-							maleFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), maleCount));
-							unkownFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), unkownCount));
-
 						}
-
-						familyStatistics.setTotalFlowInstancesCountByWeek(totalFlowInstancesCountByWeek);
-						familyStatistics.setFemaleFlowInstancesCountByWeek(femaleFlowInstancesCountByWeek);
-						familyStatistics.setMaleFlowInstancesCountByWeek(maleFlowInstancesCountByWeek);
-						familyStatistics.setUnkownFlowInstancesCountByWeek(unkownFlowInstancesCountByWeek);
-
+						
+						totalFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), totalCount));
+						femaleFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), femaleCount));
+						maleFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), maleCount));
+						unkownFlowInstancesCountByWeek.add(new SimpleEntry<String, Integer>(entry.getKey(), unkownCount));
 					}
 
+					familyStatistics.setTotalFlowInstancesCountByWeek(totalFlowInstancesCountByWeek);
+					familyStatistics.setFemaleFlowInstancesCountByWeek(femaleFlowInstancesCountByWeek);
+					familyStatistics.setMaleFlowInstancesCountByWeek(maleFlowInstancesCountByWeek);
+					familyStatistics.setUnkownFlowInstancesCountByWeek(unkownFlowInstancesCountByWeek);
 				}
 
 				if (surveyProvider != null) {
@@ -472,6 +483,15 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 					familyStatistics.getFlowStatistics().put(flow.getFlowID(), flowStatistics);
 				}
+				
+				for (StatisticsExtensionProvider extension : extensions) {
+					try {
+						 extension.getFlowFamilyStatistics(familyStatistics, startDate, endDate, enableExportSupport);
+						
+					} catch(Exception e) {
+						log.error("Error getting FlowFamilyStatistics from extension " + extension, e);
+					}
+				}
 
 				if (!familyStatistics.getFlowStatistics().isEmpty()) {
 
@@ -500,7 +520,20 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 			}
 		}
 
-		this.globalFlowInstanceCount = getGlobalFlowInstanceCount(startDate, endDate);
+		List<IntegerEntry> globalFlowInstanceCount = getGlobalFlowInstanceCount(startDate, endDate);
+		
+		for (StatisticsExtensionProvider extension : extensions) {
+			try {
+				List<IntegerEntry> extensionFlowInstanceCount = extension.getGlobalFlowInstanceCount(startDate, endDate);
+				
+				globalFlowInstanceCount = mergeIntegerEntryLists(globalFlowInstanceCount, extensionFlowInstanceCount);
+				
+			} catch(Exception e) {
+				log.error("Error getting GlobalFlowInstanceCount from extension " + extension, e);
+			}
+		}
+		
+		this.globalFlowInstanceCount = globalFlowInstanceCount;
 		this.globalFlowFamilyCount = getGlobalFlowFamilyCount();
 		this.globalInternalFlowFamilyCount = getGlobalInternalFlowFamilyCount();
 		this.globalExternalFlowFamilyCount = getGlobalExternalFlowFamilyCount();
@@ -510,7 +543,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 		log.info("Statistics generated in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime));
 	}
-
+	
 	private List<FloatEntry> getSurveyRating(Integer flowFamilyID) throws SQLException {
 
 		Calendar calendar = GregorianCalendar.getInstance();
@@ -600,7 +633,6 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		}
 
 		return entries;
-
 	}
 
 	private List<Entry<String, List<FlowInstance>>> getFlowInstancesByWeek(Integer flowFamilyID) throws SQLException {
@@ -609,6 +641,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 		List<Entry<String, List<FlowInstance>>> entries = new ArrayList<Entry<String, List<FlowInstance>>>();
 
+		//TODO why do we not match cacheStatistics startDate?
 		calendar.add(Calendar.WEEK_OF_YEAR, -weeksBackInTime);
 
 		while (entries.size() < weeksBackInTime) {
@@ -629,11 +662,9 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 			SimpleEntry<String, List<FlowInstance>> entry = new SimpleEntry<String, List<FlowInstance>>(week, flowInstances);
 
 			entries.add(entry);
-
 		}
 
 		return entries;
-
 	}
 
 	private List<FlowInstance> getFlowInstances(Integer flowFamilyID, Timestamp startDate, Timestamp endDate) throws SQLException {
@@ -645,7 +676,6 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		query.addParameter(endDate);
 
 		return daoFactory.getFlowInstanceDAO().getAll(query);
-
 	}
 
 	private IntegerEntry getFlowFamilyCount(Timestamp startDate, Timestamp endDate, String sqlQuery) throws SQLException {
@@ -948,7 +978,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 				stepArray.addNode(step.getName());
 
 				abortCountArray.addNode(getMatchingEntryValue(step, flowStatistics.getStepAbortCount()));
-			}			
+			}
 		}
 
 		JsonObject jsonObject = new JsonObject(2);
@@ -1080,13 +1110,10 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 						writer.write(flowFamilyStatistics.getFemaleFlowInstancesCountByWeek().get(i).getValue() + ";");
 						writer.write(flowFamilyStatistics.getMaleFlowInstancesCountByWeek().get(i).getValue() + ";");
 						writer.write(flowFamilyStatistics.getUnkownFlowInstancesCountByWeek().get(i).getValue() + ";");
-
 					}
 
 					writer.write("\n");
-
 				}
-
 			}
 
 			writer.flush();
@@ -1490,6 +1517,123 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		doc.getDocumentElement().appendChild(familyStatisticsElement);
 		
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
+	}
+	
+	public boolean addStatisticsExtensionProvider(StatisticsExtensionProvider statisticsExtensionProvider) {
+		return extensions.add(statisticsExtensionProvider);
+	}
+	
+	public boolean removeStatisticsExtensionProvider(StatisticsExtensionProvider statisticsExtensionProvider) {
+		return extensions.remove(statisticsExtensionProvider);
+	}
+
+	public static List<IntegerEntry> mergeIntegerEntryLists(List<IntegerEntry> globalList, List<IntegerEntry> extensionList) {
+
+		if (globalList == null) {
+			return extensionList;
+		}
+
+		if (extensionList != null) {
+
+			int globalIdx = 0;
+			int extensionIdx = 0;
+			while (extensionIdx < extensionList.size()) {
+
+				IntegerEntry globalEntry = globalList.get(globalIdx);
+				IntegerEntry extensionEntry = extensionList.get(extensionIdx);
+
+				int weekDiff = globalEntry.getId() - extensionEntry.getId();
+
+				if (weekDiff == 0) { // Add
+
+					globalEntry.setValue(globalEntry.getValue() + extensionEntry.getValue());
+
+					extensionIdx++;
+
+					if (globalIdx + 1 < globalList.size()) {
+						globalIdx++;
+					}
+
+				} else if (weekDiff > 0) { // Insert
+
+					globalList.add(globalIdx, extensionEntry);
+					globalIdx++;
+					extensionIdx++;
+
+				} else { // idDiff < 0
+
+					if (globalIdx + 1 < globalList.size()) { // Skip
+
+						globalIdx++;
+
+					} else { // Append
+
+						globalList.add(extensionEntry);
+						globalIdx++;
+						extensionIdx++;
+					}
+				}
+			}
+		}
+		
+		return globalList;
+	}
+	
+	public static List<Entry<String, Integer>> mergeStringEntryLists(List<Entry<String, Integer>> globalList, List<Entry<String, Integer>> extensionList) {
+
+		if (globalList == null) {
+			return extensionList;
+		}
+
+		if (extensionList != null) {
+
+//			System.out.println("E " + StringUtils.toCommaSeparatedString(extensionList));
+//			System.out.println("G1 " + StringUtils.toCommaSeparatedString(globalList));
+
+			int globalIdx = 0;
+			int extensionIdx = 0;
+			while (extensionIdx < extensionList.size()) {
+
+				Entry<String, Integer> globalEntry = globalList.get(globalIdx);
+				Entry<String, Integer> extensionEntry = extensionList.get(extensionIdx);
+
+				int weekDiff = globalEntry.getKey().compareTo(extensionEntry.getKey());
+
+				if (weekDiff == 0) { // Add
+
+					globalEntry.setValue(globalEntry.getValue() + extensionEntry.getValue());
+
+					extensionIdx++;
+
+					if (globalIdx + 1 < globalList.size()) {
+						globalIdx++;
+					}
+
+				} else if (weekDiff > 0) { // Insert
+
+					globalList.add(globalIdx, extensionEntry);
+					globalIdx++;
+					extensionIdx++;
+
+				} else { // idDiff < 0
+
+					if (globalIdx + 1 < globalList.size()) { // Skip
+
+						globalIdx++;
+
+					} else { // Append
+
+						globalList.add(extensionEntry);
+						globalIdx++;
+						extensionIdx++;
+					}
+				}
+			}
+
+//			System.out.println("G2 " + StringUtils.toCommaSeparatedString(globalList));
+		}
+		
+		return globalList;
 	}
 	
 }
