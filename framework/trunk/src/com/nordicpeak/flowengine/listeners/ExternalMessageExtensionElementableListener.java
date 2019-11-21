@@ -45,15 +45,13 @@ public class ExternalMessageExtensionElementableListener implements ElementableL
 
 		if (!CollectionUtils.isEmpty(externalMessageExtensionProviders)) {
 
-			externalMessage.setFlowInstance(flowInstance);
-
 			Element pluginFragments = doc.createElement("ViewFragmentExtension");
 
 			for (ExternalMessageExtensionProvider extensionProvider : externalMessageExtensionProviders) {
 
 				try {
 
-					ViewFragment extensionSettings = extensionProvider.getViewFragment(externalMessage, req, user, uriParser, manager);
+					ViewFragment extensionSettings = extensionProvider.getViewFragment(externalMessage, flowInstance, req, user, uriParser, manager);
 
 					if (extensionSettings != null) {
 
