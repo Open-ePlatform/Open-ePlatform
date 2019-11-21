@@ -383,7 +383,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 				if (enableExportSupport) {
 
-					List<Entry<String, List<FlowInstance>>> flowInstancesByWeek = getFlowInstancesByWeek(flowFamily.getFlowFamilyID());
+					List<Entry<String, List<FlowInstance>>> flowInstancesByWeek = getFlowInstancesByWeek(flowFamily.getFlowFamilyID(), startDate, endDate);
 
 					List<Entry<String, Integer>> totalFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
 					List<Entry<String, Integer>> femaleFlowInstancesCountByWeek = new ArrayList<Entry<String, Integer>>();
@@ -534,10 +534,10 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		}
 		
 		this.globalFlowInstanceCount = globalFlowInstanceCount;
-		this.globalFlowFamilyCount = getGlobalFlowFamilyCount();
-		this.globalInternalFlowFamilyCount = getGlobalInternalFlowFamilyCount();
-		this.globalExternalFlowFamilyCount = getGlobalExternalFlowFamilyCount();
-		this.globalPDFFormFlowFamilyCount = getGlobalPDFFormFlowFamilyCount();
+		this.globalFlowFamilyCount = getGlobalFlowFamilyCount(startDate, endDate);
+		this.globalInternalFlowFamilyCount = getGlobalInternalFlowFamilyCount(startDate, endDate);
+		this.globalExternalFlowFamilyCount = getGlobalExternalFlowFamilyCount(startDate, endDate);
+		this.globalPDFFormFlowFamilyCount = getGlobalPDFFormFlowFamilyCount(startDate, endDate);
 		this.flowFamilyStatisticsMap = statisticsMap;
 		this.publicFamilyStatistics = publicList;
 
@@ -589,79 +589,73 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		return entries;
 	}
 
-	private List<IntegerEntry> getGlobalFlowFamilyCount() throws SQLException {
+	private List<IntegerEntry> getGlobalFlowFamilyCount(Timestamp startDate, Timestamp endDate) throws SQLException {
 
-		return getGlobalFlowFamilyCount(GLOBAL_FLOW_FAMILY_COUNT);
+		return getGlobalFlowFamilyCount(GLOBAL_FLOW_FAMILY_COUNT, startDate, endDate);
 	}
 
-	private List<IntegerEntry> getGlobalPDFFormFlowFamilyCount() throws SQLException {
+	private List<IntegerEntry> getGlobalPDFFormFlowFamilyCount(Timestamp startDate, Timestamp endDate) throws SQLException {
 
-		return getGlobalFlowFamilyCount(GLOBAL_PDFFORM_FLOW_FAMILY_COUNT);
+		return getGlobalFlowFamilyCount(GLOBAL_PDFFORM_FLOW_FAMILY_COUNT, startDate, endDate);
 	}
 
-	private List<IntegerEntry> getGlobalExternalFlowFamilyCount() throws SQLException {
+	private List<IntegerEntry> getGlobalExternalFlowFamilyCount(Timestamp startDate, Timestamp endDate) throws SQLException {
 
-		return getGlobalFlowFamilyCount(GLOBAL_EXTERNAL_FLOW_FAMILY_COUNT);
+		return getGlobalFlowFamilyCount(GLOBAL_EXTERNAL_FLOW_FAMILY_COUNT, startDate, endDate);
 	}
 
-	private List<IntegerEntry> getGlobalInternalFlowFamilyCount() throws SQLException {
+	private List<IntegerEntry> getGlobalInternalFlowFamilyCount(Timestamp startDate, Timestamp endDate) throws SQLException {
 
-		return getGlobalFlowFamilyCount(GLOBAL_INTERNAL_FLOW_FAMILY_COUNT);
+		return getGlobalFlowFamilyCount(GLOBAL_INTERNAL_FLOW_FAMILY_COUNT, startDate, endDate);
 	}
 
-	private List<IntegerEntry> getGlobalFlowFamilyCount(String sqlQuery) throws SQLException {
+	private List<IntegerEntry> getGlobalFlowFamilyCount(String sqlQuery, Timestamp startDate, Timestamp endDate) throws SQLException {
 
 		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(startDate);
 
-		List<IntegerEntry> entries = new ArrayList<IntegerEntry>(weeksBackInTime);
+		List<IntegerEntry> entries = new ArrayList<IntegerEntry>(weeksBackInTime + 1);
 
-		calendar.add(Calendar.WEEK_OF_YEAR, -weeksBackInTime);
-
-		while (entries.size() < weeksBackInTime) {
-
-			calendar.add(Calendar.WEEK_OF_YEAR, 1);
-			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-
-			Timestamp endDate = DateUtils.setTimeToMaximum(new Timestamp(calendar.getTimeInMillis()));
+		while (calendar.getTimeInMillis() <= endDate.getTime()) {
 
 			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			Timestamp itermediateStartDate = DateUtils.setTimeToMidnight(new Timestamp(calendar.getTimeInMillis()));
 
-			Timestamp startDate = DateUtils.setTimeToMidnight(new Timestamp(calendar.getTimeInMillis()));
+			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+			Timestamp itermediateEndDate = DateUtils.setTimeToMaximum(new Timestamp(calendar.getTimeInMillis()));
 
-			entries.add(getFlowFamilyCount(startDate, endDate, sqlQuery));
+			entries.add(getFlowFamilyCount(itermediateStartDate, itermediateEndDate, sqlQuery));
 
+			calendar.add(Calendar.WEEK_OF_YEAR, 1);
 		}
 
 		return entries;
 	}
 
-	private List<Entry<String, List<FlowInstance>>> getFlowInstancesByWeek(Integer flowFamilyID) throws SQLException {
+	private List<Entry<String, List<FlowInstance>>> getFlowInstancesByWeek(Integer flowFamilyID, Timestamp startDate, Timestamp endDate) throws SQLException {
 
 		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(startDate);
 
-		List<Entry<String, List<FlowInstance>>> entries = new ArrayList<Entry<String, List<FlowInstance>>>();
-
-		//TODO why do we not match cacheStatistics startDate?
-		calendar.add(Calendar.WEEK_OF_YEAR, -weeksBackInTime);
-
-		while (entries.size() < weeksBackInTime) {
-
-			calendar.add(Calendar.WEEK_OF_YEAR, 1);
-			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-
-			Timestamp endDate = DateUtils.setTimeToMaximum(new Timestamp(calendar.getTimeInMillis()));
+		List<Entry<String, List<FlowInstance>>> entries = new ArrayList<Entry<String, List<FlowInstance>>>(weeksBackInTime + 1);
+		
+		while (calendar.getTimeInMillis() <= endDate.getTime()) {
 
 			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
-			Timestamp startDate = DateUtils.setTimeToMidnight(new Timestamp(calendar.getTimeInMillis()));
-
+			Timestamp itermediateStartDate = DateUtils.setTimeToMidnight(new Timestamp(calendar.getTimeInMillis()));
+			
 			String week = calendar.get(Calendar.YEAR) + " v." + calendar.get(Calendar.WEEK_OF_YEAR) + "";
+			
+			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+			Timestamp itermediateEndDate = DateUtils.setTimeToMaximum(new Timestamp(calendar.getTimeInMillis()));
 
-			List<FlowInstance> flowInstances = getFlowInstances(flowFamilyID, startDate, endDate);
+			List<FlowInstance> flowInstances = getFlowInstances(flowFamilyID, itermediateStartDate, itermediateEndDate);
 
 			SimpleEntry<String, List<FlowInstance>> entry = new SimpleEntry<String, List<FlowInstance>>(week, flowInstances);
 
 			entries.add(entry);
+			
+			calendar.add(Calendar.WEEK_OF_YEAR, 1);
 		}
 
 		return entries;
@@ -1099,7 +1093,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 				writer.write(flowFamilyStatistics.getFlowTypeName());
 				writer.write(";");
-				writer.write(flowFamilyStatistics.getName());
+				writer.write(flowFamilyStatistics.getName().replace(";", ""));
 				writer.write(";");
 
 				if (flowFamilyStatistics.getTotalFlowInstancesCountByWeek() != null) {
@@ -1587,9 +1581,6 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 
 		if (extensionList != null) {
 
-//			System.out.println("E " + StringUtils.toCommaSeparatedString(extensionList));
-//			System.out.println("G1 " + StringUtils.toCommaSeparatedString(globalList));
-
 			int globalIdx = 0;
 			int extensionIdx = 0;
 			while (extensionIdx < extensionList.size()) {
@@ -1629,8 +1620,6 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 					}
 				}
 			}
-
-//			System.out.println("G2 " + StringUtils.toCommaSeparatedString(globalList));
 		}
 		
 		return globalList;
