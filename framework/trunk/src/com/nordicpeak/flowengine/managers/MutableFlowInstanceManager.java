@@ -1575,6 +1575,33 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return queryList;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getEvaluators(Class<T> evaluatorClass) {
+
+		List<T> queryList = new ArrayList<>();
+
+		for (ManagedStep managedStep : this.managedSteps) {
+
+			for (ManagedQueryInstance managedQueryInstance : managedStep.getManagedQueryInstances()) {
+
+				for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
+
+					if (evaluatorClass.isAssignableFrom(evaluator.getClass())) {
+
+						queryList.add((T) evaluator);
+					}
+				}
+			}
+		}
+
+		if (queryList.isEmpty()) {
+
+			return null;
+		}
+
+		return queryList;
+	}
+
 	@Override
 	public List<PDFManagerResponse> getPDFContent(ImmutableFlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException {
 
