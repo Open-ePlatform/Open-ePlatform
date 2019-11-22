@@ -25,25 +25,32 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.events.FlowBrowserCacheEvent;
 
-public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implements InstanceListener<FlowBrowserModule>{
+public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implements InstanceListener<FlowBrowserModule> {
 
 	protected FlowBrowserModule flowBrowserModule;
 
-	protected ConcurrentHashMap<String, Integer> aliasMap = new ConcurrentHashMap<String, Integer>();
+	protected ConcurrentHashMap<String, Integer> aliasMap = new ConcurrentHashMap<>();
 
 	@Override
 	public void init(FilterModuleDescriptor moduleDescriptor, SystemInterface systemInterface, DataSource dataSource) throws Exception {
 
 		super.init(moduleDescriptor, systemInterface, dataSource);
-		
+
 		systemInterface.getInstanceHandler().addInstanceListener(FlowBrowserModule.class, this);
+
+		if (!systemInterface.getInstanceHandler().addInstance(FlowFamilyAliasFilterModule.class, this)) {
+
+			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowFamilyAliasFilterModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
 	}
 
 	@Override
 	public void unload() throws Exception {
 
 		systemInterface.getInstanceHandler().removeInstanceListener(FlowBrowserModule.class, this);
-		
+
+		systemInterface.getInstanceHandler().removeInstance(FlowFamilyAliasFilterModule.class, this);
+
 		super.unload();
 	}
 
@@ -58,24 +65,20 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implement
 
 			} else {
 
-				String alias = uriParser.get(0);
+				Integer flowFamilyID = getFlowFamilyIDFromAliasCache(uriParser);
 
-				if (systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) == null && systemInterface.getRootSection().getSectionCache().getEntry(alias) == null) {
+				if (flowFamilyID != null) {
 
-					Integer flowFamilyID = aliasMap.get(alias);
+					try {
 
-					if (flowFamilyID != null) {
+						flowBrowserModule.redirectToMethod(req, res, "/overview/" + flowFamilyID);
 
-						try {
-							flowBrowserModule.redirectToMethod(req, res, "/overview/" + flowFamilyID);
+					} catch (IOException e) {
 
-						} catch (IOException e) {
-
-							log.info("Error redirecting user " + user + " to flow overview for flowFamily " + flowFamilyID);
-						}
-
-						return;
+						log.info("Error redirecting user " + user + " to flow overview for flowFamily " + flowFamilyID);
 					}
+
+					return;
 				}
 			}
 		}
@@ -83,7 +86,19 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implement
 		filterChain.doFilter(req, res, user, uriParser);
 	}
 
-	@EventListener(channel=FlowBrowserModule.class)
+	public Integer getFlowFamilyIDFromAliasCache(URIParser uriParser) {
+
+		String alias = uriParser.get(0);
+
+		if (systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) == null && systemInterface.getRootSection().getSectionCache().getEntry(alias) == null) {
+
+			return aliasMap.get(alias);
+		}
+
+		return null;
+	}
+
+	@EventListener(channel = FlowBrowserModule.class)
 	public void processEvent(FlowBrowserCacheEvent event, EventSource eventSource) {
 
 		if (flowBrowserModule != null) {
@@ -111,17 +126,16 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implement
 					}
 				}
 			}
-			
+
 			aliasMap = newAliasMap;
 		}
 	}
-	
-	
+
 	@Override
 	public <InstanceType extends FlowBrowserModule> void instanceAdded(Class<FlowBrowserModule> key, InstanceType instance) {
 
 		this.flowBrowserModule = instance;
-		
+
 		processEvent((FlowBrowserCacheEvent) null, null);
 	}
 
