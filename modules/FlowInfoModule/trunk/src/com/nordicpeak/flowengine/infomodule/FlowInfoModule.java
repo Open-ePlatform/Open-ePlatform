@@ -240,11 +240,11 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		if (requestedFlow != null) {
 
-			getResponse(req, res, responseType, Collections.singletonList(requestedFlow), uriParser);
+			getResponse(req, res, uriParser, user, responseType, Collections.singletonList(requestedFlow));
 
 		} else {
 
-			getResponse(req, res, responseType, null, uriParser);
+			getResponse(req, res, uriParser, user, responseType, null);
 		}
 	}
 
@@ -276,11 +276,11 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		if (requestedFlow != null) {
 
-			getResponse(req, res, responseType, Collections.singletonList(requestedFlow), uriParser);
+			getResponse(req, res, uriParser, user, responseType, Collections.singletonList(requestedFlow));
 
 		} else {
 
-			getResponse(req, res, responseType, null, uriParser);
+			getResponse(req, res, uriParser, user, responseType, null);
 		}
 	}
 	
@@ -308,7 +308,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 		Collection<Flow> flows = flowBrowserModule.getAccessFilteredLatestPublishedFlowVersions(user);
 
-		getResponse(req, res, responseType, flows, uriParser);
+		getResponse(req, res, uriParser, user, responseType, flows);
 	}
 
 	@RESTMethod(alias = "search/{responseType}", method = "get")
@@ -357,7 +357,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 			}
 		}
 
-		getResponse(req, res, responseType, flowHits, uriParser);
+		getResponse(req, res, uriParser, user, responseType, flowHits);
 	}
 
 	@RESTMethod(alias = "getpopularflows/{resultCount}/{responseType}", method = "get")
@@ -378,11 +378,11 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				resultCount = popularFlows.size();
 			}
 
-			getResponse(req, res, responseType, popularFlows.subList(0, resultCount), uriParser);
+			getResponse(req, res, uriParser, user, responseType, popularFlows.subList(0, resultCount));
 
 		} else {
 
-			getResponse(req, res, responseType, null, uriParser);
+			getResponse(req, res, uriParser, user, responseType, null);
 		}
 	}
 
@@ -405,7 +405,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 			}
 		}
 
-		getResponse(req, res, responseType, flowsInCategory, uriParser);
+		getResponse(req, res, uriParser, user, responseType, flowsInCategory);
 	}
 
 	private String getFlowURL(HttpServletRequest req, Flow flow) {
@@ -418,32 +418,38 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 		return RequestUtils.getFullContextPathURL(req) + flowBrowserModule.getFullAlias() + "/icon/" + flow.getFlowID();
 	}
 
-	private void getResponse(HttpServletRequest req, HttpServletResponse res, String responseType, Collection<Flow> flows, URIParser uriParser) throws TransformerFactoryConfigurationError, TransformerException, IOException, URINotFoundException {
+	private void getResponse(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, String responseType, Collection<Flow> flows) throws TransformerFactoryConfigurationError, TransformerException, IOException, URINotFoundException {
 
-		if (responseType.equals("xml")) {
+		try {
+			if (responseType.equals("xml")) {
 
-			res.setContentType("text/xml");
+				res.setContentType("text/xml");
 
-			XMLUtils.writeXML(getXMLResponse(req, flows), res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
+				XMLUtils.writeXML(getXMLResponse(req, flows), res.getOutputStream(), true, sectionInterface.getSystemInterface().getEncoding());
 
-		} else if (responseType.equals("json")) {
+			} else if (responseType.equals("json")) {
 
-			res.setContentType("application/json");
+				res.setContentType("application/json");
 
-			res.getWriter().write(getJsonResponse(req, flows).toJson());
-			res.getWriter().flush();
+				res.getWriter().write(getJsonResponse(req, flows).toJson());
+				res.getWriter().flush();
 
-		} else if (responseType.equals("jsonp")) {
+			} else if (responseType.equals("jsonp")) {
 
-			res.setContentType("application/javascript");
+				res.setContentType("application/javascript");
 
-			res.getWriter().write(getJsonpCallback(req, uriParser) + "(" + getJsonResponse(req, flows).toJson() + ");");
-			res.getWriter().flush();
+				res.getWriter().write(getJsonpCallback(req, uriParser) + "(" + getJsonResponse(req, flows).toJson() + ");");
+				res.getWriter().flush();
 
-		} else {
+			} else {
 
-			// Invalid requested response type
-			throw new URINotFoundException(uriParser);
+				// Invalid requested response type
+				throw new URINotFoundException(uriParser);
+			}
+			
+		} catch (IOException e) {
+
+			log.info("Error sending response in format " + responseType + " to user " + user);
 		}
 	}
 
