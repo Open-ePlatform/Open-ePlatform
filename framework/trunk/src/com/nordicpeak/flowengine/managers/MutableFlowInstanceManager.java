@@ -1584,11 +1584,14 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			for (ManagedQueryInstance managedQueryInstance : managedStep.getManagedQueryInstances()) {
 
-				for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
+				if(managedQueryInstance.getEvaluators() != null) {
+				
+					for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
 
-					if (evaluatorClass.isAssignableFrom(evaluator.getClass())) {
+						if (evaluatorClass.isAssignableFrom(evaluator.getClass())) {
 
-						queryList.add((T) evaluator);
+							queryList.add((T) evaluator);
+						}
 					}
 				}
 			}
