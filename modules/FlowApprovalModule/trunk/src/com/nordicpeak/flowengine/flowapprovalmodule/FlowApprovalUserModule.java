@@ -416,6 +416,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				if (completed) {
 
+					//TODO show error if next status was not found
 					approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
 					
 					if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
