@@ -57,7 +57,7 @@
 	<xsl:variable name="i18n.Validation.MultipleDenyStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika nekadstatusar!</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.1">Aktivitetsgruppen</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.2">använder statusen</xsl:variable>
-	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.3">som inte finns i e-tjänsten!</xsl:variable>
+	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.3">som inte finns i den här versionen av e-tjänsten!</xsl:variable>
 	<xsl:variable name="i18n.Validation.InvalidStatus">Angiven status finns inte i den här versionen av e-tjänsten:</xsl:variable>
 	
 	<xsl:variable name="i18n.BackToFlow">Bakåt</xsl:variable>
