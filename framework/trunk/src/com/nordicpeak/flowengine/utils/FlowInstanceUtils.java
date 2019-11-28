@@ -379,10 +379,10 @@ public class FlowInstanceUtils {
 	
 	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups) {
 	
-		return getManagersString(stringBuilder, managers, managerGroups, false);
+		return getManagersString(stringBuilder, managers, managerGroups, true, false);
 	}
 	
-	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups, boolean usernames) {
+	public static StringBuilder getManagersString(StringBuilder stringBuilder, List<User> managers, List<Group> managerGroups, boolean names, boolean usernames) {
 		
 		if (managers != null) {
 			
@@ -393,15 +393,23 @@ public class FlowInstanceUtils {
 					stringBuilder.append(", ");
 				}
 				
-				if (usernames) {
-
-					stringBuilder.append(selectedManager.getUsername());
-
-				} else {
-					
+				if (names) {
 					stringBuilder.append(selectedManager.getFirstname());
 					stringBuilder.append(" ");
 					stringBuilder.append(selectedManager.getLastname());
+				}
+				
+				if (usernames) {
+
+					if (names) {
+						stringBuilder.append(" (");
+					}
+					
+					stringBuilder.append(selectedManager.getUsername());
+
+					if (names) {
+						stringBuilder.append(")");
+					}
 				}
 			}
 		}
