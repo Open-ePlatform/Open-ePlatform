@@ -5,6 +5,9 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
@@ -17,6 +20,7 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 
@@ -46,22 +50,18 @@ public class ChildQueryFilterEndpoint extends GeneratedElementable implements Se
 
 	@DAOManaged
 	@WebPopulate(required = true, maxLength = 1024)
-	@XMLElement
 	private String address;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@XMLElement
 	private String username;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@XMLElement
 	private String password;
 
 	@DAOManaged
 	@WebPopulate(required = true)
-	@XMLElement
 	private String encoding;
 
 	@DAOManaged
@@ -72,6 +72,18 @@ public class ChildQueryFilterEndpoint extends GeneratedElementable implements Se
 	@SimplifiedRelation(table = "child_query_filter_endpoint_fields", remoteValueColumnName = "name", preserveListOrder = true, indexColumn = "sortIndex")
 	@XMLElement(fixCase = true)
 	private List<String> fields;
+	
+	public Element toXMLFull(Document doc) {
+		
+		Element element = toXML(doc);
+		
+		XMLUtils.appendNewElement(doc, element, "address", address);
+		XMLUtils.appendNewElement(doc, element, "username", username);
+		XMLUtils.appendNewElement(doc, element, "password", password);
+		XMLUtils.appendNewElement(doc, element, "encoding", encoding);
+		
+		return element;
+	}
 
 	@Override
 	public String toString() {

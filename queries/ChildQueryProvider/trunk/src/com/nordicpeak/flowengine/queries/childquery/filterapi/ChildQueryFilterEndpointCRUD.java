@@ -46,6 +46,12 @@ public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQueryFilterEn
 			throw new AccessDeniedException("User " + user + " not allowed to delete endpoint " + bean + " whilst having queries");
 		}
 	}
+	
+	@Override
+	protected void appendBean(ChildQueryFilterEndpoint bean, Element targetElement, Document doc, User user) {
+		
+		targetElement.appendChild(bean.toXMLFull(doc));
+	}
 
 	@Override
 	protected void appendShowFormData(ChildQueryFilterEndpoint bean, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {

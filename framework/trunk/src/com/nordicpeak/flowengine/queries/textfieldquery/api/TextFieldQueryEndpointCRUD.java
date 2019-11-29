@@ -46,6 +46,12 @@ public class TextFieldQueryEndpointCRUD extends ModularCRUD<TextFieldQueryEndpoi
 			throw new AccessDeniedException("User " + user + " not allowed to delete endpoint " + bean + " whilst having queries");
 		}
 	}
+	
+	@Override
+	protected void appendBean(TextFieldQueryEndpoint bean, Element targetElement, Document doc, User user) {
+		
+		targetElement.appendChild(bean.toXMLFull(doc));
+	}
 
 	@Override
 	protected void appendShowFormData(TextFieldQueryEndpoint bean, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
