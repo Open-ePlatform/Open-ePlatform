@@ -75,6 +75,12 @@ import se.unlogic.standardutils.xsl.URIXSLTransformer;
 import se.unlogic.standardutils.xsl.XSLVariableReader;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
@@ -674,6 +680,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
 		
+		int attachmentPages = 0;
+		
 		for (PDFManagerResponse managerResponse : managerResponses) {
 			
 			for (PDFQueryResponse queryResponse : managerResponse.getQueryResponses()) {
@@ -684,18 +692,133 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					while (it.hasNext()) {
 						PDFAttachment attachment = it.next();
 						
-						if (attachment.isInlineAttachment()) {
+						if (attachment.isInlineAttachment() && (attachment.getName() == null || attachment.getName().toLowerCase().endsWith(".pdf"))) {
 							
 							InputStream stream = null;
+							File pdfTempAttachmentWithPageNumber = null;
 							
 							try {
-								stream = attachment.getInputStream();
+								if (attachment.isAppendPageNumber()) {
+									
+									RandomAccessFileOrArray attachmentRandomAccess = null;
+									OutputStream tempAttachmentOutputStream = null;
+									
+									try {
+										pdfTempAttachmentWithPageNumber = File.createTempFile("pdf-attachment", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+										tempAttachmentOutputStream = new BufferedOutputStream(new FileOutputStream(pdfTempAttachmentWithPageNumber));
+										
+										PdfReader reader;
+										
+										if (attachment instanceof PDFFileAttachment) {
+											
+											PDFFileAttachment pdfFileAttachment = (PDFFileAttachment) attachment;
+											
+											attachmentRandomAccess = new RandomAccessFileOrArray(pdfFileAttachment.getFile().getAbsolutePath(), false, false);
+											reader = new PdfReader(attachmentRandomAccess, null);
+											
+										} else {
+											
+											stream = attachment.getInputStream();
+											reader = new PdfReader(stream, null);
+										}
+										PdfStamper stamper = new PdfStamper(reader, tempAttachmentOutputStream);
+										
+										Font font = new Font(BaseFont.createFont(), 8f);
+										BaseFont baseFont = font.getCalculatedBaseFont(true);
+										float fontHeight = baseFont.getFontDescriptor(BaseFont.ASCENT, font.getSize()) - baseFont.getFontDescriptor(BaseFont.DESCENT, font.getSize());
+										
+										int pages = reader.getNumberOfPages();
+										
+										for (int pageNr = 1; pageNr <= pages; pageNr++) {
+											
+											Rectangle pageSize = reader.getPageSize(pageNr);
+											
+											PdfContentByte pageContents = stamper.getOverContent(pageNr);
+											
+//											pageContents.setFontAndSize(baseFont, 8f);
+											
+											ColumnText columnText = new ColumnText(pageContents);
+											
+											float lineHeight = columnText.getLeading() + (columnText.getMultipliedLeading() * fontHeight) + fontHeight;
+											
+											String text1 = "Ärendenummer: #2428 | Inskickat av: Kurt Handläggare (signerad) | Datum: 2019-05-06 14:10";
+											String text2 = "Bilaga " + (++attachmentPages);
+											
+											float textWidth1 = baseFont.getWidthPoint(text1, font.getSize()) + 0.1f;
+											float textWidth2 = baseFont.getWidthPoint(text2, font.getSize()) + 0.1f;
+											
+											int leftPadding = 0;
+											
+											if ((pageSize.getWidth() - textWidth1) / 2 < textWidth2) {
+												
+												leftPadding = 5;
+												columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
+												
+											} else {
+												
+												columnText.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+											}
+											
+											columnText.setSimpleColumn(pageSize.getLeft() + leftPadding, pageSize.getBottom(), pageSize.getRight(), pageSize.getBottom() + lineHeight); // llx, lly, urx, ury)
+											columnText.setText(new Phrase(text1, font));
+											
+											int status = columnText.go();
+											
+											if (status != ColumnText.NO_MORE_TEXT) {
+												log.warn("Unable to fit pagenumbering text1 on attachment " + attachment + " page " + attachmentPages + ": " + status);
+											}
+											
+											columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
+											columnText.setSimpleColumn(pageSize.getRight() - textWidth2 - 5, pageSize.getBottom(), pageSize.getRight() - 5, pageSize.getBottom() + lineHeight);
+											columnText.setText(new Phrase(text2, font));
+											
+											status = columnText.go();
+											
+											if (status != ColumnText.NO_MORE_TEXT) {
+												log.warn("Unable to fit pagenumbering text2 on attachment " + attachment + " page " + attachmentPages + ": " + status);
+											}
+										}
+										
+										stamper.close();
+										CloseUtils.close(stream);
+										
+										stream = new FileInputStream(pdfTempAttachmentWithPageNumber);
+										
+									} catch (Exception e) {
+										
+										log.warn("Error appending page number to inline attachment " + attachment, e);
+										
+										// Reopen stream to reset position
+										if (stream != null) {
+											CloseUtils.close(stream);
+										}
+										
+										stream = attachment.getInputStream();
+										
+									} finally {
+										
+										CloseUtils.close(tempAttachmentOutputStream);
+
+										if (attachmentRandomAccess != null) {
+
+											try {
+												attachmentRandomAccess.close();
+											} catch (IOException e) {}
+										}
+									}
+									
+								} else {
+									
+									stream = attachment.getInputStream();
+								}
+								
 								PDFMergerUtility merger = new PDFMergerUtility();
 								merger.addSource(pdfTempIn);
 								merger.addSource(stream);
 								
 								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
+								
 								merger.mergeDocuments();
 								
 								if (pdfTempIn != basePDF && !FileUtils.deleteFile(pdfTempIn)) {
@@ -708,6 +831,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								it.remove();
 								
 							} catch (Exception e) {
+								
 								log.warn("Error merging PDF from attachment " + attachment + " event " + event + " from for flow instance " + flowInstanceID, e);
 								
 								if (pdfTempOut != null && !FileUtils.deleteFile(pdfTempOut)) {
@@ -716,7 +840,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								}
 								
 							} finally {
+								
 								CloseUtils.close(stream);
+
+								if (pdfTempAttachmentWithPageNumber != null && !FileUtils.deleteFile(pdfTempAttachmentWithPageNumber)) {
+
+									log.warn("Unable to delete temp file: " + pdfTempAttachmentWithPageNumber);
+								}
 							}
 						}
 					}
