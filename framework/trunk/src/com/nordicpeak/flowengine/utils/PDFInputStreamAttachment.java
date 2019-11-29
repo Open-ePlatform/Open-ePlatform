@@ -43,4 +43,9 @@ public class PDFInputStreamAttachment implements PDFAttachment {
 	public boolean isInlineAttachment() {
 		return inlineAttachment;
 	}
+
+	@Override
+	public boolean isAppendPageNumber() {
+		return false;
+	}
 }

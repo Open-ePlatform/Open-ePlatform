@@ -12,4 +12,6 @@ public interface PDFAttachment {
 	public InputStream getInputStream() throws Exception;
 	
 	public boolean isInlineAttachment();
+	
+	public boolean isAppendPageNumber();
 }

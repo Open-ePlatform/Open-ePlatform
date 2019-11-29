@@ -145,6 +145,34 @@
 				</div>
 			</div>
 			
+			<div class="floatleft full marginbottom">
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'numberInlineAttachments'"/>
+						<xsl:with-param name="name" select="'numberInlineAttachments'"/>
+						<xsl:with-param name="value" select="'true'"/> 
+						<xsl:with-param name="element" select="FileUploadQuery" />
+					</xsl:call-template>
+					
+					<label for="numberInlineAttachments">
+						<xsl:value-of select="$i18n.numberInlineAttachments" />
+					</label>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function() {
+					
+					$("#inlinePDFAttachments").change(function() {
+					
+						var checked = $(this).prop("checked");
+						$("#numberInlineAttachments").prop("disabled", !checked).parent().parent().toggle(checked);
+						
+					}).change();
+				});
+			</script>
+			
 			<div class="floatleft full bigmarginbottom">
 				<label for="attachmentNamePrefixMode" class="floatleft clearboth">
 					<xsl:value-of select="$i18n.AttachmentNamePrefixMode" />

@@ -12,6 +12,7 @@ public class PDFFileAttachment implements PDFAttachment {
 	private final String name;
 	private final String description;
 	private final boolean inlineAttachment;
+	private final boolean appendPageNumber;
 
 	public PDFFileAttachment(File file, String description) {
 
@@ -20,6 +21,7 @@ public class PDFFileAttachment implements PDFAttachment {
 		this.description = description;
 		this.name = file.getName();
 		inlineAttachment = false;
+		appendPageNumber = false;
 	}
 
 	public PDFFileAttachment(File file, String name, String description) {
@@ -29,15 +31,17 @@ public class PDFFileAttachment implements PDFAttachment {
 		this.description = description;
 		this.name = name;
 		inlineAttachment = false;
+		appendPageNumber = false;
 	}
-	
-	public PDFFileAttachment(File file, String name, String description, boolean inlineAttachment) {
+
+	public PDFFileAttachment(File file, String name, String description, boolean inlineAttachment, boolean appendPageNumber) {
 
 		super();
 		this.file = file;
 		this.description = description;
 		this.name = name;
 		this.inlineAttachment = inlineAttachment;
+		this.appendPageNumber = appendPageNumber;
 	}
 
 	@Override
@@ -57,9 +61,26 @@ public class PDFFileAttachment implements PDFAttachment {
 
 		return new FileInputStream(file);
 	}
+	
+	public File getFile() throws Exception {
+		
+		return file;
+	}
 
 	@Override
 	public boolean isInlineAttachment() {
 		return inlineAttachment;
 	}
+
+	@Override
+	public boolean isAppendPageNumber() {
+		return appendPageNumber;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + " (name=" + name + ", file=" + file + ")";
+	}
+
+	
 }

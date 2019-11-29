@@ -918,22 +918,23 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			
 			AttachmentNamePrefixType prefixMode = query.getAttachmentNamePrefixMode();
 			boolean inline = query.isInlinePDFAttachments() && file.getName().toLowerCase().endsWith(".pdf");
+			boolean appendPageNumber = query.isNumberInlineAttachments();
 			
 			if (prefixMode == AttachmentNamePrefixType.QUERY_NAME || prefixMode == null) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline, appendPageNumber));
 				
 			} else if (prefixMode == AttachmentNamePrefixType.CUSTOM) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), query.getAttachmentNameCustomPrefix() + " " + fileDescriptor.getName(), inline));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), query.getAttachmentNameCustomPrefix() + " " + fileDescriptor.getName(), inline, appendPageNumber));
 				
 			} else if (prefixMode == AttachmentNamePrefixType.NO_PREFIX) {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), fileDescriptor.getName(), inline));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), fileDescriptor.getName(), inline, appendPageNumber));
 				
 			} else {
 				
-				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline));
+				attachments.add(new PDFFileAttachment(file, fileDescriptor.getName(), pdfAttachmentDescriptionPrefix + " " + queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName(), inline, appendPageNumber));
 				log.error("Unknown prefix mode " + prefixMode + " for query " + query);
 			}
 		}

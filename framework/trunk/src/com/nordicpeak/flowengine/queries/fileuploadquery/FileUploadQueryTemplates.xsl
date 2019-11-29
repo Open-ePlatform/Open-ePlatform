@@ -380,7 +380,7 @@
 			</strong>
 		</span>
 			
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='RequiredField']">
 	

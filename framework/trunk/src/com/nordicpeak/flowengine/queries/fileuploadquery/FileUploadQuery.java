@@ -73,6 +73,11 @@ public class FileUploadQuery extends BaseQuery {
 	protected boolean inlinePDFAttachments;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	protected boolean numberInlineAttachments;
+	
+	@DAOManaged
 	@WebPopulate(required = true)
 	@XMLElement
 	protected AttachmentNamePrefixType attachmentNamePrefixMode;
@@ -284,6 +289,7 @@ public class FileUploadQuery extends BaseQuery {
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");
 		
 		inlinePDFAttachments = xmlParser.getPrimitiveBoolean("inlinePDFAttachments");
+		numberInlineAttachments = xmlParser.getPrimitiveBoolean("numberInlineAttachments");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
@@ -308,7 +314,6 @@ public class FileUploadQuery extends BaseQuery {
 			
 			throw new ValidationException(errors);
 		}
-		
 	}
 	
 	public boolean isSetAsAttribute() {
@@ -354,31 +359,37 @@ public class FileUploadQuery extends BaseQuery {
 	public boolean isInlinePDFAttachments() {
 		return inlinePDFAttachments;
 	}
-	
+
 	public void setInlinePDFAttachments(boolean inlinePDFAttachments) {
 		this.inlinePDFAttachments = inlinePDFAttachments;
 	}
-	
+
+	public boolean isNumberInlineAttachments() {
+		return numberInlineAttachments;
+	}
+
+	public void setNumberInlineAttachments(boolean numberInlineAttachments) {
+		this.numberInlineAttachments = numberInlineAttachments;
+	}
+
 	public boolean isLockOnOwnershipTransfer() {
-		
+
 		return lockOnOwnershipTransfer;
 	}
-	
+
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
-		
+
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
 	}
 
-	
 	public String getSelectFilesButtonText() {
-	
+
 		return selectFilesButtonText;
 	}
 
-	
 	public void setSelectFilesButtonText(String selectFilesButtonText) {
-	
+
 		this.selectFilesButtonText = selectFilesButtonText;
 	}
-	
+
 }

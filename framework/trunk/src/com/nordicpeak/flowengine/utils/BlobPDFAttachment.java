@@ -41,5 +41,10 @@ public class BlobPDFAttachment implements PDFAttachment {
 	public boolean isInlineAttachment() {
 		return false;
 	}
+
+	@Override
+	public boolean isAppendPageNumber() {
+		return false;
+	}
 	
 }
