@@ -180,6 +180,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	protected String signatureAttachmentName = "Signature";
 	protected String signingPDFAttachmentName = "Signing PDF";
+	protected String inlineAttachmentPageNumber = "Attachment";
+	protected String inlineAttachmentFlowInstanceID = "Flowinstance ID";
+	protected String inlineAttachmentSubmitter = "Submitted by";
+	protected String inlineAttachmentSubmitterAnonymous = "Not logged in user";
+	protected String inlineAttachmentDate = "Date";
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -235,19 +240,16 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 					XSLVariableReader variableReader = new XSLVariableReader(styleSheetURL.toURI());
 
-					String signatureAttachmentName = variableReader.getValue("java.signature");
-
-					if (!StringUtils.isEmpty(signatureAttachmentName)) {
-
-						this.signatureAttachmentName = signatureAttachmentName;
-					}
-
-					String signingPDFAttachmentName = variableReader.getValue("java.signingPDF");
-
-					if (!StringUtils.isEmpty(signingPDFAttachmentName)) {
-
-						this.signingPDFAttachmentName = signingPDFAttachmentName;
-					}
+					//@formatter:off
+					signatureAttachmentName =  readXSLVariable("java.signature", signatureAttachmentName, variableReader);
+					signingPDFAttachmentName = readXSLVariable("java.signingPDF", signingPDFAttachmentName, variableReader);
+					
+					inlineAttachmentPageNumber =         readXSLVariable("java.attachmentPageNumber", inlineAttachmentPageNumber, variableReader);
+					inlineAttachmentFlowInstanceID =     readXSLVariable("java.attachmentFlowInstanceID", inlineAttachmentFlowInstanceID, variableReader);
+					inlineAttachmentSubmitter =          readXSLVariable("java.attachmentSubmitter", inlineAttachmentSubmitter, variableReader);
+					inlineAttachmentSubmitterAnonymous = readXSLVariable("i18n.AnonymousUser", inlineAttachmentSubmitterAnonymous, variableReader);
+					inlineAttachmentDate =               readXSLVariable("java.attachmentDate", inlineAttachmentDate, variableReader);
+					//@formatter:on
 					
 					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
 					
@@ -262,6 +264,18 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				log.error("Unable to cache PDF style sheet. Resource " + pdfStyleSheet + " not found");
 			}
 		}
+	}
+	
+	protected String readXSLVariable(String variableName, String oldValue, XSLVariableReader variableReader) {
+
+		String newValue = variableReader.getValue(variableName);
+
+		if (!StringUtils.isEmpty(newValue)) {
+
+			return newValue;
+		}
+
+		return oldValue;
 	}
 	
 	protected File createPDF(FlowInstanceManager instanceManager, SiteProfile siteProfile, User user, FlowInstanceEvent event, boolean temporary, Map<String, String> extraElements) throws Exception {
@@ -424,9 +438,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				submitDate = TimeUtils.getCurrentTimestamp();
 			}
 			
+			String submitterName = null;
+			
 			if (!(extraElements != null && extraElements.containsKey("AnonymizePoster"))) {
 				
-				XMLUtils.appendNewElement(doc, documentElement, "PostedBy", FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance()));
+				submitterName = FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance());
+				
+				XMLUtils.appendNewElement(doc, documentElement, "PostedBy", submitterName);
 				XMLUtils.appendNewElement(doc, documentElement, "PostedByCitizenID", FlowInstanceUtils.getSubmitterCitizenID(instanceManager.getFlowInstance()));
 			}
 			
@@ -528,7 +546,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				}
 			}
 			
-			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstanceID(), event, temporary);
+			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstanceID(), event, temporary, submitterName, submitDate);
 			
 			File outputFile = writePDFA(pdfWithAttachments, instanceManager, event, temporary);
 			
@@ -675,7 +693,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return null;
 	}
 	
-	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary) throws IOException, DocumentException {
+	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary, String submitterName, Timestamp submitDate) throws IOException, DocumentException {
 		
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
@@ -741,8 +759,12 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											
 											float lineHeight = columnText.getLeading() + (columnText.getMultipliedLeading() * fontHeight) + fontHeight;
 											
-											String text1 = "Ärendenummer: #2428 | Inskickat av: Kurt Handläggare (signerad) | Datum: 2019-05-06 14:10";
-											String text2 = "Bilaga " + (++attachmentPages);
+											if (submitterName == null) {
+												submitterName = inlineAttachmentSubmitterAnonymous;
+											}
+											
+											String text1 = inlineAttachmentFlowInstanceID + flowInstanceID + " | " + inlineAttachmentSubmitter + submitterName + " | " + inlineAttachmentDate + DateUtils.DATE_TIME_FORMATTER.format(submitDate);
+											String text2 = inlineAttachmentPageNumber + (++attachmentPages);
 											
 											float textWidth1 = baseFont.getWidthPoint(text1, font.getSize()) + 0.1f;
 											float textWidth2 = baseFont.getWidthPoint(text2, font.getSize()) + 0.1f;

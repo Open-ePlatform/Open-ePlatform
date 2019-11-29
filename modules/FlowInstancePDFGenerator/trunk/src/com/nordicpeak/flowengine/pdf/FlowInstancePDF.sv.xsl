@@ -7,6 +7,10 @@
 	
 	<xsl:variable name="java.signature">Signatur</xsl:variable>
 	<xsl:variable name="java.signingPDF">Signeringsunderlag</xsl:variable>
+	<xsl:variable name="java.attachmentPageNumber">Bilaga </xsl:variable>
+	<xsl:variable name="java.attachmentFlowInstanceID">Ärendenummer: #</xsl:variable>
+	<xsl:variable name="java.attachmentSubmitter">Inskickat av: </xsl:variable>
+	<xsl:variable name="java.attachmentDate">Datum: </xsl:variable>
 	
 	<xsl:variable name="i18n.AnonymousUser">Ej inloggad användare</xsl:variable>
 	<xsl:variable name="i18n.EditedByManager">Ändrad av handläggare</xsl:variable>
