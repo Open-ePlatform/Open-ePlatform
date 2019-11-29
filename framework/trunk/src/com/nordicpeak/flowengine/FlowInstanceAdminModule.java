@@ -598,23 +598,26 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							if (availableManagers != null) {
 
 								List<User> mentionedUsers = new ArrayList<User>(mentionedUserIDs.size());
-
-								for (Integer userID : mentionedUserIDs) {
-
-									User mentionedUser = systemInterface.getUserHandler().getUser(userID, false, false);
-
-									if (mentionedUser != null && availableManagers.contains(mentionedUser)) {
-
-										try {
-
-											notificationHandler.addNotification(flowInstance.getFlowInstanceID(), mentionedUser.getUserID(), moduleDescriptor.getModuleID(), "mention", user.getUserID(), mentionedInFlowInstance, null);
-
-										} catch (SQLException e) {
-
-											log.error("Error sending notification to mentioned user " + user + " of " + flowInstance, e);
+								
+								if (notificationHandler != null) {
+									
+									for (Integer userID : mentionedUserIDs) {
+										
+										User mentionedUser = systemInterface.getUserHandler().getUser(userID, false, false);
+										
+										if (mentionedUser != null && availableManagers.contains(mentionedUser)) {
+											
+											try {
+												
+												notificationHandler.addNotification(flowInstance.getFlowInstanceID(), mentionedUser.getUserID(), moduleDescriptor.getModuleID(), "mention", user.getUserID(), mentionedInFlowInstance, null);
+												
+											} catch (SQLException e) {
+												
+												log.error("Error sending notification to mentioned user " + user + " of " + flowInstance, e);
+											}
+											
+											mentionedUsers.add(mentionedUser);
 										}
-
-										mentionedUsers.add(mentionedUser);
 									}
 								}
 
