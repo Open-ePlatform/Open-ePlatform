@@ -929,13 +929,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 									progress.setActivity(activity);
 									progress.setAdded(now);
 
-									if (activity.getResponsibleUserAttributeName() != null) {
+									if (activity.getResponsibleUserAttributeNames() != null) {
 
-										User responsibleUser = getResponsibleUserFromAttribute(activity, flowInstance);
+										List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
 
-										if (responsibleUser != null) {
+										if (responsibleUsers != null) {
 
-											progress.setResponsibleAttributedUser(responsibleUser);
+											progress.setResponsibleAttributedUsers(responsibleUsers);
 										}
 									}
 
@@ -1003,14 +1003,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			boolean useFallbackUsers = true;
 
-			if (activity.getResponsibleUserAttributeName() != null) {
+			if (activity.getResponsibleUserAttributeNames() != null) {
 
-				User user = getResponsibleUserFromAttribute(activity, flowInstance);
+				List<User> users = getResponsibleUsersFromAttribute(activity, flowInstance);
 
-				if (user != null) {
+				if (users != null) {
 
 					useFallbackUsers = false;
-					managers.add(user);
+					managers.addAll(users);
 				}
 			}
 
@@ -1206,6 +1206,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 		} else if (event.getAction() == CRUDAction.UPDATE) {
 			
+			//TODO start new activites
+			//TODO mark old activites as aborted, then check for group completed
+			
 			for (FlowInstance flowInstance : event.getBeans()) {
 
 				List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
@@ -1223,7 +1226,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 								for (FlowApprovalActivity activity : activityGroup.getActivities()) {
 
-									if (activity.getResponsibleUserAttributeName() != null) {
+									if (activity.getResponsibleUserAttributeNames() != null) {
 
 										boolean activeActivity = true;
 
@@ -1266,12 +1269,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 											if (progress != null) {
 
-												User responsibleUser = getResponsibleUserFromAttribute(activity, flowInstance);
+												List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
 
-												if ((responsibleUser == null && progress.getResponsibleAttributedUser() != null) || (responsibleUser != null && !responsibleUser.equals(progress.getResponsibleAttributedUser()))) {
+												if ((responsibleUsers == null && progress.getResponsibleAttributedUsers() != null) || (responsibleUsers != null && !responsibleUsers.equals(progress.getResponsibleAttributedUsers()))) {
 
-													log.info("Updating responsible user for " + progress + " from " + progress.getResponsibleAttributedUser() + " to " + responsibleUser);
-													progress.setResponsibleAttributedUser(responsibleUser);
+													log.info("Updating responsible user for " + progress + " from " + StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) + " to " + StringUtils.toCommaSeparatedString(responsibleUsers));
+													progress.setResponsibleAttributedUsers(responsibleUsers);
 
 													progress.setActivity(activity);
 													activityProgressDAO.update(progress, transactionHandler, null);
@@ -1308,16 +1311,25 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 	
-	private User getResponsibleUserFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
+	private List<User> getResponsibleUsersFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
 
-		String username = flowInstance.getAttributeHandler().getString(activity.getResponsibleUserAttributeName());
-
-		if (username != null) {
-
-			return systemInterface.getUserHandler().getUserByUsername(username, false, true);
+		List<User> users = null;
+		
+		for (String attributeName : activity.getResponsibleUserAttributeNames()) {
+			
+			String username = flowInstance.getAttributeHandler().getString(attributeName);
+			
+			if (username != null) {
+				
+				User user = systemInterface.getUserHandler().getUserByUsername(username, false, true);
+				
+				if (user != null) {
+					users = CollectionUtils.addAndInstantiateIfNeeded(users, user);
+				}
+			}
 		}
 
-		return null;
+		return users;
 	}
 
 	public FlowApprovalActivityGroup getActivityGroup(Integer activityGroupID) throws SQLException {

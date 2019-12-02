@@ -569,19 +569,23 @@
 							<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser" mode="inline-list"/>
 							
 							<xsl:if test="ResponsibleUsers and ResponsibleGroups">
-									<xsl:text>, </xsl:text>
+								<xsl:text>, </xsl:text>
 							</xsl:if>
 							
 							<xsl:apply-templates select="ResponsibleGroups/group" mode="inline-list"/>
 							
-							<xsl:if test="responsibleUserAttributeName">
+							<xsl:if test="ResponsibleUserAttributeNames">
 								<xsl:if test="ResponsibleUsers or ResponsibleGroups">
-										<xsl:text>, </xsl:text>
+									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
-								<xsl:text>$attribute{</xsl:text>
-								<xsl:value-of select="responsibleUserAttributeName" />
-								<xsl:text>}</xsl:text>
+								<xsl:for-each select="ResponsibleUserAttributeNames/value">
+									<xsl:if test="position() > 1">, </xsl:if>
+									
+									<xsl:text>$attribute{</xsl:text>
+									<xsl:value-of select="." />
+									<xsl:text>}</xsl:text>
+								</xsl:for-each>
 							</xsl:if>
 						
 						</xsl:when>
@@ -819,7 +823,7 @@
 				
 			</xsl:if>
 			
-			<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')] or Activity/responsibleUserAttributeName">
+			<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')] or Activity/ResponsibleUserAttributeNames">
 			
 				<div class="bigmarginbottom">
 					<strong class="bigmargintop">
@@ -828,12 +832,14 @@
 					
 					<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')]" mode="list"/>
 					
-					<xsl:if test="Activity/responsibleUserAttributeName">
-						<div>
-							<xsl:text>$attribute{</xsl:text>
-							<xsl:value-of select="Activity/responsibleUserAttributeName" />
-							<xsl:text>}</xsl:text>
-						</div>
+					<xsl:if test="Activity/ResponsibleUserAttributeNames">
+						<xsl:for-each select="Activity/ResponsibleUserAttributeNames/value">
+							<div>
+								<xsl:text>$attribute{</xsl:text>
+								<xsl:value-of select="." />
+								<xsl:text>}</xsl:text>
+							</div>
+						</xsl:for-each>
 					</xsl:if>
 					
 				</div>
@@ -1062,7 +1068,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="id" select="'useResponsibleUserAttributeName'" />
 					<xsl:with-param name="name" select="'useResponsibleUserAttributeName'" />
-					<xsl:with-param name="checked" select="Activity/responsibleUserAttributeName != ''" />
+					<xsl:with-param name="checked" select="Activity/ResponsibleUserAttributeNames != ''" />
 				</xsl:call-template>
 				
 				<label class="marginleft" for="useResponsibleUserAttributeName">
@@ -1074,18 +1080,21 @@
 		<div class="floatleft full bigmarginbottom useResponsibleUserAttributeName">
 			
 			<label for="responsibleUserAttributeName" class="floatleft full">
-				<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeName" />
+				<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeNames" />
 			</label>
 			
 			<p>
-				<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeNameDescription" />
+				<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeNamesDescription" />
 			</p>
 			
 			<div class="floatleft full">
-				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'responsibleUserAttributeName'"/>
-					<xsl:with-param name="name" select="'responsibleUserAttributeName'"/>
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'responsibleUserAttributeNames'"/>
+					<xsl:with-param name="name" select="'responsibleUserAttributeNames'"/>
 					<xsl:with-param name="element" select="Activity" />
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="element" select="Activity/ResponsibleUserAttributeNames/value" />
+					<xsl:with-param name="separateListValues" select="'true'"/>
 				</xsl:call-template>
 			</div>
 		</div>
@@ -1601,8 +1610,8 @@
 					<xsl:when test="fieldName = 'globalEmailAddress'">
 						<xsl:value-of select="$i18n.Activity.globalEmailAddress"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'responsibleUserAttributeName'">
-						<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeName"/>
+					<xsl:when test="fieldName = 'responsibleUserAttributeNames'">
+						<xsl:value-of select="$i18n.Activity.ResponsibleUserAttributeNames"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'reminderAfterXDays'">
 						<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays"/>

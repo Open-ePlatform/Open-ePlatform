@@ -13,6 +13,8 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
+import se.unlogic.standardutils.dao.annotations.OneToMany;
+import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
@@ -54,9 +56,11 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@XMLElement(name = "CompletingUser")
 	private User completingUser;
 
-	@DAOManaged(columnName = "responsibleAttributedUserID")
-	@XMLElement(name = "ResponsibleAttributedUser")
-	private User responsibleAttributedUser;
+	@DAOManaged
+	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowapproval_activity_progress_resp_attr_users", remoteValueColumnName = "userID")
+	@XMLElement(fixCase = true)
+	private List<User> responsibleAttributedUsers;
 
 	@DAOManaged
 	@XMLElement
@@ -130,12 +134,12 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 		this.comment = comment;
 	}
 
-	public User getResponsibleAttributedUser() {
-		return responsibleAttributedUser;
+	public List<User> getResponsibleAttributedUsers() {
+		return responsibleAttributedUsers;
 	}
 
-	public void setResponsibleAttributedUser(User responsibleAttributedUser) {
-		this.responsibleAttributedUser = responsibleAttributedUser;
+	public void setResponsibleAttributedUsers(List<User> responsibleAttributedUsers) {
+		this.responsibleAttributedUsers = responsibleAttributedUsers;
 	}
 
 	public boolean isAutomaticReminderSent() {
@@ -174,7 +178,7 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@Override
 	public Collection<Integer> getAllowedUserIDs() {
 
-		if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && responsibleAttributedUser == null) {
+		if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && responsibleAttributedUsers == null) {
 			return null;
 		}
 
@@ -183,14 +187,16 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 		if (activity.getResponsibleUsers() != null) {
 			for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
 
-				if (!responsibleUser.isFallback() || (activity.getResponsibleUserAttributeName() != null && responsibleAttributedUser == null)) {
+				if (!responsibleUser.isFallback() || (activity.getResponsibleUserAttributeNames() != null && responsibleAttributedUsers == null)) {
 					userIDs.add(responsibleUser.getUser().getUserID());
 				}
 			}
 		}
 
-		if (responsibleAttributedUser != null) {
-			userIDs.add(responsibleAttributedUser.getUserID());
+		if (responsibleAttributedUsers != null) {
+			for (User user : responsibleAttributedUsers) {
+				userIDs.add(user.getUserID());
+			}
 		}
 
 		return userIDs;

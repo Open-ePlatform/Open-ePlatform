@@ -156,12 +156,65 @@
 		</Query>
 		<Query>
 			<![CDATA[
-				UPDATE `flowapproval_activities` a JOIN `flowapproval_activitygroups` g ON (a.activityGroupID = g.activityGroupID) SET a.shortDescription = g.userDescriptionTemplate
+				UPDATE `flowapproval_activities` a JOIN `flowapproval_activitygroups` g ON (a.activityGroupID = g.activityGroupID) SET a.shortDescription = g.userDescriptionTemplate;
 			]]>
 		</Query>
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowapproval_activitygroups` DROP COLUMN `userDescriptionTemplate`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_resp_user_attribute` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`attributeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `attributeName`),
+					CONSTRAINT `FK_flowapproval_activity_resp_user_attribute_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_resp_user_attribute` (activityID, attributeName)
+					SELECT activityID, responsibleUserAttributeName FROM flowapproval_activities WHERE responsibleUserAttributeName IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress_resp_attr_users` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityProgressID`, `userID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_resp_attr_users_1` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_progress_resp_attr_users` (activityProgressID, userID)
+					SELECT activityProgressID, responsibleAttributedUserID FROM flowapproval_activity_progress WHERE responsibleAttributedUserID IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` DROP COLUMN `responsibleUserAttributeName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` DROP COLUMN `responsibleAttributedUserID`;
 			]]>
 		</Query>
 	</Script>

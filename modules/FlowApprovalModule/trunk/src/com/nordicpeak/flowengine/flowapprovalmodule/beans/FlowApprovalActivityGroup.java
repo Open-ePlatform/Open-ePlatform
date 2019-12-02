@@ -19,7 +19,7 @@ import se.unlogic.standardutils.xml.XMLElement;
 
 @Table(name = "flowapproval_activitygroups")
 @XMLElement(name = "ActivityGroup")
-public class FlowApprovalActivityGroup extends GeneratedElementable {
+public class FlowApprovalActivityGroup extends GeneratedElementable implements Comparable<FlowApprovalActivityGroup> {
 
 	public static final Field ACTIVITIES_RELATION = ReflectionUtils.getField(FlowApprovalActivityGroup.class, "activities");
 
@@ -248,6 +248,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable {
 		} else if (!activityGroupID.equals(other.activityGroupID))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public int compareTo(FlowApprovalActivityGroup o) {
+		return getSortIndex().compareTo(o.getSortIndex());
 	}
 
 }

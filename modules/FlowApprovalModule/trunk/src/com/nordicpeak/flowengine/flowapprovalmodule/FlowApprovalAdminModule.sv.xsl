@@ -82,8 +82,8 @@
 	<xsl:variable name="i18n.Activity.AttributeFilter">Aktivering vid attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeFilterDescription">Här kan du ställa in om aktiviteten bara ska användas när ärendet har ett attribut med ett visst värde.</xsl:variable>
 	<xsl:variable name="i18n.Activity.useResponsibleUserAttributeName">Sök upp ansvarig användare via attribut</xsl:variable>
-	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeName">Attributnamn för användarnamn för ansvarig användare</xsl:variable>
-	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNameDescription">Om ingen användare hittas med användarnamnet från attributet så kommer nedan valda reservansvariga att få aktiviteten istället.</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNames">Attributnamn för användarnamn för ansvarig användare (en per rad)</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNamesDescription">Om inga användare hittas med användarnamnen från attributen nedan så kommer nedan valda reservansvariga att få aktiviteten istället.</xsl:variable>
 	<xsl:variable name="i18n.Activity.useAttributeFilter">Använd attributfilter för att aktivera aktiviteten</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värderna matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>

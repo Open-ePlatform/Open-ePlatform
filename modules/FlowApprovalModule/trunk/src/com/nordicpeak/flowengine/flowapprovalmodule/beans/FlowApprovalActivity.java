@@ -67,9 +67,13 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	private List<Group> responsibleGroups;
 
 	@DAOManaged
+	@NoDuplicates
+	@SplitOnLineBreak
 	@WebPopulate(maxLength = 255)
-	@XMLElement
-	private String responsibleUserAttributeName;
+	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowapproval_activity_resp_user_attribute", remoteValueColumnName = "attributeName")
+	@XMLElement(fixCase = true)
+	private List<String> responsibleUserAttributeNames;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
@@ -197,12 +201,12 @@ public class FlowApprovalActivity extends GeneratedElementable {
 		this.globalEmailAddress = globalEmailAddress;
 	}
 
-	public String getResponsibleUserAttributeName() {
-		return responsibleUserAttributeName;
+	public List<String> getResponsibleUserAttributeNames() {
+		return responsibleUserAttributeNames;
 	}
 
-	public void setResponsibleUserAttributeName(String responsibleUserAttributeName) {
-		this.responsibleUserAttributeName = responsibleUserAttributeName;
+	public void setResponsibleUserAttributeName(List<String> responsibleUserAttributeNames) {
+		this.responsibleUserAttributeNames = responsibleUserAttributeNames;
 	}
 
 	@Override

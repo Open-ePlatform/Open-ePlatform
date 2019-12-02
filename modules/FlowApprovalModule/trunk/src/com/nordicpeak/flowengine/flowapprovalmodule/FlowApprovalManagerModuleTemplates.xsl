@@ -192,7 +192,7 @@
 					<xsl:when test="ResponsibleUsers or ResponsibleGroups">
 						
 						<xsl:choose>
-							<xsl:when test="responsibleUserAttributeName and not(ActivityProgresses/ActivityProgress/ResponsibleAttributedUser)">
+							<xsl:when test="ResponsibleUserAttributeNames and not(ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers)">
 								
 								<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser/user" mode="inline-list"/>
 								
@@ -205,13 +205,13 @@
 								
 								<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser[fallback = 'false']/user" mode="inline-list" />
 								
-								<xsl:if test="ResponsibleUsers/ResponsibleUser[fallback = 'false'] and ActivityProgresses/ActivityProgress/ResponsibleAttributedUser">
+								<xsl:if test="ResponsibleUsers/ResponsibleUser[fallback = 'false'] and ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
-								<xsl:apply-templates select="ActivityProgresses/ActivityProgress/ResponsibleAttributedUser" mode="inline-list" />
+								<xsl:apply-templates select="ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers/user" mode="inline-list" />
 								
-								<xsl:if test="(ResponsibleUsers/ResponsibleUser[fallback = 'false'] or ActivityProgresses/ActivityProgress/ResponsibleAttributedUser) and ResponsibleGroups">
+								<xsl:if test="(ResponsibleUsers/ResponsibleUser[fallback = 'false'] or ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers) and ResponsibleGroups">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
@@ -245,13 +245,7 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="ResponsibleAttributedUser" mode="inline-list">
-		
-		<xsl:call-template name="user-inline-list" />
-		
-	</xsl:template>
-	
-	<xsl:template match="user" mode="inline-list" name="user-inline-list">
+	<xsl:template match="user" mode="inline-list">
 		
 		<xsl:if test="position() > 1">
 			<xsl:text>, </xsl:text>

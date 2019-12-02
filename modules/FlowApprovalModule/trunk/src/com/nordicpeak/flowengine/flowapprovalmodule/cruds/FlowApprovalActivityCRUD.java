@@ -169,7 +169,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 
-			if (responsibleFallbackUserIDs != null && activity.getResponsibleUserAttributeName() != null) {
+			if (responsibleFallbackUserIDs != null && activity.getResponsibleUserAttributeNames() != null) {
 
 				for (Integer userID : responsibleFallbackUserIDs) {
 
@@ -216,7 +216,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 			activity.setResponsibleGroups(responsibleGroups);
 		}
 
-		if (activity.getResponsibleUserAttributeName() != null) {
+		if (activity.getResponsibleUserAttributeNames() != null) {
 			
 			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
 				

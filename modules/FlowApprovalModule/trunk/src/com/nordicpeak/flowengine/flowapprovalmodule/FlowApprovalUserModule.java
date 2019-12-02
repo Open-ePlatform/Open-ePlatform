@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -219,7 +219,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	private void appendActivities(List<FlowApprovalActivityProgress> activities, Document doc, Element listElement) throws SQLException {
 
 		// flowInstanceID, activityGroup, activityProgress
-		Map<Integer, Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>>> mapping = new HashMap<>();
+		Map<Integer, Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>>> mapping = new TreeMap<>();
 
 		if (activities != null) {
 			for (FlowApprovalActivityProgress activityProgress : activities) {
@@ -228,7 +228,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				if (activityGroupToProgressMap == null) {
 
-					activityGroupToProgressMap = new HashMap<>();
+					activityGroupToProgressMap = new TreeMap<>();
 					mapping.put(activityProgress.getFlowInstanceID(), activityGroupToProgressMap);
 				}
 
@@ -292,31 +292,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	private List<FlowApprovalActivityProgress> getPendingActivities(User user, Field... relations) throws SQLException {
 
-		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
-		
-		// @formatter:off
-		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(
-				"SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
-				+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
-				+" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
-				+" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
-				+" WHERE ap.completed IS NULL AND ("
-				+ "(u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
-				+" OR (a.responsibleUserAttributeName IS NOT NULL AND (ap.responsibleAttributedUserID = " + user.getUserID() + " OR (ap.responsibleAttributedUserID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))"
-		);
-		// @formatter:on
-
-		if (relations != null) {
-
-			query.addRelations(relations);
-			query.addCachedRelation(FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
-		}
-
-		return activityProgressDAO.getAll(query);
+		return getActivities(user, false, relations);
 	}
 
 	private List<FlowApprovalActivityProgress> getCompletedActivities(User user, Field... relations) throws SQLException {
 
+		return getActivities(user, true, relations);
+	}
+	
+	private List<FlowApprovalActivityProgress> getActivities(User user, boolean completed, Field... relations) throws SQLException {
+		
 		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
 		
 		// @formatter:off
@@ -325,9 +310,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
 				+" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
 				+" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
-				+" WHERE ap.completed IS NOT NULL AND ("
-				+ "(u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
-				+" OR (a.responsibleUserAttributeName IS NOT NULL AND (ap.responsibleAttributedUserID = " + user.getUserID() + " OR (ap.responsibleAttributedUserID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))"
+				+" LEFT OUTER JOIN flowapproval_activity_resp_user_attribute ra ON ra.activityID = a.activityID"
+				+" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
+				+" WHERE ap.completed IS " + (completed ? "NOT " : "") + "NULL AND ("
+				+" (u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
+				+" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))"
 		);
 		// @formatter:on
 
