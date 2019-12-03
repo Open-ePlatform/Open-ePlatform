@@ -373,6 +373,29 @@
 	<xsl:variable name="i18n.PosterLastnameTag">Kontaktpersonens efternamn</xsl:variable>
 	<xsl:variable name="i18n.StatusDescriptionTag">Beskrivning för ärendets status</xsl:variable>
 	<xsl:variable name="i18n.FLowInstanceAttachedPDFTextTag">Text som beskriver bifogad PDF-ansökan</xsl:variable>
+	<xsl:variable name="i18n.Tags.SigningParty.firstname">Signerarens förnamn</xsl:variable>
+	<xsl:variable name="i18n.Tags.SigningParty.lastname">Signerarens efternamn</xsl:variable>
+	<xsl:variable name="i18n.Tags.SigningURL">Signeringslänk</xsl:variable>
+	
+	<xsl:variable name="i18n.MultisigningNotifications">Notifikationer vid flerpartsignering</xsl:variable>
+	
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignInitiatedUserSMS">SMS till signeringspart när de ombeds signera ett ärende med flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignInitiatedUserSMS">Innehåll i SMS till signeringspart när de ombeds signera ett ärende med flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignInitiatedUserEmail">E-post till signeringspart när de ombeds signera ett ärende med flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignInitiatedUserEmailSubject">Rubrik på e-postmeddelande när signeringspart ombeds signera ett ärende med flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignInitiatedUserEmailMessage">Innehåll i e-postmeddelande när signeringspart ombeds signera ett ärende med flerpartssignering</xsl:variable>
+	
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignCanceledUserSMS">SMS till signeringspart när ett ärende med flerpartssignering som de blivit ombedda att signera avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledUserSMS">Innehåll i SMS till signeringspart när ett ärende med flerpartssignering som de blivit ombedda att signera avbryts</xsl:variable>
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignCanceledUserEmail">E-post till signeringspart när ett ärende med flerpartssignering som de blivit ombedda att signera avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledUserEmailSubject">Rubrik på e-postmeddelande till signeringspart när ett ärende med flerpartssignering som de blivit ombedda att signera avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledUserEmailMessage">Innehåll i e-postmeddelande till signeringspart när ett ärende med flerpartssignering som de blivit ombedda att signera avbryts</xsl:variable>
+	
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignCanceledOwnerSMS">SMS till ärende ägarna när ett ärende med flerpartssignering avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledOwnerSMS">Innehåll i SMS till ärende ägarna när ett ärende med flerpartssignering avbryts</xsl:variable>
+	<xsl:variable name="i18n.sendFlowInstanceMultiSignCanceledOwnerEmail">E-post till ärende ägarna när ett ärende med flerpartssignering avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledOwnerEmailSubject">Rubrik på e-postmeddelande till ärende ägarna när ett ärende med flerpartssignering avbryts</xsl:variable>
+	<xsl:variable name="i18n.flowInstanceMultiSignCanceledOwnerEmailMessage">Innehåll i e-postmeddelande till ärende ägarna när ett ärende med flerpartssignering avbryts</xsl:variable>
 	
 	<xsl:variable name="i18n.GlobalNotifications">Generella notifikationer</xsl:variable>
 	

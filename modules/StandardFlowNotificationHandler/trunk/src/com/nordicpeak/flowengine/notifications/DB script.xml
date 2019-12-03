@@ -335,4 +335,21 @@
 		</Query>
 	</Script>
 	
+	<Script version="24">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `flowInstanceMultiSignInitiatedUserSMS` VARCHAR(1024) NULL DEFAULT NULL AFTER `sendManagerExpiredGlobalEmail`,
+					ADD COLUMN `flowInstanceMultiSignInitiatedUserEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `flowInstanceMultiSignInitiatedUserSMS`,
+					ADD COLUMN `flowInstanceMultiSignInitiatedUserEmailMessage` TEXT NULL AFTER `flowInstanceMultiSignInitiatedUserEmailSubject`,
+					ADD COLUMN `flowInstanceMultiSignCanceledUserSMS` VARCHAR(1024) NULL DEFAULT NULL AFTER `flowInstanceMultiSignInitiatedUserEmailMessage`,
+					ADD COLUMN `flowInstanceMultiSignCanceledUserEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `flowInstanceMultiSignCanceledUserSMS`,
+					ADD COLUMN `flowInstanceMultiSignCanceledUserEmailMessage` TEXT NULL AFTER `flowInstanceMultiSignCanceledUserEmailSubject`,
+					ADD COLUMN `flowInstanceMultiSignCanceledOwnerSMS` VARCHAR(1024) NULL DEFAULT NULL AFTER `flowInstanceMultiSignCanceledUserEmailMessage`,
+					ADD COLUMN `flowInstanceMultiSignCanceledOwnerEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `flowInstanceMultiSignCanceledOwnerSMS`,
+					ADD COLUMN `flowInstanceMultiSignCanceledOwnerEmailMessage` TEXT NULL AFTER `flowInstanceMultiSignCanceledOwnerEmailSubject`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -270,6 +270,14 @@
 				$("#global-archived-subject, #global-archived-message").toggleClass("hidden");
 			}
 			
+			function toggleText(element) {
+				$(element).parent().parent().parent().next().toggleClass("hidden");
+			}
+			
+			function toggleTexts(element) {
+				$(element).parent().parent().parent().next().toggleClass("hidden").next().toggleClass("hidden");
+			}
+			
 		</script>
 	
 		<br/>
@@ -965,7 +973,328 @@
 		
 		<div class="clearboth marginbottom">
 			<br/>
-		</div>		
+		</div>
+	
+		<h2><xsl:value-of select="$i18n.MultisigningNotifications"/></h2>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignInitiatedUserSMS'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignInitiatedUserSMS">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignInitiatedUserSMS" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleText(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignInitiatedUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignInitiatedUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignInitiatedUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignInitiatedUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
+		</div>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignCanceledUserSMS'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignCanceledUserSMS">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignCanceledUserSMS" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleText(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignCanceledUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
+		</div>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignCanceledOwnerSMS'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignCanceledOwnerSMS">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignCanceledOwnerSMS" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleText(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledOwnerSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignCanceledOwnerSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledOwnerSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledOwnerSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
+		</div>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignInitiatedUserEmail'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignInitiatedUserEmail">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignInitiatedUserEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleTexts(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignInitiatedUserEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignInitiatedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceMultiSignInitiatedUserEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignInitiatedUserEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignInitiatedUserEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignInitiatedUserEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignInitiatedUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignInitiatedUserEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignInitiatedUserEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignInitiatedUserEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable"/>
+		</div>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignCanceledUserEmail'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignCanceledUserEmail">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignCanceledUserEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleTexts(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledUserEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignCanceledUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceMultiSignCanceledUserEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledUserEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledUserEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledUserEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignCanceledUserEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignCanceledUserEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledUserEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledUserEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable"/>
+		</div>
+		
+		<div class="floatleft full marginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'sendFlowInstanceMultiSignCanceledOwnerEmail'" />
+					<xsl:with-param name="checked" select="'true'" />
+					<xsl:with-param name="disabled" select="'true'" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceMultiSignCanceledOwnerEmail">
+					<xsl:value-of select="$i18n.sendFlowInstanceMultiSignCanceledOwnerEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleTexts(this);"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledOwnerEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignCanceledOwnerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceMultiSignCanceledOwnerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledOwnerEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledOwnerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceMultiSignCanceledOwnerEmailSubject') and not($errFieldNames = 'flowInstanceMultiSignCanceledOwnerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceMultiSignCanceledOwnerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceMultiSignCanceledOwnerEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceMultiSignCanceledOwnerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addSigningTagsTable"/>
+		</div>
+		
+		<div class="clearboth marginbottom">
+			<br/>
+		</div>
 	
 		<h2><xsl:value-of select="$i18n.GlobalNotifications"/></h2>
 		
@@ -1569,6 +1898,126 @@
 	
 	</xsl:template>
 	
+	<xsl:template name="addSigningTagsTable">
+		<xsl:param name="sms" select="'false'"/>
+	
+		<div class="floatleft margintop full">
+
+			<p>
+				<xsl:choose>
+					<xsl:when test="$sms = 'true'">
+						<xsl:value-of select="$i18n.UserTagsTable.smsDescription"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.UserTagsTable.emailDescription"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</p>
+		
+			<table class="full border">
+				<tr>
+					<th>
+						<xsl:value-of select="$i18n.Tag"/>
+					</th>
+					<th>
+						<xsl:value-of select="$i18n.Description"/>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flow.name</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowNameTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.flowInstanceID</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceIDTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.url</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstance.messagesUrl</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.FlowInstanceMessagesURLTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$status.name</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.StatusTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$status.description</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.StatusDescriptionTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$contact.firstname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.PosterFirstnameTag"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$contact.lastname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.PosterLastnameTag"/>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<xsl:text>$signingParty.firstname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.SigningParty.firstname"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$signingParty.lastname</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.SigningParty.lastname"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<xsl:text>$flowInstanceSign.url</xsl:text>
+					</td>
+					<td>
+						<xsl:value-of select="$i18n.Tags.SigningURL"/>
+					</td>
+				</tr>
+			</table>
+		
+		</div>
+	
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
 			<p class="error">
@@ -1649,6 +2098,35 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'internalMessageAddedManagerEmailMessage'">
 						<xsl:value-of select="$i18n.internalMessageAddedManagerEmailMessage"/>
+					</xsl:when>
+					
+					<!-- Multisigning -->
+					<xsl:when test="fieldName = 'flowInstanceMultiSignInitiatedUserSMS'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignInitiatedUserEmailSubject'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignInitiatedUserEmailMessage'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignInitiatedUserEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledUserSMS'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledUserEmailSubject'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledUserEmailMessage'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledUserEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledOwnerSMS'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledOwnerEmailSubject'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceMultiSignCanceledOwnerEmailMessage'">
+						<xsl:value-of select="$i18n.flowInstanceMultiSignCanceledOwnerEmailMessage"/>
 					</xsl:when>
 					
 					<!-- Global -->

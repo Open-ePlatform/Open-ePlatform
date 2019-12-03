@@ -65,7 +65,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String statusChangedUserEmailMessage;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -80,7 +80,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String externalMessageReceivedUserEmailMessage;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -90,13 +90,13 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceArchivedUserEmail;
-	
+
 	@DAOManaged
 	@Templated
 	@WebPopulate(maxLength = 1024)
 	@XMLElement
 	private String flowInstanceSubmittedUserSMS;
-	
+
 	@DAOManaged
 	@Templated
 	@WebPopulate(maxLength = 1024)
@@ -142,7 +142,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendExternalMessageReceivedManagerEmail;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
@@ -152,18 +152,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String externalMessageReceivedManagerMessage;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendInternalMessageAddedManagerEmail;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@Templated
 	@XMLElement
 	private String internalMessageAddedManagerEmailSubject;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 65536)
 	@Templated
@@ -174,7 +174,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceAssignedManagerEmail;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@Templated
@@ -196,18 +196,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceSubmittedManagerEmail;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceAssignedGroupEmail;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@Templated
 	@XMLElement
 	private String flowInstanceAssignedGroupEmailSubject;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 65536)
 	@Templated
@@ -236,14 +236,14 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@RequiredIfSet(paramNames = "sendFlowInstanceSubmittedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
-	@XMLElement(fixCase=true, childName="address")
+	@XMLElement(fixCase = true, childName = "address")
 	private List<String> flowInstanceSubmittedGlobalEmailAddresses;
 
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDF;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -254,24 +254,24 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@PopulateOnlyIfSet(paramNames = "flowInstanceSubmittedGlobalEmailAttachPDF")
 	@XMLElement
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendFlowInstanceAssignedGlobalEmail;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@Templated
 	@XMLElement
 	private String flowInstanceAssignedGlobalEmailSubject;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 65536)
 	@Templated
 	@XMLElement
 	private String flowInstanceAssignedGlobalEmailMessage;
-	
+
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_assignedglobal", remoteValueColumnName = "email")
@@ -279,9 +279,9 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@RequiredIfSet(paramNames = "sendFlowInstanceAssignedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
-	@XMLElement(fixCase=true, childName="address")
+	@XMLElement(fixCase = true, childName = "address")
 	private List<String> flowInstanceAssignedGlobalEmailAddresses;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -309,17 +309,17 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase = true, childName = "address")
 	private List<String> flowInstanceArchivedGlobalEmailAddresses;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean flowInstanceArchivedGlobalEmailAttachPDF;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendExternalMessageReceivedGlobalEmail;
-	
+
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_extmessageglobal", remoteValueColumnName = "email")
@@ -327,14 +327,14 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@RequiredIfSet(paramNames = "sendExternalMessageReceivedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
-	@XMLElement(fixCase=true, childName="address")
+	@XMLElement(fixCase = true, childName = "address")
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendManagerExpiredGlobalEmail;
-	
+
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_managerexpiredglobal", remoteValueColumnName = "email")
@@ -342,9 +342,63 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@RequiredIfSet(paramNames = "sendManagerExpiredGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
-	@XMLElement(fixCase=true, childName="address")
+	@XMLElement(fixCase = true, childName = "address")
 	private List<String> managerExpiredGlobalEmailAddresses;
 
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String flowInstanceMultiSignInitiatedUserSMS;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledUserSMS;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledOwnerSMS;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceMultiSignInitiatedUserEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String flowInstanceMultiSignInitiatedUserEmailMessage;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledUserEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledUserEmailMessage;
+	
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledOwnerEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String flowInstanceMultiSignCanceledOwnerEmailMessage;
+	
 	public Integer getFlowFamilyID() {
 
 		return flowFamilyID;
@@ -476,7 +530,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceArchivedUserEmailSubject() {
-		
+
 		return flowInstanceArchivedUserEmailSubject;
 	}
 
@@ -486,7 +540,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceArchivedUserEmailMessage() {
-		
+
 		return flowInstanceArchivedUserEmailMessage;
 	}
 
@@ -555,27 +609,23 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.sendFlowInstanceAssignedGroupEmail = sendFlowInstanceAssignedGroupEmail;
 	}
 
-	
 	public String getFlowInstanceAssignedGroupEmailSubject() {
-	
+
 		return flowInstanceAssignedGroupEmailSubject;
 	}
 
-	
 	public void setFlowInstanceAssignedGroupEmailSubject(String flowInstanceAssignedGroupEmailSubject) {
-	
+
 		this.flowInstanceAssignedGroupEmailSubject = flowInstanceAssignedGroupEmailSubject;
 	}
 
-	
 	public String getFlowInstanceAssignedGroupEmailMessage() {
-	
+
 		return flowInstanceAssignedGroupEmailMessage;
 	}
 
-	
 	public void setFlowInstanceAssignedGroupEmailMessage(String flowInstanceAssignedGroupEmailMessage) {
-	
+
 		this.flowInstanceAssignedGroupEmailMessage = flowInstanceAssignedGroupEmailMessage;
 	}
 
@@ -593,9 +643,9 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
-		
+
 		if (sendFlowInstanceAssignedGroupEmail) {
-			
+
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
 		}
 
@@ -618,7 +668,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceSubmittedGlobalEmailSubject() {
-		
+
 		return flowInstanceSubmittedGlobalEmailSubject;
 	}
 
@@ -628,7 +678,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getFlowInstanceSubmittedGlobalEmailMessage() {
-		
+
 		return flowInstanceSubmittedGlobalEmailMessage;
 	}
 
@@ -641,20 +691,20 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		return flowInstanceSubmittedGlobalEmailAttachPDF;
 	}
-	
+
 	public void setFlowInstanceSubmittedGlobalEmailAttachPDF(boolean flowInstanceSubmittedGlobalEmailAttachPDF) {
-		
+
 		this.flowInstanceSubmittedGlobalEmailAttachPDF = flowInstanceSubmittedGlobalEmailAttachPDF;
 	}
-	
+
 	public boolean isFlowInstanceSubmittedGlobalEmailAttachXML() {
 		return flowInstanceSubmittedGlobalEmailAttachXML;
 	}
-	
+
 	public void setFlowInstanceSubmittedGlobalEmailAttachXML(boolean flowInstanceSubmittedGlobalEmailAttachXML) {
 		this.flowInstanceSubmittedGlobalEmailAttachXML = flowInstanceSubmittedGlobalEmailAttachXML;
 	}
-	
+
 	public boolean isFlowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately() {
 
 		return flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
@@ -666,7 +716,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public List<String> getFlowInstanceSubmittedGlobalEmailAddresses() {
-		
+
 		return flowInstanceSubmittedGlobalEmailAddresses;
 	}
 
@@ -675,51 +725,43 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.flowInstanceSubmittedGlobalEmailAddresses = flowInstanceSubmittedGlobalEmailAddresses;
 	}
 
-	
 	public boolean isSendFlowInstanceAssignedGlobalEmail() {
-	
+
 		return sendFlowInstanceAssignedGlobalEmail;
 	}
 
-	
 	public void setSendFlowInstanceAssignedGlobalEmail(boolean sendFlowInstanceAssignedGlobalEmail) {
-	
+
 		this.sendFlowInstanceAssignedGlobalEmail = sendFlowInstanceAssignedGlobalEmail;
 	}
 
-	
 	public String getFlowInstanceAssignedGlobalEmailSubject() {
-	
+
 		return flowInstanceAssignedGlobalEmailSubject;
 	}
 
-	
 	public void setFlowInstanceAssignedGlobalEmailSubject(String flowInstanceAssignedGlobalEmailSubject) {
-	
+
 		this.flowInstanceAssignedGlobalEmailSubject = flowInstanceAssignedGlobalEmailSubject;
 	}
 
-	
 	public String getFlowInstanceAssignedGlobalEmailMessage() {
-	
+
 		return flowInstanceAssignedGlobalEmailMessage;
 	}
 
-	
 	public void setFlowInstanceAssignedGlobalEmailMessage(String flowInstanceAssignedGlobalEmailMessage) {
-	
+
 		this.flowInstanceAssignedGlobalEmailMessage = flowInstanceAssignedGlobalEmailMessage;
 	}
 
-	
 	public List<String> getFlowInstanceAssignedGlobalEmailAddresses() {
-	
+
 		return flowInstanceAssignedGlobalEmailAddresses;
 	}
 
-	
 	public void setFlowInstanceAssignedGlobalEmailAddresses(List<String> flowInstanceAssignedGlobalEmailAddresses) {
-	
+
 		this.flowInstanceAssignedGlobalEmailAddresses = flowInstanceAssignedGlobalEmailAddresses;
 	}
 
@@ -767,101 +809,99 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		return externalMessageReceivedGlobalEmailAddresses;
 	}
-	
+
 	public void setExternalMessageReceivedGlobalEmailAddresses(List<String> externalMessageReceivedGlobalEmailAddresses) {
-	
+
 		this.externalMessageReceivedGlobalEmailAddresses = externalMessageReceivedGlobalEmailAddresses;
 	}
-	
+
 	public boolean isSendExternalMessageReceivedGlobalEmail() {
-	
+
 		return sendExternalMessageReceivedGlobalEmail;
 	}
 
-	
 	public void setSendExternalMessageReceivedGlobalEmail(boolean sendExternalMessageReceivedGlobalEmail) {
-	
+
 		this.sendExternalMessageReceivedGlobalEmail = sendExternalMessageReceivedGlobalEmail;
 	}
-	
+
 	public String getStatusChangedUserEmailSubject() {
-		
+
 		return statusChangedUserEmailSubject;
 	}
 
 	public void setStatusChangedUserEmailSubject(String statusChangedUserEmailSubject) {
-	
+
 		this.statusChangedUserEmailSubject = statusChangedUserEmailSubject;
 	}
 
 	public String getStatusChangedUserEmailMessage() {
-		
+
 		return statusChangedUserEmailMessage;
 	}
 
 	public void setStatusChangedUserEmailMessage(String statusChangedUserEmailMessage) {
-	
+
 		this.statusChangedUserEmailMessage = statusChangedUserEmailMessage;
 	}
-	
+
 	public String getExternalMessageReceivedUserEmailSubject() {
-		
+
 		return externalMessageReceivedUserEmailSubject;
 	}
 
 	public void setExternalMessageReceivedUserEmailSubject(String externalMessageReceivedUserEmailSubject) {
-	
+
 		this.externalMessageReceivedUserEmailSubject = externalMessageReceivedUserEmailSubject;
 	}
 
 	public String getExternalMessageReceivedUserEmailMessage() {
-		
+
 		return externalMessageReceivedUserEmailMessage;
 	}
 
-	
 	public void setExternalMessageReceivedUserEmailMessage(String externalMessageReceivedUserEmailMessage) {
-	
+
 		this.externalMessageReceivedUserEmailMessage = externalMessageReceivedUserEmailMessage;
 	}
-	
+
 	public String getExternalMessageReceivedManagerSubject() {
-	
+
 		return externalMessageReceivedManagerSubject;
 	}
-	
+
 	public void setExternalMessageReceivedManagerSubject(String externalMessageReceivedManagerSubject) {
-	
+
 		this.externalMessageReceivedManagerSubject = externalMessageReceivedManagerSubject;
 	}
-	
+
 	public String getExternalMessageReceivedManagerMessage() {
-		
+
 		return externalMessageReceivedManagerMessage;
 	}
-	
+
 	public void setExternalMessageReceivedManagerMessage(String externalMessageReceivedManagerMessage) {
-		
+
 		this.externalMessageReceivedManagerMessage = externalMessageReceivedManagerMessage;
 	}
-	
+
 	public boolean isSendManagerExpiredGlobalEmail() {
-		
+
 		return sendManagerExpiredGlobalEmail;
 	}
-	
+
 	public void setSendManagerExpiredGlobalEmail(boolean sendManagerExpiredGlobalEmail) {
-		
+
 		this.sendManagerExpiredGlobalEmail = sendManagerExpiredGlobalEmail;
 	}
-	
+
 	public List<String> getManagerExpiredGlobalEmailAddresses() {
-		
+
 		return managerExpiredGlobalEmailAddresses;
 	}
-	
+
 	public void setManagerExpiredGlobalEmailAddresses(List<String> managerExpiredGlobalEmailAddresses) {
-		
+
 		this.managerExpiredGlobalEmailAddresses = managerExpiredGlobalEmailAddresses;
 	}
 
@@ -925,6 +965,78 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setInternalMessageAddedManagerEmailMessage(String internalMessageAddedManagerEmailMessage) {
 
 		this.internalMessageAddedManagerEmailMessage = internalMessageAddedManagerEmailMessage;
+	}
+
+	public String getFlowInstanceMultiSignInitiatedUserSMS() {
+		return flowInstanceMultiSignInitiatedUserSMS;
+	}
+
+	public void setFlowInstanceMultiSignInitiatedUserSMS(String flowInstanceMultiSignInitiatedUserSMS) {
+		this.flowInstanceMultiSignInitiatedUserSMS = flowInstanceMultiSignInitiatedUserSMS;
+	}
+
+	public String getFlowInstanceMultiSignInitiatedUserEmailSubject() {
+		return flowInstanceMultiSignInitiatedUserEmailSubject;
+	}
+
+	public void setFlowInstanceMultiSignInitiatedUserEmailSubject(String flowInstanceMultiSignInitiatedUserEmailSubject) {
+		this.flowInstanceMultiSignInitiatedUserEmailSubject = flowInstanceMultiSignInitiatedUserEmailSubject;
+	}
+
+	public String getFlowInstanceMultiSignInitiatedUserEmailMessage() {
+		return flowInstanceMultiSignInitiatedUserEmailMessage;
+	}
+
+	public void setFlowInstanceMultiSignInitiatedUserEmailMessage(String flowInstanceMultiSignInitiatedUserEmailMessage) {
+		this.flowInstanceMultiSignInitiatedUserEmailMessage = flowInstanceMultiSignInitiatedUserEmailMessage;
+	}
+
+	public String getFlowInstanceMultiSignCanceledUserSMS() {
+		return flowInstanceMultiSignCanceledUserSMS;
+	}
+
+	public void setFlowInstanceMultiSignCanceledUserSMS(String flowInstanceMultiSignCanceledUserSMS) {
+		this.flowInstanceMultiSignCanceledUserSMS = flowInstanceMultiSignCanceledUserSMS;
+	}
+
+	public String getFlowInstanceMultiSignCanceledUserEmailSubject() {
+		return flowInstanceMultiSignCanceledUserEmailSubject;
+	}
+
+	public void setFlowInstanceMultiSignCanceledUserEmailSubject(String flowInstanceMultiSignCanceledUserEmailSubject) {
+		this.flowInstanceMultiSignCanceledUserEmailSubject = flowInstanceMultiSignCanceledUserEmailSubject;
+	}
+
+	public String getFlowInstanceMultiSignCanceledUserEmailMessage() {
+		return flowInstanceMultiSignCanceledUserEmailMessage;
+	}
+
+	public void setFlowInstanceMultiSignCanceledUserEmailMessage(String flowInstanceMultiSignCanceledUserEmailMessage) {
+		this.flowInstanceMultiSignCanceledUserEmailMessage = flowInstanceMultiSignCanceledUserEmailMessage;
+	}
+
+	public String getFlowInstanceMultiSignCanceledOwnerSMS() {
+		return flowInstanceMultiSignCanceledOwnerSMS;
+	}
+
+	public void setFlowInstanceMultiSignCanceledOwnerSMS(String flowInstanceMultiSignCanceledOwnerSMS) {
+		this.flowInstanceMultiSignCanceledOwnerSMS = flowInstanceMultiSignCanceledOwnerSMS;
+	}
+
+	public String getFlowInstanceMultiSignCanceledOwnerEmailSubject() {
+		return flowInstanceMultiSignCanceledOwnerEmailSubject;
+	}
+
+	public void setFlowInstanceMultiSignCanceledOwnerEmailSubject(String flowInstanceMultiSignCanceledOwnerEmailSubject) {
+		this.flowInstanceMultiSignCanceledOwnerEmailSubject = flowInstanceMultiSignCanceledOwnerEmailSubject;
+	}
+
+	public String getFlowInstanceMultiSignCanceledOwnerEmailMessage() {
+		return flowInstanceMultiSignCanceledOwnerEmailMessage;
+	}
+
+	public void setFlowInstanceMultiSignCanceledOwnerEmailMessage(String flowInstanceMultiSignCanceledOwnerEmailMessage) {
+		this.flowInstanceMultiSignCanceledOwnerEmailMessage = flowInstanceMultiSignCanceledOwnerEmailMessage;
 	}
 
 }

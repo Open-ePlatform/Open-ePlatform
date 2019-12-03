@@ -1831,6 +1831,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@EventListener(channel = FlowInstance.class, priority = 100)
 	public void processEvent(MultiSigningInitiatedEvent event, EventSource eventSource) throws SQLException {
+		
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstanceManager().getFlowInstance().getFlow());
 
 		if (!event.getFlowInstanceManager().getFlowInstance().getFlow().usesSequentialSigning()) {
 
@@ -1842,24 +1844,28 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				for (SigningParty signingParty : signingParties) {
 
-					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
-					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserSMS);
+					sendSigningPartyEmail(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, notificationSettings.getFlowInstanceMultiSignInitiatedUserEmailSubject(), notificationSettings.getFlowInstanceMultiSignInitiatedUserEmailMessage());
+					sendSigningPartySMS(event.getFlowInstanceManager().getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, notificationSettings.getFlowInstanceMultiSignInitiatedUserSMS());
 				}
 			}
 		}
 	}
 
-	public void sendSigningPartyNotifications(ImmutableFlowInstance flowInstance, SigningParty signingParty) {
+	public void sendSigningPartyNotifications(ImmutableFlowInstance flowInstance, SigningParty signingParty) throws SQLException {
+		
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
 		Contact contact = getPosterContact(flowInstance);
 
-		sendSigningPartyEmail(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserEmailSubject, flowInstanceMultiSignInitiatedUserEmailMessage);
-		sendSigningPartySMS(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, flowInstanceMultiSignInitiatedUserSMS);
+		sendSigningPartyEmail(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, notificationSettings.getFlowInstanceMultiSignInitiatedUserEmailSubject(), notificationSettings.getFlowInstanceMultiSignInitiatedUserEmailMessage());
+		sendSigningPartySMS(flowInstance, signingParty, contact, NotificationRecipient.SIGNING_PARTY, notificationSettings.getFlowInstanceMultiSignInitiatedUserSMS());
 	}
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(MultiSigningCanceledEvent event, EventSource eventSource) throws SQLException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
+		
 		Contact contact = null;
 
 		if (event.getCancellingSigningParty() == null) { // One of the owners cancelled
@@ -1873,8 +1879,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (ownerContacts != null) {
 				for (Contact ownerContact : ownerContacts) {
 
-					sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, flowInstanceMultiSignCanceledOwnerEmailSubject, flowInstanceMultiSignCanceledOwnerEmailMessage);
-					sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, flowInstanceMultiSignCanceledOwnerSMS);
+					sendSigningPartyEmail(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, notificationSettings.getFlowInstanceMultiSignCanceledOwnerEmailSubject(), notificationSettings.getFlowInstanceMultiSignCanceledOwnerEmailMessage());
+					sendSigningPartySMS(event.getFlowInstance(), event.getCancellingSigningParty(), ownerContact, NotificationRecipient.OWNER, true, notificationSettings.getFlowInstanceMultiSignCanceledOwnerSMS());
 				}
 			}
 
@@ -1900,8 +1906,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				continue;
 			}
 
-			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, flowInstanceMultiSignCanceledUserEmailSubject, flowInstanceMultiSignCanceledUserEmailMessage);
-			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, flowInstanceMultiSignCanceledUserSMS);
+			sendSigningPartyEmail(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, notificationSettings.getFlowInstanceMultiSignCanceledUserEmailSubject(), notificationSettings.getFlowInstanceMultiSignCanceledUserEmailMessage());
+			sendSigningPartySMS(event.getFlowInstance(), signingParty, contact, NotificationRecipient.SIGNING_PARTY, true, notificationSettings.getFlowInstanceMultiSignCanceledUserSMS());
 		}
 	}
 
