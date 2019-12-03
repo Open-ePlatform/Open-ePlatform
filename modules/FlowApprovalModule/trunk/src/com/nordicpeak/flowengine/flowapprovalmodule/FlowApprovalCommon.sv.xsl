@@ -30,8 +30,8 @@
 	<xsl:variable name="i18n.ActivityProgress.CompletingUser">Person</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.comment">Kommentar</xsl:variable>
 	
-	<xsl:variable name="i18n.NoActivityGroups">Inga aktivetetsgrupper finns.</xsl:variable>
-	<xsl:variable name="i18n.NoActivities">Inga aktiveteter finns.</xsl:variable>
+	<xsl:variable name="i18n.NoActivityGroups">Inga aktivitetsgrupper finns.</xsl:variable>
+	<xsl:variable name="i18n.NoActivities">Inga aktiviteter finns.</xsl:variable>
 	
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
