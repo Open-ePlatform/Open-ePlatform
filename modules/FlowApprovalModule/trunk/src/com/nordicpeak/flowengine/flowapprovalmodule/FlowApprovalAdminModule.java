@@ -6,7 +6,6 @@ import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1046,7 +1045,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		log.info("Sending emails for started " + activityGroup + " to " + managers.size() + " managers");
+		log.info("Sending emails for started " + activityGroup + " to " + managers.size() + " managers and " + globalRecipients.size() + " global recipients");
 
 		StringBuilder activitiesStringBuilder = new StringBuilder();
 
@@ -1513,17 +1512,36 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
 
 			if (activityProgresses != null) {
+
+				Map<Integer, Map<FlowApprovalActivity, FlowApprovalActivityProgress>> flowInstanceMap = new HashMap<>();
+
 				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
 
-					FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+					Map<FlowApprovalActivity, FlowApprovalActivityProgress> activityMap = flowInstanceMap.get(activityProgress.getFlowInstanceID());
 
-					if (flowInstance != null) {
-						sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+					if (activityMap == null) {
+
+						activityMap = new HashMap<>();
+						flowInstanceMap.put(activityProgress.getFlowInstanceID(), activityMap);
 					}
+
+					activityMap.put(activityProgress.getActivity(), activityProgress);
 
 					activityProgress.setAutomaticReminderSent(true);
 				}
 
+				for (Entry<Integer, Map<FlowApprovalActivity, FlowApprovalActivityProgress>> entry : flowInstanceMap.entrySet()) {
+
+					FlowInstance flowInstance = flowAdminModule.getFlowInstance(entry.getKey());
+
+					if (flowInstance != null) {
+
+						FlowApprovalActivity activity = entry.getValue().keySet().iterator().next();
+
+						sendActivityGroupStartedNotifications(entry.getValue(), activity.getActivityGroup(), flowInstance, true);
+					}
+				}
+				
 				activityProgressDAO.update(activityProgresses, null);
 			}
 
