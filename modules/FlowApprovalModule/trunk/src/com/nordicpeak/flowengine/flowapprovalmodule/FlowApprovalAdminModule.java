@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1045,7 +1046,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		log.info("Sending emails for started " + activityGroup + " to " + managers.size() + " managers and " + globalRecipients.size() + " global recipients");
+		log.info("Sending emails for started " + activityGroup + " for " + flowInstance + " to " + managers.size() + " managers and " + globalRecipients.size() + " global recipients");
 
 		StringBuilder activitiesStringBuilder = new StringBuilder();
 
@@ -1506,14 +1507,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			);
 			// @formatter:on
 
-			query.addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
-			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+			query.addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
 			List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
 
 			if (activityProgresses != null) {
 
-				Map<Integer, Map<FlowApprovalActivity, FlowApprovalActivityProgress>> flowInstanceMap = new HashMap<>();
+				Map<Integer, Map<FlowApprovalActivity, FlowApprovalActivityProgress>> flowInstanceMap = new TreeMap<>();
 
 				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
 
