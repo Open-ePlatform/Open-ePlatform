@@ -1273,7 +1273,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 												if ((responsibleUsers == null && progress.getResponsibleAttributedUsers() != null) || (responsibleUsers != null && !responsibleUsers.equals(progress.getResponsibleAttributedUsers()))) {
 
-													log.info("Updating responsible user for " + progress + " from " + StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) + " to " + StringUtils.toCommaSeparatedString(responsibleUsers));
+													log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
 													progress.setResponsibleAttributedUsers(responsibleUsers);
 
 													progress.setActivity(activity);
