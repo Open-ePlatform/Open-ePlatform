@@ -351,7 +351,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		if (bean.getExternalLink() != null) {
 
 			bean.setUsePreview(false);
-			bean.setRequireAuthentication(false);
 			bean.setRequireSigning(false);
 			bean.setSubmittedMessage(null);
 
