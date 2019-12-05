@@ -6,6 +6,11 @@
 	<xsl:include href="PersonDataInformerQueryAdminTemplates.xsl"/>
 	
 	<xsl:variable name="java.queryTypeName">Personuppgiftshantering</xsl:variable>
+	<xsl:variable name="java.queryDescription">	
+Frågetypen Personuppgiftshantering används för att i e-tjänsten informera om e-tjänstens personuppgiftshantering (informationen hämtas från e-tjänstens
+personuppgiftsinställning). Frågan visar även en kryssruta för att ge användaren chansen att visa att den tagit del av informationen. Sätts frågan som obligatorisk
+måste användaren kryssa i rutan för att komma vidare till nästa steg/skicka in ärendet.
+	</xsl:variable>	
 	<xsl:variable name="java.alternativeName">Personuppgiftshantering accepterat</xsl:variable>
 	
 	<xsl:variable name="i18n.PersonDataInformerQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
