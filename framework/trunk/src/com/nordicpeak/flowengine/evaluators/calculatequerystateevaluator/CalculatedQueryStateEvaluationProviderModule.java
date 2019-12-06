@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationException;
 
 import com.nordicpeak.flowengine.beans.EvaluationResponse;
@@ -46,6 +47,7 @@ public abstract class CalculatedQueryStateEvaluationProviderModule<T extends Cal
 			
 		} catch (ValidationException e) {
 			
+			log.warn("ValidationException while calculating value for " + evaluator + " on " + queryInstance + ": " + (e.getErrors() != null ? StringUtils.toCommaSeparatedString(e.getErrors()) : "null"));
 			return restoreDefaultQueryStates(queryInstance, evaluator, callback, attributeHandler);
 		}
 		
