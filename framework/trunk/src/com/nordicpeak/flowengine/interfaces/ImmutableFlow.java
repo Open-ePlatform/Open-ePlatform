@@ -72,4 +72,6 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public boolean isHideFromUser();
 	
 	public boolean isAppendSigningSignatureToPDF();
+	
+	public boolean isHideFlowInstanceIDFromUser();
 }
