@@ -107,7 +107,9 @@
 							</xsl:if>
 							
 							<xsl:if test="SignEvents">
-								<xsl:text> (signerad)</xsl:text>
+								<xsl:text> (</xsl:text>
+								<xsl:value-of select="$i18n.Signed"/>
+								<xsl:text>)</xsl:text>
 							</xsl:if>
 							
 							<xsl:if test="$showPostedByInfo = 'true' or SignEvents">

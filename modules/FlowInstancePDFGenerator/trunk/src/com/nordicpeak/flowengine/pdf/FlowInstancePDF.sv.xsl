@@ -17,6 +17,7 @@
 	<xsl:variable name="i18n.EditDate">Ändrings datum</xsl:variable>
 	
 	<xsl:variable name="i18n.Signing">Signeringsunderlag</xsl:variable>
+	<xsl:variable name="i18n.Signed">signerad</xsl:variable>
 	<xsl:variable name="i18n.Signed.Title">Signering</xsl:variable>
 	<xsl:variable name="i18n.Signed.Description">Följande parter har signerat detta ärende.</xsl:variable>
 	<xsl:variable name="i18n.Signed.Name">Namn</xsl:variable>

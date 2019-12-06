@@ -97,6 +97,7 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.PDFAttachment;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -185,6 +186,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	protected String inlineAttachmentSubmitter = "Submitted by";
 	protected String inlineAttachmentSubmitterAnonymous = "Not logged in user";
 	protected String inlineAttachmentDate = "Date";
+	protected String inlineAttachmentSigning = "Signing";
+	protected String inlineAttachmentSigned = "Signed";
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -249,6 +252,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					inlineAttachmentSubmitter =          readXSLVariable("java.attachmentSubmitter", inlineAttachmentSubmitter, variableReader);
 					inlineAttachmentSubmitterAnonymous = readXSLVariable("i18n.AnonymousUser", inlineAttachmentSubmitterAnonymous, variableReader);
 					inlineAttachmentDate =               readXSLVariable("java.attachmentDate", inlineAttachmentDate, variableReader);
+					inlineAttachmentSigning =            readXSLVariable("i18n.Signing", inlineAttachmentSigning, variableReader);
+					inlineAttachmentSigned =             readXSLVariable("i18n.Signed", inlineAttachmentSigned, variableReader);
 					//@formatter:on
 					
 					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
@@ -546,7 +551,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				}
 			}
 			
-			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstanceID(), event, temporary, submitterName, submitDate);
+			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstance(), event, temporary, submitterName, submitDate, signEvents != null, extraElements != null && extraElements.containsKey("Signing"));
 			
 			File outputFile = writePDFA(pdfWithAttachments, instanceManager, event, temporary);
 			
@@ -693,7 +698,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return null;
 	}
 	
-	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, Integer flowInstanceID, FlowInstanceEvent event, boolean temporary, String submitterName, Timestamp submitDate) throws IOException, DocumentException {
+	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, ImmutableFlowInstance flowInstance, FlowInstanceEvent event, boolean temporary, String submitterName, Timestamp submitDate, boolean signed, boolean signing) throws IOException, DocumentException {
 		
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
@@ -722,7 +727,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 									OutputStream tempAttachmentOutputStream = null;
 									
 									try {
-										pdfTempAttachmentWithPageNumber = File.createTempFile("pdf-attachment", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+										pdfTempAttachmentWithPageNumber = File.createTempFile("pdf-attachment", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 										tempAttachmentOutputStream = new BufferedOutputStream(new FileOutputStream(pdfTempAttachmentWithPageNumber));
 										
 										PdfReader reader;
@@ -745,6 +750,35 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 										BaseFont baseFont = font.getCalculatedBaseFont(true);
 										float fontHeight = baseFont.getFontDescriptor(BaseFont.ASCENT, font.getSize()) - baseFont.getFontDescriptor(BaseFont.DESCENT, font.getSize());
 										
+										StringBuilder textBuilder = new StringBuilder();
+										
+										if (signing) {
+											
+											textBuilder.append(inlineAttachmentSigning);
+											
+										} else {
+											
+											if (!flowInstance.getFlow().isHideFlowInstanceIDFromUser()) {
+												
+												textBuilder.append(inlineAttachmentFlowInstanceID + flowInstance.getFlowInstanceID() + " | ");
+											}
+											
+											//TODO respect template showPostedBy
+											if (submitterName == null) {
+												submitterName = inlineAttachmentSubmitterAnonymous;
+											}
+											
+											textBuilder.append(inlineAttachmentSubmitter + submitterName);
+											
+											if (signed) {
+												textBuilder.append(" (" + inlineAttachmentSigned + ")");
+											}
+											
+											textBuilder.append(" | " + inlineAttachmentDate + DateUtils.DATE_TIME_FORMATTER.format(submitDate));
+										}
+										
+										String text1 = textBuilder.toString();
+										
 										int pages = reader.getNumberOfPages();
 										
 										for (int pageNr = 1; pageNr <= pages; pageNr++) {
@@ -759,11 +793,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											
 											float lineHeight = columnText.getLeading() + (columnText.getMultipliedLeading() * fontHeight) + fontHeight;
 											
-											if (submitterName == null) {
-												submitterName = inlineAttachmentSubmitterAnonymous;
-											}
-											
-											String text1 = inlineAttachmentFlowInstanceID + flowInstanceID + " | " + inlineAttachmentSubmitter + submitterName + " | " + inlineAttachmentDate + DateUtils.DATE_TIME_FORMATTER.format(submitDate);
 											String text2 = inlineAttachmentPageNumber + (++attachmentPages);
 											
 											float textWidth1 = baseFont.getWidthPoint(text1, font.getSize()) + 0.1f;
@@ -838,7 +867,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								merger.addSource(pdfTempIn);
 								merger.addSource(stream);
 								
-								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
 								
 								merger.mergeDocuments();
@@ -854,7 +883,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								
 							} catch (Exception e) {
 								
-								log.warn("Error merging PDF from attachment " + attachment + " event " + event + " from for flow instance " + flowInstanceID, e);
+								log.warn("Error merging PDF from attachment " + attachment + " event " + event + " for flow instance " + flowInstance, e);
 								
 								if (pdfTempOut != null && !FileUtils.deleteFile(pdfTempOut)) {
 									
@@ -878,7 +907,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		
 		OutputStream outputStream = null;
 		RandomAccessFileOrArray inputFileRandomAccess = null;
-		pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstanceID + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+		pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 		
 		try {
 			inputFileRandomAccess = new RandomAccessFileOrArray(pdfTempIn.getAbsolutePath(), false, false);
