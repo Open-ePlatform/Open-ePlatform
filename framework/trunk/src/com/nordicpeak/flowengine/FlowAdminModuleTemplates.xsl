@@ -61,6 +61,11 @@
 				</div>
 				
 			</xsl:when>
+			<xsl:when test="FlowUserAdminExtension">
+			
+				<xsl:apply-templates select="FlowUserAdminExtension" />
+			
+			</xsl:when>			
 			<xsl:otherwise>
 				
 				<div class="contentitem errands-wrapper flowadmin">
@@ -7276,6 +7281,41 @@
 			</div>
 			
 		</section>
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowUserAdminExtension">
+	
+		<xsl:if test="Flows">
+		
+			<div class="full floatleft bigmargintop">
+	
+				<h2><xsl:value-of select="$i18n.Flowslist.title" /></h2>
+				
+				<div>
+				
+					<xsl:for-each select="Flows/Flow">
+				
+						<div class="floatleft full border marginbottom">
+						
+							<div class="floatleft">
+								<img class="alignbottom marginright" src="{../../FlowAdminURL}/icon/{flowID}?{IconLastModified}" width="20px"  />
+								<a href="{../../FlowAdminURL}/showflow/{flowID}" title="{name}"><xsl:value-of select="name" /></a>
+								<xsl:if test="access = 'RESTRICTED'">
+									<xsl:text> (</xsl:text>
+									<span><xsl:value-of select="$i18n.Manager.restricted" /></span>
+									<xsl:text>)</xsl:text>
+								</xsl:if>
+							</div>
+						
+						</div>
+					
+					</xsl:for-each>
+				
+				</div>
+			</div>
+					
+		</xsl:if>
 		
 	</xsl:template>
 

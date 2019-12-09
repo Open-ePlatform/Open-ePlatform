@@ -65,6 +65,8 @@ import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.Breadcrumb;
 import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.LinkTag;
+import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleBundleDescriptor;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.SimpleMenuItemDescriptor;
@@ -98,7 +100,9 @@ import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
+import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
+import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.crud.MultipartLimitProvider;
 import se.unlogic.hierarchy.core.utils.crud.MultipartRequestFilter;
@@ -112,6 +116,8 @@ import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidation
 import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionProvider;
+import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -204,6 +210,7 @@ import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
 import com.nordicpeak.flowengine.cruds.StatusCRUD;
 import com.nordicpeak.flowengine.cruds.StepCRUD;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
@@ -269,7 +276,7 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationErr
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback {
+public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback, UserAdminExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	//@formatter:off
 	private static final Field[] FLOW_FAMILY_CACHE_RELATIONS = {
@@ -589,6 +596,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@TextAreaSettingDescriptor(name = "Foreign ID attribute", description = "Attribute that is set when user is logged in with a foreign ID")
 	protected List<String> foreignIDattributes;
 	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
+	private boolean debugFragmentXML;
+	
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
 
@@ -661,8 +672,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private String updateManagersScheduleID;
 	private String removeStaleFlowInstancesScheduleID;
 	
+	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
+	
+	private UserAdminModule userAdminModule;
+	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+		
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
@@ -715,6 +732,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowShowExtensionLinkProviders.clear();
 		
 		statusFormExtensionProviders.clear();
+		
+		if (userAdminModule != null) {
+			
+			setUserAdminModule(null);
+		}
 
 		super.unload();
 	}
@@ -832,6 +854,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			this.userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		}
+		
+		viewFragmentTransformer.setDebugXML(debugFragmentXML);
 	}
 
 	protected synchronized void cacheFlowTypes() throws SQLException {
@@ -6426,6 +6450,93 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			log.error("Unable to get module transformer");
 		}
 		
+		return null;
+	}
+	
+	@InstanceManagerDependency
+	public void setUserAdminModule(UserAdminModule userAdminModule) {
+
+		if (this.userAdminModule != null) {
+
+			this.userAdminModule.removeUserAdminExtensionProvider(this);
+		}
+		
+		this.userAdminModule = userAdminModule;
+
+		if (userAdminModule != null) {
+
+			userAdminModule.addUserAdminExtensionProvider(this);
+		}
+	}
+
+	@Override
+	public ViewFragment getUserAdminExtensionViewFragment(User requestedUser, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element extensionElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "FlowUserAdminExtension");
+
+		Collection<FlowFamily> flowFamilies = getCachedFlowFamilies();
+
+		if (flowFamilies != null) {
+
+			Element flowsElement = XMLUtils.appendNewElement(doc, extensionElement, "Flows");
+			int flowsWithManagerAccess = 0;
+
+			for (FlowFamily flowFamily : flowFamilies) {
+
+				Flow flow = getLatestFlowVersion(flowFamily);
+				ManagerAccess access = getFlowFamilyManagerAccess(flowFamily, requestedUser);
+
+				if (flow != null && access != null) {
+
+					Element flowElement = XMLUtils.appendNewElement(doc, flowsElement, "Flow");
+
+					XMLUtils.appendNewElement(doc, flowElement, "flowID", flow.getFlowID());
+					XMLUtils.appendNewElement(doc, flowElement, "name", flow.getName());
+					XMLUtils.appendNewElement(doc, flowElement, "access", access);
+
+					flowsWithManagerAccess++;
+				}
+			}
+
+			if (flowsWithManagerAccess > 0) {
+				
+				XMLUtils.appendNewElement(doc, extensionElement, "FlowAdminURL", req.getContextPath() + sectionInterface.getSectionDescriptor().getFullAlias() + "/" + this.moduleDescriptor.getAlias());
+
+				return viewFragmentTransformer.createViewFragment(doc);
+			}
+		}
+
+		return null;
+	}
+
+	protected ManagerAccess getFlowFamilyManagerAccess(FlowFamily flowFamily, User requestedUser) {
+
+		return flowFamily.getManagerAccess(requestedUser);
+	}
+	
+	@Override
+	public int getPriority() {
+	
+		return 1;
+	}
+
+	@Override
+	public ForegroundModuleDescriptor getModuleDescriptor() {
+
+		return moduleDescriptor;
+	}
+
+	@Override
+	public List<LinkTag> getLinkTags() {
+
+		return null;
+	}
+
+	@Override
+	public List<ScriptTag> getScriptTags() {
+
 		return null;
 	}
 	
