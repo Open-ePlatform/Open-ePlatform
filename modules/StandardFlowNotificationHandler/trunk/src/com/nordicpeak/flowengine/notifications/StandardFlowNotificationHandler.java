@@ -2464,6 +2464,41 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	}
 
+	public boolean sendGlobalSMS(ImmutableFlowInstance flowInstance, Contact contact, String recipient, String message) {
+
+		if (recipient == null || smsSender == null || message == null) {
+
+			return false;
+		}
+
+		TagReplacer tagReplacer = new TagReplacer();
+
+		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
+		tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
+		tagReplacer.addTagSource(STATUS_TAG_SOURCE_FACTORY.getTagSource((Status) flowInstance.getStatus()));
+		tagReplacer.addTagSource(CONTACT_TAG_SOURCE_FACTORY.getTagSource(contact));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", getUserFlowInstanceModuleAlias(flowInstance) + "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.messagesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/messages/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.notesUrl", getUserFlowInstanceModuleAlias(flowInstance) + "/notes/" + flowInstance.getFlow().getFlowID() + "/" + flowInstance.getFlowInstanceID()));
+
+		SimpleSMS sms = new SimpleSMS();
+
+		try {
+			sms.setSenderName(this.getSMSSenderName(flowInstance));
+			sms.setMessage(replaceTags(message, tagReplacer, flowInstance));
+			sms.addRecipient(recipient);
+
+			smsSender.send(sms);
+
+		} catch (Exception e) {
+
+			log.error("Error generating/sending sms " + sms, e);
+			return false;
+		}
+
+		return true;
+	}
+	
 	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
 
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
