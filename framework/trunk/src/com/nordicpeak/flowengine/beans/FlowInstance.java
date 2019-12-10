@@ -589,12 +589,22 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	
 	public boolean isExternalMessagesEnabled() {
 		
-		return FlowInstanceUtils.isExternalMessagesEnabled(this, getStatus());
+		if (CollectionUtils.isEmpty(owners)) {
+			
+			return false;
+		}
+
+		if (flow == null) {
+
+			return false;
+		}
+
+		return !flow.isHideExternalMessages();
 	}
 	
 	public boolean isNewExternalMessagesAllowed() {
 		
-		return FlowInstanceUtils.isNewExternalMessagesAllowed(this, getStatus());
+		return FlowInstanceUtils.isNewExternalMessagesAllowed(this, status);
 	}
 	
 }
