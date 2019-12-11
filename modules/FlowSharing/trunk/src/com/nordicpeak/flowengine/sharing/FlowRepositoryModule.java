@@ -177,6 +177,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	
 	protected Source getSource(String username, String password, Field... extraRelations) throws SQLException {
 		
+		//TODO convert to highlevel query
 		LowLevelQuery<Source> query = new LowLevelQuery<Source>("SELECT * FROM " + sourceDAO.getTableName() + " WHERE repositoryID = ? AND username = ? AND password = ?;");
 		
 		query.addParameter(repository.getRepositoryID());
@@ -193,6 +194,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	
 	public Source getSource(String username, Field... extraRelations) throws SQLException {
 		
+		//TODO convert to highlevel query
 		LowLevelQuery<Source> query = new LowLevelQuery<Source>("SELECT * FROM " + sourceDAO.getTableName() + " WHERE repositoryID = ? AND username = ?;");
 		
 		query.addParameter(repository.getRepositoryID());
@@ -288,6 +290,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	
 	protected List<SharedFlow> getSharedFlowsByFamily(Integer sourceID, Integer flowFamilyID, Field... extraRelations) throws SQLException {
 		
+		//TODO convert to highlevel query
 		LowLevelQuery<SharedFlow> query = new LowLevelQuery<SharedFlow>("SELECT s.* FROM " + sharedFlowDAO.getTableName() + " s "
 										+ "WHERE sourceID = ? AND flowFamilyID = ? "
 										+ "ORDER BY version DESC;");
