@@ -116,8 +116,8 @@ import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidation
 import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionHandler;
 import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionProvider;
-import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminModule;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -674,7 +674,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 	
-	private UserAdminModule userAdminModule;
+	private UserAdminExtensionHandler userAdminExtensionHandler;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -733,9 +733,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		statusFormExtensionProviders.clear();
 		
-		if (userAdminModule != null) {
+		if (userAdminExtensionHandler != null) {
 			
-			setUserAdminModule(null);
+			setUserAdminExtensionHandler(null);
 		}
 
 		super.unload();
@@ -6454,18 +6454,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@InstanceManagerDependency
-	public void setUserAdminModule(UserAdminModule userAdminModule) {
+	public void setUserAdminExtensionHandler(UserAdminExtensionHandler userAdminExtensionHandler) {
 
-		if (this.userAdminModule != null) {
+		if (this.userAdminExtensionHandler != null) {
 
-			this.userAdminModule.removeUserAdminExtensionProvider(this);
+			this.userAdminExtensionHandler.removeUserAdminExtensionProvider(this);
 		}
 		
-		this.userAdminModule = userAdminModule;
+		this.userAdminExtensionHandler = userAdminExtensionHandler;
 
-		if (userAdminModule != null) {
+		if (userAdminExtensionHandler != null) {
 
-			userAdminModule.addUserAdminExtensionProvider(this);
+			userAdminExtensionHandler.addUserAdminExtensionProvider(this);
 		}
 	}
 
