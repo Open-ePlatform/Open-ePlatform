@@ -364,7 +364,11 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="added" /></a>
 			</td>
 			<td data-title="{$i18n.Column.Comment}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="comment" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}">
+					<xsl:call-template name="replaceLineBreak">
+						<xsl:with-param name="string" select="comment"/>
+					</xsl:call-template>
+				</a>
 			</td>
 			<td>
 				<a class="floatleft marginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/download/{../../RepositoryIndex}/{sharedFlowID}" title="{$i18n.Download.Title} {version}: {name}">
