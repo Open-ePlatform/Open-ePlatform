@@ -181,7 +181,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	protected String signatureAttachmentName = "Signature";
 	protected String signingPDFAttachmentName = "Signing PDF";
-	protected String inlineAttachmentPageNumber = "Attachment";
+	protected String inlineAttachmentPageNumber1 = "Attachment ";
+	protected String inlineAttachmentPageNumber2 = " page ";
+	protected String inlineAttachmentPageNumber3 = " of ";
 	protected String inlineAttachmentFlowInstanceID = "Flowinstance ID";
 	protected String inlineAttachmentSubmitter = "Submitted by";
 	protected String inlineAttachmentSubmitterAnonymous = "Not logged in user";
@@ -247,7 +249,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					signatureAttachmentName =  readXSLVariable("java.signature", signatureAttachmentName, variableReader);
 					signingPDFAttachmentName = readXSLVariable("java.signingPDF", signingPDFAttachmentName, variableReader);
 					
-					inlineAttachmentPageNumber =         readXSLVariable("java.attachmentPageNumber", inlineAttachmentPageNumber, variableReader);
+					inlineAttachmentPageNumber1 =        readXSLVariable("java.attachmentPageNumber1", inlineAttachmentPageNumber1, variableReader);
+					inlineAttachmentPageNumber2 =        readXSLVariable("java.attachmentPageNumber2", inlineAttachmentPageNumber2, variableReader);
+					inlineAttachmentPageNumber3 =        readXSLVariable("java.attachmentPageNumber3", inlineAttachmentPageNumber3, variableReader);
 					inlineAttachmentFlowInstanceID =     readXSLVariable("java.attachmentFlowInstanceID", inlineAttachmentFlowInstanceID, variableReader);
 					inlineAttachmentSubmitter =          readXSLVariable("java.attachmentSubmitter", inlineAttachmentSubmitter, variableReader);
 					inlineAttachmentSubmitterAnonymous = readXSLVariable("i18n.AnonymousUser", inlineAttachmentSubmitterAnonymous, variableReader);
@@ -703,7 +707,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
 		
-		int attachmentPages = 0;
+		int attachmentCounter = 0;
 		
 		for (PDFManagerResponse managerResponse : managerResponses) {
 			
@@ -712,23 +716,24 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				if (queryResponse.getAttachments() != null) {
 					
 					Iterator<PDFAttachment> it = queryResponse.getAttachments().iterator();
+					
 					while (it.hasNext()) {
 						PDFAttachment attachment = it.next();
 						
 						if (attachment.isInlineAttachment() && (attachment.getName() == null || attachment.getName().toLowerCase().endsWith(".pdf"))) {
 							
-							InputStream stream = null;
-							File pdfTempAttachmentWithPageNumber = null;
+							InputStream attachmentInputStream = null;
+							File tempAttachmentPDFWithPageNumber = null;
 							
 							try {
 								if (attachment.isAppendPageNumber()) {
 									
-									RandomAccessFileOrArray attachmentRandomAccess = null;
+									RandomAccessFileOrArray attachmentRandomAccessFile = null;
 									OutputStream tempAttachmentOutputStream = null;
 									
 									try {
-										pdfTempAttachmentWithPageNumber = File.createTempFile("pdf-attachment", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
-										tempAttachmentOutputStream = new BufferedOutputStream(new FileOutputStream(pdfTempAttachmentWithPageNumber));
+										tempAttachmentPDFWithPageNumber = File.createTempFile("pdf-attachment", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
+										tempAttachmentOutputStream = new BufferedOutputStream(new FileOutputStream(tempAttachmentPDFWithPageNumber));
 										
 										PdfReader reader;
 										
@@ -736,14 +741,17 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											
 											PDFFileAttachment pdfFileAttachment = (PDFFileAttachment) attachment;
 											
-											attachmentRandomAccess = new RandomAccessFileOrArray(pdfFileAttachment.getFile().getAbsolutePath(), false, false);
-											reader = new PdfReader(attachmentRandomAccess, null);
+											attachmentRandomAccessFile = new RandomAccessFileOrArray(pdfFileAttachment.getFile().getAbsolutePath(), false, false);
+											reader = new PdfReader(attachmentRandomAccessFile, null);
 											
 										} else {
 											
-											stream = attachment.getInputStream();
-											reader = new PdfReader(stream, null);
+											attachmentInputStream = attachment.getInputStream();
+											reader = new PdfReader(attachmentInputStream, null);
 										}
+										
+										attachmentCounter++;
+										
 										PdfStamper stamper = new PdfStamper(reader, tempAttachmentOutputStream);
 										
 										Font font = new Font(BaseFont.createFont(), 8f);
@@ -777,32 +785,32 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											textBuilder.append(" | " + inlineAttachmentDate + DateUtils.DATE_TIME_FORMATTER.format(submitDate));
 										}
 										
-										String text1 = textBuilder.toString();
+										String submitterText = textBuilder.toString();
 										
-										int pages = reader.getNumberOfPages();
+										int pageCount = reader.getNumberOfPages();
 										
-										for (int pageNr = 1; pageNr <= pages; pageNr++) {
+										for (int pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
 											
-											Rectangle pageSize = reader.getPageSize(pageNr);
+											Rectangle pageSize = reader.getPageSize(pageNumber);
 											
-											PdfContentByte pageContents = stamper.getOverContent(pageNr);
+											PdfContentByte pageContents = stamper.getOverContent(pageNumber);
 											
-//											pageContents.setFontAndSize(baseFont, 8f);
+//											pageContents.setFontAndSize(baseFont, 8f); // Embed font, should not be needed as helvetica is one of the standard fonts for PDFs
 											
 											ColumnText columnText = new ColumnText(pageContents);
 											
 											float lineHeight = columnText.getLeading() + (columnText.getMultipliedLeading() * fontHeight) + fontHeight;
 											
-											String text2 = inlineAttachmentPageNumber + (++attachmentPages);
+											String pageNumberText = inlineAttachmentPageNumber1 + attachmentCounter + inlineAttachmentPageNumber2 + pageNumber+ inlineAttachmentPageNumber3 + pageCount;
 											
-											float textWidth1 = baseFont.getWidthPoint(text1, font.getSize()) + 0.1f;
-											float textWidth2 = baseFont.getWidthPoint(text2, font.getSize()) + 0.1f;
+											float submitterTextWidth = baseFont.getWidthPoint(submitterText, font.getSize()) + 0.1f;
+											float pageNumberTextWidth = baseFont.getWidthPoint(pageNumberText, font.getSize()) + 0.1f;
 											
-											int leftPadding = 0;
+											int submitterTextLeftPadding = 0;
 											
-											if ((pageSize.getWidth() - textWidth1) / 2 < textWidth2) {
+											if ((pageSize.getWidth() - submitterTextWidth) / 2 < pageNumberTextWidth) {
 												
-												leftPadding = 5;
+												submitterTextLeftPadding = 5;
 												columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
 												
 											} else {
@@ -810,62 +818,62 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 												columnText.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
 											}
 											
-											columnText.setSimpleColumn(pageSize.getLeft() + leftPadding, pageSize.getBottom(), pageSize.getRight(), pageSize.getBottom() + lineHeight); // llx, lly, urx, ury)
-											columnText.setText(new Phrase(text1, font));
+											columnText.setSimpleColumn(pageSize.getLeft() + submitterTextLeftPadding, pageSize.getBottom(), pageSize.getRight(), pageSize.getBottom() + lineHeight); // llx, lly, urx, ury)
+											columnText.setText(new Phrase(submitterText, font));
 											
-											int status = columnText.go();
+											int writeTextResult = columnText.go();
 											
-											if (status != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit pagenumbering text1 on attachment " + attachment + " page " + attachmentPages + ": " + status);
+											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
+												log.warn("Unable to fit submitter text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
 											}
 											
 											columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
-											columnText.setSimpleColumn(pageSize.getRight() - textWidth2 - 5, pageSize.getBottom(), pageSize.getRight() - 5, pageSize.getBottom() + lineHeight);
-											columnText.setText(new Phrase(text2, font));
+											columnText.setSimpleColumn(pageSize.getRight() - pageNumberTextWidth - 5, pageSize.getBottom(), pageSize.getRight() - 5, pageSize.getBottom() + lineHeight);
+											columnText.setText(new Phrase(pageNumberText, font));
 											
-											status = columnText.go();
+											writeTextResult = columnText.go();
 											
-											if (status != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit pagenumbering text2 on attachment " + attachment + " page " + attachmentPages + ": " + status);
+											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
+												log.warn("Unable to fit pagenumbering text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
 											}
 										}
 										
 										stamper.close();
-										CloseUtils.close(stream);
+										CloseUtils.close(attachmentInputStream);
 										
-										stream = new FileInputStream(pdfTempAttachmentWithPageNumber);
+										attachmentInputStream = new FileInputStream(tempAttachmentPDFWithPageNumber);
 										
 									} catch (Exception e) {
 										
 										log.warn("Error appending page number to inline attachment " + attachment, e);
 										
 										// Reopen stream to reset position
-										if (stream != null) {
-											CloseUtils.close(stream);
+										if (attachmentInputStream != null) {
+											CloseUtils.close(attachmentInputStream);
 										}
 										
-										stream = attachment.getInputStream();
+										attachmentInputStream = attachment.getInputStream();
 										
 									} finally {
 										
 										CloseUtils.close(tempAttachmentOutputStream);
 
-										if (attachmentRandomAccess != null) {
+										if (attachmentRandomAccessFile != null) {
 
 											try {
-												attachmentRandomAccess.close();
+												attachmentRandomAccessFile.close();
 											} catch (IOException e) {}
 										}
 									}
 									
 								} else {
 									
-									stream = attachment.getInputStream();
+									attachmentInputStream = attachment.getInputStream();
 								}
 								
 								PDFMergerUtility merger = new PDFMergerUtility();
 								merger.addSource(pdfTempIn);
-								merger.addSource(stream);
+								merger.addSource(attachmentInputStream);
 								
 								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
@@ -892,11 +900,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								
 							} finally {
 								
-								CloseUtils.close(stream);
+								CloseUtils.close(attachmentInputStream);
 
-								if (pdfTempAttachmentWithPageNumber != null && !FileUtils.deleteFile(pdfTempAttachmentWithPageNumber)) {
+								if (tempAttachmentPDFWithPageNumber != null && !FileUtils.deleteFile(tempAttachmentPDFWithPageNumber)) {
 
-									log.warn("Unable to delete temp file: " + pdfTempAttachmentWithPageNumber);
+									log.warn("Unable to delete temp file: " + tempAttachmentPDFWithPageNumber);
 								}
 							}
 						}

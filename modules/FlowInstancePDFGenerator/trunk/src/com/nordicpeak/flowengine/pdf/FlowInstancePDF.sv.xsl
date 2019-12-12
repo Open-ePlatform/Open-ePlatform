@@ -7,7 +7,9 @@
 	
 	<xsl:variable name="java.signature">Signatur</xsl:variable>
 	<xsl:variable name="java.signingPDF">Signeringsunderlag</xsl:variable>
-	<xsl:variable name="java.attachmentPageNumber">Bilaga </xsl:variable>
+	<xsl:variable name="java.attachmentPageNumber1">Bilaga </xsl:variable>
+	<xsl:variable name="java.attachmentPageNumber2"> sida </xsl:variable>
+	<xsl:variable name="java.attachmentPageNumber3"> av </xsl:variable>
 	<xsl:variable name="java.attachmentFlowInstanceID">Ärendenummer: #</xsl:variable>
 	<xsl:variable name="java.attachmentSubmitter">Inskickat av: </xsl:variable>
 	<xsl:variable name="java.attachmentDate">Datum: </xsl:variable>
