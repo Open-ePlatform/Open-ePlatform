@@ -185,8 +185,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	protected String inlineAttachmentPageNumber2 = " page ";
 	protected String inlineAttachmentPageNumber3 = " of ";
 	protected String inlineAttachmentFlowInstanceID = "Flowinstance ID";
-	protected String inlineAttachmentSubmitter = "Submitted by";
-	protected String inlineAttachmentSubmitterAnonymous = "Not logged in user";
 	protected String inlineAttachmentDate = "Date";
 	protected String inlineAttachmentSigning = "Signing";
 	protected String inlineAttachmentSigned = "Signed";
@@ -253,8 +251,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					inlineAttachmentPageNumber2 =        readXSLVariable("java.attachmentPageNumber2", inlineAttachmentPageNumber2, variableReader);
 					inlineAttachmentPageNumber3 =        readXSLVariable("java.attachmentPageNumber3", inlineAttachmentPageNumber3, variableReader);
 					inlineAttachmentFlowInstanceID =     readXSLVariable("java.attachmentFlowInstanceID", inlineAttachmentFlowInstanceID, variableReader);
-					inlineAttachmentSubmitter =          readXSLVariable("java.attachmentSubmitter", inlineAttachmentSubmitter, variableReader);
-					inlineAttachmentSubmitterAnonymous = readXSLVariable("i18n.AnonymousUser", inlineAttachmentSubmitterAnonymous, variableReader);
 					inlineAttachmentDate =               readXSLVariable("java.attachmentDate", inlineAttachmentDate, variableReader);
 					inlineAttachmentSigning =            readXSLVariable("i18n.Signing", inlineAttachmentSigning, variableReader);
 					inlineAttachmentSigned =             readXSLVariable("i18n.Signed", inlineAttachmentSigned, variableReader);
@@ -447,13 +443,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				submitDate = TimeUtils.getCurrentTimestamp();
 			}
 			
-			String submitterName = null;
-			
 			if (!(extraElements != null && extraElements.containsKey("AnonymizePoster"))) {
 				
-				submitterName = FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance());
-				
-				XMLUtils.appendNewElement(doc, documentElement, "PostedBy", submitterName);
+				XMLUtils.appendNewElement(doc, documentElement, "PostedBy", FlowInstanceUtils.getSubmitterName(instanceManager.getFlowInstance()));
 				XMLUtils.appendNewElement(doc, documentElement, "PostedByCitizenID", FlowInstanceUtils.getSubmitterCitizenID(instanceManager.getFlowInstance()));
 			}
 			
@@ -555,7 +547,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				}
 			}
 			
-			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstance(), event, temporary, submitterName, submitDate, signEvents != null, extraElements != null && extraElements.containsKey("Signing"));
+			pdfWithAttachments = addAttachments(basePDF, managerResponses, extraAttachments, instanceManager.getFlowInstance(), event, temporary, submitDate, signEvents != null, extraElements != null && extraElements.containsKey("Signing"));
 			
 			File outputFile = writePDFA(pdfWithAttachments, instanceManager, event, temporary);
 			
@@ -702,7 +694,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return null;
 	}
 	
-	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, ImmutableFlowInstance flowInstance, FlowInstanceEvent event, boolean temporary, String submitterName, Timestamp submitDate, boolean signed, boolean signing) throws IOException, DocumentException {
+	private File addAttachments(File basePDF, List<PDFManagerResponse> managerResponses, List<PDFAttachment> extraAttachments, ImmutableFlowInstance flowInstance, FlowInstanceEvent event, boolean temporary, Timestamp submitDate, boolean signed, boolean signing) throws IOException, DocumentException {
 		
 		File pdfTempIn = basePDF;
 		File pdfTempOut = null;
@@ -768,18 +760,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											
 											if (!flowInstance.getFlow().isHideFlowInstanceIDFromUser()) {
 												
-												textBuilder.append(inlineAttachmentFlowInstanceID + flowInstance.getFlowInstanceID() + " | ");
+												textBuilder.append(inlineAttachmentFlowInstanceID + flowInstance.getFlowInstanceID());
 											}
-											
-											//TODO respect template showPostedBy
-											if (submitterName == null) {
-												submitterName = inlineAttachmentSubmitterAnonymous;
-											}
-											
-											textBuilder.append(inlineAttachmentSubmitter + submitterName);
 											
 											if (signed) {
-												textBuilder.append(" (" + inlineAttachmentSigned + ")");
+												textBuilder.append(" | " + inlineAttachmentSigned);
 											}
 											
 											textBuilder.append(" | " + inlineAttachmentDate + DateUtils.DATE_TIME_FORMATTER.format(submitDate));

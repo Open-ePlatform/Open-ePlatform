@@ -11,7 +11,6 @@
 	<xsl:variable name="java.attachmentPageNumber2"> sida </xsl:variable>
 	<xsl:variable name="java.attachmentPageNumber3"> av </xsl:variable>
 	<xsl:variable name="java.attachmentFlowInstanceID">Ärendenummer: #</xsl:variable>
-	<xsl:variable name="java.attachmentSubmitter">Inskickat av: </xsl:variable>
 	<xsl:variable name="java.attachmentDate">Datum: </xsl:variable>
 	
 	<xsl:variable name="i18n.AnonymousUser">Ej inloggad användare</xsl:variable>
