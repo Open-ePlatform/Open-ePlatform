@@ -661,6 +661,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		Element sortActivityGroupsElement = doc.createElement("SortActivityGroups");
 		doc.getDocumentElement().appendChild(sortActivityGroupsElement);
 
+		XMLUtils.appendNewElement(doc, sortActivityGroupsElement, "extensionRequestURL", extensionRequestURL);
+		
 		XMLUtils.append(doc, sortActivityGroupsElement, "ActivityGroups", activityGroups);
 
 		return viewFragmentTransformer.createViewFragment(doc);

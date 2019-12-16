@@ -5,8 +5,6 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/CKEditor.xsl"/>
 	
-	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
-
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
 		/ckeditor/ckeditor.js
@@ -44,6 +42,8 @@
 	</xsl:template>
 	
 	<xsl:template match="FlowOverviewExtension">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<div id="flowapprovalsettings" />
 		
@@ -93,6 +93,8 @@
 	<!-- Only used for showing errors -->
 	<xsl:template match="List">
 	
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
 		
 			<h1>
@@ -151,6 +153,8 @@
 	</xsl:template>
 	
 	<xsl:template match="ActivityGroup" mode="list">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<tr>
 			<td>
@@ -425,6 +429,8 @@
 	
 	<xsl:template match="ShowActivityGroup">
 		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
 		
 			<div class="floatright">
@@ -555,6 +561,8 @@
 	
 	<xsl:template match="Activity" mode="list">
 		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<tr>
 			<td>
 				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
@@ -639,6 +647,8 @@
 	
 	<xsl:template match="ResponsibleUser" mode="inline-list">
 		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<xsl:if test="position() > 1">
 			<xsl:text>, </xsl:text>
 		</xsl:if>
@@ -678,6 +688,8 @@
 	
 	<xsl:template match="ResponsibleUser" mode="list">
 		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<div>
 			
 			<xsl:choose>
@@ -708,6 +720,8 @@
 	</xsl:template>
 	
 	<xsl:template match="group" mode="inline-list">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<xsl:if test="position() > 1">
 			<xsl:text>, </xsl:text>
@@ -756,6 +770,8 @@
 	
 	<xsl:template match="ActivityGroup" mode="sort">
 	
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../extensionRequestURL" />/static/pics</xsl:variable>
+		
 		<div id="activityGroup_{activityGroupID}" class="floatleft hover border ninety marginbottom lightbackground cursor-move border-radius">
 			<div class="padding">
 				<img class="vertical-align-middle marginright" src="{$imgPath}/move.png" title="{$i18n.Move}" alt="" />
@@ -771,6 +787,8 @@
 	</xsl:template>
 	
 	<xsl:template match="ShowActivity">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
 		
@@ -868,38 +886,42 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="user" mode="list">
+<!-- 	<xsl:template match="user" mode="list"> -->
 		
-		<div>
+<!-- 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable> -->
+		
+<!-- 		<div> -->
 			
-			<xsl:choose>
-				<xsl:when test="enabled='true'">
-					<img class="marginright" src="{$imgPath}/user.png" alt="" />
-				</xsl:when>
-				<xsl:otherwise>
-					<img class="marginright" src="{$imgPath}/user_disabled.png" alt="" />
-				</xsl:otherwise>
-			</xsl:choose>
+<!-- 			<xsl:choose> -->
+<!-- 				<xsl:when test="enabled='true'"> -->
+<!-- 					<img class="marginright" src="{$imgPath}/user.png" alt="" /> -->
+<!-- 				</xsl:when> -->
+<!-- 				<xsl:otherwise> -->
+<!-- 					<img class="marginright" src="{$imgPath}/user_disabled.png" alt="" /> -->
+<!-- 				</xsl:otherwise> -->
+<!-- 			</xsl:choose> -->
 			
-			<xsl:value-of select="firstname"/>
+<!-- 			<xsl:value-of select="firstname"/> -->
 			
-			<xsl:text>&#x20;</xsl:text>
+<!-- 			<xsl:text>&#x20;</xsl:text> -->
 			
-			<xsl:value-of select="lastname"/>
+<!-- 			<xsl:value-of select="lastname"/> -->
 			
-			<xsl:if test="username">
-				<xsl:text>&#x20;</xsl:text>
+<!-- 			<xsl:if test="username"> -->
+<!-- 				<xsl:text>&#x20;</xsl:text> -->
 				
-				<xsl:text>(</xsl:text>
-					<xsl:value-of select="username"/>
-				<xsl:text>)</xsl:text>
-			</xsl:if>
+<!-- 				<xsl:text>(</xsl:text> -->
+<!-- 					<xsl:value-of select="username"/> -->
+<!-- 				<xsl:text>)</xsl:text> -->
+<!-- 			</xsl:if> -->
 			
-		</div>
+<!-- 		</div> -->
 		
-	</xsl:template>
+<!-- 	</xsl:template> -->
 	
 	<xsl:template match="group" mode="list">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<div>
 			
