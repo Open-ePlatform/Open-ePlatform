@@ -1198,12 +1198,15 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			for (FlowInstance flowInstance : event.getBeans()) {
 
-				log.info("Deleting approval progress for " + flowInstance);
+				if (flowInstance.getFirstSubmitted() != null) {
 
-				HighLevelQuery<FlowApprovalActivityProgress> query = new HighLevelQuery<FlowApprovalActivityProgress>();
-				query.addParameter(activityProgressFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+					log.info("Deleting approval progress for " + flowInstance);
 
-				activityProgressDAO.delete(query);
+					HighLevelQuery<FlowApprovalActivityProgress> query = new HighLevelQuery<FlowApprovalActivityProgress>();
+					query.addParameter(activityProgressFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+
+					activityProgressDAO.delete(query);
+				}
 			}
 			
 		} else if (event.getAction() == CRUDAction.UPDATE) {
@@ -1213,93 +1216,106 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 			for (FlowInstance flowInstance : event.getBeans()) {
 
-				List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+				if (flowInstance.getFirstSubmitted() != null) {
 
-				if (activityGroups != null) {
+					List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
-					for (FlowApprovalActivityGroup activityGroup : activityGroups) {
+					if (activityGroups != null) {
 
-						if (activityGroup.getActivities() != null) {
+						for (FlowApprovalActivityGroup activityGroup : activityGroups) {
 
-							TransactionHandler transactionHandler = activityProgressDAO.createTransaction();
+							if (activityGroup.getActivities() != null) {
 
-							try {
-								Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(activityGroup.getActivities().size());
+								TransactionHandler transactionHandler = activityProgressDAO.createTransaction();
 
-								for (FlowApprovalActivity activity : activityGroup.getActivities()) {
+								try {
+									Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(activityGroup.getActivities().size());
 
-									if (activity.getResponsibleUserAttributeNames() != null) {
+									for (FlowApprovalActivity activity : activityGroup.getActivities()) {
 
-										boolean activeActivity = true;
+										if (activity.getResponsibleUserAttributeNames() != null) {
 
-										if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
+											boolean activeActivity = true;
 
-											boolean match = false;
+											if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
 
-											AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
+												boolean match = false;
 
-											if (attributeHandler != null) {
+												AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 
-												String value = attributeHandler.getString(activity.getAttributeName());
+												if (attributeHandler != null) {
 
-												if (value != null) {
+													String value = attributeHandler.getString(activity.getAttributeName());
 
-													match = activity.getAttributeValues().contains(value);
+													if (value != null) {
 
-													if (!match && value.contains(",")) {
+														match = activity.getAttributeValues().contains(value);
 
-														String[] values = value.split(", ?");
+														if (!match && value.contains(",")) {
 
-														for (String splitValue : values) {
+															String[] values = value.split(", ?");
 
-															match = activity.getAttributeValues().contains(splitValue);
+															for (String splitValue : values) {
 
-															if (match) {
-																break;
+																match = activity.getAttributeValues().contains(splitValue);
+
+																if (match) {
+																	break;
+																}
 															}
 														}
 													}
 												}
+
+												activeActivity = match != activity.isInverted();
 											}
 
-											activeActivity = match != activity.isInverted();
-										}
+											if (activeActivity) {
 
-										if (activeActivity) {
+												FlowApprovalActivityProgress progress = getActivityProgress(activity, flowInstance);
 
-											FlowApprovalActivityProgress progress = getActivityProgress(activity, flowInstance);
+												if (progress != null) {
 
-											if (progress != null) {
+													List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
+													
+													boolean responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(progress.getResponsibleAttributedUsers());
+													
+													if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
+														
+														Set<User> oldUsers = new HashSet<User>(progress.getResponsibleAttributedUsers());
+														Set<User> newUsers = new HashSet<User>(responsibleUsers);
+														
+														responsibleUsersChanged = !oldUsers.equals(newUsers);
+													}
 
-												List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
+													if (responsibleUsersChanged) {
 
-												if ((responsibleUsers == null && progress.getResponsibleAttributedUsers() != null) || (responsibleUsers != null && !responsibleUsers.equals(progress.getResponsibleAttributedUsers()))) {
+														log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
+														progress.setResponsibleAttributedUsers(responsibleUsers);
 
-													log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
-													progress.setResponsibleAttributedUsers(responsibleUsers);
+														progress.setActivity(activity);
+														activityProgressDAO.update(progress, transactionHandler, null);
 
-													progress.setActivity(activity);
-													activityProgressDAO.update(progress, transactionHandler, null);
-
-													updatedActivities.put(activity, progress);
+														updatedActivities.put(activity, progress);
+													}
 												}
 											}
 										}
 									}
-								}
 
-								if (!updatedActivities.isEmpty()) {
+									if (!updatedActivities.isEmpty()) {
 
-									transactionHandler.commit();
+										transactionHandler.commit();
 
-									if (activityGroup.isSendActivityGroupStartedEmail()) {
+										if (activityGroup.isSendActivityGroupStartedEmail()) {
 
-										sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+											sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+										}
 									}
-								}
 
-							} finally {
-								TransactionHandler.autoClose(transactionHandler);
+								} finally {
+									TransactionHandler.autoClose(transactionHandler);
+								}
 							}
 						}
 					}
