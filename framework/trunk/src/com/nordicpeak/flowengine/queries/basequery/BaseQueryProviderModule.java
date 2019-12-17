@@ -243,7 +243,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		}
 	}
 
-	protected void parseQueryXSLStyleSheet(URL styleSheetURL){
+	protected XSLVariableReader parseQueryXSLStyleSheet(URL styleSheetURL){
 
 		try {
 			XSLVariableReader variableReader = new XSLVariableReader(styleSheetURL.toURI());
@@ -257,6 +257,8 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 			List<LinkTag> localLinks = ModuleUtils.getLinks(variableReader, sectionInterface, "f", moduleDescriptor);
 			
 			this.queryLinks = CollectionUtils.combine(globalLinks, localLinks);
+			
+			return variableReader;
 
 		} catch (Exception e) {
 
@@ -264,6 +266,8 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 			this.queryScripts = null;
 			this.queryLinks = null;
+			
+			return null;
 		}
 	}
 
