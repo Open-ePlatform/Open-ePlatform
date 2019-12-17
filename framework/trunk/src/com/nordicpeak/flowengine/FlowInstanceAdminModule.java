@@ -2192,14 +2192,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		if (source == EventSource.LOCAL) {
 
 			try {
-				FlowInstance flowInstance = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.POSTER_FIELD, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION);
-				ImmutableFlowFamily flowFamily = flowInstance.getFlow().getFlowFamily();
+				FlowInstance flowInstance = (FlowInstance) event.getFlowInstanceManager().getFlowInstance();
+				FlowInstance flowInstanceWithRules = getFlowInstance(event.getFlowInstanceManager().getFlowInstanceID(), null, FlowInstance.EVENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION);
+				ImmutableFlowFamily flowFamily = flowInstanceWithRules.getFlow().getFlowFamily();
 
 				boolean isPreviouslySubmitted = false;
 
-				if (!CollectionUtils.isEmpty(flowInstance.getEvents())) {
+				if (!CollectionUtils.isEmpty(flowInstanceWithRules.getEvents())) {
 
-					for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstance.getEvents()) {
+					for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceWithRules.getEvents()) {
 
 						if (flowInstanceEvent.getEventType() == EventType.SUBMITTED && !flowInstanceEvent.equals(event.getEvent())) {
 
@@ -2249,7 +2250,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						if (flowFamily.getAutoManagerAssignmentRules() != null) {
 
-							AttributeHandler attributeHandler = event.getFlowInstanceManager().getFlowInstance().getAttributeHandler();
+							AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
 
 							if (attributeHandler != null) {
 
@@ -2360,7 +2361,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 							FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 
 							eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-							eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), previousManagers, previousManagerGroups, null), EventTarget.ALL);
+							eventHandler.sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, event.getSiteProfile(), previousManagers, previousManagerGroups, null), EventTarget.ALL);
 						}
 					}
 				}
