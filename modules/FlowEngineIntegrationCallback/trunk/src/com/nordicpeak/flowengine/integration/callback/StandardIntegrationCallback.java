@@ -508,6 +508,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					PrincipalGroup principalGroup = new PrincipalGroup();
 					
 					principalGroup.setName(group.getName());
+					
+					response.managerGroups.add(principalGroup);
 				}
 			}
 
