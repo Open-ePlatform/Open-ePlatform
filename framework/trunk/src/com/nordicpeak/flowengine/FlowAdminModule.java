@@ -6510,10 +6510,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return null;
 	}
+	
+	public boolean hasFlowFamilyManagerAccess(Integer flowFamilyID, User user) {
+		
+		FlowFamily flowFamily = getFlowFamily(flowFamilyID);
+		
+		return hasFlowFamilyManagerAccess(flowFamily, user);
+	}
+	
+	public boolean hasFlowFamilyManagerAccess(FlowFamily flowFamily, User user) {
+		
+		return getFlowFamilyManagerAccess(flowFamily, user) != null;
+	}
+	
+	protected ManagerAccess getFlowFamilyManagerAccess(FlowFamily flowFamily, User user) {
 
-	protected ManagerAccess getFlowFamilyManagerAccess(FlowFamily flowFamily, User requestedUser) {
-
-		return flowFamily.getManagerAccess(requestedUser);
+		return flowFamily.getManagerAccess(user);
 	}
 	
 	@Override
