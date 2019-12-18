@@ -788,20 +788,21 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											
 											String pageNumberText = inlineAttachmentPageNumber1 + attachmentCounter + inlineAttachmentPageNumber2 + pageNumber+ inlineAttachmentPageNumber3 + pageCount;
 											
-											float submitterTextWidth = baseFont.getWidthPoint(submitterText, font.getSize()) + 0.1f;
+//											float submitterTextWidth = baseFont.getWidthPoint(submitterText, font.getSize()) + 0.1f;
 											float pageNumberTextWidth = baseFont.getWidthPoint(pageNumberText, font.getSize()) + 0.1f;
 											
 											int submitterTextLeftPadding = 0;
 											
-											if ((pageSize.getWidth() - submitterTextWidth) / 2 < pageNumberTextWidth) {
+											//TODO match templates alignment
+//											if ((pageSize.getWidth() - submitterTextWidth) / 2 < pageNumberTextWidth) {
 												
 												submitterTextLeftPadding = 5;
 												columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
 												
-											} else {
-												
-												columnText.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-											}
+//											} else {
+//
+//												columnText.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+//											}
 											
 											columnText.setSimpleColumn(pageSize.getLeft() + submitterTextLeftPadding, pageSize.getBottom(), pageSize.getRight(), pageSize.getBottom() + lineHeight); // llx, lly, urx, ury)
 											columnText.setText(new Phrase(submitterText, font));
