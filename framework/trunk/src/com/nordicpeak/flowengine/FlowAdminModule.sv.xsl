@@ -209,7 +209,7 @@
 	<xsl:variable name="i18n.deleteStatus.confirm">Ta bort statusen</xsl:variable>
 	<xsl:variable name="i18n.addStatus">Lägg till status</xsl:variable>
 	
-	<xsl:variable name="i18n.statusContentType.title">Innehåll</xsl:variable>
+	<xsl:variable name="i18n.statusContentType.title">Innehållstyp</xsl:variable>
 	<xsl:variable name="i18n.statusContentType.description">Välj vilken typ av ärenden som den här statusen kommer att innehålla.</xsl:variable>
 	<xsl:variable name="i18n.contentType.NEW">Sparade men ej inskickade ärenden</xsl:variable>
 	<xsl:variable name="i18n.contentType.WAITING_FOR_MULTISIGN">Väntar på flerpartssignering</xsl:variable>
@@ -221,7 +221,7 @@
 
 	<xsl:variable name="i18n.externalMessages">Meddelanden</xsl:variable>
 	<xsl:variable name="i18n.permissions">Behörigheter</xsl:variable>
-	<xsl:variable name="i18n.contentType">Innehåll</xsl:variable>
+	<xsl:variable name="i18n.contentType">Innehållstyp</xsl:variable>
 	
 	<xsl:variable name="i18n.updateFlowIcon.link.title">Uppdatera ikon</xsl:variable>
 	
