@@ -1665,7 +1665,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 								if (notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
 
-									sendContactSMS(flowInstance, contact, getFlowInstaceArchivedUserSMSMessage(flowInstance));
+									sendContactSMS(flowInstance, contact, getFlowInstanceArchivedUserSMSMessage(notificationSettings, flowInstance));
 								}
 							}
 						}
@@ -2650,15 +2650,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
-	private String getFlowInstaceArchivedUserSMSMessage(ImmutableFlowInstance flowInstance) {
+	private String getFlowInstanceArchivedUserSMSMessage(FlowFamililyNotificationSettings notificationSettings, ImmutableFlowInstance flowInstance) {
 
 		if (!CollectionUtils.isEmpty(flowInstance.getOwners())) {
 
-			return flowInstanceArchivedUserSMS;
+			return notificationSettings.getFlowInstanceArchivedUserSMS();
 
 		} else {
 
-			return flowInstanceArchivedNotLoggedInUserSMS;
+			return notificationSettings.getFlowInstanceArchivedNotLoggedInUserSMS();
 		}
 	}
 

@@ -230,6 +230,11 @@
 				$("#submit-sms").toggleClass("hidden");
 			}
 			
+			function toggleArchivedSMS(){
+				
+				$("#archived-sms").toggleClass("hidden");
+			}
+			
 			function toggleArchived(){
 				
 				$("#archived-subject, #archived-message").toggleClass("hidden");
@@ -396,9 +401,55 @@
 				<label for="sendFlowInstanceArchivedUserSMS">
 					<xsl:value-of select="$i18n.SendFlowInstanceArchivedUserSMS" />
 				</label>
+				
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleArchivedSMS();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
 			</div>
 		</div>
 	
+		<div class="floatleft full bigmarginbottom" id="archived-sms">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceArchivedUserSMS') and not($errFieldNames = 'flowInstanceArchivedNotLoggedInUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceArchivedUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceArchivedUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceArchivedUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceArchivedUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<label for="flowInstanceArchivedNotLoggedInUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceArchivedNotLoggedInUserSMS" />
+			</label>
+			
+			<div class="floatleft full marginbottom">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceArchivedNotLoggedInUserSMS'"/>
+					<xsl:with-param name="name" select="'flowInstanceArchivedNotLoggedInUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
+		</div>
+		
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
 			<div class="floatleft">
@@ -2057,6 +2108,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceSubmittedNotLoggedInUserSMS'">
 						<xsl:value-of select="$i18n.FlowInstanceSubmittedNotLoggedInUserSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedUserSMS'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedUserSMS"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceArchivedNotLoggedInUserSMS'">
+						<xsl:value-of select="$i18n.FlowInstanceArchivedNotLoggedInUserSMS"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'flowInstanceArchivedUserEmailSubject'">
 						<xsl:value-of select="$i18n.FlowInstanceArchivedUserEmailSubject"/>

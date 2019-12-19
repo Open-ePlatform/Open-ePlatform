@@ -332,6 +332,9 @@
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserSMS">Innehåll i SMS vid inskickat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserSMS">Innehåll i SMS vid inskickat ärende (ej inloggad användare)</xsl:variable>
 	
+	<xsl:variable name="i18n.FlowInstanceArchivedUserSMS">Innehåll i SMS vid avslutat ärende (inloggad användare)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedNotLoggedInUserSMS">Innehåll i SMS vid avslutat ärende (ej inloggad användare)</xsl:variable>
+	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailSubject">Rubrik på e-postmeddelande vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailMessage">Innehåll i e-postmeddelande vid inskickat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserEmailMessage">Innehåll i e-postmeddelande vid inskickat ärende (ej inloggad användare)</xsl:variable>
