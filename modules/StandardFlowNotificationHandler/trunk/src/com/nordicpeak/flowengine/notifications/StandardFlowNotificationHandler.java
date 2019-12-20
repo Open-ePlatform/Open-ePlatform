@@ -1556,6 +1556,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 
 		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+		
+		if (flowInstance.getFlow().isHideExternalMessages()) {
+			
+			return;
+		}
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
