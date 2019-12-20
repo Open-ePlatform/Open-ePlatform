@@ -30,5 +30,6 @@
 	
 	<xsl:variable name="i18n.Flow.name">E-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
+	<xsl:variable name="i18n.noAnsweredQueriesInThisStep">Det finns inga besvarade frågor i detta steg.</xsl:variable>
 	
 </xsl:stylesheet>

@@ -1051,6 +1051,21 @@
 		
 		<div class="floatleft full bigmarginbottom">
 			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'showFlowInstance'" />
+					<xsl:with-param name="id" select="'showFlowInstance'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="showFlowInstance">
+					<xsl:value-of select="$i18n.Activity.showFlowInstance" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
 			<label class="floatleft full">
 				<xsl:value-of select="$i18n.Activity.responsibleGroups" />
 			</label>

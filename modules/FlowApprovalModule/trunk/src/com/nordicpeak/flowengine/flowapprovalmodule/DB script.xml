@@ -219,4 +219,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `showFlowInstance` TINYINT(1) UNSIGNED NOT NULL AFTER `description`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

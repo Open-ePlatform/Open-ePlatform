@@ -27,6 +27,7 @@ import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
@@ -61,16 +62,34 @@ import com.nordicpeak.flowengine.UserFlowInstanceMenuModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
+import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 
-public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserMenuProvider {
+public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserMenuProvider, ImmutableFlowEngineInterface {
 
 	@XSLVariable(prefix = "java.")
 	private String userMenuTabTitle = "My organizations";
@@ -302,21 +321,36 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	
 	private List<FlowApprovalActivityProgress> getActivities(User user, boolean completed, Field... relations) throws SQLException {
 		
+		return getActivities(user, null, completed, relations);
+	}
+	
+	protected List<FlowApprovalActivityProgress> getActivities(User user, Integer flowInstanceID, Boolean completed, Field... relations) throws SQLException {
+		
 		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
 		
 		// @formatter:off
-		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(
-				"SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
-				+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
-				+" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
-				+" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
-				+" LEFT OUTER JOIN flowapproval_activity_resp_user_attribute ra ON ra.activityID = a.activityID"
-				+" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
-				+" WHERE ap.completed IS " + (completed ? "NOT " : "") + "NULL AND ("
-				+" (u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
-				+" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))"
-		);
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
+		              +" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
+		              +" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
+		              +" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
+		              +" LEFT OUTER JOIN flowapproval_activity_resp_user_attribute ra ON ra.activityID = a.activityID"
+		              +" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
+		              +" WHERE");
+		
+		if (flowInstanceID != null) {
+			builder.append(" ap.flowInstanceID = " + flowInstanceID + " AND");
+		}
+		
+		if (completed != null) {
+			builder.append(" ap.completed IS " + (completed ? "NOT " : "") + "NULL AND");
+		}
+		
+		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
+		              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))");
 		// @formatter:on
+		
+		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(builder.toString());
 
 		if (relations != null) {
 
@@ -328,7 +362,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@RESTMethod(alias = "show/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
-	public ForegroundModuleResponse showActivity(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, IOException, AccessDeniedException {
+	public ForegroundModuleResponse showActivity(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, IOException, AccessDeniedException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
 		FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(activityProgressID);
 
@@ -339,7 +373,18 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		FlowApprovalActivity activity = activityProgress.getActivity();
 		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
 
-		FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+		FlowInstance flowInstance;
+		ImmutableFlowInstanceManager instanceManager = null;
+		
+		if (activity.isShowFlowInstance()) {
+			
+			instanceManager = flowAdminModule.getImmutableFlowInstanceManager(activityProgress.getFlowInstanceID());
+			flowInstance = (FlowInstance) instanceManager.getFlowInstance();
+			
+		} else {
+			
+			flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+		}
 
 		if (!AccessUtils.checkAccess(user, activityProgress)) {
 
@@ -450,6 +495,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			XMLUtils.appendNewElement(doc, showActivity, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
 		}
 		
+		if (activity.isShowFlowInstance()) {
+			try {
+				List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), new RequestMetadata(false));
+				XMLUtils.append(doc, showActivity, "ManagerResponses", managerResponses);
+				
+			} catch (UnableToGetQueryInstanceShowHTMLException e) {
+				log.error("Unable to preview flow instance " + instanceManager, e);
+			}
+		}
+		
 		if (validationErrors != null) {
 
 			showActivity.appendChild(RequestUtils.getRequestParameters(req, doc));
@@ -488,6 +543,23 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	public ForegroundModuleResponse getFlowIcon(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, URINotFoundException {
 
 		return flowAdminModule.getFlowIcon(req, res, user, uriParser);
+	}
+	
+	protected String getImmutableQueryRequestBaseURL(HttpServletRequest req, FlowInstanceManager instanceManager) {
+		
+		return req.getContextPath() + getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
+	}
+	
+	@WebPublic(alias = "iquery")
+	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+		
+		return flowAdminModule.processImmutableQueryRequest(req, res, user, uriParser, new FlowApprovalFlowInstanceAccessController(this), true, false);
+	}
+	
+	@Override
+	public QueryHandler getQueryHandler() {
+		
+		return flowAdminModule.getQueryHandler();
 	}
 
 }

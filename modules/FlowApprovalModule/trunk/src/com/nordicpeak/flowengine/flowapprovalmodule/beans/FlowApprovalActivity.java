@@ -54,6 +54,11 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String description;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean showFlowInstance;
 
 	@DAOManaged
 	@OneToMany
@@ -207,6 +212,14 @@ public class FlowApprovalActivity extends GeneratedElementable {
 
 	public void setResponsibleUserAttributeName(List<String> responsibleUserAttributeNames) {
 		this.responsibleUserAttributeNames = responsibleUserAttributeNames;
+	}
+
+	public boolean isShowFlowInstance() {
+		return showFlowInstance;
+	}
+	
+	public void setShowFlowInstance(boolean showFlowInstance) {
+		this.showFlowInstance = showFlowInstance;
 	}
 
 	@Override
