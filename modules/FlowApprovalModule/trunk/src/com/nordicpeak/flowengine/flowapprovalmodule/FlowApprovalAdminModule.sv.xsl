@@ -95,6 +95,9 @@
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>
 	
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.useCustomApprovedText">Använd annat namn för klarmarkerad / godkänd / nekad</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.approvedText">Namn för klarmarkerad/godkänd</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.deniedText">Namn för nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka epost notifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>

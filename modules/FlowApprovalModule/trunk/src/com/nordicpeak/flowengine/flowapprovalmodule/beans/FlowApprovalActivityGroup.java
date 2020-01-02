@@ -6,6 +6,7 @@ import java.util.List;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.annotations.enums.RequiredState;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -43,7 +44,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@DAOManaged
 	@XMLElement
 	private Integer flowFamilyID;
-
+	
 	@DAOManaged
 	@WebPopulate(maxLength = 255, required = true)
 	@XMLElement
@@ -64,6 +65,18 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean useApproveDeny;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "useCustomApprovedText")
+	@XMLElement
+	private String approvedText;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = {"useCustomApprovedText", "useApproveDeny"}, requiredState = RequiredState.ALL)
+	@XMLElement
+	private String deniedText;
 
 	@DAOManaged
 	@WebPopulate
@@ -218,6 +231,22 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	public void setReminderAfterXDays(Integer reminderAfterXDays) {
 		this.reminderAfterXDays = reminderAfterXDays;
+	}
+
+	public String getApprovedText() {
+		return approvedText;
+	}
+
+	public void setApprovedText(String approveText) {
+		this.approvedText = approveText;
+	}
+
+	public String getDeniedText() {
+		return deniedText;
+	}
+
+	public void setDeniedText(String denyText) {
+		this.deniedText = denyText;
 	}
 
 	@Override

@@ -16,7 +16,7 @@
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=1
+		/js/flowapprovaladmin.js?v=2
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -340,6 +340,53 @@
 
 		</div>
 		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'useCustomApprovedText'" />
+					<xsl:with-param name="id" select="'useCustomApprovedText'" />
+					<xsl:with-param name="checked" select="ActivityGroup/approvedText or ActivityGroup/deniedText" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="useCustomApprovedText">
+					<xsl:value-of select="$i18n.ActivityGroup.useCustomApprovedText" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+
+			<label class="floatleft full required" for="approvedText">
+				<xsl:value-of select="$i18n.ActivityGroup.approvedText" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'approvedText'" />
+					<xsl:with-param name="name" select="'approvedText'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+			</div>
+
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+
+			<label class="floatleft full required" for="deniedText">
+				<xsl:value-of select="$i18n.ActivityGroup.deniedText" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'deniedText'" />
+					<xsl:with-param name="name" select="'deniedText'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+			</div>
+
+		</div>
+		
 		<xsl:call-template name="notificationEmail">
 			<xsl:with-param name="toggleField" select="'sendActivityGroupStartedEmail'"/>
 			<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupStartedEmail"/>
@@ -454,6 +501,18 @@
 			<xsl:apply-templates select="ValidationErrors/validationError" />
 			
 			<div class="bigmarginbottom">
+			
+				<xsl:if test="ActivityGroup/useApproveDeny = 'true'">
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.useApproveDeny" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+					
+					<br/>
+					
+				</xsl:if>
 				
 				<strong>
 					<xsl:value-of select="$i18n.ActivityGroup.startStatus" />
@@ -474,18 +533,34 @@
 					<br/>
 					
 					<strong>
-						<xsl:value-of select="$i18n.ActivityGroup.useApproveDeny" />
-						<xsl:text>:&#160;</xsl:text>
-					</strong>
-					<xsl:value-of select="$i18n.Yes" />
-					
-					<br/>
-					
-					<strong>
 						<xsl:value-of select="$i18n.ActivityGroup.denyStatus" />
 						<xsl:text>:&#160;</xsl:text>
 					</strong>
 					<xsl:value-of select="ActivityGroup/denyStatus" />
+					
+				</xsl:if>
+				
+				<xsl:if test="ActivityGroup/approvedText or ActivityGroup/deniedText">
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.approvedText" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="ActivityGroup/approvedText" />
+					
+					<xsl:if test="ActivityGroup/useApproveDeny = 'true'">
+					
+						<br/>
+						
+						<strong>
+							<xsl:value-of select="$i18n.ActivityGroup.deniedText" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						<xsl:value-of select="ActivityGroup/deniedText" />
+						
+					</xsl:if>
 					
 				</xsl:if>
 				
@@ -1652,6 +1727,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'reminderAfterXDays'">
 						<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'approvedText'">
+						<xsl:value-of select="$i18n.ActivityGroup.approvedText"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'deniedText'">
+						<xsl:value-of select="$i18n.ActivityGroup.deniedText"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

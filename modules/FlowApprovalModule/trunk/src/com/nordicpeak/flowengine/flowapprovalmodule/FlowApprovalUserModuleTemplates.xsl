@@ -388,7 +388,14 @@
 												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'"> disabled</xsl:if>
 											</xsl:attribute>
 											
-											<xsl:value-of select="$i18n.ActivityProgress.approved" />
+											<xsl:choose>
+												<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="$i18n.ActivityProgress.approved" />
+												</xsl:otherwise>
+											</xsl:choose>
 										</label>
 										
 									</div>
@@ -413,7 +420,14 @@
 												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'"> disabled</xsl:if>
 											</xsl:attribute>
 											
-											<xsl:value-of select="$i18n.ActivityProgress.denied" />
+											<xsl:choose>
+											<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
+												<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="$i18n.ActivityProgress.denied" />
+											</xsl:otherwise>
+										</xsl:choose>
 										</label>
 										
 									</div>
@@ -441,7 +455,14 @@
 												<xsl:if test="ActivityProgress/completed != ''"> disabled</xsl:if>
 											</xsl:attribute>
 											
-											<xsl:value-of select="$i18n.ActivityProgress.complete" />
+											<xsl:choose>
+												<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="$i18n.ActivityProgress.complete" />
+												</xsl:otherwise>
+											</xsl:choose>
 										</label>
 										
 									</div>

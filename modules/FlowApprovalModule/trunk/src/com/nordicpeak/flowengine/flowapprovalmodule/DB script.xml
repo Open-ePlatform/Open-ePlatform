@@ -227,4 +227,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `approvedText` VARCHAR(255) NULL DEFAULT NULL AFTER `denyStatus`,
+					ADD COLUMN `deniedText` VARCHAR(255) NULL DEFAULT NULL AFTER `approvedText`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
