@@ -19,8 +19,10 @@
 	<xsl:variable name="java.csvStepAbortCountFile">avbrutna ärenden.csv</xsl:variable>
 	<xsl:variable name="java.csvUnsubmittedCount">Antal ej inskickade ärenden</xsl:variable>
 	<xsl:variable name="java.csvStepUnsubmittedCountFile">antal ej inskickade ärenden.csv</xsl:variable>
-	<xsl:variable name="java.csvGlobaExternalFlowCount">Antal externa e-tjänster</xsl:variable>
-	<xsl:variable name="java.csvGlobaPDFFormFlowCount">Antal e-tjänster med enbart blankett</xsl:variable>
+	<xsl:variable name="java.csvGlobaExternalFlowCount">Antal externa tjänster</xsl:variable>
+	<xsl:variable name="java.csvGlobaPDFFormFlowCount">Antal tjänster med enbart blankett</xsl:variable>
+	<xsl:variable name="java.csvGlobaInternalAndPDFFormFlowCount">Antal tjänster med både e-tjänst och blankett</xsl:variable>
+	
 	<xsl:variable name="java.csvDetailedGlobalFlowCountFile">detaljerad statistik e-tjänster.csv</xsl:variable>
 	<xsl:variable name="java.csvDetailedFlowInstanceCountFile">detaljerad statistik ärenden.csv</xsl:variable>
 	<xsl:variable name="java.csvFlowName">E-tjänst</xsl:variable>

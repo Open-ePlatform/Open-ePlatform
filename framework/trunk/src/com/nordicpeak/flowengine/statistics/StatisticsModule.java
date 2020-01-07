@@ -102,12 +102,13 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	private static final String GLOBAL_INTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows INNER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
 	private static final String GLOBAL_EXTERNAL_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows WHERE externalLink IS NOT NULL AND publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
 	private static final String GLOBAL_PDFFORM_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows LEFT OUTER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) INNER JOIN flowengine_flow_forms ON(flowengine_flow_forms.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?) AND flowengine_steps.flowID IS NULL;";
-
+	private static final String GLOBAL_INTERNAL_AND_PDFFORM_FLOW_FAMILY_COUNT = "SELECT COUNT(DISTINCT flowFamilyID) as value, YEARWEEK(?, 3) as id FROM flowengine_flows INNER JOIN flowengine_steps ON(flowengine_steps.flowID = flowengine_flows.flowID) INNER JOIN flowengine_flow_forms ON(flowengine_flow_forms.flowID = flowengine_flows.flowID) WHERE publishDate <= ? AND (unPublishDate IS NULL OR unPublishDate > ?);";
+	
 	private static final String FLOW_INSTANCE_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_flow_instances.firstSubmitted, 3)) as id, count(flowInstanceID) as value FROM flowengine_flow_instances INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_flow_instances.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_flow_instances.firstSubmitted BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
 	private static final String EXTERNAL_FLOW_REDIRECT_COUNT_QUERY = "SELECT DISTINCT(YEARWEEK(flowengine_external_flow_redirects.time, 3)) as id, count(redirectID)/4 as value FROM flowengine_external_flow_redirects INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_external_flow_redirects.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_external_flow_redirects.time BETWEEN ? AND ?) GROUP BY id ORDER BY id ASC;";
 	private static final String STEP_ABORT_COUNT_QUERY = "SELECT DISTINCT(stepID) as id, count(abortID) as value FROM flowengine_aborted_flow_instances WHERE flowID = ? AND added BETWEEN ? AND ? GROUP BY id;";
 	private static final String STEP_UNSUBMITTED_COUNT_QUERY = "SELECT DISTINCT(stepID) as id, count(flowInstanceID) as value FROM flowengine_flow_instances WHERE statusID IN (SELECT statusID FROM flowengine_flow_statuses WHERE flowID = ? AND contentType = ?) AND ((updated IS NOT NULL AND updated BETWEEN ? AND ?) OR (updated IS NULL AND added BETWEEN ? AND ?)) GROUP BY id;";
-
+	
 	private static final String FLOW_INSTANCE_QUERY = "SELECT * FROM flowengine_flow_instances INNER JOIN flowengine_flows ON (flowengine_flows.flowID=flowengine_flow_instances.flowID) WHERE flowengine_flows.flowFamilyID = ? AND (flowengine_flow_instances.firstSubmitted BETWEEN ? AND ?);";
 
 	@ModuleSetting
@@ -194,6 +195,9 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	private String csvGlobaPDFFormFlowCount = "PDF form count";
 
 	@XSLVariable(prefix = "java.")
+	private String csvGlobaInternalAndPDFFormFlowCount = "E-service and PDF form count";
+	
+	@XSLVariable(prefix = "java.")
 	private String csvGlobalFlowCountFile = "service count.csv";
 
 	@XSLVariable(prefix = "java.")
@@ -246,7 +250,8 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 	private List<IntegerEntry> globalInternalFlowFamilyCount;
 	private List<IntegerEntry> globalExternalFlowFamilyCount;
 	private List<IntegerEntry> globalPDFFormFlowFamilyCount;
-
+	private List<IntegerEntry> globalInternalAndPDFFormFlowFamilyCount;
+	
 	private List<FlowFamilyStatistics> publicFamilyStatistics;
 
 	private AccessInterface internalAccessInterface;
@@ -538,6 +543,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		this.globalInternalFlowFamilyCount = getGlobalInternalFlowFamilyCount(startDate, endDate);
 		this.globalExternalFlowFamilyCount = getGlobalExternalFlowFamilyCount(startDate, endDate);
 		this.globalPDFFormFlowFamilyCount = getGlobalPDFFormFlowFamilyCount(startDate, endDate);
+		this.globalInternalAndPDFFormFlowFamilyCount = getGlobalInternalAndPDFFormFlowFamilyCount(startDate, endDate);
 		this.flowFamilyStatisticsMap = statisticsMap;
 		this.publicFamilyStatistics = publicList;
 
@@ -609,6 +615,11 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		return getGlobalFlowFamilyCount(GLOBAL_INTERNAL_FLOW_FAMILY_COUNT, startDate, endDate);
 	}
 
+	private List<IntegerEntry> getGlobalInternalAndPDFFormFlowFamilyCount(Timestamp startDate, Timestamp endDate) throws SQLException {
+
+		return getGlobalFlowFamilyCount(GLOBAL_INTERNAL_AND_PDFFORM_FLOW_FAMILY_COUNT, startDate, endDate);
+	}
+	
 	private List<IntegerEntry> getGlobalFlowFamilyCount(String sqlQuery, Timestamp startDate, Timestamp endDate) throws SQLException {
 
 		Calendar calendar = GregorianCalendar.getInstance();
@@ -1148,6 +1159,8 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 			writer.write(csvGlobaExternalFlowCount);
 			writer.write(";");
 			writer.write(csvGlobaPDFFormFlowCount);
+			writer.write(";");
+			writer.write(csvGlobaInternalAndPDFFormFlowCount);
 			writer.write(";\n");
 
 			if (globalInternalFlowFamilyCount != null) {
@@ -1161,6 +1174,8 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 					writer.write(globalExternalFlowFamilyCount.get(i).getValue().toString());
 					writer.write(";");
 					writer.write(globalPDFFormFlowFamilyCount.get(i).getValue().toString());
+					writer.write(";");
+					writer.write(globalInternalAndPDFFormFlowFamilyCount.get(i).getValue().toString());
 					writer.write(";\n");
 
 				}
