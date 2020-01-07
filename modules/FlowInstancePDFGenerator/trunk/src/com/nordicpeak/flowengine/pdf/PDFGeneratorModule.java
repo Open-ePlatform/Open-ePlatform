@@ -112,11 +112,12 @@ import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
-	
 	private static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
 	private static final String TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE = "pdf.temp.id";
 	
 	public static final RelationQuery EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
+	
+	private static final ITextPDFCreationListener ITEXT_PDF_CREATION_LISTENER = new ITextPDFCreationListener();
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the XHTML for PDF output of queries", required = true)
@@ -620,6 +621,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		
 		try {
 			document.getDocumentInformation().setProducer("Open ePlatform");
+			document.getDocumentInformation().setCreator("Open ePlatform");
 			
 			PDDocumentCatalog cat = document.getDocumentCatalog();
 			PDMetadata metadata = new PDMetadata(document);
@@ -747,6 +749,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 										PdfStamper stamper = new PdfStamper(reader, tempAttachmentOutputStream);
 										
 										Font font = new Font(BaseFont.createFont(), 8f);
+//										Font font = new Font(BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED), 8f); // itext can not embed base 14 fonts (Type 1 fonts)
 										BaseFont baseFont = font.getCalculatedBaseFont(true);
 										float fontHeight = baseFont.getFontDescriptor(BaseFont.ASCENT, font.getSize()) - baseFont.getFontDescriptor(BaseFont.DESCENT, font.getSize());
 										
@@ -779,8 +782,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											Rectangle pageSize = reader.getPageSize(pageNumber);
 											
 											PdfContentByte pageContents = stamper.getOverContent(pageNumber);
-											
-//											pageContents.setFontAndSize(baseFont, 8f); // Embed font, should not be needed as helvetica is one of the standard fonts for PDFs
 											
 											ColumnText columnText = new ColumnText(pageContents);
 											
@@ -864,6 +865,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								pdfTempOut = File.createTempFile("pdf-with-attachments", flowInstance.getFlowInstanceID() + "-" + getFileSuffix(event, temporary) + ".pdf", getTempDir());
 								merger.setDestinationFileName(pdfTempOut.getAbsolutePath());
 								
+								//TODO don't merge DocumentInformation or reset to src's
+								// Removes StructureTreeRoot if merged document does not have a StructureTreeRoot
 								merger.mergeDocuments();
 								
 								if (pdfTempIn != basePDF && !FileUtils.deleteFile(pdfTempIn)) {
@@ -995,6 +998,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			ResourceLoaderAgent callback = new ResourceLoaderAgent(renderer.getOutputDevice(), managerResponses);
 			callback.setSharedContext(renderer.getSharedContext());
 			renderer.getSharedContext().setUserAgentCallback(callback);
+			renderer.setListener(ITEXT_PDF_CREATION_LISTENER);
 			
 			if (this.includedFonts != null) {
 				
