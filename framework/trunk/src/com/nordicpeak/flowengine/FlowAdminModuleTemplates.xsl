@@ -609,7 +609,7 @@
 						<label>
 							<xsl:choose>
 								<xsl:when test="Flow/requireAuthentication = 'true'"><img src="{$imgPath}/lock.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requirersAuthentication" /></xsl:when>
-								<xsl:otherwise><img src="{$imgPath}/lock_open.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.requirersNoAuthentication" /></xsl:otherwise>
+								<xsl:otherwise><img src="{$imgPath}/lock_open.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requirersNoAuthentication" /></xsl:otherwise>
 							</xsl:choose>
 						</label>
 					</div>
@@ -622,7 +622,7 @@
 							<label>
 								<xsl:choose>
 									<xsl:when test="Flow/requireSigning = 'true'"><img src="{$imgPath}/page_edit.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requiresSigning" /></xsl:when>
-									<xsl:otherwise><img src="{$imgPath}/page_edit.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.requiresNoSigning" /></xsl:otherwise>
+									<xsl:otherwise><img src="{$imgPath}/page_edit.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.requiresNoSigning" /></xsl:otherwise>
 								</xsl:choose>
 							</label>
 						</div>
@@ -634,7 +634,7 @@
 							<label for="hideFromOverview">
 								<xsl:choose>
 									<xsl:when test="Flow/hideFromOverview = 'true'"><img src="{$imgPath}/invisible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" width="16px" /><xsl:value-of select="$i18n.hiddenFromOverview" /></xsl:when>
-									<xsl:otherwise><img src="{$imgPath}/visible.png" alt="" class="marginright vertical-align-bottom" /><xsl:value-of select="$i18n.shownOnOverview" /></xsl:otherwise>
+									<xsl:otherwise><img src="{$imgPath}/visible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.shownOnOverview" /></xsl:otherwise>
 								</xsl:choose>
 							</label>
 						</div>
