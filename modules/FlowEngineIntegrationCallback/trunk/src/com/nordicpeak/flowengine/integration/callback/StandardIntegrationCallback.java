@@ -10,28 +10,6 @@ import javax.jws.WebService;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import se.unlogic.hiearchy.foregroundmodules.jaxws.BaseWSModuleService;
-import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleCallback;
-import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleInstanceResolver;
-import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
-import se.unlogic.hierarchy.core.annotations.ModuleSetting;
-import se.unlogic.hierarchy.core.beans.Group;
-import se.unlogic.hierarchy.core.beans.SettingDescriptor;
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.hierarchy.core.enums.CRUDAction;
-import se.unlogic.hierarchy.core.enums.EventTarget;
-import se.unlogic.hierarchy.core.events.CRUDEvent;
-import se.unlogic.hierarchy.core.interfaces.instances.InstanceListener;
-import se.unlogic.hierarchy.core.interfaces.settings.SettingProvider;
-import se.unlogic.hierarchy.core.utils.ModuleUtils;
-import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.dao.HighLevelQuery;
-import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.RelationQuery;
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.string.StringUtils;
-import se.unlogic.standardutils.time.TimeUtils;
-
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -57,6 +35,28 @@ import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundE
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+
+import se.unlogic.hiearchy.foregroundmodules.jaxws.BaseWSModuleService;
+import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleCallback;
+import se.unlogic.hiearchy.foregroundmodules.jaxws.WSModuleInstanceResolver;
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.beans.Group;
+import se.unlogic.hierarchy.core.beans.SettingDescriptor;
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventTarget;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.interfaces.instances.InstanceListener;
+import se.unlogic.hierarchy.core.interfaces.settings.SettingProvider;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
+import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.RelationQuery;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 
 @WebService(endpointInterface = "com.nordicpeak.flowengine.integration.callback.IntegrationCallback", name = "IntegrationCallback", serviceName = "IntegrationCallback")
 @WSModuleInstanceResolver
@@ -509,7 +509,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					
 					principalGroup.setName(group.getName());
 					
-					response.managerGroups.add(principalGroup);
+					response.getManagerGroups().add(principalGroup);
 				}
 			}
 
