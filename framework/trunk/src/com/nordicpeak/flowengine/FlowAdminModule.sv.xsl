@@ -59,6 +59,8 @@
 		&lt;p&gt;Du kan även få återkoppling om ärendets status och notifiering om handläggaren behöver mer information.&lt;/p&gt;
 	</xsl:variable>
 	
+	<xsl:variable name="java.hiddenQueryText">(dold)</xsl:variable>
+	
 	<xsl:variable name="i18n.flowName">E-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.Flowslist.title">E-tjänster</xsl:variable>

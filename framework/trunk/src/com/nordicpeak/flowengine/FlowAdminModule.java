@@ -475,6 +475,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String bundleFlowtypes = "Administrate flow types";
+	
+	@XSLVariable(prefix = "java.")
+	protected String hiddenQueryText = "(hidden)";
 
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin groups", description = "Groups allowed to administrate global parts of this module such as standard statuses")
@@ -2734,7 +2737,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 							if (queryDescriptor.getDefaultQueryState() == QueryState.HIDDEN) {
 
 								queryDescriptor.setDefaultQueryState(QueryState.VISIBLE);
-								queryDescriptor.setName(queryDescriptor.getName() + " (Dold)");
+								queryDescriptor.setName(queryDescriptor.getName() + " " + hiddenQueryText);
 							}
 						}
 					}
