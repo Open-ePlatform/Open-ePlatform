@@ -242,31 +242,31 @@ public class QueryDescriptor extends GeneratedElementable implements MutableQuer
 
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
-		queryID = XMLValidationUtils.validateParameter("queryID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
-		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
-		sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, NonNegativeStringIntegerPopulator.getPopulator(), errors);
-		queryTypeID = XMLValidationUtils.validateParameter("queryTypeID", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
-		defaultQueryState = XMLValidationUtils.validateParameter("defaultQueryState", xmlParser, true, new EnumPopulator<QueryState>(QueryState.class), errors);
-		comment = XMLValidationUtils.validateParameter("comment", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
-
-		exported = xmlParser.getPrimitiveBoolean("exported");
-		xsdElementName = XMLValidationUtils.validateParameter("xsdElementName", xmlParser, false, 1, 255, new XMLElementNamePopulator(), errors);
-		mergeWithPreviousQuery = xmlParser.getPrimitiveBoolean("mergeWithPreviousQuery");
-
+		this.queryID = XMLValidationUtils.validateParameter("queryID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
+		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		this.sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, NonNegativeStringIntegerPopulator.getPopulator(), errors);
+		this.queryTypeID = XMLValidationUtils.validateParameter("queryTypeID", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		this.defaultQueryState = XMLValidationUtils.validateParameter("defaultQueryState", xmlParser, true, new EnumPopulator<QueryState>(QueryState.class), errors);
+		this.comment = XMLValidationUtils.validateParameter("comment", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
+		
+		this.exported = xmlParser.getPrimitiveBoolean("exported");
+		this.xsdElementName = XMLValidationUtils.validateParameter("xsdElementName", xmlParser, false, 1, 255, new XMLElementNamePopulator(), errors);
+		this.mergeWithPreviousQuery = xmlParser.getPrimitiveBoolean("mergeWithPreviousQuery");
+		
 		//Backwards compatibility for flows exported with FlowEngine version before 1.2
-		if (xsdElementName == null) {
+		if(xsdElementName == null){
 
-			exported = false;
+			this.exported = false;
 		}
 
-		evaluatorDescriptors = XMLPopulationUtils.populateBeans(xmlParser, "EvaluatorDescriptors/EvaluatorDescriptor", EvaluatorDescriptor.class, errors);
+		this.evaluatorDescriptors = XMLPopulationUtils.populateBeans(xmlParser, "EvaluatorDescriptors/EvaluatorDescriptor", EvaluatorDescriptor.class, errors);
 
-		if (!errors.isEmpty()) {
+		if(!errors.isEmpty()){
 
 			throw new ValidationException(errors);
 		}
 
-		importParser = xmlParser;
+		this.importParser = xmlParser;
 	}
 
 }
