@@ -388,7 +388,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			queryInstance.defaultQueryValues();
 
-			if (poster != null) {
+			//Only do if query is visible
+			if (poster != null && descriptor.getQueryState() != QueryState.HIDDEN) {
 
 				queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, null));
 			}
