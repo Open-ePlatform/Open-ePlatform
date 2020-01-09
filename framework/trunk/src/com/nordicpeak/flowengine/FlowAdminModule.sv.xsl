@@ -598,7 +598,7 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.description">Här väljer du vilka handläggare som ska tilldelas ärenden automatiskt och när det ska ske.</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.On.Submit">Regler vid nytt ärende</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelning av handläggare baserat på attribut värden</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rules">Tilldelning av handläggare baserat på attributvärden</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.Add">Lägg till regel</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeName">Attribut</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rules.AttributeValues">Värden</xsl:variable>
