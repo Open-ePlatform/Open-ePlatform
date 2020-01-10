@@ -9,7 +9,7 @@ import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.search.tasks.AddUpdateFlowInstanceTask;
 import com.nordicpeak.flowengine.search.tasks.DeleteFlowInstanceTask;
 
-public class AddUpdateFlowInstanceEvent extends FlowInstanceEvent {
+public class AddUpdateFlowInstanceEvent extends FlowInstanceQueuedIndexEvent {
 
 	public AddUpdateFlowInstanceEvent(FlowInstance flowInstance) {
 
