@@ -23,6 +23,7 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.enums.EventType;
@@ -34,9 +35,10 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 	private static final long serialVersionUID = -2876177448272548003L;
 
+	public static final Field SKIP_USER_ATTRIBUTES = ReflectionUtils.getField(FlowInstanceEvent.class,"SKIP_USER_ATTRIBUTES");
+	
 	public static final Field FLOW_INSTANCE_RELATION = ReflectionUtils.getField(FlowInstanceEvent.class,"flowInstance");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstanceEvent.class,"attributes");
-	
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstanceEvent.class,"poster");
 
 	@Key
@@ -70,9 +72,6 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 	@XMLElement
 	private Timestamp added;
 
-	@XMLElement
-	private String shortDate;
-
 	@DAOManaged(dontUpdateIfNull = true)
 	private User poster;
 
@@ -81,6 +80,12 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 	@XMLElement(fixCase=true)
 	private List<FlowInstanceEventAttribute> attributes;
 
+	@XMLElement
+	private String shortDate;
+	
+	@XMLElement
+	private Integer flowInstanceID;
+	
 	private SourceAttributeHandler attributeHandler;
 
 	@Override
@@ -212,11 +217,16 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 
 			Element userElement = poster.toXML(doc);
 
-			AttributeHandler attributeHandler = poster.getAttributeHandler();
+			boolean skipUserAttributes = doc instanceof XMLGeneratorDocument && ((XMLGeneratorDocument)doc).isIgnoredField(SKIP_USER_ATTRIBUTES);
+			
+			if(!skipUserAttributes) {
 
-			if(attributeHandler != null && !attributeHandler.isEmpty()){
+				AttributeHandler attributeHandler = poster.getAttributeHandler();
 
-				userElement.appendChild(attributeHandler.toXML(doc));
+				if(attributeHandler != null && !attributeHandler.isEmpty()){
+
+					userElement.appendChild(attributeHandler.toXML(doc));
+				}
 			}
 
 			Element posterElement = XMLUtils.appendNewElement(doc, flowInstanceEventElement, "poster");
@@ -259,19 +269,36 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowInstanceEvent other = (FlowInstanceEvent) obj;
 		if (eventID == null) {
-			if (other.eventID != null)
+			if (other.eventID != null) {
 				return false;
-		} else if (!eventID.equals(other.eventID))
+			}
+		} else if (!eventID.equals(other.eventID)) {
 			return false;
+		}
 		return true;
+	}
+
+	
+	public Integer getFlowInstanceID() {
+	
+		return flowInstanceID;
+	}
+
+	
+	public void setFlowInstanceID(Integer flowInstanceID) {
+	
+		this.flowInstanceID = flowInstanceID;
 	}
 	
 }
