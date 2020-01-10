@@ -1369,7 +1369,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				
-					<label class="nomargin" for="{$toggleField}">
+					<label class="marginleft" for="{$toggleField}">
 						<xsl:value-of select="$toggleLabel" />
 					</label>
 					<xsl:text>&#160;</xsl:text>
