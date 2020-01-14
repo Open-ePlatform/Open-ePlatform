@@ -2092,6 +2092,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			if (recipient.equals(NotificationRecipient.OWNER)) {
 
+				if(contact.getEmail() == null) {
+					
+					return false;
+				}
+				
 				email.addRecipient(contact.getEmail());
 
 			} else {
