@@ -21,6 +21,7 @@ import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.BackgroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
+import se.unlogic.standardutils.bool.BooleanUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -129,7 +130,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 		
 		Boolean override = (Boolean) req.getAttribute(REQUEST_DISABLE_MENU);
 		
-		if (override != null && override) {
+		if (BooleanUtils.valueOf(override)) {
 			return null;
 		}
 		
