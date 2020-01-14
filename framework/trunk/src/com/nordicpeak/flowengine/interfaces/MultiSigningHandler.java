@@ -10,13 +10,11 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 
 
 public interface MultiSigningHandler {
 
-	//TODO replace ImmutableFlowInstanceManager with ImmutableFlowInstance
-	ViewFragment getSigningStatusViewFragment(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstanceManager immutableFlowInstanceManager) throws Exception;
+	ViewFragment getSigningStatusViewFragment(HttpServletRequest req, User user, URIParser uriParser, ImmutableFlowInstance flowInstance) throws Exception;
 	
 	public String getSigningURL(ImmutableFlowInstance flowInstance, SigningParty signingParty);
 	

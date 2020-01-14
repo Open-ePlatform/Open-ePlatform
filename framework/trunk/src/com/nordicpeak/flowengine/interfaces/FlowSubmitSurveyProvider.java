@@ -10,12 +10,10 @@ import javax.xml.transform.TransformerException;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-
 
 public interface FlowSubmitSurveyProvider {
 
-	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, FlowInstanceManager instanceManager) throws TransformerConfigurationException, TransformerException, SQLException;
+	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, ImmutableFlowInstance flowInstance) throws TransformerConfigurationException, TransformerException, SQLException;
 
 	public ViewFragment getShowFlowSurveysFragment(Integer flowID) throws TransformerConfigurationException, TransformerException, SQLException;
 

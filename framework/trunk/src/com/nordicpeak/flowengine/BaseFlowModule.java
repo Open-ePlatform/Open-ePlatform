@@ -1592,7 +1592,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName(), this.getDefaultBreadcrumb());
 
-		appendSubmitSurveyFragment(flowInstanceManagerElement, moduleResponse, showMode, doc, req, user, instanceManager);
+		appendSubmitSurveyFragment(flowInstanceManagerElement, moduleResponse, showMode, doc, req, user, instanceManager.getFlowInstance());
 
 		if (breadcrumb != null) {
 
@@ -1604,9 +1604,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return moduleResponse;
 	}
 
-	private void appendSubmitSurveyFragment(Element flowInstanceManagerElement, SimpleForegroundModuleResponse moduleResponse, ShowMode showMode, Document doc, HttpServletRequest req, User user, FlowInstanceManager instanceManager) throws SQLException {
+	private void appendSubmitSurveyFragment(Element flowInstanceManagerElement, SimpleForegroundModuleResponse moduleResponse, ShowMode showMode, Document doc, HttpServletRequest req, User user, ImmutableFlowInstance flowInstance) throws SQLException {
 
-		if (instanceManager.getFlowInstance().getFlow().showsSubmitSurvey() && showMode == ShowMode.SUBMIT) {
+		if (flowInstance.getFlow().showsSubmitSurvey() && showMode == ShowMode.SUBMIT) {
 
 			FlowSubmitSurveyProvider instance = systemInterface.getInstanceHandler().getInstance(FlowSubmitSurveyProvider.class);
 
@@ -1614,7 +1614,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 				try {
 
-					ViewFragment viewFragment = instance.getSurveyFormFragment(req, user, instanceManager);
+					ViewFragment viewFragment = instance.getSurveyFormFragment(req, user, flowInstance);
 
 					if (viewFragment != null) {
 
@@ -1976,22 +1976,30 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected abstract Icon getFlowIcon(Integer flowID) throws SQLException;
 
-	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean mananger, ShowMode showMode) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
+	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager, ShowMode showMode) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
 		Integer flowInstanceID = null;
-		ImmutableFlowInstanceManager instanceManager;
+		FlowInstance flowInstance;
 
 		try {
 
 			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
-
-				//Get saved instance from DB or session
-				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, mananger);
-
-				if (instanceManager == null) {
-
+				
+				flowInstance = getFlowInstance(flowInstanceID);
+		
+				if (flowInstance == null) {
+					
 					log.info("User " + user + " requested non-existing flow instance with ID " + flowInstanceID + ", listing flows");
 					return callback.list(req, res, user, uriParser, Collections.singletonList(FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR));
+				}
+		
+				if (accessController != null){
+					accessController.checkFlowInstanceAccess(flowInstance, user);
+				}
+		
+				if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager)) {
+		
+					throw new FlowDisabledException(flowInstance.getFlow());
 				}
 
 			} else {
@@ -2004,18 +2012,13 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is not enabled.");
 			return callback.list(req, res, user, uriParser, Collections.singletonList(FLOW_DISABLED_VALIDATION_ERROR));
-
-		} catch (FlowEngineException e) {
-
-			log.info("Error generating preview of flowInstanceID " + flowInstanceID + " for user " + user, e);
-			return callback.list(req, res, user, uriParser, Collections.singletonList(UNABLE_TO_LOAD_FLOW_INSTANCE_VALIDATION_ERROR));
 		}
 
-		if (instanceManager.getFlowState().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
+		if (flowInstance.getStatus().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
 
 			//TODO show correct view
 			
-			log.warn("User " + user + " attempted to view multi sign message for flow instance " + instanceManager.getFlowInstance() + " not in WAITING_FOR_MULTISIGN state");
+			log.warn("User " + user + " attempted to view multi sign message for flow instance " + flowInstance + " not in WAITING_FOR_MULTISIGN state");
 			throw new URINotFoundException(uriParser);
 		}
 
@@ -2029,7 +2032,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ViewFragment viewFragment;
 
 		try {
-			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, instanceManager);
+			viewFragment = multiSigningHandler.getSigningStatusViewFragment(req, user, uriParser, flowInstance);
 		} catch (Exception e) {
 			viewFragment = null;
 			log.error("Error getting view fragment from multi signing provider " + multiSigningHandler, e);
@@ -2040,17 +2043,17 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			log.warn("No viewfragement returned from multi signing provider " + multiSigningHandler);
 		}
 
-		log.info("User " + user + " requested multi signing status for flow instance " + instanceManager.getFlowInstance());
+		log.info("User " + user + " requested multi signing status for flow instance " + flowInstance);
 
 		Document doc = createDocument(req, uriParser, user);
 		Element multiSigningStatusElement = doc.createElement("MultiSigningStatusForm");
 		doc.getDocumentElement().appendChild(multiSigningStatusElement);
 
-		multiSigningStatusElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
+		multiSigningStatusElement.appendChild(flowInstance.toXML(doc));
 
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 		
-		appendSubmitSurveyFragment(multiSigningStatusElement, moduleResponse, showMode, doc, req, user, instanceManager);
+		appendSubmitSurveyFragment(multiSigningStatusElement, moduleResponse, showMode, doc, req, user, flowInstance);
 		
 		if (viewFragment != null) {
 

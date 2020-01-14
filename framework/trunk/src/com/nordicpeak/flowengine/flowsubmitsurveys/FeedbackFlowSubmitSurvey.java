@@ -53,7 +53,7 @@ import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
 public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implements FlowSubmitSurveyProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -190,9 +190,9 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, FlowInstanceManager instanceManager) throws TransformerConfigurationException, TransformerException, SQLException {
+	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, ImmutableFlowInstance flowInstance) throws TransformerConfigurationException, TransformerException, SQLException {
 
-		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(instanceManager.getFlowInstanceID());
+		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstance.getFlowInstanceID());
 
 		if (feedbackSurvey == null) {
 
@@ -205,19 +205,17 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 			XMLUtils.appendNewElement(doc, formElement, "ShowCommentField", this.showCommentField);
 			
-			ImmutableFlow flow = instanceManager.getFlowInstance().getFlow();
+			ImmutableFlow flow = flowInstance.getFlow();
 
 			XMLUtils.appendNewElement(doc, formElement, "flowName", flow.getName());
-			XMLUtils.appendNewElement(doc, formElement, "flowInstanceID", instanceManager.getFlowInstanceID());
+			XMLUtils.appendNewElement(doc, formElement, "flowInstanceID", flowInstance.getFlowInstanceID());
 
 			XMLUtils.appendNewElement(doc, formElement, "ModuleURI", this.getModuleURI(req));
 
 			return viewFragmentTransformer.createViewFragment(doc);
-
 		}
 
 		return null;
-
 	}
 
 	@Override
