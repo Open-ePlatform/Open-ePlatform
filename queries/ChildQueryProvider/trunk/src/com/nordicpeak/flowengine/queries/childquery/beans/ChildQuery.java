@@ -9,11 +9,11 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
+import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
-import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.IntegerPopulator;
@@ -31,7 +31,6 @@ import com.nordicpeak.flowengine.interfaces.CitizenIdentifierQuery;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MultiSignQuery;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
-import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpoint;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQuery;
 
 @Table(name = "child_queries")
@@ -117,16 +116,28 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@XMLElement
 	private String attributeName;
 	
-	@DAOManaged(columnName = "filterEndpointID")
-	@ManyToOne(autoAdd = true, autoGet = true, autoUpdate = true)
-	@XMLElement(fixCase = true)
-	private ChildQueryFilterEndpoint filterEndpoint;
+	@DAOManaged
+	@XMLElement
+	private String filterEndpoint;
 	
 	@TextTagReplace
 	@DAOManaged
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String emptyFilterDescription;
+	
+	@TextTagReplace
+	@DAOManaged
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String filteredChildrenDescription;
+	
+	@TextTagReplace
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String communicationErrorDescription;
 	
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -454,6 +465,9 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		emptyFilterDescription = XMLValidationUtils.validateParameter("emptyFilterDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
+		filteredChildrenDescription = XMLValidationUtils.validateParameter("filteredChildrenDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
+		filterEndpoint = XMLValidationUtils.validateParameter("filterEndpoint", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		communicationErrorDescription = XMLValidationUtils.validateParameter("communicationErrorDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		
 		if (attributeName != null) {
 			
@@ -540,12 +554,12 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		this.attributeName = attributeName;
 	}
 
-	public ChildQueryFilterEndpoint getFilterEndpoint() {
+	public String getFilterEndpointName() {
 		return filterEndpoint;
 	}
 
-	public void setFilterEndpoint(ChildQueryFilterEndpoint filterEndpoint) {
-		this.filterEndpoint = filterEndpoint;
+	public void setFilterEndpointName(String filterEndpointName) {
+		this.filterEndpoint = filterEndpointName;
 	}
 
 	public List<SelectedChildAttribute> getSelectedChildAttributes() {
@@ -562,6 +576,22 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 
 	public void setEmptyFilterDescription(String emptyFilterDescription) {
 		this.emptyFilterDescription = emptyFilterDescription;
+	}
+
+	public String getFilteredChildrenDescription() {
+		return filteredChildrenDescription;
+	}
+
+	public void setFilteredChildrenDescription(String filteredChildrenDescription) {
+		this.filteredChildrenDescription = filteredChildrenDescription;
+	}
+
+	public String getCommunicationErrorDescription() {
+		return communicationErrorDescription;
+	}
+
+	public void setCommunicationErrorDescription(String communicationErrorDescription) {
+		this.communicationErrorDescription = communicationErrorDescription;
 	}
 
 }

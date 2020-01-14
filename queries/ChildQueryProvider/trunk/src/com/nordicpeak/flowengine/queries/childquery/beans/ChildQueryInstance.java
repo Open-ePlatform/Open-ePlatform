@@ -95,6 +95,12 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	
 	private boolean testChild;
 	
+	@XMLElement
+	private String filteredChildrenText;
+	
+	@XMLElement
+	private boolean ageFilteredChildren;
+	
 	public Integer getQueryInstanceID() {
 		
 		return queryInstanceID;
@@ -515,6 +521,22 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 
 	public void setChildAttributes(List<ChildAttribute> childAttributes) {
 		this.childAttributes = childAttributes;
+	}
+
+	public String getFilteredChildrenText() {
+		return filteredChildrenText;
+	}
+
+	public void setFilteredChildrenText(String filteredChildrenText) {
+		this.filteredChildrenText = filteredChildrenText;
+	}
+
+	public boolean isAgeFilteredChildren() {
+		return ageFilteredChildren;
+	}
+
+	public void setAgeFilteredChildren(boolean ageFilteredChildren) {
+		this.ageFilteredChildren = ageFilteredChildren;
 	}
 
 }

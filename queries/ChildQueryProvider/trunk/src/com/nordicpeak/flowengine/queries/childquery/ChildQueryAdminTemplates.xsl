@@ -12,7 +12,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/childqueryadmin.js?v=1
+		/js/childqueryadmin.js?v=2
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -237,21 +237,21 @@
 			
 				<div class="floatleft hugemarginright">
 					<div>
-						<label for="filterEndpointID" class="floatleft clearboth">
+						<label for="filterEndpoint" class="floatleft clearboth">
 							<xsl:value-of select="$i18n.FilterEndpoint.title" />
 						</label>
 					</div>
 					<div>
 						<xsl:call-template name="createDropdown">
-							<xsl:with-param name="id" select="'filterEndpointID'" />
-							<xsl:with-param name="name" select="'filterEndpointID'" />
+							<xsl:with-param name="id" select="'filterEndpoint'" />
+							<xsl:with-param name="name" select="'filterEndpoint'" />
 							<xsl:with-param name="title" select="$i18n.FilterEndpoint.title"/>
 							<xsl:with-param name="labelElementName" select="'name'" />
-							<xsl:with-param name="valueElementName" select="'endpointID'" />
+							<xsl:with-param name="valueElementName" select="'name'" />
 							<xsl:with-param name="element" select="FilterApiEndpoints/ChildQueryFilterEndpoint" />
 							<xsl:with-param name="class" select="'marginright'" />
 							<xsl:with-param name="addEmptyOption" select="$i18n.FilterEndpoint.EmptyOption" />
-							<xsl:with-param name="selectedValue" select="ChildQuery/ChildQueryFilterEndpoint/endpointID" />
+							<xsl:with-param name="selectedValue" select="ChildQuery/filterEndpoint" />
 						</xsl:call-template>
 					</div>
 				</div>
@@ -276,16 +276,16 @@
 				</xsl:variable>
 				
 				<xsl:for-each select="FilterApiEndpoints/ChildQueryFilterEndpoint">
-					<div id="endpoint-{endpointID}" class="filterEndpoint floatleft full" style="display: none;">
+					<div data-endpoint="{name}" class="filterEndpoint floatleft full" style="display: none;">
 						
-						<xsl:variable name="endpointID" select="endpointID" />
+						<xsl:variable name="endpointName" select="name" />
 						
 						<table>
 							
 							<xsl:for-each select="Fields/value">
 								
 								<tr>
-									<xsl:variable name="name" select="concat('attribute-', $endpointID, '-', .)" />
+									<xsl:variable name="name" select="concat('attribute-', $endpointName, '-', .)" />
 									
 									<td>
 										<label for="{$name}" class="nomargin bigpaddingright">
@@ -327,7 +327,60 @@
 					</div>
 				</div>
 				
+				<div class="floatleft full bigmarginbottom">
+					<div class="floatleft full">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="id" select="'useFilteredChildrenDescription'" />
+							<xsl:with-param name="name" select="'useFilteredChildrenDescription'" />
+							<xsl:with-param name="checked" select="ChildQuery/filteredChildrenDescription != ''" /> 
+						</xsl:call-template>
+							
+						<label for="useFilteredChildrenDescription">
+							<xsl:value-of select="$i18n.useFilteredChildrenDescription" />
+						</label>
+					</div>
+				</div>
+				
+				<div id="filteredChildrenDescriptionContainer" class="floatleft full bigmarginbottom">
+					<label for="emptyFilterDescription" class="floatleft clearboth"><xsl:value-of select="$i18n.FilteredChildrenDescription" /></label>
+					<div class="floatleft full">
+						<xsl:call-template name="createTextArea">
+							<xsl:with-param name="id" select="'filteredChildrenDescription'" />
+							<xsl:with-param name="name" select="'filteredChildrenDescription'" />
+							<xsl:with-param name="element" select="ChildQuery" />
+							<xsl:with-param name="rows">4</xsl:with-param>
+						</xsl:call-template>
+					</div>
+					
+					<p class="floatleft clearboth"><xsl:value-of select="$i18n.Tags" /></p>
+					
+					<table class="floatleft clearboth border">
+						<thead>
+							<th><xsl:value-of select="$i18n.Tags.name" /></th>
+							<th><xsl:value-of select="$i18n.Tags.value" /></th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>$filteredChildren</td>
+								<td><xsl:value-of select="$i18n.FilteredChildrenDescription.Tags.children" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
 			</xsl:if>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="communicationErrorDescription" class="floatleft clearboth"><xsl:value-of select="$i18n.CommunicationErrorDescription" /></label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'communicationErrorDescription'" />
+						<xsl:with-param name="name" select="'communicationErrorDescription'" />
+						<xsl:with-param name="element" select="ChildQuery" />
+						<xsl:with-param name="rows">4</xsl:with-param>
+					</xsl:call-template>
+				</div>
+			</div>
 			
 			<div class="floatleft full bigmargintop">
 				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
@@ -469,6 +522,12 @@
 			</xsl:when>
 			<xsl:when test="$fieldName = 'emptyFilterDescription'">
 				<xsl:value-of select="$i18n.EmptyFilterDescription" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'filteredChildrenDescription'">
+				<xsl:value-of select="$i18n.FilteredChildrenDescription" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'communicationErrorDescription'">
+				<xsl:value-of select="$i18n.CommunicationErrorDescription" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

@@ -75,7 +75,7 @@
 					<xsl:value-of select="$i18n.Update" />
 				</a>
 				<xsl:choose>
-					<xsl:when test="Queries">
+					<xsl:when test="InUse">
 						<a class="btn btn-light disabled vertical-align-middle" href="#" onclick="return false;">
 							<xsl:value-of select="$i18n.Delete" />
 						</a>
@@ -99,7 +99,7 @@
 			<xsl:value-of select="ChildQueryFilterEndpoint/name"/>
 			
 			<xsl:choose>
-				<xsl:when test="Queries">
+				<xsl:when test="InUse">
 					<a class="floatright marginleft" href="#" onclick="return false;">
 						<img src="{$imagePath}/delete_gray.png"/>
 					</a>
@@ -384,6 +384,17 @@
 
 		</form>
 
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey = 'EndpointNameAlreadyInUse']">
+		
+		<p class="error">
+			<xsl:value-of select="$i18n.validation.EndpointNameAlreadyInUse" />
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="providerName" />
+			<xsl:text>!</xsl:text>
+		</p>
+		
 	</xsl:template>
 
 	<xsl:template match="validationError">

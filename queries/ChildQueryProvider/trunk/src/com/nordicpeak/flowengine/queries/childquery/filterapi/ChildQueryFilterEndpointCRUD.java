@@ -29,64 +29,65 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableStep;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
+import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterEndpoint;
 
-public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQueryFilterEndpoint, Integer, User, ChildQueryFilterEndpointAdminModule> {
-	
-	public ChildQueryFilterEndpointCRUD(CRUDDAO<ChildQueryFilterEndpoint, Integer> crudDAO, ChildQueryFilterEndpointAdminModule callback) {
+public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQuerySimpleFilterEndpoint, Integer, User, ChildQueryFilterEndpointAdminModule> {
 
-		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ChildQueryFilterEndpoint>(ChildQueryFilterEndpoint.class), "ChildQueryFilterEndpoint", "endpoint", "/", callback);
+	public ChildQueryFilterEndpointCRUD(CRUDDAO<ChildQuerySimpleFilterEndpoint, Integer> crudDAO, ChildQueryFilterEndpointAdminModule callback) {
+
+		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ChildQuerySimpleFilterEndpoint>(ChildQuerySimpleFilterEndpoint.class), "ChildQueryFilterEndpoint", "endpoint", "/", callback);
 	}
-	
-	@Override
-	protected void checkDeleteAccess(ChildQueryFilterEndpoint bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
-		super.checkDeleteAccess(bean, user, req, uriParser);
-		
-		if (!CollectionUtils.isEmpty(bean.getQueries())) {
-			throw new AccessDeniedException("User " + user + " not allowed to delete endpoint " + bean + " whilst having queries");
+	@Override
+	protected void checkDeleteAccess(ChildQuerySimpleFilterEndpoint endpoint, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+
+		super.checkDeleteAccess(endpoint, user, req, uriParser);
+
+		if (callback.getQueries(endpoint) != null) {
+			throw new AccessDeniedException("User " + user + " not allowed to delete endpoint " + endpoint + " whilst having queries");
 		}
 	}
-	
+
 	@Override
-	protected void appendBean(ChildQueryFilterEndpoint bean, Element targetElement, Document doc, User user) {
-		
+	protected void appendBean(ChildQuerySimpleFilterEndpoint bean, Element targetElement, Document doc, User user) {
+
 		targetElement.appendChild(bean.toXMLFull(doc));
 	}
 
 	@Override
-	protected void appendShowFormData(ChildQueryFilterEndpoint bean, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
+	protected void appendShowFormData(ChildQuerySimpleFilterEndpoint endpoint, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
 
-		List<ChildQuery> queries = callback.getQueries(bean);
-		
+		List<ChildQuery> queries = callback.getQueries(endpoint);
+
 		if (!CollectionUtils.isEmpty(queries)) {
-			
+
 			Element queriesElement = XMLUtils.appendNewElement(doc, showTypeElement, "Queries");
-			
+
 			Map<Integer, Element> flowElements = new HashMap<Integer, Element>();
 			Map<Integer, Element> stepElements = new HashMap<Integer, Element>();
-			
+
 			for (ChildQuery query : queries) {
-				
+
 				ImmutableFlow flow = query.getQueryDescriptor().getStep().getFlow();
 				Element flowElement = flowElements.get(flow.getFlowID());
-				
+
 				if (flowElement == null) {
-					
+
 					flowElement = (Element) queriesElement.appendChild(flow.toXML(doc));
 					flowElements.put(flow.getFlowID(), flowElement);
 				}
-				
+
 				ImmutableStep step = query.getQueryDescriptor().getStep();
 				Element stepElement = stepElements.get(step.getStepID());
-				
+
 				if (stepElement == null) {
-					
+
 					stepElement = (Element) flowElement.appendChild(step.toXML(doc));
 					stepElements.put(step.getStepID(), stepElement);
 				}
-				
+
 				Element queryElement = XMLUtils.appendNewElement(doc, stepElement, "Query");
-				
+
 				queryElement.appendChild(query.getQueryDescriptor().toXML(doc));
 			}
 		}
@@ -99,27 +100,53 @@ public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQueryFilterEn
 	}
 
 	@Override
-	protected void appendUpdateFormData(ChildQueryFilterEndpoint bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+	protected void appendUpdateFormData(ChildQuerySimpleFilterEndpoint bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		XMLUtils.append(doc, updateTypeElement, "AllowedEncodings", "Encoding", callback.getAllowedEncodings());
 	}
 
 	@Override
-	protected void validateAddPopulation(ChildQueryFilterEndpoint bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+	protected void validateAddPopulation(ChildQuerySimpleFilterEndpoint bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
-		checkEncoding(bean);
+		validatePopulation(bean, req, user, uriParser);
 	}
 
 	@Override
-	protected void validateUpdatePopulation(ChildQueryFilterEndpoint bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+	protected void validateUpdatePopulation(ChildQuerySimpleFilterEndpoint bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
-		checkEncoding(bean);
+		validatePopulation(bean, req, user, uriParser);
 	}
 
-	private void checkEncoding(ChildQueryFilterEndpoint bean) throws ValidationException {
+	protected void validatePopulation(ChildQuerySimpleFilterEndpoint endpoint, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
-		if (!callback.getAllowedEncodings().contains(bean.getEncoding())) {
-			throw new ValidationException(new ValidationError("encoding", ValidationErrorType.InvalidFormat));
+		List<ValidationError> validationErrors = null;
+
+		if (!callback.getAllowedEncodings().contains(endpoint.getEncoding())) {
+			validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("encoding", ValidationErrorType.InvalidFormat));
+		}
+
+		ChildQueryFilterEndpoint existingEndpoint = callback.getChildQueryProviderModule().getFilterEndpoint(endpoint.getName());
+
+		if (existingEndpoint != null && existingEndpoint != endpoint) {
+
+			if (!existingEndpoint.getProvider().equals(callback)) {
+
+				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new EndpointNameAlreadyInUseValidationError(existingEndpoint, existingEndpoint.getProvider()));
+
+			} else {
+
+				ChildQuerySimpleFilterEndpoint simpleEndpoint = (ChildQuerySimpleFilterEndpoint) existingEndpoint;
+
+				if (!simpleEndpoint.getEndpointID().equals(endpoint.getEndpointID())) {
+
+					validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new EndpointNameAlreadyInUseValidationError(existingEndpoint, callback));
+				}
+			}
+		}
+
+		if (validationErrors != null) {
+			throw new ValidationException(validationErrors);
 		}
 	}
+
 }

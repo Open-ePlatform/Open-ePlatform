@@ -288,4 +288,37 @@
 		</Query>
 	</Script>
 	
+	<Script version="21">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_filter_endpoints` ADD UNIQUE INDEX `name` (`name`);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `filterEndpoint` VARCHAR(50) NULL DEFAULT NULL AFTER `filterEndpointID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `child_queries` SET `filterEndpoint` = (SELECT `name` FROM `child_query_filter_endpoints` WHERE endpointID = filterEndpointID);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` DROP COLUMN `filterEndpointID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="22">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries`
+					ADD COLUMN `filteredChildrenDescription` TEXT NULL AFTER `emptyFilterDescription`,
+					ADD COLUMN `communicationErrorDescription` TEXT NULL AFTER `filteredChildrenDescription`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

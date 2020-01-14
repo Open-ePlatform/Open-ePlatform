@@ -1,13 +1,16 @@
 package com.nordicpeak.flowengine.queries.childquery;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +33,10 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
@@ -40,6 +45,7 @@ import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
@@ -57,6 +63,7 @@ import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLGenerator;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.standardutils.xsl.XSLVariableReader;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -70,11 +77,16 @@ import com.nordicpeak.childrelationprovider.ChildrenResponse;
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
 import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.SimpleImmutableAlternative;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
@@ -90,9 +102,10 @@ import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQueryInstance;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredChild;
 import com.nordicpeak.flowengine.queries.childquery.beans.StoredGuardian;
-import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpointAdminModule;
 import com.nordicpeak.flowengine.queries.childquery.filterapi.FilterAPIChild;
 import com.nordicpeak.flowengine.queries.childquery.filterapi.IncompleteFilterAPIDataException;
+import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterEndpoint;
+import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterProvider;
 import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
@@ -162,6 +175,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianZipCode = "This variable should be set by your stylesheet";
 	
+	protected String communicationErrorDescription;
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User phone attribute", description = "Attribute to get phone from", required = true)
 	private String phoneAttribute = "mobilePhone";
@@ -169,17 +184,16 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	@InstanceManagerDependency(required = true)
 	private ChildRelationProvider childRelationProvider;
 	
-	@InstanceManagerDependency
-	private ChildQueryFilterEndpointAdminModule filterAPIModule;
-	
 	protected StaticContentModule staticContentModule;
 
 	private AnnotatedDAO<ChildQuery> queryDAO;
 	private AnnotatedDAO<ChildQueryInstance> queryInstanceDAO;
+	private AnnotatedDAOWrapper<QueryDescriptor, Integer> queryDescriptorDAOWrapper;
 
 	private ChildQueryCRUD queryCRUD;
 
 	private QueryParameterFactory<ChildQuery, Integer> queryIDParamFactory;
+	private QueryParameterFactory<ChildQuery, String> queryFilterEndpointNameParamFactory;
 	private QueryParameterFactory<ChildQueryInstance, Integer> queryInstanceIDParamFactory;
 
 	private ImmutableAlternative childSelectedAlternative;
@@ -187,6 +201,19 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	private ImmutableAlternative multiGuardianAlternative;
 	
 	protected ExtensionLink flowListExtensionLink;
+	
+	protected CopyOnWriteArrayList<ChildQueryFilterProvider> filterProviders = new CopyOnWriteArrayList<>();
+	
+	@Override
+	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+
+		super.init(moduleDescriptor, sectionInterface, dataSource);
+
+		if (!systemInterface.getInstanceHandler().addInstance(ChildQueryProviderModule.class, this)) {
+
+			throw new RuntimeException("Unable to register module " + moduleDescriptor + " in global instance handler using key " + ChildQueryProviderModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+	}
 	
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -198,6 +225,24 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		childSelectedAlternative = new SimpleImmutableAlternative(childSelectedAlternativeName, 1, 1);
 		singleGuardianAlternative = new SimpleImmutableAlternative(singleGuardianAlternativeName, 2, 2);
 		multiGuardianAlternative = new SimpleImmutableAlternative(multiGuardianAlternativeName, 3, 3);
+	}
+
+	@Override
+	protected XSLVariableReader parseQueryXSLStyleSheet(URL styleSheetURL) {
+		
+		XSLVariableReader variableReader = super.parseQueryXSLStyleSheet(styleSheetURL);
+		
+		if (variableReader != null) {
+			try {
+				communicationErrorDescription = variableReader.getValue("i18n.Error.Provider.CommunicationError");
+	
+			} catch (Exception e) {
+	
+				log.error("Unable to get i18n.Error.Provider.CommunicationError from query style sheet " + queryStyleSheet,e);
+			}
+		}
+		
+		return variableReader;
 	}
 
 	@Override
@@ -219,7 +264,14 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		queryCRUD = new ChildQueryCRUD(queryDAO.getWrapper(Integer.class), new AnnotatedRequestPopulator<ChildQuery>(ChildQuery.class), "ChildQuery", "query", null, this);
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
+		queryFilterEndpointNameParamFactory = queryDAO.getParamFactory("filterEndpoint", String.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
+		
+		FlowEngineDAOFactory flowDAOFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
+		
+		queryDescriptorDAOWrapper = flowDAOFactory.getQueryDescriptorDAO().getWrapper(Integer.class);
+		queryDescriptorDAOWrapper.addRelations(QueryDescriptor.STEP_RELATION, Step.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, Flow.CATEGORY_RELATION);
+		queryDescriptorDAOWrapper.setUseRelationsOnGet(true);
 	}
 	
 	@InstanceManagerDependency(required = true)
@@ -253,6 +305,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			
 			flowAdminModule.removeFlowListExtensionLinkProvider(this);
 		}
+		
+		systemInterface.getInstanceHandler().removeInstance(ChildQueryProviderModule.class, this);
 		
 		super.unload();
 	}
@@ -407,6 +461,24 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		}
 
 		return super.getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler);
+	}
+
+	@Override
+	protected void appendQueryInstance(ChildQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
+		
+		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
+		
+		ChildQuery query = queryInstance.getQuery();
+
+		if (query.getFilterEndpointName() != null) {
+
+			ChildQueryFilterEndpoint filterEndpoint = getFilterEndpoint(query.getFilterEndpointName());
+
+			if (filterEndpoint != null) {
+
+				targetElement.appendChild(filterEndpoint.toXML(doc));
+			}
+		}
 	}
 
 	private ChildQuery getQuery(Integer queryID) throws SQLException {
@@ -666,6 +738,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata) {
 		
+		ChildQuery query = queryInstance.getQuery();
+		
 		if (poster != null) {
 			
 			if ((requestMetadata == null || !requestMetadata.isManager()) && SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession()) != null) {
@@ -694,68 +768,110 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				}
 
 				log.info("Getting children information for user " + poster);
-
+				
+				queryInstance.setFilteredChildrenText(null);
+				queryInstance.setAgeFilteredChildren(false);
+				
 				try {
-					ChildrenResponse childrenResponse = childRelationProvider.getChildren(citizenIdentifier, true, queryInstance.getQuery().isUseMultipartSigning());
+					ChildrenResponse childrenResponse = childRelationProvider.getChildren(citizenIdentifier, true, query.isUseMultipartSigning());
 					
 					if (childrenResponse != null) {
 						
 						queryInstance.setHasChildrenUnderSecrecy(childrenResponse.hasChildrenUnderSecrecy());
 						
 						Map<String, StoredChild> storedChildMap = new LinkedHashMap<String, StoredChild>();
-						
-						Map<String, Child> childMap = childrenResponse.getChildren();
-						Map<String, FilterAPIChild> apiChildren = null;
+						Map<String, Child> navetChildMap = childrenResponse.getChildren();
 
-						if (queryInstance.getQuery().getFilterEndpoint() != null) {
+						if (query.getFilterEndpointName() != null) {
+							
+							ChildQueryFilterEndpoint filterEndpoint = getFilterEndpoint(query.getFilterEndpointName());
 
-							if (filterAPIModule == null) {
+							if (filterEndpoint == null) {
 
-								log.error("Missing required instance manager dependency: ChildQueryFilterEndpointAdminModule");
-								queryInstance.setFetchChildrenException(new CommunicationException("Missing required instance manager dependency: ChildQueryFilterEndpointAdminModule"));
+								log.error("Missing required filter endpoint: " + query.getFilterEndpointName());
+								queryInstance.setFetchChildrenException(new CommunicationException("Missing required filter endpoint: " + query.getFilterEndpointName()));
 								return null;
 							}
-
-							apiChildren = filterAPIModule.getChildren(queryInstance.getQuery().getFilterEndpoint(), poster, citizenIdentifier);
-
-							if (apiChildren == null) {
-								
-								queryInstance.setFetchChildrenException(new CommunicationException("Got no response from filterAPIModule"));
-								return null;
-								
-							} else if (apiChildren.isEmpty()) {
-								
-								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("Empty response from filterAPIModule"));
-								return null;
-							}
-						}
-						
-						for (Entry<String, Child> entry : childMap.entrySet()) {
 							
-							StoredChild child = new StoredChild(entry.getValue());
-							
-							if (apiChildren != null) {
-								
-								FilterAPIChild apiChild = apiChildren.get(entry.getKey());
-								
-								if (apiChild == null) {
-									continue;
+							if (query.getMinAge() != null || query.getMaxAge() != null) {
+								for (Iterator<Child> it = navetChildMap.values().iterator(); it.hasNext();) {
 									
-								} else {
+									Child child = it.next();
 									
-									child.setAttributes(apiChild.getFields());
+									int age = StoredChild.getAge(child.getCitizenIdentifier());
+									
+									if ((query.getMinAge() != null && age < query.getMinAge()) || (query.getMaxAge() != null && age > query.getMaxAge())) {
+										
+										log.info("Removing child " + child + " before filter endpoint due to age " + age + " outside limits " + query.getMinAge() + "-" + query.getMaxAge());
+										it.remove();
+										queryInstance.setAgeFilteredChildren(true);
+									}
 								}
 							}
 							
-							storedChildMap.put(entry.getKey(), child);
+							ImmutableFlow flow = queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getStep().getFlow();
+
+							Map<String, FilterAPIChild> filterChildren = filterEndpoint.getChildren(navetChildMap, poster, citizenIdentifier, flow);
+
+							if (filterChildren == null) {
+								
+								queryInstance.setFetchChildrenException(new CommunicationException("Got no response from filtering API: " + filterEndpoint));
+								return null;
+								
+							} else if (filterChildren.isEmpty()) {
+								
+								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("Empty response from filtering API: " + filterEndpoint));
+								return null;
+							}
+
+							StringBuilder filteredChildrenNames = null;
+							
+							if (query.getFilteredChildrenDescription() != null) {
+								filteredChildrenNames = new StringBuilder();
+							}
+
+							for (Entry<String, Child> entry : navetChildMap.entrySet()) {
+								
+								FilterAPIChild filterChild = filterChildren.get(entry.getKey());
+
+								if (filterChild == null) {
+
+									if (filteredChildrenNames != null) {
+
+										if (filteredChildrenNames.length() > 0) {
+											filteredChildrenNames.append(", ");
+										}
+
+										filteredChildrenNames.append(entry.getValue().getFirstname() + " " + entry.getValue().getLastname());
+									}
+
+									continue;
+								}
+
+								StoredChild child = new StoredChild(entry.getValue());
+								child.setAttributes(filterChild.getFields());
+
+								storedChildMap.put(entry.getKey(), child);
+							}
+
+							if (filteredChildrenNames != null && filteredChildrenNames.length() > 0) {
+								queryInstance.setFilteredChildrenText(query.getFilteredChildrenDescription().replace("$filteredChildren", filteredChildrenNames.toString()));
+							}
+
+							if (storedChildMap.isEmpty()) {
+
+								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("No remaining children after filtering API: " + filterEndpoint));
+								return null;
+							}
+							
+						} else {
+							
+							for (Entry<String, Child> entry : navetChildMap.entrySet()) {
+								
+								storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
+							}
 						}
-
-						if (apiChildren != null && storedChildMap.isEmpty()) {
-
-							queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("No matching children with filterAPIModule"));
-							return null;
-						}
-
+						
 						return storedChildMap;
 						
 					} else {
@@ -915,8 +1031,82 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
 
-	public ChildQueryFilterEndpointAdminModule getFilterAPIModule() {
-		return filterAPIModule;
+	public ChildQueryFilterEndpoint getFilterEndpoint(String name) {
+		
+		for (ChildQueryFilterProvider provider : filterProviders) {
+
+			try {
+				ChildQueryFilterEndpoint endpoint = provider.getEndpoint(name);
+
+				if (endpoint != null) {
+					return endpoint;
+				}
+				
+			} catch (Exception e) {
+				log.error("Error getting filter endpoint with name \"" + name + "\" from provider " + provider, e);
+			}
+		}
+		
+		return null;
+	}
+	
+	public List<ChildQueryFilterEndpoint> getFilterEndpoints() {
+		
+		List<ChildQueryFilterEndpoint> endpoints = new ArrayList<>();
+		
+		for (ChildQueryFilterProvider provider : filterProviders) {
+
+			try {
+				List<? extends ChildQueryFilterEndpoint> providerEndpoints = provider.getEndpoints();
+				
+				if(providerEndpoints != null) {
+					
+					endpoints.addAll(providerEndpoints);
+				}
+
+			} catch (Exception e) {
+				log.error("Error getting filter endpoints from provider " + provider, e);
+			}
+		}
+		
+		return endpoints;
+	}
+	
+	public boolean addChildQueryFilterProvider(ChildQueryFilterProvider provider) {
+		return filterProviders.add(provider);
+	}
+	
+	public boolean removeChildQueryFilterProvider(ChildQueryFilterProvider provider) {
+		return filterProviders.remove(provider);
+	}
+
+	public List<ChildQuery> getQueriesUsingFilterEndpoint(String name) throws SQLException {
+		
+		HighLevelQuery<ChildQuery> query = new HighLevelQuery<ChildQuery>();
+		query.addParameter(queryFilterEndpointNameParamFactory.getParameter(name));
+
+		List<ChildQuery> queries = queryDAO.getAll(query);
+		
+		if (queries != null) {
+
+			for (Iterator<ChildQuery> it = queries.iterator(); it.hasNext();) {
+				
+				ChildQuery childQuery = it.next();
+				
+				QueryDescriptor queryDescriptor = queryDescriptorDAOWrapper.get(childQuery.getQueryID());
+
+				if (queryDescriptor != null) {
+
+					childQuery.init(queryDescriptor, getFullAlias() + "/config/" + queryDescriptor.getQueryID());
+					
+				} else {
+					
+					it.remove();
+				}
+			}
+		}
+
+		return queries;
 	}
 
 }

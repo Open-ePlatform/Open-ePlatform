@@ -311,7 +311,7 @@
 						</p>
 					</xsl:if>
 					
-					<xsl:if test="(ChildQueryInstance/ChildQuery/minAge and ChildQueryInstance/Children/Child[current()/ChildQueryInstance/ChildQuery/minAge > Age]) or (ChildQueryInstance/ChildQuery/maxAge and ChildQueryInstance/Children/Child[Age > current()/ChildQueryInstance/ChildQuery/maxAge])">
+					<xsl:if test="ChildQueryInstance/ageFilteredChildren = 'true' or (ChildQueryInstance/ChildQuery/minAge and ChildQueryInstance/Children/Child[current()/ChildQueryInstance/ChildQuery/minAge > Age]) or (ChildQueryInstance/ChildQuery/maxAge and ChildQueryInstance/Children/Child[Age > current()/ChildQueryInstance/ChildQuery/maxAge])">
 						<p class="tiny">
 							<xsl:value-of select="$i18n.AgeChildrenInfo"/>
 						</p>
@@ -322,23 +322,31 @@
 				
 					<xsl:choose>
 						<xsl:when test="ChildQueryInstance/Children/Child">	<!-- Children from provider -->
-						
+							
 							<div>
 								<xsl:apply-templates select="ChildQueryInstance/Children/Child"/>
 							</div>
 							
+							<xsl:if test="ChildQueryInstance/ChildQuery/filteredChildrenDescription and ChildQueryInstance/filteredChildrenText">
+								<p class="clearboth">
+									<xsl:call-template name="replaceLineBreak">
+										<xsl:with-param name="string" select="ChildQueryInstance/filteredChildrenText" />
+									</xsl:call-template>
+								</p>
+							</xsl:if>
+							
 						</xsl:when>
 						<xsl:when test="ChildQueryInstance/Children">	<!-- Empty list from provider -->
-						
+							
 							<xsl:value-of select="$i18n.Error.NoChildren"/>
 							
 						</xsl:when>
 						<xsl:when test="ChildQueryInstance/citizenIdentifier">	<!-- Editing saved instance as admin -->
-						
+							
 							<div>
 								<xsl:call-template name="SavedChild"/>
 							</div>
-					
+							
 						</xsl:when>
 						<xsl:otherwise>	<!-- No list from provider -->
 						
@@ -350,7 +358,16 @@
 												<xsl:with-param name="string" select="ChildQueryInstance/ChildQuery/emptyFilterDescription" />
 											</xsl:call-template>
 										</xsl:when>
-										<xsl:when test="ChildQueryInstance/FetchChildrenException/CommunicationException"><xsl:value-of select="$i18n.Error.Provider.CommunicationError"/></xsl:when>
+										<xsl:when test="ChildQueryInstance/FetchChildrenException/CommunicationException">
+											<xsl:choose>
+												<xsl:when test="ChildQueryInstance/ChildQuery/communicationErrorDescription">
+													<xsl:value-of select="ChildQueryInstance/ChildQuery/communicationErrorDescription"/>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="$i18n.Error.Provider.CommunicationError"/>
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:when>
 										<xsl:when test="ChildQueryInstance/FetchChildrenException/IncompleteDataException or ChildQueryInstance/FetchChildrenException/IncompleteFilterAPIDataException"><xsl:value-of select="$i18n.Error.Provider.IncompleteData"/></xsl:when>
 										<xsl:when test="ChildQueryInstance/FetchChildrenException/InvalidCitizenIdentifierException"><xsl:value-of select="$i18n.Error.Provider.InvalidCitizenIdentifier"/></xsl:when>
 										<xsl:otherwise><xsl:value-of select="$i18n.Error.Provider.Unknown"/></xsl:otherwise>
@@ -501,7 +518,7 @@
 						
 					</xsl:if>
 					
-					<xsl:apply-templates select="../../ChildQuery/ChildQueryFilterEndpoint">
+					<xsl:apply-templates select="../../../ChildQueryFilterEndpoint">
 						<xsl:with-param name="attributes" select="Attributes" />
 						<xsl:with-param name="selectedAttributes" select="../../ChildQuery/SelectedChildAttributes" />
 					</xsl:apply-templates>
@@ -586,7 +603,7 @@
 						
 					</xsl:if>
 					
-					<xsl:apply-templates select="ChildQueryInstance/ChildQuery/ChildQueryFilterEndpoint">
+					<xsl:apply-templates select="ChildQueryFilterEndpoint">
 						<xsl:with-param name="attributes" select="ChildQueryInstance/ChildAttributes" />
 						<xsl:with-param name="selectedAttributes" select="ChildQueryInstance/ChildQuery/SelectedChildAttributes" />
 					</xsl:apply-templates>

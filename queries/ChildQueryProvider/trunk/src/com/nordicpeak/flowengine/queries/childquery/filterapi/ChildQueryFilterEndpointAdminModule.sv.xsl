@@ -11,6 +11,7 @@
 	<xsl:variable name="i18n.validation.unknownError">Okänt fel på fältet:</xsl:variable>
 	<xsl:variable name="i18n.validation.unknownFault">Ett okänt valideringsfel har uppstått.</xsl:variable>
 	<xsl:variable name="i18n.validation.EndpointNotFound">Den begärda API-källan hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.validation.EndpointNameAlreadyInUse">Det valda namnet används redan i en API-källa från</xsl:variable>
 	
 	<!-- Internationalization -->
 	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>

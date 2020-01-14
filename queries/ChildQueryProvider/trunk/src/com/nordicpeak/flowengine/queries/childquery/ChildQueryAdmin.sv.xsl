@@ -44,6 +44,7 @@
 	<xsl:variable name="i18n.MaxChildAge">Högsta ålder på barn (lämna tomt för ingen gräns)</xsl:variable>
 	<xsl:variable name="i18n.MinAgeLargerThanMaxAge">Minsta ålder kan inte vara större än högsta ålder</xsl:variable>
 	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt andra vårdnadshavaren som medsökande för ärendet</xsl:variable>
+	<xsl:variable name="i18n.CommunicationErrorDescription">Meddelande om det inte går att kontakta navet eller API-källan (kan lämnas tom för att återställa standardtext)</xsl:variable>
 	
 	<xsl:variable name="i18n.FilterEndpoint.Attributes">Extra fält</xsl:variable>
 	<xsl:variable name="i18n.FilterEndpoint.Attribute.DisplayMode">Visningsläge</xsl:variable>
@@ -64,7 +65,13 @@
 	
 	<xsl:variable name="i18n.FilterEndpoint.title">Välj API-källa för filtrering och extra information</xsl:variable>
 	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa</xsl:variable>
-	<xsl:variable name="i18n.EmptyFilterDescription">Meddelande vid avsaknad av data från API-källan (tomt svar eller inga barn kvar efter filtrering)</xsl:variable>
+	<xsl:variable name="i18n.EmptyFilterDescription">Meddelande vid avsaknad av data från API-källan (tomt svar, inga barn kvar efter filtrering eller åldersgräns används och inga barn är inom intervallet)</xsl:variable>
+	<xsl:variable name="i18n.useFilteredChildrenDescription">Visa meddelande vid bortfiltrering av barn (men åtminstone 1 barn blev kvar efter filtrering)</xsl:variable>
+	<xsl:variable name="i18n.FilteredChildrenDescription">Meddelande för bortfiltrerade barn</xsl:variable>
+	<xsl:variable name="i18n.FilteredChildrenDescription.Tags.children">Namn på barnen som filterats bort</xsl:variable>
+	<xsl:variable name="i18n.Tags">Följande taggar kan användas i texten ovan</xsl:variable>
+	<xsl:variable name="i18n.Tags.name">Tagg</xsl:variable>
+	<xsl:variable name="i18n.Tags.value">Värde</xsl:variable>
 
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.Query.setAsAttribute">Spara valt barn som attribut</xsl:variable>

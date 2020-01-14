@@ -140,6 +140,11 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 	/** @return Returns the age solely based on the birth year ignoring months and days */
 	public Integer getAge() {
 
+		return getAge(citizenIdentifier);
+	}
+	
+	public static Integer getAge(String citizenIdentifier) {
+
 		if (citizenIdentifier != null) {
 
 			int birthYear = Integer.parseInt(citizenIdentifier.substring(0, 4));

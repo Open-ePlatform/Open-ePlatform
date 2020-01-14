@@ -10,7 +10,8 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
-import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
+import se.unlogic.standardutils.templates.TemplateUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -24,7 +25,7 @@ import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUD;
 import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.beans.SelectedChildAttribute;
 import com.nordicpeak.flowengine.queries.childquery.enums.ChildAttributeDisplayMode;
-import com.nordicpeak.flowengine.queries.childquery.filterapi.ChildQueryFilterEndpoint;
+import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterEndpoint;
 
 public class ChildQueryCRUD extends BaseQueryCRUD<ChildQuery, ChildQueryProviderModule> {
 
@@ -36,22 +37,29 @@ public class ChildQueryCRUD extends BaseQueryCRUD<ChildQuery, ChildQueryProvider
 
 		this.queryDAO = queryDAO;
 	}
-
+	
+	@Override
+	protected void appendBean(ChildQuery childQuery, Element targetElement, Document doc, User user) {
+		
+		TemplateUtils.setTemplatedFields(childQuery, callback);
+		
+		super.appendBean(childQuery, targetElement, doc, user);
+	}
+	
 	@Override
 	protected void appendUpdateFormData(ChildQuery bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
 		super.appendUpdateFormData(bean, doc, updateTypeElement, user, req, uriParser);
 
-		if (callback.getFilterAPIModule() != null) {
-		
-			XMLUtils.append(doc, updateTypeElement, "FilterApiEndpoints", callback.getFilterAPIModule().getEndpoints());
-		}
+		XMLUtils.append(doc, updateTypeElement, "FilterApiEndpoints", callback.getFilterEndpoints());
 	}
 
 	@Override
-	protected ChildQuery populateFromUpdateRequest(ChildQuery bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+	protected ChildQuery populateFromUpdateRequest(ChildQuery oldChildQuery, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
 
-		ChildQuery query = super.populateFromUpdateRequest(bean, req, user, uriParser);
+		ChildQuery query = super.populateFromUpdateRequest(oldChildQuery, req, user, uriParser);
+		
+		TemplateUtils.clearUnchangedTemplatedFields(query, callback);
 
 		if (query.isUseMultipartSigning()) {
 
@@ -88,34 +96,29 @@ public class ChildQueryCRUD extends BaseQueryCRUD<ChildQuery, ChildQueryProvider
 			validationErrors.add(new ValidationError("MinAgeLargerThanMaxAge"));
 		}
 
-		Integer endpointID = null;
+		String endpointName = ValidationUtils.validateParameter("filterEndpoint", req, false, StringPopulator.getPopulator(), validationErrors);
 
-		if (callback.getFilterAPIModule() != null) {
+		if (endpointName != null) {
 
-			endpointID = ValidationUtils.validateParameter("filterEndpointID", req, false, IntegerPopulator.getPopulator(), validationErrors);
-		}
+			ChildQueryFilterEndpoint filterEndpoint = callback.getFilterEndpoint(endpointName);
 
-		if (endpointID != null) {
+			if (filterEndpoint == null) {
 
-			ChildQueryFilterEndpoint endpoint = callback.getFilterAPIModule().getEndpoint(endpointID);
-
-			if (endpoint == null) {
-
-				validationErrors.add(new ValidationError("filterEndpointID", ValidationErrorType.InvalidFormat));
+				validationErrors.add(new ValidationError("filterEndpoint", ValidationErrorType.InvalidFormat));
 
 			} else {
 
-				query.setFilterEndpoint(endpoint);
+				query.setFilterEndpointName(filterEndpoint.getName());
 
-				if (endpoint.getFields() != null) {
+				if (filterEndpoint.getFields() != null) {
 
-					List<SelectedChildAttribute> selectedChildAttributes = new ArrayList<SelectedChildAttribute>(endpoint.getFields().size());
+					List<SelectedChildAttribute> selectedChildAttributes = new ArrayList<SelectedChildAttribute>(filterEndpoint.getFields().size());
 
 					int sortIndex = 0;
 					
-					for (String fieldName : endpoint.getFields()) {
+					for (String fieldName : filterEndpoint.getFields()) {
 
-						ChildAttributeDisplayMode displayMode = ValidationUtils.validateParameter("attribute-" + endpoint.getEndpointID() + "-" + fieldName, req, true, SelectedChildAttribute.DISPLAY_MODE_POPULATOR, validationErrors);
+						ChildAttributeDisplayMode displayMode = ValidationUtils.validateParameter("attribute-" + filterEndpoint.getName() + "-" + fieldName, req, true, SelectedChildAttribute.DISPLAY_MODE_POPULATOR, validationErrors);
 
 						if (displayMode != null) {
 							selectedChildAttributes.add(new SelectedChildAttribute(fieldName, displayMode, sortIndex++));
@@ -128,7 +131,7 @@ public class ChildQueryCRUD extends BaseQueryCRUD<ChildQuery, ChildQueryProvider
 
 		} else {
 
-			query.setFilterEndpoint(null);
+			query.setFilterEndpointName(null);
 			query.setSelectedChildAttributes(null);
 		}
 

@@ -35,27 +35,42 @@ $(function() {
 		
 	}).change();
 	
-	var filterEndpointInput = $("#filterEndpointID");
+	var filterEndpointInput = $("#filterEndpoint");
 	
 	filterEndpointInput.change(function() {
 		
-		$(".filterEndpoint").hide().find("select").prop("disabled", true);
+		var endpointAttributes = $(".filterEndpoint");
 		
-		var endpointID = filterEndpointInput.val();
+		endpointAttributes.hide().find("select").prop("disabled", true);
 		
-		if (endpointID != "") {
+		var endpoint = filterEndpointInput.val();
+		
+		if (endpoint != "") {
 			
 			$("#endpoint-attributes, #emptyFilterDescriptionContainer").show();
-			$("#endpoint-" + endpointID).show().find("select").prop("disabled", false);
+			$("#useFilteredChildrenDescription").change().parent().parent().show();
+			
+			endpointAttributes.filter(function(idx, element){
+				return $(element).data("endpoint") == endpoint;
+				
+			}).show().find("select").prop("disabled", false);
 			
 		} else {
 			
-			$("#endpoint-attributes, #emptyFilterDescriptionContainer").hide();
+			$("#endpoint-attributes, #emptyFilterDescriptionContainer, #filteredChildrenDescriptionContainer").hide();
+			$("#useFilteredChildrenDescription").parent().parent().hide();
 		}
 		
 	}).change();
 	
-	$('#setAsAttribute').change(function(){
+	$('#useFilteredChildrenDescription').change(function() {
+		
+		$('#filteredChildrenDescriptionContainer').toggle(this.checked);
+		$("#filteredChildrenDescription").prop("disabled", !this.checked);
+		
+	}).change();
+	
+	$('#setAsAttribute').change(function() {
 		
 		$('#attributeContainer').toggle(this.checked);
 		
