@@ -14,6 +14,12 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
+import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.hierarchy.backgroundmodules.AnnotatedBackgroundModule;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -39,13 +45,6 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
-
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 
 public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule implements EventListener<CRUDEvent<Flow>>, Runnable {
@@ -79,7 +78,8 @@ public class PopularFlowFamiliesModule extends AnnotatedBackgroundModule impleme
 
 		systemInterface.getEventHandler().addEventListener(CRUDEvent.class, this, Flow.class);
 
-		scheduler = new Scheduler();
+		scheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
+		scheduler.setDaemon(true);
 		scheduler.schedule("0 * * * *", this);
 		scheduler.start();
 	}
