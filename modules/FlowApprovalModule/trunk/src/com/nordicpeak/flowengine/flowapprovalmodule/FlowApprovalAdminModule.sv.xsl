@@ -21,6 +21,7 @@
 	
 	<xsl:variable name="java.eventActivityGroupStarted">Påbörjade aktivitetsgrupper:</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupCompleted">Avklarad aktivitetsgrupp:</xsl:variable>
+	<xsl:variable name="java.eventActivityGroupCompletedMissingStatus">Automatiskt statusbyte misslyckat status "$status" saknas.</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupApproved">Godkänd aktivitetsgrupp:</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupDenied">Nekad aktivitetsgrupp:</xsl:variable>
 	

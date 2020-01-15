@@ -151,6 +151,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupCompleted;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityGroupCompletedMissingStatus;
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupApproved;
@@ -819,17 +822,33 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						break;
 					}
 				}
+				
+				StringBuilder activityGroupNames = new StringBuilder();
+
+				for (FlowApprovalActivityGroup activityGroup : activityGroupsForCurrentStatus) {
+
+					if (activityGroup.getActivities() != null) {
+
+						if (activityGroupNames.length() > 0) {
+							activityGroupNames.append(", ");
+						}
+
+						activityGroupNames.append(activityGroup.getName());
+					}
+				}
 
 				if (newStatus == null) {
 
 					if (denied) {
 
-						log.error("Unable to find denied status \"" + newStatusName + "\" for " + flowInstance);
+						log.warn("Unable to find denied status \"" + newStatusName + "\" for " + flowInstance);
 
 					} else {
 
-						log.error("Unable to find complete status \"" + newStatusName + "\" for " + flowInstance);
+						log.warn("Unable to find complete status \"" + newStatusName + "\" for " + flowInstance);
 					}
+					
+					flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroupNames.toString() + ". " + eventActivityGroupCompletedMissingStatus.replace("$status", newStatusName), null);
 
 				} else {
 
@@ -837,20 +856,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
 
 					flowAdminModule.getDAOFactory().getFlowInstanceDAO().update(flowInstance);
-
-					StringBuilder activityGroupNames = new StringBuilder();
-
-					for (FlowApprovalActivityGroup activityGroup : activityGroupsForCurrentStatus) {
-
-						if (activityGroup.getActivities() != null) {
-
-							if (activityGroupNames.length() > 0) {
-								activityGroupNames.append(", ");
-							}
-
-							activityGroupNames.append(activityGroup.getName());
-						}
-					}
 
 					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, eventActivityGroupCompleted + " " + activityGroupNames.toString(), null);
 
