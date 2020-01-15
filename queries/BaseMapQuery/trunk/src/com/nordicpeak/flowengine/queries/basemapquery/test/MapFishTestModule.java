@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.queries.basemapquery.test;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -13,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -228,7 +227,9 @@ public class MapFishTestModule extends AnnotatedForegroundModule implements Runn
 
 	private void initTaskScheduler(){
 		
-		this.taskScheduler = new Scheduler();
+		this.taskScheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
+		
+		this.taskScheduler.setDaemon(true);
 	
 		this.taskScheduler.schedule(this.intervalPattern, this);
 		
