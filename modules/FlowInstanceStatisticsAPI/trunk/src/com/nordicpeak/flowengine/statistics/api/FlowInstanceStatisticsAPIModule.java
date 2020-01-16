@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,8 @@ import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.SystemStatus;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
+import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
@@ -60,7 +63,6 @@ import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.culling.beans.DeletedFlowInstance;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
 
@@ -86,14 +88,25 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 	private AnnotatedDAO<FlowInstance> flowInstanceDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
-	private AnnotatedDAO<DeletedFlowInstance> deletedFlowInstanceDAO;
 	private AnnotatedDAO<FeedbackSurvey> flowInstanceFeedbackSurveyDAO;
 
 	protected QueryParameterFactory<FlowInstance, Timestamp> flowInstanceAddedParamFactory;
 	protected QueryParameterFactory<AbortedFlowInstance, Timestamp> abortedFlowInstanceAddedParamFactory;
-	protected QueryParameterFactory<DeletedFlowInstance, Timestamp> deletedFlowInstanceAddedParamFactory;
 	protected QueryParameterFactory<FeedbackSurvey, Integer> feedbackSurveyFlowInstanceIDParamFactory;
+	
+	protected CopyOnWriteArrayList<StatisticsAPIExtensionProvider> extensions = new CopyOnWriteArrayList<>();
 
+	@Override
+	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+
+		super.init(moduleDescriptor, sectionInterface, dataSource);
+
+		if (!systemInterface.getInstanceHandler().addInstance(FlowInstanceStatisticsAPIModule.class, this)) {
+			
+			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowInstanceStatisticsAPIModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+	}
+	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
@@ -102,13 +115,19 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 		flowInstanceDAO = flowEngineDAOFactory.getFlowInstanceDAO();
 		abortedFlowInstanceDAO = flowEngineDAOFactory.getAbortedFlowInstanceDAO();
-		deletedFlowInstanceDAO = daoFactory.getDAO(DeletedFlowInstance.class);
 		flowInstanceFeedbackSurveyDAO = daoFactory.getDAO(FeedbackSurvey.class);
 
 		flowInstanceAddedParamFactory = flowInstanceDAO.getParamFactory("added", Timestamp.class);
 		abortedFlowInstanceAddedParamFactory = abortedFlowInstanceDAO.getParamFactory("added", Timestamp.class);
-		deletedFlowInstanceAddedParamFactory = deletedFlowInstanceDAO.getParamFactory("added", Timestamp.class);
 		feedbackSurveyFlowInstanceIDParamFactory = flowInstanceFeedbackSurveyDAO.getParamFactory("flowInstanceID", Integer.class);
+	}
+	
+	@Override
+	public void unload() throws Exception {
+
+		systemInterface.getInstanceHandler().removeInstance(FlowInstanceStatisticsAPIModule.class, this);
+
+		super.unload();
 	}
 
 	@RESTMethod(alias = "getflowinstances/{responseType}", method = "get")
@@ -162,7 +181,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 				int normalFlowInstances = 0;
 				int abortedFlowInstances = 0;
-				int deletedFlowInstances = 0;
+				int extensionFlowInstances = 0;
 
 				Connection connection = dataSource.getConnection();
 
@@ -327,59 +346,22 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 						}
 					}
 
-					// Deleted flow instances
-					if (DBUtils.tableExists(dataSource, deletedFlowInstanceDAO.getTableName())) {
-
-						HighLevelQuery<DeletedFlowInstance> flowInstancesQuery = new HighLevelQuery<DeletedFlowInstance>();
-						flowInstancesQuery.setRowLimiter(new MySQLRowLimiter(rowLimit));
-
-						if (fromTimestamp != null) {
-							flowInstancesQuery.addParameter(deletedFlowInstanceAddedParamFactory.getParameter(fromTimestamp, QueryOperators.BIGGER_THAN_OR_EQUALS));
-						}
-
-						if (toTimestamp != null) {
-							flowInstancesQuery.addParameter(deletedFlowInstanceAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
-						}
-
-						QueryResultsStreamer<DeletedFlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<DeletedFlowInstance, Integer>(deletedFlowInstanceDAO, DeletedFlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
-
-						List<DeletedFlowInstance> flowInstances = resultsStreamer.getBeans();
-
-						while (flowInstances != null) {
-
-							deletedFlowInstances += flowInstances.size();
-
-							if (systemInterface.getSystemStatus() == SystemStatus.STOPPING) {
-								log.info("List flowinstance statistics aborted...");
-								return;
-							}
-
-							for (DeletedFlowInstance flowInstance : flowInstances) {
-
-								FlowInstanceStatistic statistic = new FlowInstanceStatistic(flowInstance.getFlowID(), flowInstance.getAdded());
-
-								if (flowInstance.getFirstSubmitted() != null) {
-									statistic.setSubmitted(flowInstance.getFirstSubmitted());
-									statistic.setSurveyAnswer(getFlowInstanceSurveyResult(flowInstance.getFlowInstanceID(), connection));
-								}
-
-								flowInstanceStatistics.add(statistic);
-							}
-
-							if (flowInstances.size() == rowLimit) {
-								flowInstances = resultsStreamer.getBeans();
-
-							} else {
-								break;
-							}
-						}
-					}
-
 				} finally {
 					DBUtils.closeConnection(connection);
 				}
+				
+				for (StatisticsAPIExtensionProvider extension : extensions) {
+					
+					List<FlowInstanceStatistic> extensionStatistics = extension.getFlowInstanceAPIStatistics(fromTimestamp, toTimestamp, rowLimit);
+					
+					if (extensionStatistics != null) {
+						
+						extensionFlowInstances += extensionStatistics.size();
+						flowInstanceStatistics.addAll(extensionStatistics);
+					}
+				}
 
-				log.info("Responding to user " + user + " with flow instance statistics: normalFlowInstances " + normalFlowInstances + ", abortedFlowInstances " + abortedFlowInstances + ", deletedFlowInstances " + deletedFlowInstances);
+				log.info("Responding to user " + user + " with flow instance statistics: normalFlowInstances " + normalFlowInstances + ", abortedFlowInstances " + abortedFlowInstances + ", deletedFlowInstances " + extensionFlowInstances);
 
 				Collections.sort(flowInstanceStatistics);
 
@@ -422,7 +404,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 		}
 	}
 
-	private Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
+	public Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
 
 		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
 		query.addParameter(feedbackSurveyFlowInstanceIDParamFactory.getParameter(flowInstanceID));
@@ -555,4 +537,11 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 		return query.executeQuery();
 	}
 
+	public boolean addStatisticsExtensionProvider(StatisticsAPIExtensionProvider statisticsExtensionProvider) {
+		return extensions.add(statisticsExtensionProvider);
+	}
+	
+	public boolean removeStatisticsExtensionProvider(StatisticsAPIExtensionProvider statisticsExtensionProvider) {
+		return extensions.remove(statisticsExtensionProvider);
+	}
 }
