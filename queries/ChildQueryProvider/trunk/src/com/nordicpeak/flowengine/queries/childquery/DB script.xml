@@ -296,7 +296,7 @@
 		</Query>
 		<Query>
 			<![CDATA[
-				ALTER TABLE `child_queries` ADD COLUMN `filterEndpoint` VARCHAR(50) NULL DEFAULT NULL AFTER `filterEndpointID`;
+				ALTER TABLE `child_queries` ADD COLUMN `filterEndpoint` VARCHAR(255) NULL DEFAULT NULL AFTER `filterEndpointID`;
 			]]>
 		</Query>
 		<Query>
@@ -321,4 +321,11 @@
 		</Query>
 	</Script>
 	
+	<Script version="23">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` MODIFY COLUMN `filterEndpoint` VARCHAR(255) DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
 </DBScripts>
