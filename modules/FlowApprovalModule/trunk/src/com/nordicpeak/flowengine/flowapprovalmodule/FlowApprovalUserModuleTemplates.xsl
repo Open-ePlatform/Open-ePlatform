@@ -70,7 +70,7 @@
 						</tbody>
 					</table>
 					
-					<div class="floatleft bigmargintop">
+					<div class="floatright bigmargintop">
 						<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/listcompleted" title="{$i18n.ShowCompleted}">
 							<xsl:value-of select="$i18n.ShowCompleted"/>
 						</a>
@@ -203,7 +203,7 @@
 						</tbody>
 					</table>
 					
-					<div class="floatleft bigmargintop">
+					<div class="floatright bigmargintop">
 						<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}" title="{$i18n.ShowPending}">
 							<xsl:value-of select="$i18n.ShowPending"/>
 						</a>
