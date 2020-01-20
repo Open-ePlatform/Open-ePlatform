@@ -24,19 +24,6 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.Constants;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.ContentType;
-import com.nordicpeak.flowengine.enums.StatisticsMode;
-import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
-import com.nordicpeak.flowengine.interfaces.StatisticsExtensionProvider;
-
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.Task;
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -88,6 +75,20 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.Constants;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.enums.StatisticsMode;
+import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.interfaces.StatisticsExtensionProvider;
+
+import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.Task;
 
 public class StatisticsModule extends AnnotatedForegroundModule implements Runnable, SystemStartupListener {
 
@@ -1023,11 +1024,13 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		JsonArray unsubmittedCountArray = new JsonArray();
 		unsubmittedCountArray.addNode(flowStepUnsubmittedCountChartLabel);
 
-		for (Step step : flowStatistics.getSteps()) {
-
-			stepArray.addNode(step.getName());
-
-			unsubmittedCountArray.addNode(getMatchingEntryValue(step, flowStatistics.getStepUnsubmittedCount()));
+		if (flowStatistics.getSteps() != null) {
+			for (Step step : flowStatistics.getSteps()) {
+	
+				stepArray.addNode(step.getName());
+	
+				unsubmittedCountArray.addNode(getMatchingEntryValue(step, flowStatistics.getStepUnsubmittedCount()));
+			}
 		}
 
 		JsonObject jsonObject = new JsonObject(2);
