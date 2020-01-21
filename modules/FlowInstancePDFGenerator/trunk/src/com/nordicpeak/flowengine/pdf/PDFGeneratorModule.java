@@ -367,6 +367,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			XMLUtils.append(doc, documentElement, "StyleSheets", "StyleSheet", customStyleSheets);
 			
 			Timestamp submitDate;
+			ImmutableFlowInstanceEvent signingEvent = null;
 			List<ImmutableFlowInstanceEvent> signEvents = null;
 			
 			if (event != null) {
@@ -396,11 +397,17 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						
 						for (ImmutableFlowInstanceEvent flowInstanceEvent : flowInstanceEvents) {
 							
-							if (flowInstanceEvent.getEventType() == EventType.SIGNED
-								&& signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION))
-								&& !Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))
-							) {
-								signEvents.add(flowInstanceEvent);
+							if (signingSessionID.equals(flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION))) {
+								
+								String signingEventType = flowInstanceEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT);
+								
+								if (flowInstanceEvent.getEventType() == EventType.SIGNED && !Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNED_PDF.equals(signingEventType)) {
+									signEvents.add(flowInstanceEvent);
+								}
+								
+								if ((flowInstanceEvent.getEventType() == EventType.SIGNED || flowInstanceEvent.getEventType() == EventType.SIGNING_SKIPPED) && Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(signingEventType)) {
+									signingEvent = flowInstanceEvent;
+								}
 							}
 						}
 						
@@ -538,13 +545,17 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFInputStreamAttachment(new ByteArrayInputStream(signData.getBytes("ISO-8859-1")), name + ".txt", name));
 					}
+				}
+				
+				if (signingEvent != null) {
 					
-					if (Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT_SIGNING_PDF.equals(signEvent.getAttributeHandler().getString(Constants.FLOW_INSTANCE_EVENT_SIGNING_SESSION_EVENT))) {
-						
-						File signingPDF = getPDF(instanceManager.getFlowInstanceID(), signEvent.getEventID());
-						
-						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFFileAttachment(signingPDF, signingPDFAttachmentName + ".pdf", signingPDFAttachmentName));
-					}
+					File signingPDF = getPDF(instanceManager.getFlowInstanceID(), signingEvent.getEventID());
+					
+					extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFFileAttachment(signingPDF, signingPDFAttachmentName + ".pdf", signingPDFAttachmentName));
+					
+				} else {
+					
+					log.warn("No initial signing event found for " + event + ", " + instanceManager.getFlowInstance());
 				}
 			}
 			
