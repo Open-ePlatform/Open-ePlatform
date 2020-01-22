@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.flowsubmitsurveys;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -338,4 +339,18 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 		return (float)sum/(float)feedbackList.size();
 	}
 
+	@Override
+	public Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
+
+		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
+		query.addParameter(flowInstanceIDParameterFactory.getParameter(flowInstanceID));
+		
+		FeedbackSurvey survey = feedbackSurveyDAO.get(query, connection);
+		
+		if (survey == null) {
+			return null;
+		}
+		
+		return 1 + survey.getAnswer().ordinal();
+	}
 }

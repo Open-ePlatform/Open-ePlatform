@@ -65,8 +65,11 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
+import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
+import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
+import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
 
-public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
+public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule implements StatisticsExtensionConsumer {
 
 	private static final String FLOW_CHANGED_DATE_SQL = "SELECT MAX(added) FROM flowengine_flow_family_events WHERE flowFamilyID = ? AND (flowVersion IS NULL OR flowVersion = ?)";
 
@@ -85,6 +88,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
+	
+	@InstanceManagerDependency(required = false)
+	private FlowSubmitSurveyProvider flowSubmitSurveyProvider;
 
 	private AnnotatedDAO<FlowInstance> flowInstanceDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
@@ -101,9 +107,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
-		if (!systemInterface.getInstanceHandler().addInstance(FlowInstanceStatisticsAPIModule.class, this)) {
+		if (!systemInterface.getInstanceHandler().addInstance(StatisticsExtensionConsumer.class, this)) {
 			
-			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowInstanceStatisticsAPIModule.class.getSimpleName() + ", another instance is already registered using this key.");
+			throw new RuntimeException("Unable to register module in global instance handler using key " + StatisticsExtensionConsumer.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 	}
 	
@@ -125,7 +131,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 	@Override
 	public void unload() throws Exception {
 
-		systemInterface.getInstanceHandler().removeInstance(FlowInstanceStatisticsAPIModule.class, this);
+		systemInterface.getInstanceHandler().removeInstance(StatisticsExtensionConsumer.class, this);
 
 		super.unload();
 	}
@@ -228,7 +234,11 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 
 								if (flowInstance.getFirstSubmitted() != null) {
 									statistic.setSubmitted(flowInstance.getFirstSubmitted());
-									statistic.setSurveyAnswer(getFlowInstanceSurveyResult(flowInstance.getFlowInstanceID(), connection));
+									
+									if(this.flowSubmitSurveyProvider != null) {
+										
+										statistic.setSurveyAnswer(flowSubmitSurveyProvider.getFlowInstanceSurveyResult(flowInstance.getFlowInstanceID(), connection));
+									}
 								}
 
 								String citizenIdentifier;
@@ -404,20 +414,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 		}
 	}
 
-	public Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
-
-		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
-		query.addParameter(feedbackSurveyFlowInstanceIDParamFactory.getParameter(flowInstanceID));
-		
-		FeedbackSurvey survey = flowInstanceFeedbackSurveyDAO.get(query, connection);
-		
-		if (survey == null) {
-			return null;
-		}
-		
-		return 1 + survey.getAnswer().ordinal();
-	}
-
 	@RESTMethod(alias = "getflows/{responseType}", method = "get")
 	public void getFlows(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "responseType") String responseType) throws Throwable {
 
@@ -537,10 +533,12 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule {
 		return query.executeQuery();
 	}
 
+	@Override
 	public boolean addStatisticsExtensionProvider(StatisticsAPIExtensionProvider statisticsExtensionProvider) {
 		return extensions.add(statisticsExtensionProvider);
 	}
 	
+	@Override
 	public boolean removeStatisticsExtensionProvider(StatisticsAPIExtensionProvider statisticsExtensionProvider) {
 		return extensions.remove(statisticsExtensionProvider);
 	}

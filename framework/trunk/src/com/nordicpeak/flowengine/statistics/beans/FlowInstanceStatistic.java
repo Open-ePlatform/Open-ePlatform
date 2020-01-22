@@ -1,4 +1,4 @@
-package com.nordicpeak.flowengine.statistics.api;
+package com.nordicpeak.flowengine.statistics.beans;
 
 import java.util.Date;
 

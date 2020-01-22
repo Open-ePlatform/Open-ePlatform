@@ -1,7 +1,9 @@
-package com.nordicpeak.flowengine.statistics.api;
+package com.nordicpeak.flowengine.statistics.interfaces;
 
 import java.sql.Timestamp;
 import java.util.List;
+
+import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 
 public interface StatisticsAPIExtensionProvider {
 
