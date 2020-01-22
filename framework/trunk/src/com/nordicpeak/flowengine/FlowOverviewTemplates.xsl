@@ -480,6 +480,9 @@
 						<xsl:if test="FlowFamily/contactPhone">
 							<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 						</xsl:if>
+						<xsl:if test="FlowFamily/contactWebAddress">
+							<br /><a href="{FlowFamily/contactWebAddress}" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="FlowFamily/contactWebAddress" /></a>
+						</xsl:if>
 					</div>
 					
 				</xsl:if>
@@ -552,6 +555,9 @@
 							
 							<xsl:if test="FlowFamily/contactPhone">
 								<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
+							</xsl:if>
+							<xsl:if test="FlowFamily/contactWebAddress">
+								<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="FlowFamily/contactWebAddress" /></a>
 							</xsl:if>
 						</p>
 					

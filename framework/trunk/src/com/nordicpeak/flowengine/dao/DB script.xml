@@ -2472,5 +2472,18 @@
  			]]> 
 		</Query>
 	</Script>
-	
+
+	<Script version="135">
+	   <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_flow_families` ADD COLUMN `contactWebAddress` VARCHAR(1024) AFTER `contactPhone`;
+	        ]]>
+	   </Query>
+	   <Query>
+	        <![CDATA[
+				ALTER TABLE `flowengine_flow_families` MODIFY COLUMN `loginHelpLinkURL` VARCHAR(1024);
+	        ]]>
+	    </Query>
+	</Script>
+
 </DBScripts>

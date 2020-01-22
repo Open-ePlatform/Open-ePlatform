@@ -106,7 +106,7 @@
 	<xsl:variable name="i18n.FlowFamily.SharedSettings">Följande inställningar gäller för samtliga versioner av e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp">Visa länk på översiktssidan (exempelvis länk till instruktion för att skaffa e-legitimation)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.LoginHelp.Name">Länknamn</xsl:variable>
-	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress</xsl:variable>
+	<xsl:variable name="i18n.FlowFamily.LoginHelp.URL">Adress (komplett URL)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.popularity.boost">Extra antal ärenden vid beräkning av popularitet</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.startButtonText">Anpassad text på startknapp (max 24 tecken)</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes">Extra attribut i ärendeöversikten</xsl:variable>
@@ -123,6 +123,7 @@
 	<xsl:variable name="i18n.contact.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.contact.email">E-post</xsl:variable>
 	<xsl:variable name="i18n.contact.phone">Telefon</xsl:variable>
+	<xsl:variable name="i18n.contact.webaddress">Webbsida (komplett URL)</xsl:variable>
 	<xsl:variable name="i18n.owner.title">Kontaktuppgifter - Personuppgiftsansvarig</xsl:variable>
 	<xsl:variable name="i18n.owner.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.owner.email">E-post</xsl:variable>

@@ -3131,6 +3131,25 @@
 				</div>
 			
 			</div>
+
+			<div class="floatleft forty bigmarginleft">
+			
+				<label for="contactPhone" class="floatleft full">
+					<xsl:value-of select="$i18n.contact.webaddress" />
+				</label>
+				
+				<div class="floatleft full">
+	
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="name" select="'contactWebAddress'" />
+						<xsl:with-param name="id" select="'contactWebAddress'" />
+						<xsl:with-param name="element" select="Flow/FlowFamily" />
+						<xsl:with-param name="size" select="10" />
+					</xsl:call-template>
+					
+				</div>
+			
+			</div>
 			
 		</div>
 		
@@ -8104,6 +8123,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'contactPhone'">
 						<xsl:value-of select="$i18n.contact.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.contact.phone"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'contactWebAddress'">
+						<xsl:value-of select="$i18n.contact.title"/><xsl:text>,&#160;</xsl:text><xsl:value-of select="$i18n.contact.webaddress"/>
 					</xsl:when>
 					<xsl:when test="starts-with(fieldName, 'overviewAttributeName_')">
 						<xsl:variable name="id" select="substring(fieldName, 23)" />

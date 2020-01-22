@@ -40,6 +40,7 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
 import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
@@ -75,6 +76,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field CONTACT_NAME_FIELD = ReflectionUtils.getField(FlowFamily.class, "contactName");
 	public static final Field CONTACT_EMAIL_FIELD = ReflectionUtils.getField(FlowFamily.class, "contactEmail");
 	public static final Field CONTACT_PHONE_FIELD = ReflectionUtils.getField(FlowFamily.class, "contactPhone");
+	public static final Field CONTACT_WEB_ADDRESS_FIELD = ReflectionUtils.getField(FlowFamily.class, "contactWebAddress");
 	public static final Field OWNER_NAME_FIELD = ReflectionUtils.getField(FlowFamily.class, "ownerName");
 	public static final Field OWNER_EMAIL_FIELD = ReflectionUtils.getField(FlowFamily.class, "ownerEmail");
 	
@@ -101,7 +103,12 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String contactPhone;
-	
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255, populator = StringHTTPURLPopulator.class)
+	@XMLElement
+	private String contactWebAddress;
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
@@ -128,7 +135,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@TextTagReplace
 	@Templated(fieldName = "defaultLoginHelpLinkURL")
-	@WebPopulate(maxLength = 255)
+	@WebPopulate(maxLength = 1024, populator = StringHTTPURLPopulator.class)
 	@RequiredIfSet(paramNames = "useLoginHelpLink")
 	@XMLElement
 	private String loginHelpLinkURL;
@@ -268,6 +275,16 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public void setContactPhone(String contactPhone) {
 		
 		this.contactPhone = contactPhone;
+	}
+
+	public String getContactWebAddress() {
+		
+		return contactWebAddress;
+	}
+	
+	public void setContactAddress(String contactWebAddress) {
+	
+		this.contactWebAddress = contactWebAddress;
 	}
 	
 	public String getOwnerName() {
