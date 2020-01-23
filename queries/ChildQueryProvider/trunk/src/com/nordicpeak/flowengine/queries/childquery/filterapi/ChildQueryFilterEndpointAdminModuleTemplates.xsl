@@ -318,6 +318,14 @@
 							<xsl:value-of select="$i18n.UserCitizenIdentifierTag"/>
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<xsl:text>$childCitizenIdentifiers</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.ChildCitizenIdentifiersTag"/>
+						</td>
+					</tr>					
 				</table>
 			</div>
 			

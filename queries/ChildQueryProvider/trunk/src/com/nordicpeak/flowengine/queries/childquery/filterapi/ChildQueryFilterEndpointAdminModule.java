@@ -33,6 +33,7 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
+import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -118,18 +119,37 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		
 		Map<String, FilterAPIChild> children = new HashMap<String, FilterAPIChild>();
 
+		TagReplacer tagReplacer = new TagReplacer();
+		
 		String address = endpoint.getAddress();
-
+		
+		//Build childCitizenIdentifier tag source
+		StringBuilder childCitizenIdentifierListBuilder = new StringBuilder();
+		
+		for(String childCitizenIdentifier : navetChildMap.keySet()) {
+			
+			if(childCitizenIdentifierListBuilder.length() != 0) {
+				
+				childCitizenIdentifierListBuilder.append(",");
+			}
+			
+			childCitizenIdentifierListBuilder.append(childCitizenIdentifier);
+		}
+		
+		tagReplacer.addTagSource(new SingleTagSource("$childCitizenIdentifiers", childCitizenIdentifierListBuilder.toString()));
+		
+		//Replace user attribute tags
 		if (user != null) {
 
 			address = UserAttributeTagUtils.replaceTags(address, user);
-
-			TagReplacer tagReplacer = new TagReplacer();
-			tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(user));
-
-			address = tagReplacer.replace(address);
 		}
-
+		
+		//Build user tag source
+		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(user));
+		
+		//Replace tags
+		address = tagReplacer.replace(address);
+		
 		SimpleRequest simpleRequest = new SimpleRequest(address);
 
 		simpleRequest.setFollowRedirects(false);
