@@ -17,7 +17,7 @@
 
 	<xsl:variable name="links">
 		/css/fancytree/skin-win7/ui.fancytree.min.css
-		/css/treequery.css
+		/css/treequery.css?v=2
 	</xsl:variable>
 
 	<xsl:template match="Document">	
@@ -262,7 +262,9 @@
 		
 		</div>
 		
-		<div id="tree{$Query/queryID}" class="clearboth" data-nofolders="{$Query/onlyAllowSelectingLeafs}"/>
+		<div id="tree{$Query/queryID}" class="clearboth" data-nofolders="{$Query/onlyAllowSelectingLeafs}">
+			<xsl:if test="$Query/onlyAllowSelectingLeafs = 'true'"><xsl:attribute name="class">leafselection clearboth</xsl:attribute></xsl:if>
+		</div>
 		
 		<xsl:call-template name="createHiddenField">
 			<xsl:with-param name="name">
