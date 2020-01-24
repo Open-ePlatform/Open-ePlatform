@@ -6,8 +6,10 @@ import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -215,8 +217,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						@SuppressWarnings("unchecked")
 						CombinedPopulator<String> citizenIDValidator = new CombinedPopulator<String>(String.class, citizenIDValidatorHyphen, citizenIDValidatorNoHyphen);
 						
-						Calendar today = Calendar.getInstance();
-
 						List<FlowInstance> flowInstances = resultsStreamer.getBeans();
 
 						while (flowInstances != null) {
@@ -249,13 +249,26 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 										citizenIdentifier = SwedishSocialSecurityPopulator.addCentury(citizenIdentifier);
 									}
+									
+									int year = Integer.valueOf(citizenIdentifier.substring(0, 4));
+									int month = Integer.valueOf(citizenIdentifier.substring(4, 6));
+									int day = Integer.valueOf(citizenIdentifier.substring(6, 8));
+									
+									LocalDate birthDate = LocalDate.of(year, month, day);
+									LocalDate submitOrAddedDate;
+									
+									if (flowInstance.getFirstSubmitted() != null) {
+										
+										submitOrAddedDate = flowInstance.getFirstSubmitted().toLocalDateTime().toLocalDate();
+										
+									} else {
+										
+										submitOrAddedDate = flowInstance.getAdded().toLocalDateTime().toLocalDate();
+									}
+									
+									Period period = Period.between(birthDate, submitOrAddedDate);
 
-									Calendar calendar = Calendar.getInstance();
-									calendar.set(Calendar.YEAR, Integer.valueOf(citizenIdentifier.substring(0, 4)));
-									calendar.set(Calendar.MONTH, Integer.valueOf(citizenIdentifier.substring(4, 6)) - 1);
-									calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(citizenIdentifier.substring(6, 8)));
-
-									statistic.setAge(today.get(Calendar.YEAR) - calendar.get(Calendar.YEAR));
+									statistic.setAge((int) period.get(ChronoUnit.YEARS));
 
 									String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
 									Integer genderPartInt = NumberUtils.toInt(genderPart);
