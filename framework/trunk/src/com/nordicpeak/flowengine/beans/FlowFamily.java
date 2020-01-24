@@ -40,7 +40,6 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
-import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
 import com.nordicpeak.flowengine.comparators.FlowFamilyManagerComparator;
@@ -105,7 +104,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	private String contactPhone;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 255, populator = StringHTTPURLPopulator.class)
+	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String contactWebAddress;
 
@@ -135,7 +134,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@TextTagReplace
 	@Templated(fieldName = "defaultLoginHelpLinkURL")
-	@WebPopulate(maxLength = 1024, populator = StringHTTPURLPopulator.class)
+	@WebPopulate(maxLength = 1024)
 	@RequiredIfSet(paramNames = "useLoginHelpLink")
 	@XMLElement
 	private String loginHelpLinkURL;
