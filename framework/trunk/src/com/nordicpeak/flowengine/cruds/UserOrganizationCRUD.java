@@ -7,6 +7,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.utils.IntegerBasedCRUD;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
@@ -168,5 +170,31 @@ public class UserOrganizationCRUD extends IntegerBasedCRUD<UserOrganization, Use
 
 		return organization;
 	}
+	
+	@Override
+	protected void checkUpdateAccess(UserOrganization bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
+		checkOrganisationAccess(bean, user);
+	}
+
+	@Override
+	protected void checkDeleteAccess(UserOrganization bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+
+		checkOrganisationAccess(bean, user);
+	}
+
+	@Override
+	protected void checkShowAccess(UserOrganization bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+
+		checkOrganisationAccess(bean, user);
+	}
+
+	
+	protected void checkOrganisationAccess(UserOrganization bean, User user) throws AccessDeniedException{
+		
+		if(!bean.getUser().equals(user)) {
+			
+			throw new AccessDeniedException("User does not have access to requested organization " + bean);
+		}
+	}
 }
