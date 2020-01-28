@@ -43,13 +43,13 @@ public class CheckboxQueryCRUD extends BaseQueryCRUD<CheckboxQuery, CheckboxQuer
 
 		this.populateQueryDescriptor((QueryDescriptor) query.getQueryDescriptor(), req, validationErrors);
 
-		if(req.getParameter("useFreeTextAlternative") != null && StringUtils.isEmpty(bean.getFreeTextAlternative())) {
+		if (req.getParameter("useFreeTextAlternative") != null && StringUtils.isEmpty(bean.getFreeTextAlternative())) {
 			validationErrors.add(new ValidationError("freeTextAlternative", ValidationErrorType.RequiredField));
 		}
 
 		List<CheckboxAlternative> alternatives = ALTERNATIVES_POPLATOR.populate(bean.getAlternatives(), req, 1024, 255, validationErrors);
 
-		if(CollectionUtils.isEmpty(alternatives)) {
+		if (CollectionUtils.isEmpty(alternatives)) {
 
 			validationErrors.add(new ValidationError("TooFewAlternatives1Min"));
 
@@ -57,12 +57,13 @@ public class CheckboxQueryCRUD extends BaseQueryCRUD<CheckboxQuery, CheckboxQuer
 
 			Integer minChecked = query.getMinChecked();
 			Integer maxChecked = query.getMaxChecked();
+			boolean freeTextAlternative = query.getFreeTextAlternative() != null;
 
-			validateMinAndMax(minChecked, maxChecked, alternatives, validationErrors);
-			
+			validateMinAndMax(minChecked, maxChecked, alternatives, validationErrors, freeTextAlternative);
+
 		}
 
-		if(!validationErrors.isEmpty()) {
+		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
 
@@ -72,30 +73,37 @@ public class CheckboxQueryCRUD extends BaseQueryCRUD<CheckboxQuery, CheckboxQuer
 
 	}
 
-	public static void validateMinAndMax(Integer minChecked, Integer maxChecked, List<CheckboxAlternative> alternatives, List<ValidationError> validationErrors) {
-		
-		if(minChecked != null) {
+	public static void validateMinAndMax(Integer minChecked, Integer maxChecked, List<CheckboxAlternative> alternatives, List<ValidationError> validationErrors, boolean freeTextAlternative) {
 
-			if(minChecked > alternatives.size()) {
+		int alternativeCount = alternatives.size();
+
+		if (freeTextAlternative) {
+
+			alternativeCount++;
+		}
+		
+		if (minChecked != null) {
+
+			if (minChecked > alternativeCount) {
 				validationErrors.add(new ValidationError("MinCheckedToBig"));
 			}
 
-			if(maxChecked != null && (minChecked > maxChecked || maxChecked < minChecked)) {
+			if (maxChecked != null && (minChecked > maxChecked || maxChecked < minChecked)) {
 				validationErrors.add(new ValidationError("MinCheckedBiggerThanMaxChecked"));
 			}
 
 		}
 
-		if(maxChecked != null) {
+		if (maxChecked != null) {
 
-			if(maxChecked > alternatives.size()) {
+			if (maxChecked > alternativeCount) {
 				validationErrors.add(new ValidationError("MaxCheckedToBig"));
 			}
 
 		}
-		
+
 	}
-	
+
 	@Override
 	protected List<Field> getBeanRelations() {
 

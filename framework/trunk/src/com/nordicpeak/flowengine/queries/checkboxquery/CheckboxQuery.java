@@ -236,7 +236,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery {
 		
 		if (alternatives != null) {
 			
-			CheckboxQueryCRUD.validateMinAndMax(minChecked, maxChecked, alternatives, errors);
+			CheckboxQueryCRUD.validateMinAndMax(minChecked, maxChecked, alternatives, errors, freeTextAlternative != null);
 		}
 		
 		if (!StringUtils.isEmpty(xmlParser.getString("columns"))) {
