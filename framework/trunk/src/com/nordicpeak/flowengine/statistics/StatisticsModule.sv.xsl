@@ -39,7 +39,7 @@
 	
 	<xsl:variable name="i18n.FlowStepAbortCountChartLabel">Avbrutna ärenden per steg</xsl:variable>
 	<xsl:variable name="i18n.FlowStepUnsubmittedCountChartLabel">Antal sparade ärenden per steg (ej inskickade ärenden)</xsl:variable>
-	<xsl:variable name="i18n.NoStatisticsAvailable">Det finns för närvarande ingen statstik tillgänglig för detta värde.</xsl:variable>
+	<xsl:variable name="i18n.NoStatisticsAvailable">Det finns för närvarande ingen statistik tillgänglig för detta värde.</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowFamilies">Välj e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.Version">Version </xsl:variable>
