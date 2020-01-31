@@ -82,6 +82,8 @@ $(document).ready(function() {
 	
 	$("div.search-results").find(".info .close").click(function(e) {
 		$(this).parent().parent().slideUp("fast");
+		
+		$('#search').val('');
 	});
 	
 	$("textarea.mentionable").each(function() {
@@ -93,6 +95,14 @@ $(document).ready(function() {
 	    });
 	});
 	
+});
+
+$(window).on('load', function(){
+	
+	if ($("#search").val()) {
+		
+		searchFlowInstance();
+	}
 });
 
 function initDeleteManagerButton($manager, $managerList) {
