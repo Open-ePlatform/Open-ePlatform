@@ -6,7 +6,10 @@
 	<xsl:output encoding="ISO-8859-1" method="html" version="4.0"/>
 
 	<xsl:include href="ChildQueryAdminTemplates.xsl"/>
-	
+	<xsl:variable name="java.queryDescription">
+Frågetypen Val av barn hämtar uppgifter om de barn den inloggade användaren är vårdnadshavare för. Detta kräver en koppling mot Skatteverket (Navet).
+Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
+	</xsl:variable>
 	<xsl:variable name="java.queryTypeName">Val av barn</xsl:variable>
 	<xsl:variable name="java.testChildrenMenuName">Testbarn</xsl:variable>
 	
