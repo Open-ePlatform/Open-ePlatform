@@ -20,12 +20,12 @@
 		/js/flowengine.tablesorter.js
 		/js/flowengine.helpdialog.js
 		/js/flowengine.tablefilter.js
-		/js/texttagadminmodule.js
-		/js/texttagadmin.js
+		/js/texttagadmin.js?v=1
 	</xsl:variable>
 	
 	<xsl:variable name="links">
 		/css/flowengine.css
+		/css/texttagadmin.css
 	</xsl:variable>
 
 	<xsl:template match="Document">	
@@ -166,7 +166,7 @@
 	
 			<div class="help-box" data-help-box="tag-sharing">
 				<div>
-		  			<div class="no-sections"> 
+		  			<div> 
 		  				<a class="close" href="#" data-icon-after="x"></a>
 		  				
 		  				<h1><xsl:value-of select="$i18n.SelectTargets.Title" /></h1>
@@ -177,7 +177,7 @@
 	  					
 	  					<h2 class="bigmargintop"><xsl:value-of select="$i18n.SelectTargets.Settings" /></h2>
 	  					
-						<input type="checkbox" name="overwrite" id="overwrite" value="true" style="display: inline-block;"/>
+						<input class="marginright" type="checkbox" name="overwrite" id="overwrite" value="true" style="display: inline-block;"/>
 	
 						<xsl:text> </xsl:text>
 						
@@ -235,7 +235,7 @@
 	
 	<xsl:template match="TagSharingTarget">
 	
-			<input type="checkbox" name="target" id="target{position()}" value="{name}" style="display: inline-block;"/>
+			<input class="marginright" type="checkbox" name="target" id="target{position()}" value="{name}" style="display: inline-block;"/>
 			
 			<xsl:text> </xsl:text>
 			
