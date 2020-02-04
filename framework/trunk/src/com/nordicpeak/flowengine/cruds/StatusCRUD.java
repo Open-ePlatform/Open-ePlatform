@@ -352,58 +352,64 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 	}
 	
 	protected void validatePopulation(Status bean, FlowFamily flowFamily, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
-		
+
+		List<ValidationError> errors = new ArrayList<ValidationError>();
+
 		if (bean.isUseAccessCheck()) {
-			
-			List<ValidationError> errors = new ArrayList<ValidationError>();
-			
+
 			List<Integer> selectedUserIDs = bean.getManagerUserIDs();
 			List<Integer> selectedGroupIDs = bean.getManagerGroupIDs();
-			
+
 			List<User> allowedManagerUsers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, callback.getUserHandler());
-			
+
 			if (!CollectionUtils.isEmpty(selectedUserIDs)) {
-				
+
 				for (Integer userID : selectedUserIDs) {
-					
+
 					User selectedUser = callback.getUserHandler().getUser(userID, true, false);
-					
+
 					if (selectedUser == null) {
-						
+
 						errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR);
 						continue;
 					}
-					
+
 					if (allowedManagerUsers != null && allowedManagerUsers.contains(selectedUser)) {
 						continue;
 					}
-					
+
 					errors.add(new UnauthorizedUserNotManagerValidationError(selectedUser));
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(selectedGroupIDs)) {
-				
+
 				for (Integer groupID : selectedGroupIDs) {
-					
+
 					Group selectedGroup = callback.getGroupHandler().getGroup(groupID, false);
-					
+
 					if (selectedGroup == null) {
-						
+
 						errors.add(FlowInstanceAdminModule.ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR);
 						continue;
 					}
 				}
 			}
-			
-			if (!errors.isEmpty()) {
-				throw new ValidationException(errors);
-			}
-			
+
 		} else {
-			
+
 			bean.setManagerUserIDs(null);
 			bean.setManagerGroupIDs(null);
+		}
+
+		if (bean.isAddExternalMessage() && bean.isRequireSigning()) {
+
+			errors.add(FlowAdminModule.EXTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR);
+		}
+
+		if (!errors.isEmpty()) {
+			
+			throw new ValidationException(errors);
 		}
 	}
 	

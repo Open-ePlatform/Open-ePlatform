@@ -47,6 +47,53 @@ $(document).ready(function() {
 		$("#useAccessCheck").on("change", function() {
 			$("#allowedManagers").toggle($(this).is(":checked"));
 		}).change();
+		
+		var $addExternalMessage = $('#addExternalMessage');
+
+		$('#newExternalMessagesDisallowed').change(function(){
+			
+			if (this.checked) {
+				
+				$addExternalMessage.prop('checked', false).change();
+			}
+			
+			$('#newExternalMessagesAllowedDays').prop('disabled', this.checked);
+			
+			$addExternalMessage.prop('disabled', this.checked);
+			
+		}).change();
+		
+		$addExternalMessage.change(function(){
+			
+			$('#defaultExternalMessageTemplate').parent().toggle(this.checked);
+			
+		}).change();
+		
+		makeCheckboxesMutualExclusive($('#requireSigning'), $addExternalMessage);
+		
+		function makeCheckboxesMutualExclusive($first, $second) {
+			
+			[$first, $second].forEach(function($current, index){
+				
+				var $other = index == 0 ? $second : $first;
+				
+				$current.change(function(){
+					
+					if (this.checked) {
+						
+						$other.prop({
+							'checked': false,
+							'disabled': true
+						}).trigger('change');
+						
+					} else {
+						
+						$other.prop('disabled', false);
+					}
+					
+				}).change();
+			});
+		}
 	}
 	
 	if ($("#flowForm").length > 0) { // Add/Update flow
@@ -389,30 +436,6 @@ $(document).ready(function() {
 			belowSummaryDiv.remove();
 		}
     });
-	
-	var $newExternalMessagesDisallowed = $('#newExternalMessagesDisallowed');
-	var $newExternalMessagesAllowedDays = $('#newExternalMessagesAllowedDays');
-	var $addExternalMessage = $('#addExternalMessage');
-	var $defaultExternalMessageTemplate = $('#defaultExternalMessageTemplate');
-	
-	$newExternalMessagesDisallowed.change(function(){
-		
-		if (this.checked) {
-			
-			$addExternalMessage.prop('checked', false).change();
-		}
-		
-		$newExternalMessagesAllowedDays.prop('disabled', this.checked);
-		
-		$addExternalMessage.prop('disabled', this.checked);
-		
-	}).change();
-	
-	$addExternalMessage.change(function(){
-		
-		$defaultExternalMessageTemplate.parent().toggle(this.checked);
-		
-	}).change();
 	
 });
 
