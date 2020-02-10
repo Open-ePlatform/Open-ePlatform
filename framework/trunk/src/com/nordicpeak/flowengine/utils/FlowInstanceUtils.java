@@ -28,7 +28,7 @@ import com.nordicpeak.flowengine.interfaces.ContactQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
-import com.nordicpeak.flowengine.interfaces.PaymentQuery;
+import com.nordicpeak.flowengine.interfaces.PaymentQueryInstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 
 public class FlowInstanceUtils {
@@ -607,17 +607,17 @@ public class FlowInstanceUtils {
 
 	public static List<InvoiceLine> getPaymentInvoiceLines(FlowInstanceManager instanceManager) {
 		
-		List<PaymentQuery> paymentQueries = instanceManager.getQueries(PaymentQuery.class);
+		List<PaymentQueryInstance> paymentQueryInstances = instanceManager.getQueries(PaymentQueryInstance.class);
 		
-		if (paymentQueries != null) {
+		if (paymentQueryInstances != null) {
 			
 			List<InvoiceLine> invoiceLines = new ArrayList<InvoiceLine>();
 			
-			for (PaymentQuery paymentQuery : paymentQueries) {
+			for (PaymentQueryInstance paymentQueryInstance : paymentQueryInstances) {
 				
-				if (paymentQuery.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
+				if (paymentQueryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
 					
-					List<? extends InvoiceLine> queryInvoiceLines = paymentQuery.getInvoiceLines();
+					List<? extends InvoiceLine> queryInvoiceLines = paymentQueryInstance.getInvoiceLines();
 					
 					if (!CollectionUtils.isEmpty(queryInvoiceLines)) {
 
