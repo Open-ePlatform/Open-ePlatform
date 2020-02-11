@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.queries.textfieldquery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +25,15 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
+import com.nordicpeak.flowengine.beans.BasePaymentProduct;
+import com.nordicpeak.flowengine.interfaces.PaymentProduct;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 import com.nordicpeak.flowengine.queries.textfieldquery.api.TextFieldQueryEndpoint;
 
 @Table(name = "text_field_queries")
 @XMLElement
-public class TextFieldQuery extends BaseQuery {
+public class TextFieldQuery extends BaseQuery implements PaymentQuery {
 
 	private static final long serialVersionUID = -842191226937409416L;
 
@@ -311,6 +315,27 @@ public class TextFieldQuery extends BaseQuery {
 	public void setLockForManagerUpdate(boolean lockForManagerUpdate) {
 
 		this.lockForManagerUpdate = lockForManagerUpdate;
+	}
+	
+	@Override
+	public List<? extends PaymentProduct> getPaymentProducts() {
+		
+		if (fields != null) {
+			
+			List<PaymentProduct> paymentProducts = new ArrayList<>();
+			
+			for (TextField field : fields) {
+				
+				if (field.isContainsPrice()) {
+					
+					paymentProducts.add(new BasePaymentProduct(0, field.getLabel()));
+				}
+			}
+			
+			return paymentProducts;
+		}
+		
+		return Collections.emptyList();
 	}
 
 }

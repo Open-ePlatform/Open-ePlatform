@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.queries.dropdownquery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -21,12 +22,16 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.beans.BasePaymentProduct;
+import com.nordicpeak.flowengine.interfaces.PaymentProduct;
+import com.nordicpeak.flowengine.interfaces.PaymentQuery;
+import com.nordicpeak.flowengine.interfaces.PricedAlternative;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesBaseQuery;
 
 
 @Table(name = "drop_down_queries")
 @XMLElement
-public class DropDownQuery extends FixedAlternativesBaseQuery {
+public class DropDownQuery extends FixedAlternativesBaseQuery implements PaymentQuery {
 
 	private static final long serialVersionUID = -842191226937409416L;
 
@@ -209,4 +214,26 @@ public class DropDownQuery extends FixedAlternativesBaseQuery {
 		
 		this.attributeName = attributeName;
 	}
+
+	@Override
+	public List<? extends PaymentProduct> getPaymentProducts() {
+		
+		if (alternatives != null) {
+			
+			List<PaymentProduct> paymentProducts = new ArrayList<>();
+			
+			for (PricedAlternative alternative : alternatives) {
+				
+				if (alternative.getPrice() != null && alternative.getPrice() > 0 && alternative.getName() != null) {
+					
+					paymentProducts.add(new BasePaymentProduct(alternative.getPrice(), alternative.getName()));
+				}
+			}
+			
+			return paymentProducts;
+		}
+		
+		return Collections.emptyList();
+	}
+	
 }
