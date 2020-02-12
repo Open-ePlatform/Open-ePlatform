@@ -23,29 +23,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowAdminModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
-import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
-import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
-import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
-import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
-
-import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
@@ -113,6 +90,30 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
+import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
+import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
@@ -804,13 +805,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						}
 					}
 
-					log.info("All activities completed but denied for " + flowInstance + " and status " + currentStatus + ", new status " + newStatusName);
+					log.info("All activities completed but denied for flow instance " + flowInstance + " and status " + currentStatus + ", new status " + newStatusName);
 
 				} else {
 
 					newStatusName = activityGroupsForCurrentStatus.get(0).getCompleteStatus();
 
-					log.info("All activities completed successfully for " + flowInstance + " and status " + currentStatus + ", new status " + newStatusName);
+					log.info("All activities completed successfully for flow instance " + flowInstance + " and status " + currentStatus + ", new status " + newStatusName);
 				}
 
 				Status newStatus = null;
@@ -880,7 +881,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				if (activityGroup.getActivities() != null) {
 
-					log.debug("Starting activity group " + activityGroup + " for " + flowInstance);
+					log.info("Starting activity group " + activityGroup + " for flow instance " + flowInstance);
 
 					TransactionHandler transactionHandler = activityProgressDAO.createTransaction();
 
@@ -991,7 +992,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		if (subject == null || message == null) {
 
-			log.warn("no subject or message");
+			log.warn("no subject or message set, unable to send notifications");
 			return;
 		}
 
@@ -1053,7 +1054,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		log.info("Sending emails for started " + activityGroup + " for " + flowInstance + " to " + managers.size() + " managers and " + globalRecipients.size() + " global recipients");
+		log.info("Sending emails for started activity group " + activityGroup + " for flow instance " + flowInstance + " to " + managers.size() + " managers and " + globalRecipients.size() + " global recipients");
 
 		StringBuilder activitiesStringBuilder = new StringBuilder();
 
@@ -1349,6 +1350,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				if (user != null) {
 					users = CollectionUtils.addAndInstantiateIfNeeded(users, user);
 				}
+				
+			}else{
+				
+				log.warn("*Unable to find user with username " + username + " specified in attribute " + attributeName + " of flow instance " + flowInstance + " for activity " + activity);
 			}
 		}
 

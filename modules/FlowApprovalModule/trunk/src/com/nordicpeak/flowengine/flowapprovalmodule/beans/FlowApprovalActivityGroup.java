@@ -15,6 +15,7 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringTag;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
@@ -35,7 +36,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@StringTag
 	@XMLElement
 	private String name;
-	
+
 	@DAOManaged
 	@OrderBy(priority = 0)
 	@XMLElement
@@ -44,7 +45,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@DAOManaged
 	@XMLElement
 	private Integer flowFamilyID;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255, required = true)
 	@XMLElement
@@ -65,7 +66,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean useApproveDeny;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@RequiredIfSet(paramNames = "useCustomApprovedText")
@@ -74,7 +75,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramNames = {"useCustomApprovedText", "useApproveDeny"}, requiredState = RequiredState.ALL)
+	@RequiredIfSet(paramNames = { "useCustomApprovedText", "useApproveDeny" }, requiredState = RequiredState.ALL)
 	@XMLElement
 	private String deniedText;
 
@@ -99,7 +100,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String activityGroupStartedEmailMessage;
-	
+
 	@DAOManaged
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
@@ -114,148 +115,184 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	private Integer activityCount;
 
 	public Integer getActivityGroupID() {
+
 		return activityGroupID;
 	}
 
 	public void setActivityGroupID(Integer activityGroupID) {
+
 		this.activityGroupID = activityGroupID;
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
 	public void setName(String name) {
+
 		this.name = name;
 	}
 
 	public Integer getFlowFamilyID() {
+
 		return flowFamilyID;
 	}
 
 	public void setFlowFamilyID(Integer flowFamilyID) {
+
 		this.flowFamilyID = flowFamilyID;
 	}
 
 	public String getStartStatus() {
+
 		return startStatus;
 	}
 
 	public void setStartStatus(String startStatus) {
+
 		this.startStatus = startStatus;
 	}
 
 	public String getCompleteStatus() {
+
 		return completeStatus;
 	}
 
 	public void setCompleteStatus(String completeStatus) {
+
 		this.completeStatus = completeStatus;
 	}
 
 	public String getDenyStatus() {
+
 		return denyStatus;
 	}
 
 	public void setDenyStatus(String denyStatus) {
+
 		this.denyStatus = denyStatus;
 	}
 
 	public boolean isUseApproveDeny() {
+
 		return useApproveDeny;
 	}
 
 	public void setUseApproveDeny(boolean useApproveDeny) {
+
 		this.useApproveDeny = useApproveDeny;
 	}
 
 	public boolean isAppendCommentsToExternalMessages() {
+
 		return appendCommentsToExternalMessages;
 	}
 
 	public void setAppendCommentsToExternalMessages(boolean appendCommentsToExternalMessages) {
+
 		this.appendCommentsToExternalMessages = appendCommentsToExternalMessages;
 	}
 
 	public boolean isSendActivityGroupStartedEmail() {
+
 		return sendActivityGroupStartedEmail;
 	}
 
 	public void setSendActivityGroupStartedEmail(boolean sendActivityGroupStartedEmail) {
+
 		this.sendActivityGroupStartedEmail = sendActivityGroupStartedEmail;
 	}
 
 	public String getActivityGroupStartedEmailSubject() {
+
 		return activityGroupStartedEmailSubject;
 	}
 
 	public void setActivityGroupStartedEmailSubject(String activityGroupStartedEmailSubject) {
+
 		this.activityGroupStartedEmailSubject = activityGroupStartedEmailSubject;
 	}
 
 	public String getActivityGroupStartedEmailMessage() {
+
 		return activityGroupStartedEmailMessage;
 	}
 
 	public void setActivityGroupStartedEmailMessage(String activityGroupStartedEmailMessage) {
+
 		this.activityGroupStartedEmailMessage = activityGroupStartedEmailMessage;
 	}
 
 	public List<FlowApprovalActivity> getActivities() {
+
 		return activities;
 	}
 
 	public void setActivities(List<FlowApprovalActivity> activities) {
+
 		this.activities = activities;
 	}
 
 	public Integer getActivityCount() {
+
 		return activityCount;
 	}
 
 	public void setActivityCount(Integer activityCount) {
+
 		this.activityCount = activityCount;
 	}
-	
+
 	public Integer getSortIndex() {
+
 		return sortIndex;
 	}
 
 	public void setSortIndex(Integer sortIndex) {
+
 		this.sortIndex = sortIndex;
 	}
 
 	public Integer getReminderAfterXDays() {
+
 		return reminderAfterXDays;
 	}
 
 	public void setReminderAfterXDays(Integer reminderAfterXDays) {
+
 		this.reminderAfterXDays = reminderAfterXDays;
 	}
 
 	public String getApprovedText() {
+
 		return approvedText;
 	}
 
 	public void setApprovedText(String approveText) {
+
 		this.approvedText = approveText;
 	}
 
 	public String getDeniedText() {
+
 		return deniedText;
 	}
 
 	public void setDeniedText(String denyText) {
+
 		this.deniedText = denyText;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (activityGroupID=" + activityGroupID + ", name=" + name + ", flowFamilyID=" + flowFamilyID + ", sortIndex=" + sortIndex + ", startStatus=" + startStatus + ", completeStatus=" + completeStatus + ")";
+
+		return StringUtils.toLogFormat(name, 30) + " (activityGroupID: " + activityGroupID + ", flowFamilyID: " + flowFamilyID + ")";
 	}
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((activityGroupID == null) ? 0 : activityGroupID.hashCode());
@@ -264,23 +301,30 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowApprovalActivityGroup other = (FlowApprovalActivityGroup) obj;
 		if (activityGroupID == null) {
-			if (other.activityGroupID != null)
+			if (other.activityGroupID != null) {
 				return false;
-		} else if (!activityGroupID.equals(other.activityGroupID))
+			}
+		} else if (!activityGroupID.equals(other.activityGroupID)) {
 			return false;
+		}
 		return true;
 	}
-	
+
 	@Override
 	public int compareTo(FlowApprovalActivityGroup o) {
+
 		return getSortIndex().compareTo(o.getSortIndex());
 	}
 

@@ -17,6 +17,7 @@ import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
@@ -44,7 +45,7 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate(maxLength = 255, required = true)
 	@XMLElement
 	private String name;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
@@ -54,7 +55,7 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String description;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -111,120 +112,149 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	private List<FlowApprovalActivityProgress> activityProgresses;
 
 	public Integer getActivityID() {
+
 		return activityID;
 	}
 
 	public void setActivityID(Integer activityID) {
+
 		this.activityID = activityID;
 	}
 
 	public FlowApprovalActivityGroup getActivityGroup() {
+
 		return activityGroup;
 	}
 
 	public void setActivityGroup(FlowApprovalActivityGroup activityGroup) {
+
 		this.activityGroup = activityGroup;
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
 	public void setName(String name) {
+
 		this.name = name;
 	}
 
 	public String getShortDescription() {
+
 		return shortDescription;
 	}
 
 	public void setShortDescription(String shortDescription) {
+
 		this.shortDescription = shortDescription;
 	}
 
 	public String getDescription() {
+
 		return description;
 	}
 
 	public void setDescription(String description) {
+
 		this.description = description;
 	}
 
 	public List<FlowApprovalActivityResponsibleUser> getResponsibleUsers() {
+
 		return responsibleUsers;
 	}
 
 	public void setResponsibleUsers(List<FlowApprovalActivityResponsibleUser> responsibleUsers) {
+
 		this.responsibleUsers = responsibleUsers;
 	}
 
 	public List<Group> getResponsibleGroups() {
+
 		return responsibleGroups;
 	}
 
 	public void setResponsibleGroups(List<Group> responsibleGroups) {
+
 		this.responsibleGroups = responsibleGroups;
 	}
 
 	public List<FlowApprovalActivityProgress> getActivityProgresses() {
+
 		return activityProgresses;
 	}
 
 	public void setActivityProgresses(List<FlowApprovalActivityProgress> activityProgresses) {
+
 		this.activityProgresses = activityProgresses;
 	}
 
 	public String getAttributeName() {
+
 		return attributeName;
 	}
 
 	public void setAttributeName(String attributeName) {
+
 		this.attributeName = attributeName;
 	}
 
 	public boolean isInverted() {
+
 		return invert;
 	}
 
 	public void setInverted(boolean invert) {
+
 		this.invert = invert;
 	}
 
 	public List<String> getAttributeValues() {
+
 		return attributeValues;
 	}
 
 	public void setAttributeValues(List<String> attributeValues) {
+
 		this.attributeValues = attributeValues;
 	}
 
 	public String getGlobalEmailAddress() {
+
 		return globalEmailAddress;
 	}
 
 	public void setGlobalEmailAddress(String globalEmailAddress) {
+
 		this.globalEmailAddress = globalEmailAddress;
 	}
 
 	public List<String> getResponsibleUserAttributeNames() {
+
 		return responsibleUserAttributeNames;
 	}
 
 	public void setResponsibleUserAttributeName(List<String> responsibleUserAttributeNames) {
+
 		this.responsibleUserAttributeNames = responsibleUserAttributeNames;
 	}
 
 	public boolean isShowFlowInstance() {
+
 		return showFlowInstance;
 	}
-	
+
 	public void setShowFlowInstance(boolean showFlowInstance) {
+
 		this.showFlowInstance = showFlowInstance;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (activityID=" + activityID + ", activityGroup=" + (activityGroup == null ? null : activityGroup.getActivityGroupID()) + ", name=" + name + ")";
+
+		return StringUtils.toLogFormat(name, 30) + " (activityID: " + activityID + ")";
 	}
 
 }
