@@ -495,7 +495,9 @@
 						
 						<div class="divider" />
 						
-						<article class="buttons">
+						
+						
+						<article class="buttons floatright">
 						
 							<xsl:if test="not(ActivityProgress/completed != '')">
 								<input type="submit" value="{$i18n.SaveChanges}" class="btn btn-green btn-inline" />
