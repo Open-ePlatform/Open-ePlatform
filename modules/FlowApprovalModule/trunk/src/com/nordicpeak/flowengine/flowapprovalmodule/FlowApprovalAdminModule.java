@@ -1353,7 +1353,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				
 			}else{
 				
-				log.warn("*Unable to find user with username " + username + " specified in attribute " + attributeName + " of flow instance " + flowInstance + " for activity " + activity);
+				log.warn("Unable to find user with username " + username + " specified in attribute " + attributeName + " of flow instance " + flowInstance + " for activity " + activity);
 			}
 		}
 
