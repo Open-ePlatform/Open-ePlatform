@@ -28,7 +28,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=9
+		/js/flowadminmodule.js?v=10
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -98,7 +98,12 @@
 					<xsl:apply-templates select="AddStatus" />
 					<xsl:apply-templates select="UpdateStatus" />
 					<xsl:apply-templates select="SortStatuses" />
-					<xsl:apply-templates select="ListStandardStatuses" />
+					<xsl:apply-templates select="ReplaceFlowStatuses" />
+					
+					<xsl:apply-templates select="ListStandardStatusGroups" />
+					<xsl:apply-templates select="AddStandardStatusGroup" />
+					<xsl:apply-templates select="UpdateStandardStatusGroup" />
+					<xsl:apply-templates select="ShowStandardStatusGroup" />
 					<xsl:apply-templates select="AddStandardStatus" />
 					<xsl:apply-templates select="UpdateStandardStatus" />
 					<xsl:apply-templates select="SortStandardStatuses" />
@@ -979,7 +984,16 @@
 							</a>
 						</div>
 					</xsl:if>
-				
+					
+					<xsl:if test="not(Flow/Statuses/Status/flowInstanceCount > 0)">
+						<div class="floatright marginright clearboth">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/replaceflowstatuses/{Flow/flowID}" title="{$i18n.ReplaceFlowStatusesWithStandard}">
+								<xsl:value-of select="$i18n.ReplaceFlowStatusesWithStandard"/>
+								<img class="marginleft" src="{$imgPath}/move.png" alt="" />
+							</a>
+						</div>
+					</xsl:if>
+					
 				</div>
 				
 			</div>
@@ -1972,7 +1986,7 @@
 						<xsl:with-param name="valueElementName" select="'flowTypeID'" />
 						<xsl:with-param name="labelElementName" select="'name'" />
 						<xsl:with-param name="element" select="FlowTypes/FlowType" />
-						<xsl:with-param name="selectedValue" select="Flow/FlowType/flowTypeID"/>       
+						<xsl:with-param name="selectedValue" select="Flow/FlowType/flowTypeID"/>
 					</xsl:call-template>
 				</div>
 				
@@ -2631,12 +2645,12 @@
 			</div>
 			
 		</xsl:if>
-			
-		<xsl:if test="$isInternal = 'true'">	
+		
+		<xsl:if test="$isInternal = 'true'">
 			
 			<!-- Disable if we are NOT in add mode -->
 			<xsl:if test="/Document/AddFlow">
-				<div class="floatleft full bigmarginbottom margintop internal">
+				<div class="floatleft full margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2646,9 +2660,28 @@
 						</xsl:call-template>
 						
 						<label for="addstandardstatuses">
-							<xsl:value-of select="$i18n.addStandardStatuses" />
+							<xsl:value-of select="$i18n.AddStandardStatuses" />
 						</label>
 					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom internal">
+					
+					<label for="statusGroupID" class="floatleft full">
+						<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup" />
+					</label>
+					
+					<div class="floatleft full">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'statusGroupID'"/>
+							<xsl:with-param name="name" select="'statusGroupID'"/>
+							<xsl:with-param name="valueElementName" select="'statusGroupID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="element" select="StandardStatusGroups/StandardStatusGroup" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.AddStandardStatuses.StandardStatusGroup.choose" />
+						</xsl:call-template>
+					</div>
+					
 				</div>
 			</xsl:if>
 		
@@ -2667,7 +2700,7 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="name" select="'shortDescription'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="Flow" />		
+					<xsl:with-param name="element" select="Flow" />
 				</xsl:call-template>
 				
 			</div>
@@ -2686,7 +2719,7 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="name" select="'longDescription'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
-					<xsl:with-param name="element" select="Flow" />		
+					<xsl:with-param name="element" select="Flow" />
 				</xsl:call-template>
 				
 			</div>
@@ -4417,74 +4450,217 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="ListStandardStatuses">
+	<xsl:template match="ListStandardStatusGroups">
 	
-		<h1><xsl:value-of select="$i18n.ListStandardStatuses.title" /></h1>
+		<h1><xsl:value-of select="$i18n.ListStandardStatusGroups.title" /></h1>
 		
 		<xsl:apply-templates select="validationError"/>
 		
 		<p>
-			<xsl:value-of select="$i18n.ListStandardStatuses.description" />
+			<xsl:value-of select="$i18n.ListStandardStatusGroups.description" />
 		</p>
 		
 			<xsl:choose>
-				<xsl:when test="StandardStatuses/StandardStatus">
+				<xsl:when test="StandardStatusGroups/StandardStatusGroup">
 				
 					<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
-						<thead>	
+						<thead>
 							<tr>
 								<th><xsl:value-of select="$i18n.name" /></th>
-								<th width="32" />
+								<th width="58" />
 							</tr>
 						</thead>
 						<tbody>
 							
-							<xsl:apply-templates select="StandardStatuses/StandardStatus" mode="list"/>
+							<xsl:apply-templates select="StandardStatusGroups/StandardStatusGroup" mode="list"/>
 							
 						</tbody>
 					</table>
 				
 				</xsl:when>
 				<xsl:otherwise>
-					<p><xsl:value-of select="$i18n.noStandardStatusesFound"/></p>
+					<p><xsl:value-of select="$i18n.ListStandardStatusGroups.noStandardStatusGroupsFound"/></p>
 				</xsl:otherwise>
 			</xsl:choose>
 			
 			<br/>
 			
 			<div class="floatright marginright">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstandardstatus/{Flow/flowID}" title="{$i18n.addStandardStatus}">
-					<xsl:value-of select="$i18n.addStandardStatus"/>
-					<img class="alignbottom" src="{$imgPath}/add.png" alt="" />
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstandardstatusgroup" title="{$i18n.AddStandardStatusGroup}">
+					<xsl:value-of select="$i18n.AddStandardStatusGroup"/>
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 				</a>
-			</div>	
-								
-			<xsl:if test="StandardStatuses/StandardStatus">
-				<div class="floatright marginright clearboth">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstandardstatuses" title="{$i18n.SortStandardStatuses}">
+			</div>
+			
+	</xsl:template>
+	
+	<xsl:template match="StandardStatusGroup" mode="list">
+		
+		<tr>
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showstandardstatusgroup/{statusGroupID}" title="{$i18n.UpdateStandardStatusGroup}: {name}">
+					<xsl:value-of select="name"/>
+				</a>
+			</td>
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatusgroup/{statusGroupID}" title="{$i18n.UpdateStandardStatusGroup}: {name}">
+					<img src="{$imgPath}/pen.png" alt="" />
+				</a>
+				
+				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/copystandardstatusgroup/{statusGroupID}" title="{$i18n.CopyStandardStatusGroup}: {name}">
+					<img src="{$imgPath}/page_copy.png" alt="" />
+				</a>
+				
+				<xsl:if test="statusGroupID != 1">
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatusgroup/{statusGroupID}" onclick="return confirm('{$i18n.DeleteStandardStatusGroup.confirm}: {name}?');" title="{$i18n.DeleteStandardStatusGroup}: {name}">
+						<img src="{$imgPath}/delete.png" alt="" />
+					</a>
+				</xsl:if>
+			</td>
+		</tr>
+		
+	</xsl:template>
+	
+	<xsl:template match="AddStandardStatusGroup">
+	
+		<h1><xsl:value-of select="$i18n.AddStandardStatusGroup"/></h1>
+	
+		<xsl:apply-templates select="validationException/validationError" />
+
+		<form method="post" action="{/Document/requestinfo/uri}">
+				
+			<xsl:call-template name="standardStatusGroupForm"/>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.AddStandardStatusGroup}" />
+			</div>
+	
+		</form>
+	
+	</xsl:template>
+	
+	<xsl:template match="UpdateStandardStatusGroup">
+	
+		<h1>
+			<xsl:value-of select="$i18n.UpdateStandardStatusGroup"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="StandardStatus/name"/>
+		</h1>
+
+		<xsl:apply-templates select="validationException/validationError" />
+
+		<form method="post" action="{/Document/requestinfo/uri}">
+		
+			<xsl:call-template name="standardStatusGroupForm"/>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.UpdateStandardStatusGroup}" />
+			</div>
+		
+		</form>
+	
+	</xsl:template>
+	
+	<xsl:template name="standardStatusGroupForm">
+	
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="name" class="floatleft full">
+				<xsl:value-of select="$i18n.name" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'name'"/>
+					<xsl:with-param name="name" select="'name'"/>
+					<xsl:with-param name="element" select="StandardStatusGroup" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="ShowStandardStatusGroup">
+	
+		<h1>
+			<xsl:value-of select="$i18n.ShowStandardStatusGroup.title" />
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="StandardStatusGroup/name" />
+		</h1>
+		
+		<xsl:apply-templates select="validationError"/>
+		
+		<p>
+			<xsl:value-of select="$i18n.ShowStandardStatusGroup.description" />
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="StandardStatusGroup/name" />
+			<xsl:text>.</xsl:text>
+		</p>
+		
+			<xsl:choose>
+				<xsl:when test="StandardStatusGroup/StandardStatuses/StandardStatus">
+				
+					<table id="flowlist" class="full coloredtable sortabletable oep-table" cellspacing="0">
+						<thead>
+							<tr>
+								<th><xsl:value-of select="$i18n.name" /></th>
+								<th width="37" />
+							</tr>
+						</thead>
+						<tbody>
+							
+							<xsl:apply-templates select="StandardStatusGroup/StandardStatuses/StandardStatus" mode="list"/>
+							
+						</tbody>
+					</table>
+				
+				</xsl:when>
+				<xsl:otherwise>
+					<p><xsl:value-of select="$i18n.ShowStandardStatusGroup.noStandardStatusesFound"/></p>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<br/>
+			
+			<div class="floatleft">
+				<a class="btn btn-light btn-inline" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.ShowStandardStatusGroup.back}">
+					<xsl:value-of select="$i18n.ShowStandardStatusGroup.back"/>
+				</a>
+			</div>
+			
+			<div class="floatright marginright">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addstandardstatus/{StandardStatusGroup/statusGroupID}" title="{$i18n.AddStandardStatus}">
+					<xsl:value-of select="$i18n.AddStandardStatus"/>
+					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+				</a>
+			</div>
+			
+			<xsl:if test="StandardStatusGroup/StandardStatuses/StandardStatus">
+				<div class="floatright marginright clearright">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/sortstandardstatuses/{StandardStatusGroup/statusGroupID}" title="{$i18n.SortStandardStatuses}">
 						<xsl:value-of select="$i18n.SortStandardStatuses"/>
 						<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 					</a>
 				</div>
 			</xsl:if>
 		
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="StandardStatus" mode="list">
 	
 		<tr>
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatus/{statusID}" title="{$i18n.updateStandardStatus.link.title}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatus/{statusID}" title="{$i18n.UpdateStandardStatus}: {name}">
 					<xsl:value-of select="name"/>
 				</a>
 			</td>
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatus/{statusID}" title="{$i18n.updateStandardStatus.link.title}: {name}">
-					<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestandardstatus/{statusID}" title="{$i18n.UpdateStandardStatus}: {name}">
+					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
 		
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirm('{$i18n.deleteStandardStatus.confirm}: {name}?');" title="{$i18n.deleteStandardStatus.link.title}: {name}">
-					<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
+				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirm('{$i18n.DeleteStandardStatus.confirm}: {name}?');" title="{$i18n.DeleteStandardStatus}: {name}">
+					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 			</td>
 		</tr>
@@ -4493,16 +4669,16 @@
 	
 	<xsl:template match="AddStandardStatus">
 	
-		<h1><xsl:value-of select="$i18n.AddStandardStatus.title"/></h1>
+		<h1><xsl:value-of select="$i18n.AddStandardStatus"/></h1>
 	
 		<xsl:apply-templates select="validationException/validationError" />
 
 		<form method="post" action="{/Document/requestinfo/uri}">
-				
+			
 			<xsl:call-template name="standardStatusForm"/>
 			
 			<div class="floatright">
-				<input type="submit" value="{$i18n.AddStatus.submit}" />
+				<input type="submit" value="{$i18n.AddStandardStatus}" />
 			</div>
 	
 		</form>
@@ -4512,7 +4688,7 @@
 	<xsl:template match="UpdateStandardStatus">
 	
 		<h1>
-			<xsl:value-of select="$i18n.UpdateStandardStatus.title"/>
+			<xsl:value-of select="$i18n.UpdateStandardStatus"/>
 			<xsl:text>&#x20;</xsl:text>
 			<xsl:value-of select="StandardStatus/name"/>
 		</h1>
@@ -4524,7 +4700,7 @@
 			<xsl:call-template name="standardStatusForm"/>
 			
 			<div class="floatright">
-				<input type="submit" value="{$i18n.UpdateStatus.submit}" />
+				<input type="submit" value="{$i18n.UpdateStandardStatus}" />
 			</div>
 		
 		</form>
@@ -4682,7 +4858,7 @@
 		<p><xsl:value-of select="$i18n.statusContentType.description"/></p>
 		
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'new'"/>
@@ -4698,7 +4874,7 @@
 		</div>
 	
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_multisign'"/>
@@ -4714,7 +4890,7 @@
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_payment'"/>
@@ -4730,7 +4906,7 @@
 		</div>
 	
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'submitted'"/>
@@ -4746,7 +4922,7 @@
 		</div>
 	
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'in_progress'"/>
@@ -4762,7 +4938,7 @@
 		</div>
 	
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_completion'"/>
@@ -4778,7 +4954,7 @@
 		</div>
 	
 		<div class="floatleft full bigmarginbottom">
-						
+			
 			<div class="floatleft full">
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'archived'"/>
@@ -4809,13 +4985,15 @@
 	
 		<h1>
 			<xsl:value-of select="$i18n.SortStandardStatuses" />
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="StandardStatusGroup/name" />
 		</h1>
 		
 		<form id="statusSortingForm" name="statusSortingForm" method="post" action="{/Document/requestinfo/uri}">
 		
 			<div class="floatleft full sortable">
 				
-				<xsl:apply-templates select="StandardStatuses/StandardStatus" mode="sort" />
+				<xsl:apply-templates select="StandardStatusGroup/StandardStatuses/StandardStatus" mode="sort" />
 				
 			</div>
 			
@@ -7245,7 +7423,7 @@
 				
 				<div class="service-navigator-wrap">
 					<div>
-						<ul class="service-navigator primary">
+						<ul class="service-navigator primary full">
 							<xsl:for-each select="../../FlowInstance/Flow/Steps/Step">
 							
 								<li>
@@ -7336,6 +7514,45 @@
 					
 		</xsl:if>
 		
+	</xsl:template>
+	
+	<xsl:template match="ReplaceFlowStatuses">
+	
+		<h1>
+			<xsl:value-of select="$i18n.ReplaceFlowStatusesWithStandard.title"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="Flow/name"/>
+		</h1>
+
+		<xsl:apply-templates select="ValidationErrors/validationError" />
+
+		<form method="post" action="{/Document/requestinfo/uri}">
+		
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="statusGroupID" class="floatleft full required">
+					<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createDropdown">
+						<xsl:with-param name="id" select="'statusGroupID'"/>
+						<xsl:with-param name="name" select="'statusGroupID'"/>
+						<xsl:with-param name="valueElementName" select="'statusGroupID'" />
+						<xsl:with-param name="labelElementName" select="'name'" />
+						<xsl:with-param name="element" select="StandardStatusGroups/StandardStatusGroup" />
+						<xsl:with-param name="addEmptyOption" select="$i18n.AddStandardStatuses.StandardStatusGroup.choose" />
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatright">
+				<input type="submit" value="{$i18n.UpdateFlowIcon.submit}" />
+			</div>
+		
+		</form>
+	
 	</xsl:template>
 
 	<xsl:template match="validationError[messageKey='NoManagersSet']">
@@ -8083,6 +8300,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'loginQuestionText'">
 						<xsl:value-of select="$i18n.Flow.showLoginQuestion"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'statusGroupID'">
+						<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup"/>
 					</xsl:when>
 					
 					<xsl:when test="fieldName = 'event-message'">

@@ -34,6 +34,7 @@
 	<xsl:variable name="java.eventStatusAddedMessage">Skapade status</xsl:variable>
 	<xsl:variable name="java.eventStatusUpdatedMessage">Uppdaterade status</xsl:variable>
 	<xsl:variable name="java.eventStatusDeletedMessage">Tog bort status</xsl:variable>
+	<xsl:variable name="java.eventStatusesReplacedMessage">Ersatte statusar med</xsl:variable>
 	<xsl:variable name="java.eventChangeFlowType">Ändrade kategori till</xsl:variable>
 	<xsl:variable name="java.eventStatusSortMessage">Sorterade statusar</xsl:variable>
 	<xsl:variable name="java.eventEvaluatorSortMessage">Sorterade regler i fråga</xsl:variable>
@@ -301,18 +302,29 @@
 	<xsl:variable name="i18n.FlowFormNotFound">Den begärda blanketten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.unknownQueryType">Okänd frågetyp</xsl:variable>
 	<xsl:variable name="i18n.unknownEvaluatorType">Okänd regeltyp</xsl:variable>
-	<xsl:variable name="i18n.administrateStandardStatuses">Adm. standardstatusar</xsl:variable>
-	<xsl:variable name="i18n.ListStandardStatuses.title">Standardstatusar</xsl:variable>
-	<xsl:variable name="i18n.ListStandardStatuses.description">Nedan visas samtliga standardstatusar i systemet.</xsl:variable>
-	<xsl:variable name="i18n.noStandardStatusesFound">Inga standardstatusar hittades.</xsl:variable>
-	<xsl:variable name="i18n.addStandardStatus">Lägg till standardstatus</xsl:variable>
-	<xsl:variable name="i18n.AddStandardStatus.title">Lägg till standardstatus</xsl:variable>
-	<xsl:variable name="i18n.SortStandardStatuses">Sortera standardstatusar</xsl:variable>
-	<xsl:variable name="i18n.UpdateStandardStatus.title">Uppdatera standardstatus</xsl:variable>
-	<xsl:variable name="i18n.updateStandardStatus.link.title">Uppdatera standardstatus</xsl:variable>
-	<xsl:variable name="i18n.deleteStandardStatus.confirm">Ta bort standardstatus</xsl:variable>
-	<xsl:variable name="i18n.deleteStandardStatus.link.title">Ta bort standardstatus</xsl:variable>
-	<xsl:variable name="i18n.addStandardStatuses">Lägg till standardstatusar</xsl:variable>
+	
+	<xsl:variable name="i18n.administrateStandardStatuses">Adm. statusgrupper</xsl:variable>
+	<xsl:variable name="i18n.ListStandardStatusGroups.title">Statusgrupper</xsl:variable>
+	<xsl:variable name="i18n.ListStandardStatusGroups.description">Nedan visas samtliga statusgrupper i systemet.</xsl:variable>
+	<xsl:variable name="i18n.ListStandardStatusGroups.noStandardStatusGroupsFound">Inga statusgrupper hittades.</xsl:variable>
+	<xsl:variable name="i18n.ShowStandardStatusGroup.title">Statusgrupp:</xsl:variable>
+	<xsl:variable name="i18n.ShowStandardStatusGroup.description">Nedan visas standardstatusar tillhörande statusgruppen</xsl:variable>
+	<xsl:variable name="i18n.ShowStandardStatusGroup.noStandardStatusesFound">Inga standardstatusar hittades.</xsl:variable>
+	<xsl:variable name="i18n.ShowStandardStatusGroup.back">Bakåt</xsl:variable>
+	<xsl:variable name="i18n.AddStandardStatus">Lägg till standardstatus</xsl:variable>
+	<xsl:variable name="i18n.AddStandardStatusGroup">Lägg till statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.UpdateStandardStatus">Uppdatera standardstatus</xsl:variable>
+	<xsl:variable name="i18n.UpdateStandardStatusGroup">Uppdatera statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.CopyStandardStatusGroup">Kopiera statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.DeleteStandardStatus">Ta bort standardstatus</xsl:variable>
+	<xsl:variable name="i18n.DeleteStandardStatus.confirm">Ta bort standardstatus</xsl:variable>
+	<xsl:variable name="i18n.DeleteStandardStatusGroup">Ta bort statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.DeleteStandardStatusGroup.confirm">Ta bort statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.SortStandardStatuses">Sortera standardstatusar i</xsl:variable>
+	
+	<xsl:variable name="i18n.AddStandardStatuses">Lägg till standardstatusar</xsl:variable>
+	<xsl:variable name="i18n.AddStandardStatuses.StandardStatusGroup">Statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.AddStandardStatuses.StandardStatusGroup.choose">Välj statusgrupp</xsl:variable>
 	<xsl:variable name="i18n.RequestedFlowFamilyNotFound">Den begärda e-tjänsten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.FlowFamilyCannotBeDeleted">Den begärda e-tjänsten kan inte tas bort då en eller flera versioner av den är publicerade eller har ärenden knuta till sig.</xsl:variable>
 	<xsl:variable name="i18n.testFlow">Testa e-tjänsten</xsl:variable>
@@ -575,6 +587,9 @@
 	<xsl:variable name="i18n.sortStatuses">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
+	
+	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard">Ersätt statusar med standardstatusar</xsl:variable>
+	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard.title">Ersätt statusar med standardstatusar i e-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.MoveEvaluator">Flytta regel</xsl:variable>
 	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>

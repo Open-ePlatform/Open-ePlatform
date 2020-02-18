@@ -112,15 +112,25 @@ $(document).ready(function() {
 			
 			var $flowForm = $("#flowForm");
 			
-			if($(this).val() == "EXTERNAL") {
+			if ($(this).val() == "EXTERNAL") {
+				
 				$flowForm.find(".internal").hide();
 				$("#enabled").removeAttr("disabled");
 				$("#externalLink").removeAttr("disabled").parent().parent().show();
+				
 			} else {
+				
 				$flowForm.find(".internal").show();
 				$("#enabled").attr("disabled", "disabled");
 				$("#externalLink").attr("disabled", "disabled").parent().parent().hide();
+				$("#addstandardstatuses").trigger("change");
 			}
+			
+		}).trigger("change");
+		
+		$("#addstandardstatuses").change(function(e) {
+			var checked = this.checked;
+			$("#statusGroupID").attr("disabled", !checked).parent().parent().toggle(checked);
 			
 		}).trigger("change");
 		

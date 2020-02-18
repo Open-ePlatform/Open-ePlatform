@@ -1676,15 +1676,15 @@
 				UPDATE flowengine_flow_types SET iconLastModified = CURRENT_TIMESTAMP();
 	        ]]>
 	    </Query>
-	</Script>	
+	</Script>
 	
 	<Script version="85">
 	    <Query>
 	        <![CDATA[
 				ALTER TABLE `flowengine_operating_messages` ADD COLUMN `messageType` VARCHAR(45) NOT NULL AFTER `endTime`;
 	        ]]>
-	    </Query>	    
-	</Script>	
+	    </Query>
+	</Script>
 
 	<Script version="86">
 	   <Query>
@@ -2450,40 +2450,77 @@
 	<Script version="134">
 		<Query>
 			<![CDATA[
- 				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `isNotRestrictedAdminDeletable` `isRestrictedAdminDeletable` TINYINT(1) NOT NULL; 
- 			]]> 
+				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `isNotRestrictedAdminDeletable` `isRestrictedAdminDeletable` TINYINT(1) NOT NULL; 
+			]]>
 		</Query>
 		<Query>
 			<![CDATA[
- 				UPDATE `flowengine_flow_statuses`  
- 				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
- 			]]> 
+				UPDATE `flowengine_flow_statuses`  
+				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
+			]]>
 		</Query>
 		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_standard_statuses`
 					ADD COLUMN `isRestrictedAdminDeletable` TINYINT(1) NOT NULL AFTER `isAdminDeletable`;
 			]]>
-		</Query>		
+		</Query>
 		<Query>
 			<![CDATA[
- 				UPDATE `flowengine_standard_statuses`  
- 				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
- 			]]> 
+				UPDATE `flowengine_standard_statuses`  
+				SET `isRestrictedAdminDeletable` = `isAdminDeletable`;
+			]]>
 		</Query>
 	</Script>
 
 	<Script version="135">
-	   <Query>
-	        <![CDATA[
+		<Query>
+			<![CDATA[
 				ALTER TABLE `flowengine_flow_families` ADD COLUMN `contactWebAddress` VARCHAR(1024) AFTER `contactPhone`;
-	        ]]>
-	   </Query>
-	   <Query>
-	        <![CDATA[
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
 				ALTER TABLE `flowengine_flow_families` MODIFY COLUMN `loginHelpLinkURL` VARCHAR(1024);
-	        ]]>
-	    </Query>
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="136">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_standard_status_groups` (
+					`statusGroupID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`statusGroupID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowengine_standard_status_groups` (statusGroupID, name) VALUES (1, "Standard");
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses`
+				ADD COLUMN `statusGroupID` INT(10) UNSIGNED NOT NULL AFTER `statusID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowengine_standard_statuses` SET `statusGroupID` = 1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses`
+				ADD CONSTRAINT `FK_flowengine_standard_statuses_1` FOREIGN KEY (`statusGroupID`)
+					REFERENCES `flowengine_standard_status_groups` (`statusGroupID`) ON UPDATE CASCADE ON DELETE CASCADE;
+			]]>
+		</Query>
 	</Script>
 
 </DBScripts>

@@ -42,6 +42,7 @@ import com.nordicpeak.flowengine.beans.OperatingMessage;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
+import com.nordicpeak.flowengine.beans.StandardStatusGroup;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.beans.UserBookmark;
@@ -129,6 +130,11 @@ public class FlowEngineDAOFactory {
 	public AnnotatedDAO<StandardStatus> getStandardStatusDAO() {
 		
 		return daoFactory.getDAO(StandardStatus.class);
+	}
+	
+	public AnnotatedDAO<StandardStatusGroup> getStandardStatusGroupDAO() {
+		
+		return daoFactory.getDAO(StandardStatusGroup.class);
 	}
 	
 	public AnnotatedDAO<DefaultStandardStatusMapping> getDefaultStandardStatusMappingDAO() {

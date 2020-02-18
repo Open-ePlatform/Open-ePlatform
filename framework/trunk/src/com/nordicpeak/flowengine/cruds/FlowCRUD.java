@@ -36,11 +36,11 @@ import se.unlogic.hierarchy.core.utils.ViewFragmentUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.CRUDDAO;
-import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
+import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.serialization.SerializationUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.templates.TemplateUtils;
@@ -59,7 +59,6 @@ import se.unlogic.webutils.validation.ValidationUtils;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.FlowBrowserModule;
 import com.nordicpeak.flowengine.beans.Category;
-import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -72,7 +71,7 @@ import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
-import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.StandardStatusGroup;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
@@ -157,6 +156,9 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		dummyFlow.setFlowFamily(dummyFlowFamily);
 
 		addTypeElement.appendChild(dummyFlow.toXML(doc));
+		
+		List<StandardStatusGroup> statusGroups = callback.getDAOFactory().getStandardStatusGroupDAO().getAll();
+		XMLUtils.append(doc, addTypeElement, "StandardStatusGroups", statusGroups);
 	}
 
 	@Override
@@ -340,6 +342,25 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		validateTags(bean, errors);
 		
 		validateFlowOverviewAttributes(bean, req, errors);
+		
+		if (req.getParameter("addstandardstatuses") != null) {
+			
+			Integer statusGroupID = ValidationUtils.validateParameter("statusGroupID", req, true, PositiveStringIntegerPopulator.getPopulator(), errors);
+			
+			if (statusGroupID != null) {
+				
+				StandardStatusGroup statusGroup = callback.getStatusGroup(statusGroupID, StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
+		
+				if (statusGroup == null) {
+			
+					errors.add(new ValidationError("statusGroupID", ValidationErrorType.InvalidFormat));
+					
+				} else {
+						
+					callback.replaceFlowStatusesWithStandardStatuses(bean, statusGroup);
+				}
+			}
+		}
 
 		if (!errors.isEmpty()) {
 
@@ -355,42 +376,6 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			bean.setSubmittedMessage(null);
 
 			return;
-		}
-
-		if (req.getParameter("addstandardstatuses") != null) {
-
-			List<StandardStatus> standardStatuses = callback.getDAOFactory().getStandardStatusDAO().getAll(new HighLevelQuery<StandardStatus>(StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION));
-
-			if (standardStatuses != null) {
-
-				List<Status> statuses = new ArrayList<Status>(standardStatuses.size());
-
-				for (StandardStatus standardStatus : standardStatuses) {
-
-					Status status = new Status(standardStatus);
-
-					if (standardStatus.getDefaultStandardStatusMappings() != null) {
-
-						List<DefaultStatusMapping> statusMappings = new ArrayList<DefaultStatusMapping>(standardStatus.getDefaultStandardStatusMappings().size());
-
-						for (DefaultStandardStatusMapping defaultStandardStatusMapping : standardStatus.getDefaultStandardStatusMappings()) {
-
-							DefaultStatusMapping statusMapping = new DefaultStatusMapping();
-
-							statusMapping.setActionID(defaultStandardStatusMapping.getActionID());
-							statusMapping.setFlow(bean);
-
-							statusMappings.add(statusMapping);
-						}
-
-						status.setDefaultStatusMappings(statusMappings);
-					}
-
-					statuses.add(status);
-				}
-
-				bean.setStatuses(statuses);
-			}
 		}
 		
 		bean.setIconLastModified(TimeUtils.getCurrentTimestamp());

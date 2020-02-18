@@ -176,6 +176,7 @@ import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
 import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
@@ -191,6 +192,7 @@ import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.StandardStatus;
+import com.nordicpeak.flowengine.beans.StandardStatusGroup;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.cache.FlowCache;
@@ -207,6 +209,7 @@ import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
 import com.nordicpeak.flowengine.cruds.FlowTypeCRUD;
 import com.nordicpeak.flowengine.cruds.QueryDescriptorCRUD;
 import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
+import com.nordicpeak.flowengine.cruds.StandardStatusGroupCRUD;
 import com.nordicpeak.flowengine.cruds.StatusCRUD;
 import com.nordicpeak.flowengine.cruds.StepCRUD;
 import com.nordicpeak.flowengine.enums.EventType;
@@ -332,7 +335,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	//@formatter:on
 	
 	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION};
-			
+
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
 	public static final ValidationError MAY_NOT_REMOVE_FLOW_FORM_IF_NO_STEPS_VALIDATION_ERROR = new ValidationError("MayNotRemoveFlowFormIfNoSteps");
@@ -425,6 +428,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventStatusDeletedMessage = "eventStatusDeletedMessage";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventStatusesReplacedMessage = "eventStatusesReplacedMessage";
 
 	@XSLVariable(prefix = "java.")
 	private String eventFlowFormAddedMessage = "eventFlowFormAddedMessage";
@@ -625,6 +631,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private EvaluatorDescriptorCRUD evaluatorDescriptorCRUD;
 	private StatusCRUD statusCRUD;
 	private StandardStatusCRUD standardStatusCRUD;
+	private StandardStatusGroupCRUD standardStatusGroupCRUD;
 	private FlowTypeCRUD flowTypeCRUD;
 	private CategoryCRUD categoryCRUD;
 	private FlowFormCRUD flowFormCRUD;
@@ -646,6 +653,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected QueryParameterFactory<QueryDescriptor, String> queryDescriptorQueryTypeIDParamFactory;
 	protected QueryParameterFactory<EvaluatorDescriptor, String> evaluatorDescriptorEvaluatorTypeIDParamFactory;
+	
+	protected AdvancedAnnotatedDAOWrapper<StandardStatusGroup, Integer> standardStatusGroupDAOWrapper;
 	
 	protected OrderByCriteria<Flow> flowVersionOrderByCriteria;
 
@@ -804,10 +813,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		statusCRUD = new StatusCRUD(statusDAOWrapper, this, statusFormExtensionProviders);
 
 		AnnotatedDAOWrapper<StandardStatus, Integer> standardStatusDAOWrapper = daoFactory.getStandardStatusDAO().getWrapper("statusID", Integer.class);
-		standardStatusDAOWrapper.addRelations(StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
+		standardStatusDAOWrapper.addRelations(StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION, StandardStatus.STANDARD_STATUS_GROUP_RELATION);
 		standardStatusDAOWrapper.setUseRelationsOnGet(true);
+		
+		standardStatusGroupDAOWrapper = daoFactory.getStandardStatusGroupDAO().getAdvancedWrapper("statusGroupID", Integer.class);
+		standardStatusGroupDAOWrapper.getGetQuery().addRelations(StandardStatusGroup.STANDARD_STATUSES_RELATION);
 
-		standardStatusCRUD = new StandardStatusCRUD(standardStatusDAOWrapper, this);
+		standardStatusCRUD = new StandardStatusCRUD(standardStatusDAOWrapper, standardStatusGroupDAOWrapper, this);
+		standardStatusGroupCRUD = new StandardStatusGroupCRUD(standardStatusGroupDAOWrapper, this);
 
 		AnnotatedDAOWrapper<FlowType, Integer> flowTypeDAOWrapper = daoFactory.getFlowTypeDAO().getWrapper("flowTypeID", Integer.class);
 		flowTypeDAOWrapper.addRelations(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION);
@@ -2088,9 +2101,55 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
+	public ForegroundModuleResponse copyStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+
+		Integer statusGroupID = uriParser.getInt(2);
+		StandardStatusGroup statusGroup = null;
+
+		if (statusGroupID != null) {
+
+			statusGroup = standardStatusGroupDAOWrapper.get(statusGroupID);
+		}
+
+		if (statusGroup == null) {
+			throw new URINotFoundException(uriParser);
+		}
+
+		log.info("User " + user + " copying " + statusGroup);
+
+		statusGroup.setStatusGroupID(null);
+		statusGroup.setName(statusGroup.getName() + flowNameCopySuffix);
+
+		for (StandardStatus status : statusGroup.getStandardStatuses()) {
+			status.setStatusID(null);
+		}
+
+		RelationQuery query = new RelationQuery(StandardStatusGroup.STANDARD_STATUSES_RELATION);
 		
-		List<StandardStatus> statuses = daoFactory.getStandardStatusDAO().getAll();
+		daoFactory.getStandardStatusGroupDAO().add(statusGroup, query);
+
+		getEventHandler().sendEvent(StandardStatusGroup.class, new CRUDEvent<StandardStatusGroup>(StandardStatusGroup.class, CRUDAction.ADD, statusGroup), EventTarget.ALL);
+
+		redirectToMethod(req, res, "/standardstatuses");
+		return null;
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+		
+		Integer statusGroupID = uriParser.getInt(2);
+		StandardStatusGroup statusGroup = null;
+
+		if (statusGroupID != null) {
+			
+			statusGroup = standardStatusGroupDAOWrapper.get(statusGroupID);
+		}
+		
+		if (statusGroup == null) {
+			throw new URINotFoundException(uriParser);
+		}
+		
+		List<StandardStatus> statuses = statusGroup.getStandardStatuses();
 		
 		if (CollectionUtils.isEmpty(statuses)) {
 			
@@ -2101,6 +2160,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 			
 			for (StandardStatus status : statuses) {
+				
+				status.setStandardStatusGroup(statusGroup);
 				
 				String sortIndex = req.getParameter("sortorder_" + status.getStatusID());
 				
@@ -2114,7 +2175,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			getEventHandler().sendEvent(StandardStatus.class, new CRUDEvent<StandardStatus>(StandardStatus.class, CRUDAction.UPDATE, statuses), EventTarget.ALL);
 			
-			redirectToMethod(req, res, "/standardstatuses");
+			redirectToMethod(req, res, "/showstandardstatusgroup/" + statusGroup.getStatusGroupID());
 			return null;
 		}
 		
@@ -2124,9 +2185,124 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		Element sortStandardStatusesElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "SortStandardStatuses");
 		
-		XMLUtils.append(doc, sortStandardStatusesElement, "StandardStatuses", statuses);
+		sortStandardStatusesElement.appendChild(statusGroup.toXML(doc));
 		
 		return new SimpleForegroundModuleResponse(doc);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse replaceFlowStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+
+		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.SHOW);
+
+		if (flow == null) {
+
+			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
+
+		} else if (!hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+		
+		if (flow.getStatuses() != null) {
+			for (Status status : flow.getStatuses()) {
+				if (status.getFlowInstanceCount() > 0) {
+
+					log.warn("User " + user + " attempted to replace " + flow + " statuses but it has flow instances");
+					
+					redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+					return null;
+				}
+			}
+		}
+		
+		List<ValidationError> validationErrors = new ArrayList<>(1);
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			
+			Integer statusGroupID = ValidationUtils.validateParameter("statusGroupID", req, true, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
+			
+			if (statusGroupID != null) {
+				
+				StandardStatusGroup statusGroup = getStatusGroup(statusGroupID, StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
+		
+				if (statusGroup == null) {
+			
+					validationErrors.add(new ValidationError("statusGroupID", ValidationErrorType.InvalidFormat));
+					
+				} else {
+	
+					log.info("User " + user + " replacing " + flow + " statuses with " + statusGroup);
+	
+					replaceFlowStatusesWithStandardStatuses(flow, statusGroup);
+	
+					RelationQuery query = new RelationQuery(Flow.STATUSES_RELATION, Status.DEFAULT_STATUS_MAPPINGS_RELATION);
+					daoFactory.getFlowDAO().update(flow, query);
+	
+					getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(Flow.class, CRUDAction.UPDATE, flow), EventTarget.ALL);
+					
+					addFlowFamilyEvent(eventStatusesReplacedMessage + " \"" + statusGroup.getName() + "\"", flow, user);
+	
+					redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+					return null;
+				}
+			}
+		}
+		
+		log.info("User " + user + " requesting replace statuses form for flow " + flow);
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element updateFlowStatusesElement = doc.createElement("ReplaceFlowStatuses");
+		doc.getDocumentElement().appendChild(updateFlowStatusesElement);
+
+		updateFlowStatusesElement.appendChild(flow.toXML(doc));
+		
+		List<StandardStatusGroup> statusGroups = getDAOFactory().getStandardStatusGroupDAO().getAll();
+		XMLUtils.append(doc, updateFlowStatusesElement, "StandardStatusGroups", statusGroups);
+
+		if (validationErrors != null) {
+
+			XMLUtils.append(doc, updateFlowStatusesElement, "ValidationErrors", validationErrors);
+		}
+
+		return new SimpleForegroundModuleResponse(doc);
+	}
+	
+	public void replaceFlowStatusesWithStandardStatuses(Flow flow, StandardStatusGroup statusGroup) {
+
+		List<StandardStatus> standardStatuses = statusGroup.getStandardStatuses();
+
+		if (standardStatuses != null) {
+
+			List<Status> statuses = new ArrayList<Status>(standardStatuses.size());
+
+			for (StandardStatus standardStatus : standardStatuses) {
+
+				Status status = new Status(standardStatus);
+
+				if (standardStatus.getDefaultStandardStatusMappings() != null) {
+
+					List<DefaultStatusMapping> statusMappings = new ArrayList<DefaultStatusMapping>(standardStatus.getDefaultStandardStatusMappings().size());
+
+					for (DefaultStandardStatusMapping defaultStandardStatusMapping : standardStatus.getDefaultStandardStatusMappings()) {
+
+						DefaultStatusMapping statusMapping = new DefaultStatusMapping();
+
+						statusMapping.setActionID(defaultStandardStatusMapping.getActionID());
+						statusMapping.setFlow(flow);
+
+						statusMappings.add(statusMapping);
+					}
+
+					status.setDefaultStatusMappings(statusMappings);
+				}
+
+				statuses.add(status);
+			}
+
+			flow.setStatuses(statuses);
+		}
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -2500,11 +2676,35 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return flowFormCRUD.delete(req, res, user, uriParser);
 	}
-
+	
 	@WebPublic(alias = "standardstatuses")
-	public ForegroundModuleResponse listStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse listStandardStatusGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return standardStatusCRUD.list(req, res, user, uriParser, null);
+		return standardStatusGroupCRUD.list(req, res, user, uriParser, null);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse addStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return standardStatusGroupCRUD.add(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return standardStatusGroupCRUD.update(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse deleteStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return standardStatusGroupCRUD.delete(req, res, user, uriParser);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse showStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+
+		return standardStatusGroupCRUD.show(req, res, user, uriParser, null);
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -5436,8 +5636,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return eventStatusDeletedMessage;
 	}
 	
-	
-
 	public boolean getUseCategories() {
 
 		return useCategories;
@@ -6555,6 +6753,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public List<ScriptTag> getScriptTags() {
 
 		return null;
+	}
+
+	public StandardStatusGroup getStatusGroup(Integer statusGroupID, Field... relations) throws SQLException {
+		
+		HighLevelQuery<StandardStatusGroup> query = new HighLevelQuery<>();
+		query.addParameter(standardStatusGroupDAOWrapper.getParameterFactory().getParameter(statusGroupID));
+		
+		if (relations != null) {
+			query.addRelations(relations);
+		}
+		
+		return standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
 	}
 	
 }
