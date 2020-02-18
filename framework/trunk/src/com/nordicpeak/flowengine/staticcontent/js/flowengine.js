@@ -105,6 +105,10 @@ function checkStartFlowPanelPosition(event) {
 	var headerHeight = ($("header").height() + 40);
 	var bottomSteps = $(".service-navigator-wrap");
 	
+	if (bottomSteps.length === 0) {
+		bottomSteps = $(".about-flow");
+	}
+	
 	if (!$("#flowforms-list-button").hasClass("open") && $(window).width() > 1004 && $(this).scrollTop() >= headerHeight) {
 		
 		if (win.scrollTop() + $startPanel.height() + parseFloat($($startPanel).css('padding-top')) >= bottomSteps.offset().top) {
