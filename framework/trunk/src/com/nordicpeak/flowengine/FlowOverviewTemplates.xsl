@@ -481,10 +481,11 @@
 							<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 						</xsl:if>
 						<xsl:if test="FlowFamily/contactWebAddress">
+						
 							<xsl:choose>
-								<xsl:when test="contains(FlowFamily/contactWebAddress, 'http://')">
+								<xsl:when test="contains(FlowFamily/contactWebAddress, '://')">
 									<xsl:variable name="webAddress">
-										<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, 'http://')" />
+										<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, '://')" />
 									</xsl:variable>
 									<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
 								</xsl:when>
@@ -571,9 +572,9 @@
 							</xsl:if>
 							<xsl:if test="FlowFamily/contactWebAddress">
 								<xsl:choose>
-									<xsl:when test="contains(FlowFamily/contactWebAddress, 'http://')">
+									<xsl:when test="contains(FlowFamily/contactWebAddress, '://')">
 										<xsl:variable name="webAddress">
-											<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, 'http://')" />
+											<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, '://')" />
 										</xsl:variable>
 										<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
 									</xsl:when>
