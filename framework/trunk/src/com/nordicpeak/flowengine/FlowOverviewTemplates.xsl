@@ -481,7 +481,20 @@
 							<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 						</xsl:if>
 						<xsl:if test="FlowFamily/contactWebAddress">
-							<br /><a href="{FlowFamily/contactWebAddress}" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="FlowFamily/contactWebAddress" /></a>
+							<xsl:choose>
+								<xsl:when test="contains(FlowFamily/contactWebAddress, 'http://')">
+									<xsl:variable name="webAddress">
+										<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, 'http://')" />
+									</xsl:variable>
+									<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="webAddress">
+										<xsl:value-of select="FlowFamily/contactWebAddress" />
+									</xsl:variable>
+									<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
+								</xsl:otherwise>
+							</xsl:choose>
 						</xsl:if>
 					</div>
 					
@@ -557,7 +570,20 @@
 								<br /><a href="tel:{FlowFamily/contactPhone}" title="{$i18n.CallNumber}: {FlowFamily/contactPhone}"><xsl:value-of select="FlowFamily/contactPhone" /></a>
 							</xsl:if>
 							<xsl:if test="FlowFamily/contactWebAddress">
-								<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="FlowFamily/contactWebAddress" /></a>
+								<xsl:choose>
+									<xsl:when test="contains(FlowFamily/contactWebAddress, 'http://')">
+										<xsl:variable name="webAddress">
+											<xsl:value-of select="substring-after(FlowFamily/contactWebAddress, 'http://')" />
+										</xsl:variable>
+										<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:variable name="webAddress">
+											<xsl:value-of select="FlowFamily/contactWebAddress" />
+										</xsl:variable>
+										<br /><a href="{FlowFamily/contactWebAddress}" target="_blank" title="{$i18n.Webbsida}: {FlowFamily/contactWebAddress}"><xsl:value-of select="$webAddress" /></a>
+									</xsl:otherwise>
+								</xsl:choose>
 							</xsl:if>
 						</p>
 					
