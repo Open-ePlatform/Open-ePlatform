@@ -595,7 +595,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						}
 					}
 
-					FlowDirection flowDirection = parseFlowDirection(req, flowAction);
+					FlowDirection flowDirection = parseFlowDirection(req, flowAction, requestMetadata.isManager());
 
 					managerResponse = instanceManager.populateCurrentStep(req, user, poster, flowDirection, queryHandler, evaluationHandler, getMutableQueryRequestBaseURL(req, instanceManager), requestMetadata, getSiteProfile(instanceManager));
 
@@ -1288,7 +1288,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected FlowDirection parseFlowDirection(HttpServletRequest req, FlowAction flowAction) {
+	protected FlowDirection parseFlowDirection(HttpServletRequest req, FlowAction flowAction, boolean manager) {
 
 		if (flowAction == null) {
 
@@ -1301,7 +1301,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				return FlowDirection.BACKWARD;
 			}
 
-		}else if(flowAction == FlowAction.SAVE || flowAction == FlowAction.SAVE_AND_CLOSE){
+		} else if (!manager && (flowAction == FlowAction.SAVE || flowAction == FlowAction.SAVE_AND_CLOSE)) {
 
 			return FlowDirection.STAY_AND_POPULATE_PARTIALLY;
 		}
