@@ -62,7 +62,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<xsl:apply-templates select="ActivityGroups/ActivityGroup" mode="list" >
+							<xsl:apply-templates select="ActivityGroups/ActivityGroup[ActivityRounds]" mode="list" >
 								<xsl:with-param name="showApproveDeny" select="ActivityGroups/ActivityGroup/useApproveDeny = 'true'" />
 							</xsl:apply-templates>
 						</tbody>
@@ -114,34 +114,52 @@
 				</h3>
 				
 				<div>
-					<strong>
-						<xsl:value-of select="$i18n.ActivityProgress.added" />
-						<xsl:text>: </xsl:text>
-					</strong>
+					<span>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityRound.added" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="ActivityRounds/ActivityRound[1]/added" />
+					</span>
 					
-					<xsl:choose>
-						<xsl:when test="Activities/Activity/ActivityProgresses">
-							<xsl:value-of select="Activities/Activity/ActivityProgresses/ActivityProgress/added"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$i18n.ActivityProgress.notStarted" />
-						</xsl:otherwise>
-					</xsl:choose>
+					<xsl:if test="ActivityRounds/ActivityRound[1]/completed">
+						<span class="bigmarginleft">
+							<strong>
+								<xsl:value-of select="$i18n.ActivityRound.completed" />
+								<xsl:text>: </xsl:text>
+							</strong>
+							
+							<xsl:value-of select="ActivityRounds/ActivityRound[1]/completed" />
+						</span>
+					</xsl:if>
+					
+					<xsl:if test="ActivityRounds/ActivityRound[1]/cancelled">
+						<span class="bigmarginleft">
+							<strong>
+								<xsl:value-of select="$i18n.ActivityRound.cancelled" />
+								<xsl:text>: </xsl:text>
+							</strong>
+							
+							<xsl:value-of select="ActivityRounds/ActivityRound[1]/cancelled" />
+						</span>
+					</xsl:if>
+					
 				</div>
 			</td>
 		</tr>
-			
+		
 		<xsl:choose>
-			<xsl:when test="Activities">
+			<xsl:when test="ActivityRounds">
 				
-				<xsl:apply-templates select="Activities/Activity[ActivityProgresses]" mode="list" >
+				<xsl:apply-templates select="ActivityRounds/ActivityRound" mode="list" >
 					<xsl:with-param name="showApproveDeny" select="$showApproveDeny" />
 				</xsl:apply-templates>
 				
 			</xsl:when>
 			<xsl:otherwise>
 				
-				<tr>
+				<tr class="activity">
 					<td colspan="6">
 						<xsl:value-of select="$i18n.NoActivities"/>
 					</td>
@@ -152,29 +170,90 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="Activity" mode="list">
+	<xsl:template match="ActivityRound" mode="list">
 		<xsl:param name="showApproveDeny"/>
 		
-		<tr>
-			<xsl:attribute name="class">
-				<xsl:text>activity</xsl:text>
-				<xsl:if test="position() = last()"> last</xsl:if>
-			</xsl:attribute>
-			
+		<xsl:if test="position() > 1">
+			<tr class="activityround">
+				<td colspan="6">
+					
+					<div>
+						<span>
+							<strong>
+								<xsl:value-of select="$i18n.ActivityRound.added" />
+								<xsl:text>: </xsl:text>
+							</strong>
+							
+							<xsl:value-of select="added" />
+						</span>
+						
+						<xsl:if test="completed">
+							<span class="bigmarginleft">
+								<strong>
+									<xsl:value-of select="$i18n.ActivityRound.completed" />
+									<xsl:text>: </xsl:text>
+								</strong>
+								
+								<xsl:value-of select="completed" />
+							</span>
+						</xsl:if>
+						
+						<xsl:if test="cancelled">
+							<span class="bigmarginleft">
+								<strong>
+									<xsl:value-of select="$i18n.ActivityRound.cancelled" />
+									<xsl:text>: </xsl:text>
+								</strong>
+								
+								<xsl:value-of select="cancelled" />
+							</span>
+						</xsl:if>
+						
+					</div>
+					
+				</td>
+			</tr>
+		</xsl:if>
+		
+		<xsl:choose>
+			<xsl:when test="ActivityProgresses">
+				
+				<xsl:apply-templates select="ActivityProgresses/ActivityProgress" mode="list" >
+					<xsl:with-param name="showApproveDeny" select="$showApproveDeny" />
+				</xsl:apply-templates>
+				
+			</xsl:when>
+			<xsl:otherwise>
+				
+				<tr class="activity">
+					<td colspan="6">
+						<xsl:value-of select="$i18n.NoActivities"/>
+					</td>
+				</tr>
+				
+			</xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:template>
+	
+	<xsl:template match="ActivityProgress" mode="list">
+		<xsl:param name="showApproveDeny"/>
+		
+		<tr class="activity">
 			<td>
-				<xsl:value-of select="name" />
+				<xsl:value-of select="Activity/name" />
 			</td>
 			<td>
-				<xsl:value-of select="ActivityProgresses/ActivityProgress/completed"/>
+				<xsl:value-of select="completed"/>
 				
-				<xsl:if test="ActivityProgresses/ActivityProgress/completed and ActivityProgresses/ActivityProgress/comment">
+				<xsl:if test="completed and comment">
 				
 					<a class="bigmarginleft" href="#" title="{$i18n.ViewComment}" onclick="commentModal(event, this)">
 						<img src="{$imgPath}/comment.png" alt="" />
 						
 						<span style="display: none;">
 							<xsl:call-template name="replaceLineBreak">
-								<xsl:with-param name="string" select="ActivityProgresses/ActivityProgress/comment"/>
+								<xsl:with-param name="string" select="comment"/>
 							</xsl:call-template>
 						</span>
 					</a>
@@ -185,12 +264,12 @@
 			<xsl:if test="$showApproveDeny = 'true'">
 				<td>
 				
-					<xsl:if test="../../useApproveDeny = 'true' and ActivityProgresses/ActivityProgress/completed">
+					<xsl:if test="../../../../useApproveDeny = 'true' and completed">
 						<xsl:choose>
-							<xsl:when test="ActivityProgresses/ActivityProgress/denied = 'true'">
+							<xsl:when test="denied = 'true'">
 								<xsl:choose>
-									<xsl:when test="../../deniedText">
-										<xsl:value-of select="../../deniedText" />
+									<xsl:when test="../../../../deniedText">
+										<xsl:value-of select="../../../../deniedText" />
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:value-of select="$i18n.ActivityProgress.denied" />
@@ -199,8 +278,8 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:choose>
-									<xsl:when test="../../approvedText">
-										<xsl:value-of select="../../approvedText" />
+									<xsl:when test="../../../../approvedText">
+										<xsl:value-of select="../../../../approvedText" />
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:value-of select="$i18n.ActivityProgress.approved" />
@@ -214,41 +293,41 @@
 			</xsl:if>
 			<td>
 				<xsl:call-template name="printUser">
-					<xsl:with-param name="user" select="ActivityProgresses/ActivityProgress/CompletingUser" />
+					<xsl:with-param name="user" select="CompletingUser" />
 				</xsl:call-template>
 			</td>
 			<td>
 				<xsl:choose>
-					<xsl:when test="ResponsibleUsers or ResponsibleGroups">
+					<xsl:when test="Activity/ResponsibleUsers or Activity/ResponsibleGroups">
 						
 						<xsl:choose>
-							<xsl:when test="ResponsibleUserAttributeNames and not(ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers)">
+							<xsl:when test="Activity/ResponsibleUserAttributeNames and not(ResponsibleAttributedUsers)">
 								
-								<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser/user" mode="inline-list"/>
+								<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser/user" mode="inline-list"/>
 								
-								<xsl:if test="ResponsibleUsers and ResponsibleGroups">
+								<xsl:if test="Activity/ResponsibleUsers and Activity/ResponsibleGroups">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
 							</xsl:when>
 							<xsl:otherwise>
 								
-								<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser[fallback = 'false']/user" mode="inline-list" />
+								<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false']/user" mode="inline-list" />
 								
-								<xsl:if test="ResponsibleUsers/ResponsibleUser[fallback = 'false'] and ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers">
+								<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false'] and ResponsibleAttributedUsers">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
-								<xsl:apply-templates select="ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers/user" mode="inline-list" />
+								<xsl:apply-templates select="ResponsibleAttributedUsers/user" mode="inline-list" />
 								
-								<xsl:if test="(ResponsibleUsers/ResponsibleUser[fallback = 'false'] or ActivityProgresses/ActivityProgress/ResponsibleAttributedUsers) and ResponsibleGroups">
+								<xsl:if test="(Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false'] or ResponsibleAttributedUsers) and Activity/ResponsibleGroups">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
 							</xsl:otherwise>
 						</xsl:choose>
 						
-						<xsl:apply-templates select="ResponsibleGroups/group" mode="inline-list"/>
+						<xsl:apply-templates select="Activity/ResponsibleGroups/group" mode="inline-list"/>
 					
 					</xsl:when>
 					<xsl:otherwise>
@@ -259,14 +338,14 @@
 				</xsl:choose>
 			</td>
 			<td>
-				<xsl:if test="../../../../UserModuleURL">
-					<a class="marginright" href="{../../../../UserModuleURL}/show/{ActivityProgresses/ActivityProgress/activityProgressID}" title="{$i18n.ShowActivity}">
+				<xsl:if test="../../../../../../UserModuleURL">
+					<a class="marginright" href="{../../../../../../UserModuleURL}/show/{activityProgressID}" title="{$i18n.ShowActivity}">
 						<img src="{$imgPath}/magnifying_glass.png" alt="" />
 					</a>
 				</xsl:if>
 				
-				<xsl:if test="not(ActivityProgresses/ActivityProgress/completed)">
-					<a href="{../../../../PostURL}?sendreminder={ActivityProgresses/ActivityProgress/activityProgressID}" title="{$i18n.SendReminder}">
+				<xsl:if test="not(completed) and not(../../cancelled)">
+					<a href="{../../../../../../PostURL}?sendreminder={activityProgressID}" title="{$i18n.SendReminder}">
 						<img src="{$imgPath}/mail_reload.png" alt="" />
 					</a>
 				</xsl:if>

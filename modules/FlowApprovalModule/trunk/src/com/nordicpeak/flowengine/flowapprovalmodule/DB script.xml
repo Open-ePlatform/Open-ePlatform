@@ -237,4 +237,67 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `allowRestarts` TINYINT(3) UNSIGNED NOT NULL AFTER `appendCommentsToExternalMessages`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_rounds` (
+					`activityRoundID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(10) UNSIGNED NOT NULL,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME(0) NOT NULL,
+					`completed` DATETIME(0) NULL,
+					`cancelled` DATETIME(0) NULL,
+					PRIMARY KEY (`activityRoundID`) USING BTREE,
+					INDEX `FK_flowapproval_activity_rounds_1` (`activityGroupID`) USING BTREE,
+					CONSTRAINT `FK_flowapproval_activity_rounds_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_rounds` (activityGroupID, flowInstanceID, added)
+				SELECT a.activityGroupID, p.flowInstanceID, MIN(p.added)
+				FROM flowapproval_activity_progress p
+					INNER JOIN flowapproval_activities a ON p.activityID = a.activityID
+				GROUP BY a.activityGroupID, p.flowInstanceID;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `activityRoundID` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `activityProgressID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activity_progress` p
+				INNER JOIN flowapproval_activities a ON p.activityID = a.activityID
+				INNER JOIN flowapproval_activity_rounds r ON p.flowInstanceID = r.flowInstanceID AND r.activityGroupID = a.activityGroupID
+				SET p.activityRoundID = r.activityRoundID; 
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activity_rounds` r
+				LEFT JOIN flowapproval_activity_progress p ON p.activityRoundID = r.activityRoundID AND p.completed IS NULL
+				SET r.completed = (SELECT MAX(completed) FROM flowapproval_activity_progress x WHERE x.activityRoundID = r.activityRoundID)
+				WHERE p.activityProgressID IS NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress`
+					CHANGE COLUMN `activityRoundID` `activityRoundID` INT(10) UNSIGNED NOT NULL AFTER `activityProgressID`,
+					DROP COLUMN `flowInstanceID`,
+					ADD CONSTRAINT `FK_flowapproval_activity_progress_2` FOREIGN KEY (`activityRoundID`) REFERENCES `flowapproval_activity_rounds` (`activityRoundID`) ON UPDATE CASCADE ON DELETE CASCADE;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

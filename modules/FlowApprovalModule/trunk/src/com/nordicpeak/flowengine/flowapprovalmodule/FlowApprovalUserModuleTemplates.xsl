@@ -19,7 +19,7 @@
 		/css/flowapprovaluser.css
 	</xsl:variable>
 
-	<xsl:template match="Document">	
+	<xsl:template match="Document">
 			
 			<xsl:apply-templates select="ListPendingActivities"/>
 			<xsl:apply-templates select="ListCompletedActivities"/>
@@ -31,7 +31,7 @@
 		
 		<xsl:apply-templates select="validationError"/>
 		
-		<div class="contentitem">
+		<div id="flow-approval" class="contentitem">
 			<section>
 				<div class="errands-wrapper">
 				
@@ -55,7 +55,9 @@
 							<xsl:choose>
 								<xsl:when test="FlowInstances">
 								
-									<xsl:apply-templates select="FlowInstances/FlowInstance/ActivityGroups/ActivityGroup" mode="list-pending" />
+									<xsl:apply-templates select="FlowInstances/FlowInstance/ActivityGroups/ActivityGroup" mode="list" >
+										<xsl:with-param name="showCompleted" select="'false'"/>
+									</xsl:apply-templates>
 									
 								</xsl:when>
 								<xsl:otherwise>
@@ -82,86 +84,11 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="ActivityGroup" mode="list-pending">
-		
-		<tr class="activitygroup">
-			<td colspan="3">
-				<h3>
-					<xsl:value-of select="name" />
-				</h3>
-				
-				<div>
-					<strong>
-						<xsl:value-of select="$i18n.FlowInstance.flowInstanceID" />
-						<xsl:text>: </xsl:text>
-					</strong>
-					
-					<xsl:value-of select="../../flowInstanceID"/>
-				</div>
-				
-				<div>
-					<strong>
-						<xsl:value-of select="$i18n.Flow.name" />
-						<xsl:text>: </xsl:text>
-					</strong>
-					
-					<xsl:value-of select="../../Flow/name"/>
-				</div>
-				
-				<div>
-					<strong>
-						<xsl:value-of select="$i18n.ActivityProgress.added" />
-						<xsl:text>: </xsl:text>
-					</strong>
-					
-					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
-				</div>
-			</td>
-		</tr>
-		
-		<xsl:apply-templates select="Progresses/ActivityProgress" mode="list-pending" />
-		
-	</xsl:template>
-	
-	<xsl:template match="ActivityProgress" mode="list-pending">
-		
-		<tr>
-			<xsl:attribute name="class">
-				<xsl:text>activity</xsl:text>
-				<xsl:if test="position() = last()"> last</xsl:if>
-			</xsl:attribute>
-			
-			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{../../../../Flow/flowID}?{../../../../Flow/IconLastModified}" width="25" alt="" />
-			</td>
-			<td data-title="{$i18n.Activity}">
-				<div>
-					<xsl:value-of select="Activity/name" />
-				</div>
-				
-				<xsl:if test="ShortDescription">
-					<div>
-						<strong>
-							<xsl:value-of select="$i18n.ActivityProgress.shortDescription" />
-							<xsl:text>: </xsl:text>
-						</strong>
-						
-						<xsl:value-of select="ShortDescription"/>
-					</div>
-				</xsl:if>
-			</td>
-			<td class="link">
-				<a class="btn btn-green" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/show/{activityProgressID}"><xsl:value-of select="$i18n.ShowActivity" /></a>
-			</td>
-		</tr>
-		
-	</xsl:template>
-	
 	<xsl:template match="ListCompletedActivities">
 		
 		<xsl:apply-templates select="validationError"/>
 		
-		<div class="contentitem">
+		<div id="flow-approval" class="contentitem">
 			<section>
 				<div class="errands-wrapper">
 					
@@ -187,7 +114,9 @@
 							<xsl:choose>
 								<xsl:when test="FlowInstances">
 								
-									<xsl:apply-templates select="FlowInstances/FlowInstance/ActivityGroups/ActivityGroup" mode="list-completed" />
+									<xsl:apply-templates select="FlowInstances/FlowInstance/ActivityGroups/ActivityGroup" mode="list" >
+										<xsl:with-param name="showCompleted" select="'true'"/>
+									</xsl:apply-templates>
 									
 								</xsl:when>
 								<xsl:otherwise>
@@ -215,10 +144,11 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="ActivityGroup" mode="list-completed">
+	<xsl:template match="ActivityGroup" mode="list">
+		<xsl:param name="showCompleted"/>
 		
 		<tr class="activitygroup">
-			<td colspan="4">
+			<td colspan="2">
 				<h3>
 					<xsl:value-of select="name" />
 				</h3>
@@ -243,11 +173,108 @@
 				
 				<div>
 					<strong>
-						<xsl:value-of select="$i18n.ActivityProgress.added" />
+						<xsl:value-of select="$i18n.ActivityRound.added" />
 						<xsl:text>: </xsl:text>
 					</strong>
 					
-					<xsl:value-of select="Progresses/ActivityProgress[1]/added"/>
+					<xsl:value-of select="ActivityRounds/ActivityRound[1]/added" />
+				</div>
+				
+				<xsl:if test="ActivityRounds/ActivityRound[1]/cancelled">
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityRound.cancelled" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="ActivityRounds/ActivityRound[1]/cancelled" />
+					</div>
+				</xsl:if>
+				
+			</td>
+			
+			<xsl:if test="$showCompleted = 'true'">
+				<td data-title="{$i18n.ActivityProgress.completed}">
+					<xsl:choose>
+						<xsl:when test="ActivityRounds/ActivityRound[1]/completed">
+							<div>
+								<xsl:value-of select="ActivityRounds/ActivityRound[1]/completed" />
+							</div>
+						</xsl:when>
+						<xsl:otherwise>&#160;</xsl:otherwise>
+					</xsl:choose>
+				</td>
+			</xsl:if>
+			
+			<td/>
+		</tr>
+		
+		<xsl:apply-templates select="ActivityRounds/ActivityRound" mode="list" >
+			<xsl:with-param name="showCompleted" select="$showCompleted"/>
+		</xsl:apply-templates>
+		
+	</xsl:template>
+	
+	<xsl:template match="ActivityRound" mode="list">
+		<xsl:param name="showApproveDeny"/>
+		<xsl:param name="showCompleted"/>
+		
+		<xsl:if test="position() > 1">
+			<tr class="activityround">
+				<td colspan="2">
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityRound.added" />
+							<xsl:text>: </xsl:text>
+						</strong>
+						
+						<xsl:value-of select="added" />
+					</div>
+					
+					<xsl:if test="cancelled">
+						<div>
+							<strong>
+								<xsl:value-of select="$i18n.ActivityRound.cancelled" />
+								<xsl:text>: </xsl:text>
+							</strong>
+							
+							<xsl:value-of select="cancelled" />
+						</div>
+					</xsl:if>
+					
+				</td>
+				<xsl:if test="$showCompleted = 'true'">
+					<td data-title="{$i18n.ActivityProgress.completed}">
+						<xsl:choose>
+							<xsl:when test="completed">
+								<div>
+									<xsl:value-of select="completed" />
+								</div>
+							</xsl:when>
+							<xsl:otherwise>&#160;</xsl:otherwise>
+						</xsl:choose>
+					</td>
+				</xsl:if>
+				<td/>
+			</tr>
+		</xsl:if>
+		
+		<xsl:apply-templates select="ActivityProgresses/ActivityProgress" mode="list" >
+			<xsl:with-param name="showCompleted" select="$showCompleted"/>
+		</xsl:apply-templates>
+		
+	</xsl:template>
+	
+	<xsl:template match="ActivityProgress" mode="list">
+		<xsl:param name="showCompleted"/>
+		
+		<tr class="activity">
+			<td class="icon">
+				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{../../../../../../Flow/flowID}?{../../../../../../Flow/IconLastModified}" width="25" alt="" />
+			</td>
+			<td data-title="{$i18n.Activity}">
+				<div>
+					<xsl:value-of select="Activity/name" />
 				</div>
 				
 				<xsl:if test="ShortDescription">
@@ -261,29 +288,18 @@
 					</div>
 				</xsl:if>
 			</td>
-		</tr>
-		
-		<xsl:apply-templates select="Progresses/ActivityProgress" mode="list-completed" />
-		
-	</xsl:template>
-	
-	<xsl:template match="ActivityProgress" mode="list-completed">
-		
-		<tr>
-			<xsl:attribute name="class">
-				<xsl:text>activity</xsl:text>
-				<xsl:if test="position() = last()"> last</xsl:if>
-			</xsl:attribute>
-			
-			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{../../../../Flow/flowID}?{../../../../Flow/IconLastModified}" width="25" alt="" />
-			</td>
-			<td data-title="{$i18n.Activity}">
-				<xsl:value-of select="Activity/name" />
-			</td>
-			<td data-title="{$i18n.ActivityProgress.completed}">
-				<xsl:value-of select="completed" />
-			</td>
+			<xsl:if test="$showCompleted = 'true'">
+				<td data-title="{$i18n.ActivityProgress.completed}">
+					<xsl:choose>
+						<xsl:when test="completed">
+							<div>
+								<xsl:value-of select="completed" />
+							</div>
+						</xsl:when>
+						<xsl:otherwise>&#160;</xsl:otherwise>
+					</xsl:choose>
+				</td>
+			</xsl:if>
 			<td class="link">
 				<a class="btn btn-green" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/show/{activityProgressID}"><xsl:value-of select="$i18n.ShowActivity" /></a>
 			</td>
@@ -302,6 +318,10 @@
 							<xsl:value-of select="ActivityProgress/Activity/name" />
 						</h1>
 					</div>
+					
+					<xsl:variable name="disabled">
+						<xsl:if test="ActivityProgress/completed or ActivityProgress/ActivityRound/completed or ActivityProgress/ActivityRound/cancelled">true</xsl:if>
+					</xsl:variable>
 					
 					<form method="POST" action="{/Document/requestinfo/uri}" name="userform">
 					
@@ -377,9 +397,7 @@
 											<xsl:with-param name="checked">
 												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'">true</xsl:if>
 											</xsl:with-param>
-											<xsl:with-param name="disabled">
-												<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-											</xsl:with-param>
+											<xsl:with-param name="disabled" select="$disabled" />
 										</xsl:call-template>
 										
 										<label for="approved">
@@ -409,9 +427,7 @@
 											<xsl:with-param name="checked">
 												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'">true</xsl:if>
 											</xsl:with-param>
-											<xsl:with-param name="disabled">
-												<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-											</xsl:with-param>
+											<xsl:with-param name="disabled" select="$disabled" />
 										</xsl:call-template>
 										
 										<label for="denied">
@@ -444,9 +460,7 @@
 											<xsl:with-param name="checked">
 												<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
 											</xsl:with-param>
-											<xsl:with-param name="disabled">
-												<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-											</xsl:with-param>
+											<xsl:with-param name="disabled" select="$disabled" />
 										</xsl:call-template>
 										
 										<label for="completed">
@@ -483,9 +497,7 @@
 										<xsl:with-param name="name" select="'comment'" />
 										<xsl:with-param name="element" select="ActivityProgress" />
 										<xsl:with-param name="rows" select="'4'" />
-										<xsl:with-param name="disabled">
-											<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-										</xsl:with-param>
+										<xsl:with-param name="disabled" select="$disabled" />
 									</xsl:call-template>
 								</div>
 							
@@ -495,15 +507,20 @@
 						
 						<div class="divider" />
 						
-						
-						
 						<article class="buttons floatright">
 						
-							<xsl:if test="not(ActivityProgress/completed != '')">
-								<input type="submit" value="{$i18n.SaveChanges}" class="btn btn-green btn-inline" />
+							<xsl:if test="$disabled != 'true'">
+								<input type="submit" value="{$i18n.SaveChanges}" class="btn btn-green btn-inline" style="width: auto;" />
 							</xsl:if>
 							
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+							<xsl:choose>
+								<xsl:when test="$disabled = 'true'">
+									<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/listcompleted" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+								</xsl:when>
+								<xsl:otherwise>
+									<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+								</xsl:otherwise>
+							</xsl:choose>
 						</article>
 						
 					</form>

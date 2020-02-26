@@ -1,10 +1,20 @@
 @CHARSET "ISO-8859-1";
 
+#flow-approval table td {
+	border-bottom: none;
+	border-top: 1px solid #fff;
+}
+
 #flow-approval table tr.activitygroup td {
-	border-top: 1px solid black;	
+	border-top: 1px solid black;
 	border-top-color: black !important;
 }
 
-#flow-approval table tr.activity.last td {
-	border-bottom-color: black !important;
+#flow-approval table tr.activity + tr.activitygroup td {
+	border-top-color: black !important;
 }
+
+#flow-approval table tr.activity:last-child td {
+	border-bottom: 1px solid black !important;
+}
+

@@ -8,6 +8,10 @@
 	<xsl:variable name="i18n.ActivityGroup.denyStatus">Nekadstatus</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityCount">Antal aktiviteter</xsl:variable>
 	
+	<xsl:variable name="i18n.ActivityRound.added">Påbörjad</xsl:variable>
+	<xsl:variable name="i18n.ActivityRound.completed">Slutförd</xsl:variable>
+	<xsl:variable name="i18n.ActivityRound.cancelled">Avbruten</xsl:variable>
+	
 	<xsl:variable name="i18n.Activity">Aktivitet</xsl:variable>
 	<xsl:variable name="i18n.Activity.name">Namn för aktiviteten</xsl:variable>
 	<xsl:variable name="i18n.Activity.shortDescription">Kort beskrivning</xsl:variable>

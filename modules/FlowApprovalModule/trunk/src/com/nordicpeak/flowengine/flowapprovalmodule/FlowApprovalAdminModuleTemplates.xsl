@@ -413,6 +413,21 @@
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'allowRestarts'" />
+					<xsl:with-param name="id" select="'allowRestarts'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="allowRestarts">
+					<xsl:value-of select="$i18n.ActivityGroup.allowRestarts" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
 
 			<label class="floatleft full" for="reminderAfterXDays">
 				<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />

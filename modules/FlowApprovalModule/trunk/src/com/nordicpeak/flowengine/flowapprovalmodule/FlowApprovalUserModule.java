@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +43,7 @@ import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
 import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.LowLevelQuery;
@@ -60,6 +63,7 @@ import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.UserFlowInstanceMenuModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
@@ -81,6 +85,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundE
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
@@ -143,7 +148,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 	}
 
 	@InstanceManagerDependency
@@ -206,7 +211,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		Element listPending = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ListPendingActivities");
 
-		List<FlowApprovalActivityProgress> pendingActivities = getPendingActivities(user, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+		List<FlowApprovalActivityProgress> pendingActivities = getPendingActivities(user, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityRound.ACTIVITY_GROUP_RELATION);
 
 		appendActivities(pendingActivities, doc, listPending);
 
@@ -228,7 +233,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		Element listCompleted = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ListCompletedActivities");
 
-		List<FlowApprovalActivityProgress> completedActivities = getCompletedActivities(user, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+		List<FlowApprovalActivityProgress> completedActivities = getCompletedActivities(user, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityRound.ACTIVITY_GROUP_RELATION);
 
 		appendActivities(completedActivities, doc, listCompleted);
 
@@ -237,68 +242,89 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	private void appendActivities(List<FlowApprovalActivityProgress> activities, Document doc, Element listElement) throws SQLException {
 
-		// flowInstanceID, activityGroup, activityProgress
-		Map<Integer, Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>>> mapping = new TreeMap<>();
+		// flowInstanceID, activityGroup, activityRound, activityProgress
+		Map<Integer, Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>>> mapping = new TreeMap<>();
 
 		if (activities != null) {
 			for (FlowApprovalActivityProgress activityProgress : activities) {
 
-				Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>> activityGroupToProgressMap = mapping.get(activityProgress.getFlowInstanceID());
+				FlowApprovalActivityRound round = activityProgress.getActivityRound();
+				
+				round.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(round.getActivityProgresses(), activityProgress));
+				
+				activityProgress.setActivityRound(null);
+				
+				Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> activityGroupToRoundMap = mapping.get(round.getFlowInstanceID());
 
-				if (activityGroupToProgressMap == null) {
+				if (activityGroupToRoundMap == null) {
 
-					activityGroupToProgressMap = new TreeMap<>();
-					mapping.put(activityProgress.getFlowInstanceID(), activityGroupToProgressMap);
+					activityGroupToRoundMap = new TreeMap<>();
+					mapping.put(round.getFlowInstanceID(), activityGroupToRoundMap);
 				}
 
-				List<FlowApprovalActivityProgress> progressList = activityGroupToProgressMap.get(activityProgress.getActivity().getActivityGroup());
+				Set<FlowApprovalActivityRound> rounds = activityGroupToRoundMap.get(round.getActivityGroup());
 
-				if (progressList == null) {
+				if (rounds == null) {
 
-					progressList = new ArrayList<>();
-					activityGroupToProgressMap.put(activityProgress.getActivity().getActivityGroup(), progressList);
+					rounds = new HashSet<>();
+					activityGroupToRoundMap.put(round.getActivityGroup(), rounds);
 				}
 
-				progressList.add(activityProgress);
+				rounds.add(round);
 			}
 		}
 
 		Element flowInstancesElement = XMLUtils.appendNewElement(doc, listElement, "FlowInstances");
 
-		for (Entry<Integer, Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>>> entry : mapping.entrySet()) {
+		for (Entry<Integer, Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>>> entry : mapping.entrySet()) {
 
 			Integer flowInstanceID = entry.getKey();
 
-			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID);
+			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION);
 
 			if (flowInstance != null) {
-
+				
 				Element flowInstanceElement = flowInstance.toXML(doc);
 
-				Map<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>> activityGroupToProgressMap = entry.getValue();
+				Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> activityGroupToRoundMap = entry.getValue();
 
 				Element activityGroupsElement = XMLUtils.appendNewElement(doc, flowInstanceElement, "ActivityGroups");
 
-				for (Entry<FlowApprovalActivityGroup, List<FlowApprovalActivityProgress>> entry2 : activityGroupToProgressMap.entrySet()) {
+				for (Entry<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> entry2 : activityGroupToRoundMap.entrySet()) {
 
 					FlowApprovalActivityGroup activityGroup = entry2.getKey();
 
 					Element activityGroupElement = activityGroup.toXML(doc);
 
-					List<FlowApprovalActivityProgress> activityProgresses = entry2.getValue();
-
-					Element progressesElement = XMLUtils.appendNewElement(doc, activityGroupElement, "Progresses");
+					Set<FlowApprovalActivityRound> activityRounds = entry2.getValue();
 					
-					for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+					Element roundsElement = XMLUtils.appendNewElement(doc, activityGroupElement, "ActivityRounds");
+					
+					for (FlowApprovalActivityRound activityRound : activityRounds) {
+					
+						List<FlowApprovalActivityProgress> activityProgresses = activityRound.getActivityProgresses();
 						
-						Element activityProgressElement = activityProgress.toXML(doc);
+						activityRound.setActivityGroup(null);
+						activityRound.setActivityProgresses(null);
 						
-						if (activityProgress.getActivity().getShortDescription() != null) {
-							
-							XMLUtils.appendNewElement(doc, activityProgressElement, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
+						Element roundElement = activityRound.toXML(doc);
+						
+						Element activityProgressesElement = XMLUtils.appendNewElement(doc, activityGroupElement, "ActivityProgresses");
+
+						for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+
+							Element activityProgressElement = activityProgress.toXML(doc);
+
+							if (activityProgress.getActivity().getShortDescription() != null) {
+
+								XMLUtils.appendNewElement(doc, activityProgressElement, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
+							}
+
+							activityProgressesElement.appendChild(activityProgressElement);
 						}
-						
-						progressesElement.appendChild(activityProgressElement);
+
+						roundElement.appendChild(activityProgressesElement);
+						roundsElement.appendChild(roundElement);
 					}
 					
 					activityGroupsElement.appendChild(activityGroupElement);
@@ -319,9 +345,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		return getActivities(user, true, relations);
 	}
 	
-	private List<FlowApprovalActivityProgress> getActivities(User user, boolean completed, Field... relations) throws SQLException {
+	private List<FlowApprovalActivityProgress> getActivities(User user, boolean active, Field... relations) throws SQLException {
 		
-		return getActivities(user, null, completed, relations);
+		return getActivities(user, null, active, relations);
 	}
 	
 	protected List<FlowApprovalActivityProgress> getActivities(User user, Integer flowInstanceID, Boolean completed, Field... relations) throws SQLException {
@@ -331,6 +357,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		// @formatter:off
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
+		              +" INNER JOIN flowapproval_activity_rounds r ON r.activityRoundID = ap.activityRoundID"
 		              +" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
 		              +" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
 		              +" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
@@ -343,7 +370,12 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 		
 		if (completed != null) {
-			builder.append(" ap.completed IS " + (completed ? "NOT " : "") + "NULL AND");
+			if (completed) {
+				builder.append(" (r.completed IS NOT NULL OR r.cancelled IS NOT NULL OR ap.completed IS NOT NULL) AND");
+				
+			} else {
+				builder.append(" r.completed IS NULL AND r.cancelled IS NULL AND ap.completed IS NULL AND");
+			}
 		}
 		
 		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
@@ -355,7 +387,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		if (relations != null) {
 
 			query.addRelations(relations);
-			query.addCachedRelation(FlowApprovalActivity.ACTIVITY_GROUP_RELATION);
+			query.addCachedRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION);
 		}
 
 		return activityProgressDAO.getAll(query);
@@ -372,18 +404,19 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
 		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
+		FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 		FlowInstance flowInstance;
 		ImmutableFlowInstanceManager instanceManager = null;
 		
 		if (activity.isShowFlowInstance()) {
 			
-			instanceManager = flowAdminModule.getImmutableFlowInstanceManager(activityProgress.getFlowInstanceID());
+			instanceManager = flowAdminModule.getImmutableFlowInstanceManager(activityProgress.getActivityRound().getFlowInstanceID());
 			flowInstance = (FlowInstance) instanceManager.getFlowInstance();
 			
 		} else {
 			
-			flowInstance = flowAdminModule.getFlowInstance(activityProgress.getFlowInstanceID());
+			flowInstance = flowAdminModule.getFlowInstance(activityProgress.getActivityRound().getFlowInstanceID());
 		}
 
 		if (!AccessUtils.checkAccess(user, activityProgress)) {
@@ -399,7 +432,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		List<ValidationError> validationErrors = null;
 
-		if (req.getMethod().equalsIgnoreCase("POST") && activityProgress.getCompleted() == null) {
+		if (req.getMethod().equalsIgnoreCase("POST") && activityProgress.getCompleted() == null && round.getCompleted() == null && round.getCancelled() == null) {
 
 			validationErrors = new ArrayList<>();
 

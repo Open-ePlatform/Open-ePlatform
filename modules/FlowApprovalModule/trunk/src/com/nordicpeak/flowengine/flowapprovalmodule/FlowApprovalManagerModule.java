@@ -46,6 +46,7 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 
 public class FlowApprovalManagerModule extends AnnotatedForegroundModule implements FlowInstanceOverviewExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
@@ -58,11 +59,12 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	private boolean debugFragmententXML;
 
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
+	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
 	private AnnotatedDAO<FlowApprovalActivityProgress> activityProgressDAO;
 	
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivityProgress, Integer> activityProgressDAOWrapper;
 
-	private QueryParameterFactory<FlowApprovalActivityProgress, Integer> activityProgressFlowInstanceIDParamFactory;
+	private QueryParameterFactory<FlowApprovalActivityRound, Integer> activityRoundFlowInstanceIDParamFactory;
 	private QueryParameterFactory<FlowApprovalActivityGroup, Integer> activityGroupFlowFamilyIDParamFactory;
 
 	protected FlowInstanceAdminModule flowInstanceAdminModule;
@@ -91,12 +93,13 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), true, true, false);
 
 		activityGroupDAO = daoFactory.getDAO(FlowApprovalActivityGroup.class);
+		activityRoundDAO = daoFactory.getDAO(FlowApprovalActivityRound.class);
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
 		
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
-		activityProgressFlowInstanceIDParamFactory = activityProgressDAO.getParamFactory("flowInstanceID", Integer.class);
+		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityGroupFlowFamilyIDParamFactory = activityGroupDAO.getParamFactory("flowFamilyID", Integer.class);
 	}
 
@@ -197,7 +200,14 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 				throw new URINotFoundException(uriParser);
 			}
 			
-			approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+			//TODO don't allow new reminder if reminded very recently
+			
+			FlowApprovalActivityRound round = activityProgress.getActivityRound();
+			
+			if (round.getCompleted() == null && round.getCancelled() == null && activityProgress.getCompleted() == null) {
+				
+				approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+			}
 		}
 		
 		//TODO show notification that reminder was sent
@@ -210,12 +220,13 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<FlowApprovalActivityGroup>();
 
 		query.addParameter(activityGroupFlowFamilyIDParamFactory.getParameter(flowInstance.getFlow().getFlowFamily().getFlowFamilyID()));
-		query.addRelationParameter(FlowApprovalActivityProgress.class, activityProgressFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+		query.addRelationParameter(FlowApprovalActivityRound.class, activityRoundFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
 
-		query.addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.ACTIVITY_PROGRESSES_RELATION);
+		query.addRelations(FlowApprovalActivityGroup.ACTIVIY_ROUNDS_RELATION, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION);
 
 		if (relations != null) {
 			query.addRelations(relations);
+			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_RELATION);
 		}
 
 		return activityGroupDAO.getAll(query);

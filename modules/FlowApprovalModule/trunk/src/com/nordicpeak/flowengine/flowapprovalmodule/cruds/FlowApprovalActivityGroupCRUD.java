@@ -117,8 +117,10 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 	protected void validateAddPopulation(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 		super.validateAddPopulation(activityGroup, req, user, uriParser);
 
-		activityGroup.setFlowFamilyID(((Flow) req.getAttribute("flow")).getFlowFamily().getFlowFamilyID());
-		activityGroup.setSortIndex(Integer.MAX_VALUE);
+		Flow flow = (Flow) req.getAttribute("flow");
+		
+		activityGroup.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
+		activityGroup.setSortIndex(1 + callback.getApprovalGroupMaxSortIndex(flow.getFlowFamily()));
 		
 		validatePopulation(activityGroup, req, user, uriParser);
 	}

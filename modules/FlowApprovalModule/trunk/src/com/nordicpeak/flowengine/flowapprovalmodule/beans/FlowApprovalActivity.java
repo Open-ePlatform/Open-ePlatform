@@ -257,4 +257,29 @@ public class FlowApprovalActivity extends GeneratedElementable {
 		return StringUtils.toLogFormat(name, 30) + " (activityID: " + activityID + ")";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((activityID == null) ? 0 : activityID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FlowApprovalActivity other = (FlowApprovalActivity) obj;
+		if (activityID == null) {
+			if (other.activityID != null)
+				return false;
+		} else if (!activityID.equals(other.activityID))
+			return false;
+		return true;
+	}
+
 }
