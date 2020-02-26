@@ -571,11 +571,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					if (externalMessage != null) {
 
-						FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
-
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
-
-						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+						sendExternalMessageAddedEvents(user, flowInstance, externalMessage);
 
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 
@@ -702,6 +698,15 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}
 
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
+	}
+
+	public void sendExternalMessageAddedEvents(User user, FlowInstance flowInstance, ExternalMessage externalMessage) throws SQLException {
+
+		FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
+
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
+
+		systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 	}
 
 	@WebPublic(alias = "messages")
@@ -2591,4 +2596,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return enableDescriptionColumn;
 	}
+	
+	public ExternalMessageCRUD getExternalMessageCRUD() {
+
+		return externalMessageCRUD;
+	}
+	
 }

@@ -126,13 +126,9 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 			for (FileItem fileItem : files) {
 
-				AttachmentType attachment = this.getNewAttachmentInstance();
-
 				String fileName = FilenameUtils.getName(fileItem.getName());
 
-				attachment.setFilename(fileName);
-				attachment.setSize(fileItem.getSize());
-				attachment.setData(new SerialBlob(fileItem.get()));
+				AttachmentType attachment = createAttachment(fileName, fileItem.getSize(), fileItem.get());
 
 				attachments.add(attachment);
 			}
@@ -143,6 +139,17 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 		return null;
 
+	}
+
+	public AttachmentType createAttachment(String fileName, long fileSize, byte[] data) throws SQLException {
+
+		AttachmentType attachment = this.getNewAttachmentInstance();
+
+		attachment.setFilename(fileName);
+		attachment.setSize(fileSize);
+		attachment.setData(new SerialBlob(data));
+		
+		return attachment;
 	}
 
 	public HttpServletRequest parseRequest(HttpServletRequest req, List<ValidationError> errors) {

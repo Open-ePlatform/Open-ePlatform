@@ -56,34 +56,13 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 	}
 
 	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
-
+		
+		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
+		
+		List<ExternalMessageAttachment> attachments = null;
 		try {
 
-			ExternalMessage externalMessage = null;
-
-			String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
-
-			List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors);
-
-			if (attachments != null && flowInstance.getFlow().isHideExternalMessageAttachments()) {
-
-				log.warn("User " + user + " tried adding an external message for flowinstance " + flowInstance + " with an attachment while attachments are disabled.");
-
-				validationErrors.add(new ValidationError("UnableToParseRequest"));
-			}
-
-			if (validationErrors.isEmpty()) {
-
-				externalMessage = new ExternalMessage();
-				externalMessage.setFlowInstance(flowInstance);
-				externalMessage.setPoster(user);
-				externalMessage.setMessage(message);
-				externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
-				externalMessage.setAttachments(attachments);
-				externalMessage.setPostedByManager(postedByManager);
-			}
-
-			return externalMessage;
+			attachments = getAttachments(req, user, validationErrors);
 
 		} finally {
 
@@ -92,6 +71,33 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 				((MultipartRequest) req).deleteFiles();
 			}
 		}
+		
+		return create(message, attachments, user, flowInstance, postedByManager, validationErrors);
+	}
+	
+	public ExternalMessage create(String message, List<ExternalMessageAttachment> attachments, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) {
+
+		ExternalMessage externalMessage = null;
+
+		if (attachments != null && flowInstance.getFlow().isHideExternalMessageAttachments()) {
+
+			log.warn("User " + user + " tried adding an external message for flowinstance " + flowInstance + " with an attachment while attachments are disabled.");
+
+			validationErrors.add(new ValidationError("UnableToParseRequest"));
+		}
+
+		if (validationErrors.isEmpty()) {
+
+			externalMessage = new ExternalMessage();
+			externalMessage.setFlowInstance(flowInstance);
+			externalMessage.setPoster(user);
+			externalMessage.setMessage(message);
+			externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+			externalMessage.setAttachments(attachments);
+			externalMessage.setPostedByManager(postedByManager);
+		}
+
+		return externalMessage;
 	}
 
 	@Override
