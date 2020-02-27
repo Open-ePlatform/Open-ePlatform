@@ -249,9 +249,9 @@
 					`activityRoundID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 					`activityGroupID` INT(10) UNSIGNED NOT NULL,
 					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
-					`added` DATETIME(0) NOT NULL,
-					`completed` DATETIME(0) NULL,
-					`cancelled` DATETIME(0) NULL,
+					`added` DATETIME NOT NULL,
+					`completed` DATETIME NULL,
+					`cancelled` DATETIME NULL,
 					PRIMARY KEY (`activityRoundID`) USING BTREE,
 					INDEX `FK_flowapproval_activity_rounds_1` (`activityGroupID`) USING BTREE,
 					CONSTRAINT `FK_flowapproval_activity_rounds_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
