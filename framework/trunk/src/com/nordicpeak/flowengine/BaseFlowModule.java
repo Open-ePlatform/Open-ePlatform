@@ -1191,7 +1191,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		Timestamp previousStatusChange = instanceManager.getFlowInstance().getLastStatusChange();
 		
-		setFlowStatus(instanceManager, actionID, eventType, requestMetadata);
+		setFlowStatus(instanceManager, user, actionID, eventType, requestMetadata);
 
 		Timestamp saveTimestamp = null;
 		
@@ -1231,9 +1231,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return event;
 	}
 	
-	protected void setFlowStatus(MutableFlowInstanceManager instanceManager, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
+	protected void setFlowStatus(MutableFlowInstanceManager instanceManager, User user, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
 		
-		Status nextStatus = getNextFlowStatus(instanceManager, actionID, eventType, requestMetadata);
+		Status nextStatus = getNextFlowStatus(instanceManager, user, actionID, eventType, requestMetadata);
 		
 		if (nextStatus != null) {
 			
@@ -1241,9 +1241,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 	
-	protected Status getNextFlowStatus(FlowInstanceManager instanceManager, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
+	protected Status getNextFlowStatus(FlowInstanceManager instanceManager, User user, String actionID, EventType eventType, RequestMetadata requestMetadata) throws FlowDefaultStatusNotFound {
 
-		FlowInstanceSaveStatusOverrideEvent statusOverrideEvent = new FlowInstanceSaveStatusOverrideEvent(instanceManager, actionID, eventType, requestMetadata);
+		FlowInstanceSaveStatusOverrideEvent statusOverrideEvent = new FlowInstanceSaveStatusOverrideEvent(instanceManager, user, actionID, eventType, requestMetadata);
 		
 		systemInterface.getEventHandler().sendEvent(FlowInstance.class, statusOverrideEvent, EventTarget.ALL);
 		
@@ -2411,7 +2411,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.PAYED, eventDetails, user, null, eventAttributes);
 		}
 		
-		Status nextStatus = getNextFlowStatus(instanceManager, actionID, EventType.SUBMITTED, null);
+		Status nextStatus = getNextFlowStatus(instanceManager, user, actionID, EventType.SUBMITTED, null);
 		
 		if (nextStatus == null) {
 			
