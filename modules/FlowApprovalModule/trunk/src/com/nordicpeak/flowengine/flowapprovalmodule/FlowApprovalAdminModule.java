@@ -202,6 +202,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@TextFieldSettingDescriptor(name = "Check for expiring managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String managersUpdateInterval = "0 0 * * *";
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send reminders repeatedly", description = "Controls wheter to send reminder emails repeatadly or not")
+	private boolean sendRemindersRepeatedly = false;
+	
 	private AnnotatedDAO<FlowApprovalActivity> activityDAO;
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
@@ -1623,7 +1627,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					+" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
 					+" INNER JOIN " + activityRoundDAO.getTableName() + " r ON ap.activityRoundID = r.activityRoundID"
 					+" INNER JOIN " + activityGroupDAO.getTableName() + " ag ON ag.activityGroupID = a.activityGroupID AND ag.reminderAfterXDays IS NOT NULL"
-					+" WHERE ap.completed IS NULL AND r.cancelled IS NULL AND ap.automaticReminderSent = 0 AND DATEDIFF(NOW(), ap.added) >= ag.reminderAfterXDays"
+					+" WHERE ap.completed IS NULL AND r.cancelled IS NULL " + (!sendRemindersRepeatedly ? "AND ap.automaticReminderSent = 0 " : "") + "AND DATEDIFF(NOW(), ap.added) >= ag.reminderAfterXDays"
 			);
 			// @formatter:on
 
