@@ -362,4 +362,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="26">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+				 MODIFY COLUMN `flowInstanceArchivedUserSMS` VARCHAR(1024) DEFAULT NULL,
+				 MODIFY COLUMN `flowInstanceArchivedNotLoggedInUserSMS` VARCHAR(1024) DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
