@@ -19,12 +19,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowType;
-
-import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
@@ -47,6 +41,13 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.PopularFlowFamiliesModule;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowType;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowInfoModule extends AnnotatedRESTModule implements EventListener<CRUDEvent<Flow>>, Runnable {
 
@@ -447,7 +448,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				throw new URINotFoundException(uriParser);
 			}
 			
-		} catch (IOException e) {
+		} catch (IOException | TransformerException e) {
 
 			log.info("Error sending response in format " + responseType + " to user " + user);
 		}
