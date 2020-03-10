@@ -96,4 +96,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE tree_queries CHANGE COLUMN helpText helpText TEXT NULL DEFAULT NULL AFTER description;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
