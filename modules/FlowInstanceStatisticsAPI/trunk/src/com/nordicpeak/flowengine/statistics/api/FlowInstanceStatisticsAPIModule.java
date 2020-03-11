@@ -70,6 +70,7 @@ import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
+import com.nordicpeak.flowengine.statistics.interfaces.StatisticsExtensionConsumer;
 
 public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule implements StatisticsExtensionConsumer {
 
@@ -311,6 +312,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						}
 					}
 
+					//TODO include when user deletes their own flowinstances
 					{ // Aborted flow instances
 						HighLevelQuery<AbortedFlowInstance> flowInstancesQuery = new HighLevelQuery<AbortedFlowInstance>();
 						flowInstancesQuery.setRowLimiter(new MySQLRowLimiter(rowLimit));
