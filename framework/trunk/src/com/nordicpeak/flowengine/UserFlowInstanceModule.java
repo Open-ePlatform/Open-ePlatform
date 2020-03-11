@@ -60,6 +60,7 @@ import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -70,6 +71,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.accesscontrollers.SessionAccessController;
 import com.nordicpeak.flowengine.accesscontrollers.UserFlowInstanceAccessController;
+import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -1248,7 +1250,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
 
-		query.addRelations(FlowInstance.OWNERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION);
+		query.addRelations(FlowInstance.OWNERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STEPS_RELATION, Flow.FLOW_TYPE_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION);
 		query.addParameter(flowInstanceIDParamFactory.getParameter(flowInstanceID));
 		query.addRelationParameter(QueryInstanceDescriptor.class, queryInstanceDescriptorFlowInstanceIDParamFactory.getParameter(flowInstanceID));
 
@@ -1294,6 +1296,19 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 							}
 						}
 					}
+				}
+
+				if (flowInstance.getStatus().getContentType() == ContentType.NEW) {
+
+					AbortedFlowInstance abortedFlowInstance = new AbortedFlowInstance();
+
+					abortedFlowInstance.setAdded(TimeUtils.getCurrentTimestamp());
+					abortedFlowInstance.setFlowFamilyID(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+					abortedFlowInstance.setFlowID(flowInstance.getFlow().getFlowID());
+					abortedFlowInstance.setStepID(flowInstance.getStepID());
+
+					log.info("Adding aborted flow instance entry for flow " + flowInstance.getFlow());
+					daoFactory.getAbortedFlowInstanceDAO().add(abortedFlowInstance, transactionHandler, null);
 				}
 			}
 
