@@ -557,7 +557,9 @@
 		 		<xsl:with-param name="totalStepCount" select="$totalStepCount"/>
 		 	</xsl:call-template>
 		 	
-	 		<xsl:call-template name="createMobileSavePanel" />
+		 	<xsl:if test="not(FlowInstance/Flow/hideSaveButton = 'true')">
+		 		<xsl:call-template name="createMobileSavePanel" />
+		 	</xsl:if>
 	 		
 	 	</xsl:if>
 	
@@ -736,11 +738,9 @@
 	 			<div class="current-step">
 	 				<xsl:value-of select="$i18n.ShortSaveBoxDescription" />
 	 			</div>
-	 			<xsl:if test="not(FlowInstance/Flow/hideSaveButton = 'true')">
-		 			<div class="buttons">
-		 				<a class="btn btn-green force-submit" data-action="save_errand" href="#" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /></a>
-		 			</div>
-	 			</xsl:if>
+	 			<div class="buttons">
+	 				<a class="btn btn-green force-submit" data-action="save_errand" href="#" onclick="submitStep('save', event)"><xsl:value-of select="$i18n.save" /></a>
+	 			</div>
 	 		</div>
 	 	</div>
 		
