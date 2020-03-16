@@ -89,7 +89,7 @@ $(document).ready(function() {
 		    axis: {
 		        x: {
 		            type: 'category',
-		            categories: ['Mycket missnÃ¶jd', 'MissnÃ¶jd', 'Varken eller', 'NÃ¶jd', 'Mycket nÃ¶jd']
+		            categories: ['Mycket missnöjd', 'Missnöjd', 'Varken eller', 'Nöjd', 'Mycket nöjd']
 		        }
 		    },
 		    legend: {
