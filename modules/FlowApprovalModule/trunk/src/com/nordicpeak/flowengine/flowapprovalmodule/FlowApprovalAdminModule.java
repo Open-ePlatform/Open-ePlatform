@@ -1276,6 +1276,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				if (flowInstance.getFirstSubmitted() != null) {
 					
+					flowInstance = flowAdminModule.getFlowInstance(flowInstance.getFlowInstanceID(), null, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+					
 					List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION);
 
 					if (activityGroups != null) {
