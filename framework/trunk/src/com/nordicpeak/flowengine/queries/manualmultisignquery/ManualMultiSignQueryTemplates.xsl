@@ -9,7 +9,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/manualmultisignquery.js
+		/js/manualmultisignquery.js?v=1
 	</xsl:variable>
 
 	<xsl:template match="Document">	
