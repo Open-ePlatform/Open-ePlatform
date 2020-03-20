@@ -478,6 +478,7 @@ public class FlowInstanceUtils {
 			contact.setCareOf(attributeHandler.getString("careOf"));
 			contact.setCitizenIdentifier(attributeHandler.getString("citizenIdentifier"));
 			contact.setOrganizationNumber(attributeHandler.getString("organizationNumber"));
+			contact.setOrganizationName(attributeHandler.getString("organizationName"));
 			contact.setContactBySMS(attributeHandler.getPrimitiveBoolean("contactBySMS"));
 			
 			if (attributeHandler.isSet("contactByEmail")) {
