@@ -252,6 +252,7 @@
 					i18nFlow = '<xsl:value-of select="$i18n.Flow" />';
 					i18nFlowInstanceID = '<xsl:value-of select="$i18n.FlowInstanceID" />';
 					i18nFlowInstanceStatus = '<xsl:value-of select="$i18n.Status" />';
+					i18nFlowInstanceDescription = '<xsl:value-of select="$i18n.Description" />';
 					i18nFlowInstanceAdded = '<xsl:value-of select="$i18n.Date" />';
 				</script>
 				
@@ -306,6 +307,7 @@
   								<th class="service active"><span data-icon-after="_"><xsl:value-of select="$i18n.Flow" /></span></th>
   								<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
   								<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
+  								<th class="description"><span data-icon-after="_"><xsl:value-of select="$i18n.Description" /></span></th>
   								<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Date" /></span></th>
   								<th class="link no-sort"></th>
   							</tr>

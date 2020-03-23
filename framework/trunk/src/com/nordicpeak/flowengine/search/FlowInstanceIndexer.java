@@ -257,7 +257,16 @@ public class FlowInstanceIndexer {
 			instance.putField(FLOW_NAME_FIELD, doc.get(FLOW_NAME_FIELD));
 			instance.putField(STATUS_NAME_FIELD, doc.get(STATUS_NAME_FIELD));
 			instance.putField(FIRST_SUBMITTED_FIELD, doc.get(FIRST_SUBMITTED_FIELD));
+			
+			String managerDescription = doc.get(MANAGER_DESCRIPTION);
+			
+			if(managerDescription == null) {
+				
+				managerDescription = "";
+			}
 
+			instance.putField(MANAGER_DESCRIPTION, managerDescription);
+			
 			jsonArray.addNode(instance);
 		}
 
@@ -593,7 +602,7 @@ public class FlowInstanceIndexer {
 			
 			if(flowInstance.getManagerDescription() != null) {
 				
-				doc.add(new TextField(MANAGER_DESCRIPTION, flowInstance.getManagerDescription(), Field.Store.NO));
+				doc.add(new TextField(MANAGER_DESCRIPTION, flowInstance.getManagerDescription(), Field.Store.YES));
 			}
 			
 			addAdditionalFields(doc, flowInstance, flowFamily);
