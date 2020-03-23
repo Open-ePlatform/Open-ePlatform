@@ -188,7 +188,8 @@ public class EvaluatorDescriptor extends GeneratedElementable implements Mutable
 		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		this.sortIndex = XMLValidationUtils.validateParameter("sortIndex", xmlParser, true, NonNegativeStringIntegerPopulator.getPopulator(), errors);
 		this.evaluatorTypeID = XMLValidationUtils.validateParameter("evaluatorTypeID", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
-
+		this.comment = XMLValidationUtils.validateParameter("comment", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
+		
 		this.enabled = xmlParser.getPrimitiveBoolean("enabled");
 
 		this.targetQueryIDs = xmlParser.getIntegers("TargetQueryIDs/queryID");
