@@ -217,6 +217,7 @@ import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
+import com.nordicpeak.flowengine.events.FlowVersionAdded;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
@@ -1762,6 +1763,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 		
 		eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flowCopy), EventTarget.ALL);
+		eventHandler.sendEvent(Flow.class, new FlowVersionAdded(flow, statusConversionMap), EventTarget.ALL);
 		
 		if (familyUpdated) {
 			eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flowCopy.getFlowFamily()), EventTarget.ALL);
@@ -4588,7 +4590,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				log.info("User " + user + " succefully imported flow " + flow);
 
 				eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flow), EventTarget.ALL);
-				
+				eventHandler.sendEvent(Flow.class, new FlowVersionAdded(flow, statusConversionMap), EventTarget.ALL);
+
 				if (familyUpdated) {
 					eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flow.getFlowFamily()), EventTarget.ALL);
 				}

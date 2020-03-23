@@ -1,6 +1,5 @@
 package com.nordicpeak.flowengine.beans;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 
 @Table(name = "flowengine_flow_statuses")
 @XMLElement
-public class Status extends GeneratedElementable implements Serializable, ImmutableStatus, XMLParserPopulateable, AccessInterface {
+public class Status extends GeneratedElementable implements ImmutableStatus, XMLParserPopulateable, AccessInterface {
 
 	private static final long serialVersionUID = -3364854013675598021L;
 

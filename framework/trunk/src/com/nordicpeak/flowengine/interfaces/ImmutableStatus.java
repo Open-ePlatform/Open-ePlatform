@@ -1,12 +1,13 @@
 package com.nordicpeak.flowengine.interfaces;
 
+import java.io.Serializable;
 import java.util.List;
 
 import se.unlogic.standardutils.xml.Elementable;
 
 import com.nordicpeak.flowengine.enums.ContentType;
 
-public interface ImmutableStatus extends Elementable{
+public interface ImmutableStatus extends Elementable, Serializable {
 
 	public Integer getStatusID();
 
