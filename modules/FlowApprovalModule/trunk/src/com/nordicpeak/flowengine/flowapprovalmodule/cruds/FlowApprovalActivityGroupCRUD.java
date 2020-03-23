@@ -122,6 +122,10 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 		activityGroup.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
 		activityGroup.setSortIndex(1 + callback.getApprovalGroupMaxSortIndex(flow.getFlowFamily()));
 		
+		if (activityGroup.getSortIndex() < 0) { // Fix for old sort index being Integer.MAX_VALUE
+			activityGroup.setSortIndex(Integer.MAX_VALUE);
+		}
+		
 		validatePopulation(activityGroup, req, user, uriParser);
 	}
 
