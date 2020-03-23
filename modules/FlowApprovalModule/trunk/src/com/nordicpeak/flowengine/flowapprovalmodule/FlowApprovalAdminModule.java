@@ -45,6 +45,7 @@ import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.enums.ResponseType;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
 import se.unlogic.hierarchy.core.handlers.UserHandler;
@@ -56,6 +57,7 @@ import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModule
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
+import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
@@ -72,6 +74,7 @@ import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.MySQLRowLimiter;
 import se.unlogic.standardutils.dao.OrderByCriteria;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
@@ -131,6 +134,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String adminExtensionViewTitle = "Flow approval settings";
+	
+	@XSLVariable(prefix = "java.")
+	private String copySuffix = " (copy)";
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupAdded;
@@ -140,6 +146,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupDeleted;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityGroupCopied;
 	
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupsSorted;
@@ -152,6 +161,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityDeleted;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityCopied;
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupStarted;
@@ -543,7 +555,15 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			return getViewFragmentResponse(activityCRUD.delete(req, res, user, uriParser));
 
-		} else if ("users".equals(method)) {
+		} else if ("copyactivity".equals(method)) {
+
+			return copyActivity(flow, req, res, user, uriParser);
+
+		} else if ("copyactivitygroup".equals(method)) {
+
+			return copyActivityGroup(flow, req, res, user, uriParser);
+
+		}else if ("users".equals(method)) {
 
 			userGroupListConnector.getUsers(req, res, user, uriParser);
 			return null;
@@ -1708,5 +1728,46 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		ObjectQuery<Integer> query = new ObjectQuery<>(dataSource, "SELECT MAX(sortIndex) FROM " + activityGroupDAO.getTableName() + " WHERE flowFamilyID = " + flowFamily.getFlowFamilyID(), IntegerPopulator.getPopulator());
 		
 		return query.executeQuery();
+	}
+	
+	private ViewFragment copyActivity(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException, IOException {
+		
+		FlowApprovalActivity activity = activityCRUD.getRequestedBean(req, res, user, uriParser, GenericCRUD.UPDATE);
+		
+		log.info("User " + user + " copying activity " + activity);
+		
+		activity.setActivityID(null);
+		activity.setName(activity.getName() + copySuffix);
+		
+		RelationQuery query = new RelationQuery(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityDAO.add(activity, query);
+		
+		addFlowFamilyEvent(eventActivityCopied + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
+
+		res.sendRedirect(req.getContextPath() + req.getAttribute("extensionRequestURL") + "/showactivitygroup/" + activity.getActivityGroup().getActivityGroupID());
+		return null;
+	}
+	
+	private ViewFragment copyActivityGroup(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
+		
+		FlowApprovalActivityGroup activityGroup = activityGroupCRUD.getRequestedBean(req, res, user, uriParser, GenericCRUD.UPDATE);
+		
+		log.info("User " + user + " copying activity group " + activityGroup);
+		
+		activityGroup.setActivityGroupID(null);
+		activityGroup.setName(activityGroup.getName() + copySuffix);
+		
+		if (activityGroup.getActivities() != null) {
+			for(FlowApprovalActivity activity : activityGroup.getActivities()) {
+				activity.setActivityID(null);
+			}
+		}
+		
+		RelationQuery query = new RelationQuery(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityGroupDAO.add(activityGroup, query);
+		
+		addFlowFamilyEvent(eventActivityGroupCopied + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
+
+		return null;
 	}
 }

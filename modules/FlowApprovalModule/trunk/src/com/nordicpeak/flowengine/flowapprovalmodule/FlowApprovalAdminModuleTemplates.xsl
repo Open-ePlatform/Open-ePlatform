@@ -60,7 +60,7 @@
 							<th><xsl:value-of select="$i18n.ActivityGroup.completeStatus" /></th>
 							<th><xsl:value-of select="$i18n.ActivityGroup.denyStatus" /></th>
 							<th><xsl:value-of select="$i18n.ActivityGroup.activityCount" /></th>
-							<th width="37" />
+							<th width="58" />
 						</tr>
 					</thead>
 					<tbody>
@@ -116,7 +116,7 @@
 								<th><xsl:value-of select="$i18n.ActivityGroup.completeStatus" /></th>
 								<th><xsl:value-of select="$i18n.ActivityGroup.denyStatus" /></th>
 								<th><xsl:value-of select="$i18n.ActivityGroup.activityCount" /></th>
-								<th width="37" />
+								<th width="58" />
 							</tr>
 						</thead>
 						<tbody>
@@ -185,6 +185,10 @@
 			<td>
 				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/updateactivitygroup/{activityGroupID}" title="{$i18n.UpdateActivityGroup}: {name}">
 					<img src="{$imgPath}/pen.png" alt="" />
+				</a>
+				
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/copyactivitygroup/{activityGroupID}" title="{$i18n.Copy}: {name}">
+					<img src="{$imgPath}/page_copy.png" alt="" />
 				</a>
 			
 				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/deleteactivitygroup/{activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm}: {name}?');" title="{$i18n.DeleteActivityGroup}: {name}">
@@ -616,7 +620,7 @@
 								<th><xsl:value-of select="$i18n.Activity.attributeName" /></th>
 								<th><xsl:value-of select="$i18n.Activity.inverted" /></th>
 								<th><xsl:value-of select="$i18n.Activity.attributeValues" /></th>
-								<th width="37" />
+								<th width="58" />
 							</tr>
 						</thead>
 						<tbody>
@@ -724,6 +728,10 @@
 			
 				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/updateactivity/{activityID}" title="{$i18n.UpdateActivity}: {name}">
 					<img src="{$imgPath}/pen.png" alt="" />
+				</a>
+				
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/copyactivity/{activityID}" title="{$i18n.Copy}: {name}">
+					<img src="{$imgPath}/page_copy.png" alt="" />
 				</a>
 			
 				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/deleteactivity/{activityID}" onclick="return confirm('{$i18n.DeleteActivity.Confirm}: {name}?');" title="{$i18n.DeleteActivity}: {name}">

@@ -10,14 +10,17 @@
 	<xsl:include href="FlowApprovalAdminModuleTemplates.xsl"/>
 	
 	<xsl:variable name="java.adminExtensionViewTitle">Aktivitetsgrupper</xsl:variable>
+	<xsl:variable name="java.copySuffix"> (kopia)</xsl:variable>
 	
 	<xsl:variable name="java.eventActivityGroupAdded">Skapade aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupUpdated">Ändrade aktivitetsgrupp</xsl:variable>
-	<xsl:variable name="java.eventActivityGroupsSorted">Sorterat aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupDeleted">Tog bort aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="java.eventActivityGroupCopied">Kopierade aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="java.eventActivityGroupsSorted">Sorterat aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="java.eventActivityAdded">Skapade aktivitet</xsl:variable>
 	<xsl:variable name="java.eventActivityUpdated">Ändrade aktivitet</xsl:variable>
 	<xsl:variable name="java.eventActivityDeleted">Tog bort aktivitet</xsl:variable>
+	<xsl:variable name="java.eventActivityCopied">Kopierade aktivitet</xsl:variable>
 	
 	<xsl:variable name="java.eventActivityGroupStarted">Påbörjade aktivitetsgrupper:</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupCancelled">Avbröt aktivitetsgrupper:</xsl:variable>
@@ -65,6 +68,7 @@
 	<xsl:variable name="i18n.BackToFlow">Bakåt</xsl:variable>
 	<xsl:variable name="i18n.BackToActivityGroup">Bakåt</xsl:variable>
 	<xsl:variable name="i18n.Move">Flytta</xsl:variable>
+	<xsl:variable name="i18n.Copy">Kopiera</xsl:variable>
 	
 	<xsl:variable name="i18n.name">Namn</xsl:variable>
 	
