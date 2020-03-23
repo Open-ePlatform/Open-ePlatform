@@ -51,7 +51,7 @@
 	<xsl:variable name="java.bundleListFlows">Lista e-tjänster</xsl:variable>
 	<xsl:variable name="java.bundleAddFlow">Lägg till e-tjänst</xsl:variable>
 	<xsl:variable name="java.bundleImportFlow">Importera e-tjänst</xsl:variable>
-	<xsl:variable name="java.bundleStandardStatuses">Adm. standardstatusar</xsl:variable>
+	<xsl:variable name="java.bundleStandardStatuses">Adm. statusgrupper</xsl:variable>
 	<xsl:variable name="java.bundleFlowtypes">Adm. kategorier</xsl:variable>
 	
 	<xsl:variable name="java.defaultLoginHelpLinkName">Så här skaffar du e-legitimation</xsl:variable>
@@ -588,8 +588,8 @@
 	<xsl:variable name="i18n.SortFlowStatuses.title">Sortera statusar</xsl:variable>
 	<xsl:variable name="i18n.MoveStatus">Flytta status</xsl:variable>
 	
-	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard">Ersätt statusar med standardstatusar</xsl:variable>
-	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard.title">Ersätt statusar med standardstatusar i e-tjänst</xsl:variable>
+	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard">Ersätt statusar med statusgrupp</xsl:variable>
+	<xsl:variable name="i18n.ReplaceFlowStatusesWithStandard.title">Ersätt statusar med statusgrupp i e-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.MoveEvaluator">Flytta regel</xsl:variable>
 	<xsl:variable name="i18n.PaymentSupportEnabled">Aktivera betalstöd</xsl:variable>
