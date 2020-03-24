@@ -47,7 +47,7 @@ public class XMLProviderModule extends AnnotatedForegroundModule implements XMLP
 
 	public static final RelationQuery EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 
-	private static final PooledSimpleDateFormat DATE_TIME_FORMATTER = new PooledSimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+	private static final PooledSimpleDateFormat DATE_TIME_FORMATTER = new PooledSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 	@ModuleSetting(allowsNull=true)
 	@TextAreaSettingDescriptor(name="Supported actionID's", description="The action ID's which will trigger export XML to be generated and stored when a submit event is detected")
