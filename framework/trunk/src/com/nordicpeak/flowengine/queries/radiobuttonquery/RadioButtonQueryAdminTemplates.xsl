@@ -11,17 +11,17 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
+		/featherlight/js/featherlight.min.js
+	</xsl:variable>	
+
+	<xsl:variable name="globallinks">
+		/featherlight/css/featherlight.min.css
 	</xsl:variable>	
 
 	<xsl:variable name="scripts">
 		/common/js/queryadmin.js
-		/common/js/featherlight.min.js
 	</xsl:variable>
 	
-	<xsl:variable name="links">
-		/common/css/featherlight.min.css
-	</xsl:variable>
-
 	<xsl:template match="Document">	
 		
 		<div id="RadioButtonQueryProvider" class="contentitem">

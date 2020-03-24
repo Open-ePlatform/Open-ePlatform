@@ -8,19 +8,22 @@
 	
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
+		/featherlight/js/featherlight.min.js
+	</xsl:variable>
+	
+	<xsl:variable name="globallinks">
+		/featherlight/css/featherlight.min.css
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
-		/js/featherlight.min.js
 		/js/datatables.min.js
 		/js/flowcatalog.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css
-		/css/featherlight.min.css
 		/css/datatables.css
 		/css/flowcatalog.css
 	</xsl:variable>

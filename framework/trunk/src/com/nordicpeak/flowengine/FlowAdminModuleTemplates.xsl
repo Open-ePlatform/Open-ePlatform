@@ -15,10 +15,12 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
+		/featherlight/js/featherlight.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
 		/css/openhierarchy-jquery-ui.css
+		/featherlight/css/featherlight.min.css
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
@@ -34,7 +36,6 @@
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
 		/js/UserGroupList.js
-		/js/featherlight.min.js
 		/js/colorpicker/jquery.minicolors.min.js
 		/js/jquery.cookie.js
 	</xsl:variable>
@@ -42,7 +43,6 @@
 	<xsl:variable name="links">
 		/css/flowengine.css?v=6
 		/css/UserGroupList.css
-		/css/featherlight.min.css
 		/js/colorpicker/jquery.minicolors.css
 	</xsl:variable>
 
