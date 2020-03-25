@@ -1737,7 +1737,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		log.info("User " + user + " copying activity " + activity);
 		
 		activity.setActivityID(null);
-		activity.setName(activity.getName() + copySuffix);
+		activity.setName(StringUtils.substring(activity.getName() + copySuffix, 255));
 		
 		RelationQuery query = new RelationQuery(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 		activityDAO.add(activity, query);
@@ -1755,7 +1755,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		log.info("User " + user + " copying activity group " + activityGroup);
 		
 		activityGroup.setActivityGroupID(null);
-		activityGroup.setName(activityGroup.getName() + copySuffix);
+		activityGroup.setName(StringUtils.substring(activityGroup.getName() + copySuffix, 255));
 		
 		if (activityGroup.getActivities() != null) {
 			for(FlowApprovalActivity activity : activityGroup.getActivities()) {
