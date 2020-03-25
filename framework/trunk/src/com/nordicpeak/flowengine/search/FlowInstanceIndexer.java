@@ -187,7 +187,7 @@ public class FlowInstanceIndexer {
 		return flowInstance.getFirstSubmitted() != null;
 	}
 	
-	public void search(HttpServletRequest req, HttpServletResponse res, User user, boolean checkAccess) throws IOException {
+	public void search(HttpServletRequest req, HttpServletResponse res, User user, boolean checkAccess, boolean includeDescription) throws IOException {
 
 		//Check if the index contains any documents
 		if (indexReader == null || indexReader.numDocs() == 0) {
@@ -258,14 +258,17 @@ public class FlowInstanceIndexer {
 			instance.putField(STATUS_NAME_FIELD, doc.get(STATUS_NAME_FIELD));
 			instance.putField(FIRST_SUBMITTED_FIELD, doc.get(FIRST_SUBMITTED_FIELD));
 			
-			String managerDescription = doc.get(MANAGER_DESCRIPTION);
+			if(includeDescription) {
 			
-			if(managerDescription == null) {
+				String managerDescription = doc.get(MANAGER_DESCRIPTION);
 				
-				managerDescription = "";
-			}
+				if(managerDescription == null) {
+					
+					managerDescription = "";
+				}
 
-			instance.putField(MANAGER_DESCRIPTION, managerDescription);
+				instance.putField(MANAGER_DESCRIPTION, managerDescription);				
+			}
 			
 			jsonArray.addNode(instance);
 		}
