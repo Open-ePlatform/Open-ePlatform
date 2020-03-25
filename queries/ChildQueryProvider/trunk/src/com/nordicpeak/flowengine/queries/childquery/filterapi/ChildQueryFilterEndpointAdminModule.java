@@ -141,7 +141,7 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		//Replace user attribute tags
 		if (user != null) {
 
-			address = UserAttributeTagUtils.replaceTags(address, user);
+			address = UserAttributeTagUtils.replaceTags(address, user, true);
 		}
 		
 		//Build user tag source
