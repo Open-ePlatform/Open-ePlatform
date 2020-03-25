@@ -31,6 +31,11 @@ public class UserAttributeTagUtils {
 	}
 
 	public static String replaceTags(String text, User user) {
+		
+		return replaceTags(text, user, false);
+	}
+	
+	public static String replaceTags(String text, User user, boolean urlEncodeValues) {
 
 		Set<String> tags = getAttributeTags(text);
 
@@ -39,7 +44,7 @@ public class UserAttributeTagUtils {
 			return text;
 		}
 
-		return replaceTags(text, user.getAttributeHandler(), tags);
+		return replaceTags(text, user.getAttributeHandler(), tags, urlEncodeValues);
 	}
 
 	public static String replaceTags(String text, AttributeHandler attributeHandler, Set<String> tags) {
@@ -63,6 +68,7 @@ public class UserAttributeTagUtils {
 
 					try {
 						value = URLEncoder.encode(value, "UTF-8");
+						
 					} catch (UnsupportedEncodingException ignore) {}
 				}
 			}
