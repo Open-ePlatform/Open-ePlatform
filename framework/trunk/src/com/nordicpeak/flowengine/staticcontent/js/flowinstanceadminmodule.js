@@ -6,6 +6,7 @@ var i18nFlowInstanceID = "Flow instance id";
 var i18nFlowInstanceStatus = "Status";
 var i18nFlowInstanceDescription = "Description";
 var i18nFlowInstanceAdded = "Added";
+var showSearchDecriptionColumn = true;
 
 $(document).ready(function() {
 	
@@ -187,19 +188,35 @@ function searchFlowInstance() {
 				
 					$.each(result.hits, function( key, flowInstance) {
 
-						var $flowInstanceRow = 
-							'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
-							'<td class"icon" />' +
-							'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
-							'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
-							'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
-							'<td data-title="' + i18nFlowInstanceDescription + '" class="description">' + flowInstance.managerDescription + '</td>' +
-							'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
-							'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
-							'</tr>'
-						;
-			        	
-						$searchResultTable.append($flowInstanceRow);
+						if(showSearchDecriptionColumn == true){
+							
+							var $flowInstanceRow = 
+								'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
+								'<td class"icon" />' +
+								'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
+								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
+								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
+								'<td data-title="' + i18nFlowInstanceDescription + '" class="description">' + flowInstance.managerDescription + '</td>' +
+								'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
+								'</tr>';
+				        	
+							$searchResultTable.append($flowInstanceRow);
+							
+						}else{
+							
+							var $flowInstanceRow = 
+								'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
+								'<td class"icon" />' +
+								'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
+								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
+								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
+								'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
+								'</tr>';
+				        	
+							$searchResultTable.append($flowInstanceRow);							
+						}
 			        	
 					});
 				

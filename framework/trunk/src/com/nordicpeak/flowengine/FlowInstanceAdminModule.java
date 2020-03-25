@@ -1581,14 +1581,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "search")
 	public ForegroundModuleResponse search(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException {
 
-		flowInstanceIndexer.search(req, res, user, true);
+		flowInstanceIndexer.search(req, res, user, true, true);
 
 		return null;
 	}
 
-	public void search(HttpServletRequest req, HttpServletResponse res, User user, boolean checkAccess) throws IOException {
+	public void search(HttpServletRequest req, HttpServletResponse res, User user, boolean checkAccess, boolean includeDescription) throws IOException {
 
-		flowInstanceIndexer.search(req, res, user, checkAccess);
+		flowInstanceIndexer.search(req, res, user, checkAccess, includeDescription);
 	}
 
 	@WebPublic(alias = "externalattachment")
