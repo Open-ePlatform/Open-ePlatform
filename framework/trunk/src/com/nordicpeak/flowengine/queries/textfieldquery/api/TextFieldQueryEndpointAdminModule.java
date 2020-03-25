@@ -252,16 +252,14 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 			usedPoster = new SimpleUser();
 		}
 		
-		//TODO URLEncoder.encode(s, "UTF-8") all parameter values
-		
 		TagReplacer tagReplacer = new TagReplacer();
 		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(usedPoster));
 		
 		address = tagReplacer.replace(address);
 
-		address = UserAttributeTagUtils.replaceTags(address, usedPoster);
+		address = UserAttributeTagUtils.replaceTags(address, usedPoster, true);
 		
-		address = AttributeTagUtils.replaceTags(address, attributeHandler);
+		address = AttributeTagUtils.replaceTags(address, attributeHandler, false, true);
 		
 		return address;
 	}
