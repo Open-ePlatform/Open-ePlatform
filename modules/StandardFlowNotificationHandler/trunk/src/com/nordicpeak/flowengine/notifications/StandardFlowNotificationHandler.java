@@ -1550,13 +1550,15 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ExternalMessageAddedEvent event, EventSource eventSource) throws SQLException {
 
+		log.info("Received external message " + event.getExternalMessage());
+		
+		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+		
 		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
 
 			return;
 		}
 
-		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
-		
 		if (flowInstance.getFlow().isHideExternalMessages()) {
 			
 			return;
