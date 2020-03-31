@@ -3694,13 +3694,13 @@
 			</div>
 		</div>
 
-		<h2><xsl:value-of select="$i18n.externalMessages"/></h2>
-		
 		<div>
 
 			<xsl:if test="Flow/hideExternalMessages = 'true'">
 				<xsl:attribute name="class">hidden</xsl:attribute>
 			</xsl:if>
+
+			<h2><xsl:value-of select="$i18n.externalMessages"/></h2>
 
 			<div class="floatleft full bigmarginbottom">
 				
