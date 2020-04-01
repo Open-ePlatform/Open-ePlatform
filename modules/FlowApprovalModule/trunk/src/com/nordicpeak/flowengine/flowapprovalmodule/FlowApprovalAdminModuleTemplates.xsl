@@ -432,6 +432,21 @@
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'requireSigning'" />
+					<xsl:with-param name="id" select="'requireSigning'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="requireSigning">
+					<xsl:value-of select="$i18n.ActivityGroup.requireSigning" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
 
 			<label class="floatleft full" for="reminderAfterXDays">
 				<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />
@@ -589,6 +604,30 @@
 					
 					<strong>
 						<xsl:value-of select="$i18n.ActivityGroup.appendCommentsToExternalMessages" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+					
+				</xsl:if>
+				
+				<xsl:if test="ActivityGroup/allowRestarts = 'true'">
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.allowRestarts" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+					
+				</xsl:if>
+				
+				<xsl:if test="ActivityGroup/requireSigning = 'true'">
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.requireSigning" />
 						<xsl:text>:&#160;</xsl:text>
 					</strong>
 					<xsl:value-of select="$i18n.Yes" />

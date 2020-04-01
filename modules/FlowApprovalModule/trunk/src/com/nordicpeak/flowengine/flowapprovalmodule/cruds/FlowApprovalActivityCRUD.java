@@ -230,7 +230,6 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
 		}
-		
 
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);

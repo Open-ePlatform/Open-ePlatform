@@ -6,8 +6,11 @@
 	
 	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
 
+	<xsl:variable name="globalscripts">
+		/featherlight/js/featherlight.min.js
+	</xsl:variable>
+
 	<xsl:variable name="scripts">
-		/js/featherlight.min.js
 		/js/flowapprovalmanager.js
 	</xsl:variable>
 
@@ -131,6 +134,14 @@
 							</strong>
 							
 							<xsl:value-of select="ActivityRounds/ActivityRound[1]/completed" />
+							
+							<xsl:if test="ActivityRounds/ActivityRound[1]/ActivityProgresses/ActivityProgress[signedDate]">
+							
+								<a class="marginleft" href="{../../PostURL}?signatures={ActivityRounds/ActivityRound[1]/activityRoundID}" title="{$i18n.DownloadSignature}">
+									<img alt="" src="{$imgPath}/lock.png" style="vertical-align: sub;" />
+								</a>
+								
+							</xsl:if>
 						</span>
 					</xsl:if>
 					
@@ -195,6 +206,15 @@
 								</strong>
 								
 								<xsl:value-of select="completed" />
+								
+								<xsl:if test="ActivityProgresses/ActivityProgress[signedDate]">
+								
+									<a class="marginleft" href="{../../../../PostURL}?signatures={activityRoundID}" title="{$i18n.DownloadSignature}">
+										<img alt="" src="{$imgPath}/lock.png" style="vertical-align: sub;"/>
+									</a>
+									
+								</xsl:if>
+								
 							</span>
 						</xsl:if>
 						
@@ -256,6 +276,14 @@
 								<xsl:with-param name="string" select="comment"/>
 							</xsl:call-template>
 						</span>
+					</a>
+					
+				</xsl:if>
+				
+				<xsl:if test="completed and signedDate">
+				
+					<a class="marginleft" href="{../../../../../../PostURL}?signature={activityProgressID}" title="{$i18n.DownloadSignature}">
+						<img alt="" src="{$imgPath}/lock.png" />
 					</a>
 					
 				</xsl:if>

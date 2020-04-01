@@ -1,0 +1,29 @@
+#pagenumber-container {
+    position: running(pagenumber-container);
+    text-align: right;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+@page {
+    size: A4;
+    @bottom-right {
+        content: element(pagenumber-container);
+    }
+}
+
+#pagenumber:before {
+    content: counter(page);
+}
+
+#pagecount:before {
+    content: counter(pages);
+}
+
+div.signatures {
+	border: 1px solid #B7B7B7;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
+	page-break-inside: avoid;
+}

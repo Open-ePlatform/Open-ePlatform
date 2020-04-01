@@ -24,6 +24,7 @@
 			<xsl:apply-templates select="ListPendingActivities"/>
 			<xsl:apply-templates select="ListCompletedActivities"/>
 			<xsl:apply-templates select="ShowActivity"/>
+			<xsl:apply-templates select="Signing"/>
 			
 	</xsl:template>
 	
@@ -485,6 +486,18 @@
 							
 							</xsl:choose>
 							
+							<xsl:if test="ActivityProgress/completed and ActivityProgress/signedDate">
+								<div>
+									<strong>
+										<xsl:value-of select="$i18n.ActivityProgress.signedDate" />
+										<xsl:text>:&#160;</xsl:text>
+									</strong>
+									<xsl:value-of select="ActivityProgress/signedDate" />
+									
+									<br/>
+								</div>
+							</xsl:if>
+							
 							<div class="bigmarginbottom">
 								
 								<label for="comment">
@@ -527,6 +540,64 @@
 			
 				</div>
 			</section>
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="Signing">
+	
+		<div class="contentitem">
+	
+			<h1 class="bigmarginbottom">
+				<xsl:value-of select="$i18n.SignActivity"/>
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="ActivityProgress/Activity/name"/>
+			</h1>
+			
+			<article class="clearfix">
+				<div>
+				
+					<strong>
+						<xsl:value-of select="$i18n.ActivityProgress.added" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="ActivityProgress/added" />
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.Flow.name" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="FlowInstance/Flow/name" />
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.FlowInstance.flowInstanceID" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="FlowInstance/flowInstanceID" />
+					
+				</div>
+			</article>
+
+			<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
+			
+			<div class="navigator-buttons">
+			
+				<a class="btn btn-light prev arrow-mobile" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/show/{ActivityProgress/activityProgressID}">
+					
+					<span class="only-mobile">
+						<xsl:value-of select="$i18n.SignActivity.Back"/>
+					</span>
+					
+					<span class="hide-mobile">
+						<xsl:value-of select="$i18n.SignActivity.Back"/>
+					</span>
+				</a>
+			</div>
+	
 		</div>
 		
 	</xsl:template>

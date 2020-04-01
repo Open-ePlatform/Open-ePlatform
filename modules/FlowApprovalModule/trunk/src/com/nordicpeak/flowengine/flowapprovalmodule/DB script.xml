@@ -300,4 +300,21 @@
 		</Query>
 	</Script>
 	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress`
+				 ADD COLUMN `signingData` TEXT NULL AFTER `automaticReminderSent`,
+				 ADD COLUMN `signedDate` DATETIME NULL DEFAULT NULL AFTER `signingData`,
+				 ADD COLUMN `signedChecksum` VARCHAR(255) NULL DEFAULT NULL AFTER `signedDate`,
+				 ADD COLUMN `signatureData` TEXT NULL AFTER `signedChecksum`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `requireSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `allowRestarts`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

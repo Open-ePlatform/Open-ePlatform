@@ -33,6 +33,7 @@
 	<xsl:variable name="i18n.ActivityProgress.denied">Nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.CompletingUser">Person</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.comment">Kommentar</xsl:variable>
+	<xsl:variable name="i18n.ActivityProgress.signedDate">Signeringsdatum</xsl:variable>
 	
 	<xsl:variable name="i18n.NoActivityGroups">Inga aktivitetsgrupper finns.</xsl:variable>
 	<xsl:variable name="i18n.NoActivities">Inga aktiviteter finns.</xsl:variable>

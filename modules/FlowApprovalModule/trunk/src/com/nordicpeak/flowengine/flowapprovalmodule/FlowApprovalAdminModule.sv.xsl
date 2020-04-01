@@ -11,6 +11,8 @@
 	
 	<xsl:variable name="java.adminExtensionViewTitle">Aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="java.copySuffix"> (kopia)</xsl:variable>
+	<xsl:variable name="java.pdfSignatureAttachment">Signatur</xsl:variable>
+	<xsl:variable name="java.pdfSigningDataAttachment">Signeringsunderlag</xsl:variable>
 	
 	<xsl:variable name="java.eventActivityGroupAdded">Skapade aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupUpdated">Ändrade aktivitetsgrupp</xsl:variable>
@@ -105,6 +107,7 @@
 	<xsl:variable name="i18n.ActivityGroup.approvedText">Namn för klarmarkerad/godkänd</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.deniedText">Namn för nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.requireSigning">Kräv signering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>

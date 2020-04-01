@@ -8,6 +8,9 @@
 	<xsl:include href="FlowApprovalUserModuleTemplates.xsl"/>
 	
 	<xsl:variable name="java.userMenuTabTitle">Mina aktiviteter</xsl:variable>
+	<xsl:variable name="java.signingUser">Person ID</xsl:variable>
+	<xsl:variable name="java.ActivityProgressState">Status</xsl:variable>
+	<xsl:variable name="java.signingMessage">Markera aktivet $activity.name (ID $activityProgress.ID) som $state för ärende $flowInstance.ID. Aktiviteten har följande unika nyckel: $hash</xsl:variable>
 	
 	<xsl:variable name="i18n.PendingActivities">Ej slutförda aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.CompletedActivities">Slutförda aktiviteter</xsl:variable>
@@ -31,5 +34,8 @@
 	<xsl:variable name="i18n.Flow.name">E-tjänst</xsl:variable>
 	<xsl:variable name="i18n.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.noAnsweredQueriesInThisStep">Det finns inga besvarade frågor i detta steg.</xsl:variable>
+	
+	<xsl:variable name="i18n.SignActivity">Signera aktivitet</xsl:variable>
+	<xsl:variable name="i18n.SignActivity.Back">Avbryt signering</xsl:variable>
 	
 </xsl:stylesheet>

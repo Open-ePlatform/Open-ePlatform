@@ -1,7 +1,14 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -23,6 +30,7 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
@@ -32,6 +40,7 @@ import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -81,6 +90,8 @@ import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.CloseUtils;
+import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
@@ -95,11 +106,19 @@ import se.unlogic.standardutils.string.TagSource;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.xml.ClassPathURIResolver;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.standardutils.xsl.URIXSLTransformer;
 import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.lowagie.text.pdf.PdfFileSpecification;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.RandomAccessFileOrArray;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -117,6 +136,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRe
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
+import com.nordicpeak.flowengine.flowapprovalmodule.listeners.FlowApprovalElementableListener;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -137,6 +157,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	
 	@XSLVariable(prefix = "java.")
 	private String copySuffix = " (copy)";
+	
+	@XSLVariable(prefix = "java.")
+	private String pdfSignatureAttachment = "Signature";
+	
+	@XSLVariable(prefix = "java.")
+	private String pdfSigningDataAttachment = "Signed data";
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupAdded;
@@ -182,6 +208,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupDenied;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Filestore", description = "Directory under where signature PDFs are stored", required = true)
+	protected String filestore;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Signature PDF XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the XHTML for PDF output", required = true)
+	protected String pdfStyleSheet = "FlowApprovalSignaturesPDF.sv.xsl";
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
@@ -218,6 +252,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@CheckboxSettingDescriptor(name = "Send reminders repeatedly", description = "Controls wheter to send reminder emails repeatadly or not")
 	private boolean sendRemindersRepeatedly = false;
 	
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Included fonts", description = "Path to the fonts that should be included in the PDF (the paths can be either in filesystem or classpath)")
+	private List<String> includedFonts;
+	
 	private AnnotatedDAO<FlowApprovalActivity> activityDAO;
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
@@ -248,6 +286,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
+	
+	protected URIXSLTransformer pdfTransformer;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -333,6 +373,56 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@Override
 	protected void moduleConfigured() throws Exception {
 
+		if (StringUtils.isEmpty(filestore)) {
+			
+			log.error("Filestore not set");
+			
+		} else if (!FileUtils.isReadable(filestore)) {
+			
+			log.error("Filestore not found/readable");
+
+		} else {
+			
+			if (!FileUtils.directoryExists(getSignaturesDir())) {
+
+				File file = new File(getSignaturesDir());
+				log.warn("Creating document directory " + file);
+				file.mkdir();
+			}
+			
+			if (!FileUtils.directoryExists(getTempDir())) {
+
+				log.warn("Temp dir " + getTempDir() + " not found, will use system default during uploads");
+			}
+		}
+
+		if (pdfStyleSheet == null) {
+			
+			pdfTransformer = null;
+			
+		} else {
+			
+			URL styleSheetURL = FlowApprovalAdminModule.class.getResource(pdfStyleSheet);
+			
+			if (styleSheetURL != null) {
+
+				try {
+					pdfTransformer = new URIXSLTransformer(styleSheetURL.toURI(), ClassPathURIResolver.getInstance(), true);
+
+					log.info("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
+					
+				} catch (Exception e) {
+					
+					log.error("Unable to cache PDF style sheet " + pdfStyleSheet, e);
+					
+					pdfTransformer = null;
+				}
+				
+			} else {
+				log.error("Unable to cache PDF style sheet. Resource " + pdfStyleSheet + " not found");
+			}
+		}
+		
 		viewFragmentTransformer.setDebugXML(debugFragmentXML);
 		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
 	}
@@ -773,6 +863,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 							log.info("Completed activity group " + activityGroup + " for " + flowInstance);
 							flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null);
 						}
+						
+						if (activityGroup.isRequireSigning()) {
+							
+							generateSignaturesPDF(flowInstance, activityGroup, round);
+						}
 					}
 				}
 
@@ -803,7 +898,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION);
 				
 				if (round.getActivityProgresses() != null) {
-
+					
 					for (FlowApprovalActivityProgress activityProgress : round.getActivityProgresses()) {
 
 						if (activityProgress.getCompleted() == null) {
@@ -1769,5 +1864,145 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		addFlowFamilyEvent(eventActivityGroupCopied + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
 
 		return null;
+	}
+	
+	public String getSignaturesDir() {
+
+		return filestore + File.separator + "flow-approval-signatures";
+	}
+	
+	public String getTempDir() {
+
+		return filestore + File.separator + "temp";
+	}
+	
+	public File getSignaturesPDF(FlowApprovalActivityRound round) {
+		
+		return new File(getSignaturesDir() + File.separator + "activity-round-" + round.getActivityRoundID() +"-signatures.pdf");
+	}
+	
+	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) {
+		
+		File outputFile = getSignaturesPDF(round);
+		
+		File tmpFile = null;
+		RandomAccessFileOrArray randomAccessFile = null;
+		OutputStream outputStream = null;
+
+		try {
+			log.info("Generating signatures page for " + round);
+			
+			Document doc = XMLUtils.createDomDocument();
+			Element documentElement = doc.createElement("Document");
+			doc.appendChild(documentElement);
+			
+			Element signaturesElement = XMLUtils.appendNewElement(doc, documentElement, "Signatures");
+			signaturesElement.appendChild(flowInstance.toXML(doc));
+			signaturesElement.appendChild(activityGroup.toXML(doc));
+			
+			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
+			genDoc.addElementableListener(FlowApprovalActivityProgress.class, new FlowApprovalElementableListener());
+			
+			signaturesElement.appendChild(round.toXML(genDoc));
+			
+			StringWriter writer = new StringWriter();
+			
+			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, writer, "UTF-8", "1.1");
+			
+			String xml = writer.toString();
+			
+			Document document;
+
+			if (systemInterface.getEncoding().equalsIgnoreCase("UTF-8")) {
+
+				document = XMLUtils.parseXML(xml, false, false);
+
+			} else {
+
+				document = XMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")), false, false);
+			}
+
+			tmpFile = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp-", ".pdf", new File(getTempDir()));
+			
+			try {
+				outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile));
+
+				ITextRenderer renderer = new ITextRenderer();
+				ResourceLoaderAgent callback = new ResourceLoaderAgent(renderer.getOutputDevice());
+				callback.setSharedContext(renderer.getSharedContext());
+				renderer.getSharedContext().setUserAgentCallback(callback);
+
+				if (includedFonts != null) {
+
+					for (String font : includedFonts) {
+
+						renderer.getFontResolver().addFont(font, true);
+					}
+				}
+
+				renderer.setDocument(document, "documentsigner");
+				renderer.layout();
+
+				renderer.createPDF(outputStream);
+
+			} finally {
+
+				CloseUtils.close(outputStream);
+			}
+
+			// Append signature attachments
+			
+			randomAccessFile = new RandomAccessFileOrArray(tmpFile.getAbsolutePath(), false, false);
+			PdfReader reader = new PdfReader(randomAccessFile, null);
+			outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+			PdfStamper stamper = new PdfStamper(reader, outputStream);
+			
+			for (FlowApprovalActivityProgress activityProgress :  round.getActivityProgresses()) {
+				
+				if (activityProgress.getSignedDate() != null) {
+					
+					String signingDataAttachmentName = pdfSigningDataAttachment + " - " + activityProgress.getActivity().getName() + " - " + activityProgress.getActivityProgressID();
+					
+					try {
+						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(stamper.getWriter(), new ByteArrayInputStream(activityProgress.getSigningData().getBytes("ISO-8859-1")), signingDataAttachmentName + ".txt");
+						stamper.getWriter().addFileAttachment(signingDataAttachmentName, fs);
+						
+					} catch (Exception e) {
+						log.error("Error appending signing data for " + activityProgress, e);
+					}
+					
+					String signatureAttachmentName = pdfSignatureAttachment + " - " + activityProgress.getActivity().getName() + " - " + activityProgress.getActivityProgressID();
+					
+					try {
+						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(stamper.getWriter(), new ByteArrayInputStream(activityProgress.getSignatureData().getBytes("ISO-8859-1")), signatureAttachmentName + ".txt");
+						stamper.getWriter().addFileAttachment(signatureAttachmentName, fs);
+						
+					} catch (Exception e) {
+						log.error("Error appending signature data for " + activityProgress, e);
+					}
+					
+				}
+			}
+			
+			stamper.close();
+
+		} catch (Exception e) {
+			
+			log.error("Error generating signed PDF for " + round, e);
+			FileUtils.deleteFile(outputFile);
+
+		} finally {
+			CloseUtils.close(outputStream);
+
+			if (randomAccessFile != null) {
+
+				try {
+					randomAccessFile.close();
+				} catch (IOException e) {}
+			}
+			
+			FileUtils.deleteFile(tmpFile);
+		}
+		
 	}
 }

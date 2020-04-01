@@ -89,6 +89,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean allowRestarts;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean requireSigning;
 
 	@DAOManaged
 	@WebPopulate
@@ -309,6 +314,14 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	public void setAllowRestarts(boolean allowRestarts) {
 		this.allowRestarts = allowRestarts;
+	}
+
+	public boolean isRequireSigning() {
+		return requireSigning;
+	}
+
+	public void setRequireSigning(boolean requireSigning) {
+		this.requireSigning = requireSigning;
 	}
 
 	@Override

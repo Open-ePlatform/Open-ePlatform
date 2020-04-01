@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
@@ -35,11 +37,14 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.http.enums.ContentDisposition;
 
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -65,6 +70,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivityProgress, Integer> activityProgressDAOWrapper;
 
 	private QueryParameterFactory<FlowApprovalActivityRound, Integer> activityRoundFlowInstanceIDParamFactory;
+	private QueryParameterFactory<FlowApprovalActivityRound, Integer> activityRoundIDParamFactory;
 	private QueryParameterFactory<FlowApprovalActivityGroup, Integer> activityGroupFlowFamilyIDParamFactory;
 
 	protected FlowInstanceAdminModule flowInstanceAdminModule;
@@ -99,6 +105,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
 		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
+		activityRoundIDParamFactory = activityRoundDAO.getParamFactory("activityRoundID", Integer.class);
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityGroupFlowFamilyIDParamFactory = activityGroupDAO.getParamFactory("flowFamilyID", Integer.class);
 	}
@@ -191,6 +198,8 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	public ForegroundModuleResponse processOverviewExtensionRequest(FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user) throws Exception {
 
 		Integer sendReminderForActivityProgressID = NumberUtils.toInt(req.getParameter("sendreminder"));
+		Integer signatureActivityProgressID = NumberUtils.toInt(req.getParameter("signature"));
+		Integer signatureActivityRoundID = NumberUtils.toInt(req.getParameter("signatures"));
 
 		if (sendReminderForActivityProgressID != null) {
 
@@ -198,6 +207,10 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 			if (activityProgress == null) {
 				throw new URINotFoundException(uriParser);
+			}
+			
+			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				throw new AccessDeniedException("Wrong flow instance");
 			}
 			
 			//TODO don't allow new reminder if reminded very recently
@@ -208,6 +221,67 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 				
 				approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
 			}
+			
+		} else if (signatureActivityProgressID != null) {
+			
+			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(signatureActivityProgressID);
+
+			if (activityProgress == null || activityProgress.getSignedDate() == null) {
+				throw new URINotFoundException(uriParser);
+			}
+			
+			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				throw new AccessDeniedException("Wrong flow instance");
+			}
+			
+			String eventSignature = activityProgress.getSigningData() + "\r\n\r\n" + activityProgress.getSignatureData();
+
+			log.info("Sending signature for " + activityProgress + " to user " + user);
+
+			String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + activityProgress.getActivity().getName() + " - signature - " + activityProgress.getActivityProgressID() + ".txt";
+
+			res.setHeader("Content-Disposition", ContentDisposition.ATTACHMENT + ";" + FileUtils.toContentDispositionFilename(filename));
+			res.setContentType("text/plain");
+
+			res.getWriter().write(eventSignature);
+			res.getWriter().close();
+			return null;
+			
+		} else if (signatureActivityRoundID != null) {
+			
+			HighLevelQuery<FlowApprovalActivityRound> query = new HighLevelQuery<FlowApprovalActivityRound>();
+			query.addRelation(FlowApprovalActivityRound.ACTIVITY_GROUP_RELATION);
+			query.addParameter(activityRoundIDParamFactory.getParameter(signatureActivityRoundID));
+			
+			FlowApprovalActivityRound round = activityRoundDAO.get(query);
+
+			if (round == null) {
+				throw new URINotFoundException(uriParser);
+			}
+			
+			if (!round.getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				throw new AccessDeniedException("Wrong flow instance");
+			}
+			
+			File pdfFile = approvalAdminModule.getSignaturesPDF(round);
+			
+			if (pdfFile == null) {
+				
+				throw new URINotFoundException(uriParser);
+			}
+			
+			try {
+				log.info("Sending signature PDF for " + round + " to user " + user);
+				
+				String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + round.getActivityGroup().getName() + " - signature - " + round.getActivityRoundID()+ ".pdf";
+				
+				HTTPUtils.sendFile(pdfFile, filename, req, res, ContentDisposition.ATTACHMENT);
+				
+			} catch (Exception e) {
+				log.info("Error sending PDF for " + round + " to user " + user + ", " + e);
+			}
+			
+			return null;
 		}
 		
 		//TODO show notification that reminder was sent
