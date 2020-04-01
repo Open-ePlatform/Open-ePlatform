@@ -441,7 +441,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@RESTMethod(alias = "show/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
-	public ForegroundModuleResponse showActivity(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, IOException, AccessDeniedException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
+	public ForegroundModuleResponse showActivity(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, IOException, AccessDeniedException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, ModuleConfigurationException {
 
 		FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(activityProgressID);
 

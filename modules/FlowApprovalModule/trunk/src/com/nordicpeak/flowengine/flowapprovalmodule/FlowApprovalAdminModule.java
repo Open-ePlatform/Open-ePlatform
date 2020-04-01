@@ -55,6 +55,7 @@ import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.enums.ResponseType;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.handlers.GroupHandler;
 import se.unlogic.hierarchy.core.handlers.UserHandler;
@@ -375,7 +376,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		if (StringUtils.isEmpty(filestore)) {
 			
-			log.error("Filestore not set");
+			log.warn("Filestore not set");
 			
 		} else if (!FileUtils.isReadable(filestore)) {
 			
@@ -803,7 +804,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return viewFragmentTransformer.createViewFragment(doc);
 	}
 
-	public void checkApprovalCompletion(FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException {
+	public void checkApprovalCompletion(FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException, ModuleConfigurationException {
 
 		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance);
 
@@ -1868,10 +1869,18 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	
 	public String getSignaturesDir() {
 
+		if (filestore == null) {
+			return null;
+		}
+		
 		return filestore + File.separator + "flow-approval-signatures";
 	}
 	
 	public String getTempDir() {
+		
+		if (filestore == null) {
+			return null;
+		}
 
 		return filestore + File.separator + "temp";
 	}
@@ -1881,7 +1890,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return new File(getSignaturesDir() + File.separator + "activity-round-" + round.getActivityRoundID() +"-signatures.pdf");
 	}
 	
-	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) {
+	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
+		
+		if (filestore == null) {
+			
+			throw new ModuleConfigurationException("Filestore not set");
+		}
 		
 		File outputFile = getSignaturesPDF(round);
 		
