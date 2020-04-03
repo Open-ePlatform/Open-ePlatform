@@ -119,13 +119,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	@XSLVariable(prefix = "i18n.", name = "Flow.name")
 	private String i18nFlow = "Flow";
 	
-	@XSLVariable(prefix = "java.", name = "signingUser")
+	@XSLVariable(prefix = "java.", name = "Signing.user")
 	private String i18nSigningUser = "User";
+	
+	@XSLVariable(prefix = "java.", name = "Signing.flowInstanceWasVisible")
+	private String i18nFlowInstanceWasVisible = "FlowInstance visible";
 	
 	@XSLVariable(prefix = "i18n.", name = "Activity")
 	private String i18nActivity = "Activity";
 	
-	@XSLVariable(prefix = "java.", name = "ActivityProgressState")
+	@XSLVariable(prefix = "java.", name = "Signing.ActivityProgress.State")
 	private String i18nActivityProgressState = "State";
 	
 	@XSLVariable(prefix = "i18n.", name = "ActivityProgress.comment")
@@ -664,6 +667,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		builder.append(i18nSigningUser + ": " + CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user) + "\r\n");
 		builder.append(i18nActivityShortDescription + ": " + (shortDescription == null ? "" : shortDescription) + "\r\n");
 		builder.append(i18nActivityDescription + ": " + (description == null ? "" : description) + "\r\n");
+		
+		if (activityProgress.getActivity().isShowFlowInstance()) {
+			builder.append(i18nFlowInstanceWasVisible + "\r\n");
+		}
+		
 		builder.append(i18nActivityProgressComment + ": " + (activityProgress.getComment() == null ? "" : activityProgress.getComment()));
 		
 		return builder.toString();

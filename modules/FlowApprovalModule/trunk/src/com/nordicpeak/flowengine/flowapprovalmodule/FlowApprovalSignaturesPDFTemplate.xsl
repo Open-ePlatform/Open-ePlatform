@@ -50,35 +50,156 @@
 				<xsl:value-of select="$i18n.Signatures" />
 			</h2>
 			
-			<p>
-				<xsl:value-of select="$i18n.Signatures.description.1" />
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="ActivityGroup/name" />
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="$i18n.Signatures.description.2" />
-				<xsl:text> </xsl:text>
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.Flow" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
 				<xsl:value-of select="FlowInstance/Flow/name" />
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="$i18n.FlowInstanceID" />
-				<xsl:text> </xsl:text>
+			</div>
+			
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.FlowInstanceID" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
 				<xsl:value-of select="FlowInstance/flowInstanceID" />
-				<xsl:text>.</xsl:text>
+			</div>
+			
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.ActivityRound.added" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
+				<xsl:value-of select="ActivityRound/added" />
+			</div>
+			
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.ActivityRound.completed" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
+				<xsl:value-of select="ActivityRound/completed" />
+			</div>
+			
+			<p>
+				<xsl:value-of select="$i18n.Signatures.description" />
 			</p>
 			
-			<xsl:apply-templates select="ActivityRound/ActivityProgresses/ActivityProgress" mode="signature" />
+			<div class="bigmargintop">
+				<xsl:apply-templates select="ActivityRound/ActivityProgresses/ActivityProgress" mode="signature" />
+			</div>
 			
 		</div>
 		
 	</xsl:template>
 	
 	<xsl:template match="ActivityProgress" mode="signature">
-	
-		<div class="bigmarginbottom">
+		
+		<div class="signature">
+		
+			<h3 class="nopadding">
+				<xsl:value-of select="Activity/name" />
+			</h3>
 			
 			<div>
+				<strong>
+					<xsl:value-of select="$java.Signing.ActivityProgress.State" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
+				<xsl:choose>
+					<xsl:when test="denied = 'true'">
+						
+						<xsl:choose>
+							<xsl:when test="../../../ActivityGroup/deniedText">
+								<xsl:value-of select="../../../ActivityGroup/deniedText" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.ActivityProgress.denied" />
+							</xsl:otherwise>
+						</xsl:choose>
+						
+					</xsl:when>
+					<xsl:otherwise>
+						
+						<xsl:choose>
+							<xsl:when test="../../../ActivityGroup/useApproveDeny = 'true'">
+							
+								<xsl:choose>
+									<xsl:when test="../../../ActivityGroup/approvedText">
+										<xsl:value-of select="../../../ActivityGroup/approvedText" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$i18n.ActivityProgress.approved" />
+									</xsl:otherwise>
+								</xsl:choose>
+								
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.ActivityProgress.complete" />
+							</xsl:otherwise>
+						</xsl:choose>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
+			
+			<xsl:if test="ShortDescription">
+				<div>
+					<strong>
+						<xsl:value-of select="$i18n.ActivityProgress.shortDescription" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					
+					<xsl:value-of select="ShortDescription" />
+				</div>
+			</xsl:if>
+			
+			<xsl:if test="Activity/description">
+				<div class="bigmarginbottom">
+					<strong>
+						<xsl:value-of select="$i18n.Activity.description" />
+					</strong>
+					
+					<p style="margin-top: 0;">
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="Activity/description"/>
+						</xsl:call-template>
+					</p>
+				</div>
+			</xsl:if>
+			
+			<xsl:if test="Activity/showFlowInstance = 'true'">
+				<div class="service">
+					<strong>
+						<xsl:value-of select="$java.Signing.flowInstanceWasVisible" />
+					</strong>
+				</div>
+			</xsl:if>
+			
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.ActivityProgress.comment" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
 				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="signingData" />
+					<xsl:with-param name="string" select="comment"/>
 				</xsl:call-template>
+			</div>
+			
+			<div>
+				<strong>
+					<xsl:value-of select="$java.Signing.user" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				
+				<xsl:value-of select="CompletingUserCitizenID" />
 			</div>
 			
 			<div>

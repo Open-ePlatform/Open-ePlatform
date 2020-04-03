@@ -438,13 +438,13 @@
 											</xsl:attribute>
 											
 											<xsl:choose>
-											<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
-												<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$i18n.ActivityProgress.denied" />
-											</xsl:otherwise>
-										</xsl:choose>
+												<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
+													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="$i18n.ActivityProgress.denied" />
+												</xsl:otherwise>
+											</xsl:choose>
 										</label>
 										
 									</div>

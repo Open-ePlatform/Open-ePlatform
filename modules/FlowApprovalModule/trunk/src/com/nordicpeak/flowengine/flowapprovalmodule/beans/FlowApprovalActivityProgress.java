@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.utils.UserUtils;
@@ -19,6 +22,9 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 @Table(name = "flowapproval_activity_progress")
 @XMLElement(name = "ActivityProgress")
@@ -199,6 +205,21 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 
 	public void setSignatureData(String signatureData) {
 		this.signatureData = signatureData;
+	}
+	
+	
+
+	@Override
+	public Element toXML(Document doc) {
+		
+		Element element = super.toXML(doc);
+		
+		if (completingUser != null) {
+			
+			XMLUtils.appendNewElement(doc, element, "CompletingUserCitizenID", CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(completingUser));
+		}
+		
+		return element;
 	}
 
 	@Override

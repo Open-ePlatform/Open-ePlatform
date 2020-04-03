@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
+	<xsl:variable name="java.Signing.user">Person ID</xsl:variable>
+	<xsl:variable name="java.Signing.ActivityProgress.State">Status</xsl:variable>
+	<xsl:variable name="java.Signing.flowInstanceWasVisible">Förhandsgranskning av ärendet var synligt</xsl:variable>
+
 	<xsl:variable name="i18n.ActivityGroup">Aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.name">Namn för aktivitetsgruppen</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.startStatus">Aktiveringstatus</xsl:variable>
@@ -29,11 +33,13 @@
 	<xsl:variable name="i18n.ActivityProgress.added">Påbörjad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.notStarted">Ej aktiverad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.completed">Slutförd</xsl:variable>
+	<xsl:variable name="i18n.ActivityProgress.complete">Klarmarkerad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.approved">Godkänd</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.denied">Nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.CompletingUser">Person</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.comment">Kommentar</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.signedDate">Signeringsdatum</xsl:variable>
+	<xsl:variable name="i18n.ActivityProgress.shortDescription">Beskrivning</xsl:variable>
 	
 	<xsl:variable name="i18n.NoActivityGroups">Inga aktivitetsgrupper finns.</xsl:variable>
 	<xsl:variable name="i18n.NoActivities">Inga aktiviteter finns.</xsl:variable>

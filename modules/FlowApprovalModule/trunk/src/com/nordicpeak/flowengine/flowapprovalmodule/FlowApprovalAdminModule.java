@@ -108,7 +108,6 @@ import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.ClassPathURIResolver;
-import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.URIXSLTransformer;
@@ -137,7 +136,6 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRe
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
-import com.nordicpeak.flowengine.flowapprovalmodule.listeners.FlowApprovalElementableListener;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -1120,6 +1118,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				log.info("Started activity groups " + activityGroupNames.toString() + " for " + flowInstance);
 
 				flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupStarted + " " + activityGroupNames.toString(), null);
+				
+			} else {
+				
+				//TODO if no started/running for this status and allowskip then change status
 			}
 		}
 	}
@@ -1914,10 +1916,33 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			signaturesElement.appendChild(flowInstance.toXML(doc));
 			signaturesElement.appendChild(activityGroup.toXML(doc));
 			
-			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-			genDoc.addElementableListener(FlowApprovalActivityProgress.class, new FlowApprovalElementableListener());
+			List<FlowApprovalActivityProgress> activityProgresses = round.getActivityProgresses();
+
+			round.setActivityProgresses(null);
 			
-			signaturesElement.appendChild(round.toXML(genDoc));
+			Element roundElement = round.toXML(doc);
+			
+			round.setActivityProgresses(activityProgresses);
+			
+			Element activityProgressesElement = XMLUtils.appendNewElement(doc, roundElement, "ActivityProgresses");
+			
+			for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+				
+				if (activityProgress.getActivity().getDescription() != null) {
+					activityProgress.getActivity().setDescription(AttributeTagUtils.replaceTags(activityProgress.getActivity().getDescription(), flowInstance.getAttributeHandler()));
+				}
+				
+				Element activityProgressElement = activityProgress.toXML(doc);
+				
+				if (activityProgress.getActivity().getShortDescription() != null) {
+					
+					XMLUtils.appendNewElement(doc, activityProgressElement, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
+				}
+				
+				activityProgressesElement.appendChild(activityProgressElement);
+			}
+			
+			signaturesElement.appendChild(roundElement);
 			
 			StringWriter writer = new StringWriter();
 			
