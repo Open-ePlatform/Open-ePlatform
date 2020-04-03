@@ -299,7 +299,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF size limit for flow instance submitted emails (users)", description = "The size limit in megabyte for PDF documents attached to email messages when new flow instances are submitted. If this size is exceeded no PDF is attached. No value set means no size limit.")
-	private Integer flowInstanceSubmittedUserEmailPDFSizeLimit;
+	private Integer flowInstanceSubmittedUserEmailPDFSizeLimit = 10;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF attached text", description = "The text replaced for $flowInstance.pdfAttachedText tag when pdf is attached to submitted email message", required = true)
