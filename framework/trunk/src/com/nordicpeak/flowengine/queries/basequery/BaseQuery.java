@@ -10,8 +10,8 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
+import se.unlogic.hierarchy.core.utils.HTMLListAttributeTagUtils;
 import se.unlogic.standardutils.annotations.WebPopulate;
-import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
@@ -29,9 +29,9 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 	private static final long serialVersionUID = 7384942784185489658L;
 
 	public static final Field DESCRIPTION_FIELD = ReflectionUtils.getField(BaseQuery.class, "description");
-	
+
 	public static final Field HELP_TEXT_FIELD = ReflectionUtils.getField(BaseQuery.class, "helpText");
-	
+
 	@FCKContent
 	@TextTagReplace
 	@URLRewrite
@@ -49,9 +49,13 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 	protected String helpText;
 
 	private Set<String> descriptionAttributeTags;
-	
+
 	private Set<String> helpTextAttributeTags;
-	
+
+	private Set<String> descriptionAttributeListTags;
+
+	private Set<String> helpTextAttributeListTags;
+
 	@XMLElement
 	private String configURL;
 
@@ -86,16 +90,28 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 
 	public String getDescription(AttributeHandler attributeHandler) {
 
-		if(description != null && hasDescriptionAttributeTags()){
+		if(description != null && (hasDescriptionAttributeTags() || hasDescriptionAttributeListTags())){
 			
-			return AttributeTagUtils.replaceTags(description, attributeHandler, descriptionAttributeTags, true);
+			String tagReplacedDescription = description;
+			
+			if(hasDescriptionAttributeTags()) {
+
+				tagReplacedDescription = AttributeTagUtils.replaceTags(description, attributeHandler, descriptionAttributeTags, true, false);
+			}
+			
+			if(hasDescriptionAttributeListTags()) {
+				
+				tagReplacedDescription = HTMLListAttributeTagUtils.replaceTags(tagReplacedDescription, attributeHandler, descriptionAttributeListTags);
+			}
+			
+			return tagReplacedDescription;
 			
 		}else{
 			
 			return description;
 		}
-	}	
-	
+	}
+
 	public void setDescription(String description) {
 
 		this.description = description;
@@ -103,12 +119,24 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 
 	public String getHelpText(AttributeHandler attributeHandler) {
 
-		if(helpText != null && hasHelpTextAttributeTags()){
+		if (helpText != null && (hasHelpTextAttributeTags() || hasHelpTextAttributeListTags())) {
+
+			String tagReplacedHelpText = helpText;
 			
-			return AttributeTagUtils.replaceTags(helpText, attributeHandler, helpTextAttributeTags, true);
+			if(hasHelpTextAttributeTags()) {
+				
+				tagReplacedHelpText = AttributeTagUtils.replaceTags(helpText, attributeHandler, helpTextAttributeTags, true, false);
+			}
 			
-		}else{
+			if(hasHelpTextAttributeListTags()) {
+				
+				tagReplacedHelpText = HTMLListAttributeTagUtils.replaceTags(tagReplacedHelpText, attributeHandler, helpTextAttributeListTags);
+			}
 			
+			return tagReplacedHelpText;
+
+		} else {
+
 			return helpText;
 		}
 	}
@@ -116,8 +144,8 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 	public void setHelpText(String helpText) {
 
 		this.helpText = helpText;
-	}	
-	
+	}
+
 	@Override
 	public void toXSD(Document doc) {
 
@@ -151,39 +179,41 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 
 		doc.getDocumentElement().appendChild(complexTypeElement);
 	}
-	
-	public void scanAttributeTags(){
-		
-		if(description != null){
-			
+
+	public void scanAttributeTags() {
+
+		if (description != null) {
+
 			this.descriptionAttributeTags = AttributeTagUtils.getAttributeTags(description);
+
+			this.descriptionAttributeListTags = HTMLListAttributeTagUtils.getAttributeTags(description);
 		}
-		
-		if(helpTextAttributeTags != null){
-			
+
+		if (helpTextAttributeTags != null) {
+
 			this.helpTextAttributeTags = AttributeTagUtils.getAttributeTags(helpText);
+
+			this.helpTextAttributeListTags = HTMLListAttributeTagUtils.getAttributeTags(helpText);
 		}
 	}
 
-	public boolean hasDescriptionAttributeTags(){
-		
-		return !CollectionUtils.isEmpty(descriptionAttributeTags);
-	}
-	
-	public boolean hasHelpTextAttributeTags(){
-		
-		return !CollectionUtils.isEmpty(helpTextAttributeTags);
+	public boolean hasDescriptionAttributeTags() {
+
+		return descriptionAttributeTags != null;
 	}
 
-	
-	protected Set<String> getDescriptionAttributeTags() {
-	
-		return descriptionAttributeTags;
+	public boolean hasHelpTextAttributeTags() {
+
+		return helpTextAttributeTags != null;
 	}
 
-	
-	protected Set<String> getHelpTextAttributeTags() {
-	
-		return helpTextAttributeTags;
+	public boolean hasDescriptionAttributeListTags() {
+
+		return descriptionAttributeListTags != null;
+	}
+
+	public boolean hasHelpTextAttributeListTags() {
+
+		return helpTextAttributeListTags != null;
 	}
 }
