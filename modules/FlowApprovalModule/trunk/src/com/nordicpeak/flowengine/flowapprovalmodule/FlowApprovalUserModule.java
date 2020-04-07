@@ -414,9 +414,10 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		              +" LEFT OUTER JOIN flowapproval_activity_resp_user_attribute ra ON ra.activityID = a.activityID"
 		              +" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
 		              +" WHERE");
+		// @formatter:on
 		
 		if (flowInstanceID != null) {
-			builder.append(" ap.flowInstanceID = " + flowInstanceID + " AND");
+			builder.append(" r.flowInstanceID = " + flowInstanceID + " AND");
 		}
 		
 		if (completed != null) {
@@ -428,6 +429,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			}
 		}
 		
+		// @formatter:off
 		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
 		              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))");
 		// @formatter:on
