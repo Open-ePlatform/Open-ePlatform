@@ -813,7 +813,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION);
 
-				if (round.getActivityProgresses() != null) {
+				if (round != null && round.getActivityProgresses() != null) {
 					
 					if (round.getCompleted() != null || round.getCancelled() != null) {
 
@@ -896,7 +896,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION);
 				
-				if (round.getActivityProgresses() != null) {
+				if (round != null && round.getActivityProgresses() != null) {
 					
 					for (FlowApprovalActivityProgress activityProgress : round.getActivityProgresses()) {
 
