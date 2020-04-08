@@ -535,6 +535,14 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 				alternative.setValue(value);
 				alternative.setSortIndex(sortIndex);
 
+				for(FlowOverviewAttribute existingAttribute : overviewAttributes) {
+					
+					if(existingAttribute.getName().equalsIgnoreCase(alternative.getName())) {
+						
+						validationErrors.add(new ValidationError("DuplicateOverviewAttributeNames", alternative.getName()));
+					}
+				}
+				
 				overviewAttributes.add(alternative);
 			}
 			

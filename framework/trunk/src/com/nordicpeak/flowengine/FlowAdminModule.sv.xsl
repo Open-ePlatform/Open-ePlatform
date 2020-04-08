@@ -119,6 +119,8 @@
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Move">Flytta attribut</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.Delete">Ta bort attributet från ärendeöversikten</xsl:variable>
 	<xsl:variable name="i18n.FlowFamily.OverviewAttributes.DeleteConfirm">Är du säker på att du inte längre vill visa attributet på ärendeöversikten?</xsl:variable>
+	<xsl:variable name="i18n.DuplicateOverviewAttributeNames.part1">Namnet</xsl:variable>
+	<xsl:variable name="i18n.DuplicateOverviewAttributeNames.part2">får bara förekomma en gång i listan av extra attribut i ärendeöversikten.</xsl:variable>
 	
 	<xsl:variable name="i18n.contact.title">Kontaktuppgifter - Frågor om e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.contact.name">Namn</xsl:variable>

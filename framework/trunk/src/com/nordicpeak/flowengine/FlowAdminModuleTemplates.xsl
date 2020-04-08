@@ -8195,6 +8195,17 @@
 			
 		</p>
 	</xsl:template>
+
+	<xsl:template match="validationError[messageKey='DuplicateOverviewAttributeNames']">
+		<p class="error">
+			<xsl:value-of select="$i18n.DuplicateOverviewAttributeNames.part1" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="displayName" />
+			<xsl:text>&#160;</xsl:text>
+			<xsl:value-of select="$i18n.DuplicateOverviewAttributeNames.part2" />
+		</p>
+	</xsl:template>
+
 	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
