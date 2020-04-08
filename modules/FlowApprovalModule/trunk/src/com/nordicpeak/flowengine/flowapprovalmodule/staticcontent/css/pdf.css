@@ -20,6 +20,24 @@
     content: counter(pages);
 }
 
+div.header{
+}
+
+div.logo {
+	margin-bottom: 5px;
+	margin-right: 5px;
+}
+
+div.logo img {
+	height: 100px;
+	width: auto;
+	max-width: 100%;
+	
+/* 	height: auto; */
+/* 	width: 50px; */
+/* 	max-height: 100px; */
+}
+
 div.signatures {
 }
 

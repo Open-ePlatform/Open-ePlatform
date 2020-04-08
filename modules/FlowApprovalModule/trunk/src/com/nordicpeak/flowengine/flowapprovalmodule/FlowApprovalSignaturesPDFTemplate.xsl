@@ -26,8 +26,75 @@
 			</head>
 			
 			<body>
-			
-				<xsl:apply-templates select="Signatures" />
+				
+				<div class="header">
+					
+					<div class="logo floatright">
+						
+						<xsl:choose>
+							<xsl:when test="Logotype">
+								<img src="{Logotype}"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<img src="classpath://com/nordicpeak/flowengine/pdf/staticcontent/pics/logo.png"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					
+					<h2>
+						<xsl:value-of select="ActivityGroup/name" />
+						<xsl:text> </xsl:text>
+						<xsl:value-of select="$i18n.Signatures" />
+					</h2>
+					
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.Flow" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						
+						<xsl:value-of select="FlowInstance/Flow/name" />
+					</div>
+					
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.FlowInstanceID" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						
+						<xsl:value-of select="FlowInstance/flowInstanceID" />
+					</div>
+					
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityRound.added" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						
+						<xsl:value-of select="ActivityRound/added" />
+					</div>
+					
+					<div>
+						<strong>
+							<xsl:value-of select="$i18n.ActivityRound.completed" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						
+						<xsl:value-of select="ActivityRound/completed" />
+					</div>
+				</div>
+				
+				<div class="signatures">
+					
+					<p>
+						<xsl:value-of select="$i18n.Signatures.description" />
+					</p>
+					
+					<div class="bigmargintop">
+						<xsl:apply-templates select="ActivityRound/ActivityProgresses/ActivityProgress" mode="signature" />
+					</div>
+					
+				</div>
 				
 				<div id="pagenumber-container">
 					<xsl:text>Sida </xsl:text>
@@ -38,63 +105,6 @@
 				
 			</body>
 		</html>
-		
-	</xsl:template>
-	
-	<xsl:template match="Signatures">
-		
-		<div class="signatures">
-			<h2>
-				<xsl:value-of select="ActivityGroup/name" />
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="$i18n.Signatures" />
-			</h2>
-			
-			<div>
-				<strong>
-					<xsl:value-of select="$i18n.Flow" />
-					<xsl:text>:&#160;</xsl:text>
-				</strong>
-				
-				<xsl:value-of select="FlowInstance/Flow/name" />
-			</div>
-			
-			<div>
-				<strong>
-					<xsl:value-of select="$i18n.FlowInstanceID" />
-					<xsl:text>:&#160;</xsl:text>
-				</strong>
-				
-				<xsl:value-of select="FlowInstance/flowInstanceID" />
-			</div>
-			
-			<div>
-				<strong>
-					<xsl:value-of select="$i18n.ActivityRound.added" />
-					<xsl:text>:&#160;</xsl:text>
-				</strong>
-				
-				<xsl:value-of select="ActivityRound/added" />
-			</div>
-			
-			<div>
-				<strong>
-					<xsl:value-of select="$i18n.ActivityRound.completed" />
-					<xsl:text>:&#160;</xsl:text>
-				</strong>
-				
-				<xsl:value-of select="ActivityRound/completed" />
-			</div>
-			
-			<p>
-				<xsl:value-of select="$i18n.Signatures.description" />
-			</p>
-			
-			<div class="bigmargintop">
-				<xsl:apply-templates select="ActivityRound/ActivityProgresses/ActivityProgress" mode="signature" />
-			</div>
-			
-		</div>
 		
 	</xsl:template>
 	

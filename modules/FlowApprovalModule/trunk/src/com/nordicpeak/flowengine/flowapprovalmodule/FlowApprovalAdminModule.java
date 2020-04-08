@@ -75,6 +75,7 @@ import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
@@ -139,6 +140,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGr
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 
@@ -272,6 +274,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
+	
+	@InstanceManagerDependency
+	protected PDFProvider pdfProvider;
 
 	protected StandardFlowNotificationHandler notificationHandler;
 
@@ -1909,9 +1914,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			Element documentElement = doc.createElement("Document");
 			doc.appendChild(documentElement);
 			
-			Element signaturesElement = XMLUtils.appendNewElement(doc, documentElement, "Signatures");
-			signaturesElement.appendChild(flowInstance.toXML(doc));
-			signaturesElement.appendChild(activityGroup.toXML(doc));
+			documentElement.appendChild(flowInstance.toXML(doc));
+			documentElement.appendChild(activityGroup.toXML(doc));
 			
 			List<FlowApprovalActivityProgress> activityProgresses = round.getActivityProgresses();
 
@@ -1939,7 +1943,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				activityProgressesElement.appendChild(activityProgressElement);
 			}
 			
-			signaturesElement.appendChild(roundElement);
+			documentElement.appendChild(roundElement);
+			
+			SiteProfile siteProfile = flowAdminModule.getSiteProfile(flowInstance);
+			String logotype = pdfProvider.getLogotype(siteProfile);
+			
+			XMLUtils.appendNewCDATAElement(doc, documentElement, "Logotype", logotype);
 			
 			StringWriter writer = new StringWriter();
 			
