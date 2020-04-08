@@ -10,7 +10,7 @@
 	<xsl:variable name="i18n.Signatures">signaturer</xsl:variable>
 	<xsl:variable name="i18n.Signatures.description">Följande aktiviteter har signerats:</xsl:variable>
 	
-	<xsl:variable name="i18n.Signature.date">Datum</xsl:variable>
+	<xsl:variable name="i18n.Signature.date">Signeringsdatum</xsl:variable>
 	<xsl:variable name="i18n.Signature.checksum">Signerad checksumma</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceID">Ärendenummer</xsl:variable>

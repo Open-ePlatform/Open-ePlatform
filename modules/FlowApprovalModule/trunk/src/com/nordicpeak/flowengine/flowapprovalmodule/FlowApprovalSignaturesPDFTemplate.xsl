@@ -195,22 +195,51 @@
 			
 			<div>
 				<strong>
-					<xsl:value-of select="$java.Signing.user" />
+					<xsl:choose>
+						<xsl:when test="signedDate">
+							<xsl:value-of select="$java.Signing.user" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.ActivityProgress.CompletingUser" />
+						</xsl:otherwise>
+					</xsl:choose>
 					<xsl:text>:&#160;</xsl:text>
 				</strong>
 				
-				<xsl:value-of select="CompletingUserCitizenID" />
+				<xsl:value-of select="CompletingUser/firstname" />
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="CompletingUser/lastname" />
+				
+				<xsl:if test="signedDate">
+					<xsl:text> (</xsl:text>
+					<xsl:value-of select="CompletingUserCitizenID" />
+					<xsl:text>)</xsl:text>
+				</xsl:if>
 			</div>
 			
-			<div>
-				<strong><xsl:value-of select="$i18n.Signature.date"/>:&#160;</strong>
-				<xsl:value-of select="signedDate"/>
-			</div>
-			
-			<div>
-				<strong><xsl:value-of select="$i18n.Signature.checksum"/>:&#160;</strong>
-				<xsl:value-of select="signedChecksum"/>
-			</div>
+			<xsl:choose>
+				<xsl:when test="signedDate">
+					
+					<div>
+						<strong><xsl:value-of select="$i18n.Signature.date"/>:&#160;</strong>
+						<xsl:value-of select="signedDate"/>
+					</div>
+					
+					<div>
+						<strong><xsl:value-of select="$i18n.Signature.checksum"/>:&#160;</strong>
+						<xsl:value-of select="signedChecksum"/>
+					</div>
+					
+				</xsl:when>
+				<xsl:otherwise>
+					
+					<div>
+						<strong><xsl:value-of select="$i18n.ActivityProgress.completed"/>:&#160;</strong>
+						<xsl:value-of select="completed"/>
+					</div>
+					
+				</xsl:otherwise>
+			</xsl:choose>
 			
 		</div>
 	

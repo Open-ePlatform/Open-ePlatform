@@ -317,4 +317,17 @@
 		</Query>
 	</Script>
 	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `requireSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `showFlowInstance`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` DROP COLUMN `requireSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

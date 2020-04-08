@@ -12,6 +12,7 @@
 	<xsl:variable name="i18n.ViewComment">Visa kommentar</xsl:variable>
 	<xsl:variable name="i18n.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.SendReminder">Skicka påminnelse till ansvariga</xsl:variable>
-	<xsl:variable name="i18n.DownloadSignature">Ladda ner signatur</xsl:variable>
+	<xsl:variable name="i18n.DownloadSignature">Hämta signatur</xsl:variable>
+	<xsl:variable name="i18n.DownloadSignatures">Hämta bekräftelse med signaturer</xsl:variable>
 	
 </xsl:stylesheet>

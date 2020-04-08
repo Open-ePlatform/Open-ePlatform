@@ -137,8 +137,8 @@
 							
 							<xsl:if test="ActivityRounds/ActivityRound[1]/ActivityProgresses/ActivityProgress[signedDate]">
 							
-								<a class="marginleft" href="{../../PostURL}?signatures={ActivityRounds/ActivityRound[1]/activityRoundID}" title="{$i18n.DownloadSignature}">
-									<img alt="" src="{$imgPath}/lock.png" style="vertical-align: sub;" />
+								<a class="marginleft" href="{../../PostURL}?signatures={ActivityRounds/ActivityRound[1]/activityRoundID}" title="{$i18n.DownloadSignatures}">
+									<img alt="" src="{$imgPath}/pdf.png" style="vertical-align: sub;" />
 								</a>
 								
 							</xsl:if>
@@ -209,8 +209,8 @@
 								
 								<xsl:if test="ActivityProgresses/ActivityProgress[signedDate]">
 								
-									<a class="marginleft" href="{../../../../PostURL}?signatures={activityRoundID}" title="{$i18n.DownloadSignature}">
-										<img alt="" src="{$imgPath}/lock.png" style="vertical-align: sub;"/>
+									<a class="marginleft" href="{../../../../PostURL}?signatures={activityRoundID}" title="{$i18n.DownloadSignatures}">
+										<img alt="" src="{$imgPath}/pdf.png" style="vertical-align: sub;"/>
 									</a>
 									
 								</xsl:if>

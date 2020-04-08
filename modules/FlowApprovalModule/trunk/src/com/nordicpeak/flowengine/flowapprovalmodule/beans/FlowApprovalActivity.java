@@ -62,6 +62,11 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	private boolean showFlowInstance;
 
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean requireSigning;
+	
+	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<FlowApprovalActivityResponsibleUser> responsibleUsers;
@@ -105,7 +110,7 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@SimplifiedRelation(table = "flowapproval_activity_attribute_values", remoteValueColumnName = "value")
 	@XMLElement(fixCase = true)
 	private List<String> attributeValues;
-
+	
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
@@ -219,6 +224,14 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	public void setAttributeValues(List<String> attributeValues) {
 
 		this.attributeValues = attributeValues;
+	}
+	
+	public boolean isRequireSigning() {
+		return requireSigning;
+	}
+
+	public void setRequireSigning(boolean requireSigning) {
+		this.requireSigning = requireSigning;
 	}
 
 	public String getGlobalEmailAddress() {

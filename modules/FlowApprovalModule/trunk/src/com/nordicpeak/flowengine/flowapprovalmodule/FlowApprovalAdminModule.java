@@ -863,10 +863,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 							flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null);
 						}
 						
-						if (activityGroup.isRequireSigning()) {
-							
-							generateSignaturesPDF(flowInstance, activityGroup, round);
-						}
+						generateSignaturesPDF(flowInstance, activityGroup, round);
 					}
 				}
 
@@ -2019,7 +2016,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					} catch (Exception e) {
 						log.error("Error appending signature data for " + activityProgress, e);
 					}
-					
 				}
 			}
 			

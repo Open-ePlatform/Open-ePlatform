@@ -523,7 +523,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				activityProgress.setComment(comment);
 				
-				if (completed && !activityGroup.isRequireSigning()) {
+				if (completed && !activity.isRequireSigning()) {
 
 					activityProgress.setCompleted(TimeUtils.getCurrentTimestamp());
 					activityProgress.setCompletingUser(user);
@@ -533,7 +533,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				if (completed) {
 
-					if (activityGroup.isRequireSigning()) {
+					if (activity.isRequireSigning()) {
 					
 						redirectToMethod(req, res, "/signactivity/" + activityProgress.getActivityProgressID());
 						return null;
@@ -666,7 +666,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		builder.append(i18nFlowInstanceID + ": " + flowInstance.getFlowInstanceID() + "\r\n");
 		builder.append(i18nActivity + ": " + activityProgress.getActivity().getName() + " (ID " + activityProgress.getActivityProgressID() + ")\r\n");
 		builder.append(i18nActivityProgressState + ": " + getActivityProgressState(activityProgress) + "\r\n");
-		builder.append(i18nSigningUser + ": " + CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user) + "\r\n");
+		builder.append(i18nSigningUser + ": " + user.getFirstname() + " " + user.getLastname() + " (" + CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user) + ")\r\n");
 		builder.append(i18nActivityShortDescription + ": " + (shortDescription == null ? "" : shortDescription) + "\r\n");
 		builder.append(i18nActivityDescription + ": " + (description == null ? "" : description) + "\r\n");
 		
