@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.pdf;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,22 +16,26 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaPDF;
-import org.apache.jempbox.xmp.pdfa.XMPSchemaPDFAId;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
-import org.apache.pdfbox.util.PDFMergerUtility;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -612,7 +617,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	private File writePDFA(File pdfWithAttachments, FlowInstanceManager instanceManager, FlowInstanceEvent event, boolean temporary) throws Exception {
 		
 		File outputFile;
@@ -628,38 +632,40 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		
 		outputFile.getParentFile().mkdirs();
 		
-		PDDocument document = PDDocument.loadNonSeq(pdfWithAttachments, null);
+		PDDocument document = PDDocument.load(pdfWithAttachments);
 		
 		try {
-			document.getDocumentInformation().setProducer("Open ePlatform");
-			document.getDocumentInformation().setCreator("Open ePlatform");
+            PDDocumentCatalog catalog = document.getDocumentCatalog();
+            PDDocumentInformation info = document.getDocumentInformation();
 			
-			PDDocumentCatalog cat = document.getDocumentCatalog();
-			PDMetadata metadata = new PDMetadata(document);
-			cat.setMetadata(metadata);
-			
-			XMPMetadata xmp = new XMPMetadata();
-			XMPSchemaPDFAId pdfaid = new XMPSchemaPDFAId(xmp);
-			xmp.addSchema(pdfaid);
-			pdfaid.setConformance("A");
-			pdfaid.setPart(3);
-			pdfaid.setAbout("");
-			
-			XMPSchemaBasic schemaBasic = new XMPSchemaBasic(xmp);
-			
-			schemaBasic.setCreateDate(document.getDocumentInformation().getCreationDate());
-			schemaBasic.setModifyDate(document.getDocumentInformation().getModificationDate());
-			xmp.addSchema(schemaBasic);
-			
-			XMPSchemaPDF schemaPDF = new XMPSchemaPDF(xmp);
-			schemaPDF.setProducer(document.getDocumentInformation().getProducer());
-			xmp.addSchema(schemaPDF);
-			
-			XMPSchemaDublinCore schemaDublinCore = new XMPSchemaDublinCore(xmp);
-			schemaDublinCore.setTitle(document.getDocumentInformation().getTitle());
-			xmp.addSchema(schemaDublinCore);
-			
-			metadata.importXMPMetadata(xmp);
+            XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+
+            PDFAIdentificationSchema id = metadata.createAndAddPFAIdentificationSchema();
+            id.setPart(3);
+            id.setConformance("A");
+            
+            AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
+            pdfSchema.setKeywords("Open ePlatform");
+            pdfSchema.setProducer("Open ePlatform");
+
+            XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
+            basicSchema.setModifyDate(info.getModificationDate());
+            basicSchema.setCreateDate(info.getCreationDate());
+            basicSchema.setCreatorTool("Open ePlatform");
+            basicSchema.setMetadataDate( new GregorianCalendar());
+
+            DublinCoreSchema dcSchema = metadata.createAndAddDublinCoreSchema();
+            dcSchema.setTitle(info.getTitle());
+            dcSchema.addCreator("Open ePlatform");
+            dcSchema.setDescription("Open ePlatform");
+
+            PDMetadata metadataStream = new PDMetadata(document);
+            catalog.setMetadata( metadataStream );
+            
+            XmpSerializer serializer = new XmpSerializer();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            serializer.serialize(metadata, baos, false);
+            metadataStream.importXMPMetadata( baos.toByteArray() );
 			
 			InputStream colorProfile = PDFGeneratorModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
 			
@@ -668,7 +674,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			oi.setOutputCondition("sRGB IEC61966-2.1");
 			oi.setOutputConditionIdentifier("sRGB IEC61966-2.1");
 			oi.setRegistryName("http://www.color.org");
-			cat.addOutputIntent(oi);
+			catalog.addOutputIntent(oi);
 			
 			document.save(outputFile);
 			
@@ -878,7 +884,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 								
 								//TODO don't merge DocumentInformation or reset to src's
 								// Removes StructureTreeRoot if merged document does not have a StructureTreeRoot
-								merger.mergeDocuments();
+								merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
 								
 								if (pdfTempIn != basePDF && !FileUtils.deleteFile(pdfTempIn)) {
 									
