@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
+
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
-
-import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 
 
 public interface PDFProvider {
@@ -37,5 +37,7 @@ public interface PDFProvider {
 	public List<String> getIncludedFonts();
 	
 	public File getTempDir();
+
+	public String getLogotype(SiteProfile siteProfile);
 
 }

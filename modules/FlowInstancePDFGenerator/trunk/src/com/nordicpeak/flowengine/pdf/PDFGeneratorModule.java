@@ -112,7 +112,7 @@ import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
-	private static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
+	public static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
 	private static final String TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE = "pdf.temp.id";
 	
 	public static final RelationQuery EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
@@ -1273,5 +1273,30 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	public List<String> getIncludedFonts() {
 
 		return this.includedFonts;
+	}
+
+	@Override
+	public String getLogotype(SiteProfile siteProfile) {
+
+		if (siteProfile != null) {
+
+			File logotypeFile = siteProfile.getSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+
+			if (logotypeFile != null) {
+
+				return "file://" + logotypeFile.getAbsolutePath();
+			}
+
+		} else if (siteProfileHandler != null) {
+
+			File logotypeFile = siteProfileHandler.getGlobalSettingHandler().getFile(LOGOTYPE_SETTING_ID);
+
+			if (logotypeFile != null) {
+
+				return "file://" + logotypeFile.getAbsolutePath();
+			}
+		}
+
+		return defaultLogotype;
 	}
 }
