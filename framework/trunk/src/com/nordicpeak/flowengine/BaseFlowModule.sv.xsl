@@ -63,7 +63,7 @@
 	
 	<xsl:variable name="i18n.saveBtnSuffix"/>
 	
-	<xsl:variable name="i18n.FlowInstanceConcurrentlyModified">Detta ärende har ändrats sedan du öppnade den och kan därför inte sparas. Klicka här för att öppna den senaste versionen, observera att dina eventuella ändringar kommer att gå förlorade.</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceConcurrentlyModified">Detta ärende har ändrats sedan du öppnade det och kan därför inte sparas. Klicka här för att öppna den senaste versionen, observera att dina eventuella ändringar kommer att gå förlorade.</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceConcurrentlyModifiedConfirm">Är du säker på att du vill öppna senaste versionen och därmed förlora eventuella ändringar?</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceConcurrentlyModifiedLinkTitle">Öppna den senaste versionen</xsl:variable>
 	<xsl:variable name="i18n.MultiSignStatus">Flerpartssignering</xsl:variable>
