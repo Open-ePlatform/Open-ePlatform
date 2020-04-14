@@ -1045,6 +1045,9 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 		}
 
 		queryDAO.add(query, transactionHandler, null);
+		
+		cacheGeneralMapQueryConfiguration(query);
+		
 	}
 
 	@Override
