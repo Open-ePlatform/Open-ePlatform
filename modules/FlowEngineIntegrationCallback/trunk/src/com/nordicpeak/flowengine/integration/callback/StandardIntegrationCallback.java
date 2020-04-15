@@ -40,11 +40,14 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.InternalMessage;
+import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.integration.callback.events.DeliveryConfirmationEvent;
@@ -243,23 +246,47 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			throw e;
 		}
 	}
+	
+	@Override
+	public int addInternalMessage(Integer flowInstanceID, ExternalID internalID, IntegrationMessage message, Principal principal) throws AccessDeniedException, FlowInstanceNotFoundException {
+
+		try {
+			checkDependencies();
+
+			FlowInstance flowInstance = getFlowInstance(flowInstanceID, internalID);
+
+			User principalUser = getPrincipalUser(principal);
+
+			log.info("User " + callback.getUser() + " requested add internal message for flow instance " + flowInstance + " using principal " + principal);
+
+			InternalMessage internalMessage = getInternalMessage(message);
+
+			internalMessage.setPoster(principalUser);
+			internalMessage.setFlowInstance(flowInstance);
+
+			try {
+				daoFactory.getInternalMessageDAO().add(internalMessage);
+
+			} catch (SQLException e) {
+
+				throw new RuntimeException(e);
+			}
+
+			callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+
+			return internalMessage.getMessageID();
+
+		} catch (RuntimeException e) {
+
+			log.error("Error adding message", e);
+
+			throw e;
+		}
+	}	
 
 	private ExternalMessage getExternalMessage(IntegrationMessage message) {
 
-		if (message == null) {
-
-			throw new NullPointerException("Integration message cannot be null");
-		}
-
-		if (message.getAdded() == null) {
-
-			throw new NullPointerException("Added field cannot be null");
-		}
-
-		if (StringUtils.isEmpty(message.getMessage())) {
-
-			throw new RuntimeException("Message field cannot be null or empty");
-		}
+		validateIntegrationMessage(message);
 
 		ExternalMessage externalMessage = new ExternalMessage();
 
@@ -272,20 +299,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 			for (Attachment attachment : message.getAttachments()) {
 
-				if (StringUtils.isEmpty(attachment.getFilename())) {
-
-					throw new RuntimeException("Message field cannot be null or empty");
-				}
-
-				if (attachment.getEncodedData() == null) {
-
-					throw new NullPointerException("Encoded data field cannot be null");
-				}
-
-				if (attachment.getSize() <= 0) {
-
-					throw new RuntimeException("Size cannot be < 0");
-				}
+				validateAttachment(attachment);
 
 				ExternalMessageAttachment externalMessageAttachment = new ExternalMessageAttachment();
 
@@ -312,6 +326,84 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		return externalMessage;
 	}
 
+	private InternalMessage getInternalMessage(IntegrationMessage message) {
+
+		validateIntegrationMessage(message);
+
+		InternalMessage internalMessage = new InternalMessage();
+
+		internalMessage.setAdded(TimeUtils.getTimeStamp(message.getAdded()));
+		internalMessage.setMessage(message.getMessage());
+
+		if (!CollectionUtils.isEmpty(message.getAttachments())) {
+
+			ArrayList<InternalMessageAttachment> internalMessageAttachments = new ArrayList<>(message.getAttachments().size());
+
+			for (Attachment attachment : message.getAttachments()) {
+
+				validateAttachment(attachment);
+
+				InternalMessageAttachment internalMessageAttachment = new InternalMessageAttachment();
+
+				internalMessageAttachment.setAdded(internalMessage.getAdded());
+
+				internalMessageAttachment.setFilename(attachment.getFilename());
+
+				try {
+					internalMessageAttachment.setData(new SerialBlob(attachment.getEncodedData()));
+
+				} catch (SQLException e) {
+
+					throw new RuntimeException(e);
+				}
+
+				internalMessageAttachment.setSize(attachment.getSize());
+
+				internalMessageAttachments.add(internalMessageAttachment);
+			}
+
+			internalMessage.setAttachments(internalMessageAttachments);
+		}
+
+		return internalMessage;
+	}
+	
+	protected void validateAttachment(Attachment attachment) {
+
+		if (StringUtils.isEmpty(attachment.getFilename())) {
+
+			throw new RuntimeException("Message field cannot be null or empty");
+		}
+
+		if (attachment.getEncodedData() == null) {
+
+			throw new NullPointerException("Encoded data field cannot be null");
+		}
+
+		if (attachment.getSize() <= 0) {
+
+			throw new RuntimeException("Size cannot be < 0");
+		}
+	}
+
+	protected void validateIntegrationMessage(IntegrationMessage message) {
+		
+		if (message == null) {
+
+			throw new NullPointerException("Integration message cannot be null");
+		}
+
+		if (message.getAdded() == null) {
+
+			throw new NullPointerException("Added field cannot be null");
+		}
+
+		if (StringUtils.isEmpty(message.getMessage())) {
+
+			throw new RuntimeException("Message field cannot be null or empty");
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

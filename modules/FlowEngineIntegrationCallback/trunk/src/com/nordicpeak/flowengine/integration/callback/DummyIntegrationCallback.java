@@ -81,6 +81,16 @@ public class DummyIntegrationCallback extends BaseWSModuleService implements Int
 		return RandomUtils.getRandomInt(0, Integer.MAX_VALUE);
 	}
 
+	@Override
+	public int addInternalMessage(Integer flowInstanceID, ExternalID externalID, IntegrationMessage message, Principal principal) throws AccessDeniedException, FlowInstanceNotFoundException {
+
+		log.info("User " + callback.getUser() + " requested addInternalMessage");
+		
+		checkFlowInstanceID(flowInstanceID);
+		
+		return RandomUtils.getRandomInt(0, Integer.MAX_VALUE);
+	}	
+	
 	/**
 	 * {@inheritDoc}
 	 */

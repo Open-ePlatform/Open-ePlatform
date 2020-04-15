@@ -41,8 +41,8 @@ public interface IntegrationCallback {
      * @return
      *     returns int
      * @throws StatusNotFoundException
-     * @throws FlowInstanceNotFoundException
      * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
      */
     @WebMethod
     @WebResult(name = "eventID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
@@ -72,8 +72,8 @@ public interface IntegrationCallback {
      * @param flowInstanceID
      * @return
      *     returns int
-     * @throws FlowInstanceNotFoundException
      * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
      */
     @WebMethod
     @WebResult(name = "eventID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
@@ -102,8 +102,8 @@ public interface IntegrationCallback {
      * @param flowInstanceID
      * @return
      *     returns int
-     * @throws FlowInstanceNotFoundException
      * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
      */
     @WebMethod
     @WebResult(name = "messageID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
@@ -122,14 +122,42 @@ public interface IntegrationCallback {
     ;
 
     /**
+     * This method is used to add messages to flow instances. The message can be either in plain text or HTML.
+     * 
+     * @param principal
+     * @param externalID
+     * @param message
+     * @param flowInstanceID
+     * @return
+     *     returns int
+     * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
+     */
+    @WebMethod
+    @WebResult(name = "messageID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+    @RequestWrapper(localName = "addInternalMessage", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.AddInternalMessage")
+    @ResponseWrapper(localName = "addInternalMessageResponse", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.AddInternalMessageResponse")
+    public int addInternalMessage(
+        @WebParam(name = "flowInstanceID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        Integer flowInstanceID,
+        @WebParam(name = "externalID", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        ExternalID externalID,
+        @WebParam(name = "message", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        IntegrationMessage message,
+        @WebParam(name = "principal", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback")
+        Principal principal)
+        throws AccessDeniedException, FlowInstanceNotFoundException
+    ;
+
+    /**
      * This method is used by the various integration platforms to confirm whether or not a flow instance could be delivered to and external system. If the flow instance has been delivered and received a new ID in the external system then this new ID should be passed on to this method using the externalID parameter.
      * 
      * @param logMessage
      * @param externalID
      * @param delivered
      * @param flowInstanceID
-     * @throws FlowInstanceNotFoundException
      * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
      */
     @WebMethod
     @RequestWrapper(localName = "confirmDelivery", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.ConfirmDelivery")
@@ -152,8 +180,8 @@ public interface IntegrationCallback {
      * @param logMessage
      * @param externalID
      * @param flowInstanceID
-     * @throws FlowInstanceNotFoundException
      * @throws AccessDeniedException
+     * @throws FlowInstanceNotFoundException
      */
     @WebMethod
     @RequestWrapper(localName = "deleteInstance", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", className = "com.nordicpeak.flowengine.integration.callback.DeleteInstance")

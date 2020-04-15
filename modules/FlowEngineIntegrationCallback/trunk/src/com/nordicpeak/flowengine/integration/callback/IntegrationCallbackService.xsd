@@ -102,6 +102,19 @@
 		</xs:complexType>
 	</xs:element>
 	
+		<xs:element name="addInternalMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="flowInstanceID" type="xs:int" />
+					<xs:element name="externalID" type="ExternalID" />
+				</xs:choice>
+				<xs:element name="message" type="IntegrationMessage" minOccurs="1" maxOccurs="1" />
+				<xs:element name="principal" type="Principal" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:complexType name="Attachment">
 		<xs:sequence>
 			<xs:element name="encodedData" type="xs:base64Binary" minOccurs="1" maxOccurs="1" />
@@ -126,6 +139,14 @@
 	</xs:complexType>
 	
 	<xs:element name="addMessageResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="messageID" type="xs:int" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="addInternalMessageResponse">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="messageID" type="xs:int" minOccurs="1" maxOccurs="1" />

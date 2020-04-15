@@ -105,6 +105,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AddInternalMessage }
+     * 
+     */
+    public AddInternalMessage createAddInternalMessage() {
+        return new AddInternalMessage();
+    }
+
+    /**
+     * Create an instance of {@link IntegrationMessage }
+     * 
+     */
+    public IntegrationMessage createIntegrationMessage() {
+        return new IntegrationMessage();
+    }
+
+    /**
      * Create an instance of {@link AddMessageResponse }
      * 
      */
@@ -137,14 +153,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link IntegrationMessage }
-     * 
-     */
-    public IntegrationMessage createIntegrationMessage() {
-        return new IntegrationMessage();
-    }
-
-    /**
      * Create an instance of {@link AccessDenied }
      * 
      */
@@ -174,6 +182,14 @@ public class ObjectFactory {
      */
     public SetAttribute createSetAttribute() {
         return new SetAttribute();
+    }
+
+    /**
+     * Create an instance of {@link AddInternalMessageResponse }
+     * 
+     */
+    public AddInternalMessageResponse createAddInternalMessageResponse() {
+        return new AddInternalMessageResponse();
     }
 
     /**

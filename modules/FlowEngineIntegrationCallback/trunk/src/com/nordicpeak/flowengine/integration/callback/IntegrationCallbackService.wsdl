@@ -21,6 +21,14 @@
 
 	</wsdl:message>
 
+	<wsdl:message name="addInternalMessageRequest">
+
+		<wsdl:part element="impl:addInternalMessage" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+
 	<wsdl:message name="addEventResponse">
 
 		<wsdl:part element="impl:addEventResponse" name="parameters">
@@ -64,6 +72,14 @@
 	<wsdl:message name="addMessageResponse">
 
 		<wsdl:part element="impl:addMessageResponse" name="parameters">
+
+		</wsdl:part>
+
+	</wsdl:message>
+	
+	<wsdl:message name="addInternalMessageResponse">
+
+		<wsdl:part element="impl:addInternalMessageResponse" name="parameters">
 
 		</wsdl:part>
 
@@ -214,6 +230,24 @@
 			</wsdl:input>
 
 			<wsdl:output message="impl:addMessageResponse" name="addMessageResponse">
+
+			</wsdl:output>
+			
+			<wsdl:fault message="impl:FlowInstanceNotFoundException" name="FlowInstanceNotFoundException"/>
+			
+			<wsdl:fault message="impl:AccessDeniedException" name="AccessDeniedException"/>
+
+		</wsdl:operation>
+		
+		<wsdl:operation name="addInternalMessage">
+
+			<wsdl:documentation>This method is used to add messages to flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+
+			<wsdl:input message="impl:addInternalMessageRequest" name="addInternalMessageRequest">
+
+			</wsdl:input>
+
+			<wsdl:output message="impl:addInternalMessageResponse" name="addInternalMessageResponse">
 
 			</wsdl:output>
 			
@@ -396,6 +430,36 @@
 			</wsdl:input>
 
 			<wsdl:output name="addMessageResponse">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:output>
+			
+			<wsdl:fault name="FlowInstanceNotFoundException">
+
+				<wsdlsoap:fault name="FlowInstanceNotFoundException" use="literal" />
+
+			</wsdl:fault>
+
+			<wsdl:fault name="AccessDeniedException">
+
+				<wsdlsoap:fault name="AccessDeniedException" use="literal" />
+
+			</wsdl:fault>
+
+		</wsdl:operation>
+		
+		<wsdl:operation name="addInternalMessage">
+
+			<wsdlsoap:operation soapAction="" />
+
+			<wsdl:input name="addInternalMessageRequest">
+
+				<wsdlsoap:body use="literal" />
+
+			</wsdl:input>
+
+			<wsdl:output name="addInternalMessageResponse">
 
 				<wsdlsoap:body use="literal" />
 
