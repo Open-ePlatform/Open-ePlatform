@@ -968,7 +968,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				this.flowIndexer = new FlowIndexer(latestPublishedFlowVersionsMap.values(), maxHitCount);
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 
 			log.error("Error indexing flows, searching disabled", e);
 

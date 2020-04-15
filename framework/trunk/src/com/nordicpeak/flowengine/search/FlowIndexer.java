@@ -30,10 +30,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -70,11 +71,13 @@ public class FlowIndexer {
 
 	protected int maxHitCount;
 
-	public FlowIndexer(Collection<Flow> flows, int maxHitCount) throws IOException{
+	public FlowIndexer(Collection<Flow> flows, int maxHitCount) throws Exception{
 
 		this.maxHitCount = maxHitCount;
 
-		HtmlParser htmlParser = new HtmlParser();
+		TikaConfig tikaConfig = new TikaConfig(this.getClass().getResourceAsStream("tika-config.xml"));
+		
+		AutoDetectParser parser = new AutoDetectParser(tikaConfig);
 
 		indexWriter = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_44, analyzer));
 
@@ -90,11 +93,11 @@ public class FlowIndexer {
 				
 				doc.add(new IntField(ID_FIELD, flow.getFlowID(), Field.Store.YES));
 				doc.add(new TextField(NAME_FIELD, flow.getName(), Field.Store.NO));
-				doc.add(new TextField(SHORT_DESCRIPTION_FIELD, parseHTML(flow.getShortDescription(), htmlParser), Field.Store.NO));
+				doc.add(new TextField(SHORT_DESCRIPTION_FIELD, parseHTML(flow.getShortDescription(), parser), Field.Store.NO));
 
 				if(!StringUtils.isEmpty(flow.getLongDescription())){
 					
-					doc.add(new TextField(LONG_DESCRIPTION_FIELD, parseHTML(flow.getLongDescription(), htmlParser), Field.Store.NO));
+					doc.add(new TextField(LONG_DESCRIPTION_FIELD, parseHTML(flow.getLongDescription(), parser), Field.Store.NO));
 				}
 
 				if(flow.getTags() != null){
@@ -138,7 +141,7 @@ public class FlowIndexer {
 		}
 	}
 
-	private String parseHTML(String text, HtmlParser htmlParser) throws IOException, SAXException, TikaException {
+	private String parseHTML(String text, AutoDetectParser parser) throws IOException, SAXException, TikaException {
 
 		StringWriter writer = new StringWriter();
 		ContentHandler contentHandler = new BodyContentHandler(writer);
@@ -146,7 +149,7 @@ public class FlowIndexer {
 		Metadata metadata = new Metadata();
 		metadata.set(Metadata.CONTENT_TYPE, "text/html");
 
-		htmlParser.parse(StringUtils.getInputStream(text), contentHandler, metadata, new ParseContext());
+		parser.parse(StringUtils.getInputStream(text), contentHandler, metadata, new ParseContext());
 
 		return writer.toString();
 	}
