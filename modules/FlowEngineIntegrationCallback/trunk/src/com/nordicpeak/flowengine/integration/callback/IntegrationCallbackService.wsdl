@@ -205,7 +205,7 @@
 
 		<wsdl:operation name="addEvent">
 
-			<wsdl:documentation>This method is used to add events to the history flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+			<wsdl:documentation>This method is used to add events to the history flow instances. The message should be in plain text.</wsdl:documentation>
 
 			<wsdl:input message="impl:addEventRequest" name="addEventRequest">
 
@@ -223,7 +223,7 @@
 
 		<wsdl:operation name="addMessage">
 
-			<wsdl:documentation>This method is used to add messages to flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+			<wsdl:documentation>This method is used to add messages to flow instances. The message should be in plain text.</wsdl:documentation>
 
 			<wsdl:input message="impl:addMessageRequest" name="addMessageRequest">
 
@@ -241,7 +241,7 @@
 		
 		<wsdl:operation name="addInternalMessage">
 
-			<wsdl:documentation>This method is used to add messages to flow instances. The message can be either in plain text or HTML.</wsdl:documentation>
+			<wsdl:documentation>This method is used to add messages to flow instances. The message should be in plain text.</wsdl:documentation>
 
 			<wsdl:input message="impl:addInternalMessageRequest" name="addInternalMessageRequest">
 
