@@ -399,105 +399,120 @@
 			
 	<xsl:template match="FlowInstanceManagerSubmitted">
 
-		<div>
-			<xsl:attribute name="class">
-				<xsl:choose>
-					<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
-						info-box success alternatesubmittext
-					</xsl:when>
-					<xsl:otherwise>
-						info-box success
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:attribute>
-		
-			<span data-icon-before="c">
-				<xsl:choose>
-					<xsl:when test="AlternateSubmitMessageHeader">
-						<strong><xsl:value-of select="AlternateSubmitMessageHeader" /></strong>
-					</xsl:when>
-					<xsl:otherwise>
-						<strong><xsl:value-of select="$i18n.FlowInstanceManagerSubmitted" /></strong>
-					</xsl:otherwise>				
-				</xsl:choose>
-				<i class="icon close">x</i>
-			</span>
-			<div class="marker"></div>
-		</div>
-		
-		<div>
-			<xsl:attribute name="class">
-				<xsl:choose>
-					<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
-						info-box-message success alternatesubmittext
-					</xsl:when>
-					<xsl:otherwise>
-						info-box-message success
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:attribute>
-			
-			<xsl:choose>
-				<xsl:when test="AlternateSubmitMessageText">
-					<xsl:value-of select="AlternateSubmitMessageText" disable-output-escaping="yes"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="FlowInstance/Flow/submittedMessage" disable-output-escaping="yes"/>
-				</xsl:otherwise>
-			</xsl:choose>
-				
-			<xsl:if test="SubmitSurveyHTML">
-				<xsl:value-of select="SubmitSurveyHTML" disable-output-escaping="yes" />
-			</xsl:if>
-			
-		</div>
-	
 		<section class="service">
 			
 			<div class="section-full padtop receipt">
+  				
+				<div>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
+								info-box success alternatesubmittext
+							</xsl:when>
+							<xsl:otherwise>
+								info-box success
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+				
+					<span data-icon-before="c">
+						<xsl:choose>
+							<xsl:when test="AlternateSubmitMessageHeader">
+								<strong><xsl:value-of select="AlternateSubmitMessageHeader" /></strong>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><xsl:value-of select="$i18n.FlowInstanceManagerSubmitted" /></strong>
+							</xsl:otherwise>				
+						</xsl:choose>
+						<i class="icon close">x</i>
+					</span>
+					<div class="marker"></div>
+				</div>
+				
+				<div>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="AlternateSubmitMessageHeader or AlternateSubmitMessageText">
+								info-box-message success alternatesubmittext
+							</xsl:when>
+							<xsl:otherwise>
+								info-box-message success
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					
+					<xsl:choose>
+						<xsl:when test="AlternateSubmitMessageText">
+							<xsl:value-of select="AlternateSubmitMessageText" disable-output-escaping="yes"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="FlowInstance/Flow/submittedMessage" disable-output-escaping="yes"/>
+						</xsl:otherwise>
+					</xsl:choose>
+						
+				</div>
+	  				
   				<div class="heading-wrapper">
   				
-  					<xsl:choose>
-  						<xsl:when test="PDFLink">
-  							<a href="{PDFLink}" class="btn btn-right btn-light xl hide-mobile"><xsl:value-of select="$i18n.DownloadPDF" /></a>	
-  						</xsl:when>
-  						<xsl:otherwise>
-  							<a href="#" class="btn btn-right btn-light xl hide-mobile" onclick="event.preventDefault(); window.print();"><xsl:value-of select="$i18n.Print" /></a>
-  						</xsl:otherwise>
-  					</xsl:choose>
-  					
   					<xsl:variable name="submittedEvents" select="FlowInstance/events/FlowInstanceEvent[eventType='SUBMITTED']" />
   				
-  					<figure>
-	  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
-	  				</figure>
-	  				<div class="heading">
-  						<h1 class="xl"><xsl:value-of select="$i18n.Receipt" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/Flow/name" /></h1>
-						<span class="errandno">
-							
+	  				<div class="errand-header">
+  						<h1>
+  							<xsl:value-of select="$i18n.Receipt" />
+  						</h1>
+  						<a id="show-receipt-btn" href="#" class="btn btn-right btn-light"><xsl:value-of select="$i18n.ShowReceipt" /></a>
+  						<a id="hide-receipt-btn" href="#" class="btn btn-right btn-light hidden"><xsl:value-of select="$i18n.HideReceipt" /></a>
+  						<xsl:choose>
+							<xsl:when test="PDFLink">
+								<a href="{PDFLink}" class="btn btn-right btn-light marginright"><xsl:value-of select="$i18n.DownloadPDF" /></a>	
+							</xsl:when>
+							<xsl:otherwise>
+								<a href="#" class="btn btn-right btn-light marginright hide-mobile" onclick="event.preventDefault(); window.print();"><xsl:value-of select="$i18n.Print" /></a>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					<div class="errand-info">
+						<h2 class="h1">
+							<figure>
+			  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{FlowInstance/Flow/flowID}?{FlowInstance/Flow/IconLastModified}" alt="" />
+			  				</figure>
+							<xsl:value-of select="FlowInstance/Flow/name" />
+						</h2>
+						<p>
 							<xsl:if test="not(FlowInstance/Flow/hideFlowInstanceIDFromUser = 'true')">
 								<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" />
-								<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
 							</xsl:if>
-							
+						</p>
+						<p>
 							<xsl:value-of select="$i18n.PostedBy" /><xsl:text>:&#160;</xsl:text>
 							<xsl:call-template name="PrintPostedBy">
 								<xsl:with-param name="poster" select="$submittedEvents[position() = last()]/poster/user"/>
 								<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 							</xsl:call-template>
-						 	<xsl:text>&#160;</xsl:text><b class="pipe">|</b><xsl:text>&#160;</xsl:text>
+							<br/>
 							<xsl:value-of select="$submittedEvents[position() = last()]/added" />
-						</span>
+						</p>
 					</div>
   				</div>
   			</div>
+  			
   			<div class="divider"></div>
   			
-  			<div class="queries">
+  			<div class="queries receipt">
+				
 				<xsl:apply-templates select="ManagerResponses/ManagerResponse">
 					<xsl:with-param name="mode" select="'receipt'" />
 				</xsl:apply-templates>
+				
+				<div class="divider"></div>
+				
 			</div>
+			
+			<xsl:if test="SubmitSurveyHTML">
+				<div class="survey-wrapper section-full">				
+					<xsl:value-of select="SubmitSurveyHTML" disable-output-escaping="yes" />
+				</div>
+			</xsl:if>
 			
 		</section>
 	

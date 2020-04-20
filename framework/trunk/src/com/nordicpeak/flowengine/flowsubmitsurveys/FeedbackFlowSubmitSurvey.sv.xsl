@@ -15,7 +15,7 @@
 	<xsl:variable name="i18n.Unkown">Okänt</xsl:variable>
 	<xsl:variable name="i18n.LeaveComment">Lämna en kommentar</xsl:variable>
 	<xsl:variable name="i18n.Comment">Kommentar</xsl:variable>
-	<xsl:variable name="i18n.Send">Skicka</xsl:variable>
+	<xsl:variable name="i18n.Send">Skicka betyg</xsl:variable>
 	<xsl:variable name="i18n.CommentPlaceHolder">Lämna gärna en kommentar till ditt betyg</xsl:variable>
 	<xsl:variable name="i18n.FeedbackSurveySuccess">Ditt betyg är registrerat, tack för din medverkan</xsl:variable>
 	<xsl:variable name="i18n.NoAnswer">Du måste välja ett betyg för att kunna skicka in</xsl:variable>

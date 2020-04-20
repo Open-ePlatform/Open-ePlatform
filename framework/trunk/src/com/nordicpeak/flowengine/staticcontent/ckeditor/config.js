@@ -92,7 +92,7 @@ CKEDITOR.editorConfig = function( config )
 	    ['Bold','Italic','Underline','Strike','Subscript','Superscript'],
 	    ['NumberedList','BulletedList','Blockquote'],
 	    ['JustifyLeft','JustifyCenter','JustifyRight'],
-	    ['Format'],['RemoveFormat','SpecialChar']  // No comma for the last row.*/
+	    ['Format','Styles'],['RemoveFormat','SpecialChar']  // No comma for the last row.*/
 	   
 	];
 
@@ -277,4 +277,7 @@ CKEDITOR.editorConfig = function( config )
 	if(config.specialChars.indexOf('&ge;') < 0){
 		config.specialChars.push('&ge;');
 	}
+	
+	config.stylesSet = 'flowengine-styles';
+	
 };

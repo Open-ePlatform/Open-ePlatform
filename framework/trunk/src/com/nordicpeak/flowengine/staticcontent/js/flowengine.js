@@ -95,6 +95,20 @@ $(document).ready(function() {
 	    
     }
 	
+    $("#show-receipt-btn").click(function(e) {
+        e.preventDefault();
+        $(this).closest("section.service").find(".queries").show();
+        $(this).hide();
+        $("#hide-receipt-btn").show(); 
+    });
+    
+    $("#hide-receipt-btn").click(function(e) {
+        e.preventDefault();
+        $(this).closest("section.service").find(".queries").hide();
+        $(this).hide();
+        $("#show-receipt-btn").show();
+    });
+    
 });
 
 function checkStartFlowPanelPosition(event) {

@@ -11,12 +11,12 @@
 	<xsl:variable name="scripts">
 		/js/d3.v3.min.js
 		/js/c3.min.js
-		/js/feedbacksurvey.js
+		/js/feedbacksurvey.js?v=2
 	</xsl:variable>
 	
 	<xsl:variable name="links">
 		/css/c3.min.css
-		/css/feedbacksurvey.css
+		/css/feedbacksurvey.css?v=2
 	</xsl:variable>
 
 	<xsl:template match="Document">	
@@ -55,81 +55,76 @@
 				<xsl:with-param name="value" select="flowInstanceID" />
 			</xsl:call-template>
 			
-			<div class="inner">
+			<div class="alternative">
+				<xsl:call-template name="createRadio">
+					<xsl:with-param name="id" select="'very_satisfied'"/>
+					<xsl:with-param name="name" select="'answer'"/>
+					<xsl:with-param name="title" select="$i18n.VerySatisfied"/>
+					<xsl:with-param name="value" select="'VERY_SATISFIED'" />
+				</xsl:call-template>
+				<label for="very_satisfied" class="radio"><xsl:value-of select="$i18n.VerySatisfied" /></label>
+			</div>
+			
+			<div class="alternative">
+				<xsl:call-template name="createRadio">
+					<xsl:with-param name="id" select="'satisfied'"/>
+					<xsl:with-param name="name" select="'answer'"/>
+					<xsl:with-param name="title" select="$i18n.Satisfied"/>
+					<xsl:with-param name="value" select="'SATISFIED'" />
+				</xsl:call-template>
+				<label for="satisfied" class="radio"><xsl:value-of select="$i18n.Satisfied" /></label>
+			</div>
+			
+			<div class="alternative">
+				<xsl:call-template name="createRadio">
+					<xsl:with-param name="id" select="'neither'"/>
+					<xsl:with-param name="name" select="'answer'"/>
+					<xsl:with-param name="title" select="$i18n.Neither"/>
+					<xsl:with-param name="value" select="'NEITHER'" />
+				</xsl:call-template>
+				<label for="neither" class="radio"><xsl:value-of select="$i18n.Neither" /></label>
+			</div>
+			
+			<div class="alternative">
+				<xsl:call-template name="createRadio">
+					<xsl:with-param name="id" select="'dissatisfied'"/>
+					<xsl:with-param name="name" select="'answer'"/>
+					<xsl:with-param name="title" select="$i18n.Dissatisfied"/>
+					<xsl:with-param name="value" select="'DISSATISFIED'" />
+				</xsl:call-template>
+				<label for="dissatisfied" class="radio"><xsl:value-of select="$i18n.Dissatisfied" /></label>
+			</div>
+			
+			<div class="alternative">
+				<xsl:call-template name="createRadio">
+					<xsl:with-param name="id" select="'very_dissatisfied'"/>
+					<xsl:with-param name="name" select="'answer'"/>
+					<xsl:with-param name="title" select="$i18n.VeryDissatisfied"/>
+					<xsl:with-param name="value" select="'VERY_DISSATISFIED'"/>
+				</xsl:call-template>
+				<label for="very_dissatisfied" class="radio"><xsl:value-of select="$i18n.VeryDissatisfied" /></label>
+			</div>
+			
+			<div class="comment-wrapper">
+			
+				<xsl:if test="ShowCommentField = 'true'">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'feedback_comment'"/>
+						<xsl:with-param name="name" select="'comment'"/>
+						<xsl:with-param name="title" select="$i18n.Comment"/>
+						<xsl:with-param name="class" select="'hidden bigmarginbottom'"/>
+						<xsl:with-param name="rows" select="'3'"/>
+						<xsl:with-param name="placeholder" select="$i18n.CommentPlaceHolder"/>
+					</xsl:call-template>					
+				</xsl:if>
 				
-				<div class="alternative">
-					<xsl:call-template name="createRadio">
-						<xsl:with-param name="id" select="'very_dissatisfied'"/>
-						<xsl:with-param name="name" select="'answer'"/>
-						<xsl:with-param name="title" select="$i18n.VeryDissatisfied"/>
-						<xsl:with-param name="value" select="'VERY_DISSATISFIED'"/>
-					</xsl:call-template>
-					<label for="very_dissatisfied" class="radio"><xsl:value-of select="$i18n.VeryDissatisfied" /></label>
-				</div>
-				
-				<div class="alternative">
-					<xsl:call-template name="createRadio">
-						<xsl:with-param name="id" select="'dissatisfied'"/>
-						<xsl:with-param name="name" select="'answer'"/>
-						<xsl:with-param name="title" select="$i18n.Dissatisfied"/>
-						<xsl:with-param name="value" select="'DISSATISFIED'" />
-					</xsl:call-template>
-					<label for="dissatisfied" class="radio"><xsl:value-of select="$i18n.Dissatisfied" /></label>
-				</div>
-				
-				<div class="alternative">
-					<xsl:call-template name="createRadio">
-						<xsl:with-param name="id" select="'neither'"/>
-						<xsl:with-param name="name" select="'answer'"/>
-						<xsl:with-param name="title" select="$i18n.Neither"/>
-						<xsl:with-param name="value" select="'NEITHER'" />
-					</xsl:call-template>
-					<label for="neither" class="radio"><xsl:value-of select="$i18n.Neither" /></label>
-				</div>
-				
-				<div class="alternative">
-					<xsl:call-template name="createRadio">
-						<xsl:with-param name="id" select="'satisfied'"/>
-						<xsl:with-param name="name" select="'answer'"/>
-						<xsl:with-param name="title" select="$i18n.Satisfied"/>
-						<xsl:with-param name="value" select="'SATISFIED'" />
-					</xsl:call-template>
-					<label for="satisfied" class="radio"><xsl:value-of select="$i18n.Satisfied" /></label>
-				</div>
-				
-				<div class="alternative">
-					<xsl:call-template name="createRadio">
-						<xsl:with-param name="id" select="'very_satisfied'"/>
-						<xsl:with-param name="name" select="'answer'"/>
-						<xsl:with-param name="title" select="$i18n.VerySatisfied"/>
-						<xsl:with-param name="value" select="'VERY_SATISFIED'" />
-					</xsl:call-template>
-					<label for="very_satisfied" class="radio"><xsl:value-of select="$i18n.VerySatisfied" /></label>
-				</div>
-				
-				<div class="comment-wrapper">
-				
-					<xsl:if test="ShowCommentField = 'true'">
-						<xsl:call-template name="createTextArea">
-							<xsl:with-param name="id" select="'feedback_comment'"/>
-							<xsl:with-param name="name" select="'comment'"/>
-							<xsl:with-param name="title" select="$i18n.Comment"/>
-							<xsl:with-param name="class" select="'hidden bigmarginbottom'"/>
-							<xsl:with-param name="rows" select="'3'"/>
-							<xsl:with-param name="placeholder" select="$i18n.CommentPlaceHolder"/>
-						</xsl:call-template>					
-					</xsl:if>
-					
-				
-					<div class="validationerrors floatleft" />
-				
-					<xsl:if test="ShowCommentField = 'true'">
-						<a href="#" class="comment-btn bigmarginright"><xsl:value-of select="$i18n.LeaveComment" /></a>
-					</xsl:if>
-				
-					<input type="button" name="sendButton" class="submit-btn btn btn-green xl" value="{$i18n.Send}" />
-				
-				</div>
+				<div class="validationerrors floatleft" />
+			
+				<xsl:if test="ShowCommentField = 'true'">
+					<a href="#" class="comment-btn bigmarginright"><xsl:value-of select="$i18n.LeaveComment" /></a>
+				</xsl:if>
+			
+				<input type="button" name="sendButton" class="submit-btn btn btn-green xl" value="{$i18n.Send}" />
 			
 			</div>
 			

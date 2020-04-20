@@ -650,3 +650,162 @@ aside.narrow + .content.omega {
 .flowadmin #queryTypeDescription {
 	line-height: 1.6;
 }
+
+#FlowBrowser section.service .receipt > .heading-wrapper  {
+	border: 2px dashed #555555;
+	max-width: 500px;
+	margin: auto;
+	float: none;
+	margin-top: 45px;
+	margin-bottom: 20px;
+	border-radius: 3px;
+}
+
+#FlowBrowser section.service .receipt.queries article {
+	border-color: #E8E8E8;
+	background-color: transparent;
+}
+
+#FlowBrowser section.service .divider {
+	border-width: 3px;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-info {
+	text-align: center;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-info p {
+	color: #555555;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-info h2 {
+	float: none;
+	padding: 5px 0;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-header {
+	margin: 0;
+	padding: 7px;
+	border-bottom: 1px solid #E8E8E8;
+	display: inline-block;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-header h1 {
+	background: url(../pics/receipt.png) 0 2px no-repeat;
+	background-size: 25px;
+	padding-left: 30px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	text-transform: uppercase;
+	float: left;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-header h1, #FlowBrowser section.service .receipt .heading-wrapper .errand-info h2.h1 {
+	font-size: 20px !important;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-header a {
+	float: right;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-info figure {
+	width: 30px;
+	height: 30px;
+	margin-right: 5px;
+	margin-top: -5px;
+	float: none;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+#FlowBrowser section.service .receipt .heading-wrapper .errand-info figure img {
+	width: 30px;
+	height: 30px;
+}
+
+#FlowBrowser section.service .receipt.queries {
+	display: none;
+}
+
+#FlowBrowser section.service .section-full.padtop.receipt {
+	margin-top: 37px;
+	padding-top: 15px;
+}
+
+#FlowBrowser section.service .receipt .info-box {
+	color: #000;
+	position: relative;
+}
+
+#FlowBrowser section.service .receipt .info-box .info-box span strong {
+	font-weight: 800;
+}
+
+#FlowBrowser section.service .receipt .info-box > span {
+		padding-bottom: 5px;
+		text-align: left;
+		padding-left: 37px;
+		padding-top: 10px;
+}
+
+#FlowBrowser section.service .receipt .info-box .marker {
+	display: none;
+}
+
+#FlowBrowser section.service .receipt .info-box .close {
+	display: none;
+}
+
+#FlowBrowser section.service .receipt .info-box.success {
+	background: #ECF6EA;
+	border: 1px solid #349B46;
+	border-bottom: none;
+}
+
+#FlowBrowser section.service .receipt .info-box.success.alternatesubmittext {
+	background: inherit;
+	border-color: inherit;
+}
+
+#FlowBrowser section.service .receipt .info-box.success span::before {
+    color: #FFF;
+	background-color: #158040;
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 9px;
+    line-height: 0.9;
+    margin-top: 3px;
+    margin-right: 7px;
+    position: absolute;
+    left: 10px;
+}
+
+#FlowBrowser section.service .receipt .info-box-message {
+	padding: 0 10px 10px 37px;
+	text-align: left;
+}
+
+#FlowBrowser section.service .receipt .info-box-message > p {
+	margin-top: 0px;
+	margin-bottom: 3px;
+	padding-top: 3px;
+}
+
+#FlowBrowser section.service .receipt .info-box-message.success {
+	background: #ECF6EA;
+	border: 1px solid #349B46;
+	border-top: none;
+	border-radius: 0 0 3px 3px;
+}
+
+@media screen and (max-width: 767px) {
+	#FlowBrowser section.service .section-full.padtop.receipt {
+		margin-top: 0px;
+	}
+	#FlowBrowser section.service .receipt > .heading-wrapper {
+		margin-top: 35px;
+		margin-bottom: 5px;
+	}
+}

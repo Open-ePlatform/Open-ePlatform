@@ -87,5 +87,7 @@
 	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
 	
 	<xsl:variable name="i18n.SubmitSurveyTitle">Användarundersökning</xsl:variable>
+	<xsl:variable name="i18n.ShowReceipt">Visa detaljer</xsl:variable>
+	<xsl:variable name="i18n.HideReceipt">Dölj detaljer</xsl:variable>
 	
 </xsl:stylesheet>
