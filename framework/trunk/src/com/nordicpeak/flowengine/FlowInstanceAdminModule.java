@@ -637,8 +637,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				Collections.reverse(flowInstance.getEvents());
 			}
 
-			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser);
-
 			if (user != null) {
 				showFlowInstanceOverviewElement.appendChild(user.toXML(doc));
 			}
@@ -684,6 +682,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
 			
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
+
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser, moduleResponse);
 
 			moduleResponse = new FragmentLinkScriptFilter<>().filterShowBeanModuleResponse(moduleResponse, flowInstance, doc, req, user, uriParser);
 
@@ -735,7 +735,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		throw new URINotFoundException(uriParser);
 	}
 
-	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
+	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SimpleForegroundModuleResponse moduleResponse) {
 
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
