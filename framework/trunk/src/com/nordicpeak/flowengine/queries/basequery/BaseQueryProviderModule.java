@@ -341,26 +341,26 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	protected void appendQueryInstance(QI queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
 
-		if(queryInstance.getQuery().hasDescriptionAttributeTags() || queryInstance.getQuery().hasHelpTextAttributeTags()){
-			
+		if(queryInstance.getQuery().hasTags()) {
+
 			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
 			
-			if(queryInstance.getQuery().hasDescriptionAttributeTags()){
+			if(queryInstance.getQuery().getDescription() != null){
 				
 				generatorDocument.addIgnoredField(BaseQuery.DESCRIPTION_FIELD);
 				generatorDocument.addAssignableElementableListener(BaseQuery.class, new QueryDescriptionListener(attributeHandler));
 			}
 			
-			if(queryInstance.getQuery().hasHelpTextAttributeTags()){
+			if(queryInstance.getQuery().getHelpText() != null){
 				
 				generatorDocument.addIgnoredField(BaseQuery.HELP_TEXT_FIELD);
 				generatorDocument.addAssignableElementableListener(BaseQuery.class, new QueryHelpTextListener(attributeHandler));
 			}
 			
 			targetElement.appendChild(queryInstance.toXML(generatorDocument));
-			
-		}else{
-			
+		
+		}else {
+
 			targetElement.appendChild(queryInstance.toXML(doc));
 		}
 	}

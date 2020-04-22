@@ -88,6 +88,11 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 		return description;
 	}
 
+	public String getHelpText() {
+		
+		return helpText;
+	}	
+	
 	public String getDescription(AttributeHandler attributeHandler) {
 
 		if(description != null && (hasDescriptionAttributeTags() || hasDescriptionAttributeListTags())){
@@ -96,7 +101,7 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 			
 			if(hasDescriptionAttributeTags()) {
 
-				tagReplacedDescription = AttributeTagUtils.replaceTags(description, attributeHandler, descriptionAttributeTags, true, false);
+				tagReplacedDescription = AttributeTagUtils.replaceTags(tagReplacedDescription, attributeHandler, descriptionAttributeTags, true, false);
 			}
 			
 			if(hasDescriptionAttributeListTags()) {
@@ -215,5 +220,10 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 	public boolean hasHelpTextAttributeListTags() {
 
 		return helpTextAttributeListTags != null;
+	}
+	
+	public boolean hasTags() {
+		
+		return hasDescriptionAttributeTags() || hasHelpTextAttributeTags() || hasDescriptionAttributeListTags() || hasHelpTextAttributeListTags();
 	}
 }
