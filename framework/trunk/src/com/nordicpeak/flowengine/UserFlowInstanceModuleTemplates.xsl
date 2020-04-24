@@ -952,7 +952,7 @@
 				<xsl:value-of select="status" />
 				<xsl:if test="statusDescription">
 					<xsl:call-template name="createHelpDialog">
-						<xsl:with-param name="id" select="'saved'" />
+						<xsl:with-param name="id" select="status" />
 						<xsl:with-param name="class" select="'floatright'" />
 						<xsl:with-param name="text" select="statusDescription" />
 					</xsl:call-template>
