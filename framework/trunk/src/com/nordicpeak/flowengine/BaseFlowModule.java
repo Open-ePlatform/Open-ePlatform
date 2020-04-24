@@ -1646,7 +1646,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected void appendLinksAndScripts(SimpleForegroundModuleResponse moduleResponse, List<ManagerResponse> managerResponses) {
+	public static void appendLinksAndScripts(SimpleForegroundModuleResponse moduleResponse, List<ManagerResponse> managerResponses) {
 
 		for (ManagerResponse managerResponse : managerResponses) {
 
@@ -1654,7 +1654,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected void appendLinksAndScripts(SimpleForegroundModuleResponse moduleResponse, ManagerResponse managerResponse) {
+	protected static void appendLinksAndScripts(SimpleForegroundModuleResponse moduleResponse, ManagerResponse managerResponse) {
 
 		if (managerResponse.getQueryResponses() != null) {
 
