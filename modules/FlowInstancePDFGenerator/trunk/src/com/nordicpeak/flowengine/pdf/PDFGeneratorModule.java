@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Level;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -58,6 +59,7 @@ import se.unlogic.hierarchy.core.settings.Setting;
 import se.unlogic.hierarchy.core.settings.SingleFileUploadSetting;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.log4jutils.Log4jUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.SiteProfileUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
@@ -123,6 +125,12 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	public static final RelationQuery EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 	
 	private static final ITextPDFCreationListener ITEXT_PDF_CREATION_LISTENER = new ITextPDFCreationListener();
+	
+	static {
+		//Fix PDFBox logging
+		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdfparser.BaseParser", Level.WARN);
+		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdmodel.common.PDNumberTreeNode", Level.WARN);
+	}
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the XHTML for PDF output of queries", required = true)
