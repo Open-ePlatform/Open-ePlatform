@@ -12,12 +12,13 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
+import com.nordicpeak.flowengine.interfaces.NonColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 
 @Table(name = "stop_query_instances")
 @XMLElement
-public class StopQueryInstance extends BaseQueryInstance {
+public class StopQueryInstance extends BaseQueryInstance implements NonColumnExportableQueryInstance{
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
