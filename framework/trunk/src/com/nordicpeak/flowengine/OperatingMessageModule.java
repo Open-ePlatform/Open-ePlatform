@@ -19,22 +19,6 @@ import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.ExternalOperatingMessage;
-import com.nordicpeak.flowengine.beans.ExternalOperatingMessageSource;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
-import com.nordicpeak.flowengine.beans.OperatingMessage;
-import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
-import com.nordicpeak.flowengine.cruds.OperatingMessageCRUD;
-import com.nordicpeak.flowengine.cruds.OperatingMessageFragmentExtensionCRUD;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.OperatingMessageType;
-import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
-import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
-import com.nordicpeak.flowengine.interfaces.OperatingStatus;
-import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidator;
-
-import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
@@ -90,6 +74,23 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SimpleRequest;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
+
+import com.nordicpeak.flowengine.beans.ExternalOperatingMessage;
+import com.nordicpeak.flowengine.beans.ExternalOperatingMessageSource;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
+import com.nordicpeak.flowengine.beans.OperatingMessage;
+import com.nordicpeak.flowengine.beans.OperatingMessageNotificationSettings;
+import com.nordicpeak.flowengine.cruds.OperatingMessageCRUD;
+import com.nordicpeak.flowengine.cruds.OperatingMessageFragmentExtensionCRUD;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.OperatingMessageType;
+import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
+import com.nordicpeak.flowengine.interfaces.OperatingStatus;
+import com.nordicpeak.flowengine.validators.OperatingMessageSubscriptionValidator;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class OperatingMessageModule extends AnnotatedForegroundModule implements CRUDCallback<User>, Runnable, ServerStartupListener, FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -267,7 +268,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			if (source.isEnabled() && !moduleDescriptor.getMutableSettingHandler().isSet("source." + source.getName())) {
 
 				settingsMissing = true;
-				moduleDescriptor.getMutableSettingHandler().setSetting("source." + source.getName(), "true");
+				moduleDescriptor.getMutableSettingHandler().setSetting("source." + source.getName(), "false");
 			}
 		}
 
@@ -285,6 +286,7 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 		if (ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
 
 			if (!CollectionUtils.isEmpty(subscriptions)) {
+				
 				for (String subscription : subscriptions) {
 
 					String[] splits = subscription.split(":", 2);
@@ -542,6 +544,11 @@ public class OperatingMessageModule extends AnnotatedForegroundModule implements
 			if(systemInterface.getSystemStatus() != SystemStatus.STARTED) {
 				
 				return;
+			}
+			
+			if(!source.isEnabled()) {
+				
+				continue;
 			}
 			
 			try {
