@@ -6386,18 +6386,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					if(emailRecipients != null) {
 						
+						HashSet<String> duplicatesCheck = new HashSet<>();
 						ListIterator<String> iterator = emailRecipients.listIterator();
 						
 						while (iterator.hasNext()) {
 							
 							String email = iterator.next().trim();
 							
-							if (email.isEmpty()) {
+							if (email.isEmpty() || duplicatesCheck.contains(email.toLowerCase())) {
 								
 								iterator.remove();
 
 							} else {
 
+								duplicatesCheck.add(email.toLowerCase());
 								iterator.set(email);
 
 								if (email.length() > 255) {
@@ -6417,7 +6419,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					if (CollectionUtils.isEmpty(emailRecipients)) {
 						
 						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
-						
 					}
 					
 					rule.setEmailRecipients(emailRecipients);
