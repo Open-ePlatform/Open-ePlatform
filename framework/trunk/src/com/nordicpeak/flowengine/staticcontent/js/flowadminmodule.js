@@ -117,6 +117,7 @@ $(document).ready(function() {
 				$flowForm.find(".internal").hide();
 				$("#enabled").removeAttr("disabled");
 				$("#externalLink").removeAttr("disabled").parent().parent().show();
+				$("#addstandardstatuses").prop("checked", false);
 				
 			} else {
 				

@@ -343,7 +343,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		validateFlowOverviewAttributes(bean, req, errors);
 		
-		if (req.getParameter("addstandardstatuses") != null) {
+		if (req.getParameter("addstandardstatuses") != null && bean.isInternal()) {
 			
 			Integer statusGroupID = ValidationUtils.validateParameter("statusGroupID", req, true, PositiveStringIntegerPopulator.getPopulator(), errors);
 			
