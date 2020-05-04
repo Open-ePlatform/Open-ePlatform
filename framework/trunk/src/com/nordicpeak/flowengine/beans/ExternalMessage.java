@@ -99,4 +99,9 @@ public class ExternalMessage extends BaseMessage {
 		this.systemMessage = systemMessage;
 	}
 
+	@Override
+	public String getTypeLogName() {
+		
+		return "external";
+	}
 }

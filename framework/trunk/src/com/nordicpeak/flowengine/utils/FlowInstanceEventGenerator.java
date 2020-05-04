@@ -9,6 +9,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.RelationQuery;
+import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.time.TimeUtils;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -39,6 +40,11 @@ public class FlowInstanceEventGenerator {
 	}
 
 	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp, Map<String,String> eventAttributes) throws SQLException {
+		
+		return addFlowInstanceEvent(flowInstance, eventType, details, user, timestamp, eventAttributes, null);
+	}
+	
+	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp, Map<String,String> eventAttributes, TransactionHandler transactionHandler) throws SQLException {
 
 		FlowInstanceEvent flowInstanceEvent = new FlowInstanceEvent();
 		flowInstanceEvent.setFlowInstance((FlowInstance) flowInstance);
@@ -66,11 +72,25 @@ public class FlowInstanceEventGenerator {
 				attributeHandler.setAttribute(entry.getKey(), entry.getValue());
 			}
 
-			eventDAO.add(flowInstanceEvent, FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY);
-
+				if(transactionHandler != null) {
+					
+					eventDAO.add(flowInstanceEvent, transactionHandler, FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY);
+					
+				}else {
+					
+					eventDAO.add(flowInstanceEvent, FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY);
+				}
+			
 		}else{
 
-			eventDAO.add(flowInstanceEvent);
+			if(transactionHandler != null) {
+				
+				eventDAO.add(flowInstanceEvent, transactionHandler, null);
+				
+			}else {
+				
+				eventDAO.add(flowInstanceEvent);
+			}
 		}
 
 		return flowInstanceEvent;

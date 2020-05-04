@@ -14,7 +14,10 @@ import org.w3c.dom.Element;
 
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.fileattachments.FileAttachment;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -26,6 +29,7 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
+import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 
 public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, InternalMessageAttachment> {
 
@@ -40,6 +44,10 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 
 		req = parseRequest(req, errors);
 
+		TransactionHandler transactionHandler = null;
+		
+		List<FileAttachment> addedFileAttachments = null;
+		
 		try{
 			String message = ValidationUtils.validateParameter("internalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), errors);
 
@@ -49,6 +57,8 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 
 				log.info("User " + user + " adding internal message for flowinstance " + flowInstance);
 
+				transactionHandler = messageDAO.createTransaction();
+				
 				InternalMessage internalMessage = new InternalMessage();
 				internalMessage.setFlowInstance(flowInstance);
 				internalMessage.setPoster(user);
@@ -56,8 +66,12 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 				internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
 				internalMessage.setAttachments(attachments);
 
-				messageDAO.add(internalMessage);
+				messageDAO.add(internalMessage, transactionHandler, null);
+				
+				addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(callback.getFileAttachmentHandler(), internalMessage);
 
+				transactionHandler.commit();
+				
 				return internalMessage;
 
 			}
@@ -66,8 +80,22 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 
 			return null;
 
+		}catch(Throwable t){	
+			
+			if(!CollectionUtils.isEmpty(addedFileAttachments)) {
+				
+				for(FileAttachment fileAttachment : addedFileAttachments) {
+					
+					fileAttachment.delete();
+				}
+			}
+			
+			throw t;
+			
 		}finally{
-
+			
+			TransactionHandler.autoClose(transactionHandler);
+			
 			if (req instanceof MultipartRequest) {
 
 				((MultipartRequest)req).deleteFiles();
@@ -81,11 +109,4 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 		
 		return InternalMessage.FLOWINSTANCE_RELATION;
 	}
-
-	@Override
-	protected String getTypeLogName() {
-		
-		return "internal";
-	}
-	
 }

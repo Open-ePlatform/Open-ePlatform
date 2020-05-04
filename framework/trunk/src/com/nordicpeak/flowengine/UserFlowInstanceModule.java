@@ -56,6 +56,7 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -233,6 +234,9 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@InstanceManagerDependency
 	protected XMLProvider xmlProvider;
 
+	@InstanceManagerDependency
+	protected FileAttachmentHandler fileAttachmentHandler;
+	
 	protected HashSet<Integer> excludedFlowTypesHashSet = null;
 
 	private QueryParameterFactory<FlowInstanceEvent, FlowInstance> flowInstanceEventFlowInstanceParamFactory;
@@ -1546,5 +1550,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public ExtensionLink getUserMenuExtensionLink() {
 
 		return userMenuLink;
+	}
+
+	@Override
+	public FileAttachmentHandler getFileAttachmentHandler() {
+
+		return fileAttachmentHandler;
 	}
 }

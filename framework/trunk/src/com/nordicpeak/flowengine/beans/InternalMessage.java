@@ -67,4 +67,9 @@ public class InternalMessage extends BaseMessage {
 		this.flowInstance = flowInstance;
 	}
 
+	@Override
+	public String getTypeLogName() {
+		
+		return "internal";
+	}
 }

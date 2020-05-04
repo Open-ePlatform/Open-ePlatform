@@ -15,6 +15,9 @@ import org.w3c.dom.Element;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.fileattachments.FileAttachment;
+import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -26,6 +29,7 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
+import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 
 public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, ExternalMessageAttachment> {
 
@@ -40,37 +44,54 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 		req = parseRequest(req, validationErrors);
 		
-		ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors);
-
-		if (externalMessage != null) {
-
-			log.info("User " + user + " adding external message for flowinstance " + flowInstance);
-
-			messageDAO.add(externalMessage);
-		}
-
-		XMLUtils.append(doc, element, validationErrors);
-
-		return externalMessage;
-
-	}
-
-	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
+		TransactionHandler transactionHandler = null;
 		
-		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
+		List<FileAttachment> addedFileAttachments = null;
 		
-		List<ExternalMessageAttachment> attachments = null;
 		try {
 
-			attachments = getAttachments(req, user, validationErrors);
+			ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors);
 
+			if (externalMessage != null) {
+				
+				log.info("User " + user + " adding external message for flowinstance " + flowInstance);
+
+				transactionHandler = messageDAO.createTransaction();
+
+				messageDAO.add(externalMessage, transactionHandler, null);
+				
+				addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(callback.getFileAttachmentHandler(), externalMessage);
+				
+				transactionHandler.commit();
+			}
+
+			XMLUtils.append(doc, element, validationErrors);
+
+			return externalMessage;
+
+		}catch(Throwable t){	
+			
+			FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
+			
+			throw t;
+			
 		} finally {
+			
+			TransactionHandler.autoClose(transactionHandler);
 
 			if (req instanceof MultipartRequest) {
 
 				((MultipartRequest) req).deleteFiles();
 			}
 		}
+		
+	}
+
+	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
+		
+		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
+		
+		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors);
 		
 		return create(message, attachments, user, flowInstance, postedByManager, validationErrors);
 	}
@@ -106,10 +127,9 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		return ExternalMessage.FLOWINSTANCE_RELATION;
 	}
 
-	@Override
-	protected String getTypeLogName() {
-		
-		return "external";
+	public void add(ExternalMessage externalMessage, TransactionHandler transactionHandler) throws SQLException {
+
+		messageDAO.add(externalMessage, transactionHandler, null);
 	}
 
 }

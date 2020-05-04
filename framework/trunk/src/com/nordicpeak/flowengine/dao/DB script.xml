@@ -2616,4 +2616,17 @@
 		</Query>
 	</Script>
 
+	<Script version="138">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_internal_message_attachments` MODIFY COLUMN `data` LONGBLOB DEFAULT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_external_message_attachments` MODIFY COLUMN `data` LONGBLOB DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+
 </DBScripts>

@@ -138,6 +138,7 @@ import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.image.ImageUtils;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.CloseUtils;
@@ -267,6 +268,7 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanc
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
 import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
+import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 import com.nordicpeak.flowengine.validationerrors.EvaluatorImportValidationError;
@@ -622,6 +624,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	@InstanceManagerDependency(required = true)
 	protected StaticContentModule staticContentModule;
+	
+	@InstanceManagerDependency
+	protected FileAttachmentHandler fileAttachmentHandler;
 	
 	protected AnnotatedDAO<ExternalMessageTemplate> externalMessageTemplateDAO;
 	
@@ -3172,6 +3177,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			deleteFlowsFromCache(event.getBeans());
 
+			for(Flow flow : event.getBeans()) {
+				
+				try {
+					log.info("Deleting file attachments for flow " + flow);
+					
+					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flow);
+					
+				}catch(Throwable t) {
+					
+					log.error("Error deleting file attachments for flow " + flow, t);
+				}
+			}
+			
 		} else {
 
 			List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
@@ -3319,6 +3337,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					flow.setFlowSubmittedInstanceCount(flow.getFlowSubmittedInstanceCount() - 1);
 				}
 
+				try {
+					log.info("Deleting file attachments for flow instance " + flowInstance);
+					
+					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flowInstance);
+					
+				}catch(Throwable t) {
+					
+					log.error("Error deleting file attachments for flow instance " + flowInstance, t);
+				}
+				
 				Status status = getCachedStatus(flow, flowInstance.getStatus());
 
 				if (status != null) {
@@ -6419,6 +6447,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					if (CollectionUtils.isEmpty(emailRecipients)) {
 						
 						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
+						
 					}
 					
 					rule.setEmailRecipients(emailRecipients);

@@ -124,4 +124,6 @@ public abstract class BaseMessage extends GeneratedElementable implements Immuta
 		
 		return StringUtils.toLogFormat(message, 50) + " (ID: " + messageID + ")";
 	}
+	
+	public abstract String getTypeLogName();
 }

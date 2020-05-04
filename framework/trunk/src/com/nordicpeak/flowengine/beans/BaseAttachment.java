@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.streams.InputStreamProvider;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
@@ -34,6 +35,8 @@ public abstract class BaseAttachment extends GeneratedElementable implements Imm
 	@DAOManaged
 	@XMLElement
 	private Timestamp added;
+	
+	private InputStreamProvider inputStreamProvider;
 
 	@DAOManaged
 	@XMLElement
@@ -111,5 +114,15 @@ public abstract class BaseAttachment extends GeneratedElementable implements Imm
 	public String toString() {
 		
 		return StringUtils.toLogFormat(filename, 50) + " (ID: " + attachmentID + ")";
+	}
+
+	public InputStreamProvider getInputStreamProvider() {
+	
+		return inputStreamProvider;
+	}
+	
+	public void setInputStreamProvider(InputStreamProvider inputStreamProvider) {
+	
+		this.inputStreamProvider = inputStreamProvider;
 	}
 }

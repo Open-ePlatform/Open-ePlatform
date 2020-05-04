@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.fileupload.FileItem;
@@ -22,6 +21,7 @@ import org.apache.commons.fileupload.InvalidFileNameException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import se.unlogic.fileuploadutils.FileItemInputStreamProvider;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
@@ -32,6 +32,7 @@ import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidatio
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.fileattachments.FileAttachment;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.string.StringUtils;
@@ -48,6 +49,7 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
+import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 
 public abstract class BaseMessageCRUD<MessageType extends BaseMessage, AttachmentType extends BaseAttachment> {
 
@@ -128,7 +130,16 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 				String fileName = FilenameUtils.getName(fileItem.getName());
 
-				AttachmentType attachment = createAttachment(fileName, fileItem.getSize(), fileItem.get());
+				AttachmentType attachment;
+				
+				if(callback.getFileAttachmentHandler() != null) {
+					
+					attachment = FlowEngineFileAttachmentUtils.createFileAttachment(fileName, fileItem.getSize(), new FileItemInputStreamProvider(fileItem), attachmentClass);
+					
+				}else {
+					
+					attachment = FlowEngineFileAttachmentUtils.createBlobAttachment(fileName, fileItem.getSize(), fileItem.get(), attachmentClass);
+				}
 
 				attachments.add(attachment);
 			}
@@ -140,18 +151,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		return null;
 
 	}
-
-	public AttachmentType createAttachment(String fileName, long fileSize, byte[] data) throws SQLException {
-
-		AttachmentType attachment = this.getNewAttachmentInstance();
-
-		attachment.setFilename(fileName);
-		attachment.setSize(fileSize);
-		attachment.setData(new SerialBlob(data));
-		
-		return attachment;
-	}
-
+	
 	public HttpServletRequest parseRequest(HttpServletRequest req, List<ValidationError> errors) {
 
 		if (MultipartRequest.isMultipartRequest(req)) {
@@ -175,23 +175,6 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		}
 
 		return req;
-	}
-
-	protected AttachmentType getNewAttachmentInstance() {
-
-		try {
-
-			return attachmentClass.newInstance();
-
-		} catch (InstantiationException e) {
-
-			throw new RuntimeException(e);
-
-		} catch (IllegalAccessException e) {
-
-			throw new RuntimeException(e);
-		}
-
 	}
 
 	public ForegroundModuleResponse getRequestedMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController previewAccessController) throws SQLException, AccessDeniedException, URINotFoundException, ModuleConfigurationException {
@@ -218,11 +201,31 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 			if (attachment != null) {
 
-				log.info("User " + user + " downloading " + getTypeLogName() + " message attachment " + attachment);
+				log.info("User " + user + " downloading " + message.getTypeLogName() + " message attachment " + attachment);
 				
 				try {
 
-					HTTPUtils.sendBlob(attachment.getData(), attachment.getFilename(), attachment.getAdded(), req, res, ContentDisposition.ATTACHMENT);
+					if(attachment.getData() != null) {
+						
+						HTTPUtils.sendBlob(attachment.getData(), attachment.getFilename(), attachment.getAdded(), req, res, ContentDisposition.ATTACHMENT);
+					
+					}else {
+					
+						if(callback.getFileAttachmentHandler() == null) {
+							
+							throw new IOException("Unable to find attachment data for " + message.getTypeLogName() + " message attachment " + attachment + " requested by " + user + ", no file attachment handler available.");
+						}
+						
+						FileAttachment fileAttachment = callback.getFileAttachmentHandler().getFileAttachment(FlowEngineFileAttachmentUtils.getAttachmentPath(message, attachment));
+						
+						if(fileAttachment == null) {
+							
+							throw new IOException("Unable to find attachment data for " + message.getTypeLogName() + " message attachment " + attachment + " requested by " + user + ", no file found in file attachment handler.");
+						}
+						
+						HTTPUtils.sendFile(fileAttachment.getInputStream(), attachment.getFilename(), attachment.getAdded(), req, res, ContentDisposition.ATTACHMENT, fileAttachment.getLength());
+						
+					}
 					
 				} catch (RuntimeException e) {
 
@@ -257,6 +260,4 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 
 	protected abstract Field getFlowInstanceRelation();
 
-	protected abstract String getTypeLogName();
-	
 }

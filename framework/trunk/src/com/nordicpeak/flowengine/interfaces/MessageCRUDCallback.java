@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.webutils.http.URIParser;
 
@@ -28,4 +29,5 @@ public interface MessageCRUDCallback {
 
 	ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> errors) throws SQLException, ModuleConfigurationException;
 
+	FileAttachmentHandler getFileAttachmentHandler();
 }

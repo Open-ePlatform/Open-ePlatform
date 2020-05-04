@@ -68,6 +68,7 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.json.JsonArray;
@@ -278,6 +279,9 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	@InstanceManagerDependency
 	protected GenericSigningProvider genericSigningProvider;
+	
+	@InstanceManagerDependency
+	protected FileAttachmentHandler fileAttachmentHandler;
 	
 	protected FlowAdminModule flowAdminModule;
 
@@ -2601,5 +2605,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return externalMessageCRUD;
 	}
-	
+
+	@Override
+	public FileAttachmentHandler getFileAttachmentHandler() {
+
+		return fileAttachmentHandler;
+	}
 }
