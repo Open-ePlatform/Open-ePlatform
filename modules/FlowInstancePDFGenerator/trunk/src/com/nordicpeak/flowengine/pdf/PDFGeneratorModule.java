@@ -128,8 +128,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	
 	static {
 		//Fix PDFBox logging
-		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdfparser.BaseParser", Level.WARN);
-		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdmodel.common.PDNumberTreeNode", Level.WARN);
+		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdfparser.BaseParser", Level.OFF);
+		Log4jUtils.setLoggerLevel("org.apache.pdfbox.pdmodel.common.PDNumberTreeNode", Level.OFF);
 	}
 	
 	@ModuleSetting
