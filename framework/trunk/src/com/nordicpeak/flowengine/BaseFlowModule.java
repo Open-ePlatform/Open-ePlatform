@@ -95,6 +95,7 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.FlowAction;
 import com.nordicpeak.flowengine.enums.FlowDirection;
 import com.nordicpeak.flowengine.enums.ShowMode;
+import com.nordicpeak.flowengine.events.FlowInstanceSaveStatusOverrideCommitedEvent;
 import com.nordicpeak.flowengine.events.FlowInstanceSaveStatusOverrideEvent;
 import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
@@ -1190,6 +1191,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		log.info("User " + user + " saving flow instance " + instanceManager.getFlowInstance());
 
 		Timestamp previousStatusChange = instanceManager.getFlowInstance().getLastStatusChange();
+		Status previousStatus = (Status) instanceManager.getFlowInstance().getStatus();
 		
 		setFlowStatus(instanceManager, user, actionID, eventType, requestMetadata);
 
@@ -1228,6 +1230,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(crudAction, (FlowInstance) instanceManager.getFlowInstance()), EventTarget.ALL);
 
+		eventHandler.sendEvent(FlowInstance.class, new FlowInstanceSaveStatusOverrideCommitedEvent(instanceManager, user, actionID, eventType, requestMetadata, previousStatus), EventTarget.ALL);
+		
 		return event;
 	}
 	

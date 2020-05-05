@@ -20,6 +20,7 @@ public class FlowInstanceSaveStatusOverrideEvent implements Serializable {
 	private final RequestMetadata requestMetadata;
 
 	private Status overrideStatus;
+	private boolean overrideByManagerEdit;
 
 	public FlowInstanceSaveStatusOverrideEvent(FlowInstanceManager flowInstanceManager, User user, String actionID, EventType eventType, RequestMetadata requestMetadata) {
 
@@ -30,6 +31,12 @@ public class FlowInstanceSaveStatusOverrideEvent implements Serializable {
 		this.actionID = actionID;
 		this.eventType = eventType;
 		this.requestMetadata = requestMetadata;
+	}
+
+	@Override
+	public String toString() {
+
+		return this.getClass().getSimpleName() + " (" + flowInstanceManager.toString() + ")";
 	}
 
 	public FlowInstanceManager getFlowInstanceManager() {
@@ -65,6 +72,16 @@ public class FlowInstanceSaveStatusOverrideEvent implements Serializable {
 	public void setOverrideStatus(Status overrideStatus) {
 
 		this.overrideStatus = overrideStatus;
+	}
+
+	public boolean isOverrideByManagerEdit() {
+
+		return overrideByManagerEdit;
+	}
+
+	public void setOverrideByManagerEdit(boolean overrideByManagerEdit) {
+
+		this.overrideByManagerEdit = overrideByManagerEdit;
 	}
 
 }
