@@ -98,6 +98,7 @@ import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.FlowInstanceSaveStatusOverrideCommitedEvent;
 import com.nordicpeak.flowengine.events.FlowInstanceSaveStatusOverrideEvent;
 import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
+import com.nordicpeak.flowengine.events.NewMutableFlowInstanceManagerCreatedEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
@@ -424,6 +425,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			session.setAttribute(getFlowInstanceSessionPrefix() + flowID + ":" + null, instanceManager);
 
+			systemInterface.getEventHandler().sendEvent(MutableFlowInstanceManager.class, new NewMutableFlowInstanceManagerCreatedEvent(user, instanceManager), EventTarget.ALL);
+			
 			return instanceManager;
 		}
 	}
