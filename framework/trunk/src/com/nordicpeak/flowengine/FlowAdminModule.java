@@ -2115,7 +2115,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (statusGroupID != null) {
 
-			statusGroup = standardStatusGroupDAOWrapper.get(statusGroupID);
+			HighLevelQuery<StandardStatusGroup> query = new HighLevelQuery<>(StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
+			query.addParameter(standardStatusGroupDAOWrapper.getParameterFactory().getParameter(statusGroupID));
+			
+			statusGroup = standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
 		}
 
 		if (statusGroup == null) {
@@ -2131,7 +2134,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			status.setStatusID(null);
 		}
 
-		RelationQuery query = new RelationQuery(StandardStatusGroup.STANDARD_STATUSES_RELATION);
+		RelationQuery query = new RelationQuery(StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
 		
 		daoFactory.getStandardStatusGroupDAO().add(statusGroup, query);
 
