@@ -60,12 +60,14 @@ import se.unlogic.webutils.http.HTTPUtils;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManager;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.InternalMessage;
+import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.search.events.AddFlowEvent;
@@ -688,6 +690,9 @@ public class FlowInstanceIndexer {
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
+		query.addExcludedField(ExternalMessageAttachment.DATA_FIELD);
+		query.addExcludedField(InternalMessageAttachment.DATA_FIELD);
+		
 		query.addParameter(flowInstanceFlowParamFactory.getParameter(flow));
 		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
 		
@@ -711,6 +716,9 @@ public class FlowInstanceIndexer {
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
 		
+		query.addExcludedField(ExternalMessageAttachment.DATA_FIELD);
+		query.addExcludedField(InternalMessageAttachment.DATA_FIELD);
+		
 		query.addParameter(flowInstanceFlowParamFactory.getWhereInParameter(flows));
 		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
 		
@@ -723,6 +731,9 @@ public class FlowInstanceIndexer {
 		
 		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION,  FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, FlowInstance.OWNERS_RELATION);
 		query.addCachedRelations(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+		
+		query.addExcludedField(ExternalMessageAttachment.DATA_FIELD);
+		query.addExcludedField(InternalMessageAttachment.DATA_FIELD);
 		
 		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
 		query.addRelationParameter(Flow.class, flowEnabledParamFactory.getParameter(true));
