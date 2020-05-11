@@ -31,7 +31,7 @@
 			<xsl:choose>
 				<xsl:when test="ActivityGroups">
 					
-					<table class="full coloredtable sortabletable oep-table" cellspacing="0">
+					<table class="full sortabletable oep-table" cellspacing="0">
 						<thead>
 							<tr>
 								<th><xsl:value-of select="$i18n.Activity" /></th>
@@ -61,7 +61,7 @@
 								</xsl:if>
 								<th><xsl:value-of select="$i18n.ActivityProgress.CompletingUser" /></th>
 								<th><xsl:value-of select="$i18n.Activity.responsible" /></th>
-								<th style="width: 37px;" />
+								<th style="width: 200px;" />
 							</tr>
 						</thead>
 						<tbody>
@@ -135,7 +135,7 @@
 							
 							<xsl:value-of select="ActivityRounds/ActivityRound[1]/completed" />
 							
-							<xsl:if test="ActivityRounds/ActivityRound[1]/ActivityProgresses/ActivityProgress[signedDate]">
+							<xsl:if test="ActivityRounds/ActivityRound[1]/pdf = 'true'">
 							
 								<a class="marginleft" href="{../../PostURL}?signatures={ActivityRounds/ActivityRound[1]/activityRoundID}" title="{$i18n.DownloadSignatures}">
 									<img alt="" src="{$imgPath}/pdf.png" style="vertical-align: sub;" />
@@ -207,7 +207,7 @@
 								
 								<xsl:value-of select="completed" />
 								
-								<xsl:if test="ActivityProgresses/ActivityProgress[signedDate]">
+								<xsl:if test="pdf = 'true'">
 								
 									<a class="marginleft" href="{../../../../PostURL}?signatures={activityRoundID}" title="{$i18n.DownloadSignatures}">
 										<img alt="" src="{$imgPath}/pdf.png" style="vertical-align: sub;"/>
@@ -367,14 +367,16 @@
 			</td>
 			<td>
 				<xsl:if test="../../../../../../UserModuleURL">
-					<a class="marginright" href="{../../../../../../UserModuleURL}/show/{activityProgressID}" title="{$i18n.ShowActivity}">
-						<img src="{$imgPath}/magnifying_glass.png" alt="" />
+					<a class="btn btn-inline btn-green" href="{../../../../../../UserModuleURL}/show/{activityProgressID}" title="{$i18n.ShowActivity}">
+						<xsl:value-of select="$i18n.Open" />
+<!-- 						<img src="{$imgPath}/magnifying_glass.png" alt="" /> -->
 					</a>
 				</xsl:if>
 				
 				<xsl:if test="not(completed) and not(../../cancelled)">
-					<a href="{../../../../../../PostURL}?sendreminder={activityProgressID}" title="{$i18n.SendReminder}">
-						<img src="{$imgPath}/mail_reload.png" alt="" />
+					<a class="btn btn-inline btn-light" href="{../../../../../../PostURL}?sendreminder={activityProgressID}" title="{$i18n.SendReminderLong}">
+						<xsl:value-of select="$i18n.SendReminder" />
+<!-- 						<img src="{$imgPath}/mail_reload.png" alt="" /> -->
 					</a>
 				</xsl:if>
 			</td>

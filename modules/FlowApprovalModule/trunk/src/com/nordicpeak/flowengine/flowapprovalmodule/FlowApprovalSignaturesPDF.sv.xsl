@@ -7,7 +7,6 @@
 	
 	<xsl:include href="FlowApprovalSignaturesPDFTemplate.xsl"/>
 	
-	<xsl:variable name="i18n.Signatures">signaturer</xsl:variable>
 	<xsl:variable name="i18n.Signatures.description">Följande aktiviteter har färdigställts:</xsl:variable>
 	
 	<xsl:variable name="i18n.Signature.date">Signeringsdatum</xsl:variable>

@@ -265,8 +265,9 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			
 			File pdfFile = approvalAdminModule.getSignaturesPDF(round);
 			
-			if (pdfFile == null) {
+			if (pdfFile == null || !pdfFile.exists()) {
 				
+				log.warn("PDF for " + round + " not found");
 				throw new URINotFoundException(uriParser);
 			}
 			

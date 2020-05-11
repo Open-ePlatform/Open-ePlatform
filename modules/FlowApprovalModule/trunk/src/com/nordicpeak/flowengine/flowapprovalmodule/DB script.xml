@@ -330,4 +330,22 @@
 		</Query>
 	</Script>
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_rounds` ADD COLUMN `pdf` TINYINT UNSIGNED NOT NULL AFTER `cancelled`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `onlyRestartIfActivityChanges` TINYINT(3) UNSIGNED NOT NULL AFTER `allowRestarts`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `allowSkip` TINYINT(3) UNSIGNED NOT NULL AFTER `denyStatus`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

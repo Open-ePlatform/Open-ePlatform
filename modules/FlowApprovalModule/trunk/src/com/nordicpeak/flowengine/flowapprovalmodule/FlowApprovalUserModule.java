@@ -404,6 +404,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		
 		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
 		
+		//TODO split into multiple smaller queries
+		
 		// @formatter:off
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"

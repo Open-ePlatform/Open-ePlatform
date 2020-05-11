@@ -210,8 +210,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupDenied;
 	
-	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Filestore", description = "Directory under where signature PDFs are stored", required = true)
+	@XSLVariable(prefix = "java.")
+	private String eventActivityGroupSkipped;
+	
+	@ModuleSetting(allowsNull = true)
+	@TextFieldSettingDescriptor(name = "Filestore", description = "Directory under where signature PDFs are stored", required = false)
 	protected String filestore;
 	
 	@ModuleSetting
@@ -847,28 +850,32 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						
 						round.setCompleted(TimeUtils.getCurrentTimestamp());
 						round.setActivityGroup(activityGroup);
-						activityRoundDAO.update(round);
-
-						if (activityGroup.isUseApproveDeny()) {
-
-							if (denied) {
-
-								log.info("Completed denied activity group " + activityGroup + " for " + flowInstance);
-								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupDenied + " " + activityGroup.getName(), null);
-
-							} else {
-
-								log.info("Completed approved activity group " + activityGroup + " for " + flowInstance);
-								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupApproved + " " + activityGroup.getName(), null);
-							}
-
-						} else {
-
-							log.info("Completed activity group " + activityGroup + " for " + flowInstance);
-							flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null);
-						}
 						
-						generateSignaturesPDF(flowInstance, activityGroup, round);
+						try {
+							if (activityGroup.isUseApproveDeny()) {
+	
+								if (denied) {
+	
+									log.info("Completed denied activity group " + activityGroup + " for " + flowInstance);
+									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupDenied + " " + activityGroup.getName(), null);
+	
+								} else {
+	
+									log.info("Completed approved activity group " + activityGroup + " for " + flowInstance);
+									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupApproved + " " + activityGroup.getName(), null);
+								}
+	
+							} else {
+	
+								log.info("Completed activity group " + activityGroup + " for " + flowInstance);
+								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null);
+							}
+							
+							generateSignaturesPDF(flowInstance, activityGroup, round);
+						
+						} finally {
+							activityRoundDAO.update(round);
+						}
 					}
 				}
 
@@ -987,7 +994,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 					flowAdminModule.getDAOFactory().getFlowInstanceDAO().update(flowInstance);
 
-					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, eventActivityGroupCompleted + " " + activityGroupNames.toString(), null);
+					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, null);
 
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), currentStatus, null), EventTarget.ALL);
@@ -1034,7 +1041,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return true;
 	}
 
-	private void startActivityGroups(ImmutableFlowInstance flowInstance, Status newStatus) throws SQLException {
+	private void startActivityGroups(FlowInstance flowInstance, Status newStatus) throws SQLException {
 
 		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
@@ -1052,7 +1059,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					
 					FlowApprovalActivityRound oldRound = getLatestActivityRound(activityGroup, flowInstance);
 					
-					if (oldRound == null || oldRound.getCancelled() != null) {
+					if (oldRound == null || oldRound.getCancelled() != null || (oldRound.getCompleted() != null && activityGroup.isAllowRestarts())) {
 						
 						log.info("Starting activity group " + activityGroup + " for flow instance " + flowInstance);
 						
@@ -1123,7 +1130,65 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				
 			} else {
 				
-				//TODO if no started/running for this status and allowskip then change status
+				// If no started/running activities for this status and allowskip then change status
+				
+				String nextStatusName = null;
+				
+				for (FlowApprovalActivityGroup activityGroup : activityGroups) {
+					
+					FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION);
+				
+					if (round != null && round.getActivityProgresses() != null && round.getCompleted() == null && round.getCancelled() == null) {
+						
+						nextStatusName = null;
+						break;
+					}
+					
+					if (activityGroup.isAllowSkip()) {
+						
+						nextStatusName = activityGroup.getCompleteStatus();
+						
+						if (activityGroupNames.length() > 0) {
+							activityGroupNames.append(", ");
+						}
+
+						activityGroupNames.append(activityGroup.getName());
+					}
+				}
+				
+				if (nextStatusName != null) {
+					
+					Status nextStatus = null;
+	
+					for (Status status : flowInstance.getFlow().getStatuses()) {
+	
+						if (status.getName().equalsIgnoreCase(nextStatusName)) {
+							nextStatus = status;
+							break;
+						}
+					}
+					
+					if (nextStatus == null) {
+	
+						log.warn("Unable to skip to next status, unable to find complete status \"" + nextStatusName + "\" for " + flowInstance);
+	
+					} else {
+	
+						log.info("Skipping activity groups " + activityGroupNames + " for " + flowInstance);
+						
+						flowInstance.setStatus(nextStatus);
+						flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
+	
+						flowAdminModule.getDAOFactory().getFlowInstanceDAO().update(flowInstance);
+	
+						flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupSkipped + " " + activityGroupNames.toString(), null);
+						
+						FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, null);
+	
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), newStatus, null), EventTarget.ALL);
+					}
+				}
 			}
 		}
 	}
@@ -1334,7 +1399,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	public void processSubmitEvent(SubmitEvent event, EventSource eventSource) {
 
 		try {
-			startActivityGroups(event.getFlowInstanceManager().getFlowInstance(), event.getFlowInstanceManager().getFlowState());
+			startActivityGroups((FlowInstance) event.getFlowInstanceManager().getFlowInstance(), event.getFlowInstanceManager().getFlowState());
 
 		} catch (Exception e) {
 			log.error("Error processing SubmitEvent " + event, e);
@@ -1396,7 +1461,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				if (flowInstance.getFirstSubmitted() != null) {
 					
-					flowInstance = flowAdminModule.getFlowInstance(flowInstance.getFlowInstanceID(), null, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION);
+					flowInstance = flowAdminModule.getFlowInstance(flowInstance.getFlowInstanceID(), null, FlowInstance.STATUS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.STATUSES_RELATION);
 					
 					List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), flowInstance.getStatus().getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION);
 
@@ -1405,6 +1470,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						cancelInvalidActivityRounds(flowInstance, flowInstance.getStatus());
 						
 						List<FlowApprovalActivityGroup> restartedActivityGroups = null;
+						StringBuilder cancelledActivityGroupNames = null;
 						
 						for (FlowApprovalActivityGroup activityGroup : activityGroups) {
 
@@ -1414,31 +1480,47 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 								
 								if (activityGroup.isAllowRestarts()) {
 									
-									Set<FlowApprovalActivity> oldActivities = new HashSet<>();
-									Set<FlowApprovalActivity> newActivities = new HashSet<>();
+									Set<FlowApprovalActivity> oldActivities = null;
+									Set<FlowApprovalActivity> newActivities = null;
 									
-									if (round != null && round.getCancelled() == null) {
-										for (FlowApprovalActivityProgress activityProgress : round.getActivityProgresses()) {
-											oldActivities.add(activityProgress.getActivity());
+									if (activityGroup.isOnlyRestartIfActivityChanges()) {
+										
+										oldActivities = new HashSet<>();
+										newActivities = new HashSet<>();
+									
+										if (round != null && round.getCancelled() == null) {
+											for (FlowApprovalActivityProgress activityProgress : round.getActivityProgresses()) {
+												oldActivities.add(activityProgress.getActivity());
+											}
+										}
+										
+										for (FlowApprovalActivity activity : activityGroup.getActivities()) {
+											if (isActivityActive(activity, flowInstance)) {
+												newActivities.add(activity);
+											}
 										}
 									}
 									
-									for (FlowApprovalActivity activity : activityGroup.getActivities()) {
-										if (isActivityActive(activity, flowInstance)) {
-											newActivities.add(activity);
-										}
-									}
-									
-									if (!newActivities.equals(oldActivities)) {
+									if (!activityGroup.isOnlyRestartIfActivityChanges() || !newActivities.equals(oldActivities)) {
 										
 										if (round != null && round.getCompleted() == null && round.getCancelled() == null) {
-											
+
 											round.setCancelled(TimeUtils.getCurrentTimestamp());
-											
+
 											round.setActivityGroup(activityGroup);
 											activityRoundDAO.update(round);
+
+											if (cancelledActivityGroupNames == null) {
+												cancelledActivityGroupNames = new StringBuilder();
+											}
+											
+											if (cancelledActivityGroupNames.length() > 0) {
+												cancelledActivityGroupNames.append(", ");
+											}
+
+											cancelledActivityGroupNames.append(activityGroup.getName());
 										}
-										
+
 										restartedActivityGroups = CollectionUtils.addAndInstantiateIfNeeded(restartedActivityGroups, activityGroup);
 										continue;
 									}
@@ -1504,18 +1586,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 							
 							log.info("Active activities has changed, restarting " + StringUtils.toCommaSeparatedString(restartedActivityGroups) + " for " + flowInstance);
 
-							StringBuilder activityGroupNames = new StringBuilder();
-
-							for (FlowApprovalActivityGroup group : restartedActivityGroups) {
-
-								if (activityGroupNames.length() > 0) {
-									activityGroupNames.append(", ");
-								}
-
-								activityGroupNames.append(group.getName());
+							if (cancelledActivityGroupNames != null) {
+								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCancelled + " " + cancelledActivityGroupNames.toString(), null);
 							}
-							
-							flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCancelled + " " + activityGroupNames.toString(), null);
 							
 							startActivityGroups(flowInstance, flowInstance.getStatus());
 						}
@@ -1898,7 +1971,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		
 		if (filestore == null) {
 			
-			throw new ModuleConfigurationException("Filestore not set");
+			log.warn("Unable to create PDF filestore not set");
+			return;
 		}
 		
 		File outputFile = getSignaturesPDF(round);
@@ -2029,6 +2103,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 			
 			stamper.close();
+			
+			round.setPdf(true);
 
 		} catch (Exception e) {
 			
@@ -2047,6 +2123,5 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 			FileUtils.deleteFile(tmpFile);
 		}
-		
 	}
 }

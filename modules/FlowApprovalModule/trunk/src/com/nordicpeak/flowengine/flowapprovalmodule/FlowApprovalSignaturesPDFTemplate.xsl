@@ -12,8 +12,6 @@
 				<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 				
 				<title>
-					<xsl:value-of select="$i18n.Signatures" />
-					<xsl:text> - </xsl:text>
 					<xsl:value-of select="Signatures/ActivityGroup/name" />
 					<xsl:text> - </xsl:text>
 					<xsl:value-of select="$i18n.FlowInstanceID" />
@@ -43,8 +41,6 @@
 					
 					<h2>
 						<xsl:value-of select="ActivityGroup/name" />
-						<xsl:text> </xsl:text>
-						<xsl:value-of select="$i18n.Signatures" />
 					</h2>
 					
 					<div>

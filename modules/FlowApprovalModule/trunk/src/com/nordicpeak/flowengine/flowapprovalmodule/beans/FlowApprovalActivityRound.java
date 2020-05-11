@@ -45,6 +45,10 @@ public class FlowApprovalActivityRound extends GeneratedElementable {
 	@DAOManaged
 	@XMLElement
 	private Timestamp cancelled;
+	
+	@DAOManaged
+	@XMLElement
+	private boolean pdf;
 
 	@DAOManaged
 	@OneToMany
@@ -105,6 +109,14 @@ public class FlowApprovalActivityRound extends GeneratedElementable {
 
 	public void setCancelled(Timestamp cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public boolean hasPdf() {
+		return pdf;
+	}
+
+	public void setPdf(boolean pdf) {
+		this.pdf = pdf;
 	}
 
 	@Override

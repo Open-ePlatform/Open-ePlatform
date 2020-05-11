@@ -39,6 +39,13 @@ $(document).ready(function() {
 			
 		}).change();
 		
+		$("#allowRestarts").change(function(){
+			
+			var checked = $(this).prop("checked");
+			$("#onlyRestartIfActivityChanges").attr("disabled", !checked).parent().parent().toggle(checked);
+			
+		}).change();
+		
 		$('.notification-text-toggle').click(function(){
 			
 			$(this).closest('.notification').find('.notification-text').toggle();

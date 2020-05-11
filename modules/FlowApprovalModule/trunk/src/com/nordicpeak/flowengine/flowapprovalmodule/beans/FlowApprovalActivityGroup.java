@@ -62,6 +62,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@RequiredIfSet(paramNames = "useApproveDeny")
 	@XMLElement
 	private String denyStatus;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean allowSkip;
 
 	@DAOManaged
 	@WebPopulate
@@ -89,6 +94,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean allowRestarts;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean onlyRestartIfActivityChanges;
 	
 	@DAOManaged
 	@WebPopulate
@@ -303,12 +313,28 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		this.deniedText = denyText;
 	}
 
+	public boolean isAllowSkip() {
+		return allowSkip;
+	}
+
+	public void setAllowSkip(boolean allowSkip) {
+		this.allowSkip = allowSkip;
+	}
+
 	public boolean isAllowRestarts() {
 		return allowRestarts;
 	}
 
 	public void setAllowRestarts(boolean allowRestarts) {
 		this.allowRestarts = allowRestarts;
+	}
+
+	public boolean isOnlyRestartIfActivityChanges() {
+		return onlyRestartIfActivityChanges;
+	}
+
+	public void setOnlyRestartIfActivityChanges(boolean onlyRestartIfActivityChanges) {
+		this.onlyRestartIfActivityChanges = onlyRestartIfActivityChanges;
 	}
 
 	@Override

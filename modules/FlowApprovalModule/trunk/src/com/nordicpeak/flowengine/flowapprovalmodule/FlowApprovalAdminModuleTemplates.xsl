@@ -313,6 +313,21 @@
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'allowSkip'" />
+					<xsl:with-param name="id" select="'allowSkip'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="allowSkip">
+					<xsl:value-of select="$i18n.ActivityGroup.allowSkip" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'useApproveDeny'" />
 					<xsl:with-param name="id" select="'useApproveDeny'" />
 					<xsl:with-param name="element" select="ActivityGroup" />
@@ -427,6 +442,21 @@
 				
 				<label class="marginleft" for="allowRestarts">
 					<xsl:value-of select="$i18n.ActivityGroup.allowRestarts" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'onlyRestartIfActivityChanges'" />
+					<xsl:with-param name="id" select="'onlyRestartIfActivityChanges'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="onlyRestartIfActivityChanges">
+					<xsl:value-of select="$i18n.ActivityGroup.onlyRestartIfActivityChanges" />
 				</label>
 			</div>
 		</div>
@@ -559,6 +589,18 @@
 					
 				</xsl:if>
 				
+				<xsl:if test="ActivityGroup/allowSkip = 'true'">
+					
+					<br/>
+					
+					<strong>
+						<xsl:value-of select="$i18n.ActivityGroup.allowSkip" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+					
+				</xsl:if>
+				
 				<xsl:if test="ActivityGroup/approvedText or ActivityGroup/deniedText">
 					
 					<br/>
@@ -604,6 +646,18 @@
 						<xsl:text>:&#160;</xsl:text>
 					</strong>
 					<xsl:value-of select="$i18n.Yes" />
+					
+					<xsl:if test="ActivityGroup/onlyRestartIfActivityChanges = 'true'">
+					
+						<br/>
+						
+						<strong>
+							<xsl:value-of select="$i18n.ActivityGroup.onlyRestartIfActivityChanges" />
+							<xsl:text>:&#160;</xsl:text>
+						</strong>
+						<xsl:value-of select="$i18n.Yes" />
+						
+					</xsl:if>
 					
 				</xsl:if>
 				

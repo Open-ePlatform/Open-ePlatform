@@ -30,6 +30,7 @@
 	<xsl:variable name="java.eventActivityGroupCompletedMissingStatus">Automatiskt statusbyte misslyckat status "$status" saknas.</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupApproved">Godkänd aktivitetsgrupp:</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupDenied">Nekad aktivitetsgrupp:</xsl:variable>
+	<xsl:variable name="java.eventActivityGroupSkipped">Hoppade över aktivitetsgrupp:</xsl:variable>
 	
 	<xsl:variable name="java.reminderEmailPrefix">Påminnelse: </xsl:variable>
 	<xsl:variable name="java.activityGroupStartedEmailSubject">Nya aktiviteter för $activityGroup.name i ärende $flowInstance.flowInstanceID </xsl:variable>
@@ -107,7 +108,9 @@
 	<xsl:variable name="i18n.ActivityGroup.useCustomApprovedText">Använd annat namn för klarmarkerad / godkänd / nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.approvedText">Namn för klarmarkerad/godkänd</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.deniedText">Namn för nekad</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.allowSkip">Hoppa över / byt till målstatus även om ingen aktivitet startas (endast om ingen grupp alls startas/är igång)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.onlyRestartIfActivityChanges">Tillåt omstart endast om det blir skillnad på startade aktiviteter (pga attribut)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>
