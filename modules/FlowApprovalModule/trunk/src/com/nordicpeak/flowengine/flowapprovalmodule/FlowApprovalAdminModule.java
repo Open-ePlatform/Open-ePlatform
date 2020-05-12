@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -120,6 +122,7 @@ import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -143,8 +146,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
@@ -1328,8 +1329,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				try {
 					email.addRecipient(manager.getEmail());
 					email.setMessageContentType(SimpleEmail.HTML);
-					email.setSenderName(notificationHandler.getEmailSenderName(null));
-					email.setSenderAddress(notificationHandler.getEmailSenderAddress(null));
+					email.setSenderName(notificationHandler.getEmailSenderName(flowInstance));
+					email.setSenderAddress(notificationHandler.getEmailSenderAddress(flowInstance));
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
@@ -1376,8 +1377,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				try {
 					email.addRecipient(emailAdress);
 					email.setMessageContentType(SimpleEmail.HTML);
-					email.setSenderName(notificationHandler.getEmailSenderName(null));
-					email.setSenderAddress(notificationHandler.getEmailSenderAddress(null));
+					email.setSenderName(notificationHandler.getEmailSenderName(flowInstance));
+					email.setSenderAddress(notificationHandler.getEmailSenderAddress(flowInstance));
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
