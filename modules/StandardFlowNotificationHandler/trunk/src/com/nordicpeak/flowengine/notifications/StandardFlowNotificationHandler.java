@@ -443,6 +443,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Manager mentioned email message", description = "The message of emails sent to manager mentioned in internal message", required = true)
 	@XSLVariable(prefix = "java.")
 	private String managerMentionedEmailMessage;
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to groups when new messages are received from users", description = "Controls if email messages are sent to the groups when they receive new messages from users.")
+	private boolean sendExternalMessageReceivedGroupEmail;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "New message received email subject (groups)", description = "The subject of emails sent to the groups when new messages are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String externalMessageReceivedGroupEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "New message received email message (groups)", description = "The message of emails sent to the groups when new messages are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String externalMessageReceivedGroupEmailMessage;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to groups when they are assigned new flow instances", description = "Controls if email messages are sent to groups when they are assigned new flow instances.")
@@ -1591,13 +1605,23 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		} else if (event.getSenderType() == SenderType.USER) {
 
-			if (notificationSettings.isSendExternalMessageReceivedManagerEmail() || notificationSettings.isSendExternalMessageReceivedGlobalEmail()) {
+			if (notificationSettings.isSendExternalMessageReceivedManagerEmail() || notificationSettings.isSendExternalMessageReceivedGroupEmail() || notificationSettings.isSendExternalMessageReceivedGlobalEmail()) {
 
 				Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
 
 				if (notificationSettings.isSendExternalMessageReceivedManagerEmail()) {
 
 					sendManagerEmails(flowInstance, contact, notificationSettings.getExternalMessageReceivedManagerSubject(), notificationSettings.getExternalMessageReceivedManagerMessage(), null, false);
+				}
+				
+				if (notificationSettings.isSendExternalMessageReceivedGroupEmail()) {
+					
+					Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
+					
+					for (String email : managerGroupEmailRecipientAddresses) {
+						
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getExternalMessageReceivedGroupEmailSubject(), notificationSettings.getExternalMessageReceivedGroupEmailMessage(), null, false);
+					}
 				}
 
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
@@ -1808,6 +1832,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
+	private Set<String> getManagerGroupEmailRecipientAddresses(FlowInstance flowInstance) {
+		
+		return getManagerGroupEmailRecipientAddresses(flowInstance, null);
+	}
+	
 	private Set<String> getManagerGroupEmailRecipientAddresses(FlowInstance flowInstance, List<Group> excludedManagerGroups) {
 
 		List<Group> managerGroups = flowInstance.getManagerGroups();
@@ -1817,7 +1846,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			
 			Set<String> addresses = new HashSet<>();
 			
-			managerGroups.removeAll(excludedManagerGroups);
+			if (excludedManagerGroups != null) {
+				
+				managerGroups.removeAll(excludedManagerGroups);
+			}
 			
 			for (Group managerGroup : managerGroups) {
 				
