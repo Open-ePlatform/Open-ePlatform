@@ -745,7 +745,7 @@
 		  						<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
 		  						
 			  						<div class="heading-wrapper">
-			  							<label class="required"><xsl:value-of select="$i18n.AttachFiles" /></label>
+			  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
 			  						</div>
 			  						
 			  						<script>
