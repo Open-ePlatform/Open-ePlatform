@@ -213,19 +213,19 @@ public class ContactDetailQuery extends BaseQuery implements CitizenIdentifierQu
 		}
 
 		if (fieldCareOf != ContactDetailQueryField.HIDDEN) {
-			appendFieldDefenition("CareOf", fieldCareOf == ContactDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("CareOf", fieldCareOf == ContactDetailQueryField.REQUIRED && !useOfficalAddress, doc, sequenceElement);
 		}
 
 		if (fieldAddress != ContactDetailQueryField.HIDDEN) {
-			appendFieldDefenition("Address", fieldAddress == ContactDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("Address", fieldAddress == ContactDetailQueryField.REQUIRED && !useOfficalAddress, doc, sequenceElement);
 		}
 
 		if (fieldAddress != ContactDetailQueryField.HIDDEN) {
-			appendFieldDefenition("ZipCode", fieldAddress == ContactDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("ZipCode", fieldAddress == ContactDetailQueryField.REQUIRED && !useOfficalAddress, doc, sequenceElement);
 		}
 
 		if (fieldAddress != ContactDetailQueryField.HIDDEN) {
-			appendFieldDefenition("PostalAddress", fieldAddress == ContactDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("PostalAddress", fieldAddress == ContactDetailQueryField.REQUIRED && !useOfficalAddress, doc, sequenceElement);
 		}
 
 		if (fieldPhone != ContactDetailQueryField.HIDDEN) {
