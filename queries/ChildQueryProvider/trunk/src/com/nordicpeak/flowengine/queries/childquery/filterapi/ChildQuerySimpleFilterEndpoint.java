@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
@@ -174,8 +175,9 @@ public class ChildQuerySimpleFilterEndpoint extends GeneratedElementable impleme
 	}
 
 	@Override
-	public Map<String, FilterAPIChild> getChildren(Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow) throws ChildRelationProviderException {
-		return adminModule.getChildren(this, navetChildMap, user, parentCitizenID, flow);
+	public Map<String, FilterAPIChild> getChildren(Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow, AttributeHandler attributeHandler) throws ChildRelationProviderException {
+		
+		return adminModule.getChildren(this, navetChildMap, user, parentCitizenID, flow, attributeHandler);
 	}
 
 	@Override

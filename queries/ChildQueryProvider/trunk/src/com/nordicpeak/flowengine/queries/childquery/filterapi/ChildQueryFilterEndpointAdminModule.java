@@ -23,6 +23,8 @@ import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
@@ -113,7 +115,7 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		this.childQueryProviderModule = childQueryProviderModule;
 	}
 
-	protected Map<String, FilterAPIChild> getChildren(ChildQuerySimpleFilterEndpoint endpoint, Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow) {
+	protected Map<String, FilterAPIChild> getChildren(ChildQuerySimpleFilterEndpoint endpoint, Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow, AttributeHandler attributeHandler) {
 
 		log.info("Getting filter children from " + endpoint);
 		
@@ -149,6 +151,12 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		
 		//Replace tags
 		address = tagReplacer.replace(address);
+		
+		//Replace attribute tags
+		if(attributeHandler != null){
+			
+			address = AttributeTagUtils.replaceTags(address, attributeHandler, false, true);
+		}
 		
 		SimpleRequest simpleRequest = new SimpleRequest(address);
 

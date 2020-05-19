@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.XMLable;
 
 import com.nordicpeak.childrelationprovider.Child;
@@ -19,6 +20,6 @@ public interface ChildQueryFilterEndpoint extends XMLable {
 	
 	public List<String> getFields();
 
-	public Map<String, FilterAPIChild> getChildren(Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow) throws ChildRelationProviderException;
+	public Map<String, FilterAPIChild> getChildren(Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow, AttributeHandler attributeHandler) throws ChildRelationProviderException;
 
 }

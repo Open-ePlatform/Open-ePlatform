@@ -445,7 +445,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			//Only do if query is visible
 			if (poster != null && descriptor.getQueryState() != QueryState.HIDDEN) {
 
-				queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, null));
+				queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, null, null));
 			}
 		}
 
@@ -457,7 +457,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		if (queryInstance.getChildren() == null) {
 
-			queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, requestMetadata));
+			queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, requestMetadata, attributeHandler));
 		}
 
 		return super.getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler);
@@ -736,7 +736,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		return ChildQueryInstance.class;
 	}
 
-	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata) {
+	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata, AttributeHandler attributeHandler) {
 		
 		ChildQuery query = queryInstance.getQuery();
 		
@@ -811,7 +811,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 							
 							ImmutableFlow flow = queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getStep().getFlow();
 
-							Map<String, FilterAPIChild> filterChildren = filterEndpoint.getChildren(navetChildMap, poster, citizenIdentifier, flow);
+							Map<String, FilterAPIChild> filterChildren = filterEndpoint.getChildren(navetChildMap, poster, citizenIdentifier, flow, attributeHandler);
 
 							if (filterChildren == null) {
 								
