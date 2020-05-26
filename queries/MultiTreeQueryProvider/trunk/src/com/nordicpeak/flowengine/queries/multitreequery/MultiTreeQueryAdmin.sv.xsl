@@ -21,7 +21,7 @@
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.Query.setAsAttribute">Spara fältens värde som attribut</xsl:variable>
 	<xsl:variable name="i18n.Query.attributeName">Attributprefix</xsl:variable>
-	<xsl:variable name="i18n.Query.previewMode">Förhandsgranskningsläge</xsl:variable>
+	<xsl:variable name="i18n.Query.previewMode">Visningsläge</xsl:variable>
 	<xsl:variable name="i18n.Query.previewMode.Tree">Träd</xsl:variable>
 	<xsl:variable name="i18n.Query.previewMode.List">Lista</xsl:variable>
 	

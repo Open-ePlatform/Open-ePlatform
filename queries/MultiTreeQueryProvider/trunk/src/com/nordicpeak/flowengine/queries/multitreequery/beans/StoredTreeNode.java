@@ -56,6 +56,9 @@ public class StoredTreeNode extends LinkedHashMap<String, StoredTreeNode> implem
 	@XMLElement
 	private String icon;
 
+	@XMLElement
+	private String nodeHierarchy;
+
 	private StoredTreeNode parent;
 
 	public StoredTreeNode() {}
@@ -192,6 +195,16 @@ public class StoredTreeNode extends LinkedHashMap<String, StoredTreeNode> implem
 	public void setIcon(String icon) {
 
 		this.icon = icon;
+	}
+
+	public String getNodeHierarchy() {
+
+		return nodeHierarchy;
+	}
+
+	public void setNodeHierarchy(String nodeHierarchy) {
+
+		this.nodeHierarchy = nodeHierarchy;
 	}
 
 	@Override

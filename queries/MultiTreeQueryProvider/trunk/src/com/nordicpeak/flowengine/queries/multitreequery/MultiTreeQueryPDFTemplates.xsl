@@ -45,9 +45,43 @@
 				<xsl:if test="MultiTreeQueryInstance/selectedNodeKeys">
 						
 					<p>
-						<ul class="tree" style="list-style-type: none; margin: 0; padding: 0;">
-							<xsl:apply-templates select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[not(parentNodeKey)]" />
-						</ul>
+					
+						<xsl:choose>
+							<xsl:when test="MultiTreeQueryInstance/MultiTreeQuery/previewMode = 'LIST'">
+					
+								<div class="border">
+								
+									<ul class="list-style-type-none">
+									
+										<xsl:choose>
+											<xsl:when test="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[nodeHierarchy]">
+												
+												<xsl:apply-templates select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[nodeHierarchy]" mode="list"/>
+											
+											</xsl:when>
+											<xsl:otherwise>
+											
+												<li class="no-chosen-trees">
+													<span class="floatleft marginleft"><xsl:value-of select="$i18n.NoChosenTrees" /></span>
+												</li>
+												
+											</xsl:otherwise>
+										</xsl:choose>
+				
+									</ul>
+								
+								</div>
+
+							</xsl:when>
+							<xsl:otherwise>
+							
+								<ul class="tree" style="list-style-type: none; margin: 0; padding: 0;">
+									<xsl:apply-templates select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[not(parentNodeKey)]" />
+								</ul>
+							
+							</xsl:otherwise>										
+						</xsl:choose>
+					
 					</p>
 					
 				</xsl:if>
@@ -80,6 +114,16 @@
 			
 			</li>
 	
+	</xsl:template>
+	
+	<xsl:template match="TreeNode" mode="list">
+		
+		<li>
+			<span class="marginleft">
+				<xsl:value-of select="nodeHierarchy"/>
+			</span>
+		</li>
+		
 	</xsl:template>
 	
 </xsl:stylesheet>

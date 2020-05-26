@@ -4,4 +4,6 @@
 
 	<xsl:include href="MultiTreeQueryPDFTemplates.xsl"/>
 	
+	<xsl:variable name="i18n.NoChosenTrees">Inga valda alternativ</xsl:variable>
+	
 </xsl:stylesheet>

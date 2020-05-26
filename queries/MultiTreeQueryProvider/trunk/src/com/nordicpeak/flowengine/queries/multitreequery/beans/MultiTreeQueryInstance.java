@@ -34,6 +34,8 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
+	private static final int NODE_HIERARCHY_TRUNCATE_THRESHOLD = 10;
+
 	public static final Field QUERY_RELATION = ReflectionUtils.getField(MultiTreeQueryInstance.class, "query");
 
 	@DAOManaged
@@ -119,20 +121,20 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 
 		return Collections.emptyList();
 	}
-	
+
 	public StoredTreeNode getTreeNodeFromStoredNodes(String keys) {
-		
+
 		if (!CollectionUtils.isEmpty(storedTreeNodes)) {
-			
+
 			for (StoredTreeNode node : storedTreeNodes) {
-				
+
 				if (keys.contains(node.getKey())) {
-					
+
 					return node;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -162,13 +164,13 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 	public StoredTreeNode getSelectedTreeNodeWithParents(String key) {
 
 		List<StoredTreeNode> nodes = getSelectedTreeNodes();
-		
+
 		for (StoredTreeNode node : nodes) {
-			
+
 			if (node.getKey().equals(key)) {
-				
+
 				setParentsForStoredTreeNode(node);
-				
+
 				return node;
 			}
 		}
@@ -211,7 +213,7 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 		String attribute = getStringValue();
 
 		if (attribute != null) {
-			
+
 			attributeHandler.setAttribute(query.getAttributeName() + ".Name", attribute);
 		}
 	}
@@ -259,10 +261,10 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 		List<StoredTreeNode> nodes = getSelectedTreeNodes();
 
 		if (!nodes.isEmpty()) {
-			
+
 			return nodes.stream().map(StoredTreeNode::getName).collect(Collectors.joining(", "));
 		}
-		
+
 		return null;
 	}
 
@@ -282,6 +284,31 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 	public String getFreeTextAlternativeValue() {
 
 		return null;
+	}
+
+	public void generateNodeHierarchy() {
+
+		for (StoredTreeNode node : getSelectedTreeNodes()) {
+
+			node.setNodeHierarchy(getNodeHierarchy(node, false));
+		}
+	}
+
+	private static String getNodeHierarchy(StoredTreeNode node, boolean truncate) {
+
+		String nodeName = node.getName();
+
+		if (truncate && nodeName.length() > NODE_HIERARCHY_TRUNCATE_THRESHOLD) {
+
+			nodeName = nodeName.substring(0, NODE_HIERARCHY_TRUNCATE_THRESHOLD) + "...";
+		}
+
+		if (node.getParent() != null) {
+
+			return getNodeHierarchy(node.getParent(), true) + " > " + nodeName;
+		}
+
+		return nodeName;
 	}
 
 }

@@ -74,10 +74,42 @@
 							
 							<div class="marginleft">
 							
-								<xsl:call-template name="FancyTreeShow">
-									<xsl:with-param name="QueryID" select="MultiTreeQueryInstance/MultiTreeQuery/queryID"/>
-									<xsl:with-param name="TreeNodes" select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[not(parentNodeKey)]"/>
-								</xsl:call-template>
+								<xsl:choose>
+									<xsl:when test="MultiTreeQueryInstance/MultiTreeQuery/previewMode = 'LIST'">
+							
+										<div class="border">
+										
+											<ul class="chosen-tree-list list-table">
+											
+												<xsl:choose>
+													<xsl:when test="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[nodeHierarchy]">
+														
+														<xsl:apply-templates select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[nodeHierarchy]" mode="list"/>
+													
+													</xsl:when>
+													<xsl:otherwise>
+													
+														<li class="no-chosen-trees">
+															<span class="floatleft marginleft"><xsl:value-of select="$i18n.NoChosenTrees" /></span>
+														</li>
+														
+													</xsl:otherwise>
+												</xsl:choose>
+						
+											</ul>
+										
+										</div>
+
+									</xsl:when>
+									<xsl:otherwise>
+									
+										<xsl:call-template name="FancyTreeShow">
+											<xsl:with-param name="QueryID" select="MultiTreeQueryInstance/MultiTreeQuery/queryID"/>
+											<xsl:with-param name="TreeNodes" select="MultiTreeQueryInstance/StoredTreeNodes/TreeNode[not(parentNodeKey)]"/>
+										</xsl:call-template>
+									
+									</xsl:otherwise>										
+								</xsl:choose>
 								
 							</div>
 							
@@ -249,6 +281,16 @@
 		
 		<script type="text/javascript">var MultiTreeQueryTree<xsl:value-of select="$QueryID"/> = [<xsl:apply-templates select="$TreeNodes"/>];</script>
 	
+	</xsl:template>
+	
+	<xsl:template match="TreeNode" mode="list">
+		
+		<li>
+			<span class="marginleft">
+				<xsl:value-of select="nodeHierarchy"/>
+			</span>
+		</li>
+		
 	</xsl:template>
 	
 	<xsl:template name="FancyTree">
