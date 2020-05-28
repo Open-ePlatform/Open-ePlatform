@@ -82,6 +82,10 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set user on events", description = "Set the API user on generated events")
 	private boolean setUserOnEvents;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Enable attribute prefix", description = "Enable the callback. prefix on set attributes")
+	private boolean enableAttributePrefix = true;
 
 	protected FlowAdminModule flowAdminModule;
 	
@@ -850,7 +854,10 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				throw new RuntimeException("Name cannot be empty");
 			}
 
-			name = "callback." + name;
+			if(enableAttributePrefix) {
+				
+				name = "callback." + name;
+			}
 
 			log.info("User " + callback.getUser() + " requested set attribute for flow instance " + flowInstance + " attribute \"" + name + "\" with value \"" + value + "\"");
 
