@@ -289,6 +289,11 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 	public void generateNodeHierarchy() {
 
 		for (StoredTreeNode node : getSelectedTreeNodes()) {
+			
+			if (node.getParent() == null && node.getParentNodeKey() != null) {
+				
+				setParentsForStoredTreeNode(node);
+			}
 
 			node.setNodeHierarchy(getNodeHierarchy(node, false));
 		}
