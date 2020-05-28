@@ -7,7 +7,19 @@ $(document).ready(function() {
 	setQueryRequiredFunctions["MultiTreeQueryInstance"] = makeMultiTreeQueryRequired;
 });
 
-function initMultiTreeQuery(queryID, previouslySelected) {
+function initMultiTreeQuery(queryID) {
+	
+	var nonVarargParametersCount = initMultiTreeQuery.length;
+	
+	if (arguments.length > nonVarargParametersCount) {
+		
+		var previouslySelected = new Array(arguments.length - nonVarargParametersCount);
+		
+		for (var i = 0; i < previouslySelected.length; i++) {
+			
+			previouslySelected[i] = arguments[i + nonVarargParametersCount];
+		}
+	}
 
 	waitUntilMultiTreeQueryScriptsAreLoaded(queryID, previouslySelected);
 }
@@ -131,11 +143,9 @@ function initMultiTreeQuery2(queryID, previouslySelected) {
 		
 		if (previouslySelected) {
 			
-			var previouslySelectedParts = previouslySelected.split(",");
-			
-			for (var i = 0; i < previouslySelectedParts.length; i++) {
+			for (var i = 0; i < previouslySelected.length; i++) {
 				
-				var key = previouslySelectedParts[i];
+				var key = previouslySelected[i];
 				var node = tree.getNodeByKey(key);
 				
 				if (node) {

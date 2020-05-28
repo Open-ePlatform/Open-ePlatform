@@ -10,10 +10,9 @@
 
 	<xsl:variable name="scripts">
 		/js/fancytree/jquery.fancytree.min.js
-		/js/fancytree/jquery.fancytree.min.js
 		/js/fancytree/src/jquery.fancytree.persist.js
 		/js/fancytree/src/jquery.fancytree.filter.js
-		/js/multitreequery.js
+		/js/multitreequery.js?v=1
 	</xsl:variable>
 
 	<xsl:variable name="links">
@@ -254,11 +253,13 @@
 						<xsl:when test="MultiTreeQueryInstance/selectedNodeKeys">
 						
 							<xsl:for-each select="MultiTreeQueryInstance/selectedNodeKeys/value">
+								<xsl:text>'</xsl:text>
 								<xsl:call-template name="escapeForJavascript">
 									<xsl:with-param name="text" select="."/>
 								</xsl:call-template>
+								<xsl:text>'</xsl:text>
 								<xsl:if test="position() != last()">
-									<xsl:text>,</xsl:text>
+									<xsl:text> ,</xsl:text>
 								</xsl:if>
 							</xsl:for-each>
 							
@@ -266,7 +267,7 @@
 					</xsl:choose>
 				</xsl:variable>
 				
-				<script type="text/javascript">initMultiTreeQuery('<xsl:value-of select="MultiTreeQueryInstance/MultiTreeQuery/queryID" />', '<xsl:value-of select="$selected"/>');</script>
+				<script type="text/javascript">initMultiTreeQuery('<xsl:value-of select="MultiTreeQueryInstance/MultiTreeQuery/queryID" />', <xsl:value-of select="$selected"/>);</script>
 			</article>
 		
 		</div>

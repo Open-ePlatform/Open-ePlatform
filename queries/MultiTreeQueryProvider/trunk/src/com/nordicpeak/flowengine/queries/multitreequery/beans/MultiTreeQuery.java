@@ -14,6 +14,7 @@ import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -31,6 +32,8 @@ import com.nordicpeak.flowengine.queries.multitreequery.enums.PreviewMode;
 public class MultiTreeQuery extends BaseQuery implements FixedAlternativesQuery {
 
 	private static final long serialVersionUID = -842191226937409429L;
+	
+	private static final EnumPopulator<PreviewMode> PREVIEW_MODE_POPULATOR = new EnumPopulator<>(PreviewMode.class);
 
 	@DAOManaged
 	@Key
@@ -179,6 +182,8 @@ public class MultiTreeQuery extends BaseQuery implements FixedAlternativesQuery 
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
 
+		previewMode = XMLValidationUtils.validateParameter("previewMode", xmlParser, true, PREVIEW_MODE_POPULATOR, errors);
+		
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
