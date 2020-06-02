@@ -166,7 +166,7 @@
 		  		</xsl:if>
 		  		<xsl:if test="$flowInstance/Status/isUserDeletable = 'true'">
 			  		<li>
-			  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.CancelFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-red">
+			  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-red">
 							<span data-icon-before="x"><xsl:value-of select="$i18n.cancelInstance"/></span>
 						</a>
 			  		</li>
@@ -260,7 +260,7 @@
 			  		
 			  		<xsl:if test="$flowInstance/Status/isAdminDeletable = 'true' or $deleteAccessOverride">
 				  		<li>
-				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.CancelFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-light">
+				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-light">
 								<span data-icon-before="x"><xsl:value-of select="$i18n.deleteInstance"/></span>
 							</a>
 				  		</li>

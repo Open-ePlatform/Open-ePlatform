@@ -22,13 +22,12 @@
 	<xsl:variable name="i18n.FlowInstanceErrorDataNotSaved">Ett fel uppstod i e-tjänsten.</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceManagerClosed">Den här kopian på ärendet har stängts.</xsl:variable>
 	
-	<xsl:variable name="i18n.CancelFlowInstanceConfirm">Är du säker på att du vill avbryta ärendet</xsl:variable>
 	<xsl:variable name="i18n.DeleteFlowInstanceConfirm">Är du säker på att du vill ta bort ärendet</xsl:variable>
 	
 	<xsl:variable name="i18n.overview">Ärendeöversikt</xsl:variable>
 	<xsl:variable name="i18n.showInstance">Visa ärende</xsl:variable>
 	<xsl:variable name="i18n.updateInstance">Ändra ärende</xsl:variable>
-	<xsl:variable name="i18n.cancelInstance">Avbryt ärende</xsl:variable>
+	<xsl:variable name="i18n.cancelInstance">Ta bort ärende</xsl:variable>
 	
 	<xsl:variable name="i18n.updateStatus">Ändra status</xsl:variable>
 	<xsl:variable name="i18n.updateManagers">Ändra handläggare</xsl:variable>

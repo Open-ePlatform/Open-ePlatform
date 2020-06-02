@@ -91,6 +91,7 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
+import com.nordicpeak.flowengine.events.DeletedByManagerEvent;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.OwnersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
@@ -1332,6 +1333,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 
 		this.eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.DELETE, flowInstance), EventTarget.ALL);
+		
+		this.eventHandler.sendEvent(FlowInstance.class, new DeletedByManagerEvent(flowInstance, user), EventTarget.ALL);
 
 		return flowInstance;
 	}
