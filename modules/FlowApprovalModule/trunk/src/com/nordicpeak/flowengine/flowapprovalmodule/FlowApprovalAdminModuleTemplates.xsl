@@ -976,34 +976,48 @@
 			
 			<xsl:apply-templates select="ValidationErrors/validationError" />
 			
-			<strong>
-				<xsl:value-of select="$i18n.Activity.shortDescription" />
-				<xsl:text>:&#160;</xsl:text>
-			</strong>
-			<xsl:value-of select="Activity/shortDescription" />
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.Activity.shortDescription" />
+					<xsl:text>:&#160;</xsl:text>
+				</strong>
+				<xsl:value-of select="Activity/shortDescription" />
+			</div>
 			
-			<br/>
-			
-			<strong>
-				<xsl:value-of select="$i18n.Activity.description" />
-			</strong>
-			<p style="word-break: break-word;">
-				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="Activity/description" />
-				</xsl:call-template>
-			</p>
+			<div>
+				<strong>
+					<xsl:value-of select="$i18n.Activity.description" />
+				</strong>
+				<p style="word-break: break-word;">
+					<xsl:call-template name="replaceLineBreak">
+						<xsl:with-param name="string" select="Activity/description" />
+					</xsl:call-template>
+				</p>
+			</div>
 			
 			<xsl:if test="Activity/requireSigning = 'true'">
 				
-				<br/>
-				
-				<strong>
-					<xsl:value-of select="$i18n.Activity.requireSigning" />
-					<xsl:text>:&#160;</xsl:text>
-				</strong>
-				<xsl:value-of select="$i18n.Yes" />
+				<div>
+					<strong>
+						<xsl:value-of select="$i18n.Activity.requireSigning" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+				</div>
 				
 			</xsl:if>
+			
+			<xsl:if test="Activity/onlyUseGlobalNotifications = 'true'">
+				
+				<div>
+					<strong>
+						<xsl:value-of select="$i18n.Activity.onlyUseGlobalNotifications" />
+					</strong>
+				</div>
+				
+			</xsl:if>
+			
+			<div class="marginbottom" />
 			
 			<xsl:if test="Activity/ResponsibleGroups/group">
 			
@@ -1360,6 +1374,21 @@
 					<xsl:with-param name="name" select="'globalEmailAddress'"/>
 					<xsl:with-param name="element" select="Activity" />
 				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'onlyUseGlobalNotifications'" />
+					<xsl:with-param name="name" select="'onlyUseGlobalNotifications'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="onlyUseGlobalNotifications">
+					<xsl:value-of select="$i18n.Activity.onlyUseGlobalNotifications" />
+				</label>
 			</div>
 		</div>
 		

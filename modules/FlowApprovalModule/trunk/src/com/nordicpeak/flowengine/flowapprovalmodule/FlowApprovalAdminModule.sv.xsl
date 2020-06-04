@@ -99,6 +99,7 @@
 	<xsl:variable name="i18n.Activity.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddressHelp">Får notifikation om startad aktivitet utöver ansvariga</xsl:variable>
+	<xsl:variable name="i18n.Activity.onlyUseGlobalNotifications">Skicka notifikationer endast till funktionsbrevlådan</xsl:variable>
 	<xsl:variable name="i18n.Activity.shortDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>

@@ -87,10 +87,16 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	private List<String> responsibleUserAttributeNames;
 
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean onlyUseGlobalNotifications;
+	
+	@DAOManaged
+	@RequiredIfSet(paramNames = "onlyUseGlobalNotifications")
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@XMLElement
 	private String globalEmailAddress;
-
+	
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
@@ -242,6 +248,14 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	public void setGlobalEmailAddress(String globalEmailAddress) {
 
 		this.globalEmailAddress = globalEmailAddress;
+	}
+
+	public boolean isOnlyUseGlobalNotifications() {
+		return onlyUseGlobalNotifications;
+	}
+
+	public void setOnlyUseGlobalNotifications(boolean onlyUseGlobalNotifications) {
+		this.onlyUseGlobalNotifications = onlyUseGlobalNotifications;
 	}
 
 	public List<String> getResponsibleUserAttributeNames() {

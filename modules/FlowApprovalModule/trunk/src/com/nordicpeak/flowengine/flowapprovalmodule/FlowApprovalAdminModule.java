@@ -1,7 +1,5 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -122,7 +120,6 @@ import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
-
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -146,6 +143,8 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
@@ -1249,42 +1248,45 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		for (FlowApprovalActivity activity : createdActivities.keySet()) {
 
-			boolean useFallbackUsers = true;
-
-			if (activity.getResponsibleUserAttributeNames() != null) {
-
-				List<User> users = getResponsibleUsersFromAttribute(activity, flowInstance);
-
-				if (users != null) {
-
-					useFallbackUsers = false;
-					managers.addAll(users);
-				}
-			}
-
-			if (activity.getResponsibleUsers() != null) {
-
-				for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
-
-					if (!responsibleUser.isFallback() || useFallbackUsers) {
-
-						managers.add(responsibleUser.getUser());
+			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
+				
+				boolean useFallbackUsers = true;
+				
+				if (activity.getResponsibleUserAttributeNames() != null) {
+	
+					List<User> users = getResponsibleUsersFromAttribute(activity, flowInstance);
+	
+					if (users != null) {
+	
+						useFallbackUsers = false;
+						managers.addAll(users);
 					}
 				}
-			}
-
-			if (activity.getResponsibleGroups() != null) {
-
-				List<User> groupUsers = null;
-
-				for (int groupID : UserUtils.getGroupIDs(activity.getResponsibleGroups())) {
-
-					groupUsers = CollectionUtils.addAndInstantiateIfNeeded(groupUsers, systemInterface.getUserHandler().getUsersByGroup(groupID, true, true));
+	
+				if (activity.getResponsibleUsers() != null) {
+	
+					for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
+	
+						if (!responsibleUser.isFallback() || useFallbackUsers) {
+	
+							managers.add(responsibleUser.getUser());
+						}
+					}
 				}
-
-				if (groupUsers != null) {
-
-					managers.addAll(groupUsers);
+	
+				if (activity.getResponsibleGroups() != null) {
+	
+					List<User> groupUsers = null;
+	
+					for (int groupID : UserUtils.getGroupIDs(activity.getResponsibleGroups())) {
+	
+						groupUsers = CollectionUtils.addAndInstantiateIfNeeded(groupUsers, systemInterface.getUserHandler().getUsersByGroup(groupID, true, true));
+					}
+	
+					if (groupUsers != null) {
+	
+						managers.addAll(groupUsers);
+					}
 				}
 			}
 			
@@ -1617,12 +1619,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				User user = systemInterface.getUserHandler().getUserByUsername(username, false, true);
 
 				if (user != null) {
+					
 					users = CollectionUtils.addAndInstantiateIfNeeded(users, user);
+					
+				} else {
+					
+					log.warn("Unable to find user with username " + username + " specified in attribute " + attributeName + " of flow instance " + flowInstance + " for activity " + activity);
 				}
-
-			} else {
-
-				log.warn("Unable to find user with username " + username + " specified in attribute " + attributeName + " of flow instance " + flowInstance + " for activity " + activity);
 			}
 		}
 

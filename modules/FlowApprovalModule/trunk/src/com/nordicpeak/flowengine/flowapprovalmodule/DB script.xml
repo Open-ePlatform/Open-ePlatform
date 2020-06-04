@@ -348,4 +348,13 @@
 		</Query>
 	</Script>
 	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `onlyUseGlobalNotifications` TINYINT(1) UNSIGNED NOT NULL AFTER `globalEmailAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	
 </DBScripts>
