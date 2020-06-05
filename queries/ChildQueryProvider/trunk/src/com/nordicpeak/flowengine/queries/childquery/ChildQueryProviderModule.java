@@ -15,8 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Level;
 import org.w3c.dom.Document;
@@ -453,7 +451,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	@Override
-	public QueryResponse getFormHTML(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getFormHTML(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		if (queryInstance.getChildren() == null) {
 
