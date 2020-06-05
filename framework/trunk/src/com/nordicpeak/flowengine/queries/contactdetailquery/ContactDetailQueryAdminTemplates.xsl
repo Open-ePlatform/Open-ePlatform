@@ -328,6 +328,38 @@
 						<td>prefix.citizenIdentifier</td>
 						<td><xsl:value-of select="$java.exportCitizenID" /></td>
 					</tr>
+					<tr>
+						<td>prefix.firstname</td>
+						<td><xsl:value-of select="$java.exportFirstName" /></td>
+					</tr>
+					<tr>
+						<td>prefix.lastname</td>
+						<td><xsl:value-of select="$java.exportLastName" /></td>
+					</tr>
+					<tr>
+						<td>prefix.address</td>
+						<td><xsl:value-of select="$java.exportAddress" /></td>
+					</tr>
+					<tr>
+						<td>prefix.zipCode</td>
+						<td><xsl:value-of select="$java.exportZipCode" /></td>
+					</tr>
+					<tr>
+						<td>prefix.postalAddress</td>
+						<td><xsl:value-of select="$java.exportPostalAddress" /></td>
+					</tr>
+					<tr>
+						<td>prefix.email</td>
+						<td><xsl:value-of select="$java.exportEmail" /></td>
+					</tr>
+					<tr>
+						<td>prefix.phone</td>
+						<td><xsl:value-of select="$java.exportPhone" /></td>
+					</tr>
+					<tr>
+						<td>prefix.mobilePhone</td>
+						<td><xsl:value-of select="$java.exportMobilePhone" /></td>
+					</tr>
 				</tbody>
 			</table>
 			
