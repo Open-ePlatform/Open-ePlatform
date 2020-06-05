@@ -698,4 +698,7 @@
 	
 	<xsl:variable name="i18n.PreviewQueries">Förhandsgranska frågor</xsl:variable>
 	
+	<xsl:variable name="i18n.Step.OneQuery">fråga</xsl:variable>
+	<xsl:variable name="i18n.Step.MultipleQueries">frågor</xsl:variable>
+	
 </xsl:stylesheet>

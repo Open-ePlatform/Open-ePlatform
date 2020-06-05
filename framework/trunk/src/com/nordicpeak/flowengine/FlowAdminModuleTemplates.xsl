@@ -1684,6 +1684,24 @@
 				<span class="index"><xsl:value-of select="position()" /></span>
 				<span class="name">
 					<xsl:value-of select="name"/>
+					<xsl:text> (</xsl:text>
+					
+					<xsl:variable name="queryCount" select="count(QueryDescriptors/QueryDescriptor)"/>
+					
+					<xsl:value-of select="$queryCount"/>
+					
+					<xsl:text> </xsl:text>
+					
+					<xsl:choose>
+						<xsl:when test="$queryCount = 1">
+							<xsl:value-of select="$i18n.Step.OneQuery"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.Step.MultipleQueries"/>
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					<xsl:text>)</xsl:text>
 				</span>
 				<span class="tools">
 					<xsl:if test="$disableStructureManipulation = false()">
