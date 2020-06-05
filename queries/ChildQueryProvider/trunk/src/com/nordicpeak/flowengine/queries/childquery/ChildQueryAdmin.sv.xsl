@@ -7,7 +7,7 @@
 
 	<xsl:include href="ChildQueryAdminTemplates.xsl"/>
 	<xsl:variable name="java.queryDescription">
-Frågetypen Val av barn hämtar uppgifter om de barn den inloggade användaren är vårdnadshavare för. Detta kräver en koppling mot Skatteverket (Navet).
+Frågetypen Val av barn hämtar uppgifter om de barn den inloggade användaren är vårdnadshavare för och kräver att ett barn väljs om frågetypen är satt som obligatorisk. Detta kräver en koppling mot Skatteverket (Navet).
 Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	</xsl:variable>
 	<xsl:variable name="java.queryTypeName">Val av barn</xsl:variable>
@@ -67,7 +67,7 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="i18n.TestChildren.enabled">Aktivera testbarn</xsl:variable>
 	
 	<xsl:variable name="i18n.FilterEndpoint.title">Välj API-källa för filtrering och extra information</xsl:variable>
-	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa</xsl:variable>
+	<xsl:variable name="i18n.FilterEndpoint.EmptyOption">Ingen API-källa vald</xsl:variable>
 	<xsl:variable name="i18n.EmptyFilterDescription">Meddelande vid avsaknad av data från API-källan (tomt svar, inga barn kvar efter filtrering eller åldersgräns används och inga barn är inom intervallet)</xsl:variable>
 	<xsl:variable name="i18n.useFilteredChildrenDescription">Visa meddelande vid bortfiltrering av barn (men åtminstone 1 barn blev kvar efter filtrering)</xsl:variable>
 	<xsl:variable name="i18n.FilteredChildrenDescription">Meddelande för bortfiltrerade barn</xsl:variable>
