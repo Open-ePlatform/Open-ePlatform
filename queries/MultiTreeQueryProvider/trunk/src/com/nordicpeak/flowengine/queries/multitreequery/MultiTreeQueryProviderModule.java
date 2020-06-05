@@ -268,7 +268,7 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getFormHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		if (queryInstance.getFullTree() == null) {
 
