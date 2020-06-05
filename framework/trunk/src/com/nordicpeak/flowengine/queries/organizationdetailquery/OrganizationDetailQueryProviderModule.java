@@ -8,8 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -66,9 +64,9 @@ import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
-import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModule<OrganizationDetailQueryInstance> implements BaseQueryCRUDCallback {
 
@@ -625,7 +623,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getFormHTML(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 		
 		if (dependencyLock != null) {
 
