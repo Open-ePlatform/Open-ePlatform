@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1406,7 +1407,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				bookmark = new UserBookmark();
 				bookmark.setFlowInstance(flowInstance);
 				bookmark.setUser(user);
-				daoFactory.getUserBookmarkDAO().add(bookmark);
+				
+				try {
+					daoFactory.getUserBookmarkDAO().add(bookmark);
+					
+				} catch (SQLIntegrityConstraintViolationException e) {
+					
+					log.info("Unable to add bookmark for instance " + flowInstance + " for user " + user + " due to " + e);
+				}
 
 			} else {
 
