@@ -39,7 +39,7 @@ public class FlowApprovalFlowInstanceAccessController implements FlowInstanceAcc
 			if (activityProgresses != null) {
 				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
 
-					if (activityProgress.getActivity().isShowFlowInstance() && !AccessUtils.checkAccess(user, activityProgress)) {
+					if (activityProgress.getActivity().isShowFlowInstance() && AccessUtils.checkAccess(user, activityProgress)) {
 						return;
 					}
 				}
