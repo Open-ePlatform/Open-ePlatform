@@ -10,6 +10,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -49,7 +50,7 @@ public class FlowInstanceEventGenerator {
 		FlowInstanceEvent flowInstanceEvent = new FlowInstanceEvent();
 		flowInstanceEvent.setFlowInstance((FlowInstance) flowInstance);
 		flowInstanceEvent.setEventType(eventType);
-		flowInstanceEvent.setDetails(details);
+		flowInstanceEvent.setDetails(StringUtils.substring(details, 255, "..."));
 		flowInstanceEvent.setPoster(user);
 		flowInstanceEvent.setStatus(flowInstance.getStatus().getName());
 		flowInstanceEvent.setStatusDescription(flowInstance.getStatus().getDescription());
