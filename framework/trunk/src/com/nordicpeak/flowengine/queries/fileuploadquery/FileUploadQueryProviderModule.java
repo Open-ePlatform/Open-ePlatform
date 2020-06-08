@@ -545,7 +545,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					}
 				} catch (InvalidFileNameException e) {
 
-					validationErrors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName())));
+					validationErrors.add(new InvalidFileExtensionValidationError(""));
 					
 					continue;
 				}
