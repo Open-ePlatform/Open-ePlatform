@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.InvalidFileNameException;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -537,8 +538,15 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 			for (FileItem fileItem : fileItems) {
 
-				if (StringUtils.isEmpty(fileItem.getName())) {
+				try {
+					if (StringUtils.isEmpty(fileItem.getName())) {
 
+						continue;
+					}
+				} catch (InvalidFileNameException e) {
+
+					validationErrors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName())));
+					
 					continue;
 				}
 
