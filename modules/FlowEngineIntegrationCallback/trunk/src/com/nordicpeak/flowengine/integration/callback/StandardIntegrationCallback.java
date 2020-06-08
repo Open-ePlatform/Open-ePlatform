@@ -878,6 +878,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				flowInstance.getAttributeHandler().setAttribute(name, value);
 			}
 
+			FlowInstanceUtils.setDescriptions(flowInstance);
+			
 			try {
 				daoFactory.getFlowInstanceDAO().update(flowInstance, new RelationQuery(FlowInstance.ATTRIBUTES_RELATION));
 
