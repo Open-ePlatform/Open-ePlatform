@@ -1738,7 +1738,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					if (pdfProvider != null) {
 
-						pdfFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestSubmitEvent(flowInstance).getEventID());
+						pdfFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestPDFEvent(flowInstance).getEventID());
 
 						if (pdfFile != null) {
 
