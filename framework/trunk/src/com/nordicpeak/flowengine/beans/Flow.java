@@ -319,6 +319,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideFromUser;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideFromManager;
 
 	@DAOManaged
 	@WebPopulate
@@ -991,6 +996,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 		hideFromOverview = xmlParser.getPrimitiveBoolean("hideFromOverview");
 		hideFromUser = xmlParser.getPrimitiveBoolean("hideFromUser");
+		hideFromManager = xmlParser.getPrimitiveBoolean("hideFromManager");
 		hideFlowInstanceIDFromUser = xmlParser.getPrimitiveBoolean("hideFlowInstanceIDFromUser");
 		hideInternalMessages = xmlParser.getPrimitiveBoolean("hideInternalMessages");
 		hideExternalMessages = xmlParser.getPrimitiveBoolean("hideExternalMessages");
@@ -1274,6 +1280,18 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setHideSaveButton(boolean hideSaveButton) {
 
 		this.hideSaveButton = hideSaveButton;
+	}
+
+	
+	public boolean isHideFromManager() {
+	
+		return hideFromManager;
+	}
+
+	
+	public void setHideFromManager(boolean hideFromManager) {
+	
+		this.hideFromManager = hideFromManager;
 	}
 
 }

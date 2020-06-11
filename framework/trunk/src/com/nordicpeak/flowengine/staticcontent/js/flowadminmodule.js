@@ -115,6 +115,7 @@ $(document).ready(function() {
 			if ($(this).val() == "EXTERNAL") {
 				
 				$flowForm.find(".internal").hide();
+				$flowForm.find(".external").show();
 				$("#enabled").removeAttr("disabled");
 				$("#externalLink").removeAttr("disabled").parent().parent().show();
 				$("#addstandardstatuses").prop("checked", false);
@@ -122,6 +123,7 @@ $(document).ready(function() {
 			} else {
 				
 				$flowForm.find(".internal").show();
+				$flowForm.find(".external").hide();
 				$("#enabled").attr("disabled", "disabled");
 				$("#externalLink").attr("disabled", "disabled").parent().parent().hide();
 				$("#addstandardstatuses").trigger("change");

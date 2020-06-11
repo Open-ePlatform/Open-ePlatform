@@ -701,4 +701,18 @@
 	<xsl:variable name="i18n.Step.OneQuery">fråga</xsl:variable>
 	<xsl:variable name="i18n.Step.MultipleQueries">frågor</xsl:variable>
 	
+	<xsl:variable name="i18n.Flow.hideFlowInstances">Dölj ärenden</xsl:variable>
+	<xsl:variable name="i18n.Flow.hideFromManager">Dölj ärenden i handläggargränssnittet (gäller inte fliken alla, använd med försiktighet)</xsl:variable>
+	
+	<xsl:variable name="i18n.Flow.link">Länkning</xsl:variable>
+	<xsl:variable name="i18n.Flow.activationAndPublishing">Aktivering och publicering</xsl:variable>
+	<xsl:variable name="i18n.Flow.preview">Förhandsgranskning</xsl:variable>	
+	<xsl:variable name="i18n.Flow.paymentSettings">Betalning</xsl:variable>
+	<xsl:variable name="i18n.Flow.authenticationSettings">Inloggning</xsl:variable>
+	<xsl:variable name="i18n.Flow.signing">Signering</xsl:variable>
+	<xsl:variable name="i18n.Flow.surveys">Undersökning</xsl:variable>
+	<xsl:variable name="i18n.Flow.messagesAndNotes">Meddelanden och noteringar</xsl:variable>
+	<xsl:variable name="i18n.Flow.hideDetailsAndFunctions">Dölj information och funktioner</xsl:variable>
+	<xsl:variable name="i18n.Flow.statuses">Statusar/Handläggningsprocess</xsl:variable>
+	
 </xsl:stylesheet>

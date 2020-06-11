@@ -2628,5 +2628,13 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="139">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `hideFromManager` BOOLEAN NOT NULL AFTER `hideFromUser`;
+			]]>
+		</Query>
+	</Script>	
 
 </DBScripts>

@@ -2155,473 +2155,381 @@
 		
 		<xsl:if test="not(/Document/UpdateFlow and $isInternal = 'true')">
 		
-			<div class="floatleft full bigmarginbottom external">
-				
-				<xsl:if test="/Document/AddFlow">
-					<xsl:attribute name="class">floatleft full bigmarginbottom external hidden</xsl:attribute>
-				</xsl:if>
-				
-				<label for="name" class="floatleft full">
-					<xsl:value-of select="$i18n.externalLink" />
-				</label>
-				
-				<div class="floatleft full">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="id" select="'externalLink'"/>
-						<xsl:with-param name="name" select="'externalLink'"/>
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-				</div>
-			</div>
-		</xsl:if>
+			<fieldset class="external">
+				<legend><xsl:value-of select="$i18n.Flow.link" /></legend>
 		
-		<xsl:if test="LacksPublishAccess">
-			<div class="floatleft full">
-				
-				<label class="floatleft full">
-					<xsl:value-of select="$i18n.LacksPublishAccess" />
-				</label>
-			</div>
-		</xsl:if>
-		
-		<div class="floatleft full bigmarginbottom">
-			<xsl:if test="LacksPublishAccess">
-				<xsl:attribute name="class">floatleft full bigmarginbottom opacity-fifty</xsl:attribute>
-			</xsl:if>
-		
-			<div class="floatleft">
-				
-				<label for="publishDate" class="floatleft">
-					<xsl:value-of select="$i18n.publishDate" />
-				</label>
-				
-				<div class="floatleft clearboth">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="name" select="'publishDate'" />
-						<xsl:with-param name="id" select="'publishDate'" />
-						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="size" select="10" />
-						<xsl:with-param name="disabled" select="LacksPublishAccess" />
-						<xsl:with-param name="class" select="'marginright'" />
-					</xsl:call-template>
-				</div>
-			</div>
-			
-			<div class="bigmarginleft floatleft">
-				
-				<label for="unPublishDate" class="floatleft">
-					<xsl:value-of select="$i18n.unPublishDate" />
-				</label>
-				
-				<div class="floatleft clearboth">
-					<xsl:call-template name="createTextField">
-						<xsl:with-param name="name" select="'unPublishDate'" />
-						<xsl:with-param name="id" select="'unPublishDate'" />
-						<xsl:with-param name="element" select="Flow" />
-						<xsl:with-param name="size" select="10" />
-						<xsl:with-param name="disabled" select="LacksPublishAccess" />
-						<xsl:with-param name="class" select="'marginright'" />
-					</xsl:call-template>
-				</div>
-			</div>
-		
-		</div>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-			<xsl:if test="LacksPublishAccess">
-				<xsl:attribute name="class">floatleft full bigmarginbottom margintop opacity-fifty</xsl:attribute>
-			</xsl:if>
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'enabled'" />
-					<xsl:with-param name="id" select="'enabled'" />
-					<xsl:with-param name="element" select="Flow" /> 
+				<div class="floatleft full bigmarginbottom">
 					
-					<!-- Disable if we are in add mode -->
-					<xsl:with-param name="disabled" select="LacksPublishAccess or (/Document/AddFlow and $isInternal = 'true')" />
-				</xsl:call-template>
-				
-				<label for="enabled">
-					<xsl:value-of select="$i18n.enableFlow" />
-				</label>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<xsl:variable name="disableSkip" select="Flow/FlowForms/FlowForm and not(AllowSkipOverviewForFlowForms)"/>
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'skipOverview'" />
-					<xsl:with-param name="id" select="'skipOverview'" />
-					<xsl:with-param name="element" select="Flow" />
-					<xsl:with-param name="disabled" select="$disableSkip" />
-				</xsl:call-template>
-				
-				<label for="skipOverview">
-					<xsl:value-of select="$i18n.skipOverview" />
-					
-					<xsl:if test="$disableSkip">
-						<xsl:value-of select="' ('" />
-						<xsl:value-of select="$i18n.MayNotSetOverviewIfFlowFormIsSet.description" />
-						<xsl:value-of select="')'" />
+					<xsl:if test="/Document/AddFlow">
+						<xsl:attribute name="class">floatleft full bigmarginbottom external hidden</xsl:attribute>
 					</xsl:if>
-				</label>
-			</div>
-		</div>
-		
-		<xsl:if test="$isInternal = 'true'">
-		
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'usePreview'" />
-						<xsl:with-param name="id" select="'usePreview'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
 					
-					<label for="usePreview">
-						<xsl:value-of select="$i18n.usePreview" />
+					<label for="name" class="floatleft full">
+						<xsl:value-of select="$i18n.externalLink" />
 					</label>
-				</div>
-			</div>
-		
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'paymentSupportEnabled'" />
-						<xsl:with-param name="id" select="'paymentSupportEnabled'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
 					
-					<label for="paymentSupportEnabled">
-						<xsl:value-of select="$i18n.PaymentSupportEnabled" />
-					</label>
+					<div class="floatleft full">
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="id" select="'externalLink'"/>
+							<xsl:with-param name="name" select="'externalLink'"/>
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+					</div>
 				</div>
-			</div>
-		
+			
+			</fieldset>
 		</xsl:if>
+		
+		<fieldset>
+			<legend><xsl:value-of select="$i18n.Flow.activationAndPublishing" /></legend>
+		
+			<xsl:if test="LacksPublishAccess">
+				<div class="floatleft full">
+					
+					<label class="floatleft full">
+						<xsl:value-of select="$i18n.LacksPublishAccess" />
+					</label>
+				</div>
+			</xsl:if>
 			
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'requireAuthentication'" />
-					<xsl:with-param name="id" select="'requireAuthentication'" />
-					<xsl:with-param name="element" select="Flow" />
-				</xsl:call-template>
+			<div class="floatleft full">
+				<xsl:if test="LacksPublishAccess">
+					<xsl:attribute name="class">floatleft full bigmarginbottom opacity-fifty</xsl:attribute>
+				</xsl:if>
+			
+				<div class="floatleft">
+					
+					<label for="publishDate" class="floatleft">
+						<xsl:value-of select="$i18n.publishDate" />
+					</label>
+					
+					<div class="floatleft clearboth">
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'publishDate'" />
+							<xsl:with-param name="id" select="'publishDate'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="size" select="10" />
+							<xsl:with-param name="disabled" select="LacksPublishAccess" />
+							<xsl:with-param name="class" select="'marginright'" />
+						</xsl:call-template>
+					</div>
+				</div>
 				
-				<label for="requireAuthentication">
-					<xsl:value-of select="$i18n.requireAuthentication" />
-				</label>
+				<div class="bigmarginleft floatleft">
+					
+					<label for="unPublishDate" class="floatleft">
+						<xsl:value-of select="$i18n.unPublishDate" />
+					</label>
+					
+					<div class="floatleft clearboth">
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="name" select="'unPublishDate'" />
+							<xsl:with-param name="id" select="'unPublishDate'" />
+							<xsl:with-param name="element" select="Flow" />
+							<xsl:with-param name="size" select="10" />
+							<xsl:with-param name="disabled" select="LacksPublishAccess" />
+							<xsl:with-param name="class" select="'marginright'" />
+						</xsl:call-template>
+					</div>
+				</div>
+			
 			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'showLoginQuestion'" />
-					<xsl:with-param name="name" select="'showLoginQuestion'" />
-					<xsl:with-param name="element" select="Flow" />
-				</xsl:call-template>
-				
-				<label for="showLoginQuestion">
-					<xsl:value-of select="$i18n.Flow.showLoginQuestion" />
-				</label>
-			</div>
-		
-			<div class="floatleft full margintop">
-				<xsl:call-template name="createTextArea">
-					<xsl:with-param name="id" select="'loginQuestionText'" />
-					<xsl:with-param name="name" select="'loginQuestionText'" />
-					<xsl:with-param name="class" select="'flow-ckeditor'" />
-					<xsl:with-param name="value" >
-						<xsl:choose>
-							<xsl:when test="Flow/loginQuestionText">
-								<xsl:value-of select="Flow/loginQuestionText" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$java.defaultFlowStartLoginQuestionText" disable-output-escaping="yes"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:with-param>
-				</xsl:call-template>
-	    </div>
-	    
-	    <script type="text/javascript">
-				$(document).ready(function() {
-					
-					var authCheckbox = $("#requireAuthentication");
-					
-					var showLoginQuestionCheckbox = function() {
-						
-						var checked = authCheckbox.prop("checked");
-						
-						$("#showLoginQuestion").parent().parent().toggle(!checked);
-						
-						if (checked) {
-							$("#showLoginQuestion").prop("checked", false).change();
-						}
-					};
-					
-					authCheckbox.change(showLoginQuestionCheckbox);
-					showLoginQuestionCheckbox();
-					
-					
-					var checkbox = $("#showLoginQuestion");
-					
-					var showLoginQuestionText = function() {
-						
-						var checked = checkbox.prop("checked");
-						
-						$("#loginQuestionText").parent().toggle(checked);
-					};
-					
-					checkbox.change(showLoginQuestionText);
-					showLoginQuestionText();
-				});
-			</script>
-		</div>
-		
-		<xsl:if test="ForeignIDsBlocked">
+			
 			<div class="floatleft full bigmarginbottom margintop">
+				
+				<xsl:if test="LacksPublishAccess">
+					<xsl:attribute name="class">floatleft full bigmarginbottom margintop opacity-fifty</xsl:attribute>
+				</xsl:if>
 			
 				<div class="floatleft">
 					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'allowForeignIDs'" />
-						<xsl:with-param name="id" select="'allowForeignIDs'" />
-						<xsl:with-param name="element" select="Flow" />
+						<xsl:with-param name="name" select="'enabled'" />
+						<xsl:with-param name="id" select="'enabled'" />
+						<xsl:with-param name="element" select="Flow" /> 
+						
+						<!-- Disable if we are in add mode -->
+						<xsl:with-param name="disabled" select="LacksPublishAccess or (/Document/AddFlow and $isInternal = 'true')" />
 					</xsl:call-template>
 					
-					<label for="allowForeignIDs">
-						<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
+					<label for="enabled">
+						<xsl:value-of select="$i18n.enableFlow" />
 					</label>
 				</div>
 			</div>
-		</xsl:if>
-			
+		
+		</fieldset>
+		
 		<xsl:if test="$isInternal = 'true'">
+		
+			<fieldset class="internal">
 			
-			<div class="floatleft full bigmarginbottom margintop internal">
+				<legend><xsl:value-of select="$i18n.Flow.preview" /></legend>	
+		
+				<div class="floatleft full bigmarginbottom">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'usePreview'" />
+							<xsl:with-param name="id" select="'usePreview'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="usePreview">
+							<xsl:value-of select="$i18n.usePreview" />
+						</label>
+					</div>
+				</div>
+			
+			</fieldset>
+		
+		</xsl:if>
+		
+		<fieldset>
+			<legend><xsl:value-of select="$i18n.Flow.authenticationSettings" /></legend>
+		
+			<div class="floatleft full bigmarginbottom">
 			
 				<div class="floatleft">
 					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'requireSigning'" />
-						<xsl:with-param name="id" select="'requireSigning'" />
+						<xsl:with-param name="name" select="'requireAuthentication'" />
+						<xsl:with-param name="id" select="'requireAuthentication'" />
 						<xsl:with-param name="element" select="Flow" />
 					</xsl:call-template>
 					
-					<label for="requireSigning">
-						<xsl:value-of select="$i18n.requireSigning" />
+					<label for="requireAuthentication">
+						<xsl:value-of select="$i18n.requireAuthentication" />
 					</label>
 				</div>
 			</div>
 			
-			<xsl:if test="SupportsSequentialSigning">
-				<div class="floatleft full bigmarginbottom margintop internal">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'useSequentialSigning'" />
-							<xsl:with-param name="id" select="'useSequentialSigning'" />
-							<xsl:with-param name="element" select="Flow" />
-						</xsl:call-template>
-						
-						<label for="useSequentialSigning">
-							<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
-						</label>
-					</div>
+			<div class="floatleft full bigmarginbottom">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'showLoginQuestion'" />
+						<xsl:with-param name="name" select="'showLoginQuestion'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="showLoginQuestion">
+						<xsl:value-of select="$i18n.Flow.showLoginQuestion" />
+					</label>
 				</div>
-				
-				<div class="floatleft full bigmarginbottom margintop internal">
+			
+				<div class="floatleft full margintop">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'loginQuestionText'" />
+						<xsl:with-param name="name" select="'loginQuestionText'" />
+						<xsl:with-param name="class" select="'flow-ckeditor'" />
+						<xsl:with-param name="value" >
+							<xsl:choose>
+								<xsl:when test="Flow/loginQuestionText">
+									<xsl:value-of select="Flow/loginQuestionText" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$java.defaultFlowStartLoginQuestionText" disable-output-escaping="yes"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+					</xsl:call-template>
+		    </div>
+		    
+		    <script type="text/javascript">
+					$(document).ready(function() {
+						
+						var authCheckbox = $("#requireAuthentication");
+						
+						var showLoginQuestionCheckbox = function() {
+							
+							var checked = authCheckbox.prop("checked");
+							
+							$("#showLoginQuestion").parent().parent().toggle(!checked);
+							
+							if (checked) {
+								$("#showLoginQuestion").prop("checked", false).change();
+							}
+						};
+						
+						authCheckbox.change(showLoginQuestionCheckbox);
+						showLoginQuestionCheckbox();
+						
+						
+						var checkbox = $("#showLoginQuestion");
+						
+						var showLoginQuestionText = function() {
+							
+							var checked = checkbox.prop("checked");
+							
+							$("#loginQuestionText").parent().toggle(checked);
+						};
+						
+						checkbox.change(showLoginQuestionText);
+						showLoginQuestionText();
+					});
+				</script>
+			</div>
+		
+			<xsl:if test="ForeignIDsBlocked">
+				<div class="floatleft full bigmarginbottom margintop">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'skipPosterSigning'" />
-							<xsl:with-param name="id" select="'skipPosterSigning'" />
+							<xsl:with-param name="name" select="'allowForeignIDs'" />
+							<xsl:with-param name="id" select="'allowForeignIDs'" />
 							<xsl:with-param name="element" select="Flow" />
 						</xsl:call-template>
 						
-						<label for="skipPosterSigning">
-							<xsl:value-of select="$i18n.Flow.skipPosterSigning" />
-							<xsl:text> </xsl:text>
-							<xsl:value-of select="$i18n.Flow.skipPosterSigning.description" />
-						</label>
-					</div>
-				</div>
-				
-				<div class="floatleft full bigmarginbottom margintop internal">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'allowPosterMultipartSigning'" />
-							<xsl:with-param name="id" select="'allowPosterMultipartSigning'" />
-							<xsl:with-param name="element" select="Flow" />
-						</xsl:call-template>
-						
-						<label for="allowPosterMultipartSigning">
-							<xsl:value-of select="$i18n.Flow.allowPosterMultipartSigning" />
+						<label for="allowForeignIDs">
+							<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
 						</label>
 					</div>
 				</div>
 			</xsl:if>
+		
+		</fieldset>
 			
-			<div class="floatleft full bigmarginbottom margintop internal">
+		<xsl:if test="$isInternal = 'true'">
 			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'appendSigningSignatureToPDF'" />
-						<xsl:with-param name="id" select="'appendSigningSignatureToPDF'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="appendSigningSignatureToPDF">
-						<xsl:value-of select="$i18n.Flow.appendSigningSignatureToPDF" />
-					</label>
-				</div>
-			</div>
+			<fieldset class="internal">
+				<legend><xsl:value-of select="$i18n.Flow.signing" /></legend>
 			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'showPreviousSignaturesToSigners'" />
-						<xsl:with-param name="id" select="'showPreviousSignaturesToSigners'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="showPreviousSignaturesToSigners">
-						<xsl:value-of select="$i18n.Flow.showPreviousSignaturesToSigners" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideManagerDetails'" />
-						<xsl:with-param name="id" select="'hideManagerDetails'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideManagerDetails">
-						<xsl:value-of select="$i18n.hideManagerDetails" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideFromOverview'" />
-						<xsl:with-param name="id" select="'hideFromOverview'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideFromOverview">
-						<xsl:value-of select="$i18n.hideFromOverview" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideFromUser'" />
-						<xsl:with-param name="id" select="'hideFromUser'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideFromUser">
-						<xsl:value-of select="$i18n.Flow.hideFromUser" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideFlowInstanceIDFromUser'" />
-						<xsl:with-param name="id" select="'hideFlowInstanceIDFromUser'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideFlowInstanceIDFromUser">
-						<xsl:value-of select="$i18n.Flow.hideFlowInstanceIDFromUser" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
+				<div class="floatleft full bigmarginbottom">
 				
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideExternalMessages'" />
-						<xsl:with-param name="id" select="'hideExternalMessages'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideExternalMessages">
-						<xsl:value-of select="$i18n.hideExternalMessages" />
-					</label>
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'requireSigning'" />
+							<xsl:with-param name="id" select="'requireSigning'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="requireSigning">
+							<xsl:value-of select="$i18n.requireSigning" />
+						</label>
+					</div>
 				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
 				
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
-						<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
+				<xsl:if test="SupportsSequentialSigning">
+					<div class="floatleft full bigmarginbottom margintop">
 					
-					<label for="hideExternalMessageAttachments">
-						<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideInternalMessages'" />
-						<xsl:with-param name="id" select="'hideInternalMessages'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideInternalMessages">
-						<xsl:value-of select="$i18n.hideInternalMessages" />
-					</label>
-				</div>
-			</div>
-			
-			<xsl:choose>
-				<xsl:when test="SubmitSurveyEnabled">
-					<div class="floatleft full bigmarginbottom margintop internal">
-				
 						<div class="floatleft">
 							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'showSubmitSurvey'" />
-								<xsl:with-param name="id" select="'showSubmitSurvey'" />
-								<xsl:with-param name="element" select="Flow" />       
+								<xsl:with-param name="name" select="'useSequentialSigning'" />
+								<xsl:with-param name="id" select="'useSequentialSigning'" />
+								<xsl:with-param name="element" select="Flow" />
 							</xsl:call-template>
 							
-							<label for="showSubmitSurvey">
-								<xsl:value-of select="$i18n.showSubmitSurvey" />
+							<label for="useSequentialSigning">
+								<xsl:value-of select="$i18n.Flow.useSequentialSigning" />
 							</label>
 						</div>
 					</div>
+					
+					<div class="floatleft full bigmarginbottom margintop">
+					
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'skipPosterSigning'" />
+								<xsl:with-param name="id" select="'skipPosterSigning'" />
+								<xsl:with-param name="element" select="Flow" />
+							</xsl:call-template>
+							
+							<label for="skipPosterSigning">
+								<xsl:value-of select="$i18n.Flow.skipPosterSigning" />
+								<xsl:text> </xsl:text>
+								<xsl:value-of select="$i18n.Flow.skipPosterSigning.description" />
+							</label>
+						</div>
+					</div>
+					
+					<div class="floatleft full bigmarginbottom margintop">
+					
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'allowPosterMultipartSigning'" />
+								<xsl:with-param name="id" select="'allowPosterMultipartSigning'" />
+								<xsl:with-param name="element" select="Flow" />
+							</xsl:call-template>
+							
+							<label for="allowPosterMultipartSigning">
+								<xsl:value-of select="$i18n.Flow.allowPosterMultipartSigning" />
+							</label>
+						</div>
+					</div>
+				</xsl:if>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'appendSigningSignatureToPDF'" />
+							<xsl:with-param name="id" select="'appendSigningSignatureToPDF'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="appendSigningSignatureToPDF">
+							<xsl:value-of select="$i18n.Flow.appendSigningSignatureToPDF" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'showPreviousSignaturesToSigners'" />
+							<xsl:with-param name="id" select="'showPreviousSignaturesToSigners'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="showPreviousSignaturesToSigners">
+							<xsl:value-of select="$i18n.Flow.showPreviousSignaturesToSigners" />
+						</label>
+					</div>
+				</div>
+			
+			</fieldset>
+			
+			<fieldset class="internal">
+				<legend><xsl:value-of select="$i18n.Flow.paymentSettings" /></legend>		
+			
+				<div class="floatleft full bigmarginbottom">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'paymentSupportEnabled'" />
+							<xsl:with-param name="id" select="'paymentSupportEnabled'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="paymentSupportEnabled">
+							<xsl:value-of select="$i18n.PaymentSupportEnabled" />
+						</label>
+					</div>
+				</div>
+				
+			</fieldset>
+			
+			<xsl:choose>
+				<xsl:when test="SubmitSurveyEnabled">
+				
+					<fieldset class="internal">
+						<legend><xsl:value-of select="$i18n.Flow.surveys" /></legend>
+				
+						<div class="floatleft full bigmarginbottom">
+					
+							<div class="floatleft">
+								<xsl:call-template name="createCheckbox">
+									<xsl:with-param name="name" select="'showSubmitSurvey'" />
+									<xsl:with-param name="id" select="'showSubmitSurvey'" />
+									<xsl:with-param name="element" select="Flow" />       
+								</xsl:call-template>
+								
+								<label for="showSubmitSurvey">
+									<xsl:value-of select="$i18n.showSubmitSurvey" />
+								</label>
+							</div>
+						</div>
+					</fieldset>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:call-template name="createHiddenField">
@@ -2630,77 +2538,213 @@
 						<xsl:with-param name="element" select="Flow" /> 
 					</xsl:call-template>
 				</xsl:otherwise>
-			</xsl:choose>
+			</xsl:choose>			
 			
-			<div class="floatleft full bigmarginbottom margintop internal">
+			<fieldset class="internal">
+				<legend><xsl:value-of select="$i18n.Flow.messagesAndNotes" /></legend>
 			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideSubmitStepText'" />
-						<xsl:with-param name="id" select="'hideSubmitStepText'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
+				<div class="floatleft full bigmarginbottom">
 					
-					<label for="hideSubmitStepText">
-						<xsl:value-of select="$i18n.hideSubmitStepText" />
-					</label>
-				</div>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom margintop internal">
-			
-				<div class="floatleft">
-					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="name" select="'hideSaveButton'" />
-						<xsl:with-param name="id" select="'hideSaveButton'" />
-						<xsl:with-param name="element" select="Flow" />
-					</xsl:call-template>
-					
-					<label for="hideSaveButton">
-						<xsl:value-of select="$i18n.hideSaveButton" />
-					</label>
-				</div>
-			</div>
-			
-		</xsl:if>
-		
-		<xsl:if test="$isInternal = 'true'">
-			
-			<!-- Disable if we are NOT in add mode -->
-			<xsl:if test="/Document/AddFlow">
-				<div class="floatleft full margintop internal">
-				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'addstandardstatuses'" />
-							<xsl:with-param name="id" select="'addstandardstatuses'" />
-							<xsl:with-param name="checked" select="'true'" />
+							<xsl:with-param name="name" select="'hideExternalMessages'" />
+							<xsl:with-param name="id" select="'hideExternalMessages'" />
+							<xsl:with-param name="element" select="Flow" />
 						</xsl:call-template>
 						
-						<label for="addstandardstatuses">
-							<xsl:value-of select="$i18n.AddStandardStatuses" />
+						<label for="hideExternalMessages">
+							<xsl:value-of select="$i18n.hideExternalMessages" />
 						</label>
 					</div>
 				</div>
 				
-				<div class="floatleft full bigmarginbottom internal">
+				<div class="floatleft full bigmarginbottom margintop">
 					
-					<label for="statusGroupID" class="floatleft full">
-						<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup" />
-					</label>
-					
-					<div class="floatleft full">
-						<xsl:call-template name="createDropdown">
-							<xsl:with-param name="id" select="'statusGroupID'"/>
-							<xsl:with-param name="name" select="'statusGroupID'"/>
-							<xsl:with-param name="valueElementName" select="'statusGroupID'" />
-							<xsl:with-param name="labelElementName" select="'name'" />
-							<xsl:with-param name="element" select="StandardStatusGroups/StandardStatusGroup" />
-							<xsl:with-param name="addEmptyOption" select="$i18n.AddStandardStatuses.StandardStatusGroup.choose" />
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideExternalMessageAttachments'" />
+							<xsl:with-param name="id" select="'hideExternalMessageAttachments'" />
+							<xsl:with-param name="element" select="Flow" />
 						</xsl:call-template>
+						
+						<label for="hideExternalMessageAttachments">
+							<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideInternalMessages'" />
+							<xsl:with-param name="id" select="'hideInternalMessages'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideInternalMessages">
+							<xsl:value-of select="$i18n.hideInternalMessages" />
+						</label>
+					</div>
+				</div>
+			
+			</fieldset>
+			
+			<fieldset class="internal">
+				<legend><xsl:value-of select="$i18n.Flow.hideFlowInstances" /></legend>
+				
+				<div class="floatleft full bigmarginbottom">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideFromUser'" />
+							<xsl:with-param name="id" select="'hideFromUser'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideFromUser">
+							<xsl:value-of select="$i18n.Flow.hideFromUser" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop internal">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideFromManager'" />
+							<xsl:with-param name="id" select="'hideFromManager'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideFromManager">
+							<xsl:value-of select="$i18n.Flow.hideFromManager" />
+						</label>
+					</div>
+				</div>
+				
+			</fieldset>
+			
+			<fieldset class="internal">
+				<legend><xsl:value-of select="$i18n.Flow.hideDetailsAndFunctions" /></legend>
+				
+				<div class="floatleft full bigmarginbottom">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideFlowInstanceIDFromUser'" />
+							<xsl:with-param name="id" select="'hideFlowInstanceIDFromUser'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideFlowInstanceIDFromUser">
+							<xsl:value-of select="$i18n.Flow.hideFlowInstanceIDFromUser" />
+						</label>
+					</div>
+				</div>				
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideManagerDetails'" />
+							<xsl:with-param name="id" select="'hideManagerDetails'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideManagerDetails">
+							<xsl:value-of select="$i18n.hideManagerDetails" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideFromOverview'" />
+							<xsl:with-param name="id" select="'hideFromOverview'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideFromOverview">
+							<xsl:value-of select="$i18n.hideFromOverview" />
+						</label>
+					</div>
+				</div>				
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideSubmitStepText'" />
+							<xsl:with-param name="id" select="'hideSubmitStepText'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideSubmitStepText">
+							<xsl:value-of select="$i18n.hideSubmitStepText" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'hideSaveButton'" />
+							<xsl:with-param name="id" select="'hideSaveButton'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="hideSaveButton">
+							<xsl:value-of select="$i18n.hideSaveButton" />
+						</label>
+					</div>
+				</div>
+				
+			</fieldset>
+			
+			<!-- Disable if we are NOT in add mode -->
+			<xsl:if test="/Document/AddFlow">
+			
+				<fieldset class="internal">
+					<legend><xsl:value-of select="$i18n.Flow.statuses" /></legend>
+			
+					<div class="floatleft full">
+					
+						<div class="floatleft">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="name" select="'addstandardstatuses'" />
+								<xsl:with-param name="id" select="'addstandardstatuses'" />
+								<xsl:with-param name="checked" select="'true'" />
+							</xsl:call-template>
+							
+							<label for="addstandardstatuses">
+								<xsl:value-of select="$i18n.AddStandardStatuses" />
+							</label>
+						</div>
 					</div>
 					
-				</div>
+					<div class="floatleft full bigmarginbottom">
+						
+						<label for="statusGroupID" class="floatleft full">
+							<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup" />
+						</label>
+						
+						<div class="floatleft full">
+							<xsl:call-template name="createDropdown">
+								<xsl:with-param name="id" select="'statusGroupID'"/>
+								<xsl:with-param name="name" select="'statusGroupID'"/>
+								<xsl:with-param name="valueElementName" select="'statusGroupID'" />
+								<xsl:with-param name="labelElementName" select="'name'" />
+								<xsl:with-param name="element" select="StandardStatusGroups/StandardStatusGroup" />
+								<xsl:with-param name="addEmptyOption" select="$i18n.AddStandardStatuses.StandardStatusGroup.choose" />
+							</xsl:call-template>
+						</div>
+						
+					</div>
+				</fieldset>
 			</xsl:if>
 		
 		</xsl:if>
