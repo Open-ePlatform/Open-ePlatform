@@ -44,6 +44,7 @@ public class FlowCache {
 			ManagerAccess access = flowFamily.getManagerAccess(user);
 			
 			if (access == ManagerAccess.FULL) {
+				
 				flowFamiliesFullAccess.add(flowFamily);
 				
 			} else if (access == ManagerAccess.RESTRICTED) {
