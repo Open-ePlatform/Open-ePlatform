@@ -4,6 +4,15 @@
 	<xsl:variable name="java.Signing.user">Signerad av</xsl:variable>
 	<xsl:variable name="java.Signing.ActivityProgress.State">Status</xsl:variable>
 	<xsl:variable name="java.Signing.flowInstanceWasVisible">Förhandsgranskning av ärendet var synligt</xsl:variable>
+	
+	<xsl:variable name="i18n.FlowDisabled">Den här e-tjänsten är inte tillgänglig för tillfället</xsl:variable>
+	
+	<xsl:variable name="i18n.Validation.RequiredField" select="'Du måste fylla i fältet:'"/>
+	<xsl:variable name="i18n.Validation.InvalidFormat" select="'Felaktigt format på fältet:'"/>
+	<xsl:variable name="i18n.Validation.TooShort" select="'För kort innehåll i fältet:'"/>
+	<xsl:variable name="i18n.Validation.TooLong" select="'För långt innehåll i fältet:'"/>	
+	<xsl:variable name="i18n.Validation.UnknownValidationErrorType" select="'Okänt fel på fältet:'"/>
+	<xsl:variable name="i18n.Validation.UnknownMessageKey" select="'Ett okänt valideringsfel har uppstått.'"/>
 
 	<xsl:variable name="i18n.ActivityGroup">Aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.name">Namn för aktivitetsgruppen</xsl:variable>

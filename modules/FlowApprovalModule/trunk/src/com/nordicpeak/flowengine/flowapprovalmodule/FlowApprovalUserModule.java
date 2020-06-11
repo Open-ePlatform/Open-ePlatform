@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.BaseFlowModule;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.UserFlowInstanceMenuModule;
@@ -244,12 +246,12 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@Override
-	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
 
 		return listPending(req, res, user, uriParser, null);
 	}
 
-	public ForegroundModuleResponse listPending(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Throwable {
+	public ForegroundModuleResponse listPending(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws AccessDeniedException, SQLException {
 
 		if (user == null) {
 			throw new AccessDeniedException("User needs to be logged in");
@@ -275,7 +277,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@WebPublic(requireLogin = true, toLowerCase = true)
-	public ForegroundModuleResponse listCompleted(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+	public ForegroundModuleResponse listCompleted(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
 
 		log.info("User " + user + " listing completed activities");
 
@@ -332,7 +334,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION);
 
-			if (flowInstance != null) {
+			if (flowInstance != null && flowInstance.getFlow().isEnabled()) {
 				
 				Element flowInstanceElement = flowInstance.toXML(doc);
 
@@ -482,6 +484,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
+		}
+		
+		if (!flowInstance.getFlow().isEnabled()) {
+			
+			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 
 		List<ValidationError> validationErrors = null;
@@ -637,6 +644,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			}
 		}
 		
+		if (!flowInstance.getFlow().isEnabled()) {
+			
+			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+		}
+		
 		if (!activityProgress.isMutable()) {
 			
 			log.warn("Activity " + activityProgress + " is not in a mutable state");
@@ -776,6 +788,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
+		}
+		
+		if (!flowInstance.getFlow().isEnabled()) {
+			
+			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 		
 		if (!activityProgress.isMutable()) {

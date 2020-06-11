@@ -50,13 +50,6 @@
 		
 	</xsl:variable>
 	
-	<xsl:variable name="i18n.Validation.RequiredField" select="'Du måste fylla i fältet:'"/>
-	<xsl:variable name="i18n.Validation.InvalidFormat" select="'Felaktigt format på fältet:'"/>
-	<xsl:variable name="i18n.Validation.TooShort" select="'För kort innehåll i fältet:'"/>
-	<xsl:variable name="i18n.Validation.TooLong" select="'För långt innehåll i fältet:'"/>	
-	<xsl:variable name="i18n.Validation.UnknownValidationErrorType" select="'Okänt fel på fältet:'"/>
-	<xsl:variable name="i18n.Validation.UnknownMessageKey" select="'Ett okänt valideringsfel har uppstått.'"/>
-	
 	<xsl:variable name="i18n.Validation.ActivityNotFound">Den begärda aktiviteten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupNotFound">Den begärda aktivitetsgruppen hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleRequired">Aktiviteten måste ha någon ansvarig</xsl:variable>

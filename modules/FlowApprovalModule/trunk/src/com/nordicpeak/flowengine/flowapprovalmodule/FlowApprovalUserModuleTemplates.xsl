@@ -31,6 +31,7 @@
 	<xsl:template match="ListPendingActivities">
 		
 		<xsl:apply-templates select="validationError"/>
+		<xsl:apply-templates select="ValidationErrors/validationError"/>
 		
 		<div id="flow-approval" class="contentitem">
 			<section>
@@ -662,6 +663,59 @@
 		</div>
 		
 		<div class="help-backdrop" data-help-box="helpdialog_{$id}" />
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='FlowDisabled']">
+	
+		<section class="modal error">
+			<span data-icon-before="!">
+				<xsl:value-of select="$i18n.FlowDisabled" />
+			</span>
+			<i class="icon close">x</i>
+		</section>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError">
+		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
+			<p class="error">
+				<xsl:choose>
+					<xsl:when test="validationErrorType='RequiredField'">
+						<xsl:value-of select="$i18n.Validation.RequiredField" />
+					</xsl:when>
+					<xsl:when test="validationErrorType='InvalidFormat'">
+						<xsl:value-of select="$i18n.Validation.InvalidFormat" />
+					</xsl:when>
+					<xsl:when test="validationErrorType='TooShort'">
+						<xsl:value-of select="$i18n.Validation.TooShort" />
+					</xsl:when>
+					<xsl:when test="validationErrorType='TooLong'">
+						<xsl:value-of select="$i18n.Validation.TooLong" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.Validation.UnknownValidationErrorType" />
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				<xsl:text>&#x20;</xsl:text>
+				
+<!-- 				<xsl:choose> -->
+<!-- 					<xsl:when test="fieldName = ''"> -->
+<!-- 						<xsl:value-of select="$i18n."/> -->
+<!-- 					</xsl:when> -->
+<!-- 					<xsl:otherwise> -->
+						<xsl:value-of select="fieldName"/>
+<!-- 					</xsl:otherwise> -->
+<!-- 				</xsl:choose> -->
+			</p>
+		</xsl:if>
+		
+		<xsl:if test="messageKey">
+			<p class="error">
+				<xsl:value-of select="$i18n.Validation.UnknownMessageKey" />
+			</p>
+		</xsl:if>
 		
 	</xsl:template>
 	
