@@ -2619,4 +2619,10 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		return fileAttachmentHandler;
 	}
+
+	
+	public CopyOnWriteArrayList<ExtensionLinkProvider> getListOverviewExtensionLinkProviders() {
+	
+		return listOverviewExtensionLinkProviders;
+	}
 }
