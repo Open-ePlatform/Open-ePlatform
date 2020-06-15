@@ -2142,6 +2142,7 @@
 			
 			<label for="name" class="floatleft full">
 				<xsl:value-of select="$i18n.name" />
+				<span class="required">*</span>
 			</label>
 			
 			<div class="floatleft full">
@@ -2381,7 +2382,6 @@
 						
 						<label for="allowForeignIDs">
 							<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
-							<span class="required">*</span>
 						</label>
 					</div>
 				</div>
@@ -2763,6 +2763,7 @@
 						
 						<label for="statusGroupID" class="floatleft full">
 							<xsl:value-of select="$i18n.AddStandardStatuses.StandardStatusGroup" />
+							<span class="required">*</span>
 						</label>
 						
 						<div class="floatleft full">
