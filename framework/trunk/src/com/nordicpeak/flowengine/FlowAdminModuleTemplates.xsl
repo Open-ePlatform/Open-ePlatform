@@ -2625,10 +2625,38 @@
 				
 			</fieldset>
 			
-			<fieldset class="internal">
-				<legend><xsl:value-of select="$i18n.Flow.hideDetailsAndFunctions" /></legend>
-				
-				<div class="floatleft full bigmarginbottom">
+		</xsl:if>
+		
+		<fieldset>
+			<legend><xsl:value-of select="$i18n.Flow.hideDetailsAndFunctions" /></legend>
+			
+			<div class="floatleft full bigmarginbottom">
+			
+				<xsl:variable name="disableSkip" select="Flow/FlowForms/FlowForm and not(AllowSkipOverviewForFlowForms)"/>
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'skipOverview'" />
+						<xsl:with-param name="id" select="'skipOverview'" />
+						<xsl:with-param name="element" select="Flow" />
+						<xsl:with-param name="disabled" select="$disableSkip" />
+					</xsl:call-template>
+					
+					<label for="skipOverview">
+						<xsl:value-of select="$i18n.skipOverview" />
+						
+						<xsl:if test="$disableSkip">
+							<xsl:value-of select="' ('" />
+							<xsl:value-of select="$i18n.MayNotSetOverviewIfFlowFormIsSet.description" />
+							<xsl:value-of select="')'" />
+						</xsl:if>
+					</label>
+				</div>
+			</div>				
+			
+			<xsl:if test="$isInternal = 'true'">
+			
+				<div class="floatleft full bigmarginbottom margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2643,7 +2671,7 @@
 					</div>
 				</div>				
 				
-				<div class="floatleft full bigmarginbottom margintop">
+				<div class="floatleft full bigmarginbottom margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2658,7 +2686,7 @@
 					</div>
 				</div>
 				
-				<div class="floatleft full bigmarginbottom margintop">
+				<div class="floatleft full bigmarginbottom margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2673,7 +2701,7 @@
 					</div>
 				</div>				
 				
-				<div class="floatleft full bigmarginbottom margintop">
+				<div class="floatleft full bigmarginbottom margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2688,7 +2716,7 @@
 					</div>
 				</div>
 				
-				<div class="floatleft full bigmarginbottom margintop">
+				<div class="floatleft full bigmarginbottom margintop internal">
 				
 					<div class="floatleft">
 						<xsl:call-template name="createCheckbox">
@@ -2702,8 +2730,12 @@
 						</label>
 					</div>
 				</div>
-				
-			</fieldset>
+			
+			</xsl:if>
+			
+		</fieldset>
+		
+		<xsl:if test="$isInternal = 'true'">
 			
 			<!-- Disable if we are NOT in add mode -->
 			<xsl:if test="/Document/AddFlow">
