@@ -2381,6 +2381,7 @@
 						
 						<label for="allowForeignIDs">
 							<xsl:value-of select="$i18n.Flow.allowForeignIDs" />
+							<span class="required">*</span>
 						</label>
 					</div>
 				</div>
@@ -2787,6 +2788,7 @@
 			
 			<label for="shortDescription" class="floatleft full">
 				<xsl:value-of select="$i18n.shortDescription" />
+				<span class="required">*</span>
 			</label>
 			
 			<div class="floatleft full">
@@ -2806,6 +2808,7 @@
 			
 			<label for="longDescription" class="floatleft full">
 				<xsl:value-of select="$i18n.longDescription" />
+				<span class="required">*</span>
 			</label>
 			
 			<div class="floatleft full">
@@ -2827,6 +2830,7 @@
 				
 				<label for="submittedMessage" class="floatleft full">
 					<xsl:value-of select="$i18n.submittedMessage" />
+					<span class="required">*</span>
 				</label>
 				
 				<div class="floatleft full">
