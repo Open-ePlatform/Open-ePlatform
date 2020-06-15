@@ -786,7 +786,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 							if (filterEndpoint == null) {
 
-								log.error("Missing required filter endpoint: " + query.getFilterEndpointName());
+								log.warn("Missing required filter endpoint: " + query.getFilterEndpointName());
 								queryInstance.setFetchChildrenException(new CommunicationException("Missing required filter endpoint: " + query.getFilterEndpointName()));
 								return null;
 							}
