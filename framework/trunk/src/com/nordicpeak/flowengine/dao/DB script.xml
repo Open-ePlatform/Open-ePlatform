@@ -2636,5 +2636,18 @@
 			]]>
 		</Query>
 	</Script>	
+	
+	<Script version="140">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses` 
+					ADD COLUMN `newExternalMessagesDisallowed` TINYINT(1) NOT NULL AFTER `managingTime`,
+					ADD COLUMN `newExternalMessagesAllowedDays` INT(10) UNSIGNED AFTER `newExternalMessagesDisallowed`,
+					ADD COLUMN `addExternalMessage` TINYINT(1) NOT NULL AFTER `newExternalMessagesAllowedDays`,
+					ADD COLUMN `requireSigning` TINYINT(1) NOT NULL AFTER `isRestrictedAdminDeletable`,
+					ADD COLUMN `useAccessCheck` TINYINT(1) NOT NULL AFTER `requireSigning`;
+			]]>
+		</Query>
+	</Script>	
 
 </DBScripts>

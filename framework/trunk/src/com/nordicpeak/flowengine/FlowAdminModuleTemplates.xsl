@@ -3696,7 +3696,11 @@
 
 		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 				
-			<xsl:call-template name="statusForm"/>
+			<xsl:call-template name="statusForm">
+				<xsl:with-param name="element" select="Status" />
+				<xsl:with-param name="statusMappings" select="Status/DefaultStatusMappings/DefaultStatusMapping" />
+				<xsl:with-param name="hideExternalMessageSettings" select="Status/Flow/hideExternalMessages = 'true'" />
+			</xsl:call-template>
 			
 			<xsl:call-template name="statusFragmentExtension"/>
 			
@@ -3720,7 +3724,11 @@
 
 		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 		
-			<xsl:call-template name="statusForm"/>
+			<xsl:call-template name="statusForm">
+				<xsl:with-param name="element" select="Status" />
+				<xsl:with-param name="statusMappings" select="Status/DefaultStatusMappings/DefaultStatusMapping" />
+				<xsl:with-param name="hideExternalMessageSettings" select="Status/Flow/hideExternalMessages = 'true'" />
+			</xsl:call-template>
 
 			<xsl:call-template name="statusFragmentExtension"/>
 			
@@ -3745,6 +3753,10 @@
 	</xsl:template>
 	
 	<xsl:template name="statusForm">
+		<xsl:param name="element" />
+		<xsl:param name="statusMappings" />
+		<xsl:param name="hideExternalMessageSettings" select="false()" />
+		<xsl:param name="hideFlowSpecificSettings" select="false()" />
 	
 		<div class="floatleft full bigmarginbottom">
 			
@@ -3756,7 +3768,7 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'name'"/>
 					<xsl:with-param name="name" select="'name'"/>
-					<xsl:with-param name="element" select="Status" />          
+					<xsl:with-param name="element" select="$element" />          
 				</xsl:call-template>
 			</div>
 		</div>	
@@ -3771,7 +3783,7 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'description'"/>
 					<xsl:with-param name="name" select="'description'"/>
-					<xsl:with-param name="element" select="Status" />          
+					<xsl:with-param name="element" select="$element" />          
 				</xsl:call-template>
 			</div>
 		</div>
@@ -3788,14 +3800,14 @@
 				<xsl:call-template name="createTextField">
 					<xsl:with-param name="id" select="'managingTime'"/>
 					<xsl:with-param name="name" select="'managingTime'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 			</div>
 		</div>
 
 		<div>
 
-			<xsl:if test="Flow/hideExternalMessages = 'true'">
+			<xsl:if test="$hideExternalMessageSettings">
 				<xsl:attribute name="class">hidden</xsl:attribute>
 			</xsl:if>
 
@@ -3807,7 +3819,7 @@
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="name" select="'newExternalMessagesDisallowed'" />
 						<xsl:with-param name="id" select="'newExternalMessagesDisallowed'" />
-						<xsl:with-param name="element" select="Status" />
+						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
 					
 					<label for="newExternalMessagesDisallowed">
@@ -3824,7 +3836,7 @@
 					<xsl:call-template name="createTextField">
 						<xsl:with-param name="id" select="'newExternalMessagesAllowedDays'"/>
 						<xsl:with-param name="name" select="'newExternalMessagesAllowedDays'"/>
-						<xsl:with-param name="element" select="Status" />
+						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
 				</div>
 	
@@ -3832,7 +3844,7 @@
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="name" select="'addExternalMessage'" />
 						<xsl:with-param name="id" select="'addExternalMessage'" />
-						<xsl:with-param name="element" select="Status" />
+						<xsl:with-param name="element" select="$element" />
 					</xsl:call-template>
 					
 					<label for="addExternalMessage">
@@ -3840,22 +3852,27 @@
 					</label>
 				</div>
 				
-				<div class="floatleft full bigmarginbottom hidden">
+				<xsl:if test="not($hideFlowSpecificSettings)">
 				
-					<label for="defaultExternalMessageTemplate" class="floatleft full">
-						<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
-					</label>
-		
-					<xsl:call-template name="createDropdown">
-						<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
-						<xsl:with-param name="valueElementName" select="'templateID'" />
-						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="selectedValue" select="Status/defaultExternalMessageTemplateID" />
-						<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
-					</xsl:call-template>
-				</div>
+					<div class="floatleft full bigmarginbottom hidden">
+					
+						<label for="defaultExternalMessageTemplate" class="floatleft full">
+							<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
+						</label>
+			
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
+							<xsl:with-param name="valueElementName" select="'templateID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="selectedValue" select="$element/defaultExternalMessageTemplateID" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
+						</xsl:call-template>
+					</div>
+					
+				</xsl:if>
+				
 			</div>
 		</div>
 
@@ -3867,7 +3884,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserMutable'" />
 					<xsl:with-param name="id" select="'isUserMutable'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="isUserMutable">
@@ -3882,7 +3899,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isUserDeletable'" />
 					<xsl:with-param name="id" select="'isUserDeletable'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="isUserDeletable">
@@ -3897,7 +3914,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminMutable'" />
 					<xsl:with-param name="id" select="'isAdminMutable'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="isAdminMutable">
@@ -3912,7 +3929,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isAdminDeletable'" />
 					<xsl:with-param name="id" select="'isAdminDeletable'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="isAdminDeletable">
@@ -3927,7 +3944,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'isRestrictedAdminDeletable'" />
 					<xsl:with-param name="id" select="'isRestrictedAdminDeletable'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="isRestrictedAdminDeletable">
@@ -3942,7 +3959,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'requireSigning'" />
 					<xsl:with-param name="id" select="'requireSigning'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="requireSigning">
@@ -3957,7 +3974,7 @@
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'useAccessCheck'" />
 					<xsl:with-param name="id" select="'useAccessCheck'" />
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
 				<label for="useAccessCheck">
@@ -3966,46 +3983,50 @@
 			</div>
 		</div>
 		
-		<div id="allowedManagers" class="floatleft full hidden">
-			<div class="floatleft full bigmarginbottom">
+		<xsl:if test="not($hideFlowSpecificSettings)">
+		
+			<div id="allowedManagers" class="floatleft full hidden">
+				<div class="floatleft full bigmarginbottom">
+					
+					<label class="floatleft full">
+						<xsl:value-of select="$i18n.allowedGroups" />
+					</label>
+					
+					<xsl:call-template name="GroupList">
+						<xsl:with-param name="connectorURL">
+							<xsl:value-of select="/Document/requestinfo/currentURI"/>
+							<xsl:text>/</xsl:text>
+							<xsl:value-of select="/Document/module/alias"/>
+							<xsl:text>/groups/</xsl:text>
+							<xsl:value-of select="Flow/flowID"/>
+						</xsl:with-param>
+						<xsl:with-param name="name" select="'group'"/>
+						<xsl:with-param name="groups" select="ManagerGroups" />
+					</xsl:call-template>
+					
+				</div>
 				
-				<label class="floatleft full">
-					<xsl:value-of select="$i18n.allowedGroups" />
-				</label>
-				
-				<xsl:call-template name="GroupList">
-					<xsl:with-param name="connectorURL">
-						<xsl:value-of select="/Document/requestinfo/currentURI"/>
-						<xsl:text>/</xsl:text>
-						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/groups/</xsl:text>
-						<xsl:value-of select="Flow/flowID"/>
-					</xsl:with-param>
-					<xsl:with-param name="name" select="'group'"/>
-					<xsl:with-param name="groups" select="ManagerGroups" />
-				</xsl:call-template>
-				
+				<div class="floatleft full bigmarginbottom">
+					
+					<label class="floatleft full">
+						<xsl:value-of select="$i18n.allowedUsers" />
+					</label>
+					
+					<xsl:call-template name="UserList">
+						<xsl:with-param name="connectorURL">
+							<xsl:value-of select="/Document/requestinfo/currentURI"/>
+							<xsl:text>/</xsl:text>
+							<xsl:value-of select="/Document/module/alias"/>
+							<xsl:text>/users/</xsl:text>
+							<xsl:value-of select="Flow/flowID"/>
+						</xsl:with-param>
+						<xsl:with-param name="name" select="'user'"/>
+						<xsl:with-param name="users" select="ManagerUsers" />
+					</xsl:call-template>
+				</div>
 			</div>
 			
-			<div class="floatleft full bigmarginbottom">
-				
-				<label class="floatleft full">
-					<xsl:value-of select="$i18n.allowedUsers" />
-				</label>
-				
-				<xsl:call-template name="UserList">
-					<xsl:with-param name="connectorURL">
-						<xsl:value-of select="/Document/requestinfo/currentURI"/>
-						<xsl:text>/</xsl:text>
-						<xsl:value-of select="/Document/module/alias"/>
-						<xsl:text>/users/</xsl:text>
-						<xsl:value-of select="Flow/flowID"/>
-					</xsl:with-param>
-					<xsl:with-param name="name" select="'user'"/>
-					<xsl:with-param name="users" select="ManagerUsers" />
-				</xsl:call-template>
-			</div>
-		</div>
+		</xsl:if>
 	
 		<h2 class="clearboth"><xsl:value-of select="$i18n.statusContentType.title"/></h2>
 		
@@ -4017,7 +4038,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'new'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'NEW'"/>
 				</xsl:call-template>
 				
@@ -4033,7 +4054,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_multisign'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />  
+					<xsl:with-param name="element" select="$element" />  
 					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>
 				</xsl:call-template>
 				
@@ -4049,7 +4070,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_payment'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>
 				</xsl:call-template>
 				
@@ -4065,7 +4086,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'submitted'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'SUBMITTED'"/>
 				</xsl:call-template>
 				
@@ -4081,7 +4102,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'in_progress'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'IN_PROGRESS'"/>
 				</xsl:call-template>
 				
@@ -4097,7 +4118,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'waiting_for_completion'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>
 				</xsl:call-template>
 				
@@ -4113,7 +4134,7 @@
 				<xsl:call-template name="createRadio">
 					<xsl:with-param name="id" select="'archived'"/>
 					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="Status" />
+					<xsl:with-param name="element" select="$element" />
 					<xsl:with-param name="value" select="'ARCHIVED'"/>
 				</xsl:call-template>
 				
@@ -4129,13 +4150,16 @@
 		
 			<p><xsl:value-of select="$i18n.defaultStatusMappings.description"/></p>
 		
-			<xsl:apply-templates select="FlowActions/FlowAction" mode="statusForm"/>
+			<xsl:apply-templates select="FlowActions/FlowAction" mode="statusForm">
+				<xsl:with-param name="statusMappings" select="$statusMappings" />
+			</xsl:apply-templates>
 		
 		</xsl:if>
 		
 	</xsl:template>
 	
 	<xsl:template match="FlowAction" mode="statusForm">
+		<xsl:param name="statusMappings" />
 	
 		<div class="floatleft full bigmarginbottom margintop">
 		
@@ -4149,7 +4173,7 @@
 					<xsl:with-param name="name" select="'actionID'" />
 					<xsl:with-param name="value" select="actionID"/>
 					<xsl:with-param name="id" select="$id"/>
-					<xsl:with-param name="element" select="../../Status/DefaultStatusMappings/DefaultStatusMapping" />
+					<xsl:with-param name="element" select="$statusMappings" />
 					<xsl:with-param name="requestparameters" select="../../requestparameters"/>				     
 				</xsl:call-template>
 				
@@ -4772,9 +4796,13 @@
 	
 		<xsl:apply-templates select="validationException/validationError" />
 
-		<form method="post" action="{/Document/requestinfo/uri}">
+		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 			
-			<xsl:call-template name="standardStatusForm"/>
+			<xsl:call-template name="statusForm">
+				<xsl:with-param name="element" select="StandardStatus" />
+				<xsl:with-param name="statusMappings" select="StandardStatus/DefaultStandardStatusMappings/DefaultStandardStatusMapping" />
+				<xsl:with-param name="hideFlowSpecificSettings" select="true()" />
+			</xsl:call-template>
 			
 			<div class="floatright">
 				<input type="submit" value="{$i18n.AddStandardStatus}" />
@@ -4794,10 +4822,14 @@
 
 		<xsl:apply-templates select="validationException/validationError" />
 
-		<form method="post" action="{/Document/requestinfo/uri}">
+		<form id="statusform" method="post" action="{/Document/requestinfo/uri}">
 		
-			<xsl:call-template name="standardStatusForm"/>
-			
+			<xsl:call-template name="statusForm">
+				<xsl:with-param name="element" select="StandardStatus" />
+				<xsl:with-param name="statusMappings" select="StandardStatus/DefaultStandardStatusMappings/DefaultStandardStatusMapping" />
+				<xsl:with-param name="hideFlowSpecificSettings" select="true()" />
+			</xsl:call-template>
+						
 			<div class="floatright">
 				<input type="submit" value="{$i18n.UpdateStandardStatus}" />
 			</div>
@@ -4806,280 +4838,6 @@
 	
 	</xsl:template>
 	
-	<xsl:template name="standardStatusForm">
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<label for="name" class="floatleft full">
-				<xsl:value-of select="$i18n.name" />
-			</label>
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'name'"/>
-					<xsl:with-param name="name" select="'name'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<label for="description" class="floatleft full">
-				<xsl:value-of select="$i18n.description" />
-			</label>
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createTextArea">
-					<xsl:with-param name="id" select="'description'"/>
-					<xsl:with-param name="name" select="'description'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<label for="managingTime" class="floatleft full">
-				<xsl:value-of select="$i18n.managingTime" />
-			</label>
-			
-			<p><xsl:value-of select="$i18n.managingTime.description"/></p>
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'managingTime'"/>
-					<xsl:with-param name="name" select="'managingTime'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-
-			<div class="floatleft full">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'addExternalMessage'" />
-					<xsl:with-param name="id" select="'addExternalMessage'" />
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-				
-				<label for="addExternalMessage">
-					<xsl:value-of select="$i18n.addExternalMessage" />
-				</label>
-			</div>
-			
-			<div class="floatleft full bigmarginbottom">
-			
-				<label for="defaultExternalMessageTemplate" class="floatleft full">
-					<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
-				</label>
-	
-				<div class="floatleft full">
-					<xsl:call-template name="createDropdown">
-						<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
-						<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
-						<xsl:with-param name="valueElementName" select="'templateID'" />
-						<xsl:with-param name="labelElementName" select="'name'" />
-						<xsl:with-param name="selectedValue" select="StandardStatus/defaultExternalMessageTemplateID" />
-						<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
-					</xsl:call-template>
-				</div>
-			</div>
-		</div>
-		
-		
-		<h2><xsl:value-of select="$i18n.permissions"/></h2>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'isUserMutable'" />
-					<xsl:with-param name="id" select="'isUserMutable'" />
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-				
-				<label for="isUserMutable">
-					<xsl:value-of select="$i18n.isUserMutable" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'isUserDeletable'" />
-					<xsl:with-param name="id" select="'isUserDeletable'" />
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-				
-				<label for="isUserDeletable">
-					<xsl:value-of select="$i18n.isUserDeletable" />
-				</label>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'isAdminMutable'" />
-					<xsl:with-param name="id" select="'isAdminMutable'" />
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-				
-				<label for="isAdminMutable">
-					<xsl:value-of select="$i18n.isAdminMutable" />
-				</label>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'isAdminDeletable'" />
-					<xsl:with-param name="id" select="'isAdminDeletable'" />
-					<xsl:with-param name="element" select="StandardStatus" />
-				</xsl:call-template>
-				
-				<label for="isAdminDeletable">
-					<xsl:value-of select="$i18n.isAdminDeletable" />
-				</label>
-			</div>
-		</div>
-	
-		<h2><xsl:value-of select="$i18n.statusContentType.title"/></h2>
-		
-		<p><xsl:value-of select="$i18n.statusContentType.description"/></p>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'new'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'NEW'"/>
-				</xsl:call-template>
-				
-				<label for="new">
-					<xsl:value-of select="$i18n.contentType.NEW" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'waiting_for_multisign'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'WAITING_FOR_MULTISIGN'"/>
-				</xsl:call-template>
-				
-				<label for="waiting_for_multisign">
-					<xsl:value-of select="$i18n.contentType.WAITING_FOR_MULTISIGN" />
-				</label>
-			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'waiting_for_payment'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'WAITING_FOR_PAYMENT'"/>
-				</xsl:call-template>
-				
-				<label for="waiting_for_payment">
-					<xsl:value-of select="$i18n.contentType.WAITING_FOR_PAYMENT" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'submitted'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'SUBMITTED'"/>
-				</xsl:call-template>
-				
-				<label for="submitted">
-					<xsl:value-of select="$i18n.contentType.SUBMITTED" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'in_progress'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'IN_PROGRESS'"/>
-				</xsl:call-template>
-				
-				<label for="in_progress">
-					<xsl:value-of select="$i18n.contentType.IN_PROGRESS" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'waiting_for_completion'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'WAITING_FOR_COMPLETION'"/>
-				</xsl:call-template>
-				
-				<label for="waiting_for_completion">
-					<xsl:value-of select="$i18n.contentType.WAITING_FOR_COMPLETION" />
-				</label>
-			</div>
-		</div>
-	
-		<div class="floatleft full bigmarginbottom">
-			
-			<div class="floatleft full">
-				<xsl:call-template name="createRadio">
-					<xsl:with-param name="id" select="'archived'"/>
-					<xsl:with-param name="name" select="'contentType'"/>
-					<xsl:with-param name="element" select="StandardStatus" />
-					<xsl:with-param name="value" select="'ARCHIVED'"/>
-				</xsl:call-template>
-				
-				<label for="archived">
-					<xsl:value-of select="$i18n.contentType.ARCHIVED" />
-				</label>
-			</div>
-		</div>
-	
-		<xsl:if test="FlowActions">
-		
-			<h2><xsl:value-of select="$i18n.defaultStatusMappings.title"/></h2>
-		
-			<p><xsl:value-of select="$i18n.defaultStatusMappings.description"/></p>
-		
-			<xsl:apply-templates select="FlowActions/FlowAction" mode="standardStatusForm"/>
-		
-		</xsl:if>
-	
-	</xsl:template>
-		
 	<xsl:template match="SortStandardStatuses">
 	
 		<h1>
@@ -5101,32 +4859,6 @@
 			</div>
 
 		</form>
-	
-	</xsl:template>
-	
-	<xsl:template match="FlowAction" mode="standardStatusForm">
-	
-		<div class="floatleft full bigmarginbottom margintop">
-		
-			<xsl:variable name="id">
-				<xsl:value-of select="'action_'"/>
-				<xsl:value-of select="position()"/>
-			</xsl:variable>
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'actionID'" />
-					<xsl:with-param name="value" select="actionID"/>
-					<xsl:with-param name="id" select="$id"/>
-					<xsl:with-param name="element" select="../../StandardStatus/DefaultStandardStatusMappings/DefaultStandardStatusMapping" />
-					<xsl:with-param name="requestparameters" select="../../requestparameters"/>				     
-				</xsl:call-template>
-				
-				<label for="{$id}">
-					<xsl:value-of select="name" />
-				</label>
-			</div>
-		</div>
 	
 	</xsl:template>
 	
