@@ -656,9 +656,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
             pdfSchema.setKeywords("Open ePlatform");
             pdfSchema.setProducer("Open ePlatform");
 
+            GregorianCalendar calendar = new GregorianCalendar();
+            
             XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
-            basicSchema.setModifyDate(info.getModificationDate());
-            basicSchema.setCreateDate(info.getCreationDate());
+            basicSchema.setModifyDate(calendar);
+            basicSchema.setCreateDate(calendar);
             basicSchema.setCreatorTool("Open ePlatform");
             basicSchema.setMetadataDate( new GregorianCalendar());
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
 
 import com.lowagie.text.DocumentException;
@@ -30,11 +31,12 @@ public class PDFUtils {
 		List<PDFByteAttachment> attachments = new ArrayList<PDFByteAttachment>();
 
 		RandomAccessFileOrArray inputFileRandomAccess = null;
+		PdfReader reader = null;
 
 		try {
 			inputFileRandomAccess = new RandomAccessFileOrArray(pdfFile.getAbsolutePath(), false, false);
 
-			PdfReader reader = new PdfReader(inputFileRandomAccess, null);
+			reader = new PdfReader(inputFileRandomAccess, null);
 			PdfDictionary catalog = reader.getCatalog();
 
 			PdfDictionary documentNames = (PdfDictionary) PdfReader.getPdfObject(catalog.get(PdfName.NAMES));
@@ -54,7 +56,6 @@ public class PDFUtils {
 						PdfDictionary fileSpec = fileSpecs.getAsDict(i + 1);
 						PdfDictionary references = fileSpec.getAsDict(PdfName.EF);
 
-						@SuppressWarnings("unchecked")
 						Set<PdfName> keys = references.getKeys();
 
 						HashSet<String> visitedReferences = new HashSet<String>(keys.size());
@@ -91,12 +92,8 @@ public class PDFUtils {
 			}
 		} finally {
 
-			if (inputFileRandomAccess != null) {
-
-				try {
-					inputFileRandomAccess.close();
-				} catch (IOException e) {}
-			}
+			CloseUtils.close(inputFileRandomAccess);
+			CloseUtils.close(reader);
 		}
 
 		return attachments;
@@ -106,11 +103,12 @@ public class PDFUtils {
 	public static byte[] removeAttachments(File pdfFile) throws IOException, DocumentException {
 
 		RandomAccessFileOrArray inputFileRandomAccess = null;
-
+		PdfReader reader = null;
+		
 		try {
 			inputFileRandomAccess = new RandomAccessFileOrArray(pdfFile.getAbsolutePath(), false, false);
 
-			PdfReader reader = new PdfReader(inputFileRandomAccess, null);
+			reader = new PdfReader(inputFileRandomAccess, null);
 			PdfDictionary root = reader.getCatalog();
 			PdfDictionary names = root.getAsDict(PdfName.NAMES);
 
@@ -131,12 +129,8 @@ public class PDFUtils {
 			
 		} finally {
 
-			if (inputFileRandomAccess != null) {
-
-				try {
-					inputFileRandomAccess.close();
-				} catch (IOException e) {}
-			}
+			CloseUtils.close(inputFileRandomAccess);
+			CloseUtils.close(reader);
 		}
 	}
 
