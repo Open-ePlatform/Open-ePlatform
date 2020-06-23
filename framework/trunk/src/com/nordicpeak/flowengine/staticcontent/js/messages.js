@@ -45,7 +45,9 @@ $(document).ready(function() {
 
 function initMessageTab(tabID, messagePanelID) {
 	
-	if (!$(tabID).length || !$(messagePanelID).length) return;
+	var $messagePanel = $(messagePanelID);
+	
+	if (!$(tabID).length || !$messagePanel.length) return;
 	
 	$(tabID + " a.reply_message").click(function(e) {
 		e.preventDefault();
@@ -60,9 +62,9 @@ function initMessageTab(tabID, messagePanelID) {
 		quoteDiv.find("input").val(quotedMessage.data("messageid")).prop("disabled", false);
 		quoteDiv.show();
 		
-		$(messagePanelID).show();
+		$messagePanel.show();
 		scrollToMessages(messagePanelID);
-		$("#message").focus();
+		$messagePanel.find("#message").focus();
 	});
 	
 	$(tabID + " a.stop_quote").click(function(e) {
@@ -76,12 +78,12 @@ function initMessageTab(tabID, messagePanelID) {
 	$(tabID + " a.open_message").click(function(e) {
 		e.preventDefault();
 		
-		$(messagePanelID).show();
+		$messagePanel.show();
 		scrollToMessages(messagePanelID);
-		$("#message").focus();
+		$messagePanel.find("#message").focus();
 	});
 
-	$(messagePanelID + " a.close_message").click(function(e) {
+	$messagePanel.find("a.close_message").click(function(e) {
 		e.preventDefault();
 		$(messagePanelID).hide();
 	});
