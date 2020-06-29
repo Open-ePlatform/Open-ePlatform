@@ -15,7 +15,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/fileuploadquery.css
+		/css/fileuploadquery.css?v=1
 	</xsl:variable>
 	
 	<xsl:template match="Document">	

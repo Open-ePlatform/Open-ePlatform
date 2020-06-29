@@ -17,7 +17,7 @@ input[type="file"].fileuploader {
 	right: 0;
 	top: 0;
 	visibility: visible;
-	width: 90px;
+	width: 100%;
 }
 
 .upload.no-hover:hover {
