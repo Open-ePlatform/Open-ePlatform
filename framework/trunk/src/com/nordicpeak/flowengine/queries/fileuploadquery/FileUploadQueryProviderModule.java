@@ -297,17 +297,17 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 		} else {
 
-			return getExistingQueryInstance(descriptor, instanceManagerID, instanceMetadata);
+			return getExistingQueryInstance(descriptor, req, instanceManagerID, instanceMetadata);
 		}
 	}
 
 	@Override
 	public ImmutableQueryInstance getImmutableQueryInstance(MutableQueryInstanceDescriptor descriptor, HttpServletRequest req, InstanceMetadata instanceMetadata) throws Throwable {
 
-		return getExistingQueryInstance(descriptor, null, instanceMetadata);
+		return getExistingQueryInstance(descriptor, req, null, instanceMetadata);
 	}
 
-	private QueryInstance getExistingQueryInstance(MutableQueryInstanceDescriptor descriptor, String instanceManagerID, InstanceMetadata instanceMetadata) throws Throwable {
+	private QueryInstance getExistingQueryInstance(MutableQueryInstanceDescriptor descriptor, HttpServletRequest req, String instanceManagerID, InstanceMetadata instanceMetadata) throws Throwable {
 
 		FileUploadQueryInstance queryInstance = getQueryInstance(descriptor.getQueryInstanceID());
 
@@ -321,6 +321,13 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 		if (queryInstance.getQuery() == null) {
 
 			return null;
+		}
+		
+		if(req != null){
+
+			FCKUtils.setAbsoluteFileUrls(queryInstance.getQuery(), RequestUtils.getFullContextPathURL(req) + ckConnectorModuleAlias);
+
+			URLRewriter.setAbsoluteLinkUrls(queryInstance.getQuery(), req, true);
 		}
 		
 		queryInstance.getQuery().scanAttributeTags();
