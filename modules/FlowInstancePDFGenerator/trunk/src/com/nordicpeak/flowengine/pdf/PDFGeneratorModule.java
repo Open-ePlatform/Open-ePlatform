@@ -1107,18 +1107,21 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				
 				for (FlowInstance flowInstance : event.getBeans()) {
 					
-					File instanceDir = new File(pdfDir + File.separator + flowInstance.getFlowInstanceID());
-					
-					if (!instanceDir.exists()) {
+					try {
+						File instanceDir = new File(pdfDir + File.separator + flowInstance.getFlowInstanceID());
 						
-						continue;
+						if (instanceDir.exists()) {
+							
+							log.info("Deleting PDF files for flow instance " + flowInstance);
+							
+							FileUtils.deleteFiles(instanceDir, null, true);
+							
+							instanceDir.delete();
+						}
+					} catch (Exception e) {
+
+						log.error("Error deleting PDF files for flow instance " + flowInstance);
 					}
-					
-					log.info("Deleting PDF files for flow instance " + flowInstance);
-					
-					FileUtils.deleteFiles(instanceDir, null, true);
-					
-					instanceDir.delete();
 				}
 			}
 		}
