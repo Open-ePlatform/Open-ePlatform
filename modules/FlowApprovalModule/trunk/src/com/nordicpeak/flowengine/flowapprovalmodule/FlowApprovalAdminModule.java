@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -69,6 +70,7 @@ import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
+import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
@@ -213,9 +215,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupSkipped;
 	
-	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name = "Filestore", description = "Directory under where signature PDFs are stored", required = false)
-	protected String filestore;
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "PDF dir", description = "The directory where PDF files be stored", required = true)
+	protected String pdfDir;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Temp dir", description = "The directory where temporary files be stored", required = true)
+	protected String tempDir;
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Signature PDF XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the XHTML for PDF output", required = true)
@@ -229,8 +235,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmentXML;
 
-	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "User approval module URL", description = "The full URL of the user approval module", required = true)
+	//@ModuleSetting
+	//@TextFieldSettingDescriptor(name = "User approval module URL", description = "The full URL of the user approval module", required = true)
 	protected String userApprovalModuleAlias = null;
 
 	@ModuleSetting
@@ -380,26 +386,30 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@Override
 	protected void moduleConfigured() throws Exception {
 
-		if (StringUtils.isEmpty(filestore)) {
+		if(ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
 			
-			log.warn("Filestore not set");
+			File pdfDirFile = new File(pdfDir);
 			
-		} else if (!FileUtils.isReadable(filestore)) {
-			
-			log.error("Filestore not found/readable");
-
-		} else {
-			
-			if (!FileUtils.directoryExists(getSignaturesDir())) {
-
-				File file = new File(getSignaturesDir());
-				log.warn("Creating document directory " + file);
-				file.mkdir();
+			if(!pdfDirFile.exists()) {
+				
+				if(pdfDirFile.getParentFile().exists()) {
+					
+					log.info("Creating missing  " + pdfDirFile.getName() + " directory for PDF filestore directory");
+					
+					if(!pdfDirFile.mkdir()) {
+						
+						log.error("Unable to create missing " + pdfDirFile.getName() + " directory for PDF filestore directory");
+					}
+					
+				}else {
+					
+					log.error("The set PDF filestore directory does not exist");
+				}
 			}
 			
-			if (!FileUtils.directoryExists(getTempDir())) {
-
-				log.warn("Temp dir " + getTempDir() + " not found, will use system default during uploads");
+			if(!FileUtils.directoryExists(tempDir)) {
+				
+				log.error("The set temp directory does not exist");
 			}
 		}
 
@@ -1449,12 +1459,36 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				if (flowInstance.getFirstSubmitted() != null) {
 
-					log.info("Deleting approval rounds for " + flowInstance);
+					//Delete from DB
+					try {
+						log.info("Deleting approval rounds for flow instance " + flowInstance);
 
-					HighLevelQuery<FlowApprovalActivityRound> query = new HighLevelQuery<FlowApprovalActivityRound>();
-					query.addParameter(activityRoundFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
+						HighLevelQuery<FlowApprovalActivityRound> query = new HighLevelQuery<FlowApprovalActivityRound>();
+						query.addParameter(activityRoundFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
 
-					activityRoundDAO.delete(query);
+						activityRoundDAO.delete(query);
+						
+					} catch (SQLException e) {
+
+						log.error("Error deleting approval rounds for flow instance " + flowInstance, e);
+					}
+					
+					//Delete from filesystem
+					try {
+						File instanceDir = new File(pdfDir + File.separator + flowInstance.getFlowInstanceID());
+						
+						if (instanceDir.exists()) {
+							
+							log.info("Deleting PDF files for flow instance " + flowInstance);
+							
+							FileUtils.deleteFiles(instanceDir, null, true);
+							
+							instanceDir.delete();
+						}
+					} catch (Exception e) {
+						
+						log.error("Error deleting PDF files for flow instance " + flowInstance, e);
+					}
 				}
 			}
 			
@@ -1948,34 +1982,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 	
-	public String getSignaturesDir() {
-
-		if (filestore == null) {
-			return null;
-		}
-		
-		return filestore + File.separator + "flow-approval-signatures";
-	}
-	
-	public String getTempDir() {
-		
-		if (filestore == null) {
-			return null;
-		}
-
-		return filestore + File.separator + "temp";
-	}
-	
 	public File getSignaturesPDF(FlowApprovalActivityRound round) {
 		
-		return new File(getSignaturesDir() + File.separator + "activity-round-" + round.getActivityRoundID() +"-signatures.pdf");
+		return new File(pdfDir + File.separator + round.getFlowInstanceID() + File.separator + "activity-round-" + round.getActivityRoundID() +"-signatures.pdf");
 	}
 	
 	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
 		
-		if (filestore == null) {
+		if (pdfDir == null || tempDir == null) {
 			
-			log.warn("Unable to create PDF filestore not set");
+			log.error("Unable to create filestore(s) not set");
 			return;
 		}
 		
@@ -2045,7 +2061,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				document = XMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")), false, false);
 			}
 
-			tmpFile = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp-", ".pdf", new File(getTempDir()));
+			tmpFile = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp-", ".pdf", new File(tempDir));
 			
 			try {
 				outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile));
