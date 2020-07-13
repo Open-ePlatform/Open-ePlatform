@@ -124,6 +124,7 @@ import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.bool.BooleanUtils;
+import se.unlogic.standardutils.collections.CaseInsensitiveNameComparator;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
@@ -1067,11 +1068,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
 				}
 
+				CollectionUtils.sortMapByValue(tempFlowCacheMap, CaseInsensitiveNameComparator.getInstance());
+				
 				this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 			}
 
 			log.info("Cached " + flowIDs.size() + " flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
-			//System.out.println("Cached " + flowIDs.size() + " flows in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 
 		} finally {
 
@@ -2253,7 +2255,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					addFlowFamilyEvent(eventStatusesReplacedMessage + " \"" + statusGroup.getName() + "\"", flow, user);
 	
-					redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
+					redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#statuses");
 					return null;
 				}
 			}
@@ -3160,24 +3162,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				closeInstanceManagers(flow);
 			}
 
-			if (event.getAction() == CRUDAction.DELETE) {
-	
-				//This code may leave loose files if the bean does not have all relations set
-				for (Flow flow : event.getBeans()) {
-	
-					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-	
-						for (FlowForm flowForm : flow.getFlowForms()) {
-	
-							deleteFlowFormFile(flowForm);
-						}
-					}
-				}
-			}
 		}
 		
 		if(event.getAction() == CRUDAction.DELETE) {
 
+			//This code may leave loose files if the bean does not have all relations set
+			for (Flow flow : event.getBeans()) {
+
+				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+
+					for (FlowForm flowForm : flow.getFlowForms()) {
+
+						deleteFlowFormFile(flowForm);
+					}
+				}
+			}			
+			
 			deleteFlowsFromCache(event.getBeans());
 
 			for(Flow flow : event.getBeans()) {
