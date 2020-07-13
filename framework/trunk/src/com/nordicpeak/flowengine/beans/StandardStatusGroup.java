@@ -11,6 +11,7 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
@@ -66,4 +67,9 @@ public class StandardStatusGroup extends GeneratedElementable implements Seriali
 		this.standardStatuses = standardStatuses;
 	}
 
+	@Override
+	public String toString() {
+
+		return StringUtils.toLogFormat(name, 30) + " (statusGroupID: " + statusGroupID + ")";
+	}
 }
