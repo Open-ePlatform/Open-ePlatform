@@ -1997,6 +1997,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		
 		File outputFile = getSignaturesPDF(round);
 		
+		FileUtils.createMissingDirectories(outputFile);
+		
 		File tmpFile = null;
 		RandomAccessFileOrArray randomAccessFile = null;
 		OutputStream outputStream = null;
