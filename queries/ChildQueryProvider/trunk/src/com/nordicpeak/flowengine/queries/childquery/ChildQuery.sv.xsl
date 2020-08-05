@@ -16,7 +16,7 @@
 	<xsl:variable name="i18n.Error.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	<xsl:variable name="i18n.Error.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
 	<xsl:variable name="i18n.Error.InvalidFormat">Innehållet i det här fältet har ett ogiltigt format!</xsl:variable>
-	<xsl:variable name="i18n.Error.InvalidFormatMain">Du har valt ett ogiltig barn, försök igen!</xsl:variable>
+	<xsl:variable name="i18n.Error.InvalidFormatMain">Du har valt ett ogiltigt barn, försök igen!</xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part2"> tecken vilket överskrider maxgränsen på </xsl:variable>
 	<xsl:variable name="i18n.Error.TooLongFieldContent.part3"> tecken!</xsl:variable>
