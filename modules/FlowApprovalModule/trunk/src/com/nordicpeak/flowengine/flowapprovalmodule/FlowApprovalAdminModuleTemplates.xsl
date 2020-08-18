@@ -406,16 +406,6 @@
 
 		</div>
 		
-		<xsl:call-template name="notificationEmail">
-			<xsl:with-param name="toggleField" select="'sendActivityGroupStartedEmail'"/>
-			<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupStartedEmail"/>
-			<xsl:with-param name="subjectField" select="'activityGroupStartedEmailSubject'"/>
-			<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailSubject"/>
-			<xsl:with-param name="messageField" select="'activityGroupStartedEmailMessage'"/>
-			<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailMessage"/>
-			<xsl:with-param name="tagsTable" select="'manager'"/>
-		</xsl:call-template>
-		
 		<div class="floatleft full bigmarginbottom">
 		
 			<div class="floatleft">
@@ -460,6 +450,16 @@
 				</label>
 			</div>
 		</div>
+		
+		<xsl:call-template name="notificationEmail">
+			<xsl:with-param name="toggleField" select="'sendActivityGroupStartedEmail'"/>
+			<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupStartedEmail"/>
+			<xsl:with-param name="subjectField" select="'activityGroupStartedEmailSubject'"/>
+			<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailSubject"/>
+			<xsl:with-param name="messageField" select="'activityGroupStartedEmailMessage'"/>
+			<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailMessage"/>
+			<xsl:with-param name="tagsTable" select="'manager'"/>
+		</xsl:call-template>
 		
 		<div class="floatleft full bigmarginbottom">
 
@@ -1367,6 +1367,12 @@
 			<p>
 				<xsl:value-of select="$i18n.Activity.globalEmailAddressHelp" />
 			</p>
+			
+			<xsl:if test="not(Activity/ActivityGroup/sendActivityGroupStartedEmail = 'true')">
+				<p>
+					<xsl:value-of select="$i18n.Activity.StartedNotificationDisabled" />
+				</p>
+			</xsl:if>
 			
 			<div class="floatleft full">
 				<xsl:call-template name="createTextField">

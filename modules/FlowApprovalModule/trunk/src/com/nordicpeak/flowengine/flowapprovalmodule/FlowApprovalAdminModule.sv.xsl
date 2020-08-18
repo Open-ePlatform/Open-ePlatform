@@ -93,6 +93,7 @@
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddressHelp">Får notifikation om startad aktivitet utöver ansvariga</xsl:variable>
 	<xsl:variable name="i18n.Activity.onlyUseGlobalNotifications">Skicka notifikationer endast till funktionsbrevlådan</xsl:variable>
+	<xsl:variable name="i18n.Activity.StartedNotificationDisabled">OBS Aktivitetsgruppen är inte inställd på att skicka påbörjatnotifikationer men påminnelser, automatiska och manuella, kan fortfarande användas.</xsl:variable>
 	<xsl:variable name="i18n.Activity.shortDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>
@@ -105,7 +106,7 @@
 	<xsl:variable name="i18n.ActivityGroup.allowSkip">Hoppa över / byt till målstatus även om ingen aktivitet startas (endast om ingen grupp alls startas/är igång)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.onlyRestartIfActivityChanges">Tillåt omstart endast om det blir skillnad på startade aktiviteter (pga attribut)</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp (samma texter för påmminelser)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToExternalMessages">Kopiera aktivitetskommentarer till meddelanden på ärendet</xsl:variable>
