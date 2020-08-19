@@ -100,7 +100,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 					attributeHandler.removeAttribute(textFieldValue.getTextField().getAttributeName());
 				}
 
-				if (!textFieldValue.getTextField().isDisabled()) {
+				if (!textFieldValue.getTextField().isDisabled() || textFieldValue.getTextField().getEndpointField() != null) {
 
 					iterator.remove();
 				}
