@@ -426,6 +426,10 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 						validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("APIRequestException"));
 					}
+					
+				} else {
+					
+					queryInstance.setInitialized(true);
 				}
 			}
 
