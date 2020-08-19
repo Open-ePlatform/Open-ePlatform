@@ -741,7 +741,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						submitLock = new Object();
 					}
 					
-					synchronized (submitLock) {
+					synchronized (submitMutexKeyProvider.getKey(submitLock)) {
 						
 						if(hasSubmitChecks) {
 							
