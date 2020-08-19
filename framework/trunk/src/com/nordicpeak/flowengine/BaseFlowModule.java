@@ -64,6 +64,7 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.TagReplacer;
+import se.unlogic.standardutils.threads.MutexKeyProvider;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
@@ -229,6 +230,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected EventHandler eventHandler;
 
 	protected FlowEngineDAOFactory daoFactory;
+	
+	protected MutexKeyProvider<Object> submitMutexKeyProvider = new MutexKeyProvider<>();
 
 	protected QueryParameterFactory<Flow, Integer> flowIDParamFactory;
 	protected QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
@@ -725,218 +728,237 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 					
-					SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
+					boolean hasSubmitChecks = instanceManager.hasSubmitChecks(); 
 					
-					if (submitCheckResponse != null) {
+					Object submitLock;
+					
+					if(hasSubmitChecks) {
 						
-						log.info("Save & submit denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT valid for submit due to validation error in query " + submitCheckResponse.getQueryInstance().getQueryInstanceDescriptor());
-						res.sendRedirect(submitCheckResponse.getRedirectURL());
-						return null;
+						submitLock = instanceManager.getFlowInstance().getFlow().getFlowFamily();
+						
+					}else {
+						
+						submitLock = new Object();
 					}
-
-					if (enableSaving && instanceManager.getFlowInstance().getFlow().requiresSigning() && (!instanceManager.getFlowInstance().getFlow().isSkipPosterSigning() || MultiSignUtils.requiresMultiSigning(instanceManager))) {
-
-						SigningProvider signingProvider = getSigningProvider();
-
-						if (signingProvider == null) {
-
-							if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
-
-								return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
-
-							} else {
-
-								return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
-							}
-						}
-
-						boolean modifiedSinceLastSignRequest = false;
+					
+					synchronized (submitLock) {
 						
-						if (instanceManager.hasUnsavedChanges() && user != null) {
+						if(hasSubmitChecks) {
 							
-							log.info("User " + user + " saving and preparing to sign flow instance " + instanceManager.getFlowInstance());
+							SubmitCheckFailedResponse submitCheckResponse = instanceManager.checkValidForSubmit(poster, queryHandler, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), requestMetadata);
 							
-							boolean previouslySaved = instanceManager.isPreviouslySaved();
-							
-							save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
-							
-							if (!previouslySaved) {
+							if (submitCheckResponse != null) {
 								
-								res.sendRedirect(getSaveAndSubmitURL(instanceManager, req));
+								log.info("Save & submit denied for user " + user + " requesting flow instance " + instanceManager.getFlowInstance() + ", instance is NOT valid for submit due to validation error in query " + submitCheckResponse.getQueryInstance().getQueryInstanceDescriptor());
+								res.sendRedirect(submitCheckResponse.getRedirectURL());
 								return null;
 							}
-							
-						} else if (!instanceManager.getSessionAttributeHandler().isSet(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE)) {
-							
-							log.info("User " + user + " preparing to sign flow instance " + instanceManager.getFlowInstance());
-							
-							instanceManager.getSessionAttributeHandler().setAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE, instanceManager.getChangesCounter());
-							
-						} else if (instanceManager.getChangesCounter() != instanceManager.getSessionAttributeHandler().getInt(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE)) {
-							
-							log.info("User " + user + " modified unsaved flow instance and is re-preparing to sign flow instance " + instanceManager.getFlowInstance());
-							
-							instanceManager.getSessionAttributeHandler().setAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE, instanceManager.getChangesCounter());
-							modifiedSinceLastSignRequest = true;
 						}
 
-						try {
-							SigningCallback signingCallback;
+						if (enableSaving && instanceManager.getFlowInstance().getFlow().requiresSigning() && (!instanceManager.getFlowInstance().getFlow().isSkipPosterSigning() || MultiSignUtils.requiresMultiSigning(instanceManager))) {
 
-							SiteProfile instanceProfile = getSiteProfile(instanceManager);
+							SigningProvider signingProvider = getSigningProvider();
+
+							if (signingProvider == null) {
+
+								if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
+
+									return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
+
+								} else {
+
+									return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SIGNING_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
+								}
+							}
+
+							boolean modifiedSinceLastSignRequest = false;
 							
-							if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
+							if (instanceManager.hasUnsavedChanges() && user != null) {
 								
-								if (instanceManager.getFlowInstance().getFlow().isSkipPosterSigning()) {
+								log.info("User " + user + " saving and preparing to sign flow instance " + instanceManager.getFlowInstance());
+								
+								boolean previouslySaved = instanceManager.isPreviouslySaved();
+								
+								save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
+								
+								if (!previouslySaved) {
 									
-									FlowInstanceEvent saveEvent = save(instanceManager, user, poster, req, callback.getMultiSigningActionID(), EventType.SIGNING_SKIPPED, null, requestMetadata);
-									signingComplete(instanceManager, saveEvent, req, instanceProfile, callback.getMultiSigningActionID());
+									res.sendRedirect(getSaveAndSubmitURL(instanceManager, req));
+									return null;
+								}
+								
+							} else if (!instanceManager.getSessionAttributeHandler().isSet(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE)) {
+								
+								log.info("User " + user + " preparing to sign flow instance " + instanceManager.getFlowInstance());
+								
+								instanceManager.getSessionAttributeHandler().setAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE, instanceManager.getChangesCounter());
+								
+							} else if (instanceManager.getChangesCounter() != instanceManager.getSessionAttributeHandler().getInt(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE)) {
+								
+								log.info("User " + user + " modified unsaved flow instance and is re-preparing to sign flow instance " + instanceManager.getFlowInstance());
+								
+								instanceManager.getSessionAttributeHandler().setAttribute(SIGN_FLOW_MODIFICATION_COUNT_INSTANCE_MANAGER_ATTRIBUTE, instanceManager.getChangesCounter());
+								modifiedSinceLastSignRequest = true;
+							}
+
+							try {
+								SigningCallback signingCallback;
+
+								SiteProfile instanceProfile = getSiteProfile(instanceManager);
+								
+								if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
 									
-									res.sendRedirect(getSignSuccessURL(instanceManager, req));
+									if (instanceManager.getFlowInstance().getFlow().isSkipPosterSigning()) {
+										
+										FlowInstanceEvent saveEvent = save(instanceManager, user, poster, req, callback.getMultiSigningActionID(), EventType.SIGNING_SKIPPED, null, requestMetadata);
+										signingComplete(instanceManager, saveEvent, req, instanceProfile, callback.getMultiSigningActionID());
+										
+										res.sendRedirect(getSignSuccessURL(instanceManager, req));
+										return null;
+									}
+
+									signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, requestMetadata, false);
+
+								} else if (requiresPayment(instanceManager)) {
+
+									signingCallback = getSigningCallback(instanceManager, poster, null, callback.getPaymentActionID(), instanceProfile, requestMetadata, false);
+
+								} else {
+
+									signingCallback = getSigningCallback(instanceManager, poster, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, requestMetadata, true);
+								}
+
+								ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
+
+								if (res.isCommitted()) {
+
+									return null;
+
+								} else if (viewFragment == null) {
+
+									log.warn("Signing provider returned no view fragment and not committed not direct response for signing of flow instance " + instanceManager + " by user " + user);
+
+									redirectToSignError(req, res, uriParser, instanceManager);
+
 									return null;
 								}
 
-								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getMultiSigningActionID(), instanceProfile, requestMetadata, false);
+								return showSigningForm(instanceManager, req, res, user, uriParser, viewFragment);
 
-							} else if (requiresPayment(instanceManager)) {
+							} catch (Exception e) {
 
-								signingCallback = getSigningCallback(instanceManager, poster, null, callback.getPaymentActionID(), instanceProfile, requestMetadata, false);
-
-							} else {
-
-								signingCallback = getSigningCallback(instanceManager, poster, EventType.SUBMITTED, callback.getSubmitActionID(), instanceProfile, requestMetadata, true);
-							}
-
-							ViewFragment viewFragment = signingProvider.sign(req, res, user, instanceManager, signingCallback, modifiedSinceLastSignRequest);
-
-							if (res.isCommitted()) {
-
-								return null;
-
-							} else if (viewFragment == null) {
-
-								log.warn("Signing provider returned no view fragment and not committed not direct response for signing of flow instance " + instanceManager + " by user " + user);
+								log.error("Error invoking signing provider " + signingProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
 								redirectToSignError(req, res, uriParser, instanceManager);
 
 								return null;
 							}
 
-							return showSigningForm(instanceManager, req, res, user, uriParser, viewFragment);
+						} else if (enableSaving && requiresPayment(instanceManager)) {
 
-						} catch (Exception e) {
+							FlowPaymentProvider paymentProvider = getFlowPaymentProvider();
 
-							log.error("Error invoking signing provider " + signingProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
+							if (paymentProvider == null) {
 
-							redirectToSignError(req, res, uriParser, instanceManager);
+								if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
 
-							return null;
-						}
+									return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
 
-					} else if (enableSaving && requiresPayment(instanceManager)) {
+								} else {
 
-						FlowPaymentProvider paymentProvider = getFlowPaymentProvider();
+									return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
+								}
+							}
 
-						if (paymentProvider == null) {
+							boolean previouslySaved = instanceManager.isPreviouslySaved();
+							Status paymentStatus = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(callback.getPaymentActionID());
+							
+							if (paymentStatus != null && paymentStatus.getContentType() != ContentType.WAITING_FOR_PAYMENT) {
+								
+								log.warn("Wrong content type for payment status " + paymentStatus + " in flow " + instanceManager.getFlowInstance().getFlow());
+								paymentStatus = null;
+							}
 
-							if (instanceManager.getFlowInstance().getFlow().usesPreview()) {
+							if (instanceManager.hasUnsavedChanges() || (paymentStatus != null && !paymentStatus.equals(instanceManager.getFlowState()))) {
 
-								return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, requestMetadata);
+								log.info("User " + user + " saving and preparing to pay flow instance " + instanceManager.getFlowInstance());
+
+								if (paymentStatus != null) {
+									
+									save(instanceManager, user, poster, req, callback.getPaymentActionID(), EventType.UPDATED, null, requestMetadata);
+									
+									removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
+									
+								} else {
+									
+									save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
+								}
+								
+								savedFlowInstanceForPayment(instanceManager, user, req);
 
 							} else {
 
-								return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, PAYMENT_PROVIDER_NOT_FOUND_VALIDATION_ERROR, flowAction, requestMetadata);
+								log.info("User " + user + " preparing to pay flow instance " + instanceManager.getFlowInstance());
 							}
-						}
-
-						boolean previouslySaved = instanceManager.isPreviouslySaved();
-						Status paymentStatus = (Status) instanceManager.getFlowInstance().getFlow().getDefaultState(callback.getPaymentActionID());
-						
-						if (paymentStatus != null && paymentStatus.getContentType() != ContentType.WAITING_FOR_PAYMENT) {
-							
-							log.warn("Wrong content type for payment status " + paymentStatus + " in flow " + instanceManager.getFlowInstance().getFlow());
-							paymentStatus = null;
-						}
-
-						if (instanceManager.hasUnsavedChanges() || (paymentStatus != null && !paymentStatus.equals(instanceManager.getFlowState()))) {
-
-							log.info("User " + user + " saving and preparing to pay flow instance " + instanceManager.getFlowInstance());
 
 							if (paymentStatus != null) {
-								
-								save(instanceManager, user, poster, req, callback.getPaymentActionID(), EventType.UPDATED, null, requestMetadata);
-								
-								removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession());
-								
-							} else {
-								
-								save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
-							}
-							
-							savedFlowInstanceForPayment(instanceManager, user, req);
 
-						} else {
-
-							log.info("User " + user + " preparing to pay flow instance " + instanceManager.getFlowInstance());
-						}
-
-						if (paymentStatus != null) {
-
-							res.sendRedirect(getStandalonePaymentURL(instanceManager, req));
-							return null;
-
-						} else if (!previouslySaved) {
-
-							res.sendRedirect(getSaveAndSubmitURL(instanceManager, req));
-							return null;
-						}
-						
-						try {
-							
-							SiteProfile instanceProfile = getSiteProfile(instanceManager);
-
-							ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
-
-							if (res.isCommitted()) {
-
+								res.sendRedirect(getStandalonePaymentURL(instanceManager, req));
 								return null;
 
-							} else if (viewFragment == null) {
+							} else if (!previouslySaved) {
 
-								log.warn("Payment provider returned no view fragment and not committed not direct response for pay of flow instance " + instanceManager + " by user " + user);
+								res.sendRedirect(getSaveAndSubmitURL(instanceManager, req));
+								return null;
+							}
+							
+							try {
+								
+								SiteProfile instanceProfile = getSiteProfile(instanceManager);
+
+								ViewFragment viewFragment = paymentProvider.pay(req, res, user, uriParser, instanceManager, new BaseFlowModuleInlinePaymentCallback(this, instanceProfile, callback.getSubmitActionID()));
+
+								if (res.isCommitted()) {
+
+									return null;
+
+								} else if (viewFragment == null) {
+
+									log.warn("Payment provider returned no view fragment and not committed not direct response for pay of flow instance " + instanceManager + " by user " + user);
+
+									redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
+									return null;
+								}
+
+								return showInlinePaymentForm(instanceManager, req, res, user, uriParser, viewFragment);
+
+							} catch (Exception e) {
+
+								log.error("Error invoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
 								redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
 								return null;
 							}
-
-							return showInlinePaymentForm(instanceManager, req, res, user, uriParser, viewFragment);
-
-						} catch (Exception e) {
-
-							log.error("Error invoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
-
-							redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
-							return null;
 						}
+
+						log.info("User " + user + " saving and submitting flow instance " + instanceManager.getFlowInstance());
+
+						FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null, requestMetadata);
+
+						if (enableSaving) {
+
+							sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager));
+						}
+
+						removeFlowInstanceManagerFromSession(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req.getSession(false));
+
+						closeSubmittedFlowInstanceManager(instanceManager, req);
 					}
-
-					log.info("User " + user + " saving and submitting flow instance " + instanceManager.getFlowInstance());
-
-					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null, requestMetadata);
-
-					if (enableSaving) {
-
-						sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager));
-					}
-
-					removeFlowInstanceManagerFromSession(instanceManager.getFlowID(), instanceManager.getFlowInstanceID(), req.getSession(false));
-
-					closeSubmittedFlowInstanceManager(instanceManager, req);
-
+					
 					redirectToSubmitMethod(instanceManager, req, res);
 
 					return null;
-
+					
 				} else if (flowAction == FlowAction.SAVE_AND_CLOSE && user != null) {
 
 					log.info("User " + user + " saving and closing flow instance " + instanceManager.getFlowInstance());

@@ -1291,6 +1291,27 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 	}
 
+	public boolean hasSubmitChecks() {
+		
+		for (ManagedStep step : managedSteps) {
+			
+			for (ManagedQueryInstance managedQueryInstance : step.getManagedQueryInstances()) {
+				
+				QueryInstance queryInstance = managedQueryInstance.getQueryInstance();
+				
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && queryInstance.getQueryInstanceDescriptor().isPopulated()) {
+					
+					if (queryInstance instanceof SubmitCheck) {
+						
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public SubmitCheckFailedResponse checkValidForSubmit(User poster, QueryHandler queryHandler, String baseUpdateURL, RequestMetadata requestMetadata) throws SubmitCheckException {
 		
 		User resolvedPoster = getPoster(poster);
@@ -1299,6 +1320,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		ManagedStep blockingStep = null;
 		
 		outer: for (ManagedStep step : managedSteps) {
+			
 			for (ManagedQueryInstance managedQueryInstance : step.getManagedQueryInstances()) {
 				
 				QueryInstance queryInstance = managedQueryInstance.getQueryInstance();
@@ -1319,22 +1341,6 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 							throw new SubmitCheckException(queryInstance.getQueryInstanceDescriptor(), e);
 						}
 					}
-					
-//					if (managedQueryInstance.getEvaluators() != null) {
-//
-//						for (Evaluator evaluator : managedQueryInstance.getEvaluators()) {
-//
-//							if (evaluator.getEvaluatorDescriptor().isEnabled() && evaluator instanceof SubmitCheck) {
-//
-//								if (!((SubmitCheck) queryInstance).isValidForSubmit(poster, queryHandler)) {
-//
-//									blockingQueryInstance = managedQueryInstance;
-//									blockingStep = step;
-//									break outer;
-//								}
-//							}
-//						}
-//					}
 				}
 			}
 		}

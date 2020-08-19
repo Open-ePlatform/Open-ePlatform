@@ -334,20 +334,28 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		if (this == obj) {
 			return true;
 		}
+		
 		if (obj == null) {
 			return false;
 		}
+		
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+		
 		FlowFamily other = (FlowFamily) obj;
+		
 		if (flowFamilyID == null) {
+		
 			if (other.flowFamilyID != null) {
 				return false;
 			}
+			
 		} else if (!flowFamilyID.equals(other.flowFamilyID)) {
+			
 			return false;
 		}
+		
 		return true;
 	}
 
