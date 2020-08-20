@@ -523,7 +523,6 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 
 									labels.add(new FeatureLabel(UUID.randomUUID().toString(), centroid, NumberUtils.formatNumber(lineString.getLength(), 1, 1, false, true) + " m"));
 								}
-								;
 
 								JsonArray coord = new JsonArray();
 
