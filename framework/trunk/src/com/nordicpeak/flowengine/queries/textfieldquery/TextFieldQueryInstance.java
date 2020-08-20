@@ -108,6 +108,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 		}
 
 		initialized = false;
+		lastUsedEndpointURL = null;
 
 		super.reset(attributeHandler);
 	}
