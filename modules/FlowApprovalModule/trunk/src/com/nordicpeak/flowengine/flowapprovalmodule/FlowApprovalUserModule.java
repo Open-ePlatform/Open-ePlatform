@@ -332,7 +332,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			Integer flowInstanceID = entry.getKey();
 
-			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION);
+			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 
 			if (flowInstance != null && flowInstance.getFlow().isEnabled()) {
 				
@@ -628,8 +628,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
-//		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
-//		FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 		FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getActivityRound().getFlowInstanceID());
 
@@ -775,7 +773,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
 		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
-//		FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 		FlowInstance flowInstance = flowAdminModule.getFlowInstance(activityProgress.getActivityRound().getFlowInstanceID());
 
@@ -944,5 +941,4 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		
 		return flowAdminModule.getQueryHandler();
 	}
-
 }
