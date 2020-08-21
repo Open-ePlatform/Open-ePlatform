@@ -678,7 +678,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 							
 							String fieldName = "endpointField-" + endpoint.getEndpointID() + "-" + queryField.getTextFieldID();
 
-							String endpointField = ValidationUtils.validateParameter(fieldName, req, false, StringPopulator.getPopulator(), validationErrors);
+							String endpointField = ValidationUtils.validateParameter(fieldName, req, false, null, 255, StringPopulator.getPopulator(), validationErrors);
 
 							if (endpointField != null && endpoint.getFields() != null && !endpoint.getFields().contains(endpointField)) {
 

@@ -123,7 +123,6 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	private List<TextFieldValue> values;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String endpointField;
 	
