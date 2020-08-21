@@ -55,6 +55,7 @@ import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -3110,7 +3111,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return externalMessageTemplateCRUD.delete(req, res, user, uriParser);
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowType.class)
+	@EventListener(channel=FlowType.class)
 	public void processFlowTypeEvent(CRUDEvent<FlowType> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow types");
@@ -3119,7 +3120,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows();
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Category.class)
+	@EventListener(channel=Category.class)
 	public void processCategoryEvent(CRUDEvent<Category> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " categories");
@@ -3128,7 +3129,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows();
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowFamily.class)
+	@EventListener(channel=FlowFamily.class)
 	public void processFlowFamilyEvent(CRUDEvent<FlowFamily> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow families");
@@ -3150,7 +3151,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel = Flow.class)
+	@EventListener(channel = Flow.class)
 	public void processFlowEvent(CRUDEvent<Flow> event, EventSource source) throws SQLException {
 
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flows");
@@ -3206,7 +3207,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Step.class)
+	@EventListener(channel=Step.class)
 	public void processStepEvent(CRUDEvent<Step> event, EventSource source) throws SQLException {
 	
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " steps");
@@ -3226,7 +3227,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows(flowIDs);
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=QueryDescriptor.class)
+	@EventListener(channel=QueryDescriptor.class)
 	public void processQueryDescriptorEvent(CRUDEvent<QueryDescriptor> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " query descriptors");
@@ -3253,7 +3254,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows(flowIDs);
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=EvaluatorDescriptor.class)
+	@EventListener(channel=EvaluatorDescriptor.class)
 	public void processEvaluatorDescriptorEvent(CRUDEvent<EvaluatorDescriptor> event, EventSource source) throws SQLException {
 	
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " evaluator descriptors");
@@ -3273,7 +3274,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows(flowIDs);
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=Status.class)
+	@EventListener(channel=Status.class)
 	public void processStatusEvent(CRUDEvent<Status> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " statuses");
@@ -3288,7 +3289,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		cacheFlows(flowIDs);
 	}
 	
-	@se.unlogic.hierarchy.core.annotations.EventListener(channel=FlowInstance.class)
+	@EventListener(channel=FlowInstance.class)
 	public void processFlowInstanceEvent(CRUDEvent<FlowInstance> event, EventSource source) throws SQLException {
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow instances");
