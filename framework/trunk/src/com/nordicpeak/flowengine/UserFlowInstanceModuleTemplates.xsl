@@ -668,11 +668,14 @@
   						  <p>
 		  						<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
 		  						<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
-		  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-		  						<xsl:call-template name="printUser">
-		  							<xsl:with-param name="user" select="editor/user" />
-		  							<xsl:with-param name="hideUsername" select="true()"/>
-		  						</xsl:call-template>
+		  						
+		  						<xsl:if test="Flow/hideManagerDetails = 'false'">
+			  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+			  						<xsl:call-template name="printUser">
+			  							<xsl:with-param name="user" select="editor/user" />
+			  							<xsl:with-param name="hideUsername" select="true()"/>
+			  						</xsl:call-template>
+		  						</xsl:if>
 		  					</p>
   					</xsl:if>
   					
