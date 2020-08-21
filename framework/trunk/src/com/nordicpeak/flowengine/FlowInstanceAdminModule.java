@@ -1525,7 +1525,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		MutableFlowInstanceManager instanceManager;
 
 		try {
-			//TODO OE-103			
 			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
 				
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION);
