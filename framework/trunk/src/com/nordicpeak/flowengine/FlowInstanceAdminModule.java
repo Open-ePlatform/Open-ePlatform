@@ -1525,7 +1525,20 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		MutableFlowInstanceManager instanceManager;
 
 		try {
-			if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
+			//TODO OE-103			
+			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
+				
+				FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION);
+				
+				if(flowInstance != null) {
+					
+					log.info("Redirecting user " + user + " to full URL of flow instance " + flowInstance);
+					redirectToMethod(req, res, "/flowinstance/" + flowInstance.getFlow().getFlowID() + "/" + flowInstanceID);
+				}
+				
+				throw new URINotFoundException(uriParser);
+				
+			}else if (uriParser.size() == 4 && (flowID = uriParser.getInt(2)) != null && (flowInstanceID = uriParser.getInt(3)) != null) {
 
 				// Get saved instance from DB or session
 				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
