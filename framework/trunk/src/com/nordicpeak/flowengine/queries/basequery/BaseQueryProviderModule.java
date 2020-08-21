@@ -345,17 +345,10 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
 			
-			if(queryInstance.getQuery().getDescription() != null){
-				
-				generatorDocument.addIgnoredField(BaseQuery.DESCRIPTION_FIELD);
-				generatorDocument.addAssignableElementableListener(BaseQuery.class, new QueryDescriptionListener(attributeHandler));
-			}
+			generatorDocument.addIgnoredField(BaseQuery.HELP_TEXT_FIELD);
+			generatorDocument.addIgnoredField(BaseQuery.DESCRIPTION_FIELD);
 			
-			if(queryInstance.getQuery().getHelpText() != null){
-				
-				generatorDocument.addIgnoredField(BaseQuery.HELP_TEXT_FIELD);
-				generatorDocument.addAssignableElementableListener(BaseQuery.class, new QueryHelpTextListener(attributeHandler));
-			}
+			generatorDocument.addAssignableElementableListener(BaseQuery.class, new BaseQueryTextsListener(attributeHandler));
 			
 			targetElement.appendChild(queryInstance.toXML(generatorDocument));
 		

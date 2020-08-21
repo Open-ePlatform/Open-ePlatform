@@ -7,12 +7,11 @@ import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.xml.ElementableListener;
 import se.unlogic.standardutils.xml.XMLUtils;
 
-
-public class QueryHelpTextListener implements ElementableListener<BaseQuery> {
+public class BaseQueryTextsListener implements ElementableListener<BaseQuery> {
 
 	private final AttributeHandler attributeHandler;
 	
-	public QueryHelpTextListener(AttributeHandler attributeHandler) {
+	public BaseQueryTextsListener(AttributeHandler attributeHandler) {
 
 		super();
 		this.attributeHandler = attributeHandler;
@@ -21,7 +20,12 @@ public class QueryHelpTextListener implements ElementableListener<BaseQuery> {
 	@Override
 	public void elementGenerated(Document doc, Element element, BaseQuery query) {
 
-		XMLUtils.appendNewCDATAElement(doc, element, "helpText", query.getHelpText(attributeHandler));
+		if (query.getHelpText() != null) {
+			XMLUtils.appendNewCDATAElement(doc, element, "helpText", query.getHelpText(attributeHandler));
+		}
+		
+		if (query.getDescription() != null) {
+			XMLUtils.appendNewCDATAElement(doc, element, "description", query.getDescription(attributeHandler));
+		}
 	}
-
 }
