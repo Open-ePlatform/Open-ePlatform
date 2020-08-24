@@ -17,4 +17,6 @@ public interface Guardian extends Serializable, Elementable {
 	public String getZipCode();
 
 	public String getPostalAddress();
+	
+	public String getAddressUUID();
 }

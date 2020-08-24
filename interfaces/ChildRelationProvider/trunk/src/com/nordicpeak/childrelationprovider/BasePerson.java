@@ -26,6 +26,9 @@ public class BasePerson extends GeneratedElementable implements Serializable {
 
 	@XMLElement
 	protected String postalAddress;
+	
+	@XMLElement
+	protected String addressUUID;
 
 	public String getFirstname() {
 
@@ -91,5 +94,17 @@ public class BasePerson extends GeneratedElementable implements Serializable {
 	public String toString(){
 		
 		return firstname + " " + lastname + " (" + citizenIdentifier + ")";
+	}
+
+	
+	public String getAddressUUID() {
+	
+		return addressUUID;
+	}
+
+	
+	public void setAddressUUID(String addressUUID) {
+	
+		this.addressUUID = addressUUID;
 	}
 }

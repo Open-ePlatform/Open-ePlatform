@@ -24,4 +24,6 @@ public interface Child extends Serializable, Elementable {
 	public String getPostalAddress();
 
 	public String getMunicipalityCode();
+	
+	public String getAddressUUID();
 }
