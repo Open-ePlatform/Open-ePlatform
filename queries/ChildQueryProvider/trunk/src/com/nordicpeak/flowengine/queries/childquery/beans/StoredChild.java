@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.date.DateUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
@@ -42,6 +43,9 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 
 	@XMLElement
 	private String postalAddress;
+	
+	@DAOManaged
+	protected String addressUUID;
 
 	private String municipalityCode;
 
@@ -63,6 +67,7 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 		zipcode = child.getZipCode();
 		postalAddress = child.getPostalAddress();
 		municipalityCode = child.getMunicipalityCode();
+		addressUUID = child.getAddressUUID();
 
 		if (!CollectionUtils.isEmpty(child.getGuardians())) {
 
@@ -214,6 +219,12 @@ public class StoredChild extends GeneratedElementable implements Serializable {
 				attributes.add(new ChildAttribute(entry.getKey(), entry.getValue()));
 			}
 		}
+	}
+
+	
+	public String getAddressUUID() {
+	
+		return addressUUID;
 	}
 
 }

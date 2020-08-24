@@ -54,6 +54,10 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 	@DAOManaged
 	@XMLElement
 	private String postalAddress;
+	
+	@DAOManaged
+	@XMLElement(fixCase = true)
+	protected String addressUUID;
 
 	@DAOManaged
 	private boolean poster;
@@ -73,6 +77,7 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 		this.address = guardian.getAddress();
 		this.zipcode = guardian.getZipCode();
 		this.postalAddress = guardian.getPostalAddress();
+		this.addressUUID = guardian.getAddressUUID();
 	}
 	
 	public StoredGuardian(String firstname, String lastname, String citizenIdentifier) {

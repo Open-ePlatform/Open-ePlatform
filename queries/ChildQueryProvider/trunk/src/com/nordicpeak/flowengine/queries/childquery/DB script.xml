@@ -328,4 +328,17 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="24">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_instances` ADD COLUMN `addressUUID` VARCHAR(36) AFTER `municipalityCode`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians` ADD COLUMN `addressUUID` VARCHAR(36) AFTER `postalAddress`;
+			]]>
+		</Query>
+	</Script>	
 </DBScripts>

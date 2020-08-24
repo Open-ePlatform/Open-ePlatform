@@ -369,6 +369,13 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		addressElement.setAttribute("minOccurs", "1");
 		addressElement.setAttribute("maxOccurs", "1");
 		sequenceElement.appendChild(addressElement);
+		
+		Element addressUUIDElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
+		addressUUIDElement.setAttribute("name", "AddressUUID");
+		addressUUIDElement.setAttribute("type", "xs:string");
+		addressUUIDElement.setAttribute("minOccurs", "0");
+		addressUUIDElement.setAttribute("maxOccurs", "1");
+		sequenceElement.appendChild(addressUUIDElement);
 
 		Element zipcodeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		zipcodeElement.setAttribute("name", "Zipcode");
@@ -384,7 +391,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		postalAddressElement.setAttribute("maxOccurs", "1");
 		sequenceElement.appendChild(postalAddressElement);
 
-		if (useMultipartSigning) {
+		if (useMultipartSigning || alwaysShowOtherGuardians) {
 
 			Element guardiansElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 			guardiansElement.setAttribute("name", "Guardians");
@@ -421,6 +428,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 			addElementType(doc, guardianSequenceElement, "citizenIdentifier", "xs:string");
 			addElementType(doc, guardianSequenceElement, "email", "xs:string", requireGuardianEmail);
 			addElementType(doc, guardianSequenceElement, "phone", "xs:string", requireGuardianPhone);
+			addElementType(doc, guardianSequenceElement, "AddressUUID", "xs:string", false);
 
 			doc.getDocumentElement().appendChild(guardianComplexTypeElement);
 		}

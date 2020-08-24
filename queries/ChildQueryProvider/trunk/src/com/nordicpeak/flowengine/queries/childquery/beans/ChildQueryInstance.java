@@ -77,6 +77,9 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 	private String municipalityCode;
 	
 	@DAOManaged
+	protected String addressUUID;
+	
+	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@XMLElement(name = "Guardians")
 	private List<StoredGuardian> storedGuardians;
@@ -310,6 +313,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		XMLUtils.appendNewElement(doc, element, "Firstname", firstname);
 		XMLUtils.appendNewElement(doc, element, "Lastname", lastname);
 		XMLUtils.appendNewElement(doc, element, "Address", address);
+		XMLUtils.appendNewElement(doc, element, "addressUUID", addressUUID);
 		XMLUtils.appendNewElement(doc, element, "Zipcode", zipcode);
 		XMLUtils.appendNewElement(doc, element, "PostalAddress", postalAddress);
 		
@@ -537,6 +541,18 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 
 	public void setAgeFilteredChildren(boolean ageFilteredChildren) {
 		this.ageFilteredChildren = ageFilteredChildren;
+	}
+
+	
+	public String getAddressUUID() {
+	
+		return addressUUID;
+	}
+
+	
+	public void setAddressUUID(String addressUUID) {
+	
+		this.addressUUID = addressUUID;
 	}
 
 }
