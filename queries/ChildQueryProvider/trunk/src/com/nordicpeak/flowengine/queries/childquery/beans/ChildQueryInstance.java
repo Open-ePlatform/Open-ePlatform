@@ -313,7 +313,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		XMLUtils.appendNewElement(doc, element, "Firstname", firstname);
 		XMLUtils.appendNewElement(doc, element, "Lastname", lastname);
 		XMLUtils.appendNewElement(doc, element, "Address", address);
-		XMLUtils.appendNewElement(doc, element, "addressUUID", addressUUID);
+		XMLUtils.appendNewElement(doc, element, "AddressUUID", addressUUID);
 		XMLUtils.appendNewElement(doc, element, "Zipcode", zipcode);
 		XMLUtils.appendNewElement(doc, element, "PostalAddress", postalAddress);
 		
