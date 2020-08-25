@@ -356,5 +356,27 @@
 		</Query>
 	</Script>
 	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `sendActivityGroupCompletedEmail` TINYINT(3) UNSIGNED NOT NULL AFTER `activityGroupStartedEmailMessage`,
+					ADD COLUMN `activityGroupCompletedEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendActivityGroupCompletedEmail`,
+					ADD COLUMN `activityGroupCompletedEmailMessage` TEXT(65535) NULL DEFAULT NULL AFTER `activityGroupCompletedEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups_notify_completed` (
+				`activityGroupID` INTEGER UNSIGNED NOT NULL,
+				`email` VARCHAR(255) NOT NULL,
+				PRIMARY KEY (`activityGroupID`,`email`),
+				CONSTRAINT `FK_flowapproval_activitygroups_notify_completed_1` FOREIGN KEY `FK_flowapproval_activitygroups_notify_completed_1` (`activityGroupID`)
+					REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON DELETE CASCADE ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

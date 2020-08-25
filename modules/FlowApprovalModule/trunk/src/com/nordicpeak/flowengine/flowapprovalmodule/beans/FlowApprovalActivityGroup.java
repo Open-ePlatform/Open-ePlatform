@@ -3,14 +3,19 @@ package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
+import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
+import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.annotations.enums.RequiredState;
+import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
+import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
@@ -121,6 +126,33 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer reminderAfterXDays;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendActivityGroupCompletedEmail;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String activityGroupCompletedEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65535)
+	@XMLElement
+	private String activityGroupCompletedEmailMessage;
+	
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowapproval_activitygroups_notify_completed", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@RequiredIfSet(paramNames = "sendActivityGroupCompletedEmail")
+	@SplitOnLineBreak
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
+	@XMLElement(fixCase = true, childName = "address")
+	private List<String> activityGroupCompletedEmailAddresses;
 
 	@DAOManaged
 	@OneToMany
@@ -243,6 +275,38 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	public void setActivityGroupStartedEmailMessage(String activityGroupStartedEmailMessage) {
 
 		this.activityGroupStartedEmailMessage = activityGroupStartedEmailMessage;
+	}
+
+	public boolean isSendActivityGroupCompletedEmail() {
+		return sendActivityGroupCompletedEmail;
+	}
+
+	public void setSendActivityGroupCompletedEmail(boolean sendActivityGroupCompletedEmail) {
+		this.sendActivityGroupCompletedEmail = sendActivityGroupCompletedEmail;
+	}
+
+	public String getActivityGroupCompletedEmailSubject() {
+		return activityGroupCompletedEmailSubject;
+	}
+
+	public void setActivityGroupCompletedEmailSubject(String activityGroupCompletedEmailSubject) {
+		this.activityGroupCompletedEmailSubject = activityGroupCompletedEmailSubject;
+	}
+
+	public String getActivityGroupCompletedEmailMessage() {
+		return activityGroupCompletedEmailMessage;
+	}
+
+	public void setActivityGroupCompletedEmailMessage(String activityGroupCompletedEmailMessage) {
+		this.activityGroupCompletedEmailMessage = activityGroupCompletedEmailMessage;
+	}
+
+	public List<String> getActivityGroupCompletedEmailAddresses() {
+		return activityGroupCompletedEmailAddresses;
+	}
+
+	public void setActivityGroupCompletedEmailAddresses(List<String> activityGroupCompletedEmailAddresses) {
+		this.activityGroupCompletedEmailAddresses = activityGroupCompletedEmailAddresses;
 	}
 
 	public List<FlowApprovalActivity> getActivities() {

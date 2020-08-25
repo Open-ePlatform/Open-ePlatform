@@ -38,7 +38,7 @@
 	
 		&lt;p&gt;Hej $manager.firstname,&lt;/p&gt;
 		
-		&lt;p&gt;Det finns nya aktiviteter för $activityGroup.name  i ärende $flowInstance.flowInstanceID $flow.name.&lt;/p&gt;
+		&lt;p&gt;Det finns nya aktiviteter för $activityGroup.name i ärende $flowInstance.flowInstanceID $flow.name.&lt;/p&gt;
 		
 		&lt;p&gt;$activities&lt;/p&gt;
 		
@@ -47,6 +47,14 @@
 		&lt;p&gt;
 			&lt;a href="$myActivitiesURL"&gt;$myActivitiesURL&lt;/a&gt;
 		&lt;/p&gt;
+		
+	</xsl:variable>
+	<xsl:variable name="java.activityGroupCompletedEmailSubject">Avklarad aktivitetsgrupp $activityGroup.name för ärende $flowInstance.flowInstanceID </xsl:variable>
+	<xsl:variable name="java.activityGroupCompletedEmailMessage">
+	
+		&lt;p&gt;Aktivitetsgruppen $activityGroup.name för ärende $flowInstance.flowInstanceID $flow.name är avklarad.&lt;/p&gt;
+		
+		&lt;p&gt;Avklarade aktiviteter:<br/>$activities&lt;/p&gt;
 		
 	</xsl:variable>
 	
@@ -106,9 +114,13 @@
 	<xsl:variable name="i18n.ActivityGroup.allowSkip">Hoppa över / byt till målstatus även om ingen aktivitet startas (endast om ingen grupp alls startas/är igång)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.onlyRestartIfActivityChanges">Tillåt omstart endast om det blir skillnad på startade aktiviteter (pga attribut)</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp (samma texter för påmminelser)</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupCompletedEmail">Skicka e-postnotifiering vid avklarad aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailSubject">Rubrik för notifiering</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailMessage">Meddelandetext för notifiering</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddresses">E-postadresser för notifiering om avklarad aktivitetsgrupp (en adress per rad)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToExternalMessages">Kopiera aktivitetskommentarer till meddelanden på ärendet</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.startStatus2">Aktivitetsgruppen påbörjas när ärendet hamnar i denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.completeStatus2">Om alla aktiviteter i gruppen är klarmarkerade/godkända så får ärendet denna status.</xsl:variable>

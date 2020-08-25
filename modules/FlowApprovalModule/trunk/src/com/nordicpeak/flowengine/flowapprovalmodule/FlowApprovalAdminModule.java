@@ -250,6 +250,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	private String activityGroupStartedEmailMessage;
 	
 	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Activity group started email subject", description = "The subject of emails sent to the global adresses when an activity group is completed", required = true)
+	@XSLVariable(prefix = "java.")
+	private String activityGroupCompletedEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Activity group started email message", description = "The message of emails sent to the global adresses when an activity group is completed", required = true)
+	@XSLVariable(prefix = "java.")
+	private String activityGroupCompletedEmailMessage;
+	
+	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Activity reminder email subject prefix", description = "The subject prefix of emails sent to remind users of an activity", required = true)
 	@XSLVariable(prefix = "java.")
 	private String reminderEmailPrefix;
@@ -886,6 +896,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						} finally {
 							activityRoundDAO.update(round);
 						}
+						
+						if (activityGroup.isSendActivityGroupCompletedEmail()) {
+							sendActivityGroupCompletedNotifications(round.getActivityProgresses(), activityGroup, flowInstance);
+						}
 					}
 				}
 
@@ -1244,6 +1258,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			log.warn("no subject or message set, unable to send notifications");
 			return;
 		}
+		
+		if (reminder) {
+			subject = reminderEmailPrefix + subject;
+		}
 
 		List<TagSource> sharedTagSources = new ArrayList<TagSource>(4);
 
@@ -1346,10 +1364,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
-					if (reminder) {
-						email.setSubject(reminderEmailPrefix + email.getSubject());
-					}
-
 					systemInterface.getEmailHandler().send(email);
 
 				} catch (Exception e) {
@@ -1394,10 +1408,66 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
-					if (reminder) {
-						email.setSubject(reminderEmailPrefix + email.getSubject());
-					}
+					systemInterface.getEmailHandler().send(email);
 
+				} catch (Exception e) {
+
+					log.info("Error generating/sending email " + email, e);
+				}
+			}
+		}
+	}
+	
+	
+	public void sendActivityGroupCompletedNotifications(List<FlowApprovalActivityProgress> activityProgresses, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance) throws SQLException {
+
+		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupCompletedEmailSubject(), activityGroupCompletedEmailSubject);
+		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupCompletedEmailMessage(), activityGroupCompletedEmailMessage);
+
+		if (subject == null || message == null) {
+
+			log.warn("no subject or message set, unable to send notifications");
+			return;
+		}
+		
+		if (!activityGroup.getActivityGroupCompletedEmailAddresses().isEmpty()) {
+
+			List<TagSource> sharedTagSources = new ArrayList<TagSource>(4);
+	
+			sharedTagSources.add(ACTIVITY_GROUP_TAG_SOURCE_FACTORY.getTagSource(activityGroup));
+			sharedTagSources.add(FLOW_INSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
+			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
+			sharedTagSources.add(new SingleTagSource("$myActivitiesURL", userApprovalModuleAlias));
+			
+			log.info("Sending emails for completed activity group " + activityGroup + " for flow instance " + flowInstance + " to " + activityGroup.getActivityGroupCompletedEmailAddresses().size() + " global recipients");
+	
+			StringBuilder activitiesStringBuilder = new StringBuilder();
+			
+			for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
+	
+				if (activitiesStringBuilder.length() > 0) {
+					activitiesStringBuilder.append("<br/>");
+				}
+	
+				activitiesStringBuilder.append(activityProgress.getActivity().getName());
+			}
+			
+			sharedTagSources.add(new SingleTagSource("$activities", activitiesStringBuilder.toString()));
+			
+			TagReplacer tagReplacer = new TagReplacer(sharedTagSources);
+
+			for (String emailAdress : activityGroup.getActivityGroupCompletedEmailAddresses()) {
+
+				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+
+				try {
+					email.addRecipient(emailAdress);
+					email.setMessageContentType(SimpleEmail.HTML);
+					email.setSenderName(notificationHandler.getEmailSenderName(flowInstance));
+					email.setSenderAddress(notificationHandler.getEmailSenderAddress(flowInstance));
+					email.setSubject(tagReplacer.replace(subject));
+					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
+					
 					systemInterface.getEmailHandler().send(email);
 
 				} catch (Exception e) {
