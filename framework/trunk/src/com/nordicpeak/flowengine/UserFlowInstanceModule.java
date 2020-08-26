@@ -703,8 +703,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-		genDoc.addElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
-		genDoc.addElementableListener(ExternalMessage.class, new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
+		genDoc.addRootElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
+		genDoc.addFieldElementableListener(ExternalMessage.class, new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
 		
 		Element showFlowInstanceElement = flowInstance.toXML(genDoc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);

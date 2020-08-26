@@ -4075,9 +4075,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		XMLGeneratorDocument xmlGeneratorDocument = new XMLGeneratorDocument(doc);
 
 		xmlGeneratorDocument.addIgnoredField(Flow.FLOW_TYPE_RELATION);
-		xmlGeneratorDocument.addElementableListener(QueryDescriptor.class, new QueryDescriptorElementableListener(queryHandler, validationErrors));
-		xmlGeneratorDocument.addElementableListener(EvaluatorDescriptor.class, new EvaluatorDescriptorElementableListener(evaluationHandler, validationErrors));
-		xmlGeneratorDocument.addElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
+		xmlGeneratorDocument.addFieldElementableListener(QueryDescriptor.class, new QueryDescriptorElementableListener(queryHandler, validationErrors));
+		xmlGeneratorDocument.addFieldElementableListener(EvaluatorDescriptor.class, new EvaluatorDescriptorElementableListener(evaluationHandler, validationErrors));
+		xmlGeneratorDocument.addFieldElementableListener(FlowForm.class, new FlowFormExportElementableListener(this, validationErrors));
 
 		Element flowNode = flow.toXML(xmlGeneratorDocument);
 		XMLUtils.append(doc, flowNode, "OverviewAttributes", flow.getOverviewAttributes());

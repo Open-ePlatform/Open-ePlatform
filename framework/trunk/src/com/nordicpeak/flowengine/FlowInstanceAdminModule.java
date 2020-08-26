@@ -743,7 +743,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	protected Element appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SimpleForegroundModuleResponse moduleResponse) {
 
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-		genDoc.addElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
+		genDoc.addRootElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
 		
 		Element showFlowInstanceElement = flowInstance.toXML(genDoc);
 		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
@@ -865,7 +865,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-			genDoc.addElementableListener(Status.class, new FlowStatusManagerAccessElementableListener(user));
+			genDoc.addFieldElementableListener(Status.class, new FlowStatusManagerAccessElementableListener(user));
 
 			updateInstanceStatusElement.appendChild(flowInstance.toXML(genDoc));
 

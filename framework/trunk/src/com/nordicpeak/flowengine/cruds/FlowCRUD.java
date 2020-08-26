@@ -135,7 +135,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	protected void appendBean(Flow flow, Element targetElement, Document doc, User user) {
 		
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-		genDoc.addElementableListener(FlowForm.class, flowFormElementableListener);
+		genDoc.addFieldElementableListener(FlowForm.class, flowFormElementableListener);
 		
 		TemplateUtils.setTemplatedFields(flow.getFlowFamily(), callback);
 		
