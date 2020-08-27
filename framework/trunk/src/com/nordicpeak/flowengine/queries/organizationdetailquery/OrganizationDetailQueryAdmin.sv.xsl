@@ -18,7 +18,7 @@
 	
 	<xsl:variable name="java.queryTypeName">Kontaktuppgiftsfråga (organisation)</xsl:variable>
 	<xsl:variable name="java.queryDescription">
-Frågetypen Kontaktuppgiftsfråga (organisation) är en skräddarsydd frågetyp när användaren skall manuellt ange uppgifter om organisation. 
+Frågetypen Kontaktuppgiftsfråga (organisation) är en skräddarsydd frågetyp när användaren skall ange sina kontaktuppgifter manuellt samt ange uppgifter om en organisation. 
 Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina organisationer på Mina sidor.
 	</xsl:variable>
 	
