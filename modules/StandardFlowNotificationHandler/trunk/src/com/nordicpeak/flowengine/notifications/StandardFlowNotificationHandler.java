@@ -2825,4 +2825,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return statusChangedUserSMS;
 	}
+
+	public String getFlowInstancePDFFilename() {
+		return pdfFilename;
+	}
 }
