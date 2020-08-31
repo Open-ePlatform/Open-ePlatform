@@ -131,6 +131,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean sendActivityGroupCompletedEmail;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean activityGroupCompletedEmailAttachPDF;
 
 	@DAOManaged
 	@Templated
@@ -283,6 +288,14 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	public void setSendActivityGroupCompletedEmail(boolean sendActivityGroupCompletedEmail) {
 		this.sendActivityGroupCompletedEmail = sendActivityGroupCompletedEmail;
+	}
+
+	public boolean isActivityGroupCompletedEmailAttachPDF() {
+		return activityGroupCompletedEmailAttachPDF;
+	}
+
+	public void setActivityGroupCompletedEmailAttachPDF(boolean activityGroupCompletedEmailAttachPDF) {
+		this.activityGroupCompletedEmailAttachPDF = activityGroupCompletedEmailAttachPDF;
 	}
 
 	public String getActivityGroupCompletedEmailSubject() {

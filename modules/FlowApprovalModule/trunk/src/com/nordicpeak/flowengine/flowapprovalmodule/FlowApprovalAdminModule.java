@@ -35,6 +35,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
+import se.unlogic.emailutils.framework.FileAttachment;
 import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
@@ -94,6 +95,7 @@ import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.enums.Order;
+import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonArray;
@@ -144,7 +146,9 @@ import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvid
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.notifications.PDFSizeExeededException;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
@@ -1455,11 +1459,23 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			sharedTagSources.add(new SingleTagSource("$activities", activitiesStringBuilder.toString()));
 			
 			TagReplacer tagReplacer = new TagReplacer(sharedTagSources);
+			
+			File pdfFile = null;
+			
+			if (activityGroup.isActivityGroupCompletedEmailAttachPDF()) {
+				try {
+					pdfFile = notificationHandler.getEventPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestSubmitEvent(flowInstance).getEventID(), notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit());
+
+				} catch (PDFSizeExeededException e) {
+
+					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() + " MB set for global email submit notifications and will not be attached to the generated email.");
+				}
+			}
 
 			for (String emailAdress : activityGroup.getActivityGroupCompletedEmailAddresses()) {
 
 				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-
+				
 				try {
 					email.addRecipient(emailAdress);
 					email.setMessageContentType(SimpleEmail.HTML);
@@ -1467,6 +1483,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSenderAddress(notificationHandler.getEmailSenderAddress(flowInstance));
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
+					
+					if (pdfFile != null && notificationHandler.getFlowInstancePDFFilename() != null) {
+		
+						String generatedFilename = tagReplacer.replace(notificationHandler.getFlowInstancePDFFilename()) + ".pdf";
+		
+						email.add(new FileAttachment(pdfFile, FileUtils.toValidHttpFilename(generatedFilename)));
+					}
 					
 					systemInterface.getEmailHandler().send(email);
 

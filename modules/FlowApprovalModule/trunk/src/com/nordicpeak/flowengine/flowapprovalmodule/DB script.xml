@@ -379,4 +379,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `activityGroupCompletedEmailAttachPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `sendActivityGroupCompletedEmail`;
+			]]>
+		</Query>
+	</Script>
+	
+	
 </DBScripts>

@@ -487,6 +487,21 @@
 			<xsl:with-param name="tagsTable" select="'manager'"/>
 		</xsl:call-template>
 		
+		<div class="floatleft full marginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'activityGroupCompletedEmailAttachPDF'" />
+					<xsl:with-param name="name" select="'activityGroupCompletedEmailAttachPDF'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label for="activityGroupCompletedEmailAttachPDF">
+					<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF" />
+				</label>
+			</div>
+		</div>
+		
 		<div class="floatleft full bigmarginbottom">
 		
 			<label for="flowInstanceSubmittedGlobalEmailAddresses" class="floatleft full">
