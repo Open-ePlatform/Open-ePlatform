@@ -226,6 +226,7 @@ public class ContactDetailQuery extends BaseQuery implements CitizenIdentifierQu
 
 		if (fieldAddress != ContactDetailQueryField.HIDDEN) {
 			appendFieldDefenition("PostalAddress", fieldAddress == ContactDetailQueryField.REQUIRED && !useOfficalAddress, doc, sequenceElement);
+			appendFieldDefenition("AddressUUID", false, doc, sequenceElement);
 		}
 
 		if (fieldPhone != ContactDetailQueryField.HIDDEN) {

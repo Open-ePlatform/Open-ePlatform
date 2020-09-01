@@ -296,4 +296,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="27">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `contact_detail_query_instances` ADD COLUMN `addressUUID` VARCHAR(36) AFTER `careOf`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

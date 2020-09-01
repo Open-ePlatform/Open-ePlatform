@@ -61,6 +61,10 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	
 	@DAOManaged
 	@XMLElement
+	private String addressUUID;
+	
+	@DAOManaged
+	@XMLElement
 	private String zipCode;
 	
 	@DAOManaged
@@ -287,6 +291,11 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.setAttribute(query.getAttributeName() + ".phone", phone);
 		attributeHandler.setAttribute(query.getAttributeName() + ".mobilePhone", mobilePhone);
 		
+		if(query.getFieldAddress() != ContactDetailQueryField.HIDDEN && query.usesOfficalAddress()) {
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".addressUUID", addressUUID);
+		}
+		
 		attributeHandler.setAttribute(query.getAttributeName() + ".contactBySMS", contactBySMS);
 		
 	}
@@ -302,6 +311,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.removeAttribute(query.getAttributeName() + ".email");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".phone");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".mobilePhone");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".addressUUID");
 	}
 
 	@Override
@@ -404,6 +414,10 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		
 		if (query.getFieldAddress() != ContactDetailQueryField.HIDDEN) {
 			XMLUtils.appendNewCDATAElement(doc, element, "PostalAddress", postalAddress);
+			
+			if(query.usesOfficalAddress()) {
+				XMLUtils.appendNewCDATAElement(doc, element, "AddressUUID", addressUUID);
+			}
 		}
 		
 		if (query.getFieldPhone() != ContactDetailQueryField.HIDDEN) {
@@ -620,6 +634,18 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	public boolean isTestCitizenIdentifier() {
 
 		return false;
+	}
+
+	
+	public String getAddressUUID() {
+	
+		return addressUUID;
+	}
+
+	
+	public void setAddressUUID(String addressUUID) {
+	
+		this.addressUUID = addressUUID;
 	}
 	
 }

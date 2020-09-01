@@ -306,6 +306,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		String email = null;
 		String careOf = null;
 		String address = null;
+		String addressUUID = null;
 		String zipCode = null;
 		String postalAddress = null;
 		boolean officalAddress = false;
@@ -379,9 +380,11 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					
 					if (queryInstance.isOfficalAddress()) {
 						
+						careOf = queryInstance.getCareOf();
 						address = queryInstance.getAddress();
 						zipCode = queryInstance.getZipCode();
 						postalAddress = queryInstance.getPostalAddress();
+						addressUUID = queryInstance.getAddressUUID();
 						officalAddress = true;
 					}
 					
@@ -391,6 +394,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					
 					String officialCareOf = posterAttributeHandler.getString("official.careOf");
 					String officialAddress = posterAttributeHandler.getString("official.address");
+					String officialAddressUUID = posterAttributeHandler.getString("official.addressUUID");
 					String officialZipCode = posterAttributeHandler.getString("official.zipCode");
 					String officialPostalAddress = posterAttributeHandler.getString("official.postalAddress");
 					
@@ -400,6 +404,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 						address = officialAddress;
 						zipCode = officialZipCode;
 						postalAddress = officialPostalAddress;
+						addressUUID = officialAddressUUID;
 						officalAddress = true;
 					}
 				}
@@ -539,6 +544,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		
 		queryInstance.setCareOf(careOf);
 		queryInstance.setAddress(address);
+		queryInstance.setAddressUUID(addressUUID);
 		queryInstance.setZipCode(zipCode);
 		queryInstance.setPostalAddress(postalAddress);
 		
