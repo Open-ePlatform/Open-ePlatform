@@ -221,6 +221,7 @@ import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.enums.StatisticsMode;
 import com.nordicpeak.flowengine.events.FlowVersionAdded;
+import com.nordicpeak.flowengine.events.NewMutableFlowInstanceManagerCreatedEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
@@ -2966,6 +2967,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
 
 				MutableFlowInstanceManager instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, user, instanceMetadata, DEFAULT_REQUEST_METADATA, getAbsoluteFileURL(uriParser, flow));
+				
+				systemInterface.getEventHandler().sendEvent(MutableFlowInstanceManager.class, new NewMutableFlowInstanceManagerCreatedEvent(user, instanceManager), EventTarget.ALL);
 				
 				try {
 					log.info("User " + user + " requested testFlowAllSteps of flow instance " + instanceManager.getFlowInstance());
