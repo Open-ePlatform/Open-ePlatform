@@ -496,7 +496,7 @@
 					<xsl:with-param name="element" select="ActivityGroup" />
 				</xsl:call-template>
 				
-				<label for="activityGroupCompletedEmailAttachPDF">
+				<label class="marginleft" for="activityGroupCompletedEmailAttachPDF">
 					<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF" />
 				</label>
 			</div>

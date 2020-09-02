@@ -58,6 +58,16 @@ $(document).ready(function() {
 				.find('input').prop('disabled', !this.checked);
 			
 		}).change();
+		
+		$("#sendActivityGroupCompletedEmail").change(function() {
+			
+			var $input = $("#activityGroupCompletedEmailAttachPDF");
+			
+			$input.parent().parent().toggle(this.checked);
+			$input.prop('disabled', !this.checked);
+			
+		}).change();
+		
 	}
 	
 	if ($("#activityForm").length > 0) {

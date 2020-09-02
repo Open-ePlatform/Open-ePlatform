@@ -119,7 +119,7 @@
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailMessage">Meddelandetext för notifieringar till aktivitetsansvariga</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupCompletedEmail">Skicka e-postnotifiering vid avklarad aktivitetsgrupp</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF">Bifoga PDF-sammanställning för aktivitetsgruppen</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailSubject">Rubrik för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailMessage">Meddelandetext för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddresses">E-postadresser för notifiering om avklarad aktivitetsgrupp (en adress per rad)</xsl:variable>
