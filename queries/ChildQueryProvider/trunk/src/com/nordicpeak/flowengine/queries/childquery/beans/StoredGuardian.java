@@ -188,4 +188,16 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 		this.poster = poster;
 	}
 
+	
+	public String getAddressUUID() {
+	
+		return addressUUID;
+	}
+
+	
+	public void setAddressUUID(String addressUUID) {
+	
+		this.addressUUID = addressUUID;
+	}
+
 }
