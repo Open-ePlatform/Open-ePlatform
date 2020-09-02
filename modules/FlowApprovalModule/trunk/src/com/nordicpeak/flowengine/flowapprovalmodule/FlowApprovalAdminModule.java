@@ -96,6 +96,7 @@ import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.io.BinarySizeFormater;
+import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonArray;
@@ -146,9 +147,7 @@ import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvid
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.notifications.PDFSizeExeededException;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
@@ -164,6 +163,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	
 	@XSLVariable(prefix = "java.")
 	private String copySuffix = " (copy)";
+	
+	@XSLVariable(prefix = "java.")
+	private String signaturesFilename = "signature";
 	
 	@XSLVariable(prefix = "java.")
 	private String pdfSignatureAttachment = "Signature";
@@ -400,29 +402,29 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@Override
 	protected void moduleConfigured() throws Exception {
 
-		if(ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
-			
+		if (ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR)) {
+
 			File pdfDirFile = new File(pdfDir);
-			
-			if(!pdfDirFile.exists()) {
-				
-				if(pdfDirFile.getParentFile().exists()) {
-					
+
+			if (!pdfDirFile.exists()) {
+
+				if (pdfDirFile.getParentFile().exists()) {
+
 					log.info("Creating missing  " + pdfDirFile.getName() + " directory for PDF filestore directory");
-					
-					if(!pdfDirFile.mkdir()) {
-						
+
+					if (!pdfDirFile.mkdir()) {
+
 						log.error("Unable to create missing " + pdfDirFile.getName() + " directory for PDF filestore directory");
 					}
-					
-				}else {
-					
+
+				} else {
+
 					log.error("The set PDF filestore directory does not exist");
 				}
 			}
-			
-			if(!FileUtils.directoryExists(tempDir)) {
-				
+
+			if (!FileUtils.directoryExists(tempDir)) {
+
 				log.error("The set temp directory does not exist");
 			}
 		}
@@ -902,7 +904,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						}
 						
 						if (activityGroup.isSendActivityGroupCompletedEmail()) {
-							sendActivityGroupCompletedNotifications(round.getActivityProgresses(), activityGroup, flowInstance);
+							sendActivityGroupCompletedNotifications(round.getActivityProgresses(), round, activityGroup, flowInstance);
 						}
 					}
 				}
@@ -1423,7 +1425,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	}
 	
 	
-	public void sendActivityGroupCompletedNotifications(List<FlowApprovalActivityProgress> activityProgresses, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance) throws SQLException {
+	public void sendActivityGroupCompletedNotifications(List<FlowApprovalActivityProgress> activityProgresses, FlowApprovalActivityRound round, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance) throws SQLException {
 
 		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupCompletedEmailSubject(), activityGroupCompletedEmailSubject);
 		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupCompletedEmailMessage(), activityGroupCompletedEmailMessage);
@@ -1463,12 +1465,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			File pdfFile = null;
 			
 			if (activityGroup.isActivityGroupCompletedEmailAttachPDF()) {
-				try {
-					pdfFile = notificationHandler.getEventPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestSubmitEvent(flowInstance).getEventID(), notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit());
 
-				} catch (PDFSizeExeededException e) {
-
-					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() + " MB set for global email submit notifications and will not be attached to the generated email.");
+				pdfFile = getSignaturesPDF(round);
+					
+				if (pdfFile == null || !pdfFile.exists()) {
+					log.warn("PDF for " + round + " not found");
+					
+				} else if (notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() != null && pdfFile.length() > notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() * BinarySizes.MegaByte) {
+					
+					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(pdfFile.length()) + ") for activity round " + round + " exceeds the size limit of " + notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() + " MB set for global email submit notifications and will not be attached to the generated email.");
+					pdfFile = null;
 				}
 			}
 
@@ -1484,11 +1490,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					email.setSubject(tagReplacer.replace(subject));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 					
-					if (pdfFile != null && notificationHandler.getFlowInstancePDFFilename() != null) {
-		
-						String generatedFilename = tagReplacer.replace(notificationHandler.getFlowInstancePDFFilename()) + ".pdf";
-		
-						email.add(new FileAttachment(pdfFile, FileUtils.toValidHttpFilename(generatedFilename)));
+					if (pdfFile != null) {
+						
+						String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + round.getActivityGroup().getName() + " - " + signaturesFilename + " - " + round.getActivityRoundID()+ ".pdf";
+						
+						email.add(new FileAttachment(pdfFile, FileUtils.toValidHttpFilename(filename)));
 					}
 					
 					systemInterface.getEmailHandler().send(email);
@@ -2238,5 +2244,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 			FileUtils.deleteFile(tmpFile);
 		}
+	}
+
+	public String getSignaturesFilename() {
+		return signaturesFilename;
 	}
 }

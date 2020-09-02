@@ -11,6 +11,7 @@
 	
 	<xsl:variable name="java.adminExtensionViewTitle">Aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="java.copySuffix"> (kopia)</xsl:variable>
+	<xsl:variable name="java.signaturesFilename">signaturer</xsl:variable>
 	<xsl:variable name="java.pdfSignatureAttachment">Signatur</xsl:variable>
 	<xsl:variable name="java.pdfSigningDataAttachment">Signeringsunderlag</xsl:variable>
 	

@@ -238,7 +238,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 			log.info("Sending signature for " + activityProgress + " to user " + user);
 
-			String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + activityProgress.getActivity().getName() + " - signature - " + activityProgress.getActivityProgressID() + ".txt";
+			String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + activityProgress.getActivity().getName() + " - " + approvalAdminModule.getSignaturesFilename() + " - " + activityProgress.getActivityProgressID() + ".txt";
 
 			res.setHeader("Content-Disposition", ContentDisposition.ATTACHMENT + ";" + FileUtils.toContentDispositionFilename(filename));
 			res.setContentType("text/plain");
