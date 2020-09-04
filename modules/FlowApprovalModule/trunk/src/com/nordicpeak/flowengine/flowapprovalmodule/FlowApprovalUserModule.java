@@ -915,7 +915,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink() {
+	public ExtensionLink getUserMenuExtensionLink(User user) {
 		return userMenuLink;
 	}
 
@@ -940,5 +940,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	public QueryHandler getQueryHandler() {
 		
 		return flowAdminModule.getQueryHandler();
+	}
+	
+	@Override
+	public String getUserMenuPriority() {
+
+		return userMenuExtensionLinkSlot;
 	}
 }
