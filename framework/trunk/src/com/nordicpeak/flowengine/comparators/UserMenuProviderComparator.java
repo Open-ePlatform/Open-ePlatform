@@ -9,7 +9,7 @@ public class UserMenuProviderComparator implements Comparator<UserMenuProvider> 
 	@Override
 	public int compare(UserMenuProvider o1, UserMenuProvider o2) {
 
-		return o1.getUserMenuExtensionLink().getSlot().compareTo(o2.getUserMenuExtensionLink().getSlot());
+		return o1.getUserMenuPriority().compareTo(o2.getUserMenuPriority());
 	}
 
 }

@@ -145,7 +145,7 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			if (linkProvider.getAccessInterface() == null || AccessUtils.checkAccess(user, linkProvider.getAccessInterface())) {
 				
 				try {
-					ExtensionLink link = linkProvider.getUserMenuExtensionLink();
+					ExtensionLink link = linkProvider.getUserMenuExtensionLink(user);
 					
 					if (link != null) {
 						

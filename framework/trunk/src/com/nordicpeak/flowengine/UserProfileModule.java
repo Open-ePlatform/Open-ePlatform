@@ -8,6 +8,7 @@ import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -93,8 +94,13 @@ public class UserProfileModule extends se.unlogic.hierarchy.foregroundmodules.us
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink() {
+	public ExtensionLink getUserMenuExtensionLink(User user) {
 		return userMenuLink;
 	}
 
+	@Override
+	public String getUserMenuPriority() {
+
+		return userMenuExtensionLinkSlot;
+	}
 }

@@ -191,7 +191,13 @@ public class UserOrganizationsModule extends AnnotatedForegroundModule implement
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink() {
+	public ExtensionLink getUserMenuExtensionLink(User user) {
 		return userMenuLink;
+	}
+	
+	@Override
+	public String getUserMenuPriority() {
+
+		return userMenuExtensionLinkSlot;
 	}
 }

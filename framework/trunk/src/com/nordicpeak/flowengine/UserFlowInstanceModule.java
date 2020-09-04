@@ -1550,7 +1550,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	}
 
 	@Override
-	public ExtensionLink getUserMenuExtensionLink() {
+	public ExtensionLink getUserMenuExtensionLink(User user) {
 
 		return userMenuLink;
 	}
@@ -1559,5 +1559,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public FileAttachmentHandler getFileAttachmentHandler() {
 
 		return fileAttachmentHandler;
+	}
+	
+	@Override
+	public String getUserMenuPriority() {
+
+		return userMenuExtensionLinkSlot;
 	}
 }
