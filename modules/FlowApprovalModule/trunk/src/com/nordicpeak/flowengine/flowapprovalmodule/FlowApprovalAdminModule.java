@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -125,6 +127,7 @@ import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -148,8 +151,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
@@ -2027,7 +2028,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			
 			String baseURL = notificationHandler.getUserFlowInstanceModuleAlias(null);
 			
-			this.userApprovalModuleAlias = StringUtils.substringBefore(baseURL, StringUtils.substringAfterLast(baseURL, "/")) + "flowapproval";
+			this.userApprovalModuleAlias = StringUtils.substringBeforeLast(baseURL, StringUtils.substringAfterLast(baseURL, "/")) + "flowapproval";
 		}
 		
 		this.notificationHandler = notificationHandler;
