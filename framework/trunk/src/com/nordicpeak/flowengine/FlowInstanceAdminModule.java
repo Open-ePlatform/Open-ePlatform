@@ -1437,7 +1437,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, null, uriParser, getUpdateAccessController(), true, true, false, MANAGER_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, null, uriParser, getUpdateAccessController(), false, true, false, MANAGER_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")
