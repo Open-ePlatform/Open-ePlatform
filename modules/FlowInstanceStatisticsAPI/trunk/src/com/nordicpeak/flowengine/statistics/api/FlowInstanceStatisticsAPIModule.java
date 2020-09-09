@@ -312,7 +312,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						}
 					}
 
-					//TODO include when user deletes their own flowinstances
 					{ // Aborted flow instances
 						HighLevelQuery<AbortedFlowInstance> flowInstancesQuery = new HighLevelQuery<AbortedFlowInstance>();
 						flowInstancesQuery.setRowLimiter(new MySQLRowLimiter(rowLimit));
