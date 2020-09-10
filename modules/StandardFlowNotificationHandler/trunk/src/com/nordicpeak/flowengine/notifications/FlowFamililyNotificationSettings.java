@@ -242,6 +242,23 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@Templated
 	@XMLElement
 	private String flowInstanceAssignedGroupEmailMessage;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendInternalMessageAddedGroupEmail;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String internalMessageAddedGroupEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String internalMessageAddedGroupEmailMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -703,7 +720,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
 
-		if (sendExternalMessageReceivedGroupEmail || sendFlowInstanceAssignedGroupEmail) {
+		if (sendExternalMessageReceivedGroupEmail || sendFlowInstanceAssignedGroupEmail || sendInternalMessageAddedGroupEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
 		}
@@ -1154,6 +1171,30 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setFlowInstanceMultiSignCanceledOwnerEmailMessage(String flowInstanceMultiSignCanceledOwnerEmailMessage) {
 
 		this.flowInstanceMultiSignCanceledOwnerEmailMessage = flowInstanceMultiSignCanceledOwnerEmailMessage;
+	}
+
+	public boolean isSendInternalMessageAddedGroupEmail() {
+		return sendInternalMessageAddedGroupEmail;
+	}
+
+	public void setSendInternalMessageAddedGroupEmail(boolean sendInternalMessageAddedGroupEmail) {
+		this.sendInternalMessageAddedGroupEmail = sendInternalMessageAddedGroupEmail;
+	}
+
+	public String getInternalMessageAddedGroupEmailSubject() {
+		return internalMessageAddedGroupEmailSubject;
+	}
+
+	public void setInternalMessageAddedGroupEmailSubject(String internalMessageAddedGroupEmailSubject) {
+		this.internalMessageAddedGroupEmailSubject = internalMessageAddedGroupEmailSubject;
+	}
+
+	public String getInternalMessageAddedGroupEmailMessage() {
+		return internalMessageAddedGroupEmailMessage;
+	}
+
+	public void setInternalMessageAddedGroupEmailMessage(String internalMessageAddedGroupEmailMessage) {
+		this.internalMessageAddedGroupEmailMessage = internalMessageAddedGroupEmailMessage;
 	}
 
 }

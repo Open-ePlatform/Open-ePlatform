@@ -471,6 +471,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Assigned new flow instance email message (groups)", description = "The message of emails sent to the users when they are assigned new flow instances", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceAssignedGroupEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to groups when new internal messages are received from users", description = "Controls if email messages are sent to the groups when they receive new messages from users.")
+	private boolean sendInternalMessageAddedGroupEmail;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "New internal message received email subject (groups)", description = "The subject of emails sent to the groups when new messages are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageAddedGroupEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "New internal message received email message (groups)", description = "The message of emails sent to the groups when new messages are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageAddedGroupEmailMessage;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when new flow instances are submitted", description = "Controls if email messages are the sent to specified address when new flow instances are submitted.")
@@ -1642,8 +1656,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(InternalMessageAddedEvent event, EventSource eventSource) throws SQLException {
 
-		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
-
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups())) {
 			return;
 		}
 
@@ -1651,11 +1664,21 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
-		if (notificationSettings.isSendInternalMessageAddedManagerEmail()) {
+		if (notificationSettings.isSendInternalMessageAddedManagerEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) ) {
 
 			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
 
 			sendManagerEmails(flowInstance, null, notificationSettings.getInternalMessageAddedManagerEmailSubject(), notificationSettings.getInternalMessageAddedManagerEmailMessage(), excludedManagers, false);
+		}
+		
+		if (notificationSettings.isSendInternalMessageAddedGroupEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups())) {
+			
+			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
+			
+			for (String email : managerGroupEmailRecipientAddresses) {
+				
+				sendGlobalEmail(event.getSiteProfile(), flowInstance, null, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);
+			}
 		}
 	}
 

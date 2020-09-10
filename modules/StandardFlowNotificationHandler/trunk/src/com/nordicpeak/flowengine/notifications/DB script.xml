@@ -383,4 +383,15 @@
 		</Query>
 	</Script>
 	
+	<Script version="28">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendInternalMessageAddedGroupEmail` TINYINT(1) NOT NULL AFTER `externalMessageReceivedGroupEmailMessage`,
+					ADD COLUMN `internalMessageAddedGroupEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendInternalMessageAddedGroupEmail`,
+					ADD COLUMN `internalMessageAddedGroupEmailMessage` TEXT NULL AFTER `internalMessageAddedGroupEmailSubject`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

@@ -17,7 +17,7 @@
 	
 	<xsl:variable name="java.flowInstanceMultiSignInitiatedUserSMS">Hej $signingParty.firstname, du har ombetts att signera ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som skickats in av $contact.firstname $contact.lastname. Använd följande länk för att visa ärendet: $flowInstanceSign.url</xsl:variable>
 	<xsl:variable name="java.flowInstanceMultiSignCanceledUserSMS">Hej $signingParty.firstname, $contact.firstname $contact.lastname har valt att avbryta signeringen av ärende $flow.name (ärende nr. $flowInstance.flowInstanceID) som du tidigare blev ombedd att signera. Det kan komma en ny signeringsförfrågan om ärendet skickas in på nytt.</xsl:variable>
-	<xsl:variable name="java.flowInstanceMultiSignCanceledOwnerSMS">Hej $contact.firstname, $signingParty.firstname $signingParty.lastname har valt att avbryta signeringen av ärende $flow.name (ärende nr. $flowInstance.flowInstanceID).</xsl:variable>		
+	<xsl:variable name="java.flowInstanceMultiSignCanceledOwnerSMS">Hej $contact.firstname, $signingParty.firstname $signingParty.lastname har valt att avbryta signeringen av ärende $flow.name (ärende nr. $flowInstance.flowInstanceID).</xsl:variable>
 	
 	<xsl:variable name="java.statusChangedUserEmailSubject">Ny status för ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.statusChangedUserEmailMessage">
@@ -224,6 +224,21 @@
 		
 		&lt;p&gt;
 			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.internalMessageAddedGroupEmailSubject">Nytt internt meddelande kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.internalMessageAddedGroupEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Det har lagts till en ny notering på ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.notesUrl"&gt;$flowInstance.notesUrl&lt;/a&gt;
 		&lt;/p&gt;
 	
 	</xsl:variable>
@@ -458,6 +473,10 @@
 	<xsl:variable name="i18n.SendInternalMessageAddedManagerEmail">E-post till tilldelade handläggare vid ny intern notering</xsl:variable>
 	<xsl:variable name="i18n.internalMessageAddedManagerEmailSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
 	<xsl:variable name="i18n.internalMessageAddedManagerEmailMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
+	
+	<xsl:variable name="i18n.SendInternalMessageAddedGroupEmail">E-post till tilldelade handläggargrupper vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.internalMessageAddedGroupEmailSubject">Rubrik på e-postmeddelande vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.internalMessageAddedGroupEmailMessage">Innehåll i e-postmeddelande vid ny intern notering</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>

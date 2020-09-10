@@ -149,6 +149,12 @@
 						<xsl:value-of select="$i18n.SendFlowInstanceAssignedGroupEmail"/>
 					</li>
 				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendInternalMessageAddedGroupEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendInternalMessageAddedGroupEmail"/>
+					</li>
+				</xsl:if>
 
 			</ul>
 		
@@ -269,6 +275,11 @@
 			function toggleGroupAssignMessage(){
 				
 				$("#group-assign-subject, #group-assign-message").toggleClass("hidden");
+			}
+			
+			function toggleGroupInternalMessage (){
+				
+				$("#group-internal-message-subject, #group-internal-message-message").toggleClass("hidden");
 			}
 			
 			function toggleGlobalSubmit(){
@@ -1091,6 +1102,66 @@
 			</div>
 			
 			<xsl:call-template name="addUserTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendInternalMessageAddedGroupEmail'" />
+					<xsl:with-param name="id" select="'sendInternalMessageAddedGroupEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendInternalMessageAddedGroupEmail">
+					<xsl:value-of select="$i18n.SendInternalMessageAddedGroupEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGroupInternalMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>			
+			</div>
+		</div>
+	
+		<div class="floatleft full bigmarginbottom" id="group-internal-message-subject">
+		
+			<xsl:if test="not($errFieldNames = 'internalMessageAddedGroupEmailSubject') and not($errFieldNames = 'internalMessageAddedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="internalMessageAddedGroupEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.internalMessageAddedGroupEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'internalMessageAddedGroupEmailSubject'"/>
+					<xsl:with-param name="name" select="'internalMessageAddedGroupEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-internal-message-message">
+			
+			<xsl:if test="not($errFieldNames = 'internalMessageAddedGroupEmailSubject') and not($errFieldNames = 'internalMessageAddedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="internalMessageAddedGroupEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.internalMessageAddedGroupEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'internalMessageAddedGroupEmailMessage'"/>
+					<xsl:with-param name="name" select="'internalMessageAddedGroupEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 		
 		<div class="clearboth marginbottom">
