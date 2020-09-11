@@ -356,6 +356,9 @@
 	<xsl:variable name="i18n.SendExternalMessageReceivedManagerEmail">E-post till tilldelade handläggare vid nytt meddelande från medborgare</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceAssignedManagerEmail">E-post vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedManagerEmail">E-post till tilldelade handläggare vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.StatusChangedManagerEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.StatusChangedManagerEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
+	
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.NoNotificationsEnabled">Inga notifikationer är aktiverade för denna e-tjänst</xsl:variable>
 	

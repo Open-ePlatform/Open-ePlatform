@@ -267,6 +267,11 @@
 				$("#manager-assign-subject, #manager-assign-message").toggleClass("hidden");
 			}
 			
+			function toggleManagerStatusChangedMessage(){
+				
+				$("#manager-status-changed-subject, #manager-status-changed-message").toggleClass("hidden");
+			}
+			
 			function toggleGroupExternalMessage (){
 				
 				$("#group-external-message-subject, #group-external-message-message").toggleClass("hidden");
@@ -960,7 +965,52 @@
 				<label for="sendStatusChangedManagerEmail">
 					<xsl:value-of select="$i18n.SendStatusChangedManagerEmail" />
 				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerStatusChangedMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-status-changed-subject">
+		
+			<xsl:if test="not($errFieldNames = 'statusChangedManagerEmailSubject') and not($errFieldNames = 'statusChangedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="statusChangedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.StatusChangedManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'statusChangedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'statusChangedManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-status-changed-message">
+			
+			<xsl:if test="not($errFieldNames = 'statusChangedManagerEmailSubject') and not($errFieldNames = 'statusChangedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="statusChangedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.StatusChangedManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'statusChangedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'statusChangedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">

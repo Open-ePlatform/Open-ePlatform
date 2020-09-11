@@ -203,6 +203,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean sendStatusChangedManagerEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String statusChangedManagerEmailSubject;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String statusChangedManagerEmailMessage;
 
 	@DAOManaged
 	@WebPopulate
@@ -633,6 +645,22 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setSendStatusChangedManagerEmail(boolean sendStatusChangedManagerEmail) {
 
 		this.sendStatusChangedManagerEmail = sendStatusChangedManagerEmail;
+	}
+
+	public String getStatusChangedManagerEmailSubject() {
+		return statusChangedManagerEmailSubject;
+	}
+
+	public void setStatusChangedManagerEmailSubject(String statusChangedManagerEmailSubject) {
+		this.statusChangedManagerEmailSubject = statusChangedManagerEmailSubject;
+	}
+
+	public String getStatusChangedManagerEmailMessage() {
+		return statusChangedManagerEmailMessage;
+	}
+
+	public void setStatusChangedManagerEmailMessage(String statusChangedManagerEmailMessage) {
+		this.statusChangedManagerEmailMessage = statusChangedManagerEmailMessage;
 	}
 
 	public boolean isSendFlowInstanceSubmittedManagerEmail() {

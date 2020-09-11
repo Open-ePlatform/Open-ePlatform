@@ -1747,7 +1747,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		if (notificationSettings.isSendStatusChangedManagerEmail()) {
 
-			sendManagerEmails(flowInstance, posterContact, statusChangedManagerEmailSubject, statusChangedManagerEmailMessage, CollectionUtils.getList(event.getUser()), false);
+			sendManagerEmails(flowInstance, posterContact, notificationSettings.getStatusChangedManagerEmailSubject(), notificationSettings.getStatusChangedManagerEmailMessage(), CollectionUtils.getList(event.getUser()), false);
 		}
 		
 		if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
