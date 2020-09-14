@@ -14,7 +14,7 @@
 	
 	<xsl:variable name="java.eventCopyFlowMessage">Kopierade version</xsl:variable>
 	<xsl:variable name="java.eventUpdateIconMessage">Updaterade ikon till</xsl:variable>
-	<xsl:variable name="java.eventUpdateNotificationsMessage">Uppdaterade notifikations inställningar</xsl:variable>
+	<xsl:variable name="java.eventUpdateNotificationsMessage">Uppdaterade notifikationsinställningar</xsl:variable>
 	<xsl:variable name="java.eventSortFlowMessage">Sorterade frågor och steg</xsl:variable>
 	<xsl:variable name="java.eventImportFlowMessage">Importerade version</xsl:variable>
 	<xsl:variable name="java.eventImportQueriesMessage">Importerade frågor</xsl:variable>
