@@ -2635,7 +2635,7 @@
 				ALTER TABLE `flowengine_flows` ADD COLUMN `hideFromManager` BOOLEAN NOT NULL AFTER `hideFromUser`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="140">
 		<Query>
@@ -2648,6 +2648,16 @@
 					ADD COLUMN `useAccessCheck` TINYINT(1) NOT NULL AFTER `requireSigning`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="141">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_aborted_flow_instances`
+					ADD COLUMN `flowInstanceID` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `abortID`,
+					ADD INDEX `flowInstanceID` (`flowInstanceID`);
+			]]>
+		</Query>
+	</Script>
 
 </DBScripts>

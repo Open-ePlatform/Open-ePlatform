@@ -1307,6 +1307,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 					AbortedFlowInstance abortedFlowInstance = new AbortedFlowInstance();
 
+					abortedFlowInstance.setFlowInstanceID(flowInstance.getFlowInstanceID());
 					abortedFlowInstance.setAdded(TimeUtils.getCurrentTimestamp());
 					abortedFlowInstance.setFlowFamilyID(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
 					abortedFlowInstance.setFlowID(flowInstance.getFlow().getFlowID());
