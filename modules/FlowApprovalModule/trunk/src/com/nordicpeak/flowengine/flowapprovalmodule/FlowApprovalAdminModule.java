@@ -991,6 +991,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				}
 				
 				StringBuilder activityGroupNames = new StringBuilder();
+				boolean suppressManagerNotifications = false;
 
 				for (FlowApprovalActivityGroup activityGroup : activityGroupsForCurrentStatus) {
 
@@ -1001,6 +1002,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						}
 
 						activityGroupNames.append(activityGroup.getName());
+					}
+					
+					if (activityGroup.isSuppressChangeStatusManagerNotifications()) {
+						suppressManagerNotifications = true;
 					}
 				}
 
@@ -1026,8 +1031,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, null);
 
-					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), currentStatus, null), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), this, EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), currentStatus, null, false, suppressManagerNotifications), this, EventTarget.ALL);
 				}
 			}
 		}
@@ -1203,6 +1208,15 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						log.warn("Unable to skip to next status, unable to find complete status \"" + nextStatusName + "\" for " + flowInstance);
 	
 					} else {
+						
+						boolean suppressManagerNotifications = false;
+						
+						for (FlowApprovalActivityGroup activityGroup : activityGroups) {
+							if (activityGroup.isSuppressChangeStatusManagerNotifications()) {
+								suppressManagerNotifications = true;
+								break;
+							}
+						}
 	
 						log.info("Skipping activity groups " + activityGroupNames + " for " + flowInstance);
 						
@@ -1215,8 +1229,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						
 						FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, null);
 	
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), newStatus, null), EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.UPDATE, flowInstance), this, EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), newStatus, null, false, suppressManagerNotifications), this, EventTarget.ALL);
 					}
 				}
 			}

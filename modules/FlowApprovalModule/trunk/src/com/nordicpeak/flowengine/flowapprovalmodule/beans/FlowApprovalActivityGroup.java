@@ -158,6 +158,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase = true, childName = "address")
 	private List<String> activityGroupCompletedEmailAddresses;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean suppressChangeStatusManagerNotifications;
 
 	@DAOManaged
 	@OneToMany
@@ -412,6 +417,14 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 	public void setOnlyRestartIfActivityChanges(boolean onlyRestartIfActivityChanges) {
 		this.onlyRestartIfActivityChanges = onlyRestartIfActivityChanges;
+	}
+	
+	public boolean isSuppressChangeStatusManagerNotifications() {
+		return suppressChangeStatusManagerNotifications;
+	}
+
+	public void setSuppressChangeStatusManagerNotifications(boolean suppressChangeStatusManagerNotifications) {
+		this.suppressChangeStatusManagerNotifications = suppressChangeStatusManagerNotifications;
 	}
 
 	@Override

@@ -388,5 +388,13 @@
 		</Query>
 	</Script>
 	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `suppressChangeStatusManagerNotifications` TINYINT(1) UNSIGNED NOT NULL AFTER `activityGroupCompletedEmailMessage`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

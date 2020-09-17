@@ -80,6 +80,7 @@
 	<xsl:variable name="i18n.ShowActivityGroup">Visa aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.AddActivityGroup">Lägg till ny aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.UpdateActivityGroup">Ändra aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="i18n.UpdateActivityGroup.Notifications">Notifikationer</xsl:variable>
 	<xsl:variable name="i18n.SortActivityGroups">Sortera aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup">Ta bort aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup.Confirm">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
@@ -128,6 +129,7 @@
 	<xsl:variable name="i18n.ActivityGroup.completeStatus2">Om alla aktiviteter i gruppen är klarmarkerade/godkända så får ärendet denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.denyStatus2">Om någon aktivitet i gruppen inte blir godkänd så får ärendet denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.reminderAfterXDays">Skicka automatisk påminnelse om aktivitet inte är klarmarkerad inom x dagar</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.suppressChangeStatusManagerNotifications">Förhindra notifikationer till handläggare vid byte av status</xsl:variable>
 	
 	<xsl:variable name="i18n.TagsTable.Description.Email">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>

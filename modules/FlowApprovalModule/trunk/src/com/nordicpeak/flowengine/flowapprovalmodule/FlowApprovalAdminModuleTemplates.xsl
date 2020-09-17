@@ -451,73 +451,95 @@
 			</div>
 		</div>
 		
-		<xsl:call-template name="notificationEmail">
-			<xsl:with-param name="toggleField" select="'sendActivityGroupStartedEmail'"/>
-			<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupStartedEmail"/>
-			<xsl:with-param name="subjectField" select="'activityGroupStartedEmailSubject'"/>
-			<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailSubject"/>
-			<xsl:with-param name="messageField" select="'activityGroupStartedEmailMessage'"/>
-			<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailMessage"/>
-			<xsl:with-param name="tagsTable" select="'manager'"/>
-		</xsl:call-template>
-		
-		<div class="floatleft full bigmarginbottom">
-
-			<label class="floatleft full" for="reminderAfterXDays">
-				<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />
-			</label>
+		<fieldset>
+			<legend>
+				<xsl:value-of select="$i18n.UpdateActivityGroup.Notifications"/>
+			</legend>
 			
-			<div class="floatleft full">
-				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'reminderAfterXDays'" />
-					<xsl:with-param name="name" select="'reminderAfterXDays'" />
-					<xsl:with-param name="element" select="ActivityGroup" />
-				</xsl:call-template>
-			</div>
-
-		</div>
-		
-		<xsl:call-template name="notificationEmail">
-			<xsl:with-param name="toggleField" select="'sendActivityGroupCompletedEmail'"/>
-			<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupCompletedEmail"/>
-			<xsl:with-param name="subjectField" select="'activityGroupCompletedEmailSubject'"/>
-			<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupCompletedEmailSubject"/>
-			<xsl:with-param name="messageField" select="'activityGroupCompletedEmailMessage'"/>
-			<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupCompletedEmailMessage"/>
-			<xsl:with-param name="tagsTable" select="'manager'"/>
-		</xsl:call-template>
-		
-		<div class="floatleft full marginbottom">
-		
-			<div class="floatleft">
-				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'activityGroupCompletedEmailAttachPDF'" />
-					<xsl:with-param name="name" select="'activityGroupCompletedEmailAttachPDF'" />
-					<xsl:with-param name="element" select="ActivityGroup" />
-				</xsl:call-template>
-				
-				<label class="marginleft" for="activityGroupCompletedEmailAttachPDF">
-					<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF" />
+			<xsl:call-template name="notificationEmail">
+				<xsl:with-param name="toggleField" select="'sendActivityGroupStartedEmail'"/>
+				<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupStartedEmail"/>
+				<xsl:with-param name="subjectField" select="'activityGroupStartedEmailSubject'"/>
+				<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailSubject"/>
+				<xsl:with-param name="messageField" select="'activityGroupStartedEmailMessage'"/>
+				<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailMessage"/>
+				<xsl:with-param name="tagsTable" select="'manager'"/>
+			</xsl:call-template>
+			
+			<div class="floatleft full bigmarginbottom">
+	
+				<label class="floatleft full" for="reminderAfterXDays">
+					<xsl:value-of select="$i18n.ActivityGroup.reminderAfterXDays" />
 				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'reminderAfterXDays'" />
+						<xsl:with-param name="name" select="'reminderAfterXDays'" />
+						<xsl:with-param name="element" select="ActivityGroup" />
+					</xsl:call-template>
+				</div>
+	
 			</div>
-		</div>
-		
-		<div class="floatleft full bigmarginbottom">
-		
-			<label for="flowInstanceSubmittedGlobalEmailAddresses" class="floatleft full">
-				<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAddresses" />
-			</label>
 			
-			<div class="floatleft full">
-				<xsl:call-template name="createTextArea">
-					<xsl:with-param name="id" select="'activityGroupCompletedEmailAddresses'"/>
-					<xsl:with-param name="name" select="'activityGroupCompletedEmailAddresses'"/>
-					<xsl:with-param name="rows" select="5"/>
-					<xsl:with-param name="separateListValues" select="'true'"/>
-					<xsl:with-param name="element" select="ActivityGroup/ActivityGroupCompletedEmailAddresses/address" />
-				</xsl:call-template>
+			<xsl:call-template name="notificationEmail">
+				<xsl:with-param name="toggleField" select="'sendActivityGroupCompletedEmail'"/>
+				<xsl:with-param name="toggleLabel" select="$i18n.ActivityGroup.sendActivityGroupCompletedEmail"/>
+				<xsl:with-param name="subjectField" select="'activityGroupCompletedEmailSubject'"/>
+				<xsl:with-param name="subjectLabel" select="$i18n.ActivityGroup.activityGroupCompletedEmailSubject"/>
+				<xsl:with-param name="messageField" select="'activityGroupCompletedEmailMessage'"/>
+				<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupCompletedEmailMessage"/>
+				<xsl:with-param name="tagsTable" select="'manager'"/>
+			</xsl:call-template>
+			
+			<div class="floatleft full marginbottom">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'activityGroupCompletedEmailAttachPDF'" />
+						<xsl:with-param name="name" select="'activityGroupCompletedEmailAttachPDF'" />
+						<xsl:with-param name="element" select="ActivityGroup" />
+					</xsl:call-template>
+					
+					<label class="marginleft" for="activityGroupCompletedEmailAttachPDF">
+						<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF" />
+					</label>
+				</div>
 			</div>
-		</div>
+			
+			<div class="floatleft full bigmarginbottom">
+			
+				<label for="flowInstanceSubmittedGlobalEmailAddresses" class="floatleft full">
+					<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAddresses" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'activityGroupCompletedEmailAddresses'"/>
+						<xsl:with-param name="name" select="'activityGroupCompletedEmailAddresses'"/>
+						<xsl:with-param name="rows" select="5"/>
+						<xsl:with-param name="separateListValues" select="'true'"/>
+						<xsl:with-param name="element" select="ActivityGroup/ActivityGroupCompletedEmailAddresses/address" />
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'suppressChangeStatusManagerNotifications'" />
+						<xsl:with-param name="id" select="'suppressChangeStatusManagerNotifications'" />
+						<xsl:with-param name="element" select="ActivityGroup" />
+					</xsl:call-template>
+					
+					<label class="marginleft" for="suppressChangeStatusManagerNotifications">
+						<xsl:value-of select="$i18n.ActivityGroup.suppressChangeStatusManagerNotifications" />
+					</label>
+				</div>
+			</div>
+			
+		</fieldset>
 		
 		<xsl:call-template name="initializeFCKEditor">
 			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
@@ -1529,7 +1551,7 @@
 		
 		<div class="notification">
 		
-			<div class="floatleft full bigmarginbottom margintop">
+			<div class="floatleft full bigmarginbottom">
 			
 				<div class="floatleft">
 					
