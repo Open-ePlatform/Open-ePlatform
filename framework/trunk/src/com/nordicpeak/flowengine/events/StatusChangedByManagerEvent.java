@@ -19,6 +19,7 @@ public class StatusChangedByManagerEvent implements Serializable {
 	private final Status previousStatus;
 	private final User user;
 	private final boolean suppressUserNotifications;
+	private final boolean suppressManagerNotifications;
 
 	public StatusChangedByManagerEvent(FlowInstance flowInstance, FlowInstanceEvent event, SiteProfile siteProfile, Status previousStatus, User user) {
 		
@@ -26,6 +27,11 @@ public class StatusChangedByManagerEvent implements Serializable {
 	}
 	
 	public StatusChangedByManagerEvent(FlowInstance flowInstance, FlowInstanceEvent event, SiteProfile siteProfile, Status previousStatus, User user, boolean suppressUserNotifications) {
+		
+		this(flowInstance, event, siteProfile, previousStatus, user, suppressUserNotifications, false);
+	}
+	
+	public StatusChangedByManagerEvent(FlowInstance flowInstance, FlowInstanceEvent event, SiteProfile siteProfile, Status previousStatus, User user, boolean suppressUserNotifications, boolean suppressManagerNotifications) {
 
 		super();
 		
@@ -35,6 +41,7 @@ public class StatusChangedByManagerEvent implements Serializable {
 		this.previousStatus = previousStatus;
 		this.user = user;
 		this.suppressUserNotifications = suppressUserNotifications;
+		this.suppressManagerNotifications = suppressManagerNotifications;
 	}
 
 	public FlowInstance getFlowInstance() {
@@ -66,4 +73,9 @@ public class StatusChangedByManagerEvent implements Serializable {
 	
 		return suppressUserNotifications;
 	}
+
+	public boolean isSuppressManagerNotifications() {
+		return suppressManagerNotifications;
+	}
+	
 }
