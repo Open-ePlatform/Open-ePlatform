@@ -1743,43 +1743,46 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 
-		Contact posterContact = getPosterContact(flowInstance);
+		if (!event.isSuppressManagerNotifications()) {
 		
-		if (notificationSettings.isSendStatusChangedManagerEmail()) {
-
-			sendManagerEmails(flowInstance, posterContact, notificationSettings.getStatusChangedManagerEmailSubject(), notificationSettings.getStatusChangedManagerEmailMessage(), CollectionUtils.getList(event.getUser()), false);
-		}
-		
-		if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
-
-			if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
-
-				File pdfFile = null;
-				boolean attachPDF = false;
-
-				if (notificationSettings.isFlowInstanceArchivedGlobalEmailAttachPDF()) {
-
-					if (pdfProvider != null) {
-
-						pdfFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestPDFEvent(flowInstance).getEventID());
-
-						if (pdfFile != null) {
-
-							if (isValidAttachmentSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, pdfFile)) {
-
-								attachPDF = true;
-
-							} else {
-
-								log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email archived notifications and will not be attached to the generated email.");
+			Contact posterContact = getPosterContact(flowInstance);
+			
+			if (notificationSettings.isSendStatusChangedManagerEmail()) {
+	
+				sendManagerEmails(flowInstance, posterContact, notificationSettings.getStatusChangedManagerEmailSubject(), notificationSettings.getStatusChangedManagerEmailMessage(), CollectionUtils.getList(event.getUser()), false);
+			}
+			
+			if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
+	
+				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
+	
+					File pdfFile = null;
+					boolean attachPDF = false;
+	
+					if (notificationSettings.isFlowInstanceArchivedGlobalEmailAttachPDF()) {
+	
+						if (pdfProvider != null) {
+	
+							pdfFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestPDFEvent(flowInstance).getEventID());
+	
+							if (pdfFile != null) {
+	
+								if (isValidAttachmentSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, pdfFile)) {
+	
+									attachPDF = true;
+	
+								} else {
+	
+									log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email archived notifications and will not be attached to the generated email.");
+								}
 							}
 						}
 					}
-				}
-				
-				for (String email : notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses()) {
 					
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, false);
+					for (String email : notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses()) {
+						
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, false);
+					}
 				}
 			}
 		}
