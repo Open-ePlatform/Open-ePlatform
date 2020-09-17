@@ -25,6 +25,7 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	<xsl:variable name="i18n.inlinePDFAttachments">Inkludera bifogade PDF filer som sidor i ärendets PDF istället för som separata bilagor</xsl:variable>
 	<xsl:variable name="i18n.numberInlineAttachments">Lägg till sidfot i bifogade PDF filer</xsl:variable>
 	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
+	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
 
 	<xsl:variable name="i18n.attachmentNamePrefixMode">filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>
 	<xsl:variable name="i18n.AttachmentNamePrefixMode">Filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>

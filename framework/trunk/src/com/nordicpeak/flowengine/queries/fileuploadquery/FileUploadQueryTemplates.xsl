@@ -30,20 +30,23 @@
 		<div class="query">
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
+				<xsl:if test="FileUploadQueryInstance/FileUploadQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
 			
 			<article>
 				
 				<div class="heading-wrapper">
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
+					<xsl:if test="not(FileUploadQueryInstance/FileUploadQuery/hideTitle = 'true')">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>
 					
 					<xsl:call-template name="createUpdateButton">
 						<xsl:with-param name="queryID" select="FileUploadQueryInstance/FileUploadQuery/queryID" />
@@ -78,6 +81,7 @@
 		
 			<xsl:attribute name="class">
 				<xsl:text>query</xsl:text>
+				<xsl:if test="FileUploadQueryInstance/FileUploadQuery/hideTitle = 'true'"> notitle</xsl:if>
 				<xsl:if test="EnableAjaxPosting"> enableAjaxPosting</xsl:if>
 				<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/mergeWithPreviousQuery = 'true'"> mergewithpreviousquery</xsl:if>
 			</xsl:attribute>
@@ -101,14 +105,16 @@
 			
 				<div class="heading-wrapper">
 					
-					<h2>
-						<xsl:attribute name="class">
-							<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-								<xsl:text>required</xsl:text>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-					</h2>
+					<xsl:if test="not(FileUploadQueryInstance/FileUploadQuery/hideTitle = 'true')">
+						<h2>
+							<xsl:attribute name="class">
+								<xsl:if test="FileUploadQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+						</h2>
+					</xsl:if>
 					
 					<xsl:if test="FileUploadQueryInstance/FileUploadQuery/helpText">
 						<xsl:apply-templates select="FileUploadQueryInstance/FileUploadQuery/helpText" />

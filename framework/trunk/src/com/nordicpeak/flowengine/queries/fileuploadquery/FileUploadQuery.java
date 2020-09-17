@@ -89,11 +89,6 @@ public class FileUploadQuery extends BaseQuery {
 	protected String attachmentNameCustomPrefix;
 	
 	@DAOManaged
-	@OneToMany
-	@XMLElement
-	private List<FileUploadQueryInstance> instances;
-	
-	@DAOManaged
 	@XMLElement
 	private boolean setAsAttribute;
 	
@@ -104,12 +99,22 @@ public class FileUploadQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean hideTitle;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean lockOnOwnershipTransfer;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 30)
 	@XMLElement
 	private String selectFilesButtonText;
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement
+	private List<FileUploadQueryInstance> instances;
 	
 	public static long getSerialversionuid() {
 		
@@ -291,6 +296,7 @@ public class FileUploadQuery extends BaseQuery {
 		inlinePDFAttachments = xmlParser.getPrimitiveBoolean("inlinePDFAttachments");
 		numberInlineAttachments = xmlParser.getPrimitiveBoolean("numberInlineAttachments");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
+		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 		
@@ -380,6 +386,16 @@ public class FileUploadQuery extends BaseQuery {
 	public void setLockOnOwnershipTransfer(boolean lockOnOwnershipTransfer) {
 
 		this.lockOnOwnershipTransfer = lockOnOwnershipTransfer;
+	}
+	
+	public boolean isHideTitle() {
+		
+		return hideTitle;
+	}
+	
+	public void setHideTitle(boolean hideTitle) {
+		
+		this.hideTitle = hideTitle;
 	}
 
 	public String getSelectFilesButtonText() {

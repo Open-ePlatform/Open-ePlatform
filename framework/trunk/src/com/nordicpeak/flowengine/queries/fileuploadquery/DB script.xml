@@ -126,4 +126,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `hideTitle` TINYINT(1) UNSIGNED NOT NULL AFTER `numberInlineAttachments`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

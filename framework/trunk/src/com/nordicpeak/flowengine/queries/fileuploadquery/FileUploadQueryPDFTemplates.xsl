@@ -17,9 +17,11 @@
 			
 			<a name="query{FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			
-			<h2>
-				<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
-			</h2>			
+			<xsl:if test="not(FileUploadQueryInstance/FileUploadQuery/hideTitle = 'true')">
+				<h2>
+					<xsl:value-of select="FileUploadQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
+				</h2>
+			</xsl:if>
 			
 			<xsl:if test="Description">
 				
@@ -35,7 +37,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</div>
-								
+				
 			</xsl:if>
 			
 			<ul class="list-style-type-none">
@@ -43,10 +45,10 @@
 			</ul>
 			
 			<p class="tiny"><xsl:value-of select="$i18n.AttachedFilesNoticed"/></p>
-						
+			
 		</div>
 		
-	</xsl:template>		
+	</xsl:template>
 
 	<xsl:template match="FileDescriptor" mode="show">
 
@@ -66,6 +68,6 @@
 			<xsl:text>)</xsl:text>
 		</li>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 </xsl:stylesheet>
