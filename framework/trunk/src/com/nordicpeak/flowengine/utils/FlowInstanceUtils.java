@@ -398,7 +398,7 @@ public class FlowInstanceUtils {
 					stringBuilder.append(selectedManager.getLastname());
 				}
 				
-				if (usernames) {
+				if (usernames && selectedManager.getUsername() != null) {
 
 					if (names) {
 						stringBuilder.append(" (");
