@@ -291,6 +291,11 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		Document doc = createDocument(req, poster);
+		
+		return getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler, doc);
+	}
+	
+	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler, Document doc) throws Throwable {
 
 		Element showQueryFormElement = doc.createElement("ShowQueryForm");
 		doc.getDocumentElement().appendChild(showQueryFormElement);
