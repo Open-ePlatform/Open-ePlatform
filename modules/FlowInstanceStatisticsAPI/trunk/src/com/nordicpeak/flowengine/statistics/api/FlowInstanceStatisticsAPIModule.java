@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -191,6 +193,8 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 				int normalFlowInstances = 0;
 				int abortedFlowInstances = 0;
 				int extensionFlowInstances = 0;
+				
+				Set<Integer> abortedFlowInstanceIDsSet = new HashSet<>();
 
 				Connection connection = dataSource.getConnection();
 
@@ -338,6 +342,10 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 							}
 
 							for (AbortedFlowInstance flowInstance : flowInstances) {
+								
+								if (flowInstance.getFlowInstanceID() != null ) {
+									abortedFlowInstanceIDsSet.add(flowInstance.getFlowInstanceID());
+								}
 
 								FlowInstanceStatistic statistic = new FlowInstanceStatistic(flowInstance.getFlowID(), flowInstance.getAdded());
 
@@ -380,8 +388,16 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 					
 					if (extensionStatistics != null) {
 						
-						extensionFlowInstances += extensionStatistics.size();
-						flowInstanceStatistics.addAll(extensionStatistics);
+						for (FlowInstanceStatistic flowInstanceStatistic : extensionStatistics) {
+							
+							// Skip flow instances that exist in both aborted and deleted. Only happens when users delete saved but unsubmitted flow instances.
+							if (flowInstanceStatistic.getSubmitted() == null && abortedFlowInstanceIDsSet.contains(flowInstanceStatistic.getFlowInstanceID())) {
+								continue;
+							}
+							
+							extensionFlowInstances += 1;
+							flowInstanceStatistics.add(flowInstanceStatistic);
+						}
 					}
 				}
 
