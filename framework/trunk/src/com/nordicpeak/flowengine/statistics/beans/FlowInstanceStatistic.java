@@ -8,6 +8,8 @@ import se.unlogic.standardutils.xml.XMLElement;
 @XMLElement
 public class FlowInstanceStatistic extends GeneratedElementable implements Comparable<FlowInstanceStatistic> {
 
+	private final Integer flowInstanceID;
+	
 	@XMLElement
 	private final int flowID;
 
@@ -33,10 +35,19 @@ public class FlowInstanceStatistic extends GeneratedElementable implements Compa
 	private Integer surveyAnswer;
 
 	public FlowInstanceStatistic(int flowID, Date created) {
+		this(null, flowID, created);
+	}
+	
+	public FlowInstanceStatistic(Integer flowInstanceID, int flowID, Date created) {
 		super();
 
+		this.flowInstanceID = flowInstanceID;
 		this.flowID = flowID;
 		this.created = created;
+	}
+
+	public Integer getFlowInstanceID() {
+		return flowInstanceID;
 	}
 
 	public int getFlowID() {
