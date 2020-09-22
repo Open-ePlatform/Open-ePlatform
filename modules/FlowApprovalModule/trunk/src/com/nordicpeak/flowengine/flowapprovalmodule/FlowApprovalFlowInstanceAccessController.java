@@ -10,6 +10,7 @@ import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SitePro
 
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
@@ -34,7 +35,7 @@ public class FlowApprovalFlowInstanceAccessController implements FlowInstanceAcc
 	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
 
 		try {
-			List<FlowApprovalActivityProgress> activityProgresses = flowApprovalUserModule.getActivities(user, flowInstance.getFlowInstanceID(), null, FlowApprovalActivityProgress.ACTIVITY_RELATION);
+			List<FlowApprovalActivityProgress> activityProgresses = flowApprovalUserModule.getActivities(user, flowInstance.getFlowInstanceID(), null, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
 			if (activityProgresses != null) {
 				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
