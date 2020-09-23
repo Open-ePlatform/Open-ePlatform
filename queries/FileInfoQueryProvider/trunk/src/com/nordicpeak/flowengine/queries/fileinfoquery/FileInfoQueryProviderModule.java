@@ -36,6 +36,7 @@ import se.unlogic.hierarchy.core.validationerrors.UnableToSaveFileValidationErro
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
+import se.unlogic.standardutils.dao.CommitCallback;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
@@ -59,7 +60,6 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
@@ -354,8 +354,23 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 		this.queryDAO.delete(query, transactionHandler);
 
-		deleteFiles(query);
+		transactionHandler.addCommitCallback(new CommitCallback() {
+			
+			@Override
+			public void commitComplete() {
 
+				log.info("Deleting files for query instance " + descriptor);
+				
+				try {
+					deleteFiles(query);
+				
+				} catch (Throwable t) {
+
+					log.error("Error deleting files for query instance " + descriptor, t);
+				}
+			}
+		});	
+		
 		return true;
 	}
 
@@ -427,7 +442,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 			QueryDescriptor queryDescriptor = getFlowAdminModule().getQueryDescriptor(query.getQueryID());
 			
-			getFlowAdminModule().checkFlowStructureManipulationAccess(user, (Flow) queryDescriptor.getStep().getFlow());
+			getFlowAdminModule().checkFlowStructureManipulationAccess(user, queryDescriptor.getStep().getFlow());
 			
 			File file = new File(getFileDescriptorFilestorePath(query, fileDescriptor));
 

@@ -42,6 +42,7 @@ import se.unlogic.hierarchy.core.validationerrors.UnableToSaveFileValidationErro
 import se.unlogic.standardutils.base64.Base64;
 import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.CommitCallback;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.RelationQuery;
@@ -693,9 +694,24 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			return false;
 		}
 
-		this.queryInstanceDAO.delete(queryInstance);
+		this.queryInstanceDAO.delete(queryInstance, transactionHandler);
 
-		FileUtils.deleteDirectory(getQueryInstanceDirectory(descriptor));
+		transactionHandler.addCommitCallback(new CommitCallback() {
+			
+			@Override
+			public void commitComplete() {
+
+				log.info("Deleting files for query instance " + descriptor);
+				
+				try {
+					FileUtils.deleteDirectory(getQueryInstanceDirectory(descriptor));
+				
+				} catch (Throwable t) {
+
+					log.error("Error deleting files for query instance " + descriptor, t);
+				}
+			}
+		});
 
 		return true;
 	}
