@@ -58,13 +58,13 @@
 						<fieldset>
 							<div class="split">
 								<div class="left">
-									<label for="name" class="required">
+									<label for="firstname" class="required">
 										<xsl:value-of select="$i18n.firstname" />
 									</label>
 									<input type="text" disabled="" value="{user/firstname}" id="firstname" name="firstname" />
 								</div>
 								<div class="right">
-									<label for="name" class="required">
+									<label for="lastname" class="required">
 										<xsl:value-of select="$i18n.lastname" />
 									</label>
 									<input type="text" disabled="" value="{user/lastname}" id="lastname" name="lastname" />
