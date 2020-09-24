@@ -22,7 +22,7 @@ public class StaleFlowInstancesRemover implements Runnable {
 	
 	private static final Logger log = Logger.getLogger(StaleFlowInstancesRemover.class);
 	
-	//private final FlowAdminModule flowAdminModule;
+//	private final FlowAdminModule flowAdminModule;
 	private final AnnotatedDAO<FlowInstance> flowInstanceDAO;
 	
 	private final QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
@@ -66,10 +66,25 @@ public class StaleFlowInstancesRemover implements Runnable {
 					FlowInstance flowInstance = getFlowInstance(flowInstanceID);
 					
 					log.info("Detected stale flow instance: " + flowInstance);
+					
 //					log.info("Removing stale flow instance: " + flowInstance);
-
+//
 //					flowInstanceDAO.delete(flowInstance);
-
+//
+//					if (flowInstance.getStatus().getContentType() == ContentType.NEW) {
+//
+//						AbortedFlowInstance abortedFlowInstance = new AbortedFlowInstance();
+//
+//						abortedFlowInstance.setFlowInstanceID(flowInstance.getFlowInstanceID());
+//						abortedFlowInstance.setAdded(TimeUtils.getCurrentTimestamp());
+//						abortedFlowInstance.setFlowFamilyID(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+//						abortedFlowInstance.setFlowID(flowInstance.getFlow().getFlowID());
+//						abortedFlowInstance.setStepID(flowInstance.getStepID());
+//
+//						log.info("Adding aborted flow instance entry for flow " + flowInstance.getFlow());
+//						flowAdminModule.getDAOFactory().getAbortedFlowInstanceDAO().add(abortedFlowInstance);
+//					}
+//
 //					flowAdminModule.getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.DELETE, flowInstance), EventTarget.ALL);
 				}
 				
