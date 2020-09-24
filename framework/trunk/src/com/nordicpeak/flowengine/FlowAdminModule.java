@@ -2134,8 +2134,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		statusGroup.setStatusGroupID(null);
 		statusGroup.setName(statusGroup.getName() + flowNameCopySuffix);
 
-		for (StandardStatus status : statusGroup.getStandardStatuses()) {
-			status.setStatusID(null);
+		if(statusGroup.getStandardStatuses() != null) {
+		
+			for (StandardStatus status : statusGroup.getStandardStatuses()) {
+				
+				status.setStatusID(null);
+			}
 		}
 
 		RelationQuery query = new RelationQuery(StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
