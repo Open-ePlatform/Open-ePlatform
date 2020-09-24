@@ -56,7 +56,7 @@
  				ADD COLUMN `lastname` VARCHAR(255) AFTER `firstname`;
 			]]>
 		</Query>
-	</Script>		
+	</Script>
 				
 	<Script version="4">
 		<Query>
@@ -78,7 +78,7 @@
 	
 	<Script version="5">
 		<Query>
-			<![CDATA[		
+			<![CDATA[
 				ALTER TABLE `organization_detail_queries` ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `requireAddress`;
 			]]>
 		</Query>
@@ -86,7 +86,7 @@
 	
 	<Script version="6">
 		<Query>
-			<![CDATA[		
+			<![CDATA[
 				UPDATE `organization_detail_queries` SET `setAsAttribute` = 1;
 			]]>
 		</Query>
@@ -94,7 +94,7 @@
 	
 	<Script version="7">
 		<Query>
-			<![CDATA[		
+			<![CDATA[
 				ALTER TABLE `organization_detail_queries` DROP COLUMN `setAsAttribute`;		
 			]]>
 		</Query>
@@ -106,12 +106,22 @@
 				ALTER TABLE `organization_detail_query_instances` ADD COLUMN `citizenIdentifier` VARCHAR(255) AFTER `organizationNumber`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
 	<Script version="9">
 		<Query>
 			<![CDATA[
 				ALTER TABLE `organization_detail_queries` ADD COLUMN `hideNotificationChannelSettings` BOOLEAN NOT NULL AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries`
+					ADD COLUMN `setAsAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `requireAddress`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL DEFAULT NULL AFTER `setAsAttribute`;
 			]]>
 		</Query>
 	</Script>

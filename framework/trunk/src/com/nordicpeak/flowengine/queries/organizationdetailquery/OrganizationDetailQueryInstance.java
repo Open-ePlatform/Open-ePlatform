@@ -268,6 +268,10 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	public void reset(MutableAttributeHandler attributeHandler) {
 
 		//Preserve fields in case they have been prepopulated
+		
+		if (query.isSetAsAttribute()) {
+			resetAttributes(attributeHandler);
+		}
 
 		super.reset(attributeHandler);
 	}
@@ -286,6 +290,36 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 		this.organizationID = null;
 
 		reset(attributeHandler);
+	}
+	
+	public void setAttributes(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.setAttribute(query.getAttributeName() + ".organizationName", name);
+		attributeHandler.setAttribute(query.getAttributeName() + ".organizationNumber", organizationNumber);
+		attributeHandler.setAttribute(query.getAttributeName() + ".citizenIdentifier", citizenIdentifier);
+		attributeHandler.setAttribute(query.getAttributeName() + ".firstname", firstname);
+		attributeHandler.setAttribute(query.getAttributeName() + ".lastname", lastname);
+		attributeHandler.setAttribute(query.getAttributeName() + ".address", address);
+		attributeHandler.setAttribute(query.getAttributeName() + ".zipCode", zipCode);
+		attributeHandler.setAttribute(query.getAttributeName() + ".postalAddress", postalAddress);
+		attributeHandler.setAttribute(query.getAttributeName() + ".email", email);
+		attributeHandler.setAttribute(query.getAttributeName() + ".phone", phone);
+		attributeHandler.setAttribute(query.getAttributeName() + ".mobilePhone", mobilePhone);
+		attributeHandler.setAttribute(query.getAttributeName() + ".contactBySMS", contactBySMS);
+	}
+	
+	public void resetAttributes(MutableAttributeHandler attributeHandler) {
+
+		attributeHandler.removeAttribute(query.getAttributeName() + ".citizenIdentifier");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".firstname");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".lastname");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".address");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".zipCode");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".postalAddress");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".email");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".phone");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".mobilePhone");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".contactBySMS");
 	}
 	
 	// Used by external modules when poster changes

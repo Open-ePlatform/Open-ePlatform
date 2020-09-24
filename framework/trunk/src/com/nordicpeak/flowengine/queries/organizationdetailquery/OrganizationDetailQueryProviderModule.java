@@ -282,17 +282,19 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	@Override
 	public void populate(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
+		OrganizationDetailQuery query = queryInstance.getQuery();
+		
 		StringPopulator stringPopulator = StringPopulator.getPopulator();
 		StringSwedishPhoneNumberPopulator phonePopulator = StringSwedishPhoneNumberPopulator.getPopulator();
 
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
-		Integer queryID = queryInstance.getQuery().getQueryID();
+		Integer queryID = query.getQueryID();
 
 		boolean contactBySMS = req.getParameter("q" + queryID + "_contactBySMS") != null;
 		boolean persistOrganization = req.getParameter("q" + queryID + "_persistOrganization") != null;
 
-		boolean requireAddressFields = !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && queryInstance.getQuery().requiresAddress();
+		boolean requireAddressFields = !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && query.requiresAddress();
 
 		String name = ValidationUtils.validateParameter("q" + queryID + "_name", req, !allowPartialPopulation, stringPopulator, errors);
 		
@@ -302,7 +304,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		String zipCode = ValidationUtils.validateParameter("q" + queryID + "_zipcode", req, requireAddressFields, stringPopulator, errors);
 		String postalAddress = ValidationUtils.validateParameter("q" + queryID + "_postaladdress", req, requireAddressFields, stringPopulator, errors);
 		String mobilePhone = ValidationUtils.validateParameter("q" + queryID + "_mobilephone", req, contactBySMS, phonePopulator, errors);
-		String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, !queryInstance.getQuery().isAllowSMS() && !allowPartialPopulation, EMAIL_POPULATOR, errors);
+		String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, !query.isAllowSMS() && !allowPartialPopulation, EMAIL_POPULATOR, errors);
 		String phone = ValidationUtils.validateParameter("q" + queryID + "_phone", req, false, phonePopulator, errors);
 		Integer organizationID = ValidationUtils.validateParameter("q" + queryID + "_organization", req, false, IntegerPopulator.getPopulator(), errors);
 
@@ -338,15 +340,15 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		
 		if(!requireAddressFields && !allowPartialPopulation){
 
-			if (StringUtils.isEmpty(address) && (queryInstance.getQuery().requiresAddress() || (!StringUtils.isEmpty(zipCode) || !StringUtils.isEmpty(postalAddress)))) {
+			if (StringUtils.isEmpty(address) && (query.requiresAddress() || (!StringUtils.isEmpty(zipCode) || !StringUtils.isEmpty(postalAddress)))) {
 				errors.add(new ValidationError("q" + queryID + "_address", ValidationErrorType.RequiredField));
 			}
 
-			if (StringUtils.isEmpty(zipCode) && (queryInstance.getQuery().requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(postalAddress)))) {
+			if (StringUtils.isEmpty(zipCode) && (query.requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(postalAddress)))) {
 				errors.add(new ValidationError("q" + queryID + "_zipcode", ValidationErrorType.RequiredField));
 			}
 
-			if (StringUtils.isEmpty(postalAddress) && (queryInstance.getQuery().requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(zipCode)))) {
+			if (StringUtils.isEmpty(postalAddress) && (query.requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(zipCode)))) {
 				errors.add(new ValidationError("q" + queryID + "_postaladdress", ValidationErrorType.RequiredField));
 			}
 		}
@@ -362,7 +364,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		this.validateFieldLength("q" + queryID + "_email", email, 255, errors);
 		this.validateFieldLength("q" + queryID + "_phone", phone, 255, errors);
 
-		if (queryInstance.getQuery().isAllowSMS() && !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && !contactBySMS && StringUtils.isEmpty(rawEmail)) {
+		if (query.isAllowSMS() && !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && !contactBySMS && StringUtils.isEmpty(rawEmail)) {
 			errors.add(new ValidationError("NoContactChannelChoosen"));
 		}
 
@@ -399,6 +401,12 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 		queryInstance.getQueryInstanceDescriptor().setPopulated(queryInstance.isPopulated());
 		
+		if (query.isSetAsAttribute()) {
+
+			queryInstance.resetAttributes(attributeHandler);
+			queryInstance.setAttributes(attributeHandler);
+		}
+		
 		if (poster != null && poster.equals(user)) {
 
 			queryInstance.setCitizenIdentifier(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster));
@@ -429,7 +437,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 					throw new ValidationException(new ValidationError("UnableToPersistOrganization"));
 
-				}				
+				}
 			}
 		}
 	}

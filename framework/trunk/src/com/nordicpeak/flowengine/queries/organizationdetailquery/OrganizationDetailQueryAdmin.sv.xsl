@@ -9,6 +9,7 @@
 	<xsl:variable name="java.exportOrganizationNumber">Organisationsnummer</xsl:variable>
 	<xsl:variable name="java.exportContactFirstName">Kontaktpersonsförnamn</xsl:variable>
 	<xsl:variable name="java.exportContactLastName">Kontaktpersonsefternamn</xsl:variable>
+	<xsl:variable name="java.exportContactCitizenIdentifier">Kontaktpersonspersonnummer</xsl:variable>
 	<xsl:variable name="java.exportAddress">Adress</xsl:variable>
 	<xsl:variable name="java.exportZipCode">Postnummer</xsl:variable>
 	<xsl:variable name="java.exportPostalAddress">Ort</xsl:variable>
@@ -32,5 +33,13 @@ Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina 
 	<xsl:variable name="i18n.ContactChannelSettings">Inställningar</xsl:variable>
 	
 	<xsl:variable name="i18n.RequireAddress">Kräv postadress</xsl:variable>
+	
+	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
+	<xsl:variable name="i18n.setAsAttribute">Spara värden som attribut</xsl:variable>
+	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>
+	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.citizenIdentifier}</xsl:variable>
+	<xsl:variable name="i18n.GeneralContactAttributeInfo">Notera att attribut utan prefix alltid sparas från den sista ifyllda Kontaktuppgiftsfrågan (privatperson eller organisation) i e-tjänsten. Undantag är om kontaktuppgifter under mina uppgifter uppdateras. Ex $attribute{citizenIdentifier}</xsl:variable>
+	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	
 </xsl:stylesheet>

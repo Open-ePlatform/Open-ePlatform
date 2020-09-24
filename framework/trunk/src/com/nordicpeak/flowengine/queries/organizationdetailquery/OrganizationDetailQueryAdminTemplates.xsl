@@ -77,6 +77,95 @@
 				<label for="requireAddress"><xsl:value-of select="$i18n.RequireAddress" /></label>
 			</div>
 			
+			<div class="floatleft full bigmargintop bigmarginbottom">
+				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
+			</div>
+			
+			<div class="floatleft full marginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'setAsAttribute'" />
+						<xsl:with-param name="name" select="'setAsAttribute'" />
+						<xsl:with-param name="element" select="ContactDetailQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="setAsAttribute">
+						<xsl:value-of select="$i18n.setAsAttribute" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full marginbottom">
+				<label for="attributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.attributeName" /></label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'attributeName'"/>
+						<xsl:with-param name="name" select="'attributeName'"/>
+						<xsl:with-param name="title" select="$i18n.attributeName"/>
+						<xsl:with-param name="element" select="ContactDetailQuery" />
+					</xsl:call-template>
+				</div>
+			</div>
+			
+			<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
+			<div class="floatleft clearboth bigmarginbottom">
+				<p class="tiny"><xsl:value-of select="$i18n.GeneralContactAttributeInfo" /></p>
+			</div>
+			
+			<table class="floatleft clearboth border">
+				<thead>
+					<th><xsl:value-of select="$i18n.attributes.name" /></th>
+					<th><xsl:value-of select="$i18n.attributes.value" /></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prefix.organizationName</td>
+						<td><xsl:value-of select="$java.exportOrganizationName" /></td>
+					</tr>
+					<tr>
+						<td>prefix.organizationNumber</td>
+						<td><xsl:value-of select="$java.exportOrganizationNumber" /></td>
+					</tr>
+					<tr>
+						<td>prefix.citizenIdentifier</td>
+						<td><xsl:value-of select="$java.exportContactCitizenIdentifier" /></td>
+					</tr>
+					<tr>
+						<td>prefix.firstname</td>
+						<td><xsl:value-of select="$java.exportContactFirstName" /></td>
+					</tr>
+					<tr>
+						<td>prefix.lastname</td>
+						<td><xsl:value-of select="$java.exportContactLastName" /></td>
+					</tr>
+					<tr>
+						<td>prefix.address</td>
+						<td><xsl:value-of select="$java.exportAddress" /></td>
+					</tr>
+					<tr>
+						<td>prefix.zipCode</td>
+						<td><xsl:value-of select="$java.exportZipCode" /></td>
+					</tr>
+					<tr>
+						<td>prefix.postalAddress</td>
+						<td><xsl:value-of select="$java.exportPostalAddress" /></td>
+					</tr>
+					<tr>
+						<td>prefix.email</td>
+						<td><xsl:value-of select="$java.exportEmail" /></td>
+					</tr>
+					<tr>
+						<td>prefix.phone</td>
+						<td><xsl:value-of select="$java.exportPhone" /></td>
+					</tr>
+					<tr>
+						<td>prefix.mobilePhone</td>
+						<td><xsl:value-of select="$java.exportMobilePhone" /></td>
+					</tr>
+				</tbody>
+			</table>
+			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
 			</div>
@@ -100,6 +189,9 @@
 		<xsl:choose>
 			<xsl:when test="$fieldName = 'maxLength'">
 				<xsl:value-of select="$i18n.maxLength" />
+			</xsl:when>
+			<xsl:when test="$fieldName = 'attributeName'">
+				<xsl:value-of select="$i18n.attributeName" />
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$fieldName" />

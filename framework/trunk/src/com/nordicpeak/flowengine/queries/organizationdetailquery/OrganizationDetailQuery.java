@@ -6,6 +6,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -45,6 +46,17 @@ public class OrganizationDetailQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean requireAddress;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsAttribute;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "setAsAttribute")
+	@XMLElement
+	private String attributeName;
 
 	@DAOManaged
 	@OneToMany
@@ -181,6 +193,13 @@ public class OrganizationDetailQuery extends BaseQuery {
 		hideNotificationChannelSettings = xmlParser.getPrimitiveBoolean("hideNotificationChannelSettings");
 		allowSMS = xmlParser.getPrimitiveBoolean("allowSMS");
 		requireAddress = xmlParser.getPrimitiveBoolean("requireAddress");
+		
+		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		if (attributeName != null) {
+
+			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
 
 		if (!errors.isEmpty()) {
 
@@ -197,6 +216,26 @@ public class OrganizationDetailQuery extends BaseQuery {
 	public void setRequireAddress(boolean requireAddress) {
 
 		this.requireAddress = requireAddress;
+	}
+	
+	public boolean isSetAsAttribute() {
+
+		return setAsAttribute;
+	}
+
+	public void setSetAsAttribute(boolean setAsAttribute) {
+
+		this.setAsAttribute = setAsAttribute;
+	}
+
+	public String getAttributeName() {
+
+		return attributeName;
+	}
+
+	public void setAttributeName(String attributeName) {
+
+		this.attributeName = attributeName;
 	}
 
 }
