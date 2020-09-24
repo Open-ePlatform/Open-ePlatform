@@ -65,6 +65,7 @@ Om användaren har skyddad identitet hämtas inga folkbokföringsuppgifter.
 	<xsl:variable name="i18n.setAsAttribute">Spara värden som attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>
 	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.citizenIdentifier}</xsl:variable>
+	<xsl:variable name="i18n.GeneralContactAttributeInfo">Notera att attribut utan prefix alltid sparas från den sista ifyllda Kontaktuppgiftsfrågan (privatperson eller organisation) i e-tjänsten. Undantag är om kontaktuppgifter under mina uppgifter uppdateras. Ex $attribute{citizenIdentifier}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	

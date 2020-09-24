@@ -63,8 +63,8 @@
 
 						<div class="split">
 							<strong class="block"><xsl:value-of select="$i18n.CitizenID" /></strong>
-							<xsl:value-of select="ContactDetailQueryInstance/citizenID" />						
-						</div>				
+							<xsl:value-of select="ContactDetailQueryInstance/citizenID" />
+						</div>
 				
 					</fieldset>
 				
@@ -313,11 +313,11 @@
 							
 							<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
 						
-						</div>				
+						</div>
 				
 					</fieldset>
 				
-				</xsl:if>				
+				</xsl:if>
 				
 				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldName = 'HIDDEN')">
 				
@@ -440,7 +440,7 @@
 								
 								<xsl:apply-templates select="ValidationErrors/validationError[fieldName = $fieldName]"/>
 								
-							</div>				
+							</div>
 					
 						</fieldset>
 						
@@ -846,7 +846,7 @@
 		
 		<i data-icon-after="!" title="{$i18n.ValidationError.InvalidFormat}"></i>
 		
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template match="validationError">
 		

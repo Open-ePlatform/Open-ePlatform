@@ -291,13 +291,12 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.setAttribute(query.getAttributeName() + ".phone", phone);
 		attributeHandler.setAttribute(query.getAttributeName() + ".mobilePhone", mobilePhone);
 		
-		if(query.getFieldAddress() != ContactDetailQueryField.HIDDEN && query.usesOfficalAddress()) {
+		if (query.getFieldAddress() != ContactDetailQueryField.HIDDEN && query.usesOfficalAddress()) {
 			
 			attributeHandler.setAttribute(query.getAttributeName() + ".addressUUID", addressUUID);
 		}
 		
 		attributeHandler.setAttribute(query.getAttributeName() + ".contactBySMS", contactBySMS);
-		
 	}
 	
 	public void resetAttributes(MutableAttributeHandler attributeHandler) {
@@ -312,6 +311,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.removeAttribute(query.getAttributeName() + ".phone");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".mobilePhone");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".addressUUID");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".contactBySMS");
 	}
 
 	@Override

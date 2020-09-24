@@ -289,7 +289,7 @@
 				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>
 			</div>
 			
-			<div class="floatleft full bigmarginbottom">
+			<div class="floatleft full marginbottom">
 				<div class="floatleft full">
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="id" select="'setAsAttribute'" />
@@ -304,7 +304,7 @@
 				</div>
 			</div>
 			
-			<div class="floatleft full bigmarginbottom">
+			<div class="floatleft full marginbottom">
 				<label for="attributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.attributeName" /></label>
 				<div class="floatleft full">
 					<xsl:call-template name="createTextField">
@@ -317,6 +317,9 @@
 			</div>
 			
 			<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
+			<div class="floatleft clearboth bigmarginbottom">
+				<p class="tiny"><xsl:value-of select="$i18n.GeneralContactAttributeInfo" /></p>
+			</div>
 			
 			<table class="floatleft clearboth border">
 				<thead>
