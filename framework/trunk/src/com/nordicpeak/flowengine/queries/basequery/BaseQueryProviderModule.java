@@ -348,8 +348,6 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		if(queryInstance.getQuery().hasTags()) {
 
-			System.out.println("doc instanceof XMLGeneratorDocument: " + (doc instanceof XMLGeneratorDocument));
-			
 			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
 			
 			generatorDocument.addIgnoredField(BaseQuery.HELP_TEXT_FIELD);
