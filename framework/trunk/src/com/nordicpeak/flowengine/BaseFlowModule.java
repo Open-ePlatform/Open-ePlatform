@@ -1827,7 +1827,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				queryID = NumberUtils.toInt(uriParser.get(4));
 
 				//Get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, poster, null, uriParser, req, false, checkEnabled, checkPublishDate, checkFlowTypeAccess, requestMetadata);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, accessController, req.getSession(true), user, poster, null, uriParser, req, false, checkPublishDate, checkEnabled, checkFlowTypeAccess, requestMetadata);
 
 			} else if (uriParser.size() > 5 && NumberUtils.isInt(uriParser.get(3)) && uriParser.get(4).equals("q") && NumberUtils.isInt(uriParser.get(5))) {
 
@@ -1835,7 +1835,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				queryID = NumberUtils.toInt(uriParser.get(5));
 
 				//Get saved instance from DB or session
-				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, accessController, req.getSession(true), user, uriParser, req, true, checkEnabled, checkPublishDate, requestMetadata);
+				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, accessController, req.getSession(true), user, uriParser, req, true, checkPublishDate, checkEnabled, requestMetadata);
 
 			}
 
