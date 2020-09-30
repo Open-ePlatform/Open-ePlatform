@@ -27,7 +27,6 @@
 				'CANT_CONTACT_SEARCHSERVICE' : '<xsl:value-of select="$i18n.CantContactSearchService" />',
 				'SERVICE_ERROR_MESSAGE' : '<xsl:value-of select="$i18n.ServiceErrorMessage" />',
 				'PUD_NOT_FOUND' : '<xsl:value-of select="$i18n.PUDNotFound" />',
-				'TO_MANY_PUD_FOUND' : '<xsl:value-of select="$i18n.ToManyPUDFound" />',
 				'UNKOWN_ERROR_MESSAGE' : '<xsl:value-of select="$i18n.UnkownErrorMessage" />',
 			};
 		</script>

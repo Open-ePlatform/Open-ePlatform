@@ -21,7 +21,6 @@
 	<xsl:variable name="i18n.RequiredQueryAddress">Du måste välja en adress.</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått.</xsl:variable>
 	<xsl:variable name="i18n.PUDNotFound">Fastighetsbeteckningen för den valda adressen hittades inte. Kontakta administratören.</xsl:variable>
-	<xsl:variable name="i18n.ToManyPUDFound">Flera fastighetsbeteckningar hittades för den valda adressen. Kontakta administratören.</xsl:variable>
 	
 	<xsl:variable name="i18n.ServiceErrorMessage">Det är för tillfället problem med söktjänsten. Kontakta administratören.</xsl:variable>
 	<xsl:variable name="i18n.UnkownErrorMessage">Ett oväntat fel har inträffat. Kontakta administratören.</xsl:variable>

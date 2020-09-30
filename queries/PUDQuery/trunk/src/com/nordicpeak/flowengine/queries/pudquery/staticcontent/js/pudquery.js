@@ -2,7 +2,6 @@ var pudQueryLanguage = {
 	"CANT_CONTACT_SEARCHSERVICE" : "Unable to contact the search service, contact administrator",
 	"SERVICE_ERROR_MESSAGE" : "There is currently a problem with the search service. Contact the administrator.",
 	"PUD_NOT_FOUND" : "Propert unit designation not found for selected address",
-	"TO_MANY_PUD_FOUND" : "To many property unit designations found for address",
 	"UNKOWN_ERROR_MESSAGE" : "An unexpected error occured. Contact the administrator."
 };
 
@@ -201,9 +200,10 @@ function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, punField
 				
 				showPUDQueryErrorMessage(queryID, pudQueryLanguage.PUD_NOT_FOUND);
 			
-			} else if (data.features.length == 1) {
+			} else {
 				
-				var pud = data.features[0].properties.name;
+				//Only pick the first feature, ignore the rest
+				var pud = data.features[0].properties.name.substring(0, data.features[0].properties.name.indexOf("Enhetsomr"));
 				var pun = data.features[0].properties.deprecatedfnr;
 				
 				pudField.val(pud);
@@ -212,10 +212,6 @@ function searchPUDFromFnr(estateID, queryID, $input, $select, pudField, punField
 				pudField.change();
 
 				punField.val(pun)
-				
-			} else {
-				
-				showPUDQueryErrorMessage(queryID, pudQueryLanguage.TO_MANY_PUD_FOUND);
 			}
 					
 			$input.removeClass("ui-autocomplete-loading");
