@@ -24,6 +24,7 @@
 	<xsl:variable name="i18n.preview">Förhandsgranska</xsl:variable>
 	<xsl:variable name="i18n.submit">Skicka in</xsl:variable>
 	<xsl:variable name="i18n.signAndSubmit">Signera och skicka in</xsl:variable>
+	<xsl:variable name="i18n.signAndSubmit.Goto">Gå till signering</xsl:variable>
 	<xsl:variable name="i18n.payHeader">Betala</xsl:variable>
 	<xsl:variable name="i18n.payAndSubmit">Betala och skicka in</xsl:variable>
 	

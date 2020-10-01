@@ -357,7 +357,7 @@
 	
 	<xsl:template name="createFlowInstanceManagerPreviewSigningButton">
 	
-		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.signAndSubmit" /></a>
+		<a href="#" class="btn btn-green xl next" onclick="redirectFromPreview(event, 'save-submit=true')"><xsl:value-of select="$i18n.signAndSubmit.Goto" /></a>
 	
 	</xsl:template>
 	
@@ -742,7 +742,7 @@
 	
 	<xsl:template name="createFlowInstanceManagerFormSigningButton">
 	
-		<a href="#" class="btn btn-green xl next force-submit" onclick="submitStep('save-submit', event)"><xsl:value-of select="$i18n.signAndSubmit" /></a>
+		<a href="#" class="btn btn-green xl next force-submit" onclick="submitStep('save-submit', event)"><xsl:value-of select="$i18n.signAndSubmit.Goto" /></a>
 	
 	</xsl:template>
 	
