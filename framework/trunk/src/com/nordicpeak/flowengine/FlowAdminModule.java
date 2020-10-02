@@ -116,6 +116,8 @@ import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidatio
 import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
+import se.unlogic.hierarchy.foregroundmodules.groupadmin.GroupAdminExtensionHandler;
+import se.unlogic.hierarchy.foregroundmodules.groupadmin.GroupAdminExtensionProvider;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionHandler;
 import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionProvider;
@@ -285,7 +287,7 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationErr
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback, UserAdminExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
+public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback, UserAdminExtensionProvider, GroupAdminExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	//@formatter:off
 	private static final Field[] FLOW_FAMILY_CACHE_RELATIONS = {
@@ -697,6 +699,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 	
 	private UserAdminExtensionHandler userAdminExtensionHandler;
+	private GroupAdminExtensionHandler groupAdminExtensionHandler;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -758,6 +761,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		if (userAdminExtensionHandler != null) {
 			
 			setUserAdminExtensionHandler(null);
+		}
+		
+		if (groupAdminExtensionHandler != null) {
+			
+			setGroupAdminExtensionHandler(null);
 		}
 
 		super.unload();
@@ -3184,7 +3192,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						deleteFlowFormFile(flowForm);
 					}
 				}
-			}			
+			}
 			
 			deleteFlowsFromCache(event.getBeans());
 
@@ -6734,6 +6742,64 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				Flow flow = getLatestFlowVersion(flowFamily);
 				ManagerAccess access = getFlowFamilyManagerAccess(flowFamily, requestedUser);
+
+				if (flow != null && access != null) {
+
+					Element flowElement = XMLUtils.appendNewElement(doc, flowsElement, "Flow");
+
+					XMLUtils.appendNewElement(doc, flowElement, "flowID", flow.getFlowID());
+					XMLUtils.appendNewElement(doc, flowElement, "name", flow.getName());
+					XMLUtils.appendNewElement(doc, flowElement, "access", access);
+
+					flowsWithManagerAccess++;
+				}
+			}
+
+			if (flowsWithManagerAccess > 0) {
+				
+				XMLUtils.appendNewElement(doc, extensionElement, "FlowAdminURL", req.getContextPath() + sectionInterface.getSectionDescriptor().getFullAlias() + "/" + this.moduleDescriptor.getAlias());
+
+				return viewFragmentTransformer.createViewFragment(doc);
+			}
+		}
+
+		return null;
+	}
+	
+	@InstanceManagerDependency
+	public void setGroupAdminExtensionHandler(GroupAdminExtensionHandler groupAdminExtensionHandler) {
+
+		if (this.groupAdminExtensionHandler != null) {
+
+			this.groupAdminExtensionHandler.removeGroupAdminExtensionProvider(this);
+		}
+		
+		this.groupAdminExtensionHandler = groupAdminExtensionHandler;
+
+		if (groupAdminExtensionHandler != null) {
+
+			groupAdminExtensionHandler.addGroupAdminExtensionProvider(this);
+		}
+	}
+
+	@Override
+	public ViewFragment getGroupAdminExtensionViewFragment(Group requestedGroup, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element extensionElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "FlowUserAdminExtension");
+
+		Collection<FlowFamily> flowFamilies = getCachedFlowFamilies();
+
+		if (flowFamilies != null) {
+
+			Element flowsElement = XMLUtils.appendNewElement(doc, extensionElement, "Flows");
+			int flowsWithManagerAccess = 0;
+
+			for (FlowFamily flowFamily : flowFamilies) {
+
+				Flow flow = getLatestFlowVersion(flowFamily);
+				ManagerAccess access = flowFamily.getManagerGroupAccess(requestedGroup);
 
 				if (flow != null && access != null) {
 
