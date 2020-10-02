@@ -251,6 +251,8 @@
 	<xsl:variable name="i18n.uploadNewFlowForm">Ladda upp ny blankett</xsl:variable>
 	<xsl:variable name="i18n.FlowForm.name">Namn (kan lämnas tomt)</xsl:variable>
 	<xsl:variable name="i18n.FlowForm.externalURL">Länk till extern PDF</xsl:variable>
+	<xsl:variable name="i18n.FlowForm.downloadFormButtonText">Anpassad text på knappen för att ladda ner blanketten (max 24 tecken)</xsl:variable>
+	<xsl:variable name="i18n.FlowForm.downloadFormButtonText.Info">Om ingen anpassad text anges får knappen standardtexten. Om flera blanketter laddas upp och ska ha en anpassad text så behöver samma text läggas på alla blanketterna.</xsl:variable>
 	<xsl:variable name="i18n.AddFlowForm.submit">Lägg till blankett</xsl:variable>
 	<xsl:variable name="i18n.UpdateFlowForm.submit">Spara ändringar</xsl:variable>
 	<xsl:variable name="i18n.UnableToStoreFile">Det gick inte att spara blanketten.</xsl:variable>

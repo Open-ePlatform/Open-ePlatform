@@ -63,6 +63,11 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 	@XMLElement
 	private boolean showExternalLinkIcon;
 	
+	@DAOManaged
+	@WebPopulate(maxLength = 24)
+	@XMLElement
+	private String downloadFormButtonText;
+
 	private transient byte[] importFileContents = null;
 	
 	public Integer getFlowFormID() {
@@ -128,6 +133,16 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 		this.fileExtension = fileExtension;
 	}
 
+	public String getDownloadFormButtonText() {
+		
+		return downloadFormButtonText;
+	}
+	
+	public void setDownloadFormButtonText(String downloadFormButtonText) {
+	
+		this.downloadFormButtonText = downloadFormButtonText;
+	}
+	
 	@Override
 	public String toString() {
 
@@ -164,6 +179,8 @@ public class FlowForm extends GeneratedElementable implements Serializable, XMLP
 		}
 		
 		this.showExternalLinkIcon = xmlParser.getPrimitiveBoolean("showExternalLinkIcon");
+		
+		this.downloadFormButtonText = XMLValidationUtils.validateParameter("downloadFormButtonText", xmlParser, false, 1, 24, StringPopulator.getPopulator(), errors);
 		
 		if (!errors.isEmpty()) {
 			

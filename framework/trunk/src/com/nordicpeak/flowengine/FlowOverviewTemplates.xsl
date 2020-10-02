@@ -609,7 +609,16 @@
 				<xsl:choose>
 					<xsl:when test="$isDisabled and not($operatingMessage/allowFlowForms = 'true')">
 					
-						<a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}"><xsl:value-of select="$i18n.DownloadFlowForm" /></a>
+						<a class="btn btn-blue xl disabled full" href="javascript:void(0)" title="{$operatingMessage/message}">
+							<xsl:choose>
+								<xsl:when test="$flow/FlowForms/FlowForm/downloadFormButtonText">
+									<xsl:value-of select="$flow/FlowForms/FlowForm/downloadFormButtonText"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.DownloadFlowForm" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</a>
 					
 					</xsl:when>
 					<xsl:when test="count($flow/FlowForms/FlowForm) = 1">
@@ -628,14 +637,30 @@
 								<xsl:attribute name="rel">nofollow</xsl:attribute>
 							</xsl:if>
 							
-							<xsl:value-of select="$i18n.DownloadFlowForm" />
+							<xsl:choose>
+								<xsl:when test="$flow/FlowForms/FlowForm/downloadFormButtonText">
+									<xsl:value-of select="$flow/FlowForms/FlowForm/downloadFormButtonText"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.DownloadFlowForm" />
+								</xsl:otherwise>
+							</xsl:choose>
+
 						</a>
 						
 					</xsl:when>
 					<xsl:otherwise>
 					
 						<a id="flowforms-list-button" class="btn btn-blue xl full" href="#" onclick="$('#flowforms-list').slideToggle(200); $(this).toggleClass('open').find('span').toggle(); return false;">
-							<xsl:value-of select="$i18n.DownloadFlowForms" />
+							<xsl:choose>
+								<xsl:when test="$flow/FlowForms/FlowForm/downloadFormButtonText">
+									<xsl:value-of select="$flow/FlowForms/FlowForm/downloadFormButtonText"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.DownloadFlowForms" />
+								</xsl:otherwise>
+							</xsl:choose>
+
 							<span class="bigmarginleft" data-icon-before="^" style="display: none;" />
 							<span class="bigmarginleft" data-icon-before="_" />
 						</a>
@@ -680,7 +705,15 @@
 					<xsl:value-of select="name"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="$i18n.DownloadFlowForm" />
+					<xsl:choose>
+						<xsl:when test="downloadFormButtonText">
+							<xsl:value-of select="downloadFormButtonText"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$i18n.DownloadFlowForm" />
+						</xsl:otherwise>
+					</xsl:choose>
+
 					<xsl:text>:&#160;</xsl:text>
 					<xsl:value-of select="position()"/>
 				</xsl:otherwise>

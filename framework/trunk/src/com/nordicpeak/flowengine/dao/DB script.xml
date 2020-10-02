@@ -2660,4 +2660,12 @@
 		</Query>
 	</Script>
 
+	<Script version="142">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_forms` ADD COLUMN `downloadFormButtonText` VARCHAR(24) DEFAULT NULL AFTER `showExternalLinkIcon`;
+			]]>
+		</Query>
+	</Script>
+
 </DBScripts>

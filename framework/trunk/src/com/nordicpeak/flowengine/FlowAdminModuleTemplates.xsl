@@ -1491,7 +1491,14 @@
 
 					<a href="{externalURL}" target="_blank">
 						<img class="alignmiddle marginright" src="{$imgPath}/file.png" alt="" />
-						<xsl:value-of select="$i18n.DownloadFlowForm" />
+						<xsl:choose>
+							<xsl:when test="downloadFormButtonText">
+								<xsl:value-of select="downloadFormButtonText"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.DownloadFlowForm" />
+							</xsl:otherwise>
+						</xsl:choose>
 						<xsl:value-of select="'&#160;'" />
 						<xsl:text>(</xsl:text>
 						<xsl:value-of select="$i18n.link" />
@@ -1513,7 +1520,14 @@
 								</xsl:choose>
 							</xsl:attribute>
 						</img>
-						<xsl:value-of select="$i18n.DownloadFlowForm" />
+						<xsl:choose>
+							<xsl:when test="downloadFormButtonText">
+								<xsl:value-of select="downloadFormButtonText"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.DownloadFlowForm" />
+							</xsl:otherwise>
+						</xsl:choose>
 						
 						<xsl:if test="formattedSize">
 							<xsl:value-of select="' ('" />
@@ -4366,6 +4380,26 @@
 			</label>
 			
 		</div>		
+
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="downloadFormButtonText" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowForm.downloadFormButtonText" />
+			</label>
+			<div class="tiny">
+				<xsl:value-of select="$i18n.FlowForm.downloadFormButtonText.Info" />
+			</div>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'downloadFormButtonText'"/>
+					<xsl:with-param name="name" select="'downloadFormButtonText'"/>
+					<xsl:with-param name="width" select="'300px'" />
+					<xsl:with-param name="element" select="FlowForm" />
+				</xsl:call-template>
+			</div>
+		</div>
+
 	
 	</xsl:template>
 	
@@ -8130,6 +8164,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalURL'">
 						<xsl:value-of select="$i18n.FlowForm.externalURL"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'downloadFormButtonText'">
+						<xsl:value-of select="$i18n.FlowForm.downloadFormButtonText"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'userDescriptionTemplate'">
 						<xsl:value-of select="$i18n.userDescriptionTemplate"/>
