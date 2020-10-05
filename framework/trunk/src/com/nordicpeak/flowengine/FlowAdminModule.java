@@ -111,16 +111,15 @@ import se.unlogic.hierarchy.core.utils.crud.TransactionRequestFilter;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkProvider;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLinkUtils;
+import se.unlogic.hierarchy.core.utils.usergroupadminextensions.GroupAdminExtensionProvider;
+import se.unlogic.hierarchy.core.utils.usergroupadminextensions.UserAdminExtensionProvider;
+import se.unlogic.hierarchy.core.utils.usergroupadminextensions.UserGroupAdminExtensionHandler;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
-import se.unlogic.hierarchy.foregroundmodules.groupadmin.GroupAdminExtensionHandler;
-import se.unlogic.hierarchy.foregroundmodules.groupadmin.GroupAdminExtensionProvider;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
-import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionHandler;
-import se.unlogic.hierarchy.foregroundmodules.useradmin.UserAdminExtensionProvider;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfileHandler;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -698,8 +697,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 	
-	private UserAdminExtensionHandler userAdminExtensionHandler;
-	private GroupAdminExtensionHandler groupAdminExtensionHandler;
+	private UserGroupAdminExtensionHandler userGroupAdminExtensionHandler;
 	
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -758,16 +756,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		statusFormExtensionProviders.clear();
 		
-		if (userAdminExtensionHandler != null) {
+		if (userGroupAdminExtensionHandler != null) {
 			
 			setUserAdminExtensionHandler(null);
 		}
 		
-		if (groupAdminExtensionHandler != null) {
-			
-			setGroupAdminExtensionHandler(null);
-		}
-
 		super.unload();
 	}
 
@@ -6709,18 +6702,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@InstanceManagerDependency
-	public void setUserAdminExtensionHandler(UserAdminExtensionHandler userAdminExtensionHandler) {
+	public void setUserAdminExtensionHandler(UserGroupAdminExtensionHandler userGroupAdminExtensionHandler) {
 
-		if (this.userAdminExtensionHandler != null) {
+		if (this.userGroupAdminExtensionHandler != null) {
 
-			this.userAdminExtensionHandler.removeUserAdminExtensionProvider(this);
+			this.userGroupAdminExtensionHandler.removeUserAdminExtensionProvider(this);
+			this.userGroupAdminExtensionHandler.removeGroupAdminExtensionProvider(this);
 		}
 		
-		this.userAdminExtensionHandler = userAdminExtensionHandler;
+		this.userGroupAdminExtensionHandler = userGroupAdminExtensionHandler;
 
-		if (userAdminExtensionHandler != null) {
+		if (userGroupAdminExtensionHandler != null) {
 
-			userAdminExtensionHandler.addUserAdminExtensionProvider(this);
+			userGroupAdminExtensionHandler.addUserAdminExtensionProvider(this);
+			userGroupAdminExtensionHandler.addGroupAdminExtensionProvider(this);
 		}
 	}
 
@@ -6766,22 +6761,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return null;
 	}
 	
-	@InstanceManagerDependency
-	public void setGroupAdminExtensionHandler(GroupAdminExtensionHandler groupAdminExtensionHandler) {
-
-		if (this.groupAdminExtensionHandler != null) {
-
-			this.groupAdminExtensionHandler.removeGroupAdminExtensionProvider(this);
-		}
-		
-		this.groupAdminExtensionHandler = groupAdminExtensionHandler;
-
-		if (groupAdminExtensionHandler != null) {
-
-			groupAdminExtensionHandler.addGroupAdminExtensionProvider(this);
-		}
-	}
-
 	@Override
 	public ViewFragment getGroupAdminExtensionViewFragment(Group requestedGroup, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
 
