@@ -190,11 +190,11 @@
 						  				
 						  				<xsl:value-of select="loginQuestionText" disable-output-escaping="yes" />
 						  				
-						  				<a class="btn btn-green xl full login">
+						  				<a href="#" class="btn btn-green xl full login">
   											<xsl:value-of select="$i18n.StartFlow.LoginQuestion.Login" />
   										</a>
   										
-						  				<a class="btn btn-green xl full bigmargintop continue">
+						  				<a href="#" class="btn btn-green xl full bigmargintop continue">
   											<xsl:value-of select="$i18n.StartFlow.LoginQuestion.NoLogin" />
   										</a>
 						  			</div>
