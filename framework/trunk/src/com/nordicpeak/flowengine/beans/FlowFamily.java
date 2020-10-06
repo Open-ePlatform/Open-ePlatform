@@ -585,7 +585,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 		ManagerAccess access = null;
 		
-		if (group.isEnabled()) {
+		if (!CollectionUtils.isEmpty(managerGroups) && group.isEnabled()) {
 
 			for (FlowFamilyManagerGroup managerGroup : managerGroups) {
 
