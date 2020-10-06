@@ -6778,7 +6778,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			for (FlowFamily flowFamily : flowFamilies) {
 
 				Flow flow = getLatestFlowVersion(flowFamily);
-				ManagerAccess access = flowFamily.getManagerGroupAccess(requestedGroup);
+				ManagerAccess access = flowFamily.getManagerAccess(requestedGroup);
 
 				if (flow != null && access != null) {
 

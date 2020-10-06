@@ -581,6 +581,31 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		return access;
 	}
 
+	public ManagerAccess getManagerAccess(Group group) {
+
+		ManagerAccess access = null;
+		
+		if (group.isEnabled()) {
+
+			for (FlowFamilyManagerGroup managerGroup : managerGroups) {
+
+				if (managerGroup.getGroupID().equals(group.getGroupID())) {
+
+					if (managerGroup.isRestricted()) {
+						access = ManagerAccess.RESTRICTED;
+
+					} else {
+						return ManagerAccess.FULL;
+					}
+
+					break;
+				}
+			}
+		}
+		
+		return access;
+	}
+	
 	@Override
 	public boolean hasUpdateManagerAccess(User user) {
 
@@ -819,4 +844,5 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 		return flowElement;
 	}
+
 }
