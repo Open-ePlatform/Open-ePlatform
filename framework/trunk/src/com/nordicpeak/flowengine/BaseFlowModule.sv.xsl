@@ -84,7 +84,7 @@
 	
 	<xsl:variable name="i18n.AnonymousUser">Ej inloggad användare</xsl:variable>
 	<xsl:variable name="i18n.RemovedUser">Borttagen användare</xsl:variable>
-	<xsl:variable name="i18n.Payment">Betala</xsl:variable>
+	<xsl:variable name="i18n.Payment">Gå till betalning</xsl:variable>
 	<xsl:variable name="i18n.Sign">Signera</xsl:variable>
 	
 	<xsl:variable name="i18n.SubmitSurveyTitle">Användarundersökning</xsl:variable>
