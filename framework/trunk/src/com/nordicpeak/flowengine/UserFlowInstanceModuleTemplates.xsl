@@ -1027,26 +1027,45 @@
 		<xsl:param name="buttonText" select="$i18n.Choose" />
 		<xsl:param name="buttonClass" select="'btn-green vertical-align-middle'" />
 	
-		<xsl:variable name="baseURL">
-		
-			<xsl:choose>
-				<xsl:when test="Attributes/Attribute/Name = 'UserFlowInstanceModuleURL'">
-				
-					<xsl:value-of select="Attributes/Attribute[Name = 'UserFlowInstanceModuleURL']/Value"/>
-					
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="/Document/requestinfo/currentURI"/>
-					<xsl:text>/</xsl:text>
-					<xsl:value-of select="/Document/module/alias"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		
-		</xsl:variable>
-	
 		<xsl:choose>
-			<xsl:when test="Flow/enabled = 'false'"><xsl:value-of select="$i18n.NotEnabled" /></xsl:when>
-			<xsl:otherwise><a class="btn {$buttonClass}" href="{$baseURL}/overview/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$buttonText" /></a></xsl:otherwise>
+			
+			<xsl:when test="Flow/enabled = 'false'">
+				<xsl:value-of select="$i18n.NotEnabled" />
+			</xsl:when>
+
+			<xsl:when test="remote = 'true' and Attributes/Attribute/Name = 'RemoteFlowInstanceURL'">
+			
+				<a class="btn {$buttonClass}" href="{Attributes/Attribute[Name = 'RemoteFlowInstanceURL']/Value}">
+					<xsl:value-of select="$buttonText" />
+				</a>			
+			
+			</xsl:when>
+
+			<xsl:otherwise>
+
+				<xsl:variable name="baseURL">
+				
+					<xsl:choose>
+						<xsl:when test="remote = 'true' and Attributes/Attribute/Name = 'UserFlowInstanceModuleURL'">
+						
+							<xsl:value-of select="Attributes/Attribute[Name = 'UserFlowInstanceModuleURL']/Value"/>
+							
+						</xsl:when>
+						
+						<xsl:otherwise>
+							<xsl:value-of select="/Document/requestinfo/currentURI"/>
+							<xsl:text>/</xsl:text>
+							<xsl:value-of select="/Document/module/alias"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				
+				</xsl:variable>
+
+				<a class="btn {$buttonClass}" href="{$baseURL}/overview/{Flow/flowID}/{flowInstanceID}">
+					<xsl:value-of select="$buttonText" />
+				</a>
+			</xsl:otherwise>
+			
 		</xsl:choose>
 	
 	</xsl:template>
