@@ -440,7 +440,9 @@
 			
 			<xsl:if test="$externalID">
 			
-				<xsl:text> / </xsl:text>
+				<xsl:if test="flowInstanceID">
+					<xsl:text> / </xsl:text>
+				</xsl:if>
 				
 				<xsl:value-of select="$externalID"/>
 			
