@@ -8,7 +8,7 @@ import org.w3c.tidy.Tidy;
 
 public class JTidyUtils {
 
-	public static String getXHTML(String html){
+	public static String getXHTML(String html, String encoding){
 		
 		Tidy tidy = new Tidy();
 
@@ -18,7 +18,7 @@ public class JTidyUtils {
 		tidy.setShowErrors(0);
 		tidy.setQuiet(true);
 		tidy.setPrintBodyOnly(true);
-		tidy.setOutputEncoding("ISO-8859-1");
+		tidy.setOutputEncoding(encoding);
 		tidy.setQuoteNbsp(false);
 		
 		StringWriter stringWriter = new StringWriter();

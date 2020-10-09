@@ -301,7 +301,7 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 	public ForegroundModuleResponse keepalive(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		res.setContentType("text/html");
-		res.setCharacterEncoding("ISO-8859-1");
+		res.setCharacterEncoding(systemInterface.getEncoding());
 		res.getWriter().write(user != null ? "1" : "0");
 		res.getWriter().flush();
 
@@ -361,7 +361,7 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 
 		if(queryInstance.getQuery().getDescription() != null){
 
-			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "Description", JTidyUtils.getXHTML(queryInstance.getQuery().getDescription(attributeHandler)));
+			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "Description", JTidyUtils.getXHTML(queryInstance.getQuery().getDescription(attributeHandler), systemInterface.getEncoding()));
 			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "isHTMLDescription", queryInstance.getQuery().getDescription().contains("<") && queryInstance.getQuery().getDescription().contains(">"));
 		}
 	}

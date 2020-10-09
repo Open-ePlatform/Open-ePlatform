@@ -205,35 +205,35 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		
 		if (informerSetting != null) {
 			if (informerSetting.getReason() == null && personDataInformerModule.getDefaultReason() != null) {
-				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason()));
+				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason(), systemInterface.getEncoding()));
 			}
 			else if (informerSetting.getReason() != null) {
-				informerSetting.setReason(JTidyUtils.getXHTML(informerSetting.getReason()));
+				informerSetting.setReason(JTidyUtils.getXHTML(informerSetting.getReason(), systemInterface.getEncoding()));
 			}
 			
 			if (informerSetting.getExtraInformation() == null && personDataInformerModule.getDefaultExtraInformation() != null) {
-				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation()));
+				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation(), systemInterface.getEncoding()));
 			}
 			else if (informerSetting.getExtraInformation() != null) {
-				informerSetting.setExtraInformation(JTidyUtils.getXHTML(informerSetting.getExtraInformation()));
+				informerSetting.setExtraInformation(JTidyUtils.getXHTML(informerSetting.getExtraInformation(), systemInterface.getEncoding()));
 			}
 			
 			if (informerSetting.getExtraInformationStorage() == null && personDataInformerModule.getDefaultExtraInformationStorage() != null) {
-				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage()));
+				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage(), systemInterface.getEncoding()));
 			}
 			else if (informerSetting.getExtraInformationStorage() != null) {
-				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage()));
+				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage(), systemInterface.getEncoding()));
 			}
 			
 			if (informerSetting.getConfirmationText() == null && personDataInformerModule.getDefaultConfirmationText() != null) {
-				informerSetting.setConfirmationText(JTidyUtils.getXHTML(personDataInformerModule.getDefaultConfirmationText()));
+				informerSetting.setConfirmationText(JTidyUtils.getXHTML(personDataInformerModule.getDefaultConfirmationText(), systemInterface.getEncoding()));
 			}
 			else if (informerSetting.getConfirmationText() != null) {
-				informerSetting.setConfirmationText(JTidyUtils.getXHTML(informerSetting.getConfirmationText()));
+				informerSetting.setConfirmationText(JTidyUtils.getXHTML(informerSetting.getConfirmationText(), systemInterface.getEncoding()));
 			}
 			
 			if (informerSetting.getDataRecipient() != null) {
-				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient()));
+				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient(), systemInterface.getEncoding()));
 			}
 			
 			TextTagReplacer.replaceTextTags(informerSetting, instanceMetadata.getSiteProfile());
@@ -397,7 +397,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		
 		if (queryInstance.getQuery().getDescription() != null) {
 			
-			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "Description", JTidyUtils.getXHTML(queryInstance.getQuery().getDescription(attributeHandler)));
+			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "Description", JTidyUtils.getXHTML(queryInstance.getQuery().getDescription(attributeHandler), systemInterface.getEncoding()));
 			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "isHTMLDescription", queryInstance.getQuery().getDescription().contains("<") && queryInstance.getQuery().getDescription().contains(">"));
 		}
 	}

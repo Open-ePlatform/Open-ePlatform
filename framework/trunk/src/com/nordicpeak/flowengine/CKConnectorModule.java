@@ -52,7 +52,7 @@ public class CKConnectorModule extends AnnotatedForegroundModule {
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 
-		connector = new FCKConnector(filestore, diskThreshold, ramThreshold);
+		connector = new FCKConnector(filestore, diskThreshold, ramThreshold, systemInterface.getEncoding());
 	}
 
 	@Override

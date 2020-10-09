@@ -250,7 +250,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		
 		log.info("Sending shared flows to user " + user);
 		
-		res.setCharacterEncoding("ISO-8859-1");
+		res.setCharacterEncoding(systemInterface.getEncoding());
 		res.setContentType(JsonUtils.getContentType());
 		
 		PrintWriter writer = res.getWriter();
