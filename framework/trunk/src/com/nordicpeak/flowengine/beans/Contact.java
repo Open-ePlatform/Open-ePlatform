@@ -5,44 +5,44 @@ import se.unlogic.standardutils.string.StringTag;
 public class Contact {
 	
 	@StringTag
-	private String firstname;
+	protected String firstname;
 	
 	@StringTag
-	private String lastname;
+	protected String lastname;
 	
 	@StringTag
-	private String email;
+	protected String email;
 	
 	@StringTag
-	private String mobilePhone;
+	protected String mobilePhone;
 	
 	@StringTag
-	private String phone;
+	protected String phone;
 	
 	@StringTag
-	private String careOf;
+	protected String careOf;
 	
 	@StringTag
-	private String address;
+	protected String address;
 	
 	@StringTag
-	private String zipCode;
+	protected String zipCode;
 	
 	@StringTag
-	private String postalAddress;
+	protected String postalAddress;
 	
 	@StringTag
-	private String citizenIdentifier;
+	protected String citizenIdentifier;
 	
 	@StringTag
-	private String organizationName;
+	protected String organizationName;
 	
 	@StringTag
-	private String organizationNumber;
+	protected String organizationNumber;
 	
-	private boolean contactBySMS;
+	protected boolean contactBySMS;
 	
-	private boolean contactByEmail;
+	protected boolean contactByEmail;
 	
 	public String getFirstname() {
 		
