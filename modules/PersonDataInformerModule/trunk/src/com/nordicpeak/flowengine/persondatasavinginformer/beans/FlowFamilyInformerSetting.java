@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-
 import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -17,6 +15,8 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+
 @Table(name = "person_data_informer_settings")
 @XMLElement
 public class FlowFamilyInformerSetting extends GeneratedElementable implements Serializable {
@@ -26,7 +26,14 @@ public class FlowFamilyInformerSetting extends GeneratedElementable implements S
 	public static final Field DATA_ALTERNATIVES_RELATION = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "dataAlternatives");
 	public static final Field REASON_ALTERNATIVES_RELATION = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "reasonAlternatives");
 	public static final Field STORAGE_SETTINGS_RELATION = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "storageSettings");
-
+	
+	public static final Field REASON_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "reason");
+	public static final Field EXTRA_INFORMATION_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "extraInformation");
+	public static final Field COMPLAINT_DESCRIPTION_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "complaintDescription");
+	public static final Field EXTRA_INFORMATION_STORAGE_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "extraInformationStorage");
+	public static final Field CONFIRMATION_TEXT_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "confirmationText");
+	public static final Field DATA_RECIPIENT_FIELD = ReflectionUtils.getField(FlowFamilyInformerSetting.class, "dataRecipient");
+	
 	@DAOManaged
 	@Key
 	@XMLElement

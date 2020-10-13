@@ -13,23 +13,6 @@ import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
-import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
-import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.QueryInstance;
-import com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.utils.JTidyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -51,12 +34,30 @@ import se.unlogic.standardutils.populators.BooleanPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLGenerator;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
+
+import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
+import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.JTidyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModule<PersonDataInformerQueryInstance> implements BaseQueryCRUDCallback {
 	
@@ -393,7 +394,18 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 	@Override
 	protected void appendPDFData(Document doc, Element showQueryValuesElement, PersonDataInformerQueryInstance queryInstance, AttributeHandler attributeHandler) {
 		
-		super.appendPDFData(doc, showQueryValuesElement, queryInstance, attributeHandler);
+		XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
+		
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.REASON_FIELD);
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.EXTRA_INFORMATION_FIELD);
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.COMPLAINT_DESCRIPTION_FIELD);
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.EXTRA_INFORMATION_STORAGE_FIELD);
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.CONFIRMATION_TEXT_FIELD);
+		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.DATA_RECIPIENT_FIELD);
+		
+		generatorDocument.addAssignableFieldElementableListener(FlowFamilyInformerSetting.class, new FlowFamilyInformerSettingTextsListener(systemInterface.getEncoding()));		
+		
+		super.appendPDFData(generatorDocument, showQueryValuesElement, queryInstance, attributeHandler);
 		
 		if (queryInstance.getQuery().getDescription() != null) {
 			

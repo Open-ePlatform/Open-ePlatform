@@ -65,7 +65,7 @@
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
 				
 					<p>
-						<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" /></strong>
+						<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" disable-output-escaping="yes" /></strong>
 					</p>
 				
 				</xsl:if>
@@ -162,7 +162,7 @@
 							<xsl:attribute name="class">checkbox disabled</xsl:attribute>
 						</xsl:if>
 					
-						<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" />
+						<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" disable-output-escaping="yes"/>
 					</label>
 				</div>
 			

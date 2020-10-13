@@ -50,7 +50,7 @@
 			
 			<p>
 				<xsl:if test="PersonDataInformerQueryInstance/accepted = 'true'">
-					<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" /></strong>
+					<strong><xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting/confirmationText" disable-output-escaping="yes"/></strong>
 				</xsl:if>
 			</p>
 			
