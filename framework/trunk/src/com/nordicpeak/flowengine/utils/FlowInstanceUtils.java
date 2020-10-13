@@ -565,7 +565,7 @@ public class FlowInstanceUtils {
 		return getContactForUser(flowInstance.getPoster());
 	}
 	
-	public static void addUniqueContact(List<Contact> contacts, Contact contact) {
+	public static Contact addUniqueContact(List<Contact> contacts, Contact contact) {
 		
 		for (Contact existingContact : contacts) {
 			
@@ -573,7 +573,7 @@ public class FlowInstanceUtils {
 				
 				if (existingContact.getCitizenIdentifier().equals(contact.getCitizenIdentifier())) {
 					
-					return;
+					return existingContact;
 				}
 				
 				continue;
@@ -583,7 +583,7 @@ public class FlowInstanceUtils {
 				
 				if (existingContact.getEmail().equalsIgnoreCase(contact.getEmail())) {
 					
-					return;
+					return existingContact;
 				}
 				
 				continue;
@@ -596,7 +596,7 @@ public class FlowInstanceUtils {
 				
 				if (phone1.equals(phone2)) {
 					
-					return;
+					return existingContact;
 				}
 				
 				continue;
@@ -604,6 +604,7 @@ public class FlowInstanceUtils {
 		}
 		
 		contacts.add(contact);
+		return contact;
 	}
 
 	public static List<InvoiceLine> getPaymentInvoiceLines(FlowInstanceManager instanceManager) {
