@@ -583,8 +583,6 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 	public ManagerAccess getManagerAccess(Group group) {
 
-		ManagerAccess access = null;
-		
 		if (!CollectionUtils.isEmpty(managerGroups) && group.isEnabled()) {
 
 			for (FlowFamilyManagerGroup managerGroup : managerGroups) {
@@ -592,18 +590,16 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 				if (managerGroup.getGroupID().equals(group.getGroupID())) {
 
 					if (managerGroup.isRestricted()) {
-						access = ManagerAccess.RESTRICTED;
+						return ManagerAccess.RESTRICTED;
 
 					} else {
 						return ManagerAccess.FULL;
 					}
-
-					break;
 				}
 			}
 		}
 		
-		return access;
+		return null;
 	}
 	
 	@Override
@@ -844,5 +840,4 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 
 		return flowElement;
 	}
-
 }
