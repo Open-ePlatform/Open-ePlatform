@@ -25,6 +25,7 @@
 	<xsl:variable name="i18n.Update">Ändra</xsl:variable>
 	<xsl:variable name="i18n.DeleteConfirm">Vill du verkligen ta bort</xsl:variable>
 	<xsl:variable name="i18n.Delete">Ta bort</xsl:variable>
+	<xsl:variable name="i18n.Delete.inUse">Kan inte ta bort en API-källa som används!</xsl:variable>
 	<xsl:variable name="i18n.Address">Adress (URL)</xsl:variable>
 	<xsl:variable name="i18n.Username">Användarnamn</xsl:variable>
 	<xsl:variable name="i18n.Password">Lösenord</xsl:variable>

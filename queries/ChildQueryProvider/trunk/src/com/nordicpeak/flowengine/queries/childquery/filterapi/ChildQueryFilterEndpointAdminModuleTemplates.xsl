@@ -76,7 +76,7 @@
 				</a>
 				<xsl:choose>
 					<xsl:when test="InUse">
-						<a class="btn btn-light disabled vertical-align-middle" href="#" onclick="return false;">
+						<a class="btn btn-light disabled vertical-align-middle" href="#" onclick="alert('{$i18n.Delete.inUse}'); return false;">
 							<xsl:value-of select="$i18n.Delete" />
 						</a>
 					</xsl:when>

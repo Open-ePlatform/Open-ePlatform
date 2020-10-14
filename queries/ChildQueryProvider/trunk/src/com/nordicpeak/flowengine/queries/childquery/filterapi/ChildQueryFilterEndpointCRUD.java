@@ -49,9 +49,35 @@ public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQuerySimpleFi
 	}
 
 	@Override
-	protected void appendBean(ChildQuerySimpleFilterEndpoint bean, Element targetElement, Document doc, User user) {
+	protected void appendAllBeans(Document doc, Element listTypeElement, User user, HttpServletRequest req, URIParser uriParser, List<ValidationError> validationError) throws SQLException {
+		
+		List<ChildQuerySimpleFilterEndpoint> endpoints = getAllBeans(user, req, uriParser);
+		
+		if (endpoints != null) {
 
-		targetElement.appendChild(bean.toXMLFull(doc));
+			Element listElement = XMLUtils.appendNewElement(doc, listTypeElement, typeElementPluralName);
+
+			for (ChildQuerySimpleFilterEndpoint endpoint : endpoints) {
+
+				Element element = endpoint.toXML(doc);
+
+				try {
+					if (callback.getQueries(endpoint) != null) {
+						XMLUtils.appendNewElement(doc, element, "InUse");
+					}
+				} catch (SQLException e) {
+					log.error(e);
+				}
+
+				listElement.appendChild(element);
+			}
+		}
+	}
+
+	@Override
+	protected void appendBean(ChildQuerySimpleFilterEndpoint endpoint, Element targetElement, Document doc, User user) {
+
+		targetElement.appendChild(endpoint.toXMLFull(doc));
 	}
 
 	@Override
