@@ -360,6 +360,8 @@
 	<xsl:variable name="i18n.StatusChangedManagerEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
 	
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
+	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmailSubject">Rubrik på e-postmeddelande till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
+	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmailMessage">Innehåll i e-postmeddelande till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.NoNotificationsEnabled">Inga notifikationer är aktiverade för denna e-tjänst</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserSMS">Innehåll i SMS vid inskickat ärende (inloggad användare)</xsl:variable>

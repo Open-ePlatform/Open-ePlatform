@@ -272,6 +272,11 @@
 				$("#manager-status-changed-subject, #manager-status-changed-message").toggleClass("hidden");
 			}
 			
+			function toggleManagerSubmittedMessage(){
+				
+				$("#manager-submitted-subject, #manager-submitted-message").toggleClass("hidden");
+			}
+			
 			function toggleGroupExternalMessage (){
 				
 				$("#group-external-message-subject, #group-external-message-message").toggleClass("hidden");
@@ -1025,7 +1030,52 @@
 				<label for="sendFlowInstanceSubmittedManagerEmail">
 					<xsl:value-of select="$i18n.SendFlowInstanceSubmittedManagerEmail" />
 				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerSubmittedMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-submitted-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedManagerEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceSubmittedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.SendFlowInstanceSubmittedManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceSubmittedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceSubmittedManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-submitted-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceSubmittedManagerEmailSubject') and not($errFieldNames = 'flowInstanceSubmittedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceSubmittedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.SendFlowInstanceSubmittedManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceSubmittedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceSubmittedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
 		</div>
 	
 		<div class="clearboth marginbottom">

@@ -404,4 +404,14 @@
 		</Query>
 	</Script>
 	
+	<Script version="30">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `flowInstanceSubmittedManagerEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceSubmittedManagerEmail`,
+					ADD COLUMN `flowInstanceSubmittedManagerEmailMessage` TEXT NULL AFTER `flowInstanceSubmittedManagerEmailSubject`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

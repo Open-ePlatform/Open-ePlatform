@@ -222,6 +222,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	private boolean sendFlowInstanceSubmittedManagerEmail;
 	
 	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String flowInstanceSubmittedManagerEmailSubject;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String flowInstanceSubmittedManagerEmailMessage;
+	
+	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendExternalMessageReceivedGroupEmail;
@@ -664,13 +676,27 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public boolean isSendFlowInstanceSubmittedManagerEmail() {
-
 		return sendFlowInstanceSubmittedManagerEmail;
 	}
 
 	public void setSendFlowInstanceSubmittedManagerEmail(boolean sendFlowInstanceSubmittedManagerEmail) {
-
 		this.sendFlowInstanceSubmittedManagerEmail = sendFlowInstanceSubmittedManagerEmail;
+	}
+
+	public String getFlowInstanceSubmittedManagerEmailSubject() {
+		return flowInstanceSubmittedManagerEmailSubject;
+	}
+
+	public void setFlowInstanceSubmittedManagerEmailSubject(String flowInstanceSubmittedManagerEmailSubject) {
+		this.flowInstanceSubmittedManagerEmailSubject = flowInstanceSubmittedManagerEmailSubject;
+	}
+
+	public String getFlowInstanceSubmittedManagerEmailMessage() {
+		return flowInstanceSubmittedManagerEmailMessage;
+	}
+
+	public void setFlowInstanceSubmittedManagerEmailMessage(String flowInstanceSubmittedManagerEmailMessage) {
+		this.flowInstanceSubmittedManagerEmailMessage = flowInstanceSubmittedManagerEmailMessage;
 	}
 
 	public boolean isSendFlowInstanceAssignedGroupEmail() {
