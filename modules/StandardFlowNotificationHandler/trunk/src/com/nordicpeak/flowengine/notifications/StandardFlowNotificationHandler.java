@@ -403,7 +403,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private String flowInstanceAssignedManagerEmailMessage;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "Send email to managers on status change", description = "Controls if email messages are the sent to the users when the status of their flow instances changes.")
+	@CheckboxSettingDescriptor(name = "Send email to managers on status change", description = "Controls if email messages are the sent to the managers when the status of flow instances they are assigned to changes.")
 	private boolean sendStatusChangedManagerEmail;
 
 	@ModuleSetting
@@ -415,7 +415,21 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Status changed email message (managers)", description = "The message of emails sent to the managers when the status of their flow instance changes", required = true)
 	@XSLVariable(prefix = "java.")
 	private String statusChangedManagerEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managergroups on status change", description = "Controls if email messages are the sent to the managergroups when the status of flow instances they are assigned to changes.")
+	private boolean sendStatusChangedManagerGroupEmail;
 
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Status changed email subject (managers)", description = "The subject of emails sent to the managers when the status of their flow instance changes", required = true)
+	@XSLVariable(prefix = "java.")
+	private String statusChangedManagerGroupEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Status changed email message (managers)", description = "The message of emails sent to the managers when the status of their flow instance changes", required = true)
+	@XSLVariable(prefix = "java.")
+	private String statusChangedManagerGroupEmailMessage;
+	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when new flow instances are submitted", description = "Controls if email messages are the sent to managers when new flow instances are submitted.")
 	private boolean sendFlowInstanceSubmittedManagerEmail;
@@ -1750,6 +1764,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (notificationSettings.isSendStatusChangedManagerEmail()) {
 	
 				sendManagerEmails(flowInstance, posterContact, notificationSettings.getStatusChangedManagerEmailSubject(), notificationSettings.getStatusChangedManagerEmailMessage(), CollectionUtils.getList(event.getUser()), false);
+			}
+			
+			if (notificationSettings.isSendStatusChangedManagerGroupEmail() && !CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
+			
+				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
+				
+				for (String email : managerGroupEmailRecipientAddresses) {
+					
+					if (event.getUser() == null || !email.equals(event.getUser().getEmail())) {
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, false);
+					}
+				}
 			}
 			
 			if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {

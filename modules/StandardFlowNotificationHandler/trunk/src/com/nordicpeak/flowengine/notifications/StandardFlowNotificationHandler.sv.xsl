@@ -198,6 +198,21 @@
 	
 	</xsl:variable>
 	
+	<xsl:variable name="java.statusChangedManagerGroupEmailSubject">Statusen för ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har ändrats till $status.name</xsl:variable>
+	<xsl:variable name="java.statusChangedManagerGroupEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Statusen på ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har ändrats till $status.name.&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.flowInstanceSubmittedManagerEmailSubject">Nytt ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceSubmittedManagerEmailMessage">
 	
@@ -358,6 +373,10 @@
 	<xsl:variable name="i18n.SendStatusChangedManagerEmail">E-post till tilldelade handläggare vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedManagerEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedManagerEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
+	
+	<xsl:variable name="i18n.SendStatusChangedManagerGroupEmail">E-post till tilldelade handläggargrupper vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.StatusChangedManagerGroupEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
+	<xsl:variable name="i18n.StatusChangedManagerGroupEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
 	
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmail">E-post till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmailSubject">Rubrik på e-postmeddelande till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>

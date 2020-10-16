@@ -283,7 +283,24 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@Templated
 	@XMLElement
 	private String internalMessageAddedGroupEmailMessage;
-
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendStatusChangedManagerGroupEmail;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String statusChangedManagerGroupEmailSubject;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String statusChangedManagerGroupEmailMessage;
+	
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -1249,6 +1266,30 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 	public void setInternalMessageAddedGroupEmailMessage(String internalMessageAddedGroupEmailMessage) {
 		this.internalMessageAddedGroupEmailMessage = internalMessageAddedGroupEmailMessage;
+	}
+
+	public boolean isSendStatusChangedManagerGroupEmail() {
+		return sendStatusChangedManagerGroupEmail;
+	}
+
+	public void setSendStatusChangedManagerGroupEmail(boolean sendStatusChangedManagerGroupEmail) {
+		this.sendStatusChangedManagerGroupEmail = sendStatusChangedManagerGroupEmail;
+	}
+
+	public String getStatusChangedManagerGroupEmailSubject() {
+		return statusChangedManagerGroupEmailSubject;
+	}
+
+	public void setStatusChangedManagerGroupEmailSubject(String statusChangedManagerGroupEmailSubject) {
+		this.statusChangedManagerGroupEmailSubject = statusChangedManagerGroupEmailSubject;
+	}
+
+	public String getStatusChangedManagerGroupEmailMessage() {
+		return statusChangedManagerGroupEmailMessage;
+	}
+
+	public void setStatusChangedManagerGroupEmailMessage(String statusChangedManagerGroupEmailMessage) {
+		this.statusChangedManagerGroupEmailMessage = statusChangedManagerGroupEmailMessage;
 	}
 
 }

@@ -414,4 +414,15 @@
 		</Query>
 	</Script>
 	
+	<Script version="31">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendStatusChangedManagerGroupEmail` TINYINT(1) NOT NULL AFTER `internalMessageAddedGroupEmailMessage`,
+					ADD COLUMN `statusChangedManagerGroupEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendStatusChangedManagerGroupEmail`,
+					ADD COLUMN `statusChangedManagerGroupEmailMessage` TEXT NULL AFTER `statusChangedManagerGroupEmailSubject`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
