@@ -124,7 +124,10 @@ import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderNotFoundException;
+import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluatorNotFoundInEvaluationProviderException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
@@ -139,7 +142,10 @@ import com.nordicpeak.flowengine.exceptions.queryinstance.QueryRequestException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.SubmitCheckException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToGetQueryInstanceShowHTMLException;
 import com.nordicpeak.flowengine.exceptions.queryinstance.UnableToResetQueryInstanceException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
@@ -149,6 +155,8 @@ import com.nordicpeak.flowengine.interfaces.Icon;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
+import com.nordicpeak.flowengine.interfaces.ImmutableStep;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.SigningResponse;
@@ -1522,6 +1530,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		Integer flowID = null;
 		Integer flowInstanceID = null;
+		Integer queryID = null;
 		MutableFlowInstanceManager instanceManager;
 
 		try {
@@ -1548,8 +1557,17 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 				}
 
-			} else {
+			}else if (uriParser.size() == 5 && (flowInstanceID = uriParser.getInt(2)) != null && "query".equals(uriParser.get(3)) && (queryID = uriParser.getInt(4)) != null) {
 
+				FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION);
+
+				flowID = flowInstance.getFlow().getFlowID();
+				
+				redirectToFlowinstanceQuery(req, res, user, uriParser, flowID, flowInstanceID, queryID, flowInstance);
+				return null;
+				
+			} else {
+				
 				log.info("User " + user + " requested invalid URL, listing flows");
 				return list(req, res, user, uriParser, INVALID_LINK_VALIDATION_ERROR);
 			}
@@ -1600,6 +1618,38 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			return processFlowRequestException(instanceManager, req, res, user, null, uriParser, e);
 		}
+	}
+
+	private void redirectToFlowinstanceQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, Integer flowID, Integer flowInstanceID, Integer queryID, FlowInstance flowInstance) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException, URINotFoundException, IOException {
+
+		MutableFlowInstanceManager instanceManager = getMutableFlowInstanceManagerFromSession(flowID, flowInstanceID, req.getSession());
+		
+		if (instanceManager != null) {
+			
+			log.info("Removing current flow instance manager " + instanceManager + " from session");
+			removeFlowInstanceManagerFromSession(flowID, flowInstanceID, req.getSession());
+		}
+		
+		instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
+		
+		if (instanceManager == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		ImmutableQueryInstance queryInstance = instanceManager.getQueryInstance(queryID);
+		
+		if (queryInstance == null) {
+			
+			throw new URINotFoundException(uriParser);
+		}
+		
+		ImmutableStep step = queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getStep();
+
+		instanceManager.setStep(step.getStepID());
+		
+		log.info("Setting step to " + step + " and redirecting user " + user + " to flow instance " + flowInstance + " and queryID " + queryID);
+		redirectToMethod(req, res, "/flowinstance/" + flowID + "/" + flowInstanceID + "#query_" + queryID);
 	}
 
 	@WebPublic(alias = "search")
