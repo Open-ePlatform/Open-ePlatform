@@ -791,7 +791,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
 
-		if (sendExternalMessageReceivedGroupEmail || sendFlowInstanceAssignedGroupEmail || sendInternalMessageAddedGroupEmail) {
+		if (sendExternalMessageReceivedGroupEmail || sendFlowInstanceAssignedGroupEmail || sendInternalMessageAddedGroupEmail || sendStatusChangedManagerGroupEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
 		}

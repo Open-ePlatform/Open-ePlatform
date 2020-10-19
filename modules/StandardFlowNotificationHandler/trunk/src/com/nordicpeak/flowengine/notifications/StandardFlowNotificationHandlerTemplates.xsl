@@ -143,16 +143,22 @@
 						<xsl:value-of select="$i18n.SendExternalMessageReceivedGroupEmail"/>
 					</li>
 				</xsl:if>
-
+				
+				<xsl:if test="NotificationSettings/sendInternalMessageAddedGroupEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendInternalMessageAddedGroupEmail"/>
+					</li>
+				</xsl:if>
+				
 				<xsl:if test="NotificationSettings/sendFlowInstanceAssignedGroupEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendFlowInstanceAssignedGroupEmail"/>
 					</li>
 				</xsl:if>
 				
-				<xsl:if test="NotificationSettings/sendInternalMessageAddedGroupEmail = 'true'">
+				<xsl:if test="NotificationSettings/sendStatusChangedManagerGroupEmail = 'true'">
 					<li>
-						<xsl:value-of select="$i18n.SendInternalMessageAddedGroupEmail"/>
+						<xsl:value-of select="$i18n.SendStatusChangedManagerGroupEmail"/>
 					</li>
 				</xsl:if>
 
