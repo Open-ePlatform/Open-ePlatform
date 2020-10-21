@@ -1873,4 +1873,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		
 		return false;
 	}
+
+	public Collection<FlowBrowserExtensionViewProvider> getFlowBrowserExtensionViewProviders() {
+		return extensionViewProviders;
+	}
 }
