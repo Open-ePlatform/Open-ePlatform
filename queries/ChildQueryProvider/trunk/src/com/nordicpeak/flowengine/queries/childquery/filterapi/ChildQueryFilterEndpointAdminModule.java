@@ -34,6 +34,9 @@ import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
+import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
+import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
+import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.TagReplacer;
@@ -85,6 +88,14 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
+		//Automatic table version handling
+		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, ChildQueryProviderModule.class.getName(), new XMLDBScriptProvider(ChildQueryProviderModule.class.getResourceAsStream("DB script.xml")));
+
+		if (upgradeResult.isUpgrade()) {
+
+			log.info(upgradeResult.toString());
+		}		
+		
 		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
 
 		endpointDAO = daoFactory.getDAO(ChildQuerySimpleFilterEndpoint.class);
