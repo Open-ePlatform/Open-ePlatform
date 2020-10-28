@@ -370,9 +370,26 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		
 		List<SigningParty> signingParties = new ArrayList<SigningParty>();
 		
+		StoredGuardian posterGuardian = null;
+		
+		if (query.isSkipMultipartSigningIfSameAddress()) {
+			
+			for (StoredGuardian storedGuardian : storedGuardians) {
+				if (storedGuardian.isPoster()) {
+					posterGuardian = storedGuardian;
+					break;
+				}
+			}
+		}
+		
 		for (StoredGuardian storedGuardian : storedGuardians) {
 			
 			if (!storedGuardian.isPoster()) {
+				
+				if (query.isSkipMultipartSigningIfSameAddress() && posterGuardian != null && posterGuardian.addressEquals(storedGuardian)) {
+					continue;
+				}
+				
 				signingParties.add(new SigningParty(storedGuardian.getFirstname(), storedGuardian.getLastname(), storedGuardian.getEmail(), storedGuardian.getPhone(), storedGuardian.getCitizenIdentifier().toString(), getQuery().isSetMultipartsAsOwners()));
 			}
 		}

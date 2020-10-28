@@ -80,8 +80,13 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean skipMultipartSigningIfSameAddress;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean setMultipartsAsOwners;
-
+	
 	@DAOManaged
 	@XMLElement
 	private boolean requireGuardianEmail;
@@ -301,6 +306,14 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		this.setMultipartsAsOwners = setMultipartsAsOwners;
 	}
 
+	public boolean isSkipMultipartSigningIfSameAddress() {
+		return skipMultipartSigningIfSameAddress;
+	}
+
+	public void setSkipMultipartSigningIfSameAddress(boolean skipMultipartSigningIfSameAddress) {
+		this.skipMultipartSigningIfSameAddress = skipMultipartSigningIfSameAddress;
+	}
+
 	@Override
 	public String toString() {
 
@@ -461,6 +474,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		otherGuardiansDescription = XMLValidationUtils.validateParameter("otherGuardiansDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		useMultipartSigning = xmlParser.getPrimitiveBoolean("useMultipartSigning");
+		skipMultipartSigningIfSameAddress = xmlParser.getPrimitiveBoolean("skipMultipartSigningIfSameAddress");
 		alwaysShowOtherGuardians = xmlParser.getPrimitiveBoolean("alwaysShowOtherGuardians");
 		hideSSNForOtherGuardians = xmlParser.getPrimitiveBoolean("hideSSNForOtherGuardians");
 		showAddress = xmlParser.getPrimitiveBoolean("showAddress");

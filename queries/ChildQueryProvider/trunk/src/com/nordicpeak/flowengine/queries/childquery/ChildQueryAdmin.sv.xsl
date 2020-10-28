@@ -38,6 +38,8 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	
 	<xsl:variable name="i18n.OtherGuardiansDescription">Beskrivning för andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.UseMultipartSigning">Använd flerpartssignering</xsl:variable>
+	<xsl:variable name="i18n.Query.skipMultipartSigningIfSameAddress">Om båda vårdnadshavarna är folkbokförda på samma adress behövs endast sökandes signering</xsl:variable>
+	<xsl:variable name="i18n.Query.skipMultipartSigningIfSameAddress.warning">Systemet hanterar ej folkbokföringsadresser som är inskrivna på olika sätt hos Skatteverket och i dessa fall måste båda vårdnadshavarna signera ansökan.</xsl:variable>
 	<xsl:variable name="i18n.AlwaysShowOtherGuardians">Visa alltid andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.ShowAddress">Visa folkbokföringsadress för barn</xsl:variable>
 	<xsl:variable name="i18n.ShowGuardianAddress">Visa folkbokföringsaddress för vårdnadshavare</xsl:variable>

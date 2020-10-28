@@ -193,11 +193,43 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 	
 		return addressUUID;
 	}
-
 	
 	public void setAddressUUID(String addressUUID) {
 	
 		this.addressUUID = addressUUID;
+	}
+
+	public boolean addressEquals(StoredGuardian other) {
+
+		if (this == other) {
+			return true;
+		}
+		
+		if (other == null) {
+			return false;
+		}
+		
+		if (address == null || !address.equals(other.address)) {
+			return false;
+		}
+		
+		if (postalAddress == null || !postalAddress.equals(other.postalAddress)) {
+			return false;
+		}
+		
+		if (zipcode == null || !zipcode.equals(other.zipcode)) {
+			return false;
+		}
+		
+		if (addressUUID == null) {
+			if (other.addressUUID != null) {
+				return false;
+			}
+		} else if (!addressUUID.equals(other.addressUUID)) {
+			return false;
+		}
+		
+		return true;
 	}
 
 }

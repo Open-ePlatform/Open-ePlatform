@@ -340,5 +340,14 @@
 				ALTER TABLE `child_query_guardians` ADD COLUMN `addressUUID` VARCHAR(36) AFTER `postalAddress`;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="25">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_queries` ADD COLUMN `skipMultipartSigningIfSameAddress` TINYINT(1) UNSIGNED NOT NULL AFTER `useMultipartSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

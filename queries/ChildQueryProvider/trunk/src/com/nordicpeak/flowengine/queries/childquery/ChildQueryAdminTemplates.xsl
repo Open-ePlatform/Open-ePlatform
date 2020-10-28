@@ -100,6 +100,23 @@
 			<div class="floatleft full bigmarginbottom">
 
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'skipMultipartSigningIfSameAddress'" />
+					<xsl:with-param name="name" select="'skipMultipartSigningIfSameAddress'" />
+					<xsl:with-param name="element" select="ChildQuery" />
+				</xsl:call-template>
+				
+				<label for="skipMultipartSigningIfSameAddress">
+					<xsl:value-of select="$i18n.Query.skipMultipartSigningIfSameAddress" />
+				</label>
+				
+				<p id="skipMultipartSigningIfSameAddressWarning" class="tiny" style="padding-left: 22px;">
+					<xsl:value-of select="$i18n.Query.skipMultipartSigningIfSameAddress.warning" />
+				</p>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="id" select="'alwaysShowOtherGuardians'" />
 					<xsl:with-param name="name" select="'alwaysShowOtherGuardians'" />
 					<xsl:with-param name="element" select="ChildQuery" />

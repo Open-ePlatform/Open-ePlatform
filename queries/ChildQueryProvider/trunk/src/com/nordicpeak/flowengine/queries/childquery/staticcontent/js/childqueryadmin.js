@@ -11,15 +11,24 @@ $(function() {
 		$("#showGuardianAddress").prop("disabled", !checked).parent().toggle(checked);
 	});
 	
+	var toggleSkipMultipartSigningIfSameAddressWarning = (function() {
+		
+		var checked = $("#skipMultipartSigningIfSameAddress").prop("checked");
+		
+		$("#skipMultipartSigningIfSameAddressWarning").toggle(checked);
+	});
+	$("#skipMultipartSigningIfSameAddress").change(toggleSkipMultipartSigningIfSameAddressWarning);
+	
 	$useMultipartSigning.change(function() {
 		
 		var checked = $useMultipartSigning.prop("checked");
 		
 		$alwaysShowOtherGuardians.prop("disabled", checked);
 
-		$("#contactWays, #requireGuardianContactInfoVerification, #setMultipartsAsOwners").prop("disabled", !checked).parent().toggle(checked);
+		$("#contactWays, #requireGuardianContactInfoVerification, #setMultipartsAsOwners, #skipMultipartSigningIfSameAddress").prop("disabled", !checked).parent().toggle(checked);
 		
 		toggleCommonFields();
+		toggleSkipMultipartSigningIfSameAddressWarning();
 		
 	}).change();
 	
