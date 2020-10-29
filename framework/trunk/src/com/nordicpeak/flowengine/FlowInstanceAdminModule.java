@@ -1621,16 +1621,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	}
 
 	private void redirectToFlowinstanceQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, Integer flowID, Integer flowInstanceID, Integer queryID, FlowInstance flowInstance) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException, URINotFoundException, IOException {
-
-		MutableFlowInstanceManager instanceManager = getMutableFlowInstanceManagerFromSession(flowID, flowInstanceID, req.getSession());
 		
-		if (instanceManager != null) {
-			
-			log.info("Removing current flow instance manager " + instanceManager + " from session");
-			removeFlowInstanceManagerFromSession(flowID, flowInstanceID, req.getSession());
-		}
-		
-		instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
+		MutableFlowInstanceManager instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
 		
 		if (instanceManager == null) {
 			
