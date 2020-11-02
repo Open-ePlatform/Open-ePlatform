@@ -358,7 +358,7 @@
 		
 	</xsl:variable>
 	
-	<xsl:variable name="i18n.UserNotifications">Notifikationer till medborgare</xsl:variable>
+	<xsl:variable name="i18n.UserNotifications">Notifikationer till sökande</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserSMS">SMS vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.SendExternalMessageReceivedUserSMS">SMS vid nytt meddelande från handläggare</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedUserSMS">SMS vid inskickat ärende</xsl:variable>
@@ -368,7 +368,7 @@
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedUserEmail">E-post vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceArchivedUserEmail">E-post vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.ManagerNotifications">Notifikationer till handläggare</xsl:variable>
-	<xsl:variable name="i18n.SendExternalMessageReceivedManagerEmail">E-post till tilldelade handläggare vid nytt meddelande från medborgare</xsl:variable>
+	<xsl:variable name="i18n.SendExternalMessageReceivedManagerEmail">E-post till tilldelade handläggare vid nytt meddelande från sökande</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceAssignedManagerEmail">E-post vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedManagerEmail">E-post till tilldelade handläggare vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedManagerEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
@@ -399,7 +399,7 @@
 	
 	<xsl:variable name="i18n.GroupNotifications">Notifikationer till handläggargrupper</xsl:variable>
 	
-	<xsl:variable name="i18n.SendExternalMessageReceivedGroupEmail">E-post till tilldelade handläggargrupper vid nytt meddelande från medborgare</xsl:variable>
+	<xsl:variable name="i18n.SendExternalMessageReceivedGroupEmail">E-post till tilldelade handläggargrupper vid nytt meddelande från sökande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGroupEmailSubject">Rubrik på e-postmeddelande vid nytt meddelande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGroupEmailMessage">Innehåll i e-postmeddelande vid nytt meddelande</xsl:variable>
 	
@@ -481,8 +481,8 @@
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	
-	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från medborgare</xsl:variable>
-	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från medborgare (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från sökande</xsl:variable>
+	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från sökande (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörd handläggarbehörighet</xsl:variable>
 	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörd handläggarbehörighet (en adress per rad)</xsl:variable>
