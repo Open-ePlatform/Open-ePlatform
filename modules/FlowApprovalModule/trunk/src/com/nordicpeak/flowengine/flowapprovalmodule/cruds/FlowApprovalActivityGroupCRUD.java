@@ -148,15 +148,18 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 			boolean statusFound = false;
 
-			for (Status status : flow.getStatuses()) {
+			if(flow.getStatuses() != null) {
 
-				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
-					continue;
-				}
-				
-				if (status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
-					statusFound = true;
-					break;
+				for (Status status : flow.getStatuses()) {
+
+					if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
+						continue;
+					}
+					
+					if (status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
+						statusFound = true;
+						break;
+					}
 				}
 			}
 
