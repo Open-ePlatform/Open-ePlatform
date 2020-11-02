@@ -77,8 +77,8 @@
 	<xsl:variable name="i18n.Validation.NoMessageTypeChosen">Du har inte valt meddelandetyp</xsl:variable>
 	
 	<xsl:variable name="i18n.AllowManagingOfInstancesLabel">Tillåt handläggning av ärenden under driftstoppet</xsl:variable>
-	<xsl:variable name="i18n.AllowUserHandlingOfSubmittedInstancesLabel">Tillåt medborgare att hantera inskickade ärenden under driftstoppet</xsl:variable>
-	<xsl:variable name="i18n.OperatingMessage.allowFlowForms">Tillåt medborgare att hämta blanketter under driftstoppet</xsl:variable>
+	<xsl:variable name="i18n.AllowUserHandlingOfSubmittedInstancesLabel">Tillåt sökande att hantera inskickade ärenden under driftstoppet</xsl:variable>
+	<xsl:variable name="i18n.OperatingMessage.allowFlowForms">Tillåt användare att hämta blanketter under driftstoppet</xsl:variable>
 	<xsl:variable name="i18n.AllProfiles">Visa driftmeddelandet för alla profiler</xsl:variable>
 	<xsl:variable name="i18n.ChooseProfiles">Visa driftmeddelandet för specifika profiler</xsl:variable>
 	
