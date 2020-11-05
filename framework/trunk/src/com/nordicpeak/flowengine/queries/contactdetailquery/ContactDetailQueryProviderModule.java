@@ -24,6 +24,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.foregroundmodules.userprofile.events.UserUpdatedEvent;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -519,6 +520,8 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		}
 		
 		if (!validationErrors.isEmpty()) {
+			
+			validationErrors = CollectionUtils.removeDuplicates(validationErrors);
 			
 			throw new ValidationException(validationErrors);
 		}
