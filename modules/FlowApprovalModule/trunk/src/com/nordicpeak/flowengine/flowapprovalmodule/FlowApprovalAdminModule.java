@@ -1289,7 +1289,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		sharedTagSources.add(FLOW_INSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
 		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
 		
-		sharedTagSources.add(new SingleTagSource("$myActivitiesURL", userApprovalModuleAlias));
+		sharedTagSources.add(new SingleTagSource("$myActivitiesURL", getUserApprovalModuleAlias(flowInstance)));
 
 		HashSet<User> managers = new HashSet<>();
 		HashSet<String> globalRecipients = new HashSet<>();
@@ -1457,7 +1457,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			sharedTagSources.add(ACTIVITY_GROUP_TAG_SOURCE_FACTORY.getTagSource(activityGroup));
 			sharedTagSources.add(FLOW_INSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
 			sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
-			sharedTagSources.add(new SingleTagSource("$myActivitiesURL", userApprovalModuleAlias));
+			sharedTagSources.add(new SingleTagSource("$myActivitiesURL", getUserApprovalModuleAlias(flowInstance)));
 			
 			log.info("Sending emails for completed activity group " + activityGroup + " for flow instance " + flowInstance + " to " + activityGroup.getActivityGroupCompletedEmailAddresses().size() + " global recipients");
 	
@@ -2262,5 +2262,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	public String getSignaturesFilename() {
 		return signaturesFilename;
+	}
+
+	
+	public String getUserApprovalModuleAlias(ImmutableFlowInstance flowInstance) {
+	
+		return userApprovalModuleAlias;
 	}
 }
