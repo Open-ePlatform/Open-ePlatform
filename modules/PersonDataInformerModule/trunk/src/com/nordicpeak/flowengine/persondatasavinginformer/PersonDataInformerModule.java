@@ -929,8 +929,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 					XMLUtils.appendNewElement(doc, extensionElement, "DefaultConfirmationText", defaultConfirmationText);
 				}
 			}
-
-			return new ExtensionView(browserExtensionViewTitle, viewFragmentTransformer.createViewFragment(doc), "left-owner");
+			
+			return new ExtensionView(browserExtensionViewTitle, viewFragmentTransformer.createViewFragment(doc, true), "left-owner");
 		}
 
 		return null;
