@@ -190,6 +190,9 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	.userflowinstances .errands-wrapper td.link a.btn:not(:last-child) {
 		margin-right: 3px;
 	}
+	.userflowinstances .errands-wrapper td.link.img-link a:not(:last-child) {
+		margin-right: 3px;
+	}
 }
 
 @media screen and (max-width: 767px) {
@@ -199,6 +202,12 @@ table.full.coloredtable.sortabletable.oep-table.flowfamilyeventstable {
 	
 	.userflowinstances .errands-wrapper td.link a.btn:nth-child(n+3) {
 		margin-top: 8px !important;
+	}
+	.userflowinstances .errands-wrapper td.link.img-link {
+	  display: flex;
+	}
+	.userflowinstances .errands-wrapper td.link.img-link a {
+	  flex-grow: 1;
 	}
 }
 

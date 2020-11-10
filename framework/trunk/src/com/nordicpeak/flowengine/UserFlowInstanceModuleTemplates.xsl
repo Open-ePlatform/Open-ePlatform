@@ -23,7 +23,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/flowengine.css
+		/css/flowengine.css?v=1
 		/css/messages.css
 	</xsl:variable>
 
@@ -823,7 +823,7 @@
 	  					<table class="oep-table">
 	  						<thead class="errand">
 	  							<tr>
-	  								<th class="icon" style="width:32px;"></th>
+	  								<th></th>
 	  								<th class="service active"><span><xsl:value-of select="$i18n.Action" /></span></th>
 	  								
 	  								<xsl:if test="Flow/hideManagerDetails = 'false'">
@@ -904,16 +904,16 @@
 				<xsl:attribute name="class">odd</xsl:attribute>
 			</xsl:if>
 
-			<td class="icon">
+			<td class="link img-link">
 				<xsl:if test="Attributes/Attribute[Name='pdf']/Value = 'true'">
 					<xsl:choose>
 						<xsl:when test="eventType = 'SIGNED' or eventType = 'SIGNING_SKIPPED'">
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceSignPDF}">
+							<a class="display-inline-block" style="width:16px;" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceSignPDF}">
 								<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf_lock.png" />
 							</a>
 						</xsl:when>
 						<xsl:otherwise>
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstancePDF}">
+							<a class="display-inline-block" style="width:16px;" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/pdf/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstancePDF}">
 								<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pdf.png" />
 							</a>
 						</xsl:otherwise>
@@ -921,13 +921,13 @@
 				</xsl:if>
 				
 				<xsl:if test="Attributes/Attribute[Name='xml']/Value = 'true' and not(../../../hideEventXMLFromUser)">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/xml/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceXML}">
+					<a class="display-inline-block" style="width:16px;" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/xml/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadFlowInstanceXML}">
 						<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/xml.png" />
 					</a>
 				</xsl:if>
 				
 				<xsl:if test="Attributes/Attribute[Name='signingData']">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/signature/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadSignature}">
+					<a class="display-inline-block" style="width:16px;" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/signature/{../../flowInstanceID}/{eventID}" title="{$i18n.DownloadSignature}">
 						<img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/lock.png" />
 					</a>
 				</xsl:if>
