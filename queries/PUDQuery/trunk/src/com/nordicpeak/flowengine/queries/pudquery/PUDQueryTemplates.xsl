@@ -10,7 +10,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/pudquery.js?v=2
+		/js/pudquery.js?v=3
 	</xsl:variable>
 
 	<xsl:variable name="links">
