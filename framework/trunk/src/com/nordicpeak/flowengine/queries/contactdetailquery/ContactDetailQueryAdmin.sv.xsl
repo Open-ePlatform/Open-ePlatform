@@ -22,6 +22,7 @@ Om användaren har skyddad identitet hämtas inga folkbokföringsuppgifter.
 	<xsl:variable name="java.exportEmail">E-post</xsl:variable>
 	<xsl:variable name="java.exportMobilePhone">Mobiltelefon</xsl:variable>
 	<xsl:variable name="java.exportCitizenID">Personnummer</xsl:variable>
+	<xsl:variable name="java.officialAddressMissing">Folkbokföringsadress saknas</xsl:variable>
 	
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>
 	
@@ -68,5 +69,7 @@ Om användaren har skyddad identitet hämtas inga folkbokföringsuppgifter.
 	<xsl:variable name="i18n.GeneralContactAttributeInfo">Notera att attribut utan prefix alltid sparas från den sista ifyllda Kontaktuppgiftsfrågan (privatperson eller organisation) i e-tjänsten. Undantag är om kontaktuppgifter under mina uppgifter uppdateras. Ex $attribute{citizenIdentifier}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
+	
+	<xsl:variable name="i18n.OfficialAddressMissingDescription">Får värde &quot;Folkbokföringsadress saknas&quot; om ingen adress gick att hämta från folkbokföringen</xsl:variable>
 	
 </xsl:stylesheet>

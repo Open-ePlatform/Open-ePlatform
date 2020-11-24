@@ -279,7 +279,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		reset(attributeHandler);
 	}
 
-	public void setAttributes(MutableAttributeHandler attributeHandler) {
+	public void setAttributes(MutableAttributeHandler attributeHandler, ContactDetailQueryProviderModule queryProviderModule) {
 
 		attributeHandler.setAttribute(query.getAttributeName() + ".citizenIdentifier", citizenID);
 		attributeHandler.setAttribute(query.getAttributeName() + ".firstname", firstname);
@@ -297,6 +297,12 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		}
 		
 		attributeHandler.setAttribute(query.getAttributeName() + ".contactBySMS", contactBySMS);
+		
+		if(query.usesOfficalAddress() && !officalAddress) {
+			
+			attributeHandler.setAttribute(query.getAttributeName() + ".officialAddressMissing", queryProviderModule.getOfficialAddressMissing());
+		}
+		
 	}
 	
 	public void resetAttributes(MutableAttributeHandler attributeHandler) {

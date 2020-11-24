@@ -101,6 +101,9 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	@XSLVariable(prefix = "java.")
 	private String exportCitizenID;
 	
+	@XSLVariable(prefix = "java.")
+	private String officialAddressMissing;
+	
 	private AnnotatedDAO<ContactDetailQuery> queryDAO;
 	private AnnotatedDAO<ContactDetailQueryInstance> queryInstanceDAO;
 	
@@ -561,7 +564,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 		if (query.isSetAsAttribute()) {
 
 			queryInstance.resetAttributes(attributeHandler);
-			queryInstance.setAttributes(attributeHandler);
+			queryInstance.setAttributes(attributeHandler, this);
 		}
 		
 		if (hasUpdateUserProfileAccess(poster, user, persistUserProfile, requestMetadata, query)) {
@@ -794,6 +797,11 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	public String getExportCitizenID() {
 		
 		return exportCitizenID;
+	}
+	
+	public String getOfficialAddressMissing() {
+		
+		return officialAddressMissing;
 	}
 	
 	@Override

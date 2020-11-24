@@ -30,11 +30,24 @@ $(document).ready(function() {
 		if (!visible) {
 			$("#fieldCareOf").val("HIDDEN");
 		}
+		
 	}
 	
 	showHideAllowSMS();
 	showHideLockAddress();
 	showHideRequireAtLeastOneContactWay();
+
+	$("#useOfficalAddress").change(function(e) {
+		
+		var $this = $(this);
+		
+		if($this.is(":checked")) {
+			$("#officialAddressMissingAttribute").removeClass("hidden");
+		} else {
+			$("#officialAddressMissingAttribute").addClass("hidden");
+		}
+		
+	}).trigger("change");
 	
 	fieldMobilePhone.change(showHideAllowSMS);
 	fieldAddress.change(showHideLockAddress);

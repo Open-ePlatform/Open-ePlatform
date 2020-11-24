@@ -363,6 +363,10 @@
 						<td>prefix.mobilePhone</td>
 						<td><xsl:value-of select="$java.exportMobilePhone" /></td>
 					</tr>
+					<tr id="officialAddressMissingAttribute" class="hidden">
+						<td>prefix.officialAddressMissing</td>
+						<td><xsl:value-of select="$i18n.OfficialAddressMissingDescription" /></td>
+					</tr>
 				</tbody>
 			</table>
 			
