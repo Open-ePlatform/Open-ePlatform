@@ -15,7 +15,7 @@
 	<xsl:variable name="i18n.FlowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.Status">Status</xsl:variable>
 	<xsl:variable name="i18n.Updated">Senast sparat</xsl:variable>
-	<xsl:variable name="i18n.LastEvent">Senaste händelse</xsl:variable>
+	<xsl:variable name="i18n.LastEvent">Datum inskickat</xsl:variable>
 	<xsl:variable name="i18n.Date">Datum</xsl:variable>
 	
 	<xsl:variable name="i18n.FirstSubmitted">Inskickat</xsl:variable>
