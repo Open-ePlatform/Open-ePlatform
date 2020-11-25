@@ -1598,11 +1598,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		
 		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
 
+			log.warn("Not sending external message notifications for " + flowInstance + " as it has no owners");
 			return;
 		}
 
 		if (flowInstance.getFlow().isHideExternalMessages()) {
 			
+			log.warn("Not sending external message notifications for " + flowInstance + " as flow has external messages hidden");
 			return;
 		}
 
