@@ -34,6 +34,12 @@ function initDropDownQuery(queryID) {
 			
 		});
 		
+		$query.find("input[type='text']").change(function() {
+			
+			runDropDownEvaluators($(this), queryID);
+			
+		});
+		
 		$select.trigger("change", [{manual: true}]);
 		
 	} else {

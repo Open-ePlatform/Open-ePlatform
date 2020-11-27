@@ -28,9 +28,14 @@ function initRadioButtonQuery(queryID) {
 					
 					runRadioButtonEvaluators($this, queryID);
 					
-				};
-			
+				};			
 			}
+			
+		});
+		
+		$query.find("input[type='text']").change(function() {
+			
+			runRadioButtonEvaluators($(this), queryID);
 			
 		});
 		
@@ -45,7 +50,7 @@ function initRadioButtonQuery(queryID) {
 				runRadioButtonEvaluators($(this), queryID);
 				
 			});
-			
+		
 		}
 		
 	}

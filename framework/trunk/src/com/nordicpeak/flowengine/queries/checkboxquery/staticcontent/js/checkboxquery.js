@@ -22,16 +22,6 @@ function initCheckBoxQuery(queryID) {
 				$("#" + $this.attr("name") + "Value").attr("disabled", "disabled").parent().hide();
 			}
 			
-//			if(data == undefined || !data.manual) {
-//			
-//				if($query.hasClass("enableAjaxPosting")) {
-//					
-//					runCheckBoxEvaluators($this, queryID);
-//					
-//				}
-//			
-//			}
-			
 		});
 		
 		$freeTextAlternative.trigger("change", [{manual: true}]);
@@ -39,7 +29,7 @@ function initCheckBoxQuery(queryID) {
 		if($query.hasClass("enableAjaxPosting")) {
 			
 			bindCheckBoxChangeEvent($query.find("input[type='checkbox']"), queryID);
-			
+			bindCheckBoxChangeEvent($query.find("input[type='text']"), queryID);
 		}
 		
 	} else {
@@ -47,7 +37,6 @@ function initCheckBoxQuery(queryID) {
 		if($query.hasClass("enableAjaxPosting")) {
 			
 			bindCheckBoxChangeEvent($query.find("input[type='checkbox']"), queryID);
-			
 		}
 		
 	}
