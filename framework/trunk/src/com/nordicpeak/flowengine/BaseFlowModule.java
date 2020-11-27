@@ -1132,7 +1132,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected void processQueryRequest(FlowInstanceManager instanceManager, int queryID, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws QueryInstanceNotFoundInFlowInstanceManagerException, QueryRequestsNotSupported, QueryRequestException {
+	protected void processQueryRequest(FlowInstanceManager instanceManager, int queryID, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser) throws QueryInstanceNotFoundInFlowInstanceManagerException, QueryRequestsNotSupported, QueryRequestException {
 
 		ImmutableQueryInstance queryInstance;
 
@@ -1149,6 +1149,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			}
 
 			try {
+				//TODO add parameter poster
 				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, queryHandler);
 
 			} catch (Exception e) {
@@ -1848,7 +1849,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				throw new URINotFoundException(uriParser);
 			}
 
-			processQueryRequest(instanceManager, queryID, req, res, user, uriParser);
+			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getPoster(poster), uriParser);
 
 		} catch (QueryInstanceNotFoundInFlowInstanceManagerException e) {
 
@@ -1900,7 +1901,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				throw new URINotFoundException(uriParser);
 			}
 
-			processQueryRequest(instanceManager, queryID, req, res, user, uriParser);
+			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getFlowInstance().getPoster(), uriParser);
 
 		} catch (QueryInstanceNotFoundInFlowInstanceManagerException e) {
 
