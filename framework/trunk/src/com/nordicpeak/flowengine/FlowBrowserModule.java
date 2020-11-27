@@ -1632,6 +1632,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				}
 			}
 			
+			//TODO can be removed in the future when flows currently in multisigning are completed
 			FlowInstanceUtils.setContactAttributes(instanceManager, flowInstance.getAttributeHandler());
 			
 			HighLevelQuery<FlowInstance> updateQuery = new HighLevelQuery<FlowInstance>(FlowInstance.OWNERS_RELATION, FlowInstance.ATTRIBUTES_RELATION);

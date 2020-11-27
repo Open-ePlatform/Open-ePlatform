@@ -44,6 +44,7 @@ import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SystemInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
+import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
@@ -728,7 +729,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 						return showCurrentStepForm(instanceManager, callback, req, res, user, poster, uriParser, managerResponse, SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR, flowAction, requestMetadata);
 					}
 					
-					boolean hasSubmitChecks = instanceManager.hasSubmitChecks(); 
+					boolean hasSubmitChecks = instanceManager.hasSubmitChecks();
 					
 					Object submitLock;
 					
@@ -807,6 +808,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 								SiteProfile instanceProfile = getSiteProfile(instanceManager);
 								
 								if (MultiSignUtils.requiresMultiSigning(instanceManager)) {
+									
+									// Valid contact is needed for multisigning notifications
+									FlowInstanceUtils.setContactAttributes(instanceManager, (MutableAttributeHandler) instanceManager.getFlowInstance().getAttributeHandler());
 									
 									if (instanceManager.getFlowInstance().getFlow().isSkipPosterSigning()) {
 										
