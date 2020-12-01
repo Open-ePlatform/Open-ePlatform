@@ -23,6 +23,12 @@ $(document).ready(function() {
 		
 		$(this).prevAll(".query:first").addClass("mergedquery");
 	});
+
+	$(".query.mergewithpreviousquery.notitle").each(function(){
+		
+		$(this).prevAll(".query:first").addClass("beforenotitle");
+	});
+	
 	
 	$(".modal .close").click(function(e) {
 		e.preventDefault();
@@ -108,7 +114,6 @@ $(document).ready(function() {
         $(this).hide();
         $("#show-receipt-btn").show();
     });
-    
 });
 
 function checkStartFlowPanelPosition(event) {
