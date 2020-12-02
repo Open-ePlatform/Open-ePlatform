@@ -68,6 +68,7 @@ import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.db.DBUtils;
 import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.io.BinarySizeFormater;
@@ -1675,7 +1676,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		if (!CollectionUtils.isEmpty(user.getGroups())) {
 
-			sql = FLOW_MANAGER_SQL + " OR ffg.groupID IN (?" + StringUtils.repeatString(", ?", user.getGroups().size() - 1) + "))";
+			sql = FLOW_MANAGER_SQL + " OR ffg.groupID IN (" + DBUtils.getPreparedStatementQuestionMarks(user.getGroups()) + "))";
 
 		} else {
 

@@ -22,16 +22,6 @@ import javax.sql.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.internalnotifications.beans.StoredNotification;
-import com.nordicpeak.flowengine.internalnotifications.beans.StoredNotificationAttribute;
-import com.nordicpeak.flowengine.internalnotifications.interfaces.Notification;
-import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationHandler;
-import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSource;
-
-import it.sauronsoftware.cron4j.Scheduler;
 import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -58,12 +48,24 @@ import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
+import se.unlogic.standardutils.db.DBUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.internalnotifications.beans.StoredNotification;
+import com.nordicpeak.flowengine.internalnotifications.beans.StoredNotificationAttribute;
+import com.nordicpeak.flowengine.internalnotifications.interfaces.Notification;
+import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationHandler;
+import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSource;
+
+import it.sauronsoftware.cron4j.Scheduler;
 
 public class InternalNotificationHandlerModule extends AnnotatedForegroundModule implements NotificationHandler, Runnable, ViewFragmentModule<ForegroundModuleDescriptor> {
 	
@@ -432,7 +434,7 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 				
 				LowLevelQuery<StoredNotification> query = new LowLevelQuery<StoredNotification>();
 				
-				query.setSql("UPDATE " + notificationDAO.getTableName() + " SET seen = ? WHERE notificationID IN (?" + StringUtils.repeatString(",?", storedNotifications.size() - 1) + ")");
+				query.setSql("UPDATE " + notificationDAO.getTableName() + " SET seen = ? WHERE notificationID IN (" + DBUtils.getPreparedStatementQuestionMarks(storedNotifications) + ")");
 				
 				query.addParameter(new Timestamp(System.currentTimeMillis()));
 				
