@@ -16,6 +16,7 @@
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
 		/featherlight/js/featherlight.min.js
+		/js/confirmpost.js
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
@@ -337,7 +338,7 @@
 					</xsl:when>
 					<xsl:otherwise>
 
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowfamily/{FlowFamily/flowFamilyID}" onclick="return confirm('{$i18n.deleteFlowFamilyConfirm}: {name}?');" title="{$i18n.deleteFlowFamily.title}: {name}">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowfamily/{FlowFamily/flowFamilyID}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowFamilyConfirm}: {name}?');" title="{$i18n.deleteFlowFamily.title}: {name}">
 							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 						</a>
 
@@ -465,7 +466,7 @@
 					<xsl:choose>
 						<xsl:when test="$disableStructureManipulation = false()">
 						
-							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{Flow/flowID}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowConfirm}: {Flow/name}?');" title="{$i18n.deleteFlow.title}: {Flow/name}">
 								<img src="{$imgPath}/delete.png" alt="" />
 							</a>				
 						
@@ -1193,7 +1194,7 @@
 										<th width="75"><xsl:value-of select="$i18n.status" /></th>
 										<th width="37" >
 											<xsl:if test="PublishAccess">
-												<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirm('{$i18n.UnpublishFlowFamilyConfirm} &#34;{Flow/name}&#34;?');" title="{$i18n.UnpublishFlowFamily}">
+												<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/unpublishflowfamily/{Flow/FlowFamily/flowFamilyID}/{Flow/flowID}" onclick="return confirmPost(this.href, '{$i18n.UnpublishFlowFamilyConfirm} &#34;{Flow/name}&#34;?');" title="{$i18n.UnpublishFlowFamily}">
 													<img class="alignmiddle marginright" src="{$imgPath}/disabled.png" alt="" />
 												</a>
 											</xsl:if>
@@ -1547,7 +1548,7 @@
 					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>
 				
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}: {$name}" onclick="return confirm('{$i18n.deleteFlowForm.confirm}: {$name}?');" >
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowform/{flowFormID}" title="{$i18n.deleteFlowForm.link.title}: {$name}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowForm.confirm}: {$name}?');" >
 				
 					<xsl:if test="../../MayNotRemoveFlowFormIfNoSteps">
 						<xsl:attribute name="onclick">alert('<xsl:value-of select="$i18n.MayNotRemoveFlowFormIfNoSteps"/>'); return false;</xsl:attribute>
@@ -1590,7 +1591,7 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateexternalmessagetemplate/{../../../flowID}/{templateID}" title="{$i18n.ExternalMessageTemplates.update}: {name}">
 					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
-				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteexternalmessagetemplate/{../../../flowID}/{templateID}" onclick="return confirm('{$i18n.ExternalMessageTemplates.deleteConfirm}: {name}?');" title="{$i18n.ExternalMessageTemplates.delete}: {name}">
+				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteexternalmessagetemplate/{../../../flowID}/{templateID}" onclick="return confirmPost(this.href, '{$i18n.ExternalMessageTemplates.deleteConfirm}: {name}?');" title="{$i18n.ExternalMessageTemplates.delete}: {name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 			</td>
@@ -1677,7 +1678,7 @@
 
 					</xsl:when>
 					<xsl:otherwise>
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirm('{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflow/{flowID}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowConfirm}: {name}?');" title="{$i18n.deleteFlow.title}: {name}">
 							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 
@@ -1728,7 +1729,7 @@
 						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatestep/{stepID}" title="{$i18n.updateStep.title}: {name}">
 							<img src="{$imgPath}/pen.png" alt="" />
 						</a>
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirm('{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestep/{stepID}" onclick="return confirmPost(this.href, '{$i18n.deleteStep.confirm.part1} {name} {$i18n.deleteStep.confirm.part2}?');" title="{$i18n.deleteStep.title}: {name}">
 							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 					</xsl:if>
@@ -1810,7 +1811,7 @@
 								<img src="{$imgPath}/pen.png" alt="" />
 							</a>
 							
-							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirm('{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
+							<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletequery/{queryID}" onclick="return confirmPost(this.href, '{$i18n.deleteQuery.confirm}: {name}?');" title="{$i18n.deleteQuery.title}: {name}">
 								<img src="{$imgPath}/delete.png" alt="" />
 							</a>
 							
@@ -1893,7 +1894,7 @@
 							<img src="{$imgPath}/pen.png" alt="" />
 						</a>
 						
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirm('{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteevaluator/{evaluatorID}" onclick="return confirmPost(this.href, '{$i18n.deleteEvaluator.confirm}: {name}?');" title="{$i18n.deleteEvaluator.title}: {name}">
 							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 					</xsl:if>
@@ -1938,7 +1939,7 @@
 					</xsl:when>
 					<xsl:otherwise>
 					
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirm('{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestatus/{statusID}" onclick="return confirmPost(this.href, '{$i18n.deleteStatus.confirm}: {name}?');" title="{$i18n.deleteStatus.link.title}: {name}">
 							<img src="{$imgPath}/delete.png" alt="" />
 						</a>
 					
@@ -4669,7 +4670,7 @@
 				</a>
 				
 				<xsl:if test="statusGroupID != 1">
-					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatusgroup/{statusGroupID}" onclick="return confirm('{$i18n.DeleteStandardStatusGroup.confirm}: {name}?');" title="{$i18n.DeleteStandardStatusGroup}: {name}">
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatusgroup/{statusGroupID}" onclick="return confirmPost(this.href, '{$i18n.DeleteStandardStatusGroup.confirm}: {name}?');" title="{$i18n.DeleteStandardStatusGroup}: {name}">
 						<img src="{$imgPath}/delete.png" alt="" />
 					</a>
 				</xsl:if>
@@ -4816,7 +4817,7 @@
 					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
 		
-				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirm('{$i18n.DeleteStandardStatus.confirm}: {name}?');" title="{$i18n.DeleteStandardStatus}: {name}">
+				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletestandardstatus/{statusID}" onclick="return confirmPost(this.href, '{$i18n.DeleteStandardStatus.confirm}: {name}?');" title="{$i18n.DeleteStandardStatus}: {name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 			</td>
@@ -4999,7 +5000,7 @@
 						</xsl:when>
 						<xsl:otherwise>
 	
-							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {name}?');" title="{$i18n.deleteFlowType}: {name}">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{flowTypeID}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowType}: {name}?');" title="{$i18n.deleteFlowType}: {name}">
 								<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
 							</a>
 	
@@ -5031,7 +5032,7 @@
 					</xsl:when>
 					<xsl:otherwise>
 	
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{FlowType/flowTypeID}" onclick="return confirm('{$i18n.deleteFlowType}: {FlowType/name}?');" title="{$i18n.deleteFlowType}: {FlowType/name}">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowtype/{FlowType/flowTypeID}" onclick="return confirmPost(this.href, '{$i18n.deleteFlowType}: {FlowType/name}?');" title="{$i18n.deleteFlowType}: {FlowType/name}">
 							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 						</a>
 	
@@ -5263,7 +5264,7 @@
 					<img class="alignbottom" src="{$imgPath}/pen.png" alt="" />
 				</a>
 
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletecategory/{categoryID}" onclick="return confirm('{$i18n.deleteCategory}: {name}?');" title="{$i18n.deleteCategory}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletecategory/{categoryID}" onclick="return confirmPost(this.href, '{$i18n.deleteCategory}: {name}?');" title="{$i18n.deleteCategory}: {name}">
 					<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
 				</a>
 

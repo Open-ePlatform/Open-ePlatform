@@ -1420,6 +1420,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@WebPublic(toLowerCase = true)
 	public synchronized ForegroundModuleResponse deleteFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete flow family requests using mehod " + req.getMethod() + " are not allowed.");
+		}
+		
 		FlowFamily flowFamily;
 
 		if (uriParser.size() != 3 || !NumberUtils.isInt(uriParser.get(2)) || (flowFamily = flowCache.getFlowFamilyCacheMap().get(NumberUtils.toInt(uriParser.get(2)))) == null) {
@@ -5989,6 +5994,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (!hasPublishAccess(user)) {
 			throw new AccessDeniedException("User does not have publishing access");
+		}
+		
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Unpublish flow requests using mehod " + req.getMethod() + " are not allowed.");
 		}
 		
 		FlowFamily flowFamily = flowFamilyCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
