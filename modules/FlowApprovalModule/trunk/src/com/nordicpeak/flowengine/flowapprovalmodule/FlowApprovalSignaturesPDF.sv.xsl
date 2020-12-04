@@ -3,7 +3,7 @@
 	
 	<xsl:import href="FlowApprovalCommon.sv.xsl"/>
 	
-	<xsl:output method="xml" indent="yes" encoding="ISO-8859-1"/>
+	<xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" indent="yes" encoding="ISO-8859-1"/>
 	
 	<xsl:include href="FlowApprovalSignaturesPDFTemplate.xsl"/>
 	

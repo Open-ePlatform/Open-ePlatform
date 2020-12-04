@@ -116,6 +116,7 @@ import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 import com.nordicpeak.flowengine.utils.PDFFileAttachment;
 import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
+import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 	
@@ -504,11 +505,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			try {
 				if (systemInterface.getEncoding().equalsIgnoreCase("UTF-8")) {
 					
-					document = XMLUtils.parseXML(xml, false, false);
+					document = PDFXMLUtils.parseXML(xml);
 					
 				} else {
 					
-					document = XMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")), false, false);
+					document = PDFXMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 				}
 				
 			} catch (Exception e) {
@@ -1318,4 +1319,6 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 		return defaultLogotype;
 	}
+	
+	//TODO delete old temp files
 }

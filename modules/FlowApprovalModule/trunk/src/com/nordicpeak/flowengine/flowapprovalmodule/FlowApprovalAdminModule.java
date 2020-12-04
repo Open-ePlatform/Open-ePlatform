@@ -148,6 +148,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
+import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
@@ -2169,11 +2170,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			if (systemInterface.getEncoding().equalsIgnoreCase("UTF-8")) {
 
-				document = XMLUtils.parseXML(xml, false, false);
+				document = PDFXMLUtils.parseXML(xml);
 
 			} else {
 
-				document = XMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")), false, false);
+				document = PDFXMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 			}
 
 			tmpFile = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp-", ".pdf", new File(tempDir));
