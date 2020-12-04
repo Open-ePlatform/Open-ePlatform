@@ -10,6 +10,7 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/jquery/plugins/jquery.qloader.js
+		/js/confirmpost.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
@@ -156,7 +157,7 @@
 				 	
 				 		<span class="time"><xsl:text>&#160;·&#160;</xsl:text></span>
 				 	
-					 	<a class="delete" href="{../../ModuleURL}?action=delete&amp;attachmentID={attachmentID}" onclick="return confirm('{$i18n.DeleteFile.confirm}: {filename}');">
+					 	<a class="delete" href="{../../ModuleURL}?action=delete&amp;attachmentID={attachmentID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFile.confirm}: {filename}');">
 							<span data-icon-before="x">
 								<xsl:value-of select="$i18n.DeleteFile" />
 							</span>

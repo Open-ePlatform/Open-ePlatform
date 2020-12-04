@@ -215,9 +215,19 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 			
 			Attachment attachment = attachmentDAOWrapper.get(attachmentID);
 			
+			if(!HTTPUtils.isPost(req)) {
+				
+				throw new AccessDeniedException("Delete requests using method " + req.getMethod() + " are not allowed.");
+			}
+			
 			if (attachment == null) {
 				
 				throw new URINotFoundException(uriParser);
+			}
+			
+			if(!attachment.getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				
+				throw new AccessDeniedException("User " + user + " trying to delete attachment " + attachment + " via flow instance " + flowInstance.getFlowInstanceID() + " but it belongs to flow instance " + attachment.getFlowInstanceID());
 			}
 			
 			Timestamp now = TimeUtils.getCurrentTimestamp();
@@ -245,6 +255,11 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 			Attachment attachment = attachmentDAOWrapper.get(attachmentID);
 			
 			if (attachment != null) {
+				
+				if(!attachment.getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+					
+					throw new AccessDeniedException("User " + user + " trying to download attachment " + attachment + " via flow instance " + flowInstance.getFlowInstanceID() + " but it belongs to flow instance " + attachment.getFlowInstanceID());
+				}
 				
 				log.info("User " + user + " downloading attachment " + attachment + " from flowInstance " + flowInstance);
 				

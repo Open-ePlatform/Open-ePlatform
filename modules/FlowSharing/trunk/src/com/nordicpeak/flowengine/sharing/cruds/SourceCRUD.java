@@ -37,6 +37,8 @@ public class SourceCRUD extends IntegerBasedCRUD<Source, FlowRepositoryModule> {
 		super(crudDAO, new AnnotatedRequestPopulator<Source>(Source.class), "Source", "source", "", callback);
 		sourceDAO = crudDAO.getAnnotatedDAO();
 		this.sourceRepositoryParamFactory = sourceRepositoryParamFactory;
+		
+		setRequirePostForDelete(true);
 	}
 	
 	@Override

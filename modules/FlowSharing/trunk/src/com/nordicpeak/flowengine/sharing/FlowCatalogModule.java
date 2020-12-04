@@ -570,6 +570,11 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	@WebPublic(alias = "delete")
 	public ForegroundModuleResponse deleteFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 		
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete requests using method " + req.getMethod() + " are not allowed.");
+		}		
+		
 		Integer repositoryIndex;
 		Integer sharedflowID;
 		

@@ -4,6 +4,10 @@
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 
+	<xsl:variable name="globalscripts">
+		/js/confirmpost.js
+	</xsl:variable>
+
 	<xsl:template match="Document">	
 
 		<div class="contentitem">
@@ -71,7 +75,7 @@
 				<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png"/>
 			</a>
 
-			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletesource/{sourceID}" onclick="return confirm('{$i18n.deleteSourceConfirm}: {name}?')" title="{$i18n.removeSource}: {name}">
+			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletesource/{sourceID}" onclick="return confirmPost(this.href, '{$i18n.deleteSourceConfirm}: {name}?')" title="{$i18n.removeSource}: {name}">
 				<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png"/>
 			</a>
 				
