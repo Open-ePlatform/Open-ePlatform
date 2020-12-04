@@ -13,6 +13,7 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
+		/js/confirmpost.js
 	</xsl:variable>	
 
 	<xsl:variable name="scripts">
@@ -186,7 +187,7 @@
 			</div>
 			<div class="padding floatright">
 				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletetextfield/{textFieldID}" onclick="return confirm('{$i18n.DeleteTextField.Confirm}: {label}?');" title="{$i18n.DeleteTextField}: {label}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletetextfield/{textFieldID}" onclick="return confirmPost(this.href, '{$i18n.DeleteTextField.Confirm}: {label}?');" title="{$i18n.DeleteTextField}: {label}">
 						<img src="{$imagePath}/delete.png"/>
 					</a>
 				</div>

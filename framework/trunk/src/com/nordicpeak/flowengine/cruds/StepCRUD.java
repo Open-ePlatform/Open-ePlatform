@@ -37,6 +37,8 @@ public class StepCRUD extends ModularCRUD<Step,Integer, User, FlowAdminModule> {
 	public StepCRUD(CRUDDAO<Step, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<Step>(Step.class), "Step", "step", "", callback);
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

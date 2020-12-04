@@ -34,6 +34,7 @@ public class TextTagCRUD extends GenericCRUD<TextTag, Integer, User, TextTagAdmi
 		this.textTagModule = textTagModule;
 		this.textTagDAO = textTagDAO;
 		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

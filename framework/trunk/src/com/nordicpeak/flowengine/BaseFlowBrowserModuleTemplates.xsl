@@ -2,6 +2,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
+	<xsl:variable name="globalscripts">
+		/js/confirmpost.js
+	</xsl:variable>
+
 	<xsl:template match="validationError[messageKey='FlowNoLongerAvailable']">
 	
 		<xsl:call-template name="printValidationError">
@@ -166,7 +170,7 @@
 		  		</xsl:if>
 		  		<xsl:if test="$flowInstance/Status/isUserDeletable = 'true'">
 			  		<li>
-			  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-red">
+			  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-red">
 							<span data-icon-before="x"><xsl:value-of select="$i18n.cancelInstance"/></span>
 						</a>
 			  		</li>
@@ -260,7 +264,7 @@
 			  		
 			  		<xsl:if test="$flowInstance/Status/isAdminDeletable = 'true' or $deleteAccessOverride">
 				  		<li>
-				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-light">
+				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}?');" class="btn btn-light">
 								<span data-icon-before="x"><xsl:value-of select="$i18n.deleteInstance"/></span>
 							</a>
 				  		</li>

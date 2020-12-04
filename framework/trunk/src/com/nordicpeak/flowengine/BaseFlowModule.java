@@ -199,6 +199,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected static final URL DEFAULT_FLOW_ICON = BaseFlowModule.class.getResource("staticcontent/pics/flow_default.png");
 	
 	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
+	public static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Flow>(Flow.class, "$flow.");
 	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Temp dir", description = "Directory for temporary files. Should be on the same filesystem as the file store for best performance. If not set system default temp directory will be used")
@@ -269,8 +270,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 
 		synchronized (session) {
-
-			//TODO check if the status has changed since this instance was opened!
 
 			// Check if the user already has an instance of this flow open in his session
 			MutableFlowInstanceManager instanceManager = getMutableFlowInstanceManagerFromSession(flowID, flowInstanceID, session);
@@ -1144,12 +1143,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			if (queryInstance == null) {
 
-				//TODO change hierarchy for this exception
 				throw new QueryInstanceNotFoundInFlowInstanceManagerException(queryID, instanceManager.getFlowInstance());
 			}
 
 			try {
-				//TODO add parameter poster
 				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, queryHandler);
 
 			} catch (Exception e) {
@@ -1447,7 +1444,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		callback.appendFormData(doc, flowInstanceManagerPreviewElement, instanceManager, req, user);
 
-		// TODO breadcrumbs
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName());
 
 		appendLinksAndScripts(moduleResponse, managerResponses);
@@ -1466,7 +1462,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		signFormElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 		signFormElement.appendChild(viewFragment.toXML(doc));
 
-		//TODO fix add breadcrumbs
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName(), this.getDefaultBreadcrumb());
 
 		ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
@@ -1485,7 +1480,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		paymentFormElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
 		paymentFormElement.appendChild(viewFragment.toXML(doc));
 
-		//TODO fix add breadcrumbs
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName(), this.getDefaultBreadcrumb());
 
 		ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
@@ -1574,6 +1568,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			flow.setSubmittedMessage(AttributeTagUtils.replaceTags(flow.getSubmittedMessage(), instanceManager.getFlowInstance().getAttributeHandler()));
 			
 			TagReplacer tagReplacer = new TagReplacer();
+			tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow)instanceManager.getFlowInstance().getFlow()));
 			tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance)instanceManager.getFlowInstance()));
 			flow.setSubmittedMessage(tagReplacer.replace(flow.getSubmittedMessage()));
 		}
@@ -2050,8 +2045,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 		if (flowInstance.getStatus().getContentType() != ContentType.WAITING_FOR_MULTISIGN) {
 
-			//TODO show correct view
-			
 			log.warn("User " + user + " attempted to view multi sign message for flow instance " + flowInstance + " not in WAITING_FOR_MULTISIGN state");
 			throw new URINotFoundException(uriParser);
 		}
@@ -2094,8 +2087,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			multiSigningStatusElement.appendChild(viewFragment.toXML(doc));
 			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 		}
-
-		//TODO fix add breadcrumbs
 
 		return moduleResponse;
 
@@ -2192,7 +2183,6 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 //		List<? extends ImmutableStep> steps = instanceManager.getFlowInstance().getFlow().getSteps();
 //		paymentFormElement.appendChild(new ManagerResponse(steps.get(steps.size() - 1).getStepID(), steps.size() - 1, null, false, false).toXML(doc));
 		
-		//TODO fix add breadcrumbs
 		SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 
 		if (viewFragment != null) {

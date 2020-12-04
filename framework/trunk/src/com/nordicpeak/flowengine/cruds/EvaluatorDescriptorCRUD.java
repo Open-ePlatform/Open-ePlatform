@@ -41,6 +41,8 @@ public class EvaluatorDescriptorCRUD extends IntegerBasedCRUD<EvaluatorDescripto
 	public EvaluatorDescriptorCRUD(CRUDDAO<EvaluatorDescriptor, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(crudDAO, new AnnotatedRequestPopulator<EvaluatorDescriptor>(EvaluatorDescriptor.class), "EvaluatorDescriptor", "evaluator descriptor", "", callback);
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

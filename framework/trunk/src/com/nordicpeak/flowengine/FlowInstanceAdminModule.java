@@ -1331,6 +1331,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "delete")
 	public ForegroundModuleResponse deleteFlowInstance(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete flow instance requests using method " + req.getMethod() + " are not allowed.");
+		}
+		
 		FlowInstance flowInstance;
 
 		if (uriParser.size() == 3 && uriParser.getInt(2) != null && (flowInstance = getFlowInstance(uriParser.getInt(2))) != null && !flowInstance.getStatus().getContentType().equals(ContentType.NEW)) {

@@ -26,6 +26,8 @@ public class StandardStatusGroupCRUD extends IntegerBasedCRUD<StandardStatusGrou
 	public StandardStatusGroupCRUD(CRUDDAO<StandardStatusGroup, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(crudDAO, new AnnotatedRequestPopulator<StandardStatusGroup>(StandardStatusGroup.class), "StandardStatusGroup", "StandardStatusGroups", "standard status group", "standard status groups", "/standardstatuses", callback);
+
+		setRequirePostForDelete(true);
 	}
 
 	@Override

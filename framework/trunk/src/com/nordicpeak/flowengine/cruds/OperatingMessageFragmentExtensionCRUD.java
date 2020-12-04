@@ -39,6 +39,8 @@ public class OperatingMessageFragmentExtensionCRUD extends ModularCRUD<Operating
 	public OperatingMessageFragmentExtensionCRUD(CRUDDAO<OperatingMessage, Integer> crudDAO, OperatingMessageModule callback) {
 
 		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<OperatingMessage>(OperatingMessage.class), "OperatingMessage", "operating message", "/", callback);
+		
+		setRequirePostForDelete(true);
 	}
 	
 	@Override

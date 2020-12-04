@@ -45,6 +45,8 @@ public class OperatingMessageCRUD extends IntegerBasedCRUD<OperatingMessage, Ope
 	public OperatingMessageCRUD(CRUDDAO<OperatingMessage, Integer> crudDAO, OperatingMessageModule callback) {
 		
 		super(crudDAO, new AnnotatedRequestPopulator<OperatingMessage>(OperatingMessage.class), "OperatingMessage", "operating message", "/", callback);
+	
+		setRequirePostForDelete(true);
 	}
 	
 	@Override

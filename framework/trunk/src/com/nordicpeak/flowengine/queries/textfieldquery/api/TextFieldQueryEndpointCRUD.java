@@ -35,6 +35,8 @@ public class TextFieldQueryEndpointCRUD extends ModularCRUD<TextFieldQueryEndpoi
 	public TextFieldQueryEndpointCRUD(CRUDDAO<TextFieldQueryEndpoint, Integer> crudDAO, TextFieldQueryEndpointAdminModule callback) {
 
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<TextFieldQueryEndpoint>(TextFieldQueryEndpoint.class), "TextFieldQueryEndpoint", "endpoint", "/", callback);
+	
+		setRequirePostForDelete(true);
 	}
 	
 	@Override

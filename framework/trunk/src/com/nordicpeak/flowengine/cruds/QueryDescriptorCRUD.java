@@ -41,6 +41,8 @@ public class QueryDescriptorCRUD extends IntegerBasedCRUD<QueryDescriptor, FlowA
 	public QueryDescriptorCRUD(CRUDDAO<QueryDescriptor, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(crudDAO, new AnnotatedRequestPopulator<QueryDescriptor>(QueryDescriptor.class), "QueryDescriptor", "query descriptor", "", callback);
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

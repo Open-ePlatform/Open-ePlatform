@@ -56,6 +56,8 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 	public FlowTypeCRUD(CRUDDAO<FlowType, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowType>(FlowType.class), "FlowType", "flow type", "/flowtypes", callback);
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

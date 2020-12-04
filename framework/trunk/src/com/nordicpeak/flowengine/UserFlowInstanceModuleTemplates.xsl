@@ -8,6 +8,7 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/jquery/plugins/jquery.qloader.js
+		/js/confirmpost.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
@@ -330,7 +331,7 @@
 				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
 			
 				<xsl:if test="Status/isUserDeletable = 'true'">
-					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirm('{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}?');"><xsl:value-of select="$i18n.Delete" /></a>
 				</xsl:if>
 			</td>
 		</tr>

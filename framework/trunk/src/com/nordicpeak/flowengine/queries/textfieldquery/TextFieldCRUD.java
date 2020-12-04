@@ -41,6 +41,8 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 		super(textFieldDAO, populator, typeElementName, typeLogName, listMethodAlias, callback);
 
 		this.textFieldDAO = textFieldDAO;
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

@@ -75,6 +75,7 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		moduleResponseFilter = new FragmentLinkScriptFilter<>();
 		this.statusFormExtensionProviders = statusFormExtensionProviders;
+		setRequirePostForDelete(true);
 	}
 	
 	@Override

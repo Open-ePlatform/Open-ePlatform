@@ -1422,7 +1422,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if(!HTTPUtils.isPost(req)) {
 			
-			throw new AccessDeniedException("Delete flow family requests using mehod " + req.getMethod() + " are not allowed.");
+			throw new AccessDeniedException("Delete flow family requests using method " + req.getMethod() + " are not allowed.");
 		}
 		
 		FlowFamily flowFamily;
@@ -5998,7 +5998,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if(!HTTPUtils.isPost(req)) {
 			
-			throw new AccessDeniedException("Unpublish flow requests using mehod " + req.getMethod() + " are not allowed.");
+			throw new AccessDeniedException("Unpublish flow requests using method " + req.getMethod() + " are not allowed.");
 		}
 		
 		FlowFamily flowFamily = flowFamilyCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);

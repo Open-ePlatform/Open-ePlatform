@@ -110,6 +110,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		super(Flow.class, crudDAO, new AnnotatedRequestPopulator<Flow>(Flow.class), "Flow", "flow", "", callback);
 
 		flowFormElementableListener = new FlowFormElementableListener(callback);
+		
+		this.setRequirePostForDelete(true);
 	}
 
 	@Override

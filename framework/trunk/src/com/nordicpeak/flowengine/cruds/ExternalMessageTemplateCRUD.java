@@ -31,6 +31,8 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 	public ExternalMessageTemplateCRUD(CRUDDAO<ExternalMessageTemplate, Integer> crudDAO, FlowAdminCRUDCallback callback) {
 
 		super(ExternalMessageTemplateBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ExternalMessageTemplate>(ExternalMessageTemplate.class), "ExternalMessageTemplate", "external message template", "", callback);
+	
+		setRequirePostForDelete(true);
 	}
 
 	@Override

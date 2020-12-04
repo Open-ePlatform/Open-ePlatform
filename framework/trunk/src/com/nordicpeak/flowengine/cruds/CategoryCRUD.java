@@ -31,6 +31,8 @@ public class CategoryCRUD extends IntegerBasedCRUD<Category, FlowAdminModule> {
 	public CategoryCRUD(CRUDDAO<Category, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(crudDAO, new AnnotatedRequestPopulator<Category>(Category.class), "Category", "category", "/flowtype", callback);
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

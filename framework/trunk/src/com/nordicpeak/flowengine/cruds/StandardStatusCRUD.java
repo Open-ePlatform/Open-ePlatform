@@ -54,6 +54,8 @@ public class StandardStatusCRUD extends IntegerBasedCRUD<StandardStatus, FlowAdm
 		defaultStatusMappingStatusParamFactory = callback.getDAOFactory().getDefaultStandardStatusMappingDAO().getParamFactory("status", StandardStatus.class);
 		
 		this.statusGroupDAO = statusGroupDAO;
+		
+		setRequirePostForDelete(true);
 	}
 
 	@Override

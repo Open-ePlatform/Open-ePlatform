@@ -6,6 +6,10 @@
 	
 	<xsl:variable name="imagePath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
 	
+	<xsl:variable name="globalscripts">
+		/js/confirmpost.js
+	</xsl:variable>
+	
 	<xsl:template match="Document">
 
 		<div id="TextFieldQueryEndpointAdminModule" class="contentitem errands-wrapper">
@@ -81,7 +85,7 @@
 						</a>
 					</xsl:when>
 					<xsl:otherwise>
-						<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirm('{$i18n.DeleteConfirm}: {name}?');">
+						<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18n.DeleteConfirm}: {name}?');">
 							<xsl:value-of select="$i18n.Delete" />
 						</a>
 					</xsl:otherwise>
@@ -105,7 +109,7 @@
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
-					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirm('{$i18n.DeleteConfirm}: {Endpoint/name}?');">
+					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18nconfirmPost(this.href, onfirm}: {Endpoint/name}?');">
 						<img src="{$imagePath}/delete.png"/>
 					</a>
 				</xsl:otherwise>

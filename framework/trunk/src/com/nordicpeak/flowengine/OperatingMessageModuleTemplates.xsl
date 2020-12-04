@@ -11,6 +11,7 @@
 		/jquery/jquery-migrate.js
 		/jquery/jquery-ui.js
 		/timepicker/js/jquery.timepicker.js
+		/js/confirmpost.js
 	</xsl:variable>
 
 	<xsl:variable name="globallinks">
@@ -218,7 +219,7 @@
 						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
 							<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
 						</a>
-						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirmPost(this.href, '{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
 							<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
 						</a>
 					</xsl:otherwise>
@@ -457,7 +458,7 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}" class="marginright">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{messageID}" onclick="return confirm('{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{messageID}" onclick="return confirmPost(this.href, '{$i18n.DeleteOperatingMessageConfirm}: {name}?');" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 				</a>
 			</td>

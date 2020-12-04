@@ -36,6 +36,8 @@ public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQuerySimpleFi
 	public ChildQueryFilterEndpointCRUD(CRUDDAO<ChildQuerySimpleFilterEndpoint, Integer> crudDAO, ChildQueryFilterEndpointAdminModule callback) {
 
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ChildQuerySimpleFilterEndpoint>(ChildQuerySimpleFilterEndpoint.class), "ChildQueryFilterEndpoint", "endpoint", "/", callback);
+	
+		setRequirePostForDelete(true);
 	}
 
 	@Override

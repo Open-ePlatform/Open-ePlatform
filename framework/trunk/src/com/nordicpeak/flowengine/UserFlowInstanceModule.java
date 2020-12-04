@@ -67,6 +67,7 @@ import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
@@ -870,6 +871,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "delete")
 	public ForegroundModuleResponse deleteFlowInstance(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, AccessDeniedException, IOException {
 
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete flow instance requests using method " + req.getMethod() + " are not allowed.");
+		}	
+		
 		Integer flowInstanceID = null;
 
 		if (uriParser.size() == 3 && (flowInstanceID = NumberUtils.toInt(uriParser.get(2))) != null && deleteFlowInstance(flowInstanceID, DELETE_ACCESS_CONTROLLER, user) != null) {

@@ -45,6 +45,8 @@ public class UserOrganizationCRUD extends IntegerBasedCRUD<UserOrganization, Use
 		organizationUserParamFactory = userOrganizationDAO.getParamFactory("user", User.class);
 		organizationNameParamFactory = userOrganizationDAO.getParamFactory("name", String.class);
 		organizationNumberParamFactory = userOrganizationDAO.getParamFactory("organizationNumber", String.class);
+		
+		this.setRequirePostForDelete(true);
 	}
 
 	@Override

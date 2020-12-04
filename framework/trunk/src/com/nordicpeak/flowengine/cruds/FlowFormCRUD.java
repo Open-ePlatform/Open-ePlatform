@@ -50,6 +50,8 @@ public class FlowFormCRUD extends ModularCRUD<FlowForm, Integer, User, FlowAdmin
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowForm>(FlowForm.class), "FlowForm", "flow form", "", callback);
 		
 		flowFormElementableListener = new FlowFormElementableListener(callback);
+		
+		setRequirePostForDelete(true);
 	}
 	
 	@Override
