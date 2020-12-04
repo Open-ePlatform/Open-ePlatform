@@ -236,7 +236,7 @@
 		<h2 class="clearboth"><xsl:value-of select="$i18n.LocalOperatingMessages" /></h2>
 	
 		<table id="messageList" class="full coloredtable oep-table" cellspacing="0">
-			<thead>
+			<thead class="sortable">
 				<tr>
 					<th width="16" class="no-sort"></th>
 					<th><span data-icon-after="_"><xsl:value-of select="$i18n.Message" /></span></th>
