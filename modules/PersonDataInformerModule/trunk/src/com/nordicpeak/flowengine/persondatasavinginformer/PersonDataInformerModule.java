@@ -76,6 +76,7 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.XSLVariableReader;
 import se.unlogic.standardutils.xsl.XSLVariableReaderRenamer;
+import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
@@ -640,6 +641,11 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	private ViewFragment deleteFlowSettings(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
 
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete requests using method " + req.getMethod() + " are not allowed.");
+		}
+		
 		FlowFamilyInformerSetting informerSettings = getInformerSetting(flow.getFlowFamily());
 
 		if (informerSettings != null) {

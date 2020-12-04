@@ -10,6 +10,7 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
+		/js/confirmpost.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -194,7 +195,7 @@
 			
 			<td class="link">
 				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatedataalternative/{alternativeID}"><xsl:value-of select="$i18n.Update" /></a>
-				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletedataalternative/{alternativeID}" onclick="return confirm('{$i18n.DeleteDataAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletedataalternative/{alternativeID}" onclick="return confirmPost(this.href, '{$i18n.DeleteDataAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
 			</td>
 		</tr>
 	
@@ -213,7 +214,7 @@
 			
 			<td class="link">
 				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatereasonalternative/{alternativeID}"><xsl:value-of select="$i18n.Update" /></a>
-				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletereasonalternative/{alternativeID}" onclick="return confirm('{$i18n.DeleteReasonAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletereasonalternative/{alternativeID}" onclick="return confirmPost(this.href, '{$i18n.DeleteReasonAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
 			</td>
 		</tr>
 	

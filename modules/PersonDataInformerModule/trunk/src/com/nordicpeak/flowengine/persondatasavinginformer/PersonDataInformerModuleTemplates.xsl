@@ -7,6 +7,7 @@
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
+		/js/confirmpost.js
 	</xsl:variable>
 	
 	<!-- Programatical additional globalscripts for UpdateSettings -->
@@ -351,7 +352,7 @@
 		</a>
 		
 		<xsl:if test="FlowFamilyInformerSetting">
-			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteflowsettings" class="floatright clearboth" onclick="return confirm('{$i18n.DeleteSettings.Confirm}');">
+			<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteflowsettings" class="floatright clearboth" onclick="return confirmPost(this.href, '{$i18n.DeleteSettings.Confirm}');">
 				<xsl:value-of select="$i18n.DeleteSettings" />
 				<img class="marginleft vertical-align-bottom" src="{/Document/StaticContentURL}/pics/delete.png" alt="" />
 			</a>		
