@@ -109,7 +109,7 @@
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
-					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18nconfirmPost(this.href, onfirm}: {Endpoint/name}?');">
+					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18n.DeleteConfirm}: {name}?');">
 						<img src="{$imagePath}/delete.png"/>
 					</a>
 				</xsl:otherwise>
