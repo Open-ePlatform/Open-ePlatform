@@ -8,6 +8,7 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/jquery/plugins/jquery.qloader.js
+		/js/confirmpost.js
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">

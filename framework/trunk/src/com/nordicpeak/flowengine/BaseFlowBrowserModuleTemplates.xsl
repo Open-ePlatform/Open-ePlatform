@@ -2,10 +2,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
-	<xsl:variable name="globalscripts">
-		/js/confirmpost.js
-	</xsl:variable>
-
 	<xsl:template match="validationError[messageKey='FlowNoLongerAvailable']">
 	
 		<xsl:call-template name="printValidationError">
