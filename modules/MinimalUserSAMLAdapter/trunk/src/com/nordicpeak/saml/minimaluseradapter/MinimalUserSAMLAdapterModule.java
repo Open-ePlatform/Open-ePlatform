@@ -48,7 +48,7 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 	protected String lastNameAttribute = "surname";
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "Do not update firstname och lastname", description = "When existing user is logging in, name info will not be updated even if they differ")
+	@CheckboxSettingDescriptor(name = "Do not update firstname", description = "When existing user is logging in, firstname will not be updated even if they differ")
 	protected boolean skipNameUpdate = false;
 	
 	@ModuleSetting(allowsNull = true)
@@ -179,19 +179,17 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 
 				MutableUser mutableUser = ((MutableUser) user);
 
-				if(!skipNameUpdate) {
 					
-					if (!user.getFirstname().equals(firstName)) {
+				if (!user.getFirstname().equals(firstName) && !skipNameUpdate) {
+
+					mutableUser.setFirstname(firstName);
+					update = true;
+				}
 	
-						mutableUser.setFirstname(firstName);
-						update = true;
-					}
-	
-					if (!user.getLastname().equals(lastName)) {
-	
-						mutableUser.setLastname(lastName);
-						update = true;
-					}
+				if (!user.getLastname().equals(lastName)) {
+
+					mutableUser.setLastname(lastName);
+					update = true;
 				}
 
 				if (updateAttributes(mutableUser, attributeMap)) {
