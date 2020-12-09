@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -29,7 +29,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -63,7 +62,7 @@ public class FlowIndexer {
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer(Version.LUCENE_44);
+	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -79,7 +78,7 @@ public class FlowIndexer {
 		
 		AutoDetectParser parser = new AutoDetectParser(tikaConfig);
 
-		indexWriter = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_44, analyzer));
+		indexWriter = new IndexWriter(index, new IndexWriterConfig(analyzer));
 
 		for(Flow flow : flows){
 
@@ -91,7 +90,7 @@ public class FlowIndexer {
 			try{
 				Document doc = new Document();
 				
-				doc.add(new IntField(ID_FIELD, flow.getFlowID(), Field.Store.YES));
+				doc.add(new StoredField(ID_FIELD, flow.getFlowID()));
 				doc.add(new TextField(NAME_FIELD, flow.getName(), Field.Store.NO));
 				doc.add(new TextField(SHORT_DESCRIPTION_FIELD, parseHTML(flow.getShortDescription(), parser), Field.Store.NO));
 
@@ -183,7 +182,7 @@ public class FlowIndexer {
 		
 		queryString = queryString.trim();
 		
-		MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_44, SEARCH_FIELDS, analyzer);
+		MultiFieldQueryParser parser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
 
 		Query query;
 
@@ -243,7 +242,7 @@ public class FlowIndexer {
 		//queryString = queryString.replace(":", " ");
 		queryString = queryString.trim();
 		
-		MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_44, SEARCH_FIELDS, analyzer);
+		MultiFieldQueryParser parser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
 
 		Query query;
 

@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -28,17 +29,13 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
@@ -110,7 +107,7 @@ public class FlowInstanceIndexer {
 	
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer(Version.LUCENE_44);
+	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -147,7 +144,7 @@ public class FlowInstanceIndexer {
 		flowInstanceFlowParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("flow", Flow.class);
 		flowInstanceFirstSubmittedParamFactory = daoFactory.getFlowInstanceDAO().getParamFactory("firstSubmitted", Timestamp.class);
 
-		indexWriter = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_44, analyzer));
+		indexWriter = new IndexWriter(index, new IndexWriterConfig(analyzer));
 
 		int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
 
@@ -212,7 +209,7 @@ public class FlowInstanceIndexer {
 		//queryString = StringUtils.parseUTF8(queryString);
 		queryString = queryString.trim();
 
-		MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_44, SEARCH_FIELDS, analyzer);
+		MultiFieldQueryParser parser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
 
 		Query query;
 
@@ -232,9 +229,12 @@ public class FlowInstanceIndexer {
 
 		if(checkAccess){
 			
-			Filter filter = getFilter(user);
+			BooleanQuery.Builder builder = new BooleanQuery.Builder();
+			builder.add(query, Occur.MUST);
 			
-			results = searcher.search(query, filter, maxHitCount);
+			appendFilter(builder, user);
+			
+			results = searcher.search(builder.build(), maxHitCount);
 			
 		}else{
 			
@@ -548,7 +548,7 @@ public class FlowInstanceIndexer {
 				
 				for (User manager : flowInstance.getManagers()) {
 					
-					doc.add(new IntField(MANAGER_USER_FIELD, manager.getUserID(), Field.Store.YES));
+					doc.add(new StoredField(MANAGER_USER_FIELD, manager.getUserID()));
 					doc.add(new TextField(MANAGER_FIELD, manager.getFirstname() + " " + manager.getLastname(), Field.Store.NO));
 				}
 			}
@@ -557,7 +557,7 @@ public class FlowInstanceIndexer {
 				
 				for (Group managerGroup : flowInstance.getManagerGroups()) {
 					
-					doc.add(new IntField(MANAGER_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+					doc.add(new StoredField(MANAGER_GROUP_FIELD, managerGroup.getGroupID()));
 				}
 			}
 			
@@ -582,10 +582,10 @@ public class FlowInstanceIndexer {
 				for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
 					
 					if (managerGroup.isRestricted()) {
-						doc.add(new IntField(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+						doc.add(new StoredField(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID()));
 						
 					} else {
-						doc.add(new IntField(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID(), Field.Store.YES));
+						doc.add(new StoredField(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID()));
 					}
 				}
 			}
@@ -597,10 +597,10 @@ public class FlowInstanceIndexer {
 				for (FlowFamilyManager manager : activeManagers) {
 					
 					if (manager.isRestricted()) {
-						doc.add(new IntField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID(), Field.Store.YES));
+						doc.add(new StoredField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID()));
 						
 					} else {
-						doc.add(new IntField(ALLOWED_FULL_USER_FIELD, manager.getUserID(), Field.Store.YES));
+						doc.add(new StoredField(ALLOWED_FULL_USER_FIELD, manager.getUserID()));
 					}
 				}
 			}
@@ -629,12 +629,12 @@ public class FlowInstanceIndexer {
 
 		log.debug("Removing flow instance " + flowInstance + " from index.");
 
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 
 		query.add(new TermQuery(new Term(ID_FIELD, flowInstance.getFlowInstanceID().toString())), Occur.MUST);
 
 		try{
-			indexWriter.deleteDocuments(query);
+			indexWriter.deleteDocuments(query.build());
 
 		}catch(Exception e){
 
@@ -646,12 +646,12 @@ public class FlowInstanceIndexer {
 
 		log.debug("Removing flow instances belonging to flow " + flow + " from index.");
 
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 
 		query.add(new TermQuery(new Term(FLOW_ID_FIELD, flow.getFlowID().toString())), Occur.MUST);
 
 		try{
-			indexWriter.deleteDocuments(query);
+			indexWriter.deleteDocuments(query.build());
 
 		}catch(Exception e){
 
@@ -663,12 +663,12 @@ public class FlowInstanceIndexer {
 
 		log.debug("Removing flow instances belonging to flow family " + flowFamily + " from index.");
 
-		BooleanQuery query = new BooleanQuery();
+		BooleanQuery.Builder query = new BooleanQuery.Builder();
 
 		query.add(new TermQuery(new Term(FLOW_FAMILY_ID_FIELD, flowFamily.getFlowFamilyID().toString())), Occur.MUST);
 
 		try{
-			indexWriter.deleteDocuments(query);
+			indexWriter.deleteDocuments(query.build());
 
 		}catch(Exception e){
 
@@ -753,16 +753,16 @@ public class FlowInstanceIndexer {
 		this.logIndexing = logIndexing;
 	}
 	
-	protected Filter getFilter(User user) {
+	protected void appendFilter(BooleanQuery.Builder builder, User user) {
 		
-		BooleanQuery familyFullManagerQuery = new BooleanQuery();
-		BooleanQuery familyRestrictedManagerQuery = new BooleanQuery();
+		BooleanQuery.Builder familyFullManagerQuery = new BooleanQuery.Builder();
+		BooleanQuery.Builder familyRestrictedManagerQuery = new BooleanQuery.Builder();
 		familyRestrictedManagerQuery.setMinimumNumberShouldMatch(1);
 		
 		if (user.getUserID() != null) {
 			
-			familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
-			familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+			familyFullManagerQuery.add(IntPoint.newRangeQuery(ALLOWED_FULL_USER_FIELD, user.getUserID(), user.getUserID()), Occur.SHOULD);
+			familyRestrictedManagerQuery.add(IntPoint.newRangeQuery(ALLOWED_RESTRICTED_USER_FIELD, user.getUserID(), user.getUserID()), Occur.SHOULD);
 		}
 		
 		if (user.getGroups() != null) {
@@ -771,14 +771,14 @@ public class FlowInstanceIndexer {
 				
 				if (group.isEnabled() && group.getGroupID() != null) {
 					
-					familyFullManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
-					familyRestrictedManagerQuery.add(NumericRangeQuery.newIntRange(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					familyFullManagerQuery.add(IntPoint.newRangeQuery(ALLOWED_FULL_GROUP_FIELD, group.getGroupID(), group.getGroupID()), Occur.SHOULD);
+					familyRestrictedManagerQuery.add(IntPoint.newRangeQuery(ALLOWED_RESTRICTED_GROUP_FIELD, group.getGroupID(), group.getGroupID()), Occur.SHOULD);
 				}
 			}
 		}
 		
-		BooleanQuery instanceManagerQuery = new BooleanQuery();
-		instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_USER_FIELD, user.getUserID(), user.getUserID(), true, true), Occur.SHOULD);
+		BooleanQuery.Builder instanceManagerQuery = new BooleanQuery.Builder();
+		instanceManagerQuery.add(IntPoint.newRangeQuery(MANAGER_USER_FIELD, user.getUserID(), user.getUserID()), Occur.SHOULD);
 		
 		if (user.getGroups() != null) {
 			
@@ -786,17 +786,14 @@ public class FlowInstanceIndexer {
 				
 				if (group.isEnabled() && group.getGroupID() != null) {
 					
-					instanceManagerQuery.add(NumericRangeQuery.newIntRange(MANAGER_GROUP_FIELD, group.getGroupID(), group.getGroupID(), true, true), Occur.SHOULD);
+					instanceManagerQuery.add(IntPoint.newRangeQuery(MANAGER_GROUP_FIELD, group.getGroupID(), group.getGroupID()), Occur.SHOULD);
 				}
 			}
 		}
 		
-		familyRestrictedManagerQuery.add(instanceManagerQuery, Occur.MUST);
+		familyRestrictedManagerQuery.add(instanceManagerQuery.build(), Occur.MUST);
 		
-		BooleanQuery mainQuery = new BooleanQuery();
-		mainQuery.add(familyFullManagerQuery, Occur.SHOULD);
-		mainQuery.add(familyRestrictedManagerQuery, Occur.SHOULD);
-		
-		return new QueryWrapperFilter(mainQuery);
+		builder.add(familyFullManagerQuery.build(), Occur.SHOULD);
+		builder.add(familyRestrictedManagerQuery.build(), Occur.SHOULD);
 	}
 }
