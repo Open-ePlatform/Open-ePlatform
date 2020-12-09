@@ -9,6 +9,7 @@ import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.schema.impl.XSAnyImpl;
 import org.opensaml.xml.schema.impl.XSStringImpl;
 
+import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
@@ -46,6 +47,10 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 	@TextFieldSettingDescriptor(name = "Last name attribute", description = "The name of the attribute in the assertion containing the last name", required = true)
 	protected String lastNameAttribute = "surname";
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Do not update firstname och lastname", description = "When existing user is logging in, name info will not be updated even if they differ")
+	protected boolean skipNameUpdate = false;
+	
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Extra attributes", description = "Extra assertion attributes to be set on user in the format of one attribute per line. Example someAssertionAttribute;someLocalAttribute")
 	private List<String> extraAttributes;
@@ -174,16 +179,19 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 
 				MutableUser mutableUser = ((MutableUser) user);
 
-				if (!user.getFirstname().equals(firstName)) {
-
-					mutableUser.setFirstname(firstName);
-					update = true;
-				}
-
-				if (!user.getLastname().equals(lastName)) {
-
-					mutableUser.setLastname(lastName);
-					update = true;
+				if(!skipNameUpdate) {
+					
+					if (!user.getFirstname().equals(firstName)) {
+	
+						mutableUser.setFirstname(firstName);
+						update = true;
+					}
+	
+					if (!user.getLastname().equals(lastName)) {
+	
+						mutableUser.setLastname(lastName);
+						update = true;
+					}
 				}
 
 				if (updateAttributes(mutableUser, attributeMap)) {
