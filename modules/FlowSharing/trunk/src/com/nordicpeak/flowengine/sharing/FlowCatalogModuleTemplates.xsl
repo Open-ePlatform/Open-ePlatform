@@ -388,7 +388,7 @@
 							</xsl:call-template>
 						</xsl:variable>
 
-						<a class="floatleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{../../RepositoryIndex}/{sharedFlowID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFlowConfirm} {version}: {$name}?');" title="{$i18n.DeleteFlow.title} {version}: {name}">
+						<a class="floatleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{../../RepositoryIndex}/{sharedFlowID}" onclick="return confirmPost(this);" title="{$i18n.DeleteFlow.title} {version}: {name}">
 							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 						</a>
 

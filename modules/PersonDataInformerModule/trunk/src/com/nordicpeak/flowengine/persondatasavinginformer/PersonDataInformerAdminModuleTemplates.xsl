@@ -195,7 +195,7 @@
 			
 			<td class="link">
 				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatedataalternative/{alternativeID}"><xsl:value-of select="$i18n.Update" /></a>
-				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletedataalternative/{alternativeID}" onclick="return confirmPost(this.href, '{$i18n.DeleteDataAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletedataalternative/{alternativeID}" onclick="return confirmPost(this);" title="{$i18n.DeleteDataAlternativeConfirm}: {name}"><xsl:value-of select="$i18n.Delete" /></a>
 			</td>
 		</tr>
 	
@@ -214,7 +214,7 @@
 			
 			<td class="link">
 				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatereasonalternative/{alternativeID}"><xsl:value-of select="$i18n.Update" /></a>
-				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletereasonalternative/{alternativeID}" onclick="return confirmPost(this.href, '{$i18n.DeleteReasonAlternativeConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+				<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletereasonalternative/{alternativeID}" onclick="return confirmPost(this);" title="{$i18n.DeleteReasonAlternativeConfirm}: {name}"><xsl:value-of select="$i18n.Delete" /></a>
 			</td>
 		</tr>
 	

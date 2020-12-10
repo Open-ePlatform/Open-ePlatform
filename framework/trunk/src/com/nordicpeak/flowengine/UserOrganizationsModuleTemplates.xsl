@@ -100,7 +100,7 @@
 			<td data-title="{$i18n.OrganizationNumber}" class="organizationNumber"><xsl:value-of select="organizationNumber" /></td>
 			<td class="link">
 				<a class="btn btn-green vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{organizationID}"><xsl:value-of select="$i18n.Update" /></a>
-				<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{organizationID}" onclick="return confirmPost(this.href, '{$i18n.DeleteOrganizationConfirm}: {name}?');"><xsl:value-of select="$i18n.Delete" /></a>
+				<a class="btn btn-red vertical-align-middle" style="margin-left: 2px" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{organizationID}" onclick="return confirmPost(this);" title="{$i18n.DeleteOrganizationConfirm}: {name}"><xsl:value-of select="$i18n.Delete" /></a>
 			</td>
 		</tr>
 		

@@ -85,7 +85,7 @@
 						</a>
 					</xsl:when>
 					<xsl:otherwise>
-						<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18n.DeleteConfirm}: {name}?');">
+						<a class="btn btn-red vertical-align-middle" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this);" title="{$i18n.DeleteConfirm}: {name}">
 							<xsl:value-of select="$i18n.Delete" />
 						</a>
 					</xsl:otherwise>
@@ -109,7 +109,7 @@
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
-					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this.href, '{$i18n.DeleteConfirm}: {ChildQueryFilterEndpoint/name}?');">
+					<a class="floatright marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{endpointID}" onclick="return confirmPost(this);" title="{$i18n.DeleteConfirm}: {ChildQueryFilterEndpoint/name}">
 						<img src="{$imagePath}/delete.png"/>
 					</a>
 				</xsl:otherwise>

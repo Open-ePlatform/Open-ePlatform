@@ -157,7 +157,7 @@
 				 	
 				 		<span class="time"><xsl:text>&#160;·&#160;</xsl:text></span>
 				 	
-					 	<a class="delete" href="{../../ModuleURL}?action=delete&amp;attachmentID={attachmentID}" onclick="return confirmPost(this.href, '{$i18n.DeleteFile.confirm}: {filename}');">
+					 	<a class="delete" href="{../../ModuleURL}?action=delete&amp;attachmentID={attachmentID}" onclick="return confirmPost(this);" title="{$i18n.DeleteFile.confirm}: {filename}">
 							<span data-icon-before="x">
 								<xsl:value-of select="$i18n.DeleteFile" />
 							</span>
