@@ -2433,7 +2433,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 							RelationQuery updateQuery = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
 							updateQuery.addExcludedFields(FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION);
-							daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery);
+							daoFactory.getFlowInstanceDAO().update(flowInstance, updateQuery, 10);
 
 							FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, null);
 
