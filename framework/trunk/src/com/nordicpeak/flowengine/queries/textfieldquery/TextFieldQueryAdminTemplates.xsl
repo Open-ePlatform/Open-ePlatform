@@ -187,7 +187,7 @@
 			</div>
 			<div class="padding floatright">
 				<div class="floatright marginright">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletetextfield/{textFieldID}" onclick="return confirmPost(this);" title="{$i18n.DeleteTextField}: {label}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletetextfield/{textFieldID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteTextField}: {label}">
 						<img src="{$imagePath}/delete.png"/>
 					</a>
 				</div>

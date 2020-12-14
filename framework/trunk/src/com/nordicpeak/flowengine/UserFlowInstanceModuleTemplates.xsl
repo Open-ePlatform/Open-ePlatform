@@ -331,7 +331,7 @@
 				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
 			
 				<xsl:if test="Status/isUserDeletable = 'true'">
-					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirmPost(this);" title="'{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}"><xsl:value-of select="$i18n.Delete" /></a>
+					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="'{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}"><xsl:value-of select="$i18n.Delete" /></a>
 				</xsl:if>
 			</td>
 		</tr>

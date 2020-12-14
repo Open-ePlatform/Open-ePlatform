@@ -219,7 +219,7 @@
 						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/update/{messageID}" class="marginright">
 							<img class="alignbottom" src="{$extensionImgPath}/pen.png" alt="" />
 						</a>
-						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirmPost(this);" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+						<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/delete/{messageID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
 							<img class="alignbottom" src="{$extensionImgPath}/delete.png" alt="" />
 						</a>
 					</xsl:otherwise>
@@ -458,7 +458,7 @@
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/update/{messageID}" class="marginright">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png" alt="" />
 				</a>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{messageID}" onclick="return confirmPost(this);" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{messageID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteOperatingMessageTitle}: {name}">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 				</a>
 			</td>

@@ -75,7 +75,7 @@
 				<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/pen.png"/>
 			</a>
 
-			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletesource/{sourceID}" onclick="return confirmPost(this)" title="{$i18n.removeSource}: {name}">
+			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletesource/{sourceID}" onclick="return confirmHyperlinkPost(this)" title="{$i18n.removeSource}: {name}">
 				<img class="alignbottom marginright" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png"/>
 			</a>
 				
