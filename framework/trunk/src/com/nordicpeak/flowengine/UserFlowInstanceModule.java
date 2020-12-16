@@ -220,6 +220,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@EnumDropDownSettingDescriptor(name="Flow instance event sort order", description="The order of flow instance events when displayed in this module", required=true)
 	protected Order flowInstanceEventSortOrder = Order.ASC;
+	
+	@ModuleSetting(allowsNull=true)
+	@TextAreaSettingDescriptor(name="Allowed external message file extensions", description="Default value for allowed file extensions in external messages (leave empty to allow all file extensions).")
+	protected List<String> defaultAllowedExternalMessageFileExtensions;
 
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -638,10 +642,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "hideEventXMLFromUser");
 			}
 			
+			XMLUtils.append(doc, showFlowInstanceOverviewElement, "AllowedExternalMessageFileExtensions", "FileExtension", defaultAllowedExternalMessageFileExtensions);
+			
 			if (req.getMethod().equalsIgnoreCase("POST") && flowInstance.isNewExternalMessagesAllowed()) {
 					
-				//TODO append message or request parameters
-				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false);
+				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false, defaultAllowedExternalMessageFileExtensions);
 				
 				if (externalMessage != null) {
 					

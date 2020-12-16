@@ -29,11 +29,13 @@ import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.fileattachments.FileAttachment;
 import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -83,7 +85,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		this.manager = manager;
 	}
 
-	protected List<AttachmentType> getAttachments(HttpServletRequest req, User user, List<ValidationError> errors) throws SerialException, SQLException {
+	protected List<AttachmentType> getAttachments(HttpServletRequest req, User user, List<ValidationError> errors, List<String> allowedFileExtensions) throws SerialException, SQLException {
 
 		if (!(req instanceof MultipartRequest)) {
 
@@ -115,6 +117,15 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 					continue;
 				}
 
+				String fileExtension = FileUtils.getFileExtension(fileItem.getName());
+				
+				if (allowedFileExtensions != null && (fileExtension == null || !allowedFileExtensions.contains(fileExtension.toLowerCase()))) {
+
+					errors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName())));
+
+					continue;
+				}	
+				
 				if (fileItem.getSize() > (callback.getMaxFileSize() * BinarySizes.MegaByte)) {
 
 					errors.add(new FileSizeLimitExceededValidationError(FilenameUtils.getName(fileItem.getName()), fileItem.getSize(), callback.getMaxFileSize() * BinarySizes.MegaByte));

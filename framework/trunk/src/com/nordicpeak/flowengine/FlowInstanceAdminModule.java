@@ -29,6 +29,7 @@ import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -281,6 +282,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@EnumDropDownSettingDescriptor(name = "Flow instance event sort order", description = "The order of flow instance events when displayed in this module", required = true)
 	protected Order flowInstanceEventSortOrder = Order.ASC;
 
+	@ModuleSetting(allowsNull=true)
+	@TextAreaSettingDescriptor(name="Allowed external message file extensions", description="Default value for allowed file extensions in external messages (leave empty to allow all file extensions).")
+	protected List<String> defaultAllowedExternalMessageFileExtensions;
+	
+	@ModuleSetting(allowsNull=true)
+	@TextAreaSettingDescriptor(name="Allowed internal message file extensions", description="Default value for allowed file extensions in internal messages (leave empty to allow all file extensions).")
+	protected List<String> defaultAllowedInternalMessageFileExtensions;	
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -577,11 +586,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormattedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 
+			XMLUtils.append(doc, showFlowInstanceOverviewElement, "AllowedExternalMessageFileExtensions", "FileExtension", defaultAllowedExternalMessageFileExtensions);
+			XMLUtils.append(doc, showFlowInstanceOverviewElement, "AllowedInternalMessageFileExtensions", "FileExtension", defaultAllowedInternalMessageFileExtensions);
+			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
 				if (req.getParameter("externalmessage") != null && flowInstance.isNewExternalMessagesAllowed()) {
 
-					ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true);
+					ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, true, defaultAllowedExternalMessageFileExtensions);
 
 					if (externalMessage != null) {
 
@@ -595,7 +607,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				} else if (req.getParameter("internalmessage") != null) {
 
 					//TODO append message or request parameters
-					InternalMessage internalMessage = internalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance);
+					InternalMessage internalMessage = internalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, defaultAllowedInternalMessageFileExtensions);
 
 					if (internalMessage != null) {
 

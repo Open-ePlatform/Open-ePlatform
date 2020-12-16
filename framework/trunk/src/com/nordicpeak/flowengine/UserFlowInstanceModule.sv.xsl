@@ -95,9 +95,9 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.UnableToParseRequest">Ett okänt fel uppstod vid filuppladdningen</xsl:variable>
-	<xsl:variable name="i18n.validationError.MessageRequired">Du måste skriva ett meddelande</xsl:variable>
-	<xsl:variable name="i18n.validationError.MessageToLong">Du har skrivit ett för långt meddelande</xsl:variable>
-	<xsl:variable name="i18n.validationError.MessageToShort">Du har skrivit ett för kort meddelande</xsl:variable>
+	
+	
+	
 	
 	<xsl:variable name="i18n.DownloadFlowInstancePDF">Hämta kvittens i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadFlowInstanceXML">Hämta ärendet i XML-format</xsl:variable>
@@ -105,9 +105,13 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.DownloadSignature">Hämta signatur</xsl:variable>
 	<xsl:variable name="i18n.WaitingForOthersSignatures">Väntar på signatur från annan part</xsl:variable>
 	<xsl:variable name="i18n.WaitingForPayment">Väntar på betalning</xsl:variable>
-	<xsl:variable name="i18n.PostedByManager">Handläggare</xsl:variable>
+	
 	<xsl:variable name="i18n.Owners">Sökande</xsl:variable>
 	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>
 	<xsl:variable name="i18n.CurrentStatus">Aktuell status</xsl:variable>
 	
+	<xsl:variable name="i18n.AllowedFilextentions">Tillåtna filtyper</xsl:variable>
+	
+	<xsl:variable name="i18n.InvalidFileExtension.part1">Filen </xsl:variable>
+	<xsl:variable name="i18n.InvalidFileExtension.part2"> är av en otillåten filtyp.</xsl:variable>
 </xsl:stylesheet>

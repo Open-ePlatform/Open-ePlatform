@@ -22,6 +22,7 @@ import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
@@ -38,7 +39,7 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 		super(messageDAO, attachmentDAO, callback, InternalMessage.class, InternalMessageAttachment.class, manager);
 	}
 
-	public InternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance) throws SQLException, IOException {
+	public InternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, List<String> allowedFileExtensions) throws SQLException, IOException {
 		
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
@@ -51,7 +52,7 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 		try{
 			String message = ValidationUtils.validateParameter("internalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), errors);
 
-			List<InternalMessageAttachment> attachments = getAttachments(req, user, errors);
+			List<InternalMessageAttachment> attachments = getAttachments(req, user, errors, allowedFileExtensions);
 
 			if (errors.isEmpty()) {
 
@@ -77,7 +78,8 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 			}
 
 			XMLUtils.append(doc, element, errors);
-
+			element.appendChild(RequestUtils.getRequestParameters(req, doc, "internalmessage"));
+			
 			return null;
 
 		}catch(Throwable t){	

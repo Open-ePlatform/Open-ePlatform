@@ -721,7 +721,6 @@
 								<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
 								<xsl:text>)</xsl:text>
 								
-								<!-- TODO count how many unread messages since last login -->
 								<xsl:if test="false()">
 									<span class="count">0</span>
 								</xsl:if>
@@ -746,7 +745,7 @@
 	  						
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-		  						<textarea id="message" name="externalmessage" class="full" rows="10"/>
+		  						<textarea id="message" name="externalmessage" class="full" rows="10" value="{../requestparameters/parameter[name='externalmessage']/value}"/>
 		  						
 		  						<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
 		  						
@@ -759,7 +758,7 @@
 										deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
 									</script>				
 									
-									<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest']" />
+									<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest' or messageKey = 'InvalidFileExtension']" />
 									
 									<div class="full">
 										
@@ -769,6 +768,14 @@
 												<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
 											</span>
 											<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
+											
+											<xsl:if test="../AllowedExternalMessageFileExtensions">
+												<span>
+													<xsl:value-of select="$i18n.AllowedFilextentions" />
+													<xsl:text>: </xsl:text>
+													<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension"/>
+												</span>
+											</xsl:if>											
 										</div>
 										
 										<ul id="external-message-qloader-filelist" class="files" />
@@ -777,8 +784,13 @@
 									
 								</xsl:if>
 								
-		  						<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
-		  						<a href="#" class="btn btn-light btn-inline close_message"><xsl:value-of select="$i18n.Cancel" /></a>
+		  						
+		  						<div class="floatright">
+			  						<a href="#" class="btn btn-light btn-inline close_message marginright"><xsl:value-of select="$i18n.Cancel" /></a>
+			  						<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
+		  						</div>
+		  						
+		  						<div class="clearboth"/>
 		  						
 	  						</form>
 	  						
@@ -878,7 +890,17 @@
 		</section>
 	
 	</xsl:template>
+
+	<xsl:template match="FileExtension">
 	
+		<xsl:value-of select="."/>
+		
+		<xsl:if test="position() != last()">
+			<xsl:text>, </xsl:text>
+		</xsl:if>
+	
+	</xsl:template>	
+
 	<xsl:template name="truncateWithEllipsis">
 		<xsl:param name="text" />
 		<xsl:param name="maxLength" />
@@ -1251,6 +1273,20 @@
 			</span>
 		</div>
 		
-	</xsl:template>						
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='InvalidFileExtension']">
+	
+		<div class="info-box error">
+			<span>
+				<strong data-icon-before="!">
+					<xsl:value-of select="$i18n.InvalidFileExtension.part1"/>
+					<xsl:value-of select="filename"/>
+					<xsl:value-of select="$i18n.InvalidFileExtension.part2"/>
+				</strong>
+			</span>
+		</div>
+			
+	</xsl:template>				
 	
 </xsl:stylesheet>

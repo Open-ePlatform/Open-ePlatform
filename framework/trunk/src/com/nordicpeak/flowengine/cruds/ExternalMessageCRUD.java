@@ -22,6 +22,7 @@ import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
@@ -38,7 +39,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		super(messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
 	}
 
-	public ExternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, boolean postedByManager) throws SQLException, IOException {
+	public ExternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, boolean postedByManager, List<String> allowedFileExtensions) throws SQLException, IOException {
 
 		List<ValidationError> validationErrors = new ArrayList<>();
 
@@ -50,7 +51,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		
 		try {
 
-			ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors);
+			ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors, allowedFileExtensions);
 
 			if (externalMessage != null) {
 				
@@ -66,6 +67,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 			}
 
 			XMLUtils.append(doc, element, validationErrors);
+			element.appendChild(RequestUtils.getRequestParameters(req, doc, "externalmessage"));
 
 			return externalMessage;
 
@@ -87,11 +89,11 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		
 	}
 
-	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) throws SQLException, IOException {
+	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors, List<String> allowedFileExtensions) throws SQLException, IOException {
 		
 		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
 		
-		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors);
+		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors, allowedFileExtensions);
 		
 		return create(message, attachments, user, flowInstance, postedByManager, validationErrors);
 	}
