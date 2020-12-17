@@ -87,22 +87,18 @@ function initMessageTab(tabID, messagePanelID) {
 		e.preventDefault();
 		$(messagePanelID).hide();
 	});
-	
-	if($(tabID + " div.info-box.error").length > 0) {
-		var $tabs = $("#tabs");
-		var idx = $tabs.find(tabID).index();
-		$tabs.tabs("option", "active", idx-1);
-		$(tabID + " a.open_message").trigger("click");
-	}
 
-	if(window.location.hash == messagePanelID) {
+	if ($(tabID + " div.info-box.error").length > 0) {
+		
 		var $tabs = $("#tabs");
 		var idx = $tabs.find(tabID).index();
-		$tabs.tabs("option", "active", idx-1);
-		scrollToMessages(tabID + " ul.messages li");
+		$tabs.tabs("option", "active", idx);
+		$(tabID + " a.open_message").trigger("click");
+		
+	} else {
+		
+		setActiveTab(tabID);
 	}
-	
-	setActiveTab(tabID);
 	
 	$(window).bind('hashchange', function () {
 		
