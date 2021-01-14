@@ -11,6 +11,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -21,11 +22,15 @@ import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLParserPopulateable;
 import se.unlogic.standardutils.xml.XMLValidationUtils;
 
-@Table(name = "flowengine_flow_family_external_message_templates")
-@XMLElement
-public class ExternalMessageTemplate extends GeneratedElementable implements Serializable, XMLParserPopulateable {
+import com.nordicpeak.flowengine.enums.MessageTemplateType;
 
-	public static final Field FLOW_FAMILY_RELATION = ReflectionUtils.getField(ExternalMessageTemplate.class, "flowFamily");
+@Table(name = "flowengine_flow_family_message_templates")
+@XMLElement
+public class MessageTemplate extends GeneratedElementable implements Serializable, XMLParserPopulateable {
+
+	private static final EnumPopulator<MessageTemplateType> TYPE_POPULATOR = new EnumPopulator<>(MessageTemplateType.class);
+
+	public static final Field FLOW_FAMILY_RELATION = ReflectionUtils.getField(MessageTemplate.class, "flowFamily");
 
 	private static final long serialVersionUID = 3268646669132872847L;
 
@@ -41,54 +46,83 @@ public class ExternalMessageTemplate extends GeneratedElementable implements Ser
 
 	@DAOManaged
 	@OrderBy
-	@WebPopulate(maxLength = 255, required = true, paramName = "externalMessageTemplateName")
+	@WebPopulate(maxLength = 255, required = true, paramName = "messageTemplateName")
 	@XMLElement
 	private String name;
 
 	@DAOManaged
-	@WebPopulate(maxLength = 65535, required = true, paramName = "externalMessageTemplateMessage")
+	@WebPopulate(maxLength = 65535, required = true, paramName = "messageTemplateMessage")
 	@XMLElement
 	private String message;
 
+	@DAOManaged
+	@WebPopulate(required = true, paramName = "messageTemplateType")
+	@XMLElement
+	private MessageTemplateType type;
+
 	public Integer getTemplateID() {
+
 		return templateID;
 	}
 
 	public void setTemplateID(Integer templateID) {
+
 		this.templateID = templateID;
 	}
 
 	public FlowFamily getFlowFamily() {
+
 		return flowFamily;
 	}
 
 	public void setFlowFamily(FlowFamily flowFamily) {
+
 		this.flowFamily = flowFamily;
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
 	public void setName(String name) {
+
 		this.name = name;
 	}
 
 	public String getMessage() {
+
 		return message;
 	}
 
 	public void setMessage(String message) {
+
 		this.message = message;
+	}
+
+	public MessageTemplateType getType() {
+
+		return type;
+	}
+
+	public void setType(MessageTemplateType type) {
+
+		this.type = type;
 	}
 
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
 
-		List<ValidationError> errors = new ArrayList<ValidationError>();
+		List<ValidationError> errors = new ArrayList<>();
 
 		name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		message = XMLValidationUtils.validateParameter("message", xmlParser, true, 1, 65535, StringPopulator.getPopulator(), errors);
+		type = XMLValidationUtils.validateParameter("type", xmlParser, false, TYPE_POPULATOR, errors);
+		
+		if (type == null) {
+			
+			type = MessageTemplateType.EXTERNAL;
+		}
 
 		if (!errors.isEmpty()) {
 
@@ -98,6 +132,7 @@ public class ExternalMessageTemplate extends GeneratedElementable implements Ser
 
 	@Override
 	public String toString() {
+
 		return getClass().getSimpleName() + " (templateID=" + templateID + ", name=" + name + ")";
 	}
 

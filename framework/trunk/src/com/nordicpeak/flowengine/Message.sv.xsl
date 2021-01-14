@@ -16,7 +16,7 @@
 	<xsl:variable name="i18n.DeleteFile">Ta bort fil</xsl:variable>
 	<xsl:variable name="i18n.VerifyAttachedFiles">Bekräfta bifogade filer</xsl:variable>
 
-	<xsl:variable name="i18n.ExternalMessageTemplates.choose">Meddelandemallar</xsl:variable>
+	<xsl:variable name="i18n.MessageTemplates.choose">Meddelandemallar</xsl:variable>
 	
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part1">Filen </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>

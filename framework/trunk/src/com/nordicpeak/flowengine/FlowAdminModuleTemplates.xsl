@@ -31,7 +31,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=10
+		/js/flowadminmodule.js?v=11
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -136,8 +136,8 @@
 					<xsl:apply-templates select="ShowFlowOverview"/>
 					<xsl:apply-templates select="AutoManagerAssignment" />
 					
-					<xsl:apply-templates select="AddExternalMessageTemplate" />
-					<xsl:apply-templates select="UpdateExternalMessageTemplate" />
+					<xsl:apply-templates select="AddMessageTemplate" />
+					<xsl:apply-templates select="UpdateMessageTemplate" />
 					
 				</div>
 				
@@ -386,7 +386,7 @@
 					<li><a href="#flowsurveys" title="{$i18n.FlowSurveysTitle}"><xsl:value-of select="$i18n.FlowSurveysTitle" /></a></li>
 				</xsl:if>
 
-				<li><a href="#externalmessagetemplates" title="{$i18n.ExternalMessageTemplates.title}"><xsl:value-of select="$i18n.ExternalMessageTemplates.title" /></a></li>
+				<li><a href="#messagetemplates" title="{$i18n.MessageTemplates.title}"><xsl:value-of select="$i18n.MessageTemplates.title" /></a></li>
 
 				<li><a href="#versions" title="{$i18n.versions}"><xsl:value-of select="$i18n.versions" /></a></li>
 				
@@ -1114,39 +1114,40 @@
 	
 			<div class="showflow-wrapper">
 				
-				<a name="externalmessagetemplates"/>
+				<a name="messagetemplates"/>
 			
 				<h2 class="title">
-					<xsl:value-of select="$i18n.ExternalMessageTemplates.title"/>
+					<xsl:value-of select="$i18n.MessageTemplates.title"/>
 				</h2>
 				
 				<div class="showflow-content">
 				
 					<xsl:choose>
-						<xsl:when test="Flow/FlowFamily/ExternalMessageTemplates">
+						<xsl:when test="Flow/FlowFamily/MessageTemplates">
 							
 							<table class="full coloredtable sortabletable oep-table" cellspacing="0">
 								<thead>
 									<tr>
-										<th><xsl:value-of select="$i18n.ExternalMessageTemplate.name" /></th>
+										<th><xsl:value-of select="$i18n.MessageTemplate.name" /></th>
+										<th><xsl:value-of select="$i18n.MessageTemplate.type" /></th>
 										<th width="37" />
 									</tr>
 								</thead>
 								<tbody>
 									
-									<xsl:apply-templates select="Flow/FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate" mode="list"/>
+									<xsl:apply-templates select="Flow/FlowFamily/MessageTemplates/MessageTemplate" mode="list"/>
 									
 								</tbody>
 							</table>
 							
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="$i18n.ExternalMessageTemplates.noExternalMessageTemplates" />
+							<xsl:value-of select="$i18n.MessageTemplates.noMessageTemplates" />
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addexternalmessagetemplate/{Flow/flowID}" class="floatright">
-						<xsl:value-of select="$i18n.ExternalMessageTemplates.add" />
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addmessagetemplate/{Flow/flowID}" class="floatright">
+						<xsl:value-of select="$i18n.MessageTemplates.add" />
 						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
 					</a>
 				
@@ -1581,17 +1582,30 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="ExternalMessageTemplate" mode="list">
+	<xsl:template match="MessageTemplate" mode="list">
 	
 		<tr>
 			<td>
 				<xsl:value-of select="name"/>
 			</td>
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updateexternalmessagetemplate/{../../../flowID}/{templateID}" title="{$i18n.ExternalMessageTemplates.update}: {name}">
+				<xsl:choose>
+					<xsl:when test="type = 'EXTERNAL'">
+						<xsl:value-of select="$i18n.MessageTemplate.type.external"/>
+					</xsl:when>
+					<xsl:when test="type = 'INTERNAL'">
+						<xsl:value-of select="$i18n.MessageTemplate.type.internal"/>
+					</xsl:when>
+					<xsl:when test="type = 'ALL'">
+						<xsl:value-of select="$i18n.MessageTemplate.type.all"/>
+					</xsl:when>
+				</xsl:choose>
+			</td>
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemessagetemplate/{../../../flowID}/{templateID}" title="{$i18n.MessageTemplates.update}: {name}">
 					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
-				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteexternalmessagetemplate/{../../../flowID}/{templateID}" onclick="return confirmHyperlinkPost(this)" title="{$i18n.ExternalMessageTemplates.delete}: {name}">
+				<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deletemessagetemplate/{../../../flowID}/{templateID}" onclick="return confirmHyperlinkPost(this)" title="{$i18n.MessageTemplates.delete}: {name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 			</td>
@@ -3871,18 +3885,18 @@
 				
 					<div class="floatleft full bigmarginbottom hidden">
 					
-						<label for="defaultExternalMessageTemplate" class="floatleft full">
-							<xsl:value-of select="$i18n.defaultExternalMessageTemplate" />
+						<label for="defaultMessageTemplate" class="floatleft full">
+							<xsl:value-of select="$i18n.defaultMessageTemplate" />
 						</label>
 			
 						<xsl:call-template name="createDropdown">
-							<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
-							<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
-							<xsl:with-param name="element" select="ExternalMessageTemplates/ExternalMessageTemplate" />
+							<xsl:with-param name="name" select="'defaultMessageTemplate'" />
+							<xsl:with-param name="id" select="'defaultMessageTemplate'" />
+							<xsl:with-param name="element" select="MessageTemplates/MessageTemplate" />
 							<xsl:with-param name="valueElementName" select="'templateID'" />
 							<xsl:with-param name="labelElementName" select="'name'" />
-							<xsl:with-param name="selectedValue" select="$element/defaultExternalMessageTemplateID" />
-							<xsl:with-param name="addEmptyOption" select="$i18n.defaultExternalMessageTemplate.None" />
+							<xsl:with-param name="selectedValue" select="$element/defaultMessageTemplateID" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.defaultMessageTemplate.None" />
 						</xsl:call-template>
 					</div>
 					
@@ -7182,78 +7196,134 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="AddExternalMessageTemplate">
+	<xsl:template match="AddMessageTemplate">
 		
 		<h1>
-			<xsl:value-of select="$i18n.ExternalMessageTemplates.add"/>
+			<xsl:value-of select="$i18n.MessageTemplates.add"/>
 		</h1>
 		
 		<xsl:apply-templates select="validationException/validationError" />
 		
 		<form method="post" action="{/Document/requestinfo/uri}">
 			
-			<xsl:call-template name="externalMessageTemplateForm"/>
+			<xsl:call-template name="messageTemplateForm"/>
 			
 			<div class="floatright">
-				<input type="submit" value="{$i18n.ExternalMessageTemplates.submit}" />
+				<input type="submit" value="{$i18n.MessageTemplates.submit}" />
 			</div>
 			
 		</form>
 		
 	</xsl:template>
 	
-	<xsl:template match="UpdateExternalMessageTemplate">
+	<xsl:template match="UpdateMessageTemplate">
 		
 		<h1>
-			<xsl:value-of select="$i18n.ExternalMessageTemplates.update"/>
+			<xsl:value-of select="$i18n.MessageTemplates.update"/>
 			<xsl:text>&#x20;</xsl:text>
-			<xsl:value-of select="ExternalMessageTemplate/name"/>
+			<xsl:value-of select="MessageTemplate/name"/>
 		</h1>
 		
 		<xsl:apply-templates select="validationException/validationError" />
 		
 		<form method="post" action="{/Document/requestinfo/uri}">
 			
-			<xsl:call-template name="externalMessageTemplateForm"/>
+			<xsl:call-template name="messageTemplateForm"/>
 			
 			<div class="floatright">
-				<input type="submit" value="{$i18n.ExternalMessageTemplates.submit}" />
+				<input type="submit" value="{$i18n.MessageTemplates.submit}" />
 			</div>
 			
 		</form>
 		
 	</xsl:template>
 	
-	<xsl:template name="externalMessageTemplateForm">
+	<xsl:template name="messageTemplateForm">
 		
 		<div class="floatleft full bigmarginbottom">
 			
-			<label for="externalMessageTemplateName" class="floatleft nomargin">
-				<xsl:value-of select="$i18n.ExternalMessageTemplate.name" />
+			<label for="messageTemplateName" class="floatleft nomargin">
+				<xsl:value-of select="$i18n.MessageTemplate.name" />
 			</label>
 			
 			<div class="floatleft full">
 				<xsl:call-template name="createTextField">
-					<xsl:with-param name="id" select="'externalMessageTemplateName'"/>
-					<xsl:with-param name="name" select="'externalMessageTemplateName'"/>
-					<xsl:with-param name="value" select="ExternalMessageTemplate/name"/>
+					<xsl:with-param name="id" select="'messageTemplateName'"/>
+					<xsl:with-param name="name" select="'messageTemplateName'"/>
+					<xsl:with-param name="value" select="MessageTemplate/name"/>
 				</xsl:call-template>
 			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">
 			
-			<label for="externalMessageTemplateMessage" class="floatleft full">
-				<xsl:value-of select="$i18n.ExternalMessageTemplate.message" />
+			<label for="messageTemplateMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.MessageTemplate.message" />
 			</label>
 			
 			<div class="floatleft full">
 				<xsl:call-template name="createTextArea">
-					<xsl:with-param name="id" select="'externalMessageTemplateMessage'"/>
-					<xsl:with-param name="name" select="'externalMessageTemplateMessage'"/>
-					<xsl:with-param name="value" select="ExternalMessageTemplate/message"/>
+					<xsl:with-param name="id" select="'messageTemplateMessage'"/>
+					<xsl:with-param name="name" select="'messageTemplateMessage'"/>
+					<xsl:with-param name="value" select="MessageTemplate/message"/>
 				</xsl:call-template>
 			</div>
+		</div>
+		
+		<div>
+			
+			<label for="messageTemplateType" class="floatleft full">
+				<xsl:value-of select="$i18n.MessageTemplate.type" />
+			</label>
+		
+			<div class="floatleft full bigmarginbottom">
+							
+				<div class="floatleft full">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'messageTemplateTypeExternal'"/>
+						<xsl:with-param name="name" select="'messageTemplateType'"/>
+						<xsl:with-param name="value" select="'EXTERNAL'"/>
+						<xsl:with-param name="checked" select="MessageTemplate/type = 'EXTERNAL'" />
+					</xsl:call-template>
+					
+					<label for="messageTemplateTypeExternal">
+						<xsl:value-of select="$i18n.MessageTemplate.type.external" />
+					</label>
+				</div>
+			</div>	
+		
+			<div class="floatleft full bigmarginbottom">
+							
+				<div class="floatleft full">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'messageTemplateTypeInternal'"/>
+						<xsl:with-param name="name" select="'messageTemplateType'"/>
+						<xsl:with-param name="value" select="'INTERNAL'"/>
+						<xsl:with-param name="checked" select="MessageTemplate/type = 'INTERNAL'" />
+					</xsl:call-template>
+					
+					<label for="messageTemplateTypeInternal">
+						<xsl:value-of select="$i18n.MessageTemplate.type.internal" />
+					</label>
+				</div>
+			</div>	
+		
+			<div class="floatleft full bigmarginbottom">
+							
+				<div class="floatleft full">
+					<xsl:call-template name="createRadio">
+						<xsl:with-param name="id" select="'messageTemplateTypeAll'"/>
+						<xsl:with-param name="name" select="'messageTemplateType'"/>
+						<xsl:with-param name="value" select="'ALL'"/>
+						<xsl:with-param name="checked" select="MessageTemplate/type = 'ALL'" />
+					</xsl:call-template>
+					
+					<label for="messageTemplateTypeAll">
+						<xsl:value-of select="$i18n.MessageTemplate.type.all" />
+					</label>
+				</div>
+			</div>	
+		
 		</div>
 		
 	</xsl:template>
@@ -8024,9 +8094,9 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='DeleteFailedExternalMessageTemplateNotFound' or messageKey='UpdateFailedExternalMessageTemplateNotFound']">
+	<xsl:template match="validationError[messageKey='DeleteFailedMessageTemplateNotFound' or messageKey='UpdateFailedMessageTemplateNotFound']">
 		<p class="error">
-			<xsl:value-of select="$i18n.ValidationError.ExternalMessageTemplateNotFound"/>
+			<xsl:value-of select="$i18n.ValidationError.MessageTemplateNotFound"/>
 		</p>
 	</xsl:template>
 	
@@ -8361,12 +8431,15 @@
 						
 					</xsl:when>
 					
-					<!-- External Message Templates -->
-					<xsl:when test="fieldName = 'externalMessageTemplateName'">
-						<xsl:value-of select="$i18n.ExternalMessageTemplate.name"/>
+					<!-- Message Templates -->
+					<xsl:when test="fieldName = 'messageTemplateName'">
+						<xsl:value-of select="$i18n.MessageTemplate.name"/>
 					</xsl:when>
-					<xsl:when test="fieldName = 'externalMessageTemplateMessage'">
-						<xsl:value-of select="$i18n.ExternalMessageTemplate.message"/>
+					<xsl:when test="fieldName = 'messageTemplateMessage'">
+						<xsl:value-of select="$i18n.MessageTemplate.message"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'messageTemplateType'">
+						<xsl:value-of select="$i18n.MessageTemplate.type"/>
 					</xsl:when>
 					
 					<xsl:otherwise>

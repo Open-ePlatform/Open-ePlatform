@@ -57,10 +57,10 @@ public interface FlowAdminCRUDCallback extends AdvancedCRUDCallback<User> {
 
 	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception;
 
-	public String getEventExternalMessageTemplatesAddedMessage();
+	public String getEventMessageTemplatesAddedMessage();
 
-	public String getEventExternalMessageTemplatesUpdatedMessage();
+	public String getEventMessageTemplatesUpdatedMessage();
 
-	public String getEventExternalMessageTemplatesDeletedMessage();
+	public String getEventMessageTemplatesDeletedMessage();
 
 }

@@ -2668,4 +2668,22 @@
 		</Query>
 	</Script>
 
+	<Script version="143">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_external_message_templates` RENAME TO `flowengine_flow_family_message_templates`;
+			]]>
+		</Query>	
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_message_templates` ADD COLUMN `type` VARCHAR(255) DEFAULT 'EXTERNAL';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `defaultExternalMessageTemplateID` `defaultMessageTemplateID` INT(10) UNSIGNED;
+			]]>
+		</Query>	
+	</Script>
+
 </DBScripts>

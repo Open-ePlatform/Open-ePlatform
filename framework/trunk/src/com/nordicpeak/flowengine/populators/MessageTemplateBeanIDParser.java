@@ -6,11 +6,11 @@ import se.unlogic.hierarchy.core.utils.crud.BeanIDParser;
 import se.unlogic.webutils.http.URIParser;
 
 
-public class ExternalMessageTemplateBeanIDParser implements BeanIDParser<Integer> {
+public class MessageTemplateBeanIDParser implements BeanIDParser<Integer> {
 
-	private static final ExternalMessageTemplateBeanIDParser INSTANCE = new ExternalMessageTemplateBeanIDParser();
+	private static final MessageTemplateBeanIDParser INSTANCE = new MessageTemplateBeanIDParser();
 	
-	private ExternalMessageTemplateBeanIDParser(){}
+	private MessageTemplateBeanIDParser(){}
 	
 	@Override
 	public Integer getBeanID(URIParser uriParser, HttpServletRequest req, String getMode) {

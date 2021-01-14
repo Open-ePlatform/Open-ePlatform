@@ -40,9 +40,9 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 	public static final List<Field> INTERNAL_FIELDS = ReflectionUtils.getFields(Status.class, "isUserMutable", "isUserDeletable", "isAdminMutable", "isAdminDeletable", "sortIndex", "requireSigning", "useAccessCheck");
 
 	@DAOManaged
-	@WebPopulate(paramName = "defaultExternalMessageTemplate")
+	@WebPopulate(paramName = "defaultMessageTemplate")
 	@XMLElement
-	private Integer defaultExternalMessageTemplateID;
+	private Integer defaultMessageTemplateID;
 
 	@DAOManaged(columnName = "flowID")
 	@ManyToOne
@@ -84,14 +84,14 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 		super(baseStatus);
 	}
 
-	public Integer getDefaultExternalMessageTemplateID() {
+	public Integer getDefaultMessageTemplateID() {
 
-		return defaultExternalMessageTemplateID;
+		return defaultMessageTemplateID;
 	}
 
-	public void setDefaultExternalMessageTemplateID(Integer defaultExternalMessageTemplateID) {
+	public void setDefaultMessageTemplateID(Integer defaultMessageTemplateID) {
 
-		this.defaultExternalMessageTemplateID = defaultExternalMessageTemplateID;
+		this.defaultMessageTemplateID = defaultMessageTemplateID;
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 		this.newExternalMessagesDisallowed = xmlParser.getPrimitiveBoolean("newExternalMessagesDisallowed");
 		this.newExternalMessagesAllowedDays = XMLValidationUtils.validateParameter("newExternalMessagesAllowedDays", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		this.addExternalMessage = xmlParser.getPrimitiveBoolean("addExternalMessage");
-		this.defaultExternalMessageTemplateID = XMLValidationUtils.validateParameter("defaultExternalMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
+		this.defaultMessageTemplateID = XMLValidationUtils.validateParameter("defaultMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
 
 		this.isUserMutable = xmlParser.getPrimitiveBoolean("isUserMutable");
 		this.isUserDeletable = xmlParser.getPrimitiveBoolean("isUserDeletable");

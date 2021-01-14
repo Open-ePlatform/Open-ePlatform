@@ -61,7 +61,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field MANAGER_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "managerUsers");
 	public static final Field ALIASES_RELATION = ReflectionUtils.getField(FlowFamily.class, "aliases");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowFamily.class, "events");
-	public static final Field EXTERNAL_MESSAGE_TEMPLATES_RELATION = ReflectionUtils.getField(FlowFamily.class, "externalMessageTemplates");
+	public static final Field MESSAGE_TEMPLATES_RELATION = ReflectionUtils.getField(FlowFamily.class, "messageTemplates");
 
 	public static final Field AUTO_MANAGER_ASSIGNMENT_RULES_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentRules");
 	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysUserIDs");
@@ -222,7 +222,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
-	private List<ExternalMessageTemplate> externalMessageTemplates;
+	private List<MessageTemplate> messageTemplates;
 
 	private boolean hasTextTags;
 
@@ -802,14 +802,14 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		return !ObjectUtils.isNull(autoManagerAssignmentRules, autoManagerAssignmentAlwaysUserIDs, autoManagerAssignmentAlwaysGroupIDs, autoManagerAssignmentNoMatchUserIDs, autoManagerAssignmentNoMatchGroupIDs, autoManagerAssignmentStatusRules);
 	}
 
-	public List<ExternalMessageTemplate> getExternalMessageTemplates() {
+	public List<MessageTemplate> getMessageTemplates() {
 
-		return externalMessageTemplates;
+		return messageTemplates;
 	}
 
-	public void setExternalMessageTemplates(List<ExternalMessageTemplate> externalMessageTemplates) {
+	public void setMessageTemplates(List<MessageTemplate> messageTemplates) {
 
-		this.externalMessageTemplates = externalMessageTemplates;
+		this.messageTemplates = messageTemplates;
 	}
 
 	public Element toXML(Document doc, SiteProfile siteProfile) {

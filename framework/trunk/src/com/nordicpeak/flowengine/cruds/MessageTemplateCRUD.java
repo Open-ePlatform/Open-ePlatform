@@ -20,23 +20,23 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
-import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
+import com.nordicpeak.flowengine.beans.MessageTemplate;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
-import com.nordicpeak.flowengine.populators.ExternalMessageTemplateBeanIDParser;
+import com.nordicpeak.flowengine.populators.MessageTemplateBeanIDParser;
 
-public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemplate, Integer, User, FlowAdminCRUDCallback> {
+public class MessageTemplateCRUD extends ModularCRUD<MessageTemplate, Integer, User, FlowAdminCRUDCallback> {
 
-	public ExternalMessageTemplateCRUD(CRUDDAO<ExternalMessageTemplate, Integer> crudDAO, FlowAdminCRUDCallback callback) {
+	public MessageTemplateCRUD(CRUDDAO<MessageTemplate, Integer> crudDAO, FlowAdminCRUDCallback callback) {
 
-		super(ExternalMessageTemplateBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<ExternalMessageTemplate>(ExternalMessageTemplate.class), "ExternalMessageTemplate", "external message template", "", callback);
+		super(MessageTemplateBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<MessageTemplate>(MessageTemplate.class), "MessageTemplate", "external message template", "", callback);
 	
 		setRequirePostForDelete(true);
 	}
 
 	@Override
-	protected List<ExternalMessageTemplate> getAllBeans(User user, HttpServletRequest req, URIParser uriParser) throws SQLException {
+	protected List<MessageTemplate> getAllBeans(User user, HttpServletRequest req, URIParser uriParser) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -47,13 +47,13 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 	}
 
 	@Override
-	protected void checkUpdateAccess(ExternalMessageTemplate bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+	protected void checkUpdateAccess(MessageTemplate bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
 		checkAccess(user, req, uriParser);
 	}
 
 	@Override
-	protected void checkDeleteAccess(ExternalMessageTemplate bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
+	protected void checkDeleteAccess(MessageTemplate bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
 		checkAccess(user, req, uriParser);
 	}
@@ -76,9 +76,9 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 	}
 
 	@Override
-	protected ExternalMessageTemplate populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+	protected MessageTemplate populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
 
-		ExternalMessageTemplate template = super.populateFromAddRequest(req, user, uriParser);
+		MessageTemplate template = super.populateFromAddRequest(req, user, uriParser);
 
 		Flow flow = (Flow) req.getAttribute("flow");
 
@@ -88,11 +88,11 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 	}
 
 	@Override
-	protected void redirectToListMethod(HttpServletRequest req, HttpServletResponse res, ExternalMessageTemplate template) throws Exception {
+	protected void redirectToListMethod(HttpServletRequest req, HttpServletResponse res, MessageTemplate template) throws Exception {
 
 		Flow flow = (Flow) req.getAttribute("flow");
 
-		res.sendRedirect(req.getContextPath() + callback.getFullAlias() + "/showflow/" + flow.getFlowID() + "#externalmessagetemplates");
+		res.sendRedirect(req.getContextPath() + callback.getFullAlias() + "/showflow/" + flow.getFlowID() + "#messagetemplates");
 	}
 
 	@Override
@@ -102,30 +102,30 @@ public class ExternalMessageTemplateCRUD extends ModularCRUD<ExternalMessageTemp
 	}
 
 	@Override
-	protected ForegroundModuleResponse beanAdded(ExternalMessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+	protected ForegroundModuleResponse beanAdded(MessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventExternalMessageTemplatesAddedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
-
-		return beanEvent(template, req, res);
-	}
-
-	@Override
-	protected ForegroundModuleResponse beanUpdated(ExternalMessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-
-		callback.addFlowFamilyEvent(callback.getEventExternalMessageTemplatesUpdatedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
+		callback.addFlowFamilyEvent(callback.getEventMessageTemplatesAddedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
 
 		return beanEvent(template, req, res);
 	}
 
 	@Override
-	protected ForegroundModuleResponse beanDeleted(ExternalMessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+	protected ForegroundModuleResponse beanUpdated(MessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		callback.addFlowFamilyEvent(callback.getEventExternalMessageTemplatesDeletedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
+		callback.addFlowFamilyEvent(callback.getEventMessageTemplatesUpdatedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
 
 		return beanEvent(template, req, res);
 	}
 
-	private ForegroundModuleResponse beanEvent(ExternalMessageTemplate template, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	@Override
+	protected ForegroundModuleResponse beanDeleted(MessageTemplate template, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		callback.addFlowFamilyEvent(callback.getEventMessageTemplatesDeletedMessage() + " \"" + template.getName() + "\"", template.getFlowFamily(), user);
+
+		return beanEvent(template, req, res);
+	}
+
+	private ForegroundModuleResponse beanEvent(MessageTemplate template, HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		callback.getEventHandler().sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.UPDATE, template.getFlowFamily()), EventTarget.ALL);
 

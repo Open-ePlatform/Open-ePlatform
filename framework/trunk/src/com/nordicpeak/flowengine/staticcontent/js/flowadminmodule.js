@@ -65,7 +65,7 @@ $(document).ready(function() {
 		
 		$addExternalMessage.change(function(){
 			
-			$('#defaultExternalMessageTemplate').parent().toggle(this.checked);
+			$('#defaultMessageTemplate').parent().toggle(this.checked);
 			
 		}).change();
 		

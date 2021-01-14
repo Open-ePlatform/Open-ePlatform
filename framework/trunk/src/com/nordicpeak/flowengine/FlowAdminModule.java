@@ -184,7 +184,6 @@ import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
-import com.nordicpeak.flowengine.beans.ExternalMessageTemplate;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -193,6 +192,7 @@ import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.MessageTemplate;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.StandardStatus;
@@ -206,11 +206,11 @@ import com.nordicpeak.flowengine.comparators.QueryDescriptorSortIndexComparator;
 import com.nordicpeak.flowengine.comparators.StepSortIndexComparator;
 import com.nordicpeak.flowengine.cruds.CategoryCRUD;
 import com.nordicpeak.flowengine.cruds.EvaluatorDescriptorCRUD;
-import com.nordicpeak.flowengine.cruds.ExternalMessageTemplateCRUD;
 import com.nordicpeak.flowengine.cruds.FlowCRUD;
 import com.nordicpeak.flowengine.cruds.FlowFamilyCRUD;
 import com.nordicpeak.flowengine.cruds.FlowFormCRUD;
 import com.nordicpeak.flowengine.cruds.FlowTypeCRUD;
+import com.nordicpeak.flowengine.cruds.MessageTemplateCRUD;
 import com.nordicpeak.flowengine.cruds.QueryDescriptorCRUD;
 import com.nordicpeak.flowengine.cruds.StandardStatusCRUD;
 import com.nordicpeak.flowengine.cruds.StandardStatusGroupCRUD;
@@ -299,7 +299,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
-			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
+			FlowFamily.MESSAGE_TEMPLATES_RELATION,
 	};
 	
 	private static final Field[] FLOW_CACHE_RELATIONS = {
@@ -332,7 +332,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
-			FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION,
+			FlowFamily.MESSAGE_TEMPLATES_RELATION,
 			
 			FlowType.CATEGORIES_RELATION,
 			FlowType.ALLOWED_ADMIN_USERS_RELATION,
@@ -351,7 +351,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public static final ValidationError NO_MANAGERS_VALIDATION_ERROR = new ValidationError("NoManagersSet");
 	public static final ValidationError EXTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR = new ValidationError("ExternalMessageAndRequiredSigningMutualExclusiveError");
 
-	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.EXTERNAL_MESSAGE_TEMPLATES_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY =    new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
@@ -467,13 +467,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private String eventUpdateAutoManagerAssignment = "eventUpdateAutoManagerAssignment";
 	
 	@XSLVariable(prefix = "java.")
-	private String eventExternalMessageTemplatesAddedMessage = "external message templates added";
+	private String eventMessageTemplatesAddedMessage = "message templates added";
 	
 	@XSLVariable(prefix = "java.")
-	private String eventExternalMessageTemplatesUpdatedMessage = "external message templates updated";
+	private String eventMessageTemplatesUpdatedMessage = "message templates updated";
 	
 	@XSLVariable(prefix = "java.")
-	private String eventExternalMessageTemplatesDeletedMessage = "external message templates deleted";
+	private String eventMessageTemplatesDeletedMessage = "message templates deleted";
 
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows= "List flows";
@@ -632,7 +632,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
 	
-	protected AnnotatedDAO<ExternalMessageTemplate> externalMessageTemplateDAO;
+	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
 	
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
@@ -645,7 +645,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private FlowTypeCRUD flowTypeCRUD;
 	private CategoryCRUD categoryCRUD;
 	private FlowFormCRUD flowFormCRUD;
-	private ExternalMessageTemplateCRUD externalMessageTemplateCRUD;
+	private MessageTemplateCRUD messageTemplateCRUD;
 
 	protected QueryParameterFactory<FlowFamily, Integer> flowFamiliyIDParamFactory;
 
@@ -859,12 +859,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		HierarchyAnnotatedDAOFactory normalDAOFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, false, false);
 		
-		externalMessageTemplateDAO = normalDAOFactory.getDAO(ExternalMessageTemplate.class);
-		AnnotatedDAOWrapper<ExternalMessageTemplate, Integer> externalMessageTemplateDAOWrapper = externalMessageTemplateDAO.getWrapper(Integer.class);
-		externalMessageTemplateDAOWrapper.setUseRelationsOnGet(true);
-		externalMessageTemplateDAOWrapper.addRelations(ExternalMessageTemplate.FLOW_FAMILY_RELATION);
+		messageTemplateDAO = normalDAOFactory.getDAO(MessageTemplate.class);
+		AnnotatedDAOWrapper<MessageTemplate, Integer> messageTemplateDAOWrapper = messageTemplateDAO.getWrapper(Integer.class);
+		messageTemplateDAOWrapper.setUseRelationsOnGet(true);
+		messageTemplateDAOWrapper.addRelations(MessageTemplate.FLOW_FAMILY_RELATION);
 		
-		externalMessageTemplateCRUD = new ExternalMessageTemplateCRUD(externalMessageTemplateDAOWrapper, this);
+		messageTemplateCRUD = new MessageTemplateCRUD(messageTemplateDAOWrapper, this);
 	}
 
 	@Override
@@ -1525,19 +1525,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			flowFamily.setVersionCount(1);
 			flowFamily.setStatisticsMode(flow.getFlowFamily().getStatisticsMode());
 			
-			if (flow.getFlowFamily().getExternalMessageTemplates() != null) {
+			if (flow.getFlowFamily().getMessageTemplates() != null) {
 				
-				ArrayList<ExternalMessageTemplate> externalMessageTemplates = new ArrayList<ExternalMessageTemplate>(flow.getFlowFamily().getExternalMessageTemplates().size());
+				ArrayList<MessageTemplate> messageTemplates = new ArrayList<MessageTemplate>(flow.getFlowFamily().getMessageTemplates().size());
 				
-				for (ExternalMessageTemplate externalMessageTemplate : flow.getFlowFamily().getExternalMessageTemplates()) {
+				for (MessageTemplate messageTemplate : flow.getFlowFamily().getMessageTemplates()) {
 					
-					ExternalMessageTemplate externalMessageTemplateCopy = SerializationUtils.cloneSerializable(externalMessageTemplate);
-					externalMessageTemplateCopy.setTemplateID(null);
+					MessageTemplate messageTemplateCopy = SerializationUtils.cloneSerializable(messageTemplate);
+					messageTemplateCopy.setTemplateID(null);
 					
-					externalMessageTemplates.add(externalMessageTemplateCopy);
+					messageTemplates.add(messageTemplateCopy);
 				}
 				
-				flowFamily.setExternalMessageTemplates(externalMessageTemplates);
+				flowFamily.setMessageTemplates(messageTemplates);
 			}
 			
 			flowCopy.setFlowFamily(flowFamily);
@@ -3107,21 +3107,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return externalMessageTemplateCRUD.add(req, res, user, uriParser);
+		return messageTemplateCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return externalMessageTemplateCRUD.update(req, res, user, uriParser);
+		return messageTemplateCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteExternalMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
 
-		return externalMessageTemplateCRUD.delete(req, res, user, uriParser);
+		return messageTemplateCRUD.delete(req, res, user, uriParser);
 	}
 	
 	@EventListener(channel=FlowType.class)
@@ -4313,7 +4313,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				
 				List<ValidationError> errors = new ArrayList<ValidationError>();
 				
-				flowFamily.setExternalMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", ExternalMessageTemplate.class, errors));
+				flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/MessageTemplates/MessageTemplate", MessageTemplate.class, errors));
+				
+				if (flowFamily.getMessageTemplates() == null) {
+					
+					flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", MessageTemplate.class, errors));
+				}
 
 				//TODO Import flowfamily settings
 				
@@ -6658,21 +6663,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@Override
-	public String getEventExternalMessageTemplatesAddedMessage() {
+	public String getEventMessageTemplatesAddedMessage() {
 
-		return eventExternalMessageTemplatesAddedMessage;
+		return eventMessageTemplatesAddedMessage;
 	}
 	
 	@Override
-	public String getEventExternalMessageTemplatesUpdatedMessage() {
+	public String getEventMessageTemplatesUpdatedMessage() {
 
-		return eventExternalMessageTemplatesUpdatedMessage;
+		return eventMessageTemplatesUpdatedMessage;
 	}
 	
 	@Override
-	public String getEventExternalMessageTemplatesDeletedMessage() {
+	public String getEventMessageTemplatesDeletedMessage() {
 
-		return eventExternalMessageTemplatesDeletedMessage;
+		return eventMessageTemplatesDeletedMessage;
 	}
 
 	@Override
