@@ -25,7 +25,7 @@
 		/js/jquery.qloader-init.js
 		/js/UserGroupList.js
 		/js/js.cookie-2.0.4.min.js
-		/js/messages.js?v=2
+		/js/messages.js?v=3
 	</xsl:variable>
 
 	<xsl:variable name="links">
