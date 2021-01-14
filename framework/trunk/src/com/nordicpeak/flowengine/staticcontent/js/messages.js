@@ -81,11 +81,15 @@ function initMessageTab(tabID, messagePanelID) {
 		$messagePanel.show();
 		scrollToMessages(messagePanelID);
 		$messagePanel.find("#message").focus();
+		
+		$(this).hide();
 	});
 
 	$messagePanel.find("a.close_message").click(function(e) {
 		e.preventDefault();
 		$(messagePanelID).hide();
+		
+		$(tabID + " a.open_message").show();
 	});
 
 	if ($(tabID + " div.info-box.error").length > 0) {
