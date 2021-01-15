@@ -1511,7 +1511,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}?raw=t" target="_blank">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getflowform/{../../flowID}/{flowFormID}" target="_blank">
 						<img class="alignmiddle marginright" alt="" >
 							<xsl:attribute name="src">
 								<xsl:value-of select="$imgPath" />

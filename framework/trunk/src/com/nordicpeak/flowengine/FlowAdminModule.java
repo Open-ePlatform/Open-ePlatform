@@ -258,7 +258,6 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.PDFRequestFilter;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.StatusFormExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
@@ -675,8 +674,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected UserGroupListConnector userGroupListConnector;
 	protected UserGroupListConnector unrestrictedUserGroupListConnector;
 	protected UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
-
-	protected CopyOnWriteArrayList<PDFRequestFilter> pdfRequestFilters = new CopyOnWriteArrayList<PDFRequestFilter>();
 
 	protected CopyOnWriteArrayList<FlowAdminExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>();
 	protected CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider> fragmentExtensionViewProviders = new CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider>();
@@ -5088,14 +5085,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				throw new FlowNotAvailiableInRequestedFormat(flow.getFlowID());
 			}
 
-			boolean raw = req.getParameter("raw") != null;
-
 			if (uriParser.size() == 3) {
 
 				FlowForm flowForm = flow.getFlowForms().get(0);
 				flowForm.setFlow(flow);
 
-				return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
+				return sendFlowForm(flowForm, req, res, user, uriParser);
 
 			} else if (uriParser.size() == 4 && (flowFormID = uriParser.getInt(3)) != null) {
 
@@ -5105,7 +5100,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 						flowForm.setFlow(flow);
 
-						return sendFlowForm(flowForm, req, res, user, uriParser, getCurrentSiteProfile(req, user, uriParser, flow.getFlowFamily()), raw);
+						return sendFlowForm(flowForm, req, res, user, uriParser);
 					}
 				}
 			}
@@ -5169,7 +5164,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
 	}
 
-	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SiteProfile siteProfile, boolean unmodified) throws IOException, ModuleConfigurationException, URINotFoundException {
+	public ForegroundModuleResponse sendFlowForm(FlowForm flowForm, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException, ModuleConfigurationException, URINotFoundException {
 
 		if (!StringUtils.isEmpty(flowForm.getExternalURL())) {
 
@@ -5193,34 +5188,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			throw new URINotFoundException(uriParser);
 		}
 
-		File sentFile = file;
-
-		if (!unmodified && "pdf".equals(flowForm.getFileExtension())) {
-
-			for (PDFRequestFilter filter : pdfRequestFilters) {
-
-				try {
-					sentFile = filter.processPDFRequest(sentFile, siteProfile, flowForm.getFlow());
-
-				} catch (Throwable t) {
-
-					log.error("Error running PDF request filter " + filter, t);
-				}
-			}
-		}
-
 		try {
-			HTTPUtils.sendFile(sentFile, flowForm.getName() + "." + flowForm.getFileExtension(), req, res, ContentDisposition.ATTACHMENT);
+			HTTPUtils.sendFile(file, flowForm.getName() + "." + flowForm.getFileExtension(), req, res, ContentDisposition.ATTACHMENT);
 
 		} catch (IOException e) {
 
-			log.info("Error sending file " + sentFile + " to user " + user + ", " + e);
-		}
-
-		// Remove temporary file
-		if (file != sentFile) {
-
-			FileUtils.deleteFile(sentFile);
+			log.info("Error sending file " + file + " to user " + user + ", " + e);
 		}
 
 		return null;
@@ -5288,20 +5261,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return false;
 	}
 
-	public void addPDFRequestFilter(PDFRequestFilter filter) {
-
-		if (filter == null) {
-			throw new NullPointerException();
-		}
-
-		pdfRequestFilters.add(filter);
-	}
-
-	public void removePDFRequestFilter(PDFRequestFilter filter) {
-
-		pdfRequestFilters.remove(filter);
-	}
-	
 	public synchronized void addExtensionViewProvider(FlowAdminExtensionViewProvider flowAdminExtensionProvider) {
 		
 		if (!extensionViewProviders.contains(flowAdminExtensionProvider)) {
