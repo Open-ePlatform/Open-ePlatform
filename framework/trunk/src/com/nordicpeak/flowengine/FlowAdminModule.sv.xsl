@@ -662,7 +662,7 @@
 	<xsl:variable name="i18n.MessageTemplates.noMessageTemplates">Inga meddelandemallar finns.</xsl:variable>
 	<xsl:variable name="i18n.MessageTemplate.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.MessageTemplate.message">Meddelande</xsl:variable>
-	<xsl:variable name="i18n.MessageTemplate.type">Typ</xsl:variable>
+	<xsl:variable name="i18n.MessageTemplate.type">Ange vilken typ av meddelanden som den här mallen gäller för</xsl:variable>
 	<xsl:variable name="i18n.MessageTemplate.type.external">Meddelanden</xsl:variable>
 	<xsl:variable name="i18n.MessageTemplate.type.internal">Interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.MessageTemplate.type.all">Meddelanden och interna noteringar</xsl:variable>
