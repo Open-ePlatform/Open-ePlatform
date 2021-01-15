@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntPoint;
@@ -27,6 +28,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -76,6 +78,7 @@ import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
 import com.nordicpeak.flowengine.search.events.InitialFlowInstanceIndexingEvent;
 import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
 
+@SuppressWarnings("deprecation")
 public class FlowInstanceIndexer {
 
 	private static final String ID_FIELD = "id";
@@ -107,7 +110,7 @@ public class FlowInstanceIndexer {
 	
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
+	private final StandardAnalyzer analyzer = new StandardAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -197,6 +200,12 @@ public class FlowInstanceIndexer {
 
 		String queryString = req.getParameter("q");
 		
+		if(queryString != null) {
+			
+			queryString = URLDecoder.decode(queryString, "UTF-8");
+			queryString = queryString.trim();
+		}
+		
 		log.info("User " + user + " searching for: " + StringUtils.toLogFormat(queryString, 50));
 
 		if(StringUtils.isEmpty(queryString)){
@@ -204,13 +213,10 @@ public class FlowInstanceIndexer {
 			sendEmptyResponse(res);
 			return;
 		}
-		
-		queryString = URLDecoder.decode(queryString, "UTF-8");
-		//queryString = StringUtils.parseUTF8(queryString);
-		queryString = queryString.trim();
 
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
-
+		parser.setDefaultOperator(Operator.AND);
+		
 		Query query;
 
 		try{

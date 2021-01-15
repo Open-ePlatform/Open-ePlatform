@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -23,6 +24,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -49,6 +51,7 @@ import se.unlogic.webutils.http.SessionUtils;
 import com.nordicpeak.flowengine.beans.Flow;
 
 
+@SuppressWarnings("deprecation")
 public class FlowIndexer {
 
 	private static final String ID_FIELD = "id";
@@ -62,7 +65,7 @@ public class FlowIndexer {
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
+	private final StandardAnalyzer analyzer = new StandardAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -157,36 +160,42 @@ public class FlowIndexer {
 
 		String queryString = req.getParameter("q");
 
-		log.info("User " + user + " searching for: " + StringUtils.toLogFormat(queryString, 50));
 
+		if(queryString != null) {
+			
+			if (req.getCharacterEncoding() != null) {
+
+				try {
+					queryString = URLDecoder.decode(queryString, req.getCharacterEncoding());
+					
+				} catch (UnsupportedEncodingException e) {
+					log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query string with value " + queryString);
+				}
+				
+			}else{
+				
+				queryString = StringUtils.parseUTF8(queryString);
+			}			
+			
+			queryString = queryString.trim();
+		}
+		
+		log.info("User " + user + " searching for: " + StringUtils.toLogFormat(queryString, 50));
+		
 		if (StringUtils.isEmpty(queryString)) {
 
 			resetLastSearch(req, user);
 			sendEmptyResponse(res);
 			return;
-		}
-		
-		if (req.getCharacterEncoding() != null) {
-
-			try {
-				queryString = URLDecoder.decode(queryString, req.getCharacterEncoding());
-				
-			} catch (UnsupportedEncodingException e) {
-				log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
-			}
-			
-		}else{
-			
-			queryString = StringUtils.parseUTF8(queryString);
-		}
-		
-		queryString = queryString.trim();
+		}		
 		
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
+		parser.setDefaultOperator(Operator.AND);
 
 		Query query;
 
 		try {
+			//toLowerCase() here is a workaround the needs more investigation
 			query = parser.parse(QueryParser.escape(queryString) + "*");
 			SessionUtils.setAttribute("lastsearch", queryString, req);
 
