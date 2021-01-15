@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EnumDropDownSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
@@ -224,6 +225,14 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting(allowsNull=true)
 	@TextAreaSettingDescriptor(name="Allowed external message file extensions", description="Default value for allowed file extensions in external messages (leave empty to allow all file extensions).")
 	protected List<String> defaultAllowedExternalMessageFileExtensions;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Show custom information in my errands", description = "Controls if the custom information block should be shown in my errands")
+	protected boolean showMyErrandsInformationBlock = false;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "My errands information", description = "This information block is shown above the list of errands")
+	protected String myErrandsInformation;
 
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -404,6 +413,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		Element listFlowInstancesElement = doc.createElement("ListFlowInstances");
 
 		doc.getDocumentElement().appendChild(listFlowInstancesElement);
+		
+		if(showMyErrandsInformationBlock) {
+			
+			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowMyErrandsInformationBlock", showMyErrandsInformationBlock);
+			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "MyErrandsInformation", myErrandsInformation);
+		}
 
 		if(enableDescriptionColumn){
 			

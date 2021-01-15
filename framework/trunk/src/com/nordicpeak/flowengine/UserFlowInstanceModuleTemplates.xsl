@@ -113,6 +113,12 @@
 		</xsl:if>
 		
 		<section class="my-errands">
+
+			<xsl:if test="ShowMyErrandsInformationBlock">
+				<div class="errands-wrapper">
+					<xsl:value-of select="MyErrandsInformation" disable-output-escaping="yes" />
+				</div>
+			</xsl:if>
 		
 			<xsl:for-each select="ViewFragment">
  				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
