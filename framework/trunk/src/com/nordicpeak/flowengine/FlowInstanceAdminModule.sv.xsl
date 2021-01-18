@@ -180,4 +180,10 @@
 	<xsl:variable name="i18n.PosterWasNotLoggedIn">Användaren som skickade in denna ansökan var inte inloggad och ser inte detta ärende på Mina sidor</xsl:variable>
 	<xsl:variable name="i18n.PosterAnonymized">Användaren som skickade in denna ansökan ser inte detta ärende på Mina sidor</xsl:variable>
 	<xsl:variable name="i18n.Owners">Sökande</xsl:variable>
+	
+	<xsl:variable name="i18n.AllowedFilextentions">Tillåtna filtyper</xsl:variable>
+	
+	<xsl:variable name="i18n.InvalidFileExtension.part1">Filen </xsl:variable>
+	<xsl:variable name="i18n.InvalidFileExtension.part2"> är av en otillåten filtyp.</xsl:variable>
+	
 </xsl:stylesheet>

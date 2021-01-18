@@ -751,7 +751,9 @@
 	  						
 		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
 		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-		  						<textarea id="message" name="externalmessage" class="full" rows="10" value="{../requestparameters/parameter[name='externalmessage']/value}"/>
+		  						<textarea id="message" name="externalmessage" class="full" rows="10">
+		  							<xsl:value-of select="../requestparameters/parameter[name='externalmessage']/value" />
+		  						</textarea>
 		  						
 		  						<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
 		  						
