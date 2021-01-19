@@ -148,6 +148,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
@@ -1492,6 +1493,18 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					pdfFile = null;
 				}
 			}
+			
+			File flowInstancePDFFile = null;
+			
+			if (activityGroup.isActivityGroupCompletedEmailAttachFlowInstancePDF()) {
+				
+				flowInstancePDFFile = pdfProvider.getPDF(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestSubmitEvent(flowInstance).getEventID());
+				
+				if (flowInstancePDFFile == null || !flowInstancePDFFile.exists()) {
+
+					log.warn("FlowInstance PDF for " + flowInstance + " not found");
+				}
+			}
 
 			for (String emailAdress : activityGroup.getActivityGroupCompletedEmailAddresses()) {
 
@@ -1510,6 +1523,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + round.getActivityGroup().getName() + " - " + signaturesFilename + " - " + round.getActivityRoundID()+ ".pdf";
 						
 						email.add(new FileAttachment(pdfFile, FileUtils.toValidHttpFilename(filename)));
+					}
+					
+					if (flowInstancePDFFile != null) {
+
+						String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + ".pdf";
+						
+						email.add(new FileAttachment(flowInstancePDFFile, FileUtils.toValidHttpFilename(filename)));
 					}
 					
 					systemInterface.getEmailHandler().send(email);

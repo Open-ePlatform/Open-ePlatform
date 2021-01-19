@@ -61,10 +61,10 @@ $(document).ready(function() {
 		
 		$("#sendActivityGroupCompletedEmail").change(function() {
 			
-			var $input = $("#activityGroupCompletedEmailAttachPDF");
+			var $inputs = $("#activityGroupCompletedEmailAttachPDF, #activityGroupCompletedEmailAttachFlowInstancePDF");
 			
-			$input.parent().parent().toggle(this.checked);
-			$input.prop('disabled', !this.checked);
+			$inputs.parent().parent().toggle(this.checked);
+			$inputs.prop('disabled', !this.checked);
 			
 		}).change();
 		

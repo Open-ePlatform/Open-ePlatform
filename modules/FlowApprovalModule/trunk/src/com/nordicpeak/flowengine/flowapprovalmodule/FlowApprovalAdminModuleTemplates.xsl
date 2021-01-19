@@ -16,7 +16,7 @@
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=2
+		/js/flowapprovaladmin.js?v=3
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -503,6 +503,21 @@
 					
 					<label class="marginleft" for="activityGroupCompletedEmailAttachPDF">
 						<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachPDF" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full marginbottom">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'activityGroupCompletedEmailAttachFlowInstancePDF'" />
+						<xsl:with-param name="name" select="'activityGroupCompletedEmailAttachFlowInstancePDF'" />
+						<xsl:with-param name="element" select="ActivityGroup" />
+					</xsl:call-template>
+					
+					<label class="marginleft" for="activityGroupCompletedEmailAttachFlowInstancePDF">
+						<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAttachFlowInstancePDF" />
 					</label>
 				</div>
 			</div>
