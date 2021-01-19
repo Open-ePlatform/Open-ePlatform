@@ -302,10 +302,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 				FlowApprovalActivityRound round = activityProgress.getActivityRound();
 				
-				round.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(round.getActivityProgresses(), activityProgress));
-				
-				activityProgress.setActivityRound(null);
-				
 				Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> activityGroupToRoundMap = mapping.get(round.getFlowInstanceID());
 
 				if (activityGroupToRoundMap == null) {
@@ -321,6 +317,24 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					rounds = new HashSet<>();
 					activityGroupToRoundMap.put(round.getActivityGroup(), rounds);
 				}
+				
+				boolean found = false;
+				
+				for (FlowApprovalActivityRound existingRound : rounds) {
+					if (round.equals(existingRound)) {
+						existingRound.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(existingRound.getActivityProgresses(), activityProgress));
+						
+						found = true;
+						
+						break;
+					}
+				}
+				
+				if (!found) {
+					round.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(round.getActivityProgresses(), activityProgress));
+				}
+				
+				activityProgress.setActivityRound(null);
 
 				rounds.add(round);
 			}
