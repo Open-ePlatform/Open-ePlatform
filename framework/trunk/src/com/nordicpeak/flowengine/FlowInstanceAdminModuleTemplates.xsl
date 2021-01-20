@@ -1143,11 +1143,11 @@
 										</span>
 										<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
 										
-										<xsl:if test="../AllowedExternalMessageFileExtensions">
+										<xsl:if test="../AllowedInternalMessageFileExtensions">
 											<span>
 												<xsl:value-of select="$i18n.AllowedFilextentions" />
 												<xsl:text>: </xsl:text>
-												<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension"/>
+												<xsl:apply-templates select="../AllowedInternalMessageFileExtensions/FileExtension"/>
 											</span>
 										</xsl:if>											
 									</div>
