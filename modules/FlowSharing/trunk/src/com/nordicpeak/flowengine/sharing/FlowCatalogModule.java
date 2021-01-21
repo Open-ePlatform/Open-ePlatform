@@ -420,7 +420,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					String contentDisposition = connection.getHeaderField("Content-Disposition");
 					String filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf("filename*=UTF-8''") + "filename*=UTF-8''".length()), "UTF-8");
 					
-					HTTPUtils.sendFile(inputStream, filename, null, null, req, res, ContentDisposition.INLINE, null);
+					HTTPUtils.sendFile(inputStream, filename, "text/oeflow", null, req, res, ContentDisposition.INLINE, null);
 					return null;
 					
 				} else {

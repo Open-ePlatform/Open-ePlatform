@@ -401,6 +401,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 			
 			log.info("User " + user + " downloading shared flow " + sharedFlow);
 			
+			//Set content type to text/oeflow
 			HTTPUtils.sendBlob(sharedFlow.getFlowXML(), sharedFlow.getName() + ".oeflow", req, res, ContentDisposition.INLINE);
 			return null;
 		}
