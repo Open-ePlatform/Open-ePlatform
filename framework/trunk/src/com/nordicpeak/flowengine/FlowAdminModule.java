@@ -4066,7 +4066,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		res.setHeader("Content-Disposition", "attachment; filename=\"" + flow.getName() + ".oeflow\"");
 		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-		res.setContentType("text/xml");
+		res.setContentType("text/oeflow");
 
 		try {
 			XMLUtils.writeXML(doc, res.getOutputStream(), true, systemInterface.getEncoding());
