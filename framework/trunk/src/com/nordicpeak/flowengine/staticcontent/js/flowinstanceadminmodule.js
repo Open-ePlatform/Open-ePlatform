@@ -5,7 +5,8 @@ var i18nFlow= "Flow";
 var i18nFlowInstanceID = "Flow instance id";
 var i18nFlowInstanceStatus = "Status";
 var i18nFlowInstanceDescription = "Description";
-var i18nFlowInstanceAdded = "Added";
+var i18nFlowInstanceFirstSubmitted = "Added";
+var i18nFlowInstancePoster = "Poster";
 var showSearchDecriptionColumn = true;
 
 $(document).ready(function() {
@@ -197,7 +198,8 @@ function searchFlowInstance() {
 								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
 								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
 								'<td data-title="' + i18nFlowInstanceDescription + '" class="description">' + flowInstance.managerDescription + '</td>' +
-								'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td data-title="' + i18nFlowInstanceFirstSubmitted + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td data-title="' + i18nFlowInstancePoster + '" class="poster">' + flowInstance.poster + '</td>' +
 								'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
 								'</tr>';
 				        	
@@ -211,7 +213,8 @@ function searchFlowInstance() {
 								'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
 								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
 								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
-								'<td data-title="' + i18nFlowInstanceAdded + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td data-title="' + i18nFlowInstanceFirstSubmitted + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
+								'<td data-title="' + i18nFlowInstancePoster + '" class="poster">' + flowInstance.poster + '</td>' +
 								'<td class="link"><a href="' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '" class="btn btn-dark btn-inline">' + i18nChooseFlowInstance + '</a></td>' +
 								'</tr>';
 				        	

@@ -251,10 +251,11 @@
 					flowInstanceAdminURI = '<xsl:value-of select="/Document/requestinfo/currentURI" />/<xsl:value-of select="/Document/module/alias" />';
 					i18nChooseFlowInstance = '<xsl:value-of select="$i18n.Choose" />';
 					i18nFlow = '<xsl:value-of select="$i18n.Flow" />';
-					i18nFlowInstanceID = '<xsl:value-of select="$i18n.FlowInstanceID" />';
+					i18nFlowInstanceID = '<xsl:value-of select="$i18n.FlowInstanceID.short" />';
 					i18nFlowInstanceStatus = '<xsl:value-of select="$i18n.Status" />';
 					i18nFlowInstanceDescription = '<xsl:value-of select="$i18n.Description" />';
-					i18nFlowInstanceAdded = '<xsl:value-of select="$i18n.Date" />';
+					i18nFlowInstanceFirstSubmitted = '<xsl:value-of select="$i18n.FirstSubmitted" />';
+					i18nFlowInstancePoster = '<xsl:value-of select="i18n.FirstSubmitted" /> <xsl:value-of select="i18n.by" />';
 				</script>
 				
 				<div class="split-right search-wrapper">
@@ -306,10 +307,11 @@
   							<tr>
   								<th class="icon no-sort"></th>
   								<th class="service active"><span data-icon-after="_"><xsl:value-of select="$i18n.Flow" /></span></th>
-  								<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID" /></span></th>
+  								<th class="errando"><span data-icon-after="_"><xsl:value-of select="$i18n.FlowInstanceID.short" /></span></th>
   								<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
   								<th class="description"><span data-icon-after="_"><xsl:value-of select="$i18n.Description" /></span></th>
-  								<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Date" /></span></th>
+  								<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.FirstSubmitted" /></span></th>
+  								<th class="poster default-sort"><span data-icon-after="_"><xsl:value-of select="i18n.FirstSubmitted" /> <xsl:value-of select="i18n.by" /></span></th>
   								<th class="link no-sort"></th>
   							</tr>
   						</thead>

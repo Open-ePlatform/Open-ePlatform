@@ -278,6 +278,8 @@ public class FlowInstanceIndexer {
 				instance.putField(MANAGER_DESCRIPTION, managerDescription);				
 			}
 			
+			instance.putField(POSTER_FIELD, doc.get(POSTER_FIELD));
+			
 			jsonArray.addNode(instance);
 		}
 
@@ -519,12 +521,12 @@ public class FlowInstanceIndexer {
 			
 			if (organizationName != null) {
 				
-				doc.add(new TextField(POSTER_FIELD, organizationName, Field.Store.NO));
+				doc.add(new TextField(POSTER_FIELD, organizationName, Field.Store.YES));
 			}
 			
 			if (flowInstance.getPoster() != null) {
 				
-				doc.add(new TextField(POSTER_FIELD, flowInstance.getPoster().getFirstname() + " " + flowInstance.getPoster().getLastname(), Field.Store.NO));
+				doc.add(new TextField(POSTER_FIELD, flowInstance.getPoster().getFirstname() + " " + flowInstance.getPoster().getLastname(), Field.Store.YES));
 				
 			} else {
 				
