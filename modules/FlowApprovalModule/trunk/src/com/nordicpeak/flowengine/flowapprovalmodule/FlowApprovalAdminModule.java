@@ -1487,9 +1487,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				if (pdfFile == null || !pdfFile.exists()) {
 					log.warn("PDF for " + round + " not found");
 					
-				} else if (notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() != null && pdfFile.length() > notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() * BinarySizes.MegaByte) {
+				} else if (notificationHandler.getFlowInstanceGlobalEmailAttachmentSizeLimit() != null && pdfFile.length() > notificationHandler.getFlowInstanceGlobalEmailAttachmentSizeLimit() * BinarySizes.MegaByte) {
 					
-					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(pdfFile.length()) + ") for activity round " + round + " exceeds the size limit of " + notificationHandler.getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() + " MB set for global email submit notifications and will not be attached to the generated email.");
+					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(pdfFile.length()) + ") for activity round " + round + " exceeds the size limit of " + notificationHandler.getFlowInstanceGlobalEmailAttachmentSizeLimit() + " MB set for global email submit notifications and will not be attached to the generated email.");
 					pdfFile = null;
 				}
 			}
