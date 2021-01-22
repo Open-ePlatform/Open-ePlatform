@@ -1957,6 +1957,21 @@
 				</label>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'flowInstanceArchivedGlobalEmailAttachXML'" />
+					<xsl:with-param name="id" select="'flowInstanceArchivedGlobalEmailAttachXML'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="flowInstanceArchivedGlobalEmailAttachXML">
+					<xsl:value-of select="$i18n.FlowInstanceArchivedGlobalEmailAttachXML" />
+				</label>
+			</div>
+		</div>
 	
 		<!-- ExternalMessageReceivedGlobalEmail -->
 		<div class="floatleft full bigmarginbottom margintop internal">

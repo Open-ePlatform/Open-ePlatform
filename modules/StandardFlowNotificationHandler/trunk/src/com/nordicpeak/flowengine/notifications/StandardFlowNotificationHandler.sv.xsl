@@ -478,6 +478,7 @@
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceArchivedGlobalEmailAttachXML">Bifoga ärendet i XML-format</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserEmailAttachPDF">Bifoga ärendet i PDF-format</xsl:variable>
 	

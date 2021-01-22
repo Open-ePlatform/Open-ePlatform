@@ -528,8 +528,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "PDF size limit for flow instance submitted emails (global)", description = "The size limit in megabyte for PDF documents attached to email messages when new flow instances are submitted. If this size is exceeded no PDF is attached. No value set means no size limit.")
-	private Integer flowInstanceSubmittedGlobalEmailPDFSizeLimit;
+	@TextFieldSettingDescriptor(id = "flowInstanceSubmittedGlobalEmailPDFSizeLimit", name = "Attachment size limit for flow instance emails (global)", description = "The size limit in megabyte for documents attached to email messages. If this size is exceeded no file is attached. No value set means no size limit.")
+	private Integer flowInstanceGlobalEmailAttachmentSizeLimit;
 	
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when flow instances are assigned new managers", description = "Controls if email messages are the sent to specified address when flow instances are assigned new managers.")
@@ -1144,22 +1144,22 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				try {
 
-					pdfFile = getEventPDF(flowInstance.getFlowInstanceID(), eventID, flowInstanceSubmittedGlobalEmailPDFSizeLimit);
+					pdfFile = getEventPDF(flowInstance.getFlowInstanceID(), eventID, flowInstanceGlobalEmailAttachmentSizeLimit);
 
 				} catch (PDFSizeExeededException e) {
 
-					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+					log.warn("PDF file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
 			}
 
 			if (notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachXML()) {
 				try {
 
-					xmlFile = getEventXML(flowInstance.getFlowInstanceID(), eventID, flowInstanceSubmittedGlobalEmailPDFSizeLimit);
+					xmlFile = getEventXML(flowInstance.getFlowInstanceID(), eventID, flowInstanceGlobalEmailAttachmentSizeLimit);
 
 				} catch (PDFSizeExeededException e) {
 
-					log.warn("XML file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+					log.warn("XML file (" + BinarySizeFormater.getFormatedSize(e.getSize()) + ") for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
 			}
 
@@ -1227,9 +1227,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return flowInstanceSubmittedUserEmailPDFSizeLimit;
 	}
 
-	public Integer getFlowInstanceSubmittedGlobalEmailPDFSizeLimit() {
+	public Integer getFlowInstanceGlobalEmailAttachmentSizeLimit() {
 
-		return flowInstanceSubmittedGlobalEmailPDFSizeLimit;
+		return flowInstanceGlobalEmailAttachmentSizeLimit;
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -1541,25 +1541,25 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					if (notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachPDF() && pdfFile != null) {
 
-						if (isValidAttachmentSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, pdfFile)) {
+						if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 
 							attachPDF = true;
 
 						} else {
 
-							log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+							log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 						}
 					}
 
 					if (notificationSettings.isFlowInstanceSubmittedGlobalEmailAttachXML() && xmlFile != null) {
 
-						if (isValidAttachmentSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, xmlFile)) {
+						if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
 
 							attachXML = true;
 
 						} else {
 
-							log.warn("XML file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+							log.warn("XML file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 						}
 					}
 
@@ -1785,7 +1785,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
 	
 					File pdfFile = null;
+					File xmlFile = null;
 					boolean attachPDF = false;
+					boolean attachXML = false;
 	
 					if (notificationSettings.isFlowInstanceArchivedGlobalEmailAttachPDF()) {
 	
@@ -1795,27 +1797,54 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	
 							if (pdfFile != null) {
 	
-								if (isValidAttachmentSize(flowInstanceSubmittedGlobalEmailPDFSizeLimit, pdfFile)) {
+								if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 	
 									attachPDF = true;
 	
 								} else {
 	
-									log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceSubmittedGlobalEmailPDFSizeLimit + " MB set for global email archived notifications and will not be attached to the generated email.");
+									log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email archived notifications and will not be attached to the generated email.");
 								}
 							}
 						}
 					}
 					
+					if (notificationSettings.isFlowInstanceArchivedGlobalEmailAttachXML()) {
+						
+						if (xmlProvider != null) {
+							
+							xmlFile = xmlProvider.getXML(flowInstance.getFlowInstanceID(), FlowInstanceUtils.getLatestPDFEvent(flowInstance).getEventID());
+							
+							if (xmlFile != null) {
+								
+								if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
+									
+									attachXML = true;
+									
+								} else {
+									
+									log.warn("XML file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email archived notifications and will not be attached to the generated email.");
+								}
+							}
+						}
+					}
+					
+					NotificationOptions options = null;
+
+					if (attachXML) {
+
+						options = new NotificationOptions(xmlFile);
+					}
+					
 					for (String email : notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses()) {
 						
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, false);
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, false, options);
 					}
 				}
 			}
 		}
 	}
-
+	
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ManagersChangedEvent event, EventSource eventSource) throws SQLException {
 
