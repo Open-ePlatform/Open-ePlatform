@@ -2685,5 +2685,27 @@
 			]]>
 		</Query>	
 	</Script>
+	
+	<Script version="144">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_type_flow_published_notification_users` (
+				  `flowTypeID` INTEGER UNSIGNED NOT NULL,
+				  `userID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`flowTypeID`, `userID`),
+				  CONSTRAINT `FK_flowengine_flow_type_flow_published_notification_users_1` FOREIGN KEY (`flowTypeID`)
+				    REFERENCES `flowengine_flow_types` (`flowTypeID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_types` ADD COLUMN `onlyNotifyOnNewFlowPublications` TINYINT(1) UNSIGNED NOT NULL AFTER `useIconOnAllFlows`;
+			]]>
+		</Query>		
+	</Script>	
 
 </DBScripts>

@@ -10,9 +10,6 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
-
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.color.ColorUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
@@ -27,6 +24,9 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowType;
+
 @Table(name = "flowengine_flow_types")
 @XMLElement
 public class FlowType extends GeneratedElementable implements Serializable, ImmutableFlowType, Icon {
@@ -39,6 +39,7 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	public static final Field ALLOWED_ADMIN_USERS_RELATION = ReflectionUtils.getField(FlowType.class, "allowedAdminUserIDs");
 	public static final Field ALLOWED_GROUPS_RELATION = ReflectionUtils.getField(FlowType.class, "allowedGroupIDs");
 	public static final Field ALLOWED_USERS_RELATION = ReflectionUtils.getField(FlowType.class, "allowedUserIDs");
+	public static final Field FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION = ReflectionUtils.getField(FlowType.class, "flowPublishedNotificationUserIDs");
 	public static final Field ALLOWED_QUERIES_RELATION = ReflectionUtils.getField(FlowType.class, "allowedQueryTypes");
 
 	public static final Field ICON_BLOB_FIELD = ReflectionUtils.getField(Flow.class, "icon");
@@ -133,6 +134,18 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 	@XMLElement(childName = "queryTypeID")
 	private List<String> allowedQueryTypes;
 
+	@DAOManaged
+	@OneToMany
+	@SimplifiedRelation(table = "flowengine_flow_type_flow_published_notification_users", remoteValueColumnName = "userID")
+	@WebPopulate(paramName = "flowpublishednotificationuser")
+	@XMLElement(childName = "userID")
+	private List<Integer> flowPublishedNotificationUserIDs;
+
+	@WebPopulate
+	@DAOManaged
+	@XMLElement
+	private boolean onlyNotifyOnNewFlowPublications;
+
 	@Override
 	public Integer getFlowTypeID() {
 
@@ -209,7 +222,7 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((flowTypeID == null) ? 0 : flowTypeID.hashCode());
+		result = prime * result + (flowTypeID == null ? 0 : flowTypeID.hashCode());
 		return result;
 	}
 
@@ -383,4 +396,25 @@ public class FlowType extends GeneratedElementable implements Serializable, Immu
 
 		this.iconLastModified = iconLastModified;
 	}
+
+	public List<Integer> getFlowPublishedNotificationUserIDs() {
+
+		return flowPublishedNotificationUserIDs;
+	}
+
+	public void setFlowPublishedNotificationUserIDs(List<Integer> flowPublishedNotificationUserIDs) {
+
+		this.flowPublishedNotificationUserIDs = flowPublishedNotificationUserIDs;
+	}
+
+	public boolean isOnlyNotifyOnNewFlowPublications() {
+
+		return onlyNotifyOnNewFlowPublications;
+	}
+
+	public void setOnlyNotifyOnNewFlowPublications(boolean onlyNotifyOnNewFlowPublications) {
+
+		this.onlyNotifyOnNewFlowPublications = onlyNotifyOnNewFlowPublications;
+	}
+
 }

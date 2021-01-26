@@ -114,6 +114,7 @@ import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.FlowPublishedEvent;
 import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
@@ -181,6 +182,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow instance admin module URL", description = "The full URL of the flow instance module", required = true)
 	protected String flowInstanceAdminModuleAlias = "not set";
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow admin module URL", description = "The full URL of the flow module", required = true)
+	protected String flowAdminModuleAlias = "not set";
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send SMS to users on status change", description = "Controls if SMS messages are the sent to the users when the status of their flow instance changes.")
@@ -606,6 +611,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Manager expired email address (global)", description = "Global address to be notified when new messages are received", formatValidator = EmailPopulator.class)
 	private List<String> managerExpiredGlobalEmailAddresses;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow published user subject (user)", description = "The subject of emails sent when a flow is published", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowPublishedUserEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow published user message (user)", description = "The message of emails sent when a flow is published", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowPublishedUserEmailMessage;
 
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin group", description = "Groups that have access to the administrative functions in this module.")
@@ -2121,6 +2136,54 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					try {
 						email.addRecipient(address);
+						email.setMessageContentType(SimpleEmail.HTML);
+						email.setSenderName(getEmailSenderName(null));
+						email.setSenderAddress(getEmailSenderAddress(null));
+						email.setSubject(subject);
+						email.setMessage(EmailUtils.addMessageBody(message));
+
+						systemInterface.getEmailHandler().send(email);
+
+					} catch (Exception e) {
+
+						log.error("Error generating/sending email " + email, e);
+					}
+				}
+			}
+		}
+	}
+	
+	@EventListener(channel = Flow.class)
+	public void processEvent(FlowPublishedEvent event, EventSource eventSource) {
+		
+		Flow flow = event.getFlow();
+
+		if (flow.getFlowType().isOnlyNotifyOnNewFlowPublications() && !event.isNewPublication()) {
+
+			return;
+		}
+
+		FlowType flowType = flow.getFlowType();
+
+		if (!CollectionUtils.isEmpty(flowType.getFlowPublishedNotificationUserIDs())) {
+
+			List<User> users = systemInterface.getUserHandler().getUsers(flowType.getFlowPublishedNotificationUserIDs(), false, true);
+
+			if (users != null && flowPublishedUserEmailSubject != null && flowPublishedUserEmailMessage != null) {
+
+				TagReplacer tagReplacer = new TagReplacer();
+				tagReplacer.addTagSource(FLOW_TAG_SOURCE_FACTORY.getTagSource(flow));
+				tagReplacer.addTagSource(new SingleTagSource("$flow.url", flowAdminModuleAlias + "/showflow/" + flow.getFlowID()));
+
+				String subject = tagReplacer.replace(flowPublishedUserEmailSubject);
+				String message = tagReplacer.replace(flowPublishedUserEmailMessage);
+
+				for (User user : users) {
+
+					SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+
+					try {
+						email.addRecipient(user.getEmail());
 						email.setMessageContentType(SimpleEmail.HTML);
 						email.setSenderName(getEmailSenderName(null));
 						email.setSenderAddress(getEmailSenderAddress(null));

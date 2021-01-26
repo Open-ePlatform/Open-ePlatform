@@ -358,6 +358,21 @@
 		
 	</xsl:variable>
 	
+	<xsl:variable name="java.flowPublishedUserEmailSubject">Publicerad e-tjänst $flow.name (version $flow.version)</xsl:variable>
+	<xsl:variable name="java.flowPublishedUserEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;En e-tjänst har publicerats, $flow.name (version $flow.version).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att komma till e-tjänsten:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flow.url"&gt;$flow.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+		
 	<xsl:variable name="i18n.UserNotifications">Notifikationer till sökande</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserSMS">SMS vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.SendExternalMessageReceivedUserSMS">SMS vid nytt meddelande från handläggare</xsl:variable>

@@ -50,38 +50,37 @@ import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.interfaces.FlowTypeExtensionProvider;
 
-
 public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdminModule> {
 
 	public FlowTypeCRUD(CRUDDAO<FlowType, Integer> crudDAO, FlowAdminModule callback) {
 
 		super(IntegerBeanIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowType>(FlowType.class), "FlowType", "flow type", "/flowtypes", callback);
-		
+
 		setRequirePostForDelete(true);
 	}
 
 	@Override
 	public FlowType getBean(Integer beanID, String getMode, HttpServletRequest req) throws SQLException, AccessDeniedException {
 
-		if(getMode != null && (getMode == FlowCRUD.SHOW || getMode == FlowCRUD.DELETE)){
+		if (getMode != null && (getMode == FlowCRUD.SHOW || getMode == FlowCRUD.DELETE)) {
 
 			return callback.getCachedFlowType(beanID);
 
-		}else{
+		} else {
 
 			FlowType flowType = callback.getCachedFlowType(beanID);
 
-			if(flowType == null){
+			if (flowType == null) {
 
 				return null;
 			}
 
 			Blob icon = flowType.getIcon();
-			
+
 			flowType = SerializationUtils.cloneSerializable(flowType);
 
 			flowType.setIcon(icon);
-			
+
 			return flowType;
 		}
 	}
@@ -92,17 +91,17 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 		ArrayList<FlowType> filteredFlowtypes = new ArrayList<FlowType>(callback.getCachedFlowTypes());
 
 		//Filter flow types if user not admin for this module
-		if(!AccessUtils.checkAccess(user, callback)){
+		if (!AccessUtils.checkAccess(user, callback)) {
 
 			Iterator<FlowType> iterator = filteredFlowtypes.iterator();
 
 			FlowType flowType;
 
-			while(iterator.hasNext()){
+			while (iterator.hasNext()) {
 
 				flowType = iterator.next();
 
-				if(!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())){
+				if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
 
 					iterator.remove();
 				}
@@ -136,9 +135,9 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 		checkModificationAccess(user);
 	}
 
-	public void checkModificationAccess(User user) throws AccessDeniedException{
+	public void checkModificationAccess(User user) throws AccessDeniedException {
 
-		if(!AccessUtils.checkAccess(user, callback)){
+		if (!AccessUtils.checkAccess(user, callback)) {
 
 			throw new AccessDeniedException("User does not have access to administrate flow types.");
 		}
@@ -147,7 +146,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 	@Override
 	protected void checkShowAccess(FlowType bean, User user, HttpServletRequest req, URIParser uriParser) throws AccessDeniedException, URINotFoundException, SQLException {
 
-		if(!AccessUtils.checkAccess(user, bean.getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)){
+		if (!AccessUtils.checkAccess(user, bean.getAdminAccessInterface()) && !AccessUtils.checkAccess(user, callback)) {
 
 			throw new AccessDeniedException("User does not have access to requested flow type.");
 		}
@@ -180,53 +179,58 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 		return super.beanDeleted(bean, req, res, user, uriParser);
 	}
-	
+
 	@Override
 	protected void appendShowFormData(FlowType bean, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
-		
+
 		appendAdminAccess(user, doc, showTypeElement);
-		
+
 		if (bean.getAllowedAdminGroupIDs() != null) {
-			
+
 			XMLUtils.append(doc, showTypeElement, "AllowedAdminGroups", callback.getGroupHandler().getGroups(bean.getAllowedAdminGroupIDs(), false));
 		}
-		
+
 		if (bean.getAllowedAdminUserIDs() != null) {
-			
+
 			XMLUtils.append(doc, showTypeElement, "AllowedAdminUsers", callback.getUserHandler().getUsers(bean.getAllowedAdminUserIDs(), false, true));
 		}
-		
+
 		if (bean.getAllowedGroupIDs() != null) {
-			
+
 			XMLUtils.append(doc, showTypeElement, "AllowedGroups", callback.getGroupHandler().getGroups(bean.getAllowedGroupIDs(), false));
 		}
-		
+
 		if (bean.getAllowedUserIDs() != null) {
-			
+
 			XMLUtils.append(doc, showTypeElement, "AllowedUsers", callback.getUserHandler().getUsers(bean.getAllowedUserIDs(), false, true));
 		}
-		
+
+		if (bean.getFlowPublishedNotificationUserIDs() != null) {
+
+			XMLUtils.append(doc, showTypeElement, "FlowPublishedNotificationUsers", callback.getUserHandler().getUsers(bean.getFlowPublishedNotificationUserIDs(), false, true));
+		}
+
 		if (bean.getAllowedQueryTypes() != null) {
-			
+
 			XMLUtils.append(doc, showTypeElement, "QueryTypeDescriptors", callback.getQueryHandler().getQueryTypes(bean.getAllowedQueryTypes()));
 		}
-		
+
 		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
-			
+
 			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
-				
+
 				try {
 					ViewFragment paymentProviderViewFragment = extension.getShowFlowTypeFragment(bean, req, user, uriParser);
-			
+
 					showTypeElement.appendChild(paymentProviderViewFragment.toXML(doc));
-					
-				} catch (Exception e){
-					
+
+				} catch (Exception e) {
+
 					log.error("Error getting getShowFlowTypeFragment view fragment from flow type extension " + extension, e);
 				}
 			}
 		}
-		
+
 		XMLUtils.appendNewElement(doc, showTypeElement, "flowFamilyCount", callback.getFlowFamilies(bean.getFlowTypeID()).size());
 	}
 
@@ -236,9 +240,9 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 		appendAdminAccess(user, doc, listTypeElement);
 	}
 
-	private void appendAdminAccess(User user, Document doc, Element element){
+	private void appendAdminAccess(User user, Document doc, Element element) {
 
-		if(AccessUtils.checkAccess(user, callback)){
+		if (AccessUtils.checkAccess(user, callback)) {
 
 			XMLUtils.appendNewElement(doc, element, "AdminAccess");
 		}
@@ -249,7 +253,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 		List<FlowType> flowTypes = getAllBeans(user, req, uriParser);
 
-		if(CollectionUtils.isEmpty(flowTypes)){
+		if (CollectionUtils.isEmpty(flowTypes)) {
 
 			return;
 		}
@@ -257,7 +261,7 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 		Element flowTypesElement = doc.createElement(this.typeElementPluralName);
 		listTypeElement.appendChild(flowTypesElement);
 
-		for(FlowType flowType : flowTypes){
+		for (FlowType flowType : flowTypes) {
 
 			Element flowTypeElement = flowType.toXML(doc);
 			flowTypesElement.appendChild(flowTypeElement);
@@ -271,138 +275,143 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 		appendFormData(doc, addTypeElement, user, req, uriParser);
 	}
-	
+
 	@Override
 	protected void appendUpdateFormData(FlowType bean, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
-		
+
 		appendFormData(doc, updateTypeElement, user, req, uriParser);
-		
+
 		if (bean.getAllowedAdminGroupIDs() != null) {
-			
+
 			XMLUtils.append(doc, updateTypeElement, "AllowedAdminGroups", callback.getGroupHandler().getGroups(bean.getAllowedAdminGroupIDs(), false));
 		}
-		
+
 		if (bean.getAllowedAdminUserIDs() != null) {
-			
+
 			XMLUtils.append(doc, updateTypeElement, "AllowedAdminUsers", callback.getUserHandler().getUsers(bean.getAllowedAdminUserIDs(), false, true));
 		}
-		
+
 		if (bean.getAllowedGroupIDs() != null) {
-			
+
 			XMLUtils.append(doc, updateTypeElement, "AllowedGroups", callback.getGroupHandler().getGroups(bean.getAllowedGroupIDs(), false));
 		}
-		
+
 		if (bean.getAllowedUserIDs() != null) {
-			
+
 			XMLUtils.append(doc, updateTypeElement, "AllowedUsers", callback.getUserHandler().getUsers(bean.getAllowedUserIDs(), false, true));
 		}
-		
+
+		if (bean.getFlowPublishedNotificationUserIDs() != null) {
+
+			XMLUtils.append(doc, updateTypeElement, "FlowPublishedNotificationUsers", callback.getUserHandler().getUsers(bean.getFlowPublishedNotificationUserIDs(), false, true));
+		}
+
 		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
-			
+
 			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
-				
+
 				try {
-					
+
 					ViewFragment paymentProviderViewFragment = extension.getUpdateFlowTypeFragment(bean, req, user, uriParser, (ValidationException) req.getAttribute(extension.getProviderID() + "-validationException"));
-					
+
 					updateTypeElement.appendChild(paymentProviderViewFragment.toXML(doc));
-					
+
 				} catch (Exception e) {
-					
+
 					log.error("Error getting getUpdateFlowTypeFragment view fragment from flow type extension " + extension, e);
 				}
 			}
 		}
 	}
-	
+
 	private void appendFormData(Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) {
 
 		XMLUtils.append(doc, updateTypeElement, "QueryTypeDescriptors", callback.getQueryHandler().getAvailableQueryTypes());
-		
+
 		if (callback.useFlowTypeIconUpload()) {
-			
+
 			XMLUtils.appendNewElement(doc, updateTypeElement, "useFlowTypeIconUpload", "true");
 		}
 	}
-	
+
 	@Override
 	protected FlowType populateFromUpdateRequest(FlowType flowType, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
-		
+
 		boolean extensionErrors = false;
-		
+
 		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
-			
+
 			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
-				
+
 				try {
 					extension.validateUpdateFlowType(flowType, req, user, uriParser);
-					
+
 				} catch (ValidationException e) {
-					
+
 					extensionErrors = true;
 					req.setAttribute(extension.getClass().getName() + "-validationException", e);
 				}
 			}
-			
+
 		}
-		
+
 		flowType = super.populateFromUpdateRequest(flowType, req, user, uriParser);
-		
+
 		if (extensionErrors) {
-			
+
 			throw new ValidationException(new ValidationError("ExtensionErrors"));
 		}
-		
+
 		return flowType;
 	}
-	
+
 	@Override
 	protected void validateAddPopulation(FlowType bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
-		
+
 		super.validateAddPopulation(bean, req, user, uriParser);
-		
+
 		if (callback.useFlowTypeIconUpload()) {
-			
+
 			setIcon(req, bean, user);
 		}
-		
+
 		bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 	}
-	
+
 	@Override
 	protected void validateUpdatePopulation(FlowType bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
-		
+
 		super.validateUpdatePopulation(bean, req, user, uriParser);
-		
+
 		if (callback.useFlowTypeIconUpload()) {
-			
+
 			setIcon(req, bean, user);
 		}
 	}
-	
+
 	@Override
 	protected void updateFilteredBean(FlowType flowType, HttpServletRequest req, User user, URIParser uriParser) throws Exception {
-		
+
 		super.updateFilteredBean(flowType, req, user, uriParser);
-		
+
 		if (!callback.getFlowTypeExtensionsProviders().isEmpty()) {
-			
+
 			boolean extensionErrors = false;
-			
+
 			for (FlowTypeExtensionProvider extension : callback.getFlowTypeExtensionsProviders()) {
-				
+
 				try {
 					extension.updateFlowType(flowType, req, user, uriParser);
-					
+
 				} catch (ValidationException e) {
-					
+
 					extensionErrors = true;
 					req.setAttribute(extension.getProviderID() + "-validationException", e);
 				}
 			}
-			
+
 			if (extensionErrors) {
-				
+
 				throw new ValidationException(new ValidationError("ExtensionErrors"));
 			}
 		}
@@ -410,13 +419,13 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 	private void setIcon(HttpServletRequest req, FlowType bean, User user) throws ValidationException, IOException, SerialException, SQLException {
 
-		if(req.getParameter("deleteicon") != null){
+		if (req.getParameter("deleteicon") != null) {
 
 			bean.setIcon(null);
 			bean.setIconFileName(null);
 			bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 		}
-		
+
 		if (!(req instanceof MultipartRequest)) {
 
 			return;
@@ -436,35 +445,34 @@ public class FlowTypeCRUD extends ModularCRUD<FlowType, Integer, User, FlowAdmin
 
 			} else {
 
-				BufferedImage image = null;
-				
-				try {
+			BufferedImage image = null;
 
-					image = ImageUtils.getImage(file.get());
+			try {
 
-					image = ImageUtils.cropAsSquare(image);
-					
-					if (image.getWidth() > callback.getMaxFlowTypeIconWidth() || image.getHeight() > callback.getMaxFlowTypeIconHeight()) {
+				image = ImageUtils.getImage(file.get());
 
-						image = ImageUtils.scale(image, callback.getMaxFlowTypeIconHeight(), callback.getMaxFlowTypeIconWidth(), Image.SCALE_SMOOTH, BufferedImage.TYPE_INT_ARGB);
+				image = ImageUtils.cropAsSquare(image);
 
-					}
+				if (image.getWidth() > callback.getMaxFlowTypeIconWidth() || image.getHeight() > callback.getMaxFlowTypeIconHeight()) {
 
-				} catch (Exception e) {
+					image = ImageUtils.scale(image, callback.getMaxFlowTypeIconHeight(), callback.getMaxFlowTypeIconWidth(), Image.SCALE_SMOOTH, BufferedImage.TYPE_INT_ARGB);
 
-					throw new ValidationException(new ValidationError("UnableToParseIcon"));
 				}
-				
-				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				ImageIO.write(image, ImageUtils.PNG, byteArrayOutputStream);
-				
-				bean.setIcon(new SerialBlob(byteArrayOutputStream.toByteArray()));
-				bean.setIconFileName(FileUtils.replaceFileExtension(FilenameUtils.getName(file.getName()), "png"));
-				bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
+
+			} catch (Exception e) {
+
+				throw new ValidationException(new ValidationError("UnableToParseIcon"));
 			}
-			
+
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			ImageIO.write(image, ImageUtils.PNG, byteArrayOutputStream);
+
+			bean.setIcon(new SerialBlob(byteArrayOutputStream.toByteArray()));
+			bean.setIconFileName(FileUtils.replaceFileExtension(FilenameUtils.getName(file.getName()), "png"));
+			bean.setIconLastModified(TimeUtils.getCurrentTimestamp());
 		}
 
 	}
-	
+
+}
 }

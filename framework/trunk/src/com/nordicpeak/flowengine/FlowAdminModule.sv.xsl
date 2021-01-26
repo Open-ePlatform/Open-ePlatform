@@ -553,10 +553,17 @@
 	<xsl:variable name="i18n.FlowType.UserAccess.Title">Åtkomst till e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.FlowType.UserAccess.Description">Om du vill begränsa åtkomsten till e-tjänsterna inom denna kategori så kan du kryssa i rutan och sedan ange vilka användare och grupper som ska få komma åt e-tjänsterna.</xsl:variable>
 	<xsl:variable name="i18n.enableAccessFiltering">Aktivera begränsad åtkomst</xsl:variable>
+
+	<xsl:variable name="i18n.FlowType.FlowPublishedNotificationUsers.Title">Notifieringar</xsl:variable>
+	<xsl:variable name="i18n.FlowType.FlowPublishedNotificationUsers.Description">Följande användare kommer att notifieras automatiskt när e-tjänster inom denna kategori publiceras.</xsl:variable>
 	
 	<xsl:variable name="i18n.noUserAccess">Inga användare eller grupper har åtkomst till e-tjänster i denna kategori.</xsl:variable>
 	
 	<xsl:variable name="i18n.noAccessFilter">Samtliga användare har åtkomst till e-tjänsterna i denna kategori.</xsl:variable>
+
+	<xsl:variable name="i18n.noFlowPublishedNotificationUsers">Inga användare notifieras när e-tjänster inom denna kategori publiceras.</xsl:variable>
+
+	<xsl:variable name="i18n.onlyNotifyOnNewFlowPublications">Notifiera endast vid ny publisering (ny e-tjänst eller efter avpublisering).</xsl:variable>
 
 	<xsl:variable name="i18n.hideManagerDetails">Dölj uppgifter om handläggare</xsl:variable>
 	

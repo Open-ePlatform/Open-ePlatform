@@ -336,7 +336,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowType.CATEGORIES_RELATION,
 			FlowType.ALLOWED_ADMIN_USERS_RELATION,
 			FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
-			FlowType.ALLOWED_QUERIES_RELATION
+			FlowType.ALLOWED_QUERIES_RELATION,
+			FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION
 	};
 	//@formatter:on
 	
@@ -353,7 +354,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY =    new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
 
-	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
+	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
 
 	private static final StepSortIndexComparator STEP_COMPARATOR = new StepSortIndexComparator();
 	private static final QueryDescriptorSortIndexComparator QUERY_DESCRIPTOR_COMPARATOR = new QueryDescriptorSortIndexComparator();
@@ -631,6 +632,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
 	
+	@InstanceManagerDependency
+	protected FlowBrowserModule flowBrowserModule;
+	
 	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
 	
 	private FlowFamilyCRUD flowFamilyCRUD;
@@ -830,7 +834,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		standardStatusGroupCRUD = new StandardStatusGroupCRUD(standardStatusGroupDAOWrapper, this);
 
 		AnnotatedDAOWrapper<FlowType, Integer> flowTypeDAOWrapper = daoFactory.getFlowTypeDAO().getWrapper("flowTypeID", Integer.class);
-		flowTypeDAOWrapper.addRelations(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION);
+		flowTypeDAOWrapper.addRelations(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION);
 		flowTypeDAOWrapper.setUseRelationsOnAdd(true);
 		flowTypeDAOWrapper.setUseRelationsOnUpdate(true);
 
@@ -893,7 +897,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				FlowType.ALLOWED_GROUPS_RELATION,
 				FlowType.ALLOWED_ADMIN_USERS_RELATION,
 				FlowType.ALLOWED_ADMIN_GROUPS_RELATION,
-				FlowType.ALLOWED_QUERIES_RELATION
+				FlowType.ALLOWED_QUERIES_RELATION,
+				FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION
 		//@formatter:on
 		);
 		query.addCachedRelation(FlowType.CATEGORIES_RELATION);
@@ -6828,6 +6833,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 		
 		return standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
+	}
+
+	public FlowBrowserModule getFlowBrowserModule() {
+
+		return flowBrowserModule;
 	}
 	
 }

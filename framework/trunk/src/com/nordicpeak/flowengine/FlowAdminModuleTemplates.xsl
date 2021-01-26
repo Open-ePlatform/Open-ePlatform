@@ -5139,6 +5139,32 @@
 			
 		</fieldset>
 		
+		<fieldset>
+			<legend>
+				<img class="alignmiddle" src="{$imgPath}/lock.png" alt="" />
+				<xsl:text>&#x20;</xsl:text>
+				<xsl:value-of select="$i18n.FlowType.FlowPublishedNotificationUsers.Title"/>
+			</legend>
+			
+			<xsl:choose>
+				<xsl:when test="FlowPublishedNotificationUsers">
+				
+					<span class="floatleft bold">
+						<xsl:value-of select="$i18n.allowedUsers"/>
+					</span>
+					
+					<xsl:apply-templates select="FlowPublishedNotificationUsers/user" mode="list"/>
+				
+				</xsl:when>
+				<xsl:otherwise>
+				
+					<xsl:value-of select="$i18n.noFlowPublishedNotificationUsers"/>
+				
+				</xsl:otherwise>
+			</xsl:choose>
+			
+		</fieldset>
+		
 		<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes" />
 
 		<fieldset>
@@ -5509,6 +5535,43 @@
 					<xsl:value-of select="$i18n.FlowType.allowAnonymousAccess" />
 				</label>
 			</div>
+		
+		</fieldset>
+		
+		<fieldset class="floatleft full bigmarginbottom">
+		
+			<legend><xsl:value-of select="$i18n.FlowType.FlowPublishedNotificationUsers.Title" /></legend>
+		
+			<p class="margin">
+				<xsl:value-of select="$i18n.FlowType.FlowPublishedNotificationUsers.Description" />
+			</p>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'onlyNotifyOnNewFlowPublications'" />
+					<xsl:with-param name="id" select="'onlyNotifyOnNewFlowPublications'" />
+					<xsl:with-param name="element" select="FlowType" />
+				</xsl:call-template>
+				
+				<label for="onlyNotifyOnNewFlowPublications">
+					<xsl:value-of select="$i18n.onlyNotifyOnNewFlowPublications" />
+				</label>
+			</div>
+		
+			<label class="floatleft full">
+				<xsl:value-of select="$i18n.allowedUsers" />
+			</label>
+			
+			<xsl:call-template name="UserList">
+				<xsl:with-param name="connectorURL">
+					<xsl:value-of select="/Document/requestinfo/currentURI"/>
+					<xsl:text>/</xsl:text>
+					<xsl:value-of select="/Document/module/alias"/>
+					<xsl:text>/allusers</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name" select="'flowpublishednotificationuser'"/>
+				<xsl:with-param name="users" select="FlowPublishedNotificationUsers" />
+			</xsl:call-template>		
 		
 		</fieldset>
 		

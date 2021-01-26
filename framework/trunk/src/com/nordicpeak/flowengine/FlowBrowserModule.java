@@ -878,7 +878,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 				return;
 			}
 
-			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
+			HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(FlowType.FLOWS_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION, Flow.TAGS_RELATION, Flow.CHECKS_RELATION, Flow.STEPS_RELATION, FlowFamily.ALIASES_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION, Flow.FLOW_FORMS_RELATION);
 			
 			query.addCachedRelations(Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION);
 			query.addRelationParameter(Flow.class, flowPublishDateParamFactory.getIsNotNullParameter());

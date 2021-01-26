@@ -73,6 +73,7 @@ import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
 import com.nordicpeak.flowengine.beans.StandardStatus;
 import com.nordicpeak.flowengine.beans.StandardStatusGroup;
 import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.events.FlowPublishedEvent;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
@@ -226,8 +227,29 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		callback.addFlowFamilyEvent(callback.getEventFlowUpdatedMessage(), bean, user);
 
 		callback.redirectToMethod(req, res, "/showflow/" + bean.getFlowID());
+		
+		sendFlowPublishedEvent(bean, req);
 
 		return null;
+	}
+
+	private void sendFlowPublishedEvent(Flow flow, HttpServletRequest req) {
+
+		boolean flowWasPublished = (boolean) req.getAttribute("flowWasPublished");
+		
+		if (flow.isPublished() && !flowWasPublished) {
+			
+			Flow latestPublishedFlow = callback.getFlowBrowserModule().getLatestPublishedFlowVersion(flow.getFlowFamily().getFlowFamilyID());
+			
+			if (!flow.equals(latestPublishedFlow)) {
+				
+				return;
+			}
+
+			boolean newPublication = !(boolean) req.getAttribute("anyFlowWasPublished");
+
+			callback.getEventHandler().sendEvent(Flow.class, new FlowPublishedEvent(flow, newPublication), EventTarget.ALL);
+		}
 	}
 
 	@Override
@@ -389,6 +411,9 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		boolean enabled = bean.isEnabled();
 		Date publish = bean.getPublishDate();
 		Date unpublish = bean.getUnPublishDate();
+		
+		req.setAttribute("flowWasPublished", bean.isPublished());
+		req.setAttribute("anyFlowWasPublished", callback.getFlowBrowserModule().getLatestPublishedFlowVersion(bean.getFlowFamily().getFlowFamilyID()) != null);
 
 		bean = super.populateFromUpdateRequest(bean, req, user, uriParser);
 
