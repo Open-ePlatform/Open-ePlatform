@@ -20,7 +20,7 @@ Då flerpartssignering ska användas måste det finnas en status i e-tjänsten som h
 	<xsl:variable name="i18n.hideCitizenIdetifierInPDF">Dölj personnummer i PDF</xsl:variable>
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.SetMultipartsAsOwners">Sätt part som sökande för ärendet</xsl:variable>
-	
+	<xsl:variable name="i18n.PreventPostersCitizenIdentifier">Förhindra att det personnummer som tillhör användaren som skickar in ärendet anges</xsl:variable>
 	<xsl:variable name="i18n.ManualMultiSignQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
 	
 	<xsl:variable name="i18n.setAsAttribute">Spara fältens värde som attribut</xsl:variable>

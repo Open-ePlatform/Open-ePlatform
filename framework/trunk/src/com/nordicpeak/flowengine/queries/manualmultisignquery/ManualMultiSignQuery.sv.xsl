@@ -18,5 +18,7 @@
 	<xsl:variable name="i18n.InvalidFormat">Felaktigt format på fältet</xsl:variable>
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	<xsl:variable name="i18n.NoContactChannelSpecified">Du måste fylla i fältet e-postadress eller mobiltelefon</xsl:variable>
+	<xsl:variable name="i18n.PosterUsingPostersCitizenIdentifier">Du får ej ange ditt eget personnummer här</xsl:variable>
+	<xsl:variable name="i18n.UserUsingPostersCitizenIdentifier">Du får inte ange det personnummer som tillhör användaren som skickat in ärendet</xsl:variable>
 	
 </xsl:stylesheet>

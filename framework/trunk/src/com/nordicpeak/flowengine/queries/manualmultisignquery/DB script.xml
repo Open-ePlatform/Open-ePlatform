@@ -107,5 +107,14 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `manual_multi_sign_queries` ADD COLUMN `preventPostersCitizenIdentifier` TINYINT(1) UNSIGNED NOT NULL AFTER `setMultipartsAsOwners`;
+			]]>
+		</Query>
+	</Script>
+
 	
 </DBScripts>

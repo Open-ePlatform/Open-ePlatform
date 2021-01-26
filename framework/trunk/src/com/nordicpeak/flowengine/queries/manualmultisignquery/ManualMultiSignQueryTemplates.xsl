@@ -330,6 +330,19 @@
 		
 	</xsl:template>		
 	
+	<xsl:template match="validationError[messageKey = 'PosterUsingPostersCitizenIdentifier']">
+		
+		<i data-icon-after="!" title="{$i18n.PosterUsingPostersCitizenIdentifier}"></i>
+		
+	</xsl:template>
+
+	<xsl:template match="validationError[messageKey = 'UserUsingPostersCitizenIdentifier']">
+		
+		<i data-icon-after="!" title="{$i18n.UserUsingPostersCitizenIdentifier}"></i>
+		
+	</xsl:template>
+
+	
 	<xsl:template match="validationError">
 		
 		<span>

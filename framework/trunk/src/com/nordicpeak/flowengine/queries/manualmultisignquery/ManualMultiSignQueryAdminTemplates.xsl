@@ -66,6 +66,20 @@
 					</label>
 			    </div>
 			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'preventPostersCitizenIdentifier'" />
+						<xsl:with-param name="name" select="'preventPostersCitizenIdentifier'" />
+						<xsl:with-param name="element" select="ManualMultiSignQuery" /> 
+					</xsl:call-template>
+						
+					<label for="preventPostersCitizenIdentifier">
+						<xsl:value-of select="$i18n.PreventPostersCitizenIdentifier" />
+					</label>
+			    </div>
+			</div>
 			
 			<div class="floatleft full bigmarginbottom">
 				<div class="floatleft full">

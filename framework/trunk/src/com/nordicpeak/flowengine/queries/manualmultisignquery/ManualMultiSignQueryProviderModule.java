@@ -50,6 +50,7 @@ import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 
@@ -300,6 +301,21 @@ public class ManualMultiSignQueryProviderModule extends BaseQueryProviderModule<
 				
 				errors.add(new ValidationError("NoContactChannelSpecified", (String) null, "q" + queryID + "_mobilePhone"));
 				errors.add(new ValidationError("NoContactChannelSpecified", (String) null, "q" + queryID + "_email"));
+			}
+			
+			if(queryInstance.getQuery().isPreventPostersCitizenIdentifier()) {
+				
+				if(socialSecurityNumber != null && socialSecurityNumber.equals(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster))) {
+
+					if(user != null && user.equals(poster)) {
+						
+						errors.add(new ValidationError("PosterUsingPostersCitizenIdentifier", (String) null, "q" + queryID + "_socialSecurityNumber"));
+						
+					} else {
+						
+						errors.add(new ValidationError("UserUsingPostersCitizenIdentifier", (String) null, "q" + queryID + "_socialSecurityNumber"));
+					}
+				}
 			}
 			
 			if (!errors.isEmpty()) {

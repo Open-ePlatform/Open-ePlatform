@@ -47,6 +47,11 @@ public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery, C
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean preventPostersCitizenIdentifier = false;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean setAsAttribute;
 	
 	@DAOManaged
@@ -161,6 +166,16 @@ public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery, C
 		fieldElement.setAttribute("maxOccurs", "1");
 
 		sequenceElement.appendChild(fieldElement);
+	}
+
+	public boolean isPreventPostersCitizenIdentifier() {
+		
+		return preventPostersCitizenIdentifier;
+	}
+
+	public void setPreventPostersCitizenIdentifier(boolean preventPostersCitizenIdentifier) {
+	
+		this.preventPostersCitizenIdentifier = preventPostersCitizenIdentifier;
 	}
 	
 	public boolean isSetAsAttribute() {
