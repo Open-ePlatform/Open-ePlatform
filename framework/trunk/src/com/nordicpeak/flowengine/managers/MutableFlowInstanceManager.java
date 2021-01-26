@@ -84,13 +84,14 @@ import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.interfaces.SubmitCheck;
+import com.nordicpeak.flowengine.search.QuerySearchValueUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class MutableFlowInstanceManager implements Serializable, HttpSessionBindingListener, FlowInstanceManager {
 
-	private static final RelationQuery FLOW_INSTANCE_ADD_RELATIONS = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION, FlowInstance.OWNERS_RELATION);
-	private static final RelationQuery FLOW_INSTANCE_UPDATE_RELATIONS = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION);
+	private static final RelationQuery FLOW_INSTANCE_ADD_RELATIONS = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION, FlowInstance.OWNERS_RELATION, FlowInstance.QUERY_SEARCH_VALUES_RELATION);
+	private static final RelationQuery FLOW_INSTANCE_UPDATE_RELATIONS = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION, FlowInstance.QUERY_SEARCH_VALUES_RELATION);
 
 	// Nested class to keep track of active flow instance managers in a protected fashion
 	public final static class FlowInstanceManagerRegistery implements Serializable {
@@ -802,6 +803,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		}else if(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() == QueryState.HIDDEN){
 
+			QuerySearchValueUtils.clearQuerySearchValues(flowInstance, managedQueryInstance.getQueryInstance());
+			
 			return null;//"Query is currently hidden and we dont populate hidden queries error exception something....";
 		}
 
@@ -818,7 +821,9 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			validationErrors = e.getErrors();
 		}
-
+		
+		QuerySearchValueUtils.addQuerySearchValues(flowInstance, managedQueryInstance.getQueryInstance());
+		
 		setUnsavedChanges();
 
 		List<QueryModification> queryModifications = null;
@@ -1048,6 +1053,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 					}catch(RuntimeException e){
 						throw new UnableToPopulateQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e);
 					}
+					
+					QuerySearchValueUtils.addQuerySearchValues(flowInstance, queryInstance);
 
 				}else{
 
@@ -1058,6 +1065,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 						
 						throw new UnableToResetQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e);
 					}
+					
+					QuerySearchValueUtils.clearQuerySearchValues(flowInstance, queryInstance);
 				}
 
 			}catch(ValidationException e){

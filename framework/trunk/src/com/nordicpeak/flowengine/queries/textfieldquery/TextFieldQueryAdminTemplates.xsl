@@ -315,6 +315,21 @@
 					</label>
 				</div>
 			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'searchable'" />
+						<xsl:with-param name="name" select="'searchable'" />
+						<xsl:with-param name="element" select="$element" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="searchable">
+						<xsl:value-of select="$i18n.Searchable" />
+					</label>
+				</div>
+			</div>
 			
 			<!-- 
 			<div class="floatleft full bigmarginbottom">

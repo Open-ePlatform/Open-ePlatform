@@ -149,4 +149,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_queries` ADD COLUMN `searchable` TINYINT(1) UNSIGNED NOT NULL AFTER `description`;
+			]]>
+		</Query>
+	</Script>	
+		
 </DBScripts>

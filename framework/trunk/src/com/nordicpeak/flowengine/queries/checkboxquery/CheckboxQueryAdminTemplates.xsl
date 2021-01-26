@@ -44,6 +44,21 @@
 			<xsl:call-template name="createCommonFieldsForm">
 				<xsl:with-param name="element" select="CheckboxQuery" />
 			</xsl:call-template>
+
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'searchable'" />
+						<xsl:with-param name="name" select="'searchable'" />
+						<xsl:with-param name="element" select="CheckboxQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="searchable">
+						<xsl:value-of select="$i18n.Searchable" />
+					</label>
+				</div>
+			</div>			
 			
 			<xsl:call-template name="createAlternativesForm">
 				<xsl:with-param name="alternatives" select="CheckboxQuery/Alternatives/CheckboxAlternative" />

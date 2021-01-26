@@ -14,6 +14,7 @@ Frågetypen Kryssrutefråga används när användaren skall kunna välja mellan olika 
 	<xsl:variable name="java.alternativesText">Alternativ</xsl:variable>
 	
 	<xsl:variable name="i18n.CheckboxQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
+	<xsl:variable name="i18n.Searchable">Gör alternativen sökbara</xsl:variable>
 	<xsl:variable name="i18n.MinChecked">Minst antal valda alternativ</xsl:variable>
 	<xsl:variable name="i18n.MaxChecked">Max antal valda alternativ</xsl:variable>
 	<xsl:variable name="i18n.minChecked">minst antal valda alternativ</xsl:variable>

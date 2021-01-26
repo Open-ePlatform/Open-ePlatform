@@ -53,6 +53,7 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public static final Field MANAGERS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managers");
 	public static final Field MANAGER_GROUPS_RELATION = ReflectionUtils.getField(FlowInstance.class, "managerGroups");
 	public static final Field ATTRIBUTES_RELATION = ReflectionUtils.getField(FlowInstance.class,"attributes");
+	public static final Field QUERY_SEARCH_VALUES_RELATION = ReflectionUtils.getField(FlowInstance.class,"querySearchValues");
 	
 	public static final Field ID_FIELD = ReflectionUtils.getField(FlowInstance.class,"flowInstanceID");
 	public static final Field POSTER_FIELD = ReflectionUtils.getField(FlowInstance.class,"poster");
@@ -169,6 +170,11 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	@OneToMany
 	@XMLElement(fixCase=true)
 	private List<FlowInstanceAttribute> attributes;
+	
+	@DAOManaged
+	@OneToMany
+	@XMLElement(fixCase=true)
+	private List<QuerySearchValue> querySearchValues;
 	
 	@XMLElement
 	private boolean remote;
@@ -605,6 +611,21 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public boolean isNewExternalMessagesAllowed() {
 		
 		return FlowInstanceUtils.isNewExternalMessagesAllowed(this, status);
+	}
+
+	public List<QuerySearchValue> getQuerySearchValues() {
+
+		return querySearchValues;
+	}
+
+	public void setQuerySearchValues(List<QuerySearchValue> querySearchValues) {
+
+		this.querySearchValues = querySearchValues;
+	}
+
+	public void addQuerySearchValues(List<QuerySearchValue> querySearchValues) {
+
+		this.querySearchValues = CollectionUtils.addAndInstantiateIfNeeded(this.querySearchValues, querySearchValues);
 	}
 	
 }

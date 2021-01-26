@@ -61,6 +61,11 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	private boolean required;
 
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean searchable;
+
+	@DAOManaged
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer width;
@@ -125,7 +130,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@DAOManaged
 	@XMLElement
 	private String endpointField;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -177,6 +182,16 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	public void setRequired(boolean required) {
 
 		this.required = required;
+	}
+
+	public boolean isSearchable() {
+
+		return searchable;
+	}
+
+	public void setSearchable(boolean searchable) {
+
+		this.searchable = searchable;
 	}
 
 	public Integer getWidth() {
@@ -262,7 +277,7 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
 
-		List<ValidationError> errors = new ArrayList<ValidationError>();
+		List<ValidationError> errors = new ArrayList<>();
 
 		textFieldID = XMLValidationUtils.validateParameter("textFieldID", xmlParser, true, PositiveStringIntegerPopulator.getPopulator(), errors);
 		label = XMLValidationUtils.validateParameter("label", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
@@ -282,9 +297,9 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		defaultValue = XMLValidationUtils.validateParameter("defaultValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
 		disabled = xmlParser.getPrimitiveBoolean("disabled");
-		
-		if(disabled) {
-			
+
+		if (disabled) {
+
 			containsPrice = xmlParser.getPrimitiveBoolean("containsPrice");
 		}
 
@@ -361,15 +376,13 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		this.xsdElementName = xsdElementName;
 	}
 
-	
 	public boolean isContainsPrice() {
-	
+
 		return containsPrice;
 	}
 
-	
 	public void setContainsPrice(boolean containsPrice) {
-	
+
 		this.containsPrice = containsPrice;
 	}
 

@@ -22,6 +22,7 @@ import com.nordicpeak.flowengine.beans.BaseInvoiceLine;
 import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.PaymentQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SearchableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativeQueryUtils;
@@ -29,7 +30,7 @@ import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternative
 
 @Table(name = "checkbox_query_instances")
 @XMLElement
-public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQueryInstance {
+public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQueryInstance, SearchableQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -53,14 +54,14 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 	@XMLElement
 	private String freeTextAlternativeValue;
 
-	@DAOManaged(columnName="queryID")
+	@DAOManaged(columnName = "queryID")
 	@ManyToOne
 	@XMLElement
 	private CheckboxQuery query;
 
 	@DAOManaged
-	@ManyToMany(linkTable="checkbox_query_instance_alternatives")
-	@XMLElement(fixCase=true)
+	@ManyToMany(linkTable = "checkbox_query_instance_alternatives")
+	@XMLElement(fixCase = true)
 	private List<CheckboxAlternative> alternatives;
 
 	public Integer getQueryInstanceID() {
@@ -95,10 +96,12 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 	@Override
 	public String getFreeTextAlternativeValue() {
+
 		return freeTextAlternativeValue;
 	}
 
 	public void setFreeTextAlternativeValue(String freeTextAlternativeValue) {
+
 		this.freeTextAlternativeValue = freeTextAlternativeValue;
 	}
 
@@ -129,52 +132,52 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 		alternatives = null;
 		freeTextAlternativeValue = null;
-		
+
 		if (query.isSetAsAttribute()) {
-			
+
 			resetAttribute(attributeHandler);
 		}
-		
+
 		super.reset(attributeHandler);
 	}
 
-	public void resetAttribute(MutableAttributeHandler attributeHandler){
-		
+	public void resetAttribute(MutableAttributeHandler attributeHandler) {
+
 		attributeHandler.removeAttribute(query.getAttributeName());
 	}
-	
-	public void setAttribute(MutableAttributeHandler attributeHandler){
-		
+
+	public void setAttribute(MutableAttributeHandler attributeHandler) {
+
 		List<String> attributeValues = null;
-		
+
 		if (alternatives != null) {
-			
+
 			attributeValues = new ArrayList<String>(alternatives.size());
-			
+
 			for (CheckboxAlternative bean : alternatives) {
-				
+
 				if (!StringUtils.isEmpty(bean.getAttributeValue())) {
-					
+
 					attributeValues.add(bean.getAttributeValue());
-					
+
 				} else {
-					
+
 					attributeValues.add(bean.getName());
 				}
 			}
 		}
-		
+
 		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
-			
+
 			attributeValues = CollectionUtils.addAndInstantiateIfNeeded(attributeValues, freeTextAlternativeValue);
 		}
-		
+
 		if (attributeValues != null) {
-			
+
 			attributeHandler.setAttribute(query.getAttributeName(), StringUtils.toCommaSeparatedString(attributeValues));
 		}
 	}
-	
+
 	public void copyQueryValues() {
 
 		this.minChecked = query.getMinChecked();
@@ -186,7 +189,6 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 		return "CheckboxQueryInstance (queryInstanceID=" + queryInstanceID + ")";
 	}
-
 
 	@Override
 	public Element toExportXML(Document doc, QueryHandler queryHandler) throws Exception {
@@ -201,7 +203,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 	@Override
 	public String getStringValue() {
 
-		if(alternatives == null && freeTextAlternativeValue == null){
+		if (alternatives == null && freeTextAlternativeValue == null) {
 
 			return null;
 
@@ -209,11 +211,11 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 		StringBuilder stringBuilder = new StringBuilder();
 
-		if(alternatives != null){
+		if (alternatives != null) {
 
-			for(CheckboxAlternative alternative : alternatives){
+			for (CheckboxAlternative alternative : alternatives) {
 
-				if(stringBuilder.length() != 0){
+				if (stringBuilder.length() != 0) {
 
 					stringBuilder.append(", ");
 				}
@@ -222,9 +224,9 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 			}
 		}
 
-		if(freeTextAlternativeValue != null){
+		if (freeTextAlternativeValue != null) {
 
-			if(stringBuilder.length() != 0){
+			if (stringBuilder.length() != 0) {
 
 				stringBuilder.append(", ");
 			}
@@ -252,7 +254,7 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 			labels.add(getQueryInstanceDescriptor().getQueryDescriptor().getName() + ": " + query.getFreeTextAlternative());
 		}
-		
+
 		return labels;
 	}
 
@@ -306,27 +308,53 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 
 		return values;
 	}
-	
+
 	@Override
 	public List<BaseInvoiceLine> getInvoiceLines() {
-		
+
 		if (alternatives != null) {
-			
+
 			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(alternatives.size());
-			
+
 			for (CheckboxAlternative alternative : alternatives) {
-				
+
 				if (alternative.getPrice() != null && alternative.getPrice() > 0) {
 					invoiceLines.add(new BaseInvoiceLine(1, alternative.getPrice(), alternative.getName(), ""));
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(invoiceLines)) {
-				
+
 				return invoiceLines;
 			}
 		}
-		
+
 		return null;
 	}
+
+	@Override
+	public List<String> getSearchableValues() {
+
+		if (!query.isSearchable()) {
+
+			return null;
+		}
+
+		List<String> searchValues = null;
+
+		List<String> alternativeNames = CollectionUtils.map(alternatives, CheckboxAlternative::getName);
+
+		if (!CollectionUtils.isEmpty(alternativeNames)) {
+
+			searchValues = CollectionUtils.addAndInstantiateIfNeeded(searchValues, alternativeNames);
+		}
+
+		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
+
+			searchValues = CollectionUtils.addAndInstantiateIfNeeded(searchValues, freeTextAlternativeValue);
+		}
+
+		return searchValues;
+	}
+
 }

@@ -31,6 +31,7 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 	
 	<xsl:variable name="i18n.width">fältets bredd</xsl:variable>
 	<xsl:variable name="i18n.Required">Obligatoriskt</xsl:variable>
+	<xsl:variable name="i18n.Searchable">Gör fältet sökbart</xsl:variable>
 	<xsl:variable name="i18n.MaxLength">Tillåten längd på textinnehåll</xsl:variable>
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>
 	<xsl:variable name="i18n.Field.MinLength">Krävd längd på textinnehåll</xsl:variable>

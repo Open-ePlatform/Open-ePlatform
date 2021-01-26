@@ -185,4 +185,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `searchable` TINYINT(1) UNSIGNED NOT NULL AFTER `description`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

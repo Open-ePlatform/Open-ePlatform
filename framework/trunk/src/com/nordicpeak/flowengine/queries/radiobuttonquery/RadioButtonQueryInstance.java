@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -21,15 +22,15 @@ import com.nordicpeak.flowengine.beans.BaseInvoiceLine;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.PaymentQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SearchableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativeQueryUtils;
 import com.nordicpeak.flowengine.queries.fixedalternativesquery.FixedAlternativesQueryInstance;
 
-
 @Table(name = "radio_button_query_instances")
 @XMLElement
-public class RadioButtonQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, PaymentQueryInstance {
+public class RadioButtonQueryInstance extends BaseQueryInstance implements FixedAlternativesQueryInstance, StringValueQueryInstance, PaymentQueryInstance, SearchableQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -41,12 +42,12 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 	@XMLElement
 	private Integer queryInstanceID;
 
-	@DAOManaged(columnName="queryID")
+	@DAOManaged(columnName = "queryID")
 	@ManyToOne
 	@XMLElement
 	private RadioButtonQuery query;
 
-	@DAOManaged(columnName="alternativeID")
+	@DAOManaged(columnName = "alternativeID")
 	@ManyToOne
 	@XMLElement
 	private RadioButtonAlternative alternative;
@@ -60,19 +61,16 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 		return queryInstanceID;
 	}
 
-
 	public void setQueryInstanceID(Integer queryInstanceID) {
 
 		this.queryInstanceID = queryInstanceID;
 	}
-
 
 	@Override
 	public RadioButtonQuery getQuery() {
 
 		return query;
 	}
-
 
 	public void setQuery(RadioButtonQuery query) {
 
@@ -81,39 +79,39 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
-		
+
 		this.alternative = null;
 		freeTextAlternativeValue = null;
-		
+
 		if (query.isSetAsAttribute()) {
-			
+
 			resetAttribute(attributeHandler);
 		}
-		
+
 		super.reset(attributeHandler);
 	}
-	
+
 	public void setAttribute(MutableAttributeHandler attributeHandler) {
-		
+
 		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
-			
+
 			attributeHandler.setAttribute(query.getAttributeName(), freeTextAlternativeValue);
-			
+
 		} else if (alternative != null) {
-			
+
 			if (!StringUtils.isEmpty(alternative.getAttributeValue())) {
-				
+
 				attributeHandler.setAttribute(query.getAttributeName(), alternative.getAttributeValue());
-				
+
 			} else {
-				
+
 				attributeHandler.setAttribute(query.getAttributeName(), alternative.getName());
 			}
 		}
 	}
-	
-	public void resetAttribute(MutableAttributeHandler attributeHandler){
-		
+
+	public void resetAttribute(MutableAttributeHandler attributeHandler) {
+
 		attributeHandler.removeAttribute(query.getAttributeName());
 	}
 
@@ -129,7 +127,6 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 
 		return alternative;
 	}
-
 
 	public void setAlternative(RadioButtonAlternative alternative) {
 
@@ -151,7 +148,7 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 	public List<? extends ImmutableAlternative> getAlternatives() {
 
 		if (alternative == null) {
-			
+
 			return null;
 		}
 
@@ -167,33 +164,57 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 
 		return element;
 	}
-	
+
 	@Override
 	public String getStringValue() {
 
 		if (alternative != null) {
-			
+
 			return alternative.getName();
-			
+
 		} else if (freeTextAlternativeValue != null) {
-			
+
 			return freeTextAlternativeValue;
 		}
 
 		return null;
 	}
-	
+
 	@Override
 	public List<BaseInvoiceLine> getInvoiceLines() {
-		
+
 		if (alternative != null && alternative.getPrice() != null && alternative.getPrice() > 0) {
-			
+
 			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(1);
 			invoiceLines.add(new BaseInvoiceLine(1, alternative.getPrice(), alternative.getName(), ""));
-			
+
 			return invoiceLines;
 		}
-		
+
 		return null;
 	}
+
+	@Override
+	public List<String> getSearchableValues() {
+
+		if (!query.isSearchable()) {
+
+			return null;
+		}
+
+		List<String> searchValues = null;
+
+		if (alternative != null && !StringUtils.isEmpty(alternative.getName())) {
+
+			searchValues = CollectionUtils.addAndInstantiateIfNeeded(searchValues, alternative.getName());
+		}
+
+		if (!StringUtils.isEmpty(freeTextAlternativeValue)) {
+
+			searchValues = CollectionUtils.addAndInstantiateIfNeeded(searchValues, freeTextAlternativeValue);
+		}
+
+		return searchValues;
+	}
+
 }

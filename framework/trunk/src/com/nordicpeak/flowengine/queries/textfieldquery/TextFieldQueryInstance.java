@@ -25,12 +25,13 @@ import com.nordicpeak.flowengine.interfaces.ColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.InvoiceLine;
 import com.nordicpeak.flowengine.interfaces.PaymentQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SearchableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 
 @Table(name = "text_field_query_instances")
 @XMLElement
-public class TextFieldQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQueryInstance{
+public class TextFieldQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, ColumnExportableQueryInstance, PaymentQueryInstance, SearchableQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -54,7 +55,7 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 
 	@DAOManaged
 	private boolean initialized;
-	
+
 	private transient String lastUsedEndpointURL;
 
 	public Integer getQueryInstanceID() {
@@ -346,18 +347,22 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 	}
 
 	public boolean isInitialized() {
+
 		return initialized;
 	}
 
 	public void setInitialized(boolean initialized) {
+
 		this.initialized = initialized;
 	}
 
 	public String getLastUsedEndpointURL() {
+
 		return lastUsedEndpointURL;
 	}
 
 	public void setLastUsedEndpointURL(String lastUsedURL) {
+
 		this.lastUsedEndpointURL = lastUsedURL;
 	}
 
@@ -365,23 +370,29 @@ public class TextFieldQueryInstance extends BaseQueryInstance implements StringV
 	public List<? extends InvoiceLine> getInvoiceLines() {
 
 		if (this.values != null) {
-			
+
 			List<BaseInvoiceLine> invoiceLines = new ArrayList<BaseInvoiceLine>(values.size());
-			
+
 			for (TextFieldValue value : values) {
-				
+
 				if (value.getTextField().isContainsPrice() && NumberUtils.isInt(value.getValue())) {
 					invoiceLines.add(new BaseInvoiceLine(1, Integer.parseInt(value.getValue()), value.getTextField().getLabel(), ""));
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(invoiceLines)) {
-				
+
 				return invoiceLines;
 			}
 		}
-		
+
 		return null;
+	}
+
+	@Override
+	public List<String> getSearchableValues() {
+		
+		return CollectionUtils.map(values, value -> value.getTextField().isSearchable() ? value.getValue() : null);
 	}
 
 }

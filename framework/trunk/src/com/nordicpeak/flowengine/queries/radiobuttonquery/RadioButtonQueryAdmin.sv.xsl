@@ -13,6 +13,7 @@ Frågetypen Radioknappfråga används när användaren skall kunna välja mellan olika
 	<xsl:variable name="java.alternativesText">Alternativ</xsl:variable>
 	
 	<xsl:variable name="i18n.RadioButtonQueryNotFound">Den begärda frågan hittades inte!</xsl:variable>
+	<xsl:variable name="i18n.Searchable">Gör alternativen sökbara</xsl:variable>
 	
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>

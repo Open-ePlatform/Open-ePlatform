@@ -2707,5 +2707,22 @@
 			]]>
 		</Query>		
 	</Script>	
+	
+	<Script version="145">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_instance_query_search_values` (
+					`querySearchValueID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`searchValue` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`querySearchValueID`),
+					CONSTRAINT `FK_flowengine_flow_instance_query_search_values_1` FOREIGN KEY (`flowInstanceID`) REFERENCES `flowengine_flow_instances` (`flowInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>	
 
 </DBScripts>
