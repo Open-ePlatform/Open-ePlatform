@@ -563,7 +563,7 @@
 
 	<xsl:variable name="i18n.noFlowPublishedNotificationUsers">Inga användare notifieras när e-tjänster inom denna kategori publiceras.</xsl:variable>
 
-	<xsl:variable name="i18n.onlyNotifyOnNewFlowPublications">Notifiera endast vid ny publisering (ny e-tjänst eller efter avpublisering).</xsl:variable>
+	<xsl:variable name="i18n.onlyNotifyOnNewFlowPublications">Notifiera endast vid ny publicering (ny e-tjänst eller efter avpublicering).</xsl:variable>
 
 	<xsl:variable name="i18n.hideManagerDetails">Dölj uppgifter om handläggare</xsl:variable>
 	
