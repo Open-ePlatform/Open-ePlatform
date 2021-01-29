@@ -110,6 +110,7 @@ public class ManualMultiSignQuery extends BaseQuery implements MultiSignQuery, C
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
 		hideCitizenIdetifierInPDF = xmlParser.getPrimitiveBoolean("hideCitizenIdetifierInPDF");
+		preventPostersCitizenIdentifier = xmlParser.getPrimitiveBoolean("preventPostersCitizenIdentifier");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
