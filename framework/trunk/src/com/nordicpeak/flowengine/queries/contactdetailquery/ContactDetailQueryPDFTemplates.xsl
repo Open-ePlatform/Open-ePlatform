@@ -83,7 +83,11 @@
 							<xsl:with-param name="value" select="ContactDetailQueryInstance/postalAddress" />
 						</xsl:call-template>
 					</div>
-						
+					
+					<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/useOfficalAddress = 'true' and ContactDetailQueryInstance/officalAddress = 'false'">
+						<p><xsl:value-of select="$i18n.OfficialAddressMissing" /></p>
+					</xsl:if>
+					
 				</xsl:if>
 				
 				<xsl:if test="not(ContactDetailQueryInstance/ContactDetailQuery/fieldPhone = 'HIDDEN')">

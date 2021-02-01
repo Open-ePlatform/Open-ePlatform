@@ -39,4 +39,7 @@
 	<xsl:variable name="i18n.ValidationError.RequiresCitizenIDOnUser">Ditt användarkonto saknar personnummer, vänligen kontakta administratören!</xsl:variable>
 	
 	<xsl:variable name="i18n.ZipCodeAndPostalAddress">Postnummer och ort</xsl:variable>
+	
+	<xsl:variable name="i18n.OfficialAddressMissing">Observera att adressen är manuellt ifylld</xsl:variable>
+	
 </xsl:stylesheet>
