@@ -45,7 +45,7 @@ public class FlowApprovalActivityRound extends GeneratedElementable {
 	@DAOManaged
 	@XMLElement
 	private Timestamp cancelled;
-	
+
 	@DAOManaged
 	@XMLElement
 	private boolean pdf;
@@ -56,96 +56,120 @@ public class FlowApprovalActivityRound extends GeneratedElementable {
 	private List<FlowApprovalActivityProgress> activityProgresses;
 
 	public Integer getActivityRoundID() {
+
 		return activityRoundID;
 	}
 
 	public void setActivityRoundID(Integer activityProgressID) {
+
 		this.activityRoundID = activityProgressID;
 	}
 
 	public FlowApprovalActivityGroup getActivityGroup() {
+
 		return activityGroup;
 	}
 
 	public void setActivityGroup(FlowApprovalActivityGroup activityGroup) {
+
 		this.activityGroup = activityGroup;
 	}
 
 	public List<FlowApprovalActivityProgress> getActivityProgresses() {
+
 		return activityProgresses;
 	}
 
 	public void setActivityProgresses(List<FlowApprovalActivityProgress> activityProgresses) {
+
 		this.activityProgresses = activityProgresses;
 	}
 
 	public Integer getFlowInstanceID() {
+
 		return flowInstanceID;
 	}
 
 	public void setFlowInstanceID(Integer flowInstanceID) {
+
 		this.flowInstanceID = flowInstanceID;
 	}
 
 	public Timestamp getAdded() {
+
 		return added;
 	}
 
 	public void setAdded(Timestamp added) {
+
 		this.added = added;
 	}
 
 	public Timestamp getCompleted() {
+
 		return completed;
 	}
 
 	public void setCompleted(Timestamp completed) {
+
 		this.completed = completed;
 	}
 
 	public Timestamp getCancelled() {
+
 		return cancelled;
 	}
 
 	public void setCancelled(Timestamp cancelled) {
+
 		this.cancelled = cancelled;
 	}
 
 	public boolean hasPdf() {
+
 		return pdf;
 	}
 
 	public void setPdf(boolean pdf) {
+
 		this.pdf = pdf;
 	}
 
 	@Override
 	public String toString() {
+
 		return getClass().getSimpleName() + " (activityRoundID=" + activityRoundID + ", flowInstanceID=" + flowInstanceID + ", activityGroup=" + activityGroup + ")";
 	}
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((activityRoundID == null) ? 0 : activityRoundID.hashCode());
+		result = prime * result + (activityRoundID == null ? 0 : activityRoundID.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowApprovalActivityRound other = (FlowApprovalActivityRound) obj;
 		if (activityRoundID == null) {
-			if (other.activityRoundID != null)
+			if (other.activityRoundID != null) {
 				return false;
-		} else if (!activityRoundID.equals(other.activityRoundID))
+			}
+		} else if (!activityRoundID.equals(other.activityRoundID)) {
 			return false;
+		}
 		return true;
 	}
 

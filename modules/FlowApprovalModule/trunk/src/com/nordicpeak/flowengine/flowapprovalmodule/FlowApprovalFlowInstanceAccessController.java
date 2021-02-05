@@ -45,7 +45,7 @@ public class FlowApprovalFlowInstanceAccessController implements FlowInstanceAcc
 					}
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

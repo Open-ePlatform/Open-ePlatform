@@ -39,30 +39,37 @@ public class FlowApprovalActivityResponsibleUser extends GeneratedElementable im
 	}
 
 	public FlowApprovalActivity getActivity() {
+
 		return activity;
 	}
 
 	public void setFlowFamily(FlowApprovalActivity activity) {
+
 		this.activity = activity;
 	}
 
 	public void setUser(User user) {
+
 		this.user = user;
 	}
 
 	public User getUser() {
+
 		return user;
 	}
 
 	public static long getSerialversionuid() {
+
 		return serialVersionUID;
 	}
 
 	public boolean isFallback() {
+
 		return fallback;
 	}
 
 	public void setFallback(boolean restricted) {
+
 		this.fallback = restricted;
 	}
 

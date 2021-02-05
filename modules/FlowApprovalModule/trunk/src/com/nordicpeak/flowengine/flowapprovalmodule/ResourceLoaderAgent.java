@@ -137,6 +137,7 @@ public class ResourceLoaderAgent extends ITextUserAgent {
 	}
 
 	protected void scaleToOutputResolution(Image image) {
+
 		float factor = getSharedContext().getDotsPerPixel();
 		image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
 	}

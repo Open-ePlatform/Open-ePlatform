@@ -34,12 +34,12 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGr
 import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
 public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActivityGroup, Integer, User, FlowApprovalAdminModule> {
-	
-	public static final ContentType[] INVALID_STATUS_TYPES = new ContentType[] {ContentType.NEW, ContentType.WAITING_FOR_PAYMENT, ContentType.WAITING_FOR_MULTISIGN};
+
+	public static final ContentType[] INVALID_STATUS_TYPES = new ContentType[] { ContentType.NEW, ContentType.WAITING_FOR_PAYMENT, ContentType.WAITING_FOR_MULTISIGN };
 
 	public FlowApprovalActivityGroupCRUD(CRUDDAO<FlowApprovalActivityGroup, Integer> crudDAO, FlowApprovalAdminModule callback) {
 
-		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowApprovalActivityGroup>(FlowApprovalActivityGroup.class), "ActivityGroup", "activity group", "", callback);
+		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<>(FlowApprovalActivityGroup.class), "ActivityGroup", "activity group", "", callback);
 	}
 
 	@Override
@@ -77,14 +77,15 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	@Override
 	protected void appendBean(FlowApprovalActivityGroup activityGroup, Element targetElement, Document doc, User user) {
-		
+
 		TemplateUtils.setTemplatedFields(activityGroup, callback);
-		
+
 		super.appendBean(activityGroup, targetElement, doc, user);
 	}
 
 	@Override
 	protected void appendShowFormData(FlowApprovalActivityGroup activityGroup, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
+
 		super.appendShowFormData(activityGroup, doc, showTypeElement, user, req, res, uriParser);
 
 		appendFormData(doc, showTypeElement, user, req, uriParser);
@@ -92,8 +93,9 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	@Override
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+
 		super.appendAddFormData(doc, addTypeElement, user, req, uriParser);
-		
+
 		FlowApprovalActivityGroup dummy = new FlowApprovalActivityGroup();
 		appendBean(dummy, addTypeElement, doc, user);
 
@@ -102,6 +104,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	@Override
 	protected void appendUpdateFormData(FlowApprovalActivityGroup activityGroup, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+
 		super.appendUpdateFormData(activityGroup, doc, updateTypeElement, user, req, uriParser);
 
 		appendFormData(doc, updateTypeElement, user, req, uriParser);
@@ -115,22 +118,24 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	@Override
 	protected void validateAddPopulation(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
 		super.validateAddPopulation(activityGroup, req, user, uriParser);
 
 		Flow flow = (Flow) req.getAttribute("flow");
-		
+
 		activityGroup.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
 		activityGroup.setSortIndex(1 + callback.getApprovalGroupMaxSortIndex(flow.getFlowFamily()));
-		
+
 		if (activityGroup.getSortIndex() < 0) { // Fix for old sort index being Integer.MAX_VALUE
 			activityGroup.setSortIndex(Integer.MAX_VALUE);
 		}
-		
+
 		validatePopulation(activityGroup, req, user, uriParser);
 	}
 
 	@Override
 	protected void validateUpdatePopulation(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
 		super.validateUpdatePopulation(activityGroup, req, user, uriParser);
 
 		validatePopulation(activityGroup, req, user, uriParser);
@@ -139,7 +144,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 	protected void validatePopulation(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
 		List<ValidationError> validationErrors = null;
-		
+
 		TemplateUtils.clearUnchangedTemplatedFields(activityGroup, callback);
 
 		Flow flow = (Flow) req.getAttribute("flow");
@@ -148,14 +153,14 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 			boolean statusFound = false;
 
-			if(flow.getStatuses() != null) {
+			if (flow.getStatuses() != null) {
 
 				for (Status status : flow.getStatuses()) {
 
 					if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
 						continue;
 					}
-					
+
 					if (status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
 						statusFound = true;
 						break;
@@ -167,13 +172,13 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "startStatus"));
 			}
 		}
-		
+
 		if (activityGroup.getCompleteStatus() != null) {
 
 			boolean statusFound = false;
 
 			for (Status status : flow.getStatuses()) {
-				
+
 				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
 					continue;
 				}
@@ -188,13 +193,13 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "completeStatus"));
 			}
 		}
-		
+
 		if (activityGroup.getDenyStatus() != null) {
 
 			boolean statusFound = false;
 
 			for (Status status : flow.getStatuses()) {
-				
+
 				if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
 					continue;
 				}
@@ -209,7 +214,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "denyStatus"));
 			}
 		}
-		
+
 		if (validationErrors != null) {
 			throw new ValidationException(validationErrors);
 		}
@@ -249,7 +254,7 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	private void beanEvent(FlowApprovalActivityGroup activityGroup, HttpServletRequest req, HttpServletResponse res, CRUDAction action) throws IOException {
 
-//		callback.getEventHandler().sendEvent(FlowApprovalActivityGroup.class, new CRUDEvent<FlowApprovalActivityGroup>(action, activityGroup), EventTarget.ALL);
+		//		callback.getEventHandler().sendEvent(FlowApprovalActivityGroup.class, new CRUDEvent<FlowApprovalActivityGroup>(action, activityGroup), EventTarget.ALL);
 	}
 
 	@Override

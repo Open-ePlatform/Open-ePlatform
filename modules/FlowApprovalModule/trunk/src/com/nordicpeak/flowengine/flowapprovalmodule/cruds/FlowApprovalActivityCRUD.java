@@ -40,7 +40,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	public FlowApprovalActivityCRUD(CRUDDAO<FlowApprovalActivity, Integer> crudDAO, FlowApprovalAdminModule callback) {
 
-		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<FlowApprovalActivity>(FlowApprovalActivity.class), "Activity", "activity", "", callback);
+		super(FlowAdminFragmentExtensionViewCRUDIDParser.getInstance(), crudDAO, new AnnotatedRequestPopulator<>(FlowApprovalActivity.class), "Activity", "activity", "", callback);
 	}
 
 	@Override
@@ -91,9 +91,10 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 			throw new URINotFoundException(uriParser);
 		}
 	}
-	
+
 	@Override
 	protected void appendShowFormData(FlowApprovalActivity activity, Document doc, Element showTypeElement, User user, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws SQLException, IOException, Exception {
+
 		super.appendShowFormData(activity, doc, showTypeElement, user, req, res, uriParser);
 
 		appendFormData(doc, showTypeElement, user, req, uriParser);
@@ -101,6 +102,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	@Override
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+
 		super.appendAddFormData(doc, addTypeElement, user, req, uriParser);
 
 		FlowApprovalActivityGroup activityGroup = (FlowApprovalActivityGroup) req.getAttribute("activityGroup");
@@ -112,6 +114,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	@Override
 	protected void appendUpdateFormData(FlowApprovalActivity activity, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
+
 		super.appendUpdateFormData(activity, doc, updateTypeElement, user, req, uriParser);
 
 		appendFormData(doc, updateTypeElement, user, req, uriParser);
@@ -125,6 +128,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	@Override
 	protected void validateAddPopulation(FlowApprovalActivity activity, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
 		super.validateAddPopulation(activity, req, user, uriParser);
 
 		activity.setActivityGroup((FlowApprovalActivityGroup) req.getAttribute("activityGroup"));
@@ -134,6 +138,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	@Override
 	protected void validateUpdatePopulation(FlowApprovalActivity activity, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
+
 		super.validateUpdatePopulation(activity, req, user, uriParser);
 
 		validatePopulation(activity, req, user, uriParser);
@@ -141,15 +146,15 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	protected void validatePopulation(FlowApprovalActivity activity, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
-		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+		List<ValidationError> validationErrors = new ArrayList<>();
 
 		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleFallbackUserIDs = ValidationUtils.validateParameters("responsible-user-fallback", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
 		List<FlowApprovalActivityResponsibleUser> responsibleUsers = null;
-		
+
 		if (responsibleUserIDs != null || responsibleFallbackUserIDs != null) {
-			
+
 			responsibleUsers = new ArrayList<>(CollectionUtils.getSize(responsibleUserIDs, responsibleFallbackUserIDs));
 
 			if (responsibleUserIDs != null) {
@@ -186,7 +191,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 		}
-		
+
 		activity.setResponsibleUsers(responsibleUsers);
 
 		List<Integer> responsibleGroupIDs = ValidationUtils.validateParameters("responsibleGroup", req, false, IntegerPopulator.getPopulator(), validationErrors);
@@ -197,7 +202,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		} else {
 
-			List<Group> responsibleGroups = new ArrayList<Group>(responsibleGroupIDs.size());
+			List<Group> responsibleGroups = new ArrayList<>(responsibleGroupIDs.size());
 
 			for (Integer groupID : responsibleGroupIDs) {
 
@@ -217,16 +222,16 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 		}
 
 		if (activity.getResponsibleUserAttributeNames() != null) {
-			
+
 			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
-				
+
 				validationErrors.add(new ValidationError("ResponsibleFallbackRequired"));
 			}
-			
+
 		} else {
-			
+
 			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
-				
+
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
 		}
@@ -262,7 +267,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 	private ForegroundModuleResponse beanEvent(FlowApprovalActivity activity, HttpServletRequest req, HttpServletResponse res, CRUDAction action) throws IOException {
 
-//		callback.getEventHandler().sendEvent(FlowApprovalActivity.class, new CRUDEvent<FlowApprovalActivity>(action, activity), EventTarget.ALL);
+		//		callback.getEventHandler().sendEvent(FlowApprovalActivity.class, new CRUDEvent<FlowApprovalActivity>(action, activity), EventTarget.ALL);
 
 		res.sendRedirect(req.getContextPath() + req.getAttribute("extensionRequestURL") + "/showactivitygroup/" + activity.getActivityGroup().getActivityGroupID());
 		return null;

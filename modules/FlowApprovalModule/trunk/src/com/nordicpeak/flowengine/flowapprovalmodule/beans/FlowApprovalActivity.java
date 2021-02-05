@@ -65,7 +65,7 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean requireSigning;
-	
+
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
@@ -90,13 +90,13 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean onlyUseGlobalNotifications;
-	
+
 	@DAOManaged
 	@RequiredIfSet(paramNames = "onlyUseGlobalNotifications")
 	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
 	@XMLElement
 	private String globalEmailAddress;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
@@ -116,7 +116,7 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@SimplifiedRelation(table = "flowapproval_activity_attribute_values", remoteValueColumnName = "value")
 	@XMLElement(fixCase = true)
 	private List<String> attributeValues;
-	
+
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
@@ -231,12 +231,14 @@ public class FlowApprovalActivity extends GeneratedElementable {
 
 		this.attributeValues = attributeValues;
 	}
-	
+
 	public boolean isRequireSigning() {
+
 		return requireSigning;
 	}
 
 	public void setRequireSigning(boolean requireSigning) {
+
 		this.requireSigning = requireSigning;
 	}
 
@@ -251,10 +253,12 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	}
 
 	public boolean isOnlyUseGlobalNotifications() {
+
 		return onlyUseGlobalNotifications;
 	}
 
 	public void setOnlyUseGlobalNotifications(boolean onlyUseGlobalNotifications) {
+
 		this.onlyUseGlobalNotifications = onlyUseGlobalNotifications;
 	}
 
@@ -286,26 +290,33 @@ public class FlowApprovalActivity extends GeneratedElementable {
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((activityID == null) ? 0 : activityID.hashCode());
+		result = prime * result + (activityID == null ? 0 : activityID.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowApprovalActivity other = (FlowApprovalActivity) obj;
 		if (activityID == null) {
-			if (other.activityID != null)
+			if (other.activityID != null) {
 				return false;
-		} else if (!activityID.equals(other.activityID))
+			}
+		} else if (!activityID.equals(other.activityID)) {
 			return false;
+		}
 		return true;
 	}
 

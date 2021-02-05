@@ -114,40 +114,40 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	@XSLVariable(prefix = "java.")
 	protected String signingMessage = "Set $activity.name (ID $activityProgress.ID) to $state for flow instance $flowInstance.ID. The activity has the following unique key: $hash";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "FlowInstance.flowInstanceID")
 	private String i18nFlowInstanceID = "FlowinstanceID";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "Flow.name")
 	private String i18nFlow = "Flow";
-	
+
 	@XSLVariable(prefix = "java.", name = "Signing.user")
 	private String i18nSigningUser = "User";
-	
+
 	@XSLVariable(prefix = "java.", name = "Signing.flowInstanceWasVisible")
 	private String i18nFlowInstanceWasVisible = "FlowInstance visible";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "Activity")
 	private String i18nActivity = "Activity";
-	
+
 	@XSLVariable(prefix = "java.", name = "Signing.ActivityProgress.State")
 	private String i18nActivityProgressState = "State";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "ActivityProgress.comment")
 	private String i18nActivityProgressComment = "Comment";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "Activity.description")
 	private String i18nActivityDescription = "Description";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "Activity.shortDescription")
 	private String i18nActivityShortDescription = "ShortDescription";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "ActivityProgress.approved")
 	private String i18nActivityProgressApproved = "Approved";
-	
+
 	@XSLVariable(prefix = "i18n.", name = "ActivityProgress.denied")
 	private String i18nActivityProgressDenied = "Denied";
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "30";
@@ -162,7 +162,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	@InstanceManagerDependency(required = true)
 	protected FlowApprovalAdminModule approvalAdminModule;
-	
+
 	@InstanceManagerDependency
 	protected GenericSigningProvider genericSigningProvider;
 
@@ -301,7 +301,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			for (FlowApprovalActivityProgress activityProgress : activities) {
 
 				FlowApprovalActivityRound round = activityProgress.getActivityRound();
-				
+
 				Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> activityGroupToRoundMap = mapping.get(round.getFlowInstanceID());
 
 				if (activityGroupToRoundMap == null) {
@@ -317,23 +317,23 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					rounds = new HashSet<>();
 					activityGroupToRoundMap.put(round.getActivityGroup(), rounds);
 				}
-				
+
 				boolean found = false;
-				
+
 				for (FlowApprovalActivityRound existingRound : rounds) {
 					if (round.equals(existingRound)) {
 						existingRound.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(existingRound.getActivityProgresses(), activityProgress));
-						
+
 						found = true;
-						
+
 						break;
 					}
 				}
-				
+
 				if (!found) {
 					round.setActivityProgresses(CollectionUtils.addAndInstantiateIfNeeded(round.getActivityProgresses(), activityProgress));
 				}
-				
+
 				activityProgress.setActivityRound(null);
 
 				rounds.add(round);
@@ -349,7 +349,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION);
 
 			if (flowInstance != null && flowInstance.getFlow().isEnabled()) {
-				
+
 				Element flowInstanceElement = flowInstance.toXML(doc);
 
 				Map<FlowApprovalActivityGroup, Set<FlowApprovalActivityRound>> activityGroupToRoundMap = entry.getValue();
@@ -363,18 +363,18 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					Element activityGroupElement = activityGroup.toXML(doc);
 
 					Set<FlowApprovalActivityRound> activityRounds = entry2.getValue();
-					
+
 					Element roundsElement = XMLUtils.appendNewElement(doc, activityGroupElement, "ActivityRounds");
-					
+
 					for (FlowApprovalActivityRound activityRound : activityRounds) {
-					
+
 						List<FlowApprovalActivityProgress> activityProgresses = activityRound.getActivityProgresses();
-						
+
 						activityRound.setActivityGroup(null);
 						activityRound.setActivityProgresses(null);
-						
+
 						Element roundElement = activityRound.toXML(doc);
-						
+
 						Element activityProgressesElement = XMLUtils.appendNewElement(doc, activityGroupElement, "ActivityProgresses");
 
 						for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
@@ -392,7 +392,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 						roundElement.appendChild(activityProgressesElement);
 						roundsElement.appendChild(roundElement);
 					}
-					
+
 					activityGroupsElement.appendChild(activityGroupElement);
 				}
 
@@ -410,18 +410,18 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		return getActivities(user, true, relations);
 	}
-	
+
 	private List<FlowApprovalActivityProgress> getActivities(User user, boolean active, Field... relations) throws SQLException {
-		
+
 		return getActivities(user, null, active, relations);
 	}
-	
+
 	protected List<FlowApprovalActivityProgress> getActivities(User user, Integer flowInstanceID, Boolean completed, Field... relations) throws SQLException {
-		
+
 		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
-		
+
 		//TODO split into multiple smaller queries
-		
+
 		// @formatter:off
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT DISTINCT ap.activityProgressID as dummy, ap.* FROM " + activityProgressDAO.getTableName() + " ap"
@@ -433,25 +433,25 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		              +" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
 		              +" WHERE");
 		// @formatter:on
-		
+
 		if (flowInstanceID != null) {
 			builder.append(" r.flowInstanceID = " + flowInstanceID + " AND");
 		}
-		
+
 		if (completed != null) {
 			if (completed) {
 				builder.append(" (r.completed IS NOT NULL OR r.cancelled IS NOT NULL OR ap.completed IS NOT NULL) AND");
-				
+
 			} else {
 				builder.append(" r.completed IS NULL AND r.cancelled IS NULL AND ap.completed IS NULL AND");
 			}
 		}
-		
+
 		// @formatter:off
 		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
 		              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))");
 		// @formatter:on
-		
+
 		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(builder.toString());
 
 		if (relations != null) {
@@ -474,18 +474,18 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
 		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
-//		FlowApprovalActivityRound round = activityProgress.getActivityRound();
+		//		FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 		FlowInstance flowInstance;
 		ImmutableFlowInstanceManager instanceManager = null;
-		
+
 		if (activity.isShowFlowInstance()) {
-			
+
 			instanceManager = flowAdminModule.getImmutableFlowInstanceManager(activityProgress.getActivityRound().getFlowInstanceID());
 			flowInstance = (FlowInstance) instanceManager.getFlowInstance();
-			
+
 		} else {
-			
+
 			flowInstance = flowAdminModule.getFlowInstance(activityProgress.getActivityRound().getFlowInstanceID());
 		}
 
@@ -499,9 +499,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
 		}
-		
+
 		if (!flowInstance.getFlow().isEnabled()) {
-			
+
 			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 
@@ -545,7 +545,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
 
 				activityProgress.setComment(comment);
-				
+
 				if (completed && !activity.isRequireSigning()) {
 
 					activityProgress.setCompleted(TimeUtils.getCurrentTimestamp());
@@ -557,14 +557,14 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				if (completed) {
 
 					if (activity.isRequireSigning()) {
-					
+
 						redirectToMethod(req, res, "/signactivity/" + activityProgress.getActivityProgressID());
 						return null;
 					}
-					
+
 					//TODO show error if next status was not found
 					approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
-					
+
 					if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
 
 						log.info("Copying comment to external messages for flowinstance " + flowInstance);
@@ -582,7 +582,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 						FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
-						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 					}
 
 					redirectToDefaultMethod(req, res);
@@ -605,20 +605,20 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		showActivity.appendChild(flowInstance.toXML(doc));
 
 		if (activityProgress.getActivity().getShortDescription() != null) {
-			
+
 			XMLUtils.appendNewElement(doc, showActivity, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
 		}
-		
+
 		if (activity.isShowFlowInstance()) {
 			try {
 				List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), new RequestMetadata(false));
 				XMLUtils.append(doc, showActivity, "ManagerResponses", managerResponses);
-				
+
 			} catch (UnableToGetQueryInstanceShowHTMLException e) {
 				log.error("Unable to preview flow instance " + instanceManager, e);
 			}
 		}
-		
+
 		if (validationErrors != null) {
 
 			showActivity.appendChild(RequestUtils.getRequestParameters(req, doc));
@@ -627,16 +627,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
-	
+
 	@RESTMethod(alias = "signactivity/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
 	public ForegroundModuleResponse signActivity(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws Exception {
-		
+
 		FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(activityProgressID);
 
 		if (activityProgress == null) {
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		if (genericSigningProvider == null) {
 			throw new ModuleConfigurationException("No signing provider");
 		}
@@ -655,39 +655,39 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
 		}
-		
+
 		if (!flowInstance.getFlow().isEnabled()) {
-			
+
 			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
-		
+
 		if (!activityProgress.isMutable()) {
-			
+
 			log.warn("Activity " + activityProgress + " is not in a mutable state");
-			
+
 			return showActivity(req, res, user, uriParser, activityProgressID);
 		}
-		
+
 		log.info("User " + user + " viewing sign form for " + activityProgress);
-		
+
 		return showSignForm(req, res, user, uriParser, activityProgress, flowInstance, null);
 	}
-	
+
 	private String getDataToSign(FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, User user) {
 
 		String shortDescription = null;
 		String description = null;
-		
+
 		if (activityProgress.getActivity().getShortDescription() != null) {
 			shortDescription = AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler());
 		}
-		
+
 		if (activityProgress.getActivity().getDescription() != null) {
 			description = AttributeTagUtils.replaceTags(activityProgress.getActivity().getDescription(), flowInstance.getAttributeHandler());
 		}
-		
+
 		StringBuilder builder = new StringBuilder();
-		
+
 		builder.append(i18nFlow + ": " + flowInstance.getFlow().getName() + "\r\n");
 		builder.append(i18nFlowInstanceID + ": " + flowInstance.getFlowInstanceID() + "\r\n");
 		builder.append(i18nActivity + ": " + activityProgress.getActivity().getName() + " (ID " + activityProgress.getActivityProgressID() + ")\r\n");
@@ -695,46 +695,46 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		builder.append(i18nSigningUser + ": " + user.getFirstname() + " " + user.getLastname() + " (" + CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user) + ")\r\n");
 		builder.append(i18nActivityShortDescription + ": " + (shortDescription == null ? "" : shortDescription) + "\r\n");
 		builder.append(i18nActivityDescription + ": " + (description == null ? "" : description) + "\r\n");
-		
+
 		if (activityProgress.getActivity().isShowFlowInstance()) {
 			builder.append(i18nFlowInstanceWasVisible + "\r\n");
 		}
-		
+
 		builder.append(i18nActivityProgressComment + ": " + (activityProgress.getComment() == null ? "" : activityProgress.getComment()));
-		
+
 		return builder.toString();
 	}
-	
+
 	private String getActivityProgressState(FlowApprovalActivityProgress activityProgress) {
-		
+
 		if (activityProgress.isDenied()) {
-			
+
 			if (activityProgress.getActivity().getActivityGroup().getDeniedText() != null) {
-				
+
 				return activityProgress.getActivity().getActivityGroup().getDeniedText();
 
 			} else {
-				
+
 				return i18nActivityProgressDenied;
 			}
-			
+
 		} else {
 
 			if (activityProgress.getActivity().getActivityGroup().getApprovedText() != null) {
-				
+
 				return activityProgress.getActivity().getActivityGroup().getApprovedText();
 
 			} else {
-				
+
 				return i18nActivityProgressApproved;
 			}
 		}
 	}
-	
+
 	private SimpleSigningRequest getSigningRequest(String dataToSign, FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, User signer, URIParser uriParser) throws IOException {
-		
+
 		String dataHash = HashUtils.hash(dataToSign, HashAlgorithms.SHA1);
-		
+
 		String description = signingMessage.replace("$activityProgress.ID", activityProgress.getActivityProgressID() + "");
 		description = description.replace("$activity.name", activityProgress.getActivity().getName());
 		description = description.replace("$activitygroup.name", activityProgress.getActivity().getActivityGroup().getName());
@@ -742,45 +742,45 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		description = description.replace("$flow.name", flowInstance.getFlow().getName());
 		description = description.replace("$state", getActivityProgressState(activityProgress));
 		description = description.replace("$hash", dataHash);
-		
+
 		String signingFormURL = uriParser.getFullContextPath() + getFullAlias() + "/sign/" + activityProgress.getActivityProgressID();
 		String processSigningURL = uriParser.getFullContextPath() + getFullAlias() + "/processsign/" + activityProgress.getActivityProgressID() + "?signreq=1";
-		
+
 		return new SimpleSigningRequest(description, dataToSign, signingFormURL, processSigningURL);
 	}
-	
+
 	private ForegroundModuleResponse showSignForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, List<ValidationError> validationErrors) throws Exception {
-		
+
 		Document doc = createDocument(req, uriParser, user);
-		
+
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "Signing");
-		
+
 		String dataToSign = getDataToSign(activityProgress, flowInstance, user);
 		SimpleSigningRequest signingRequest = getSigningRequest(dataToSign, activityProgress, flowInstance, user, uriParser);
 
 		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, signingRequest, validationErrors);
-		
+
 		signingFormElement.appendChild(activityProgress.toXML(doc));
 		signingFormElement.appendChild(viewFragment.toXML(doc));
 		signingFormElement.appendChild(flowInstance.toXML(doc));
-		
+
 		FragmentLinkScriptFilter.addViewFragment(viewFragment, req);
-		
+
 		SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 		ViewFragmentUtils.appendLinksAndScripts(response, viewFragment);
-		
+
 		return response;
 	}
-	
+
 	@RESTMethod(alias = "processsign/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
 	public ForegroundModuleResponse processSigning(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws Exception {
-		
+
 		FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(activityProgressID);
 
 		if (activityProgress == null) {
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		if (genericSigningProvider == null) {
 			throw new ModuleConfigurationException("No signing provider");
 		}
@@ -800,40 +800,40 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
 		}
-		
+
 		if (!flowInstance.getFlow().isEnabled()) {
-			
+
 			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
-		
+
 		if (!activityProgress.isMutable()) {
-			
+
 			log.warn("Activity " + activityProgress + " is not in a mutable state");
-			
+
 			return showActivity(req, res, user, uriParser, activityProgressID);
 		}
 
 		log.info("User " + user + " processing singing for " + activityProgress);
-		
+
 		List<ValidationError> validationErrors = null;
-		
+
 		try {
 			String dataToSign = getDataToSign(activityProgress, flowInstance, user);
 			SimpleSigningRequest signingRequest = getSigningRequest(dataToSign, activityProgress, flowInstance, user, uriParser);
-			
+
 			SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, signingRequest);
-			
+
 			if (res.isCommitted()) {
 				return null;
 			}
-			
+
 			if (signingResponse != null) {
-				
+
 				if (user == null) {
-					
+
 					user = signingResponse.getUser();
 				}
-				
+
 				log.info("User " + user + " signed " + activityProgress);
 
 				Timestamp now = TimeUtils.getCurrentTimestamp();
@@ -845,16 +845,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					for (Entry<String, String> entry : signingResponse.getSigningAttributes().entrySet()) {
 
 						if (entry.getKey().equals("signingChecksum")) {
-							
+
 							activityProgress.setSignedChecksum(entry.getValue());
-							
+
 						} else {
-							
+
 							signatureData.append(entry.getKey() + " = " + entry.getValue() + "\n");
 						}
 					}
 				}
-				
+
 				if (!signingRequest.getHashToSign().equals(activityProgress.getSignedChecksum())) {
 					throw new RuntimeException("Mismatching checksums for " + activityProgress + ": " + signingRequest.getHashToSign() + " != " + activityProgress.getSignedChecksum());
 				}
@@ -862,15 +862,15 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				activityProgress.setSigningData(dataToSign);
 				activityProgress.setCompleted(now);
 				activityProgress.setCompletingUser(user);
-				
+
 				activityProgress.setSignedDate(now);
 				activityProgress.setSignatureData(signatureData.toString());
 
 				activityProgressDAO.update(activityProgress);
-				
+
 				//TODO show error if next status was not found
 				approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
-					
+
 				if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(activityProgress.getComment()) && flowInstance.getOwners() != null) {
 
 					log.info("Copying comment to external messages for flowinstance " + flowInstance);
@@ -888,23 +888,23 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
-					systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 				}
 
 				redirectToDefaultMethod(req, res);
 				return null;
-				
+
 			} else {
-				
+
 				log.warn("Signing failed");
 			}
-			
+
 		} catch (ValidationException e) {
-			
-			validationErrors = new ArrayList<ValidationError>();
+
+			validationErrors = new ArrayList<>();
 			validationErrors.addAll(e.getErrors());
 		}
-		
+
 		return showSignForm(req, res, user, uriParser, activityProgress, flowInstance, validationErrors);
 	}
 
@@ -920,16 +920,19 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	@Override
 	public AccessInterface getAccessInterface() {
+
 		return moduleDescriptor;
 	}
 
 	@Override
 	public String getUserMenuAlias() {
+
 		return getFullAlias();
 	}
 
 	@Override
 	public ExtensionLink getUserMenuExtensionLink(User user) {
+
 		return userMenuLink;
 	}
 
@@ -938,24 +941,24 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		return flowAdminModule.getFlowIcon(req, res, user, uriParser);
 	}
-	
+
 	protected String getImmutableQueryRequestBaseURL(HttpServletRequest req, FlowInstanceManager instanceManager) {
-		
+
 		return req.getContextPath() + getFullAlias() + "/iquery/" + instanceManager.getFlowID() + "/" + instanceManager.getFlowInstanceID() + "/q/";
 	}
-	
+
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
-		
+
 		return flowAdminModule.processImmutableQueryRequest(req, res, user, uriParser, new FlowApprovalFlowInstanceAccessController(this), true, false);
 	}
-	
+
 	@Override
 	public QueryHandler getQueryHandler() {
-		
+
 		return flowAdminModule.getQueryHandler();
 	}
-	
+
 	@Override
 	public String getUserMenuPriority() {
 

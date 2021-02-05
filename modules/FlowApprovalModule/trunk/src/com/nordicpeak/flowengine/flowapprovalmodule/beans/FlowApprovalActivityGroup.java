@@ -67,7 +67,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@RequiredIfSet(paramNames = "useApproveDeny")
 	@XMLElement
 	private String denyStatus;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -94,17 +94,17 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean appendCommentsToExternalMessages;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean allowRestarts;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean onlyRestartIfActivityChanges;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -126,17 +126,17 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer reminderAfterXDays;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean sendActivityGroupCompletedEmail;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean activityGroupCompletedEmailAttachPDF;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -153,7 +153,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String activityGroupCompletedEmailMessage;
-	
+
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowapproval_activitygroups_notify_completed", remoteValueColumnName = "email")
@@ -163,7 +163,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase = true, childName = "address")
 	private List<String> activityGroupCompletedEmailAddresses;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
@@ -173,7 +173,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@OneToMany
 	@XMLElement(fixCase = true)
 	private List<FlowApprovalActivity> activities;
-	
+
 	@DAOManaged
 	@OneToMany
 	@XMLElement(fixCase = true)
@@ -293,18 +293,22 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	}
 
 	public boolean isSendActivityGroupCompletedEmail() {
+
 		return sendActivityGroupCompletedEmail;
 	}
 
 	public void setSendActivityGroupCompletedEmail(boolean sendActivityGroupCompletedEmail) {
+
 		this.sendActivityGroupCompletedEmail = sendActivityGroupCompletedEmail;
 	}
 
 	public boolean isActivityGroupCompletedEmailAttachPDF() {
+
 		return activityGroupCompletedEmailAttachPDF;
 	}
 
 	public void setActivityGroupCompletedEmailAttachPDF(boolean activityGroupCompletedEmailAttachPDF) {
+
 		this.activityGroupCompletedEmailAttachPDF = activityGroupCompletedEmailAttachPDF;
 	}
 
@@ -319,26 +323,32 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	}
 
 	public String getActivityGroupCompletedEmailSubject() {
+
 		return activityGroupCompletedEmailSubject;
 	}
 
 	public void setActivityGroupCompletedEmailSubject(String activityGroupCompletedEmailSubject) {
+
 		this.activityGroupCompletedEmailSubject = activityGroupCompletedEmailSubject;
 	}
 
 	public String getActivityGroupCompletedEmailMessage() {
+
 		return activityGroupCompletedEmailMessage;
 	}
 
 	public void setActivityGroupCompletedEmailMessage(String activityGroupCompletedEmailMessage) {
+
 		this.activityGroupCompletedEmailMessage = activityGroupCompletedEmailMessage;
 	}
 
 	public List<String> getActivityGroupCompletedEmailAddresses() {
+
 		return activityGroupCompletedEmailAddresses;
 	}
 
 	public void setActivityGroupCompletedEmailAddresses(List<String> activityGroupCompletedEmailAddresses) {
+
 		this.activityGroupCompletedEmailAddresses = activityGroupCompletedEmailAddresses;
 	}
 
@@ -353,10 +363,12 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	}
 
 	public List<FlowApprovalActivityRound> getActivityRounds() {
+
 		return activityRounds;
 	}
 
 	public void setActivityRounds(List<FlowApprovalActivityRound> activityRounds) {
+
 		this.activityRounds = activityRounds;
 	}
 
@@ -411,34 +423,42 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	}
 
 	public boolean isAllowSkip() {
+
 		return allowSkip;
 	}
 
 	public void setAllowSkip(boolean allowSkip) {
+
 		this.allowSkip = allowSkip;
 	}
 
 	public boolean isAllowRestarts() {
+
 		return allowRestarts;
 	}
 
 	public void setAllowRestarts(boolean allowRestarts) {
+
 		this.allowRestarts = allowRestarts;
 	}
 
 	public boolean isOnlyRestartIfActivityChanges() {
+
 		return onlyRestartIfActivityChanges;
 	}
 
 	public void setOnlyRestartIfActivityChanges(boolean onlyRestartIfActivityChanges) {
+
 		this.onlyRestartIfActivityChanges = onlyRestartIfActivityChanges;
 	}
-	
+
 	public boolean isSuppressChangeStatusManagerNotifications() {
+
 		return suppressChangeStatusManagerNotifications;
 	}
 
 	public void setSuppressChangeStatusManagerNotifications(boolean suppressChangeStatusManagerNotifications) {
+
 		this.suppressChangeStatusManagerNotifications = suppressChangeStatusManagerNotifications;
 	}
 
@@ -453,7 +473,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((activityGroupID == null) ? 0 : activityGroupID.hashCode());
+		result = prime * result + (activityGroupID == null ? 0 : activityGroupID.hashCode());
 		return result;
 	}
 
@@ -484,11 +504,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	public int compareTo(FlowApprovalActivityGroup o) {
 
 		int diff = getSortIndex().compareTo(o.getSortIndex());
-		
+
 		if (diff == 0) {
 			return activityGroupID.compareTo(o.getActivityGroupID());
 		}
-		
+
 		return diff;
 	}
 

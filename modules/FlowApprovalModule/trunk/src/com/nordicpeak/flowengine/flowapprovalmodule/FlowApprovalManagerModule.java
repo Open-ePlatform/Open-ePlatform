@@ -66,7 +66,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
 	private AnnotatedDAO<FlowApprovalActivityProgress> activityProgressDAO;
-	
+
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivityProgress, Integer> activityProgressDAOWrapper;
 
 	private QueryParameterFactory<FlowApprovalActivityRound, Integer> activityRoundFlowInstanceIDParamFactory;
@@ -74,10 +74,10 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	private QueryParameterFactory<FlowApprovalActivityGroup, Integer> activityGroupFlowFamilyIDParamFactory;
 
 	protected FlowInstanceAdminModule flowInstanceAdminModule;
-	
+
 	@InstanceManagerDependency
 	protected FlowApprovalUserModule approvalUserModule;
-	
+
 	@InstanceManagerDependency(required = true)
 	protected FlowApprovalAdminModule approvalAdminModule;
 
@@ -101,7 +101,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		activityGroupDAO = daoFactory.getDAO(FlowApprovalActivityGroup.class);
 		activityRoundDAO = daoFactory.getDAO(FlowApprovalActivityRound.class);
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
-		
+
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
 		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
 
@@ -131,7 +131,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		super.moduleConfigured();
 
 		try {
-			viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+			viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 			viewFragmentTransformer.setDebugXML(debugFragmententXML);
 
 		} catch (Exception e) {
@@ -160,8 +160,8 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	@Override
 	public ViewFragment getOverviewTabContentsViewFragment(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
 
-		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<FlowApprovalActivityGroup>();
-		
+		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<>();
+
 		query.addParameter(activityGroupFlowFamilyIDParamFactory.getParameter(flowInstance.getFlow().getFlowFamily().getFlowFamilyID()));
 
 		if (activityGroupDAO.getCount(query) > 0) {
@@ -184,11 +184,11 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		XMLUtils.append(doc, tabElement, "ActivityGroups", activityGroups);
 
 		XMLUtils.appendNewElement(doc, tabElement, "PostURL", RequestUtils.getFullContextPathURL(req) + flowInstanceAdminModule.getOverviewExtensionRequestMethodAlias(flowInstance, getOverviewExtensionProviderID()));
-		
+
 		if (approvalUserModule != null) {
 			XMLUtils.appendNewElement(doc, tabElement, "UserModuleURL", RequestUtils.getFullContextPathURL(req) + approvalUserModule.getFullAlias());
 		}
-		
+
 		XMLUtils.append(doc, tabElement, validationErrors);
 
 		return viewFragmentTransformer.createViewFragment(doc);
@@ -208,32 +208,32 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			if (activityProgress == null) {
 				throw new URINotFoundException(uriParser);
 			}
-			
+
 			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
 				throw new AccessDeniedException("Wrong flow instance");
 			}
-			
+
 			//TODO don't allow new reminder if reminded very recently
-			
+
 			FlowApprovalActivityRound round = activityProgress.getActivityRound();
-			
+
 			if (round.getCompleted() == null && round.getCancelled() == null && activityProgress.getCompleted() == null) {
-				
+
 				approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
 			}
-			
+
 		} else if (signatureActivityProgressID != null) {
-			
+
 			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(signatureActivityProgressID);
 
 			if (activityProgress == null || activityProgress.getSignedDate() == null) {
 				throw new URINotFoundException(uriParser);
 			}
-			
+
 			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
 				throw new AccessDeniedException("Wrong flow instance");
 			}
-			
+
 			String eventSignature = activityProgress.getSigningData() + "\r\n\r\n" + activityProgress.getSignatureData();
 
 			log.info("Sending signature for " + activityProgress + " to user " + user);
@@ -246,45 +246,45 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			res.getWriter().write(eventSignature);
 			res.getWriter().close();
 			return null;
-			
+
 		} else if (signatureActivityRoundID != null) {
-			
-			HighLevelQuery<FlowApprovalActivityRound> query = new HighLevelQuery<FlowApprovalActivityRound>();
+
+			HighLevelQuery<FlowApprovalActivityRound> query = new HighLevelQuery<>();
 			query.addRelation(FlowApprovalActivityRound.ACTIVITY_GROUP_RELATION);
 			query.addParameter(activityRoundIDParamFactory.getParameter(signatureActivityRoundID));
-			
+
 			FlowApprovalActivityRound round = activityRoundDAO.get(query);
 
 			if (round == null) {
 				throw new URINotFoundException(uriParser);
 			}
-			
+
 			if (!round.getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
 				throw new AccessDeniedException("Wrong flow instance");
 			}
-			
+
 			File pdfFile = approvalAdminModule.getSignaturesPDF(round);
-			
+
 			if (pdfFile == null || !pdfFile.exists()) {
-				
+
 				log.warn("PDF for " + round + " not found");
 				throw new URINotFoundException(uriParser);
 			}
-			
+
 			try {
 				log.info("Sending signature PDF for " + round + " to user " + user);
-				
-				String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + round.getActivityGroup().getName() + " - signature - " + round.getActivityRoundID()+ ".pdf";
-				
+
+				String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + " - " + round.getActivityGroup().getName() + " - signature - " + round.getActivityRoundID() + ".pdf";
+
 				HTTPUtils.sendFile(pdfFile, filename, req, res, ContentDisposition.ATTACHMENT);
-				
+
 			} catch (Exception e) {
 				log.info("Error sending PDF for " + round + " to user " + user + ", " + e);
 			}
-			
+
 			return null;
 		}
-		
+
 		//TODO show notification that reminder was sent
 		res.sendRedirect(RequestUtils.getFullContextPathURL(req) + flowInstanceAdminModule.getFullAlias() + "/overview/" + flowInstance.getFlowInstanceID() + "#flow-approval");
 		return null;
@@ -292,7 +292,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 	private List<FlowApprovalActivityGroup> getActivityGroups(FlowInstance flowInstance, Field... relations) throws SQLException {
 
-		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<FlowApprovalActivityGroup>();
+		HighLevelQuery<FlowApprovalActivityGroup> query = new HighLevelQuery<>();
 
 		query.addParameter(activityGroupFlowFamilyIDParamFactory.getParameter(flowInstance.getFlow().getFlowFamily().getFlowFamilyID()));
 		query.addRelationParameter(FlowApprovalActivityRound.class, activityRoundFlowInstanceIDParamFactory.getParameter(flowInstance.getFlowInstanceID()));
