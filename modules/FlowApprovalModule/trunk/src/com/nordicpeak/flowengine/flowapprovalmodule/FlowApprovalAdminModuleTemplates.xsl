@@ -1086,6 +1086,18 @@
 				
 			</xsl:if>
 			
+			<xsl:if test="Activity/requireComment = 'true'">
+				
+				<div>
+					<strong>
+						<xsl:value-of select="$i18n.Activity.requireComment" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+				</div>
+				
+			</xsl:if>
+			
 			<xsl:if test="Activity/onlyUseGlobalNotifications = 'true'">
 				
 				<div>
@@ -1344,6 +1356,21 @@
 				
 				<label class="marginleft" for="requireSigning">
 					<xsl:value-of select="$i18n.Activity.requireSigning" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'requireComment'" />
+					<xsl:with-param name="id" select="'requireComment'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="requireComment">
+					<xsl:value-of select="$i18n.Activity.requireComment" />
 				</label>
 			</div>
 		</div>

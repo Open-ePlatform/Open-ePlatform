@@ -406,4 +406,13 @@
 		</Query>
 	</Script>
 	
+	<Script version="19">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`
+					ADD COLUMN `requireComment` TINYINT(1) UNSIGNED NOT NULL AFTER `requireSigning`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

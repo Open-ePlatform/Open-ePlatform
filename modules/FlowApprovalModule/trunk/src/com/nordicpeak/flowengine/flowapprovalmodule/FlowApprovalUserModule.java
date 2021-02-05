@@ -540,7 +540,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				}
 			}
 
-			String comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
+			boolean requireComment = activity.isRequireComment();
+
+			String comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
 
 			if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
 

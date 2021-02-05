@@ -325,6 +325,10 @@
 						<xsl:if test="ActivityProgress/completed or ActivityProgress/ActivityRound/completed or ActivityProgress/ActivityRound/cancelled">true</xsl:if>
 					</xsl:variable>
 					
+					<div class="full bigmarginbottom">
+						<xsl:apply-templates select="ValidationErrors/validationError" />
+					</div>
+					
 					<form method="POST" action="{/Document/requestinfo/uri}" name="userform">
 					
 						<article class="clearfix">
@@ -502,7 +506,13 @@
 							<div class="bigmarginbottom">
 								
 								<label for="comment">
+								
+									<xsl:if test="ActivityProgress/Activity/requireComment = 'true'">
+										<xsl:attribute name="class">required</xsl:attribute>
+									</xsl:if>
+									
 									<xsl:value-of select="$i18n.ActivityProgress.comment" />
+									
 								</label>
 								
 								<div>
@@ -700,14 +710,14 @@
 				
 				<xsl:text>&#x20;</xsl:text>
 				
-<!-- 				<xsl:choose> -->
-<!-- 					<xsl:when test="fieldName = ''"> -->
-<!-- 						<xsl:value-of select="$i18n."/> -->
-<!-- 					</xsl:when> -->
-<!-- 					<xsl:otherwise> -->
+				<xsl:choose>
+					<xsl:when test="fieldName = 'comment'">
+						<xsl:value-of select="$i18n.ActivityProgress.comment"/>
+					</xsl:when>
+					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>
-<!-- 					</xsl:otherwise> -->
-<!-- 				</xsl:choose> -->
+					</xsl:otherwise>
+				</xsl:choose>
 			</p>
 		</xsl:if>
 		
