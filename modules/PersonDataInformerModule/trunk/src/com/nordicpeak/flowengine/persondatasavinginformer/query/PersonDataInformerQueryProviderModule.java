@@ -60,364 +60,376 @@ import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModule<PersonDataInformerQueryInstance> implements BaseQueryCRUDCallback {
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String alternativeName = "This variable should be set by your stylesheet";
-	
+
 	private AnnotatedDAO<PersonDataInformerQuery> queryDAO;
 	private AnnotatedDAO<PersonDataInformerQueryInstance> queryInstanceDAO;
-	
+
 	private PersonDataInformerQueryCRUD queryCRUD;
-	
+
 	private QueryParameterFactory<PersonDataInformerQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<PersonDataInformerQueryInstance, Integer> queryInstanceIDParamFactory;
-	
+
 	private PersonDataInformerQueryAlternative alternative;
-	
+
 	@InstanceManagerDependency(required = true)
 	protected PersonDataInformerModule personDataInformerModule;
-	
+
 	@Override
 	protected void moduleConfigured() throws Exception {
-		
+
 		super.moduleConfigured();
-		
+
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR);
-		
+
 		alternative = new PersonDataInformerQueryAlternative(alternativeName);
 	}
-	
+
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
-		
+
 		//Automatic table version handling
 		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, PersonDataInformerModule.class.getName(), new XMLDBScriptProvider(PersonDataInformerModule.class.getResourceAsStream("DB script.xml")));
-		
+
 		if (upgradeResult.isUpgrade()) {
-			
+
 			log.info(upgradeResult.toString());
 		}
-		
+
 		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
-		
+
 		queryDAO = daoFactory.getDAO(PersonDataInformerQuery.class);
 		queryInstanceDAO = daoFactory.getDAO(PersonDataInformerQueryInstance.class);
-		
+
 		queryCRUD = new PersonDataInformerQueryCRUD(queryDAO.getWrapper(Integer.class), new AnnotatedRequestPopulator<PersonDataInformerQuery>(PersonDataInformerQuery.class), "PersonDataInformerQuery", "query", null, this);
-		
+
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
 	}
-	
+
 	@Override
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws SQLException {
-		
+
 		PersonDataInformerQuery query = new PersonDataInformerQuery();
-		
+
 		query.setQueryID(descriptor.getQueryID());
-		
+
 		this.queryDAO.add(query, transactionHandler, null);
-		
+
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
-		
+
 		query.setAlternative(alternative);
-		
+
 		return query;
 	}
-	
+
 	@Override
 	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
-		
+
 		PersonDataInformerQuery query = new PersonDataInformerQuery();
-		
+
 		query.setQueryID(descriptor.getQueryID());
-		
+
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
-		
+
 		this.queryDAO.add(query, transactionHandler, null);
-		
+
 		return query;
 	}
-	
+
 	@Override
 	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws SQLException {
-		
+
 		PersonDataInformerQuery query = this.getQuery(descriptor.getQueryID());
-		
+
 		if (query == null) {
-			
+
 			return null;
 		}
-		
+
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
-		
+
 		query.setAlternative(alternative);
-		
+
 		return query;
 	}
-	
+
 	@Override
 	public Query getQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable {
-		
+
 		PersonDataInformerQuery query = this.getQuery(descriptor.getQueryID(), transactionHandler);
-		
+
 		if (query == null) {
-			
+
 			return null;
 		}
-		
+
 		query.init(descriptor, getFullAlias() + "/config/" + descriptor.getQueryID());
-		
+
 		query.setAlternative(alternative);
-		
+
 		return query;
 	}
-	
+
 	@Override
 	public QueryInstance getQueryInstance(MutableQueryInstanceDescriptor descriptor, String instanceManagerID, HttpServletRequest req, User user, User poster, InstanceMetadata instanceMetadata) throws SQLException {
-		
+
 		PersonDataInformerQueryInstance queryInstance = null;
-		
+
 		//Check if we should create a new instance or get an existing one
 		if (descriptor.getQueryInstanceID() == null) {
-			
+
 			queryInstance = new PersonDataInformerQueryInstance();
-			
+
 		} else {
-			
+
 			queryInstance = getQueryInstance(descriptor.getQueryInstanceID());
-			
+
 			if (queryInstance == null) {
-				
+
 				return null;
 			}
 		}
-		
+
 		queryInstance.setQuery(getQuery(descriptor.getQueryDescriptor().getQueryID()));
-		
+
 		if (queryInstance.getQuery() == null) {
-			
+
 			return null;
 		}
-		
+
 		queryInstance.getQuery().setAlternative(alternative);
-		
+
 		FlowFamilyInformerSetting informerSetting = personDataInformerModule.getInformerSetting(descriptor.getQueryDescriptor().getStep().getFlow().getFlowFamily());
-		
+
 		if (informerSetting != null) {
+			
 			if (informerSetting.getReason() == null && personDataInformerModule.getDefaultReason() != null) {
+			
 				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason(), systemInterface.getEncoding()));
-			}
-			else if (informerSetting.getReason() != null) {
+				
+			} else if (informerSetting.getReason() != null) {
+				
 				informerSetting.setReason(JTidyUtils.getXHTML(informerSetting.getReason(), systemInterface.getEncoding()));
 			}
-			
+
 			if (informerSetting.getExtraInformation() == null && personDataInformerModule.getDefaultExtraInformation() != null) {
+				
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation(), systemInterface.getEncoding()));
-			}
-			else if (informerSetting.getExtraInformation() != null) {
+				
+			} else if (informerSetting.getExtraInformation() != null) {
+				
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(informerSetting.getExtraInformation(), systemInterface.getEncoding()));
 			}
-			
+
 			if (informerSetting.getExtraInformationStorage() == null && personDataInformerModule.getDefaultExtraInformationStorage() != null) {
+				
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage(), systemInterface.getEncoding()));
-			}
-			else if (informerSetting.getExtraInformationStorage() != null) {
+				
+			} else if (informerSetting.getExtraInformationStorage() != null) {
+				
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage(), systemInterface.getEncoding()));
 			}
-			
+
 			if (informerSetting.getConfirmationText() == null && personDataInformerModule.getDefaultConfirmationText() != null) {
+				
 				informerSetting.setConfirmationText(JTidyUtils.getXHTML(personDataInformerModule.getDefaultConfirmationText(), systemInterface.getEncoding()));
-			}
-			else if (informerSetting.getConfirmationText() != null) {
+				
+			} else if (informerSetting.getConfirmationText() != null) {
+				
 				informerSetting.setConfirmationText(JTidyUtils.getXHTML(informerSetting.getConfirmationText(), systemInterface.getEncoding()));
 			}
-			
+
 			if (informerSetting.getDataRecipient() != null) {
+				
 				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient(), systemInterface.getEncoding()));
 			}
-			
+
 			TextTagReplacer.replaceTextTags(informerSetting, instanceMetadata.getSiteProfile());
-			
+
 			queryInstance.getQuery().setFamilyInformerSettings(informerSetting);
 		}
-		
+
 		if (req != null) {
-			
+
 			FCKUtils.setAbsoluteFileUrls(queryInstance.getQuery(), RequestUtils.getFullContextPathURL(req) + ckConnectorModuleAlias);
-			
+
 			URLRewriter.setAbsoluteLinkUrls(queryInstance.getQuery(), req, true);
 		}
+
+		queryInstance.getQuery().scanAttributeTags();
 		
 		TextTagReplacer.replaceTextTags(queryInstance.getQuery(), instanceMetadata.getSiteProfile());
-		
+
 		queryInstance.set(descriptor);
-		
+
 		//If this is a new query instance copy the default values
 		if (descriptor.getQueryInstanceID() == null) {
-			
+
 			queryInstance.defaultQueryValues();
 		}
-		
+
 		return queryInstance;
 	}
-	
+
 	private PersonDataInformerQuery getQuery(Integer queryID) throws SQLException {
-		
+
 		HighLevelQuery<PersonDataInformerQuery> query = new HighLevelQuery<PersonDataInformerQuery>();
-		
+
 		query.addParameter(queryIDParamFactory.getParameter(queryID));
-		
+
 		return queryDAO.get(query);
 	}
-	
+
 	private PersonDataInformerQuery getQuery(Integer queryID, TransactionHandler transactionHandler) throws SQLException {
-		
+
 		HighLevelQuery<PersonDataInformerQuery> query = new HighLevelQuery<PersonDataInformerQuery>();
-		
+
 		query.addParameter(queryIDParamFactory.getParameter(queryID));
-		
+
 		return queryDAO.get(query, transactionHandler);
 	}
-	
+
 	private PersonDataInformerQueryInstance getQueryInstance(Integer queryInstanceID) throws SQLException {
-		
+
 		HighLevelQuery<PersonDataInformerQueryInstance> query = new HighLevelQuery<PersonDataInformerQueryInstance>();
-		
+
 		query.addParameter(queryInstanceIDParamFactory.getParameter(queryInstanceID));
-		
+
 		return queryInstanceDAO.get(query);
 	}
-	
+
 	@Override
 	public void save(PersonDataInformerQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
-		
+
 		//Check if the query instance has an ID set and if the ID of the descriptor has changed
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
-			
+
 			queryInstance.setQueryInstanceID(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID());
-			
+
 			this.queryInstanceDAO.add(queryInstance, transactionHandler, null);
-			
+
 		} else {
-			
+
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
-	
+
 	@Override
 	public void populate(PersonDataInformerQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
-		
+
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-		
+
 		Boolean accepted = ValidationUtils.validateParameter("q" + queryInstance.getQuery().getQueryID() + "_accept", req, false, BooleanPopulator.getPopulator(), validationErrors);
-		
+
 		if (accepted == null) {
 			accepted = false;
 		}
-		
+
 		//If partial population is allowed and the user has not selected any alternatives, skip validation
 		if (allowPartialPopulation) {
-			
+
 			queryInstance.setAccepted(accepted);
 			queryInstance.getQueryInstanceDescriptor().setPopulated(accepted);
-			
+
 			return;
 		}
-		
+
 		//Check if this query is required or if the user has selected any alternatives anyway
 		if (queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && !accepted) {
-			
+
 			validationErrors.add(new ValidationError("RequiredQuery"));
 		}
-		
+
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
-		
+
 		queryInstance.setAccepted(accepted);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(accepted);
 	}
-	
+
 	@WebPublic(alias = "config")
 	public ForegroundModuleResponse configureQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-		
+
 		return this.queryCRUD.update(req, res, user, uriParser);
 	}
-	
+
 	@Override
 	public boolean deleteQuery(ImmutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws SQLException {
-		
+
 		PersonDataInformerQuery query = getQuery(descriptor.getQueryID());
-		
+
 		if (query == null) {
-			
+
 			return false;
 		}
-		
+
 		this.queryDAO.delete(query, transactionHandler);
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public boolean deleteQueryInstance(ImmutableQueryInstanceDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable {
-		
+
 		PersonDataInformerQueryInstance queryInstance = this.getQueryInstance(descriptor.getQueryInstanceID());
-		
+
 		if (queryInstance == null) {
-			
+
 			return false;
 		}
-		
+
 		this.queryInstanceDAO.delete(queryInstance, transactionHandler);
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public String getTitlePrefix() {
-		
+
 		return this.moduleDescriptor.getName();
 	}
-	
+
 	@Override
 	public void copyQuery(MutableQueryDescriptor sourceQueryDescriptor, MutableQueryDescriptor copyQueryDescriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws SQLException {
-		
+
 		PersonDataInformerQuery query = getQuery(sourceQueryDescriptor.getQueryID(), transactionHandler);
-		
+
 		query.setQueryID(copyQueryDescriptor.getQueryID());
-		
+
 		this.queryDAO.add(query, transactionHandler, null);
 	}
-	
+
 	@Override
 	protected void appendPDFData(Document doc, Element showQueryValuesElement, PersonDataInformerQueryInstance queryInstance, AttributeHandler attributeHandler) {
-		
+
 		XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
-		
+
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.REASON_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.EXTRA_INFORMATION_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.COMPLAINT_DESCRIPTION_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.EXTRA_INFORMATION_STORAGE_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.CONFIRMATION_TEXT_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.DATA_RECIPIENT_FIELD);
-		
-		generatorDocument.addAssignableFieldElementableListener(FlowFamilyInformerSetting.class, new FlowFamilyInformerSettingTextsListener(systemInterface.getEncoding()));		
-		
+
+		generatorDocument.addAssignableFieldElementableListener(FlowFamilyInformerSetting.class, new FlowFamilyInformerSettingTextsListener(systemInterface.getEncoding()));
+
 		super.appendPDFData(generatorDocument, showQueryValuesElement, queryInstance, attributeHandler);
-		
+
 		if (queryInstance.getQuery().getDescription() != null) {
-			
+
 			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "Description", JTidyUtils.getXHTML(queryInstance.getQuery().getDescription(attributeHandler), systemInterface.getEncoding()));
 			XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "isHTMLDescription", queryInstance.getQuery().getDescription().contains("<") && queryInstance.getQuery().getDescription().contains(">"));
 		}
 	}
-	
+
 	@Override
 	protected Class<PersonDataInformerQueryInstance> getQueryInstanceClass() {
-		
+
 		return PersonDataInformerQueryInstance.class;
 	}
-	
+
 }
