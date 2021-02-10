@@ -194,7 +194,7 @@ public abstract class BaseQuery extends GeneratedElementable implements Query, S
 			this.descriptionAttributeListTags = HTMLListAttributeTagUtils.getAttributeTags(description);
 		}
 
-		if (helpTextAttributeTags != null) {
+		if (helpText != null) {
 
 			this.helpTextAttributeTags = AttributeTagUtils.getAttributeTags(helpText);
 
