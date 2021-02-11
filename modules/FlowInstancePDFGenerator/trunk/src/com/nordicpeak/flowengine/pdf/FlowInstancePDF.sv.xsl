@@ -15,7 +15,7 @@
 	
 	<xsl:variable name="i18n.AnonymousUser">Ej inloggad användare</xsl:variable>
 	<xsl:variable name="i18n.EditedByManager">Ändrad av handläggare</xsl:variable>
-	<xsl:variable name="i18n.EditDate">Ändrings datum</xsl:variable>
+	<xsl:variable name="i18n.EditDate">Ändringsdatum</xsl:variable>
 	
 	<xsl:variable name="i18n.Signing">Signeringsunderlag</xsl:variable>
 	<xsl:variable name="i18n.Signed">signerad</xsl:variable>
