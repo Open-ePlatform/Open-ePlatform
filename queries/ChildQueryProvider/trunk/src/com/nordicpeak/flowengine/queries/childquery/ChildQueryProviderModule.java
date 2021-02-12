@@ -607,10 +607,10 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	
 	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
 		
+		Integer queryID = queryInstance.getQuery().getQueryID();
+		String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+		
 		if (queryInstance.getQuery().isUseMultipartSigning()) {
-
-			Integer queryID = queryInstance.getQuery().getQueryID();
-			String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
 
@@ -659,6 +659,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 						}
 					}
 				}
+			}
+			
+		} else {
+			
+			for (StoredGuardian storedGuardian : storedGuardians) {
+				storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
 			}
 		}
 		
