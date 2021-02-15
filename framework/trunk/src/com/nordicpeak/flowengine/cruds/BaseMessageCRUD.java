@@ -168,7 +168,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		if (MultipartRequest.isMultipartRequest(req)) {
 
 			try {
-				return new MultipartRequest(callback.getRamThreshold() * BinarySizes.KiloByte, callback.getMaxRequestSize() * BinarySizes.MegaByte, callback.getTempDir(), req);
+				return MultipartRequest.getMultipartRequest(callback.getRamThreshold() * BinarySizes.KiloByte, callback.getMaxRequestSize() * BinarySizes.MegaByte, callback.getTempDir(), req);
 
 			} catch (SizeLimitExceededException e) {
 
