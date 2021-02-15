@@ -460,7 +460,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 			MultipartRequest multipartRequest = null;
 			
 			try {
-				multipartRequest = new MultipartRequest(getRamThreshold() * BinarySizes.KiloByte, getMaxRequestSize() * BinarySizes.MegaByte, getTempDir(), req);
+				multipartRequest = MultipartRequest.getMultipartRequest(getRamThreshold() * BinarySizes.KiloByte, getMaxRequestSize() * BinarySizes.MegaByte, getTempDir(), req);
 				Timestamp now = TimeUtils.getCurrentTimestamp();
 				
 				List<Attachment> attachments = null;
