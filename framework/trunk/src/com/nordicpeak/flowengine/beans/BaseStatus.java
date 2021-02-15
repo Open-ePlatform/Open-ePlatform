@@ -60,6 +60,11 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean addInternalMessage;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	protected boolean isUserMutable;
 
 	@DAOManaged
@@ -112,6 +117,7 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 		this.newExternalMessagesDisallowed = baseStatus.isNewExternalMessagesDisallowed();
 		this.newExternalMessagesAllowedDays = baseStatus.getNewExternalMessagesAllowedDays();
 		this.addExternalMessage = baseStatus.isAddExternalMessage();
+		this.addInternalMessage = baseStatus.isAddExternalMessage();
 		this.isUserMutable = baseStatus.isUserMutable();
 		this.isUserDeletable = baseStatus.isUserDeletable();
 		this.isAdminMutable = baseStatus.isAdminMutable();
@@ -197,6 +203,16 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 	public void setAddExternalMessage(boolean addExternalMessage) {
 
 		this.addExternalMessage = addExternalMessage;
+	}
+
+	public boolean isAddInternalMessage() {
+
+		return addInternalMessage;
+	}
+
+	public void setAddInternalMessage(boolean addInternalMessage) {
+
+		this.addInternalMessage = addInternalMessage;
 	}
 
 	public boolean isUserMutable() {

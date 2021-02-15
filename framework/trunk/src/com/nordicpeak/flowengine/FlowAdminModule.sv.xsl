@@ -198,7 +198,10 @@
 	<xsl:variable name="i18n.newExternalMessagesDisallowed">Tillåt ej nya meddelanden på ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.newExternalMessagesAllowedDays">Antal dagar som nya meddelanden är tillåtna efter byte till denna status</xsl:variable>		
 	<xsl:variable name="i18n.addExternalMessage">Kräv att handläggaren lägger till ett meddelande vid byte till denna status</xsl:variable>
+	<xsl:variable name="i18n.addInternalMessage">Kräv att handläggaren lägger till en intern notering vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.defaultMessageTemplate">Förvald meddelandemall</xsl:variable>
+	<xsl:variable name="i18n.defaultExternalMessageTemplate">Förvald meddelandemall (meddelande)</xsl:variable>
+	<xsl:variable name="i18n.defaultInternalMessageTemplate">Förvald meddelandemall (intern notering)</xsl:variable>
 	<xsl:variable name="i18n.defaultMessageTemplate.None">Ingen förvald meddelandemall</xsl:variable>
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>

@@ -40,9 +40,14 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 	public static final List<Field> INTERNAL_FIELDS = ReflectionUtils.getFields(Status.class, "isUserMutable", "isUserDeletable", "isAdminMutable", "isAdminDeletable", "sortIndex", "requireSigning", "useAccessCheck");
 
 	@DAOManaged
-	@WebPopulate(paramName = "defaultMessageTemplate")
+	@WebPopulate(paramName = "defaultExternalMessageTemplate")
 	@XMLElement
-	private Integer defaultMessageTemplateID;
+	private Integer defaultExternalMessageTemplateID;
+
+	@DAOManaged
+	@WebPopulate(paramName = "defaultInternalMessageTemplate")
+	@XMLElement
+	private Integer defaultInternalMessageTemplateID;
 
 	@DAOManaged(columnName = "flowID")
 	@ManyToOne
@@ -84,14 +89,24 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 		super(baseStatus);
 	}
 
-	public Integer getDefaultMessageTemplateID() {
+	public Integer getDefaultExternalMessageTemplateID() {
 
-		return defaultMessageTemplateID;
+		return defaultExternalMessageTemplateID;
 	}
 
-	public void setDefaultMessageTemplateID(Integer defaultMessageTemplateID) {
+	public void setDefaultExternalMessageTemplateID(Integer defaultExternalMessageTemplateID) {
 
-		this.defaultMessageTemplateID = defaultMessageTemplateID;
+		this.defaultExternalMessageTemplateID = defaultExternalMessageTemplateID;
+	}
+
+	public Integer getDefaultInternalMessageTemplateID() {
+
+		return defaultInternalMessageTemplateID;
+	}
+
+	public void setDefaultInternalMessageTemplateID(Integer defaultInternalMessageTemplateID) {
+
+		this.defaultInternalMessageTemplateID = defaultInternalMessageTemplateID;
 	}
 
 	@Override
@@ -161,7 +176,8 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 		this.newExternalMessagesDisallowed = xmlParser.getPrimitiveBoolean("newExternalMessagesDisallowed");
 		this.newExternalMessagesAllowedDays = XMLValidationUtils.validateParameter("newExternalMessagesAllowedDays", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		this.addExternalMessage = xmlParser.getPrimitiveBoolean("addExternalMessage");
-		this.defaultMessageTemplateID = XMLValidationUtils.validateParameter("defaultMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
+		this.defaultExternalMessageTemplateID = XMLValidationUtils.validateParameter("defaultExternalMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
+		this.defaultInternalMessageTemplateID = XMLValidationUtils.validateParameter("defaultInternalMessageTemplateID", xmlParser, false, NonNegativeStringIntegerPopulator.getPopulator(), errors);
 
 		this.isUserMutable = xmlParser.getPrimitiveBoolean("isUserMutable");
 		this.isUserDeletable = xmlParser.getPrimitiveBoolean("isUserDeletable");

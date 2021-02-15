@@ -93,7 +93,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		
 		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
 		
-		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors, allowedFileExtensions);
+		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors, allowedFileExtensions, "externalmessage-attachments");
 		
 		return create(message, attachments, user, flowInstance, postedByManager, validationErrors);
 	}

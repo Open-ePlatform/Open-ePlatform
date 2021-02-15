@@ -10,11 +10,11 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 
-public class FlowInstanceStatusExternalMessageElementableListener implements ElementableListener<Status> {
+public class FlowInstanceStatusMessageElementableListener implements ElementableListener<Status> {
 
 	protected final FlowInstance flowInstance;
-	
-	public FlowInstanceStatusExternalMessageElementableListener(FlowInstance flowInstance) {
+
+	public FlowInstanceStatusMessageElementableListener(FlowInstance flowInstance) {
 
 		super();
 
@@ -25,8 +25,13 @@ public class FlowInstanceStatusExternalMessageElementableListener implements Ele
 	public void elementGenerated(Document doc, Element element, Status status) {
 
 		if (!FlowInstanceUtils.isNewExternalMessagesAllowed(flowInstance, status)) {
-			
+
 			XMLUtils.appendNewElement(doc, element, "hideSendExternalMessage", true);
+		}
+
+		if (!flowInstance.isInternalMessagesEnabled()) {
+
+			XMLUtils.appendNewElement(doc, element, "hideSendInternalMessage", true);
 		}
 	}
 

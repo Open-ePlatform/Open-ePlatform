@@ -31,7 +31,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=11
+		/js/flowadminmodule.js?v=12
 		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
@@ -3885,17 +3885,50 @@
 				
 					<div class="floatleft full bigmarginbottom hidden">
 					
-						<label for="defaultMessageTemplate" class="floatleft full">
+						<label for="defaultExternalMessageTemplate" class="floatleft full">
 							<xsl:value-of select="$i18n.defaultMessageTemplate" />
 						</label>
 			
 						<xsl:call-template name="createDropdown">
-							<xsl:with-param name="name" select="'defaultMessageTemplate'" />
-							<xsl:with-param name="id" select="'defaultMessageTemplate'" />
-							<xsl:with-param name="element" select="MessageTemplates/MessageTemplate" />
+							<xsl:with-param name="name" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="id" select="'defaultExternalMessageTemplate'" />
+							<xsl:with-param name="element" select="MessageTemplates/MessageTemplate[type='EXTERNAL' or type='ALL']" />
 							<xsl:with-param name="valueElementName" select="'templateID'" />
 							<xsl:with-param name="labelElementName" select="'name'" />
-							<xsl:with-param name="selectedValue" select="$element/defaultMessageTemplateID" />
+							<xsl:with-param name="selectedValue" select="$element/defaultExternalMessageTemplateID" />
+							<xsl:with-param name="addEmptyOption" select="$i18n.defaultMessageTemplate.None" />
+						</xsl:call-template>
+					</div>
+					
+				</xsl:if>
+	
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'addInternalMessage'" />
+						<xsl:with-param name="id" select="'addInternalMessage'" />
+						<xsl:with-param name="element" select="$element" />
+					</xsl:call-template>
+					
+					<label for="addInternalMessage">
+						<xsl:value-of select="$i18n.addInternalMessage" />
+					</label>
+				</div>
+				
+				<xsl:if test="not($hideFlowSpecificSettings)">
+				
+					<div class="floatleft full bigmarginbottom hidden">
+					
+						<label for="defaultInternalMessageTemplate" class="floatleft full">
+							<xsl:value-of select="$i18n.defaultMessageTemplate" />
+						</label>
+			
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="name" select="'defaultInternalMessageTemplate'" />
+							<xsl:with-param name="id" select="'defaultInternalMessageTemplate'" />
+							<xsl:with-param name="element" select="MessageTemplates/MessageTemplate[type='INTERNAL' or type='ALL']" />
+							<xsl:with-param name="valueElementName" select="'templateID'" />
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="selectedValue" select="$element/defaultInternalMessageTemplateID" />
 							<xsl:with-param name="addEmptyOption" select="$i18n.defaultMessageTemplate.None" />
 						</xsl:call-template>
 					</div>
@@ -8265,6 +8298,15 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'contentType'">
 						<xsl:value-of select="$i18n.contentType"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'contentType'">
+						<xsl:value-of select="$i18n.contentType"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'defaultExternalMessageTemplate'">
+						<xsl:value-of select="$i18n.defaultExternalMessageTemplate"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'defaultInternalMessageTemplate'">
+						<xsl:value-of select="$i18n.defaultInternalMessageTemplate"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'defaultQueryState'">
 						<xsl:value-of select="$i18n.defaultQueryState"/>

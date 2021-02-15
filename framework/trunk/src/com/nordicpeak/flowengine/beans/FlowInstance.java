@@ -612,6 +612,16 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 		
 		return FlowInstanceUtils.isNewExternalMessagesAllowed(this, status);
 	}
+	
+	public boolean isInternalMessagesEnabled() {
+		
+		if (flow == null) {
+			
+			return false;
+		}
+		
+		return !flow.isHideInternalMessages();
+	}
 
 	public List<QuerySearchValue> getQuerySearchValues() {
 

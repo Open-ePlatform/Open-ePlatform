@@ -34,6 +34,7 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.dao.querys.ObjectQuery;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
@@ -46,7 +47,9 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.MessageTemplate;
 import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.enums.MessageTemplateType;
 import com.nordicpeak.flowengine.interfaces.StatusFormExtensionProvider;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.validationerrors.UnauthorizedUserNotManagerValidationError;
@@ -407,13 +410,31 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 
 			errors.add(FlowAdminModule.EXTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR);
 		}
-
+		
+		validateMessageTemplate(bean.getDefaultExternalMessageTemplateID(), flowFamily, MessageTemplateType.EXTERNAL, "defaultExternalMessageTemplate", errors);
+		validateMessageTemplate(bean.getDefaultInternalMessageTemplateID(), flowFamily, MessageTemplateType.INTERNAL, "defaultInternalMessageTemplate", errors);
+		
 		if (!errors.isEmpty()) {
 			
 			throw new ValidationException(errors);
 		}
 	}
-	
+
+	private void validateMessageTemplate(Integer messageTemplateID, FlowFamily flowFamily, MessageTemplateType type, String fieldName, List<ValidationError> errors) {
+
+		if (messageTemplateID != null) {
+
+			List<MessageTemplate> messageTemplates = flowFamily.getMessageTemplates();
+
+			MessageTemplate messageTemplate = CollectionUtils.find(messageTemplates, template -> template.getTemplateID().equals(messageTemplateID) && (template.getType() == MessageTemplateType.ALL || template.getType() == type));
+
+			if (messageTemplate == null) {
+
+				errors.add(new ValidationError(fieldName, ValidationErrorType.InvalidFormat));
+			}
+		}
+	}
+
 	private FlowFamily getFlowFamily(Status status) throws SQLException {
 		
 		ObjectQuery<Integer> query = new ObjectQuery<Integer>(callback.getDataSource(), STATUS_FLOWFAMILY_SQL, IntegerPopulator.getPopulator());

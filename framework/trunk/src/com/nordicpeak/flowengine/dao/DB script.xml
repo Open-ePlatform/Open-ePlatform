@@ -2725,4 +2725,24 @@
 		</Query>
 	</Script>	
 
+	<Script version="146">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses` CHANGE COLUMN `defaultMessageTemplateID` `defaultExternalMessageTemplateID` INT(10) UNSIGNED;
+			]]>
+		</Query>	
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses`
+					ADD COLUMN `addInternalMessage` TINYINT(1) NOT NULL AFTER `defaultExternalMessageTemplateID`,
+					ADD COLUMN `defaultInternalMessageTemplateID` INT(10) UNSIGNED AFTER `addInternalMessage`;
+			]]>
+		</Query>	
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses` ADD COLUMN `addInternalMessage` TINYINT(1) NOT NULL AFTER `addExternalMessage`;
+			]]>
+		</Query>
+	</Script>
+
 </DBScripts>

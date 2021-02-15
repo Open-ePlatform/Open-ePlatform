@@ -86,6 +86,11 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 	}
 
 	protected List<AttachmentType> getAttachments(HttpServletRequest req, User user, List<ValidationError> errors, List<String> allowedFileExtensions) throws SerialException, SQLException {
+	
+		return getAttachments(req, user, errors, allowedFileExtensions, null);
+	}
+	
+	protected List<AttachmentType> getAttachments(HttpServletRequest req, User user, List<ValidationError> errors, List<String> allowedFileExtensions, String fieldName) throws SerialException, SQLException {
 
 		if (!(req instanceof MultipartRequest)) {
 
@@ -116,19 +121,25 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 					fileIterator.remove();
 					continue;
 				}
+				
+				if (fieldName != null && !fileItem.getFieldName().equals(fieldName)) {
+					
+					fileIterator.remove();
+					continue;
+				}
 
 				String fileExtension = FileUtils.getFileExtension(fileItem.getName());
 				
 				if (allowedFileExtensions != null && (fileExtension == null || !allowedFileExtensions.contains(fileExtension.toLowerCase()))) {
 
-					errors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName())));
+					errors.add(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), null, null, fieldName));
 
 					continue;
 				}	
 				
 				if (fileItem.getSize() > (callback.getMaxFileSize() * BinarySizes.MegaByte)) {
 
-					errors.add(new FileSizeLimitExceededValidationError(FilenameUtils.getName(fileItem.getName()), fileItem.getSize(), callback.getMaxFileSize() * BinarySizes.MegaByte));
+					errors.add(new FileSizeLimitExceededValidationError(null, FilenameUtils.getName(fileItem.getName()), fieldName, fileItem.getSize(), callback.getMaxFileSize() * BinarySizes.MegaByte));
 
 					fileIterator.remove();
 					continue;

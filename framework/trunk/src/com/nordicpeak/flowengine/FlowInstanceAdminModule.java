@@ -649,9 +649,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#notes");
 
-						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
-						
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+						sendInternalMessageAddedEvents(flowInstance, internalMessage);
 
 						return null;
 					}
@@ -734,7 +732,14 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 	}
-
+	
+	public void sendInternalMessageAddedEvents(FlowInstance flowInstance, InternalMessage internalMessage) {
+		
+		systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
+		
+		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+	}
+	
 	@WebPublic(alias = "messages")
 	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException, URINotFoundException {
 

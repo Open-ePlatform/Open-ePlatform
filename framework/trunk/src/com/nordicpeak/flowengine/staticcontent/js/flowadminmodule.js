@@ -49,6 +49,7 @@ $(document).ready(function() {
 		}).change();
 		
 		var $addExternalMessage = $('#addExternalMessage');
+		var $addInternalMessage = $('#addInternalMessage');
 
 		$('#newExternalMessagesDisallowed').change(function(){
 			
@@ -65,7 +66,13 @@ $(document).ready(function() {
 		
 		$addExternalMessage.change(function(){
 			
-			$('#defaultMessageTemplate').parent().toggle(this.checked);
+			$('#defaultExternalMessageTemplate').parent().toggle(this.checked);
+			
+		}).change();
+		
+		$addInternalMessage.change(function(){
+			
+			$('#defaultInternalMessageTemplate').parent().toggle(this.checked);
 			
 		}).change();
 		

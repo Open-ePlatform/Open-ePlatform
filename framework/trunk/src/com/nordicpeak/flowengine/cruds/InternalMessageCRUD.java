@@ -8,16 +8,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.rowset.serial.SerialException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
-import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.fileattachments.FileAttachment;
+import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -35,80 +36,84 @@ import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, InternalMessageAttachment> {
 
 	public InternalMessageCRUD(AnnotatedDAO<InternalMessage> messageDAO, AnnotatedDAO<InternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
-		
+
 		super(messageDAO, attachmentDAO, callback, InternalMessage.class, InternalMessageAttachment.class, manager);
 	}
 
 	public InternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, List<String> allowedFileExtensions) throws SQLException, IOException {
-		
-		List<ValidationError> errors = new ArrayList<ValidationError>();
 
-		req = parseRequest(req, errors);
+		List<ValidationError> validationErrors = new ArrayList<>();
+
+		req = parseRequest(req, validationErrors);
 
 		TransactionHandler transactionHandler = null;
-		
+
 		List<FileAttachment> addedFileAttachments = null;
-		
-		try{
-			String message = ValidationUtils.validateParameter("internalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), errors);
 
-			List<InternalMessageAttachment> attachments = getAttachments(req, user, errors, allowedFileExtensions);
+		try {
 
-			if (errors.isEmpty()) {
+			InternalMessage internalMessage = create(req, user, flowInstance, validationErrors, allowedFileExtensions);
+
+			if (internalMessage != null) {
 
 				log.info("User " + user + " adding internal message for flowinstance " + flowInstance);
 
 				transactionHandler = messageDAO.createTransaction();
-				
-				InternalMessage internalMessage = new InternalMessage();
-				internalMessage.setFlowInstance(flowInstance);
-				internalMessage.setPoster(user);
-				internalMessage.setMessage(message);
-				internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
-				internalMessage.setAttachments(attachments);
 
 				messageDAO.add(internalMessage, transactionHandler, null);
-				
+
 				addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(callback.getFileAttachmentHandler(), internalMessage);
 
 				transactionHandler.commit();
-				
-				return internalMessage;
-
 			}
 
-			XMLUtils.append(doc, element, errors);
+			XMLUtils.append(doc, element, validationErrors);
 			element.appendChild(RequestUtils.getRequestParameters(req, doc, "internalmessage"));
-			
-			return null;
 
-		}catch(Throwable t){	
-			
-			if(!CollectionUtils.isEmpty(addedFileAttachments)) {
-				
-				for(FileAttachment fileAttachment : addedFileAttachments) {
-					
-					fileAttachment.delete();
-				}
-			}
-			
+			return internalMessage;
+
+		} catch (Throwable t) {
+
+			FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
+
 			throw t;
-			
-		}finally{
-			
+
+		} finally {
+
 			TransactionHandler.autoClose(transactionHandler);
-			
+
 			if (req instanceof MultipartRequest) {
 
-				((MultipartRequest)req).deleteFiles();
+				((MultipartRequest) req).deleteFiles();
 			}
 		}
 
 	}
 
+	public InternalMessage create(HttpServletRequest req, User user, FlowInstance flowInstance, List<ValidationError> errors, List<String> allowedFileExtensions) throws SerialException, SQLException {
+
+		String message = ValidationUtils.validateParameter("internalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), errors);
+
+		List<InternalMessageAttachment> attachments = getAttachments(req, user, errors, allowedFileExtensions, "internalmessage-attachments");
+
+		InternalMessage internalMessage = null;
+
+		if (errors.isEmpty()) {
+
+			internalMessage = new InternalMessage();
+			internalMessage.setFlowInstance(flowInstance);
+			internalMessage.setPoster(user);
+			internalMessage.setMessage(message);
+			internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+			internalMessage.setAttachments(attachments);
+		}
+
+		return internalMessage;
+	}
+
 	@Override
 	protected Field getFlowInstanceRelation() {
-		
+
 		return InternalMessage.FLOWINSTANCE_RELATION;
 	}
 }
