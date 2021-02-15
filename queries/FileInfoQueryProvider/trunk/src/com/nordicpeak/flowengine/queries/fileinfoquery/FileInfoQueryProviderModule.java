@@ -137,10 +137,12 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 		if (StringUtils.isEmpty(tempFileStore)) {
 
 			log.error("Temp filestore not set");
+			tempFileStoreFile = null;
 
 		} else if (!FileUtils.isReadable(tempFileStore)) {
 
 			log.error("Temp filestore not found/readable");
+			tempFileStoreFile = null;
 
 		} else {
 
@@ -579,7 +581,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 
 	public MultipartRequest parseMultipartRequest(HttpServletRequest req, User user) throws FileUploadException {
 
-		return new MultipartRequest(ramThreshold * BinarySizes.KiloByte, diskThreshold * BinarySizes.MegaByte, (long) (maxFileSize * BinarySizes.MegaByte), tempFileStoreFile, req);
+		return MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, diskThreshold * BinarySizes.MegaByte, (long) (maxFileSize * BinarySizes.MegaByte), tempFileStore, req);
 	}
 
 	public void deleteFiles(FileInfoQuery query) {
