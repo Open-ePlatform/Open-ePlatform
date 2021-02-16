@@ -183,6 +183,17 @@
 				<div class="divider errands"></div>
 			
 			</xsl:if>
+
+			<xsl:variable name="sortOrder">
+				<xsl:choose>
+					<xsl:when test="FlowInstanceSortOrder = 'ASC'">
+						ascending
+					</xsl:when>
+					<xsl:otherwise>
+						descending
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
 			
 			<div class="errands-wrapper">
 				<div class="heading-wrapper">
@@ -213,7 +224,7 @@
 							</xsl:if>
 
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
-							<th class="date default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.LastEvent" /></span></th>
+							<th class="date default-sort {$sortOrder}"><span data-icon-after="_"><xsl:value-of select="$i18n.LastEvent" /></span></th>
 							<th class="link no-sort"></th>
 						</tr>
 					</thead>
@@ -261,7 +272,7 @@
 							</xsl:if>	
 
 							<th class="status"><span data-icon-after="_"><xsl:value-of select="$i18n.Status" /></span></th>
-							<th class="date default-sort"><span data-icon-after="^"><xsl:value-of select="$i18n.Date" /></span></th>
+							<th class="date default-sort {$sortOrder}"><span data-icon-after="^"><xsl:value-of select="$i18n.Date" /></span></th>
 							<th class="link no-sort"></th>
 						</tr>
 					</thead>
@@ -367,7 +378,7 @@
 			<xsl:call-template name="printDescription"/>
 
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
-			<td data-title="{$i18n.LastEvent}" class="date">
+			<td data-title="{$i18n.LastEvent}" class="date nowrap">
 				<xsl:value-of select="firstSubmitted" />
 			</td>
 			
@@ -402,7 +413,7 @@
 			<xsl:call-template name="printDescription"/>
 
 			<td data-title="{$i18n.Status}" class="status"><xsl:value-of select="Status/name" /></td>
-			<td data-title="{$i18n.Date}" class="date">
+			<td data-title="{$i18n.Date}" class="date nowrap">
 				<xsl:value-of select="firstSubmitted" />				
 			</td>
 			<td class="link">

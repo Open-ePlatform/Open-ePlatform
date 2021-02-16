@@ -18,6 +18,13 @@ $(document).ready(function() {
 			
 			var $sortColumn = $table.find("thead tr th.default-sort");
 			var $noSort = $table.find("thead tr th.no-sort");
+		
+			var sortOrderSetting = 0;
+			
+			if($sortColumn.hasClass("ascending")) {
+			
+				sortOrderSetting = 1;
+			}
 			
 			var headers = {};
 			
@@ -30,7 +37,7 @@ $(document).ready(function() {
 			var defaultSort = null;
 
 			if ($sortColumn.length > 0) {
-				defaultSort = [ [ $sortColumn.index(), 0 ] ];
+				defaultSort = [ [ $sortColumn.index(), sortOrderSetting ] ];
 			} else {
 				defaultSort = [];
 			}

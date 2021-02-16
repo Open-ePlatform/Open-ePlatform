@@ -217,6 +217,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "10";
+
+	@ModuleSetting
+	@EnumDropDownSettingDescriptor(name="Flow instance sort order", description="The order of flow instances when displayed in this module", required=true)
+	protected Order flowInstanceSortOrder = Order.DESC;
 	
 	@ModuleSetting
 	@EnumDropDownSettingDescriptor(name="Flow instance event sort order", description="The order of flow instance events when displayed in this module", required=true)
@@ -429,6 +433,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowExternalID");
 		}
+
+		XMLUtils.appendNewElement(doc, listFlowInstancesElement, "FlowInstanceSortOrder", flowInstanceSortOrder);
 		
 		List<FlowInstance> flowInstances = getFlowInstances(user, true, excludedFlowTypes != null);
 
