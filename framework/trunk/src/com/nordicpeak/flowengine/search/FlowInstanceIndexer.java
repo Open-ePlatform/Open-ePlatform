@@ -17,7 +17,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntPoint;
-import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -280,7 +279,14 @@ public class FlowInstanceIndexer {
 				instance.putField(MANAGER_DESCRIPTION, managerDescription);				
 			}
 			
-			instance.putField(POSTER_FIELD, doc.get(POSTER_FIELD));
+			String poster = doc.get(POSTER_FIELD);
+			
+			if(poster == null) {
+				
+				poster = "";
+			}
+			
+			instance.putField(POSTER_FIELD, poster);
 			
 			jsonArray.addNode(instance);
 		}
@@ -558,7 +564,7 @@ public class FlowInstanceIndexer {
 				
 				for (User manager : flowInstance.getManagers()) {
 					
-					doc.add(new StoredField(MANAGER_USER_FIELD, manager.getUserID()));
+					doc.add(new IntPoint(MANAGER_USER_FIELD, manager.getUserID()));
 					doc.add(new TextField(MANAGER_FIELD, manager.getFirstname() + " " + manager.getLastname(), Field.Store.NO));
 				}
 			}
@@ -567,7 +573,7 @@ public class FlowInstanceIndexer {
 				
 				for (Group managerGroup : flowInstance.getManagerGroups()) {
 					
-					doc.add(new StoredField(MANAGER_GROUP_FIELD, managerGroup.getGroupID()));
+					doc.add(new IntPoint(MANAGER_GROUP_FIELD, managerGroup.getGroupID()));
 				}
 			}
 			
@@ -592,10 +598,12 @@ public class FlowInstanceIndexer {
 				for (FlowFamilyManagerGroup managerGroup : flowFamily.getManagerGroups()) {
 					
 					if (managerGroup.isRestricted()) {
-						doc.add(new StoredField(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID()));
+						
+						doc.add(new IntPoint(ALLOWED_RESTRICTED_GROUP_FIELD, managerGroup.getGroupID()));
 						
 					} else {
-						doc.add(new StoredField(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID()));
+						
+						doc.add(new IntPoint(ALLOWED_FULL_GROUP_FIELD, managerGroup.getGroupID()));
 					}
 				}
 			}
@@ -607,10 +615,12 @@ public class FlowInstanceIndexer {
 				for (FlowFamilyManager manager : activeManagers) {
 					
 					if (manager.isRestricted()) {
-						doc.add(new StoredField(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID()));
+						
+						doc.add(new IntPoint(ALLOWED_RESTRICTED_USER_FIELD, manager.getUserID()));
 						
 					} else {
-						doc.add(new StoredField(ALLOWED_FULL_USER_FIELD, manager.getUserID()));
+						
+						doc.add(new IntPoint(ALLOWED_FULL_USER_FIELD, manager.getUserID()));
 					}
 				}
 			}
@@ -809,9 +819,11 @@ public class FlowInstanceIndexer {
 			}
 		}
 		
-		familyRestrictedManagerQuery.add(instanceManagerQuery.build(), Occur.MUST);
+		familyRestrictedManagerQuery.add(instanceManagerQuery.build(), Occur.MUST); 
 		
-		builder.add(familyFullManagerQuery.build(), Occur.SHOULD);
-		builder.add(familyRestrictedManagerQuery.build(), Occur.SHOULD);
+		BooleanQuery.Builder accessQuery = new BooleanQuery.Builder();
+		accessQuery.add(familyFullManagerQuery.build(), Occur.SHOULD);
+		accessQuery.add(familyRestrictedManagerQuery.build(), Occur.SHOULD);
+		builder.add(accessQuery.build(), Occur.MUST);
 	}
 }
