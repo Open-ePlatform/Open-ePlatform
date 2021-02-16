@@ -1814,7 +1814,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			MultipartRequest multipartRequest = null;
 
 			try {
-				multipartRequest = new MultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 
 				if (multipartRequest.getParameter("clearicon") != null) {
 
@@ -4069,7 +4069,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			return flowCRUD.showBean(flow, req, res, user, uriParser, validationErrors);
 		}
 
-		res.setHeader("Content-Disposition", "attachment; filename=\"" + flow.getName() + ".oeflow\"");
+		res.setHeader("Content-Disposition", "attachment; filename=\"" + FileUtils.toValidHttpFilename(flow.getName()) + ".oeflow\"");
 		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
 		res.setContentType("text/oeflow");
 
@@ -4191,7 +4191,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			MultipartRequest multipartRequest = null;
 
 			try {
-				multipartRequest = new MultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 				req = multipartRequest;
 
 				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
@@ -4711,7 +4711,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			MultipartRequest multipartRequest = null;
 
 			try {
-				multipartRequest = new MultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 				req = multipartRequest;
 
 				Integer stepID = NumberUtils.toInt(req.getParameter("stepID"));
