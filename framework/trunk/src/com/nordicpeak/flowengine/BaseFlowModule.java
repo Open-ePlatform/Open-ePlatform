@@ -557,10 +557,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		MultipartRequest multipartRequest = null;
 
 		try {
-			if (!(req instanceof MultipartRequest) && MultipartRequest.isMultipartRequest(req)) {
+			if (MultipartRequest.isMultipartRequest(req)) {
 
 				log.debug("Parsing multipart request from user " + user + " for flow instance " + instanceManager.getFlowInstance());
-				multipartRequest = new MultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 				req = multipartRequest;
 			}
 
@@ -929,7 +929,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 									log.warn("Payment provider returned no view fragment and not committed not direct response for pay of flow instance " + instanceManager + " by user " + user);
 
-									redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
+									redirectToPaymentError(req, res, uriParser, instanceManager);
 									return null;
 								}
 
@@ -939,7 +939,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 								log.error("Error invoking payment provider " + paymentProvider + " for flow instance " + instanceManager + " requested by user " + user, e);
 
-								redirectToPaymentError(multipartRequest, res, uriParser, instanceManager);
+								redirectToPaymentError(req, res, uriParser, instanceManager);
 								return null;
 							}
 						}
