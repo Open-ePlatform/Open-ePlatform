@@ -239,7 +239,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		if (flow.isPublished() && !flowWasPublished) {
 			
-			Flow latestPublishedFlow = callback.getFlowBrowserModule().getLatestPublishedFlowVersion(flow.getFlowFamily().getFlowFamilyID());
+			Flow latestPublishedFlow = callback.getLatestPublishedFlow(flow.getFlowFamily().getFlowFamilyID());
 			
 			if (!flow.equals(latestPublishedFlow)) {
 				
@@ -413,7 +413,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		Date unpublish = bean.getUnPublishDate();
 		
 		req.setAttribute("flowWasPublished", bean.isPublished());
-		req.setAttribute("anyFlowWasPublished", callback.getFlowBrowserModule().getLatestPublishedFlowVersion(bean.getFlowFamily().getFlowFamilyID()) != null);
+		req.setAttribute("anyFlowWasPublished", callback.getLatestPublishedFlow(bean.getFlowFamily().getFlowFamilyID()) != null);
 
 		bean = super.populateFromUpdateRequest(bean, req, user, uriParser);
 

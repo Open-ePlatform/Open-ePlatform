@@ -632,9 +632,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
 	
-	@InstanceManagerDependency
-	protected FlowBrowserModule flowBrowserModule;
-	
 	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
 	
 	private FlowFamilyCRUD flowFamilyCRUD;
@@ -6835,9 +6832,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
 	}
 
-	public FlowBrowserModule getFlowBrowserModule() {
+	public Flow getLatestPublishedFlow(Integer flowFamilyID) {
 
-		return flowBrowserModule;
+		Flow latestPublishedFlow = null;
+
+		for (Flow flow : flowCache.getFlowCacheMap().values()) {
+
+			if (!flow.isPublished() || !flow.getFlowFamily().getFlowFamilyID().equals(flowFamilyID)) {
+
+				continue;
+			}
+
+			if (latestPublishedFlow == null || flow.getVersion() > latestPublishedFlow.getVersion()) {
+
+				latestPublishedFlow = flow;
+			}
+		}
+
+		return latestPublishedFlow;
 	}
 	
 }
