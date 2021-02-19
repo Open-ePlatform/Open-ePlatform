@@ -83,8 +83,13 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 	@XMLElement
 	private String shortDate;
 	
+	//Only used for chained population in API's
 	@XMLElement
 	private Integer flowInstanceID;
+	
+	//Only used for chained population in API's
+	@XMLElement
+	private Integer flowFamilyID;
 	
 	private SourceAttributeHandler attributeHandler;
 
@@ -299,6 +304,18 @@ public class FlowInstanceEvent extends GeneratedElementable implements Serializa
 	public void setFlowInstanceID(Integer flowInstanceID) {
 	
 		this.flowInstanceID = flowInstanceID;
+	}
+
+	
+	public Integer getFlowFamilyID() {
+	
+		return flowFamilyID;
+	}
+
+	
+	public void setFlowFamilyID(Integer flowFamilyID) {
+	
+		this.flowFamilyID = flowFamilyID;
 	}
 	
 }
