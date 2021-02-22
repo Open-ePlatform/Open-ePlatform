@@ -37,6 +37,7 @@ import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.validationerrors.FileCountExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.FileNameLengthLimitExceededValidationError;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.FileSizeZeroValidationError;
 import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
 import se.unlogic.hierarchy.core.validationerrors.UnableToSaveFileValidationError;
 import se.unlogic.standardutils.base64.Base64;
@@ -578,6 +579,14 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 				int maxFileSize = queryInstance.getQuery().getMaxFileSize() != null ? queryInstance.getQuery().getMaxFileSize() : maxAllowedFileSize * BinarySizes.MegaByte;
 
+				//Validate that the file is not empty
+				if (fileItem.getSize() == 0) {
+
+					validationErrors.add(new FileSizeZeroValidationError(FilenameUtils.getName(fileItem.getName())));
+
+					continue;
+				}
+				
 				//Validate file size
 				if (fileItem.getSize() > maxFileSize) {
 

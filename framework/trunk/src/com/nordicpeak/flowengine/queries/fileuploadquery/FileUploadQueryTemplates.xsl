@@ -343,6 +343,18 @@
 		</span>
 			
 	</xsl:template>
+
+	<xsl:template match="validationError[messageKey='FileSizeZero']">
+	
+		<span>
+			<strong data-icon-before="!">
+				<xsl:value-of select="$i18n.FileSizeZero.part1"/>
+				<xsl:value-of select="filename"/>
+				<xsl:value-of select="$i18n.FileSizeZero.part2"/>
+			</strong>
+		</span>
+			
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
 	

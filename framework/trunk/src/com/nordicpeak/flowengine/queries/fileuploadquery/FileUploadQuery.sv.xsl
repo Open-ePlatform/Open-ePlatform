@@ -15,6 +15,8 @@
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part2"> har en storlek på </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part3"> vilket överskrider den maximalt tillåtna filstorleken på </xsl:variable>
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
+	<xsl:variable name="i18n.FileSizeZero.part1">Filen </xsl:variable>
+	<xsl:variable name="i18n.FileSizeZero.part2"> är tom och har därför inte sparats.</xsl:variable>
 	<xsl:variable name="i18n.UnableToSaveFile.part1">Ett fel uppstod när filen </xsl:variable>
 	<xsl:variable name="i18n.UnableToSaveFile.part2"> skulle sparas.</xsl:variable>
 	<xsl:variable name="i18n.RequiredField">Den här frågan är obligatorisk!</xsl:variable>
