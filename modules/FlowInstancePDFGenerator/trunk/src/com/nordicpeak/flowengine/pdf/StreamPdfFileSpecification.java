@@ -1,4 +1,5 @@
 package com.nordicpeak.flowengine.pdf;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,41 +24,47 @@ public class StreamPdfFileSpecification extends PdfFileSpecification {
 		StreamPdfFileSpecification streamPdfFileSpecification = new StreamPdfFileSpecification();
 		streamPdfFileSpecification.writer = writer;
 		streamPdfFileSpecification.put(PdfName.F, new PdfString(filename));
-		streamPdfFileSpecification.put(PdfName.SUBTYPE, new PdfName(MimeUtils.getMimeType(filename)));
 		streamPdfFileSpecification.setUnicodeFileName(filename, false);
-		
-		PdfStream stream;
-		PdfIndirectReference ref;
+
+		String mimetype = MimeUtils.getMimeType(filename);
+
+		if (mimetype.equals(MimeUtils.UNKNOWN_MIME_TYPE)) {
+			mimetype = "application/octet-stream";
+		}
+
+		PdfStream embeddedFileStream;
+		PdfIndirectReference streamRef;
 		PdfIndirectReference refFileLength;
-		
+
 		try {
 			refFileLength = writer.getPdfIndirectReference();
 
-			stream = new PdfStream(inputStream, writer);
+			embeddedFileStream = new PdfStream(inputStream, writer);
 
-			stream.put(PdfName.TYPE, PdfName.EMBEDDEDFILE);
-			stream.flateCompress();
-			stream.put(PdfName.PARAMS, refFileLength);
+			embeddedFileStream.put(PdfName.TYPE, PdfName.EMBEDDEDFILE);
+			embeddedFileStream.put(PdfName.SUBTYPE, new PdfName(mimetype));
+			embeddedFileStream.flateCompress();
+			embeddedFileStream.put(PdfName.PARAMS, refFileLength);
 
-			ref = writer.addToBody(stream).getIndirectReference();
-			stream.writeLength();
+			streamRef = writer.addToBody(embeddedFileStream).getIndirectReference();
+			embeddedFileStream.writeLength();
 
-			PdfDictionary params = new PdfDictionary();
+			PdfDictionary fileSpecificParams = new PdfDictionary();
+			fileSpecificParams.put(PdfName.SIZE, new PdfNumber(embeddedFileStream.getRawLength()));
 
-			params.put(PdfName.SIZE, new PdfNumber(stream.getRawLength()));
-			writer.addToBody(params, refFileLength);
-			
+			writer.addToBody(fileSpecificParams, refFileLength);
+
 		} finally {
-			
+
 			CloseUtils.close(inputStream);
 		}
-		
-		PdfDictionary pdfDictionary = new PdfDictionary();
-		pdfDictionary.put(PdfName.F, ref);
-		pdfDictionary.put(PdfName.UF, ref);
-		
-		streamPdfFileSpecification.put(PdfName.EF, pdfDictionary);
-		
+
+		PdfDictionary embeddedFilesDictionary = new PdfDictionary();
+		embeddedFilesDictionary.put(PdfName.F, streamRef);
+		embeddedFilesDictionary.put(PdfName.UF, streamRef);
+
+		streamPdfFileSpecification.put(PdfName.EF, embeddedFilesDictionary);
+
 		return streamPdfFileSpecification;
 	}
 }
