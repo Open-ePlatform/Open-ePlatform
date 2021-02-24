@@ -3,6 +3,9 @@ package com.nordicpeak.flowengine.flowapprovalmodule;
 import java.io.IOException;
 import java.io.InputStream;
 
+import se.unlogic.standardutils.io.CloseUtils;
+import se.unlogic.standardutils.mime.MimeUtils;
+
 import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfIndirectReference;
@@ -12,44 +15,56 @@ import com.lowagie.text.pdf.PdfStream;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfWriter;
 
+
+
 public class StreamPdfFileSpecification extends PdfFileSpecification {
 
-	public static PdfFileSpecification fileEmbedded(PdfWriter writer, InputStream in, String fileDisplay) throws IOException {
+	public static PdfFileSpecification fileEmbedded(PdfWriter writer, InputStream inputStream, String filename) throws IOException {
 
-		StreamPdfFileSpecification fs = new StreamPdfFileSpecification();
-		fs.writer = writer;
-		fs.put(PdfName.F, new PdfString(fileDisplay));
-		fs.setUnicodeFileName(fileDisplay, false);
-		PdfStream stream;
-		PdfIndirectReference ref;
+		StreamPdfFileSpecification streamPdfFileSpecification = new StreamPdfFileSpecification();
+		streamPdfFileSpecification.writer = writer;
+		streamPdfFileSpecification.put(PdfName.F, new PdfString(filename));
+		streamPdfFileSpecification.setUnicodeFileName(filename, false);
+
+		String mimetype = MimeUtils.getMimeType(filename);
+
+		if (mimetype.equals(MimeUtils.UNKNOWN_MIME_TYPE)) {
+			mimetype = "application/octet-stream";
+		}
+
+		PdfStream embeddedFileStream;
+		PdfIndirectReference streamRef;
 		PdfIndirectReference refFileLength;
+
 		try {
 			refFileLength = writer.getPdfIndirectReference();
 
-			stream = new PdfStream(in, writer);
+			embeddedFileStream = new PdfStream(inputStream, writer);
 
-			stream.put(PdfName.TYPE, PdfName.EMBEDDEDFILE);
-			stream.flateCompress();
-			stream.put(PdfName.PARAMS, refFileLength);
+			embeddedFileStream.put(PdfName.TYPE, PdfName.EMBEDDEDFILE);
+			embeddedFileStream.put(PdfName.SUBTYPE, new PdfName(mimetype));
+			embeddedFileStream.flateCompress();
+			embeddedFileStream.put(PdfName.PARAMS, refFileLength);
 
-			ref = writer.addToBody(stream).getIndirectReference();
-			stream.writeLength();
+			streamRef = writer.addToBody(embeddedFileStream).getIndirectReference();
+			embeddedFileStream.writeLength();
 
-			PdfDictionary params = new PdfDictionary();
+			PdfDictionary fileSpecificParams = new PdfDictionary();
+			fileSpecificParams.put(PdfName.SIZE, new PdfNumber(embeddedFileStream.getRawLength()));
 
-			params.put(PdfName.SIZE, new PdfNumber(stream.getRawLength()));
-			writer.addToBody(params, refFileLength);
+			writer.addToBody(fileSpecificParams, refFileLength);
+
 		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (Exception e) {}
-			}
+
+			CloseUtils.close(inputStream);
 		}
-		PdfDictionary f = new PdfDictionary();
-		f.put(PdfName.F, ref);
-		f.put(PdfName.UF, ref);
-		fs.put(PdfName.EF, f);
-		return fs;
+
+		PdfDictionary embeddedFilesDictionary = new PdfDictionary();
+		embeddedFilesDictionary.put(PdfName.F, streamRef);
+		embeddedFilesDictionary.put(PdfName.UF, streamRef);
+
+		streamPdfFileSpecification.put(PdfName.EF, embeddedFilesDictionary);
+
+		return streamPdfFileSpecification;
 	}
 }
