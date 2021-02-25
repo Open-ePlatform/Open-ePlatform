@@ -1,5 +1,7 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -125,6 +127,7 @@ import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
+
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -150,8 +153,6 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFXMLUtils;
-
-import it.sauronsoftware.cron4j.Scheduler;
 
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
@@ -1541,7 +1542,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	@EventListener(channel = FlowInstanceManager.class)
+	@EventListener(channel = FlowInstanceManager.class, priority = 100)
 	public void processSubmitEvent(SubmitEvent event, EventSource eventSource) {
 
 		try {
@@ -1552,7 +1553,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	@EventListener(channel = FlowInstance.class)
+	@EventListener(channel = FlowInstance.class, priority = 100)
 	public void processStatusChangedEvent(StatusChangedByManagerEvent event, EventSource eventSource) {
 
 		try {
