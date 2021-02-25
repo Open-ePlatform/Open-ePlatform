@@ -87,8 +87,10 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfArray;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfFileSpecification;
+import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
@@ -943,6 +945,14 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			PdfReader reader = new PdfReader(inputFileRandomAccess, null);
 			PdfStamper stamper = new PdfStamper(reader, outputStream);
 			PdfWriter writer = stamper.getWriter();
+			
+			PdfArray associatedFilesArray = reader.getCatalog().getAsArray(new PdfName("AF"));
+			
+			if (associatedFilesArray == null) {
+				
+				associatedFilesArray = new PdfArray();
+				reader.getCatalog().put(new PdfName("AF"), associatedFilesArray);
+			}
 
 			for (PDFManagerResponse managerResponse : managerResponses) {
 
@@ -955,6 +965,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							try {
 								PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, attachment.getInputStream(), attachment.getName());
 								writer.addFileAttachment(attachment.getDescription(), fs);
+								associatedFilesArray.add(fs.getReference());
 
 							} catch (Exception e) {
 								log.error("Error appending attachment " + attachment.getName() + " from query " + queryResponse.getQueryDescriptor(), e);
@@ -970,11 +981,16 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					try {
 						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, attachment.getInputStream(), attachment.getName());
 						writer.addFileAttachment(attachment.getDescription(), fs);
+						associatedFilesArray.add(fs.getReference());
 
 					} catch (Exception e) {
 						log.error("Error appending extra attachment " + attachment.getName(), e);
 					}
 				}
+			}
+			
+			if (associatedFilesArray.isEmpty()) {
+				reader.getCatalog().put(new PdfName("AF"), null);
 			}
 
 			stamper.close();
