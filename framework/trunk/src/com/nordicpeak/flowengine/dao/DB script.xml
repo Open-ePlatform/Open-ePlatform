@@ -2744,5 +2744,13 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="147">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_notifications` ADD INDEX `index_2`(`flowInstanceID`);
+			]]>
+		</Query>	
+	</Script>	
 
 </DBScripts>
