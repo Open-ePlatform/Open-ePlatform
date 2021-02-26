@@ -183,7 +183,7 @@ public class FlowDeleterModule extends AnnotatedForegroundModule {
 		
 		int skippedCount = 0;
 
-		log.info("User " + user + " deleting all flows without flow instances...");
+		log.info("User " + user + " deleting flows " + flowIDs.toString() + " that don't have any flow instances...");
 
 		TransactionHandler transactionHandler = null;
 
