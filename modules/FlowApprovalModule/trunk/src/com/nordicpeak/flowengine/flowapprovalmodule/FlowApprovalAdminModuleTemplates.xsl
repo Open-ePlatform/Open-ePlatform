@@ -16,7 +16,7 @@
 		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=3
+		/js/flowapprovaladmin.js?v=4
 	</xsl:variable>
 	
 	<xsl:variable name="links">

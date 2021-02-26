@@ -75,7 +75,7 @@ $(document).ready(function() {
 		$('#useResponsibleUserAttributeName').change(function(){
 			
 			$(".useResponsibleUserAttributeName").toggle(this.checked);
-			$("#responsibleUserAttributeName").prop('disabled', !this.checked);
+			$("#responsibleUserAttributeNames").prop('disabled', !this.checked);
 			
 		}).change();
 		
