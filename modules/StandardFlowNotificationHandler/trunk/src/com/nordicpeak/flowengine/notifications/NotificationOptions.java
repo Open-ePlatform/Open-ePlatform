@@ -11,7 +11,7 @@ public class NotificationOptions {
 	private String senderAddress;
 
 	public NotificationOptions() {}
-	
+
 	public NotificationOptions(File xmlFile) {
 
 		this.xmlFile = xmlFile;
@@ -22,7 +22,7 @@ public class NotificationOptions {
 		this.senderName = senderName;
 		this.senderAddress = senderAddress;
 	}
-	
+
 	public File getXmlFile() {
 
 		return xmlFile;
