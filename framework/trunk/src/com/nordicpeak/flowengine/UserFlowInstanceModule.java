@@ -220,7 +220,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	@ModuleSetting
 	@EnumDropDownSettingDescriptor(name="Flow instance sort order", description="The order of flow instances when displayed in this module", required=true)
-	protected Order flowInstanceSortOrder = Order.DESC;
+	protected Order flowInstanceSortOrder = Order.ASC;
 	
 	@ModuleSetting
 	@EnumDropDownSettingDescriptor(name="Flow instance event sort order", description="The order of flow instance events when displayed in this module", required=true)

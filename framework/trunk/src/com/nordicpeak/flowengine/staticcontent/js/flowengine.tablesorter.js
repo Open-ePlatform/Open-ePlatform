@@ -21,7 +21,7 @@ $(document).ready(function() {
 		
 			var sortOrderSetting = 0;
 			
-			if($sortColumn.hasClass("ascending")) {
+			if($sortColumn.hasClass("descending")) {
 			
 				sortOrderSetting = 1;
 			}
