@@ -6,6 +6,7 @@ import java.io.InputStream;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.mime.MimeUtils;
 
+import com.lowagie.text.pdf.PdfDate;
 import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfIndirectReference;
@@ -25,6 +26,7 @@ public class StreamPdfFileSpecification extends PdfFileSpecification {
 		streamPdfFileSpecification.writer = writer;
 		streamPdfFileSpecification.put(PdfName.F, new PdfString(filename));
 		streamPdfFileSpecification.setUnicodeFileName(filename, false);
+		streamPdfFileSpecification.put(new PdfName("AFRelationship"), new PdfName("Supplement"));
 
 		String mimetype = MimeUtils.getMimeType(filename);
 
@@ -51,6 +53,7 @@ public class StreamPdfFileSpecification extends PdfFileSpecification {
 
 			PdfDictionary fileSpecificParams = new PdfDictionary();
 			fileSpecificParams.put(PdfName.SIZE, new PdfNumber(embeddedFileStream.getRawLength()));
+			fileSpecificParams.put(PdfName.MODDATE, new PdfDate()); // File modification date. Required for Embedded Associated Files.
 
 			writer.addToBody(fileSpecificParams, refFileLength);
 
@@ -68,3 +71,4 @@ public class StreamPdfFileSpecification extends PdfFileSpecification {
 		return streamPdfFileSpecification;
 	}
 }
+
