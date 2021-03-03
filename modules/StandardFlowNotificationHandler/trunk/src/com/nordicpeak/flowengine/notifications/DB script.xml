@@ -433,4 +433,35 @@
 		</Query>
 	</Script>
 	
+	<Script version="33">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceExpiredManagerEmail` TINYINT(1) NOT NULL AFTER `flowInstanceSubmittedManagerEmailMessage`,
+					ADD COLUMN `flowInstanceExpiredManagerEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceExpiredManagerEmail`,
+					ADD COLUMN `flowInstanceExpiredManagerEmailMessage` TEXT NULL AFTER `flowInstanceExpiredManagerEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceExpiredGlobalEmail` TINYINT(1) NOT NULL AFTER `sendManagerExpiredGlobalEmail`,
+					ADD COLUMN `flowInstanceExpiredGlobalEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceExpiredGlobalEmail`,
+					ADD COLUMN `flowInstanceExpiredGlobalEmailMessage` TEXT NULL AFTER `flowInstanceExpiredGlobalEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_expiredglobal` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`email` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `email`),
+					CONSTRAINT `FK_flow_familiy_notification_setting_expiredglobal_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>		
+	</Script>
+	
 </DBScripts>

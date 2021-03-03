@@ -427,6 +427,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}
 		
 	}
+	
+	public FlowAdminModule getFlowAdminModule() {
+
+		return flowAdminModule;
+	}
 
 	protected FlowInstanceIndexer createIndexer() throws Exception {
 

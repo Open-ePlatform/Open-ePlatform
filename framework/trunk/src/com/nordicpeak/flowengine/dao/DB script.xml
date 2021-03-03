@@ -2752,5 +2752,13 @@
 			]]>
 		</Query>	
 	</Script>	
+	
+	<Script version="148">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_instances` ADD COLUMN `lastExpiredNotificationSent` TIMESTAMP NULL AFTER `lastStatusChange`;
+			]]>
+		</Query>	
+	</Script>	
 
 </DBScripts>

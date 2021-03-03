@@ -115,6 +115,10 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	@DAOManaged
 	@XMLElement
 	private Timestamp lastStatusChange;
+	
+	@DAOManaged
+	@XMLElement
+	private Timestamp lastExpiredNotificationSent;
 
 	@DAOManaged
 	@XMLElement
@@ -347,6 +351,17 @@ public class FlowInstance extends GeneratedElementable implements ImmutableFlowI
 	public void setLastStatusChange(Timestamp lastStatusChange) {
 
 		this.lastStatusChange = lastStatusChange;
+	}
+
+	@Override
+	public Timestamp getLastExpiredNotificationSent() {
+
+		return lastExpiredNotificationSent;
+	}
+
+	public void setLastExpiredNotificationSent(Timestamp lastExpiredNotificationSent) {
+
+		this.lastExpiredNotificationSent = lastExpiredNotificationSent;
 	}
 
 	@Override

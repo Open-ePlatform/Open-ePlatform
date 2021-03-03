@@ -236,6 +236,23 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean sendFlowInstanceExpiredManagerEmail;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String flowInstanceExpiredManagerEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String flowInstanceExpiredManagerEmailMessage;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean sendExternalMessageReceivedGroupEmail;
 
 	@DAOManaged
@@ -436,6 +453,34 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase = true, childName = "address")
 	private List<String> managerExpiredGlobalEmailAddresses;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendFlowInstanceExpiredGlobalEmail;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 255)
+	@XMLElement
+	private String flowInstanceExpiredGlobalEmailSubject;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 65536)
+	@XMLElement
+	private String flowInstanceExpiredGlobalEmailMessage;
+
+	@DAOManaged
+	@Templated
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flow_familiy_notification_setting_expiredglobal", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@RequiredIfSet(paramNames = "sendFlowInstanceExpiredGlobalEmail")
+	@SplitOnLineBreak
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
+	@XMLElement(fixCase = true, childName = "address")
+	private List<String> flowInstanceExpiredGlobalEmailAddresses;
 
 	@DAOManaged
 	@Templated
@@ -729,6 +774,36 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setFlowInstanceSubmittedManagerEmailMessage(String flowInstanceSubmittedManagerEmailMessage) {
 
 		this.flowInstanceSubmittedManagerEmailMessage = flowInstanceSubmittedManagerEmailMessage;
+	}
+
+	public boolean isSendFlowInstanceExpiredManagerEmail() {
+
+		return sendFlowInstanceExpiredManagerEmail;
+	}
+
+	public void setSendFlowInstanceExpiredManagerEmail(boolean sendFlowInstanceExpiredManagerEmail) {
+
+		this.sendFlowInstanceExpiredManagerEmail = sendFlowInstanceExpiredManagerEmail;
+	}
+
+	public String getFlowInstanceExpiredManagerEmailSubject() {
+
+		return flowInstanceExpiredManagerEmailSubject;
+	}
+
+	public void setFlowInstanceExpiredManagerEmailSubject(String flowInstanceExpiredManagerEmailSubject) {
+
+		this.flowInstanceExpiredManagerEmailSubject = flowInstanceExpiredManagerEmailSubject;
+	}
+
+	public String getFlowInstanceExpiredManagerEmailMessage() {
+
+		return flowInstanceExpiredManagerEmailMessage;
+	}
+
+	public void setFlowInstanceExpiredManagerEmailMessage(String flowInstanceExpiredManagerEmailMessage) {
+
+		this.flowInstanceExpiredManagerEmailMessage = flowInstanceExpiredManagerEmailMessage;
 	}
 
 	public boolean isSendFlowInstanceAssignedGroupEmail() {
@@ -1087,6 +1162,46 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setManagerExpiredGlobalEmailAddresses(List<String> managerExpiredGlobalEmailAddresses) {
 
 		this.managerExpiredGlobalEmailAddresses = managerExpiredGlobalEmailAddresses;
+	}
+
+	public boolean isSendFlowInstanceExpiredGlobalEmail() {
+
+		return sendFlowInstanceExpiredGlobalEmail;
+	}
+
+	public void setSendFlowInstanceExpiredGlobalEmail(boolean sendFlowInstanceExpiredGlobalEmail) {
+
+		this.sendFlowInstanceExpiredGlobalEmail = sendFlowInstanceExpiredGlobalEmail;
+	}
+
+	public String getFlowInstanceExpiredGlobalEmailSubject() {
+
+		return flowInstanceExpiredGlobalEmailSubject;
+	}
+
+	public void setFlowInstanceExpiredGlobalEmailSubject(String flowInstanceExpiredGlobalEmailSubject) {
+
+		this.flowInstanceExpiredGlobalEmailSubject = flowInstanceExpiredGlobalEmailSubject;
+	}
+
+	public String getFlowInstanceExpiredGlobalEmailMessage() {
+
+		return flowInstanceExpiredGlobalEmailMessage;
+	}
+
+	public void setFlowInstanceExpiredGlobalEmailMessage(String flowInstanceExpiredGlobalEmailMessage) {
+
+		this.flowInstanceExpiredGlobalEmailMessage = flowInstanceExpiredGlobalEmailMessage;
+	}
+
+	public List<String> getFlowInstanceExpiredGlobalEmailAddresses() {
+
+		return flowInstanceExpiredGlobalEmailAddresses;
+	}
+
+	public void setFlowInstanceExpiredGlobalEmailAddresses(List<String> flowInstanceExpiredGlobalEmailAddresses) {
+
+		this.flowInstanceExpiredGlobalEmailAddresses = flowInstanceExpiredGlobalEmailAddresses;
 	}
 
 	public String getFlowInstanceSubmittedUserSMS() {

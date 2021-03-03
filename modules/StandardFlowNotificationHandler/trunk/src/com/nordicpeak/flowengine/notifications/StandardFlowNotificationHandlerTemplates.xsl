@@ -123,6 +123,12 @@
 						<xsl:value-of select="$i18n.SendFlowInstanceSubmittedManagerEmail"/>
 					</li>
 				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendFlowInstanceExpiredManagerEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceExpiredManagerEmail"/>
+					</li>
+				</xsl:if>
 			
 			</ul>
 		
@@ -203,6 +209,12 @@
 				<xsl:if test="NotificationSettings/sendManagerExpiredGlobalEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendManagerExpiredGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendFlowInstanceExpiredGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceExpiredGlobalEmail"/>
 					</li>
 				</xsl:if>
 				
@@ -287,6 +299,11 @@
 				
 				$("#manager-submitted-subject, #manager-submitted-message").toggleClass("hidden");
 			}
+
+			function toggleManagerExpiredMessage(){
+				
+				$("#manager-expired-subject, #manager-expired-message").toggleClass("hidden");
+			}
 			
 			function toggleGroupExternalMessage (){
 				
@@ -316,6 +333,11 @@
 			function toggleGlobalArchived(){
 				
 				$("#global-archived-subject, #global-archived-message").toggleClass("hidden");
+			}
+			
+			function toggleGlobalExpired(){
+				
+				$("#global-expired-subject, #global-expired-message").toggleClass("hidden");
 			}
 			
 			function toggleText(element) {
@@ -1020,6 +1042,66 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'statusChangedManagerEmailMessage'"/>
 					<xsl:with-param name="name" select="'statusChangedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceExpiredManagerEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceExpiredManagerEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceExpiredManagerEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceExpiredManagerEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerExpiredMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-expired-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceExpiredManagerEmailSubject') and not($errFieldNames = 'flowInstanceExpiredManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceExpiredManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceExpiredManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceExpiredManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceExpiredManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-expired-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceExpiredManagerEmailSubject') and not($errFieldNames = 'flowInstanceExpiredManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceExpiredManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceExpiredManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceExpiredManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceExpiredManagerEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
@@ -2040,6 +2122,85 @@
 			</div>
 		</div>
 	
+		<!-- FlowInstanceExpiredGlobalEmail -->
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceExpiredGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceExpiredGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceExpiredGlobalEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceExpiredGlobalEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGlobalExpired();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-expired-subject">
+		
+			<xsl:if test="not($errFieldNames = 'flowInstanceExpiredGlobalEmailSubject') and not($errFieldNames = 'flowInstanceExpiredGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="flowInstanceExpiredGlobalEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'flowInstanceExpiredGlobalEmailSubject'"/>
+					<xsl:with-param name="name" select="'flowInstanceExpiredGlobalEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-expired-message">
+			
+			<xsl:if test="not($errFieldNames = 'flowInstanceExpiredGlobalEmailSubject') and not($errFieldNames = 'flowInstanceExpiredGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="flowInstanceExpiredGlobalEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceExpiredGlobalEmailMessage'"/>
+					<xsl:with-param name="name" select="'flowInstanceExpiredGlobalEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="flowInstanceExpiredGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'flowInstanceExpiredGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'flowInstanceExpiredGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/FlowInstanceExpiredGlobalEmailAddresses/address" />
+				</xsl:call-template>
+			</div>
+		</div>
+	
 		<xsl:call-template name="initializeFCKEditor">
 			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>
 			<xsl:with-param name="customConfig">config.js</xsl:with-param>
@@ -2492,6 +2653,12 @@
 					<xsl:when test="fieldName = 'internalMessageAddedManagerEmailMessage'">
 						<xsl:value-of select="$i18n.internalMessageAddedManagerEmailMessage"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceExpiredManagerEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceExpiredManagerEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceExpiredManagerEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceExpiredManagerEmailMessage"/>
+					</xsl:when>
 					
 					<!-- Multisigning -->
 					<xsl:when test="fieldName = 'flowInstanceMultiSignInitiatedUserSMS'">
@@ -2555,6 +2722,15 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceExpiredGlobalEmailSubject'">
+						<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailSubject"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceExpiredGlobalEmailMessage'">
+						<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailMessage"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowInstanceExpiredGlobalEmailAddresses'">
+						<xsl:value-of select="$i18n.FlowInstanceExpiredGlobalEmailAddresses"/>
 					</xsl:when>
 					
 					<xsl:otherwise>

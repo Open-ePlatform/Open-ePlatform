@@ -113,6 +113,7 @@ import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
+import com.nordicpeak.flowengine.events.ExpiredFlowInstanceNotificationEvent;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.FlowPublishedEvent;
 import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
@@ -448,6 +449,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance submitted email message (managers)", description = "The message of emails sent to the managers when a new flow instance is submitted", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceSubmittedManagerEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managers when flow instances expires", description = "Controls if email messages are the sent to managers when flow instances expires.")
+	private boolean sendFlowInstanceExpiredManagerEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow instance expired email subject (managers)", description = "The subject of emails sent to the managers when a flow instance expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceExpiredManagerEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow instance expired email message (managers)", description = "The message of emails sent to the managers when a flow instance expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceExpiredManagerEmailMessage;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to mentioned managers", description = "Controls if email messages should be sent to mentioned users.")
@@ -612,6 +627,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@TextAreaSettingDescriptor(name = "Manager expired email address (global)", description = "Global address to be notified when new messages are received", formatValidator = EmailPopulator.class)
 	private List<String> managerExpiredGlobalEmailAddresses;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when flow instances expires", description = "Controls if email messages are the sent to specified address when flow instances expires.")
+	private boolean sendFlowInstanceExpiredGlobalEmail;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Flow instance expired email subject (global)", description = "The subject of emails sent when a flow instance expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceExpiredGlobalEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Flow instance expired email message (global)", description = "The message of emails sent when a flow instance expires", required = true)
+	@XSLVariable(prefix = "java.")
+	private String flowInstanceExpiredGlobalEmailMessage;
+
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Flow instance expired email address (global)", description = "Global address to be notified when flow instances expires", formatValidator = EmailPopulator.class)
+	private List<String> flowInstanceExpiredGlobalEmailAddresses;
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow published user subject (user)", description = "The subject of emails sent when a flow is published", required = true)
 	@XSLVariable(prefix = "java.")
@@ -1072,6 +1105,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		notificationSettings.setSendFlowInstanceSubmittedManagerEmail(sendFlowInstanceSubmittedManagerEmail);
 
+		notificationSettings.setSendFlowInstanceExpiredManagerEmail(sendFlowInstanceExpiredManagerEmail);
+
 		notificationSettings.setSendFlowInstanceAssignedGroupEmail(sendFlowInstanceAssignedGroupEmail);
 
 		notificationSettings.setSendFlowInstanceSubmittedGlobalEmail(sendFlowInstanceSubmittedGlobalEmail);
@@ -1086,6 +1121,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setExternalMessageReceivedGlobalEmailAddresses(externalMessageReceivedGlobalEmailAddresses);
 		notificationSettings.setManagerExpiredGlobalEmailAddresses(managerExpiredGlobalEmailAddresses);
 
+		notificationSettings.setSendFlowInstanceExpiredGlobalEmail(sendFlowInstanceExpiredGlobalEmail);
+		
 		return notificationSettings;
 	}
 
@@ -2200,6 +2237,47 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
+	
+	@EventListener(channel = Flow.class)
+	public void processEvent(ExpiredFlowInstanceNotificationEvent event, EventSource eventSource) throws SQLException {
+		
+		List<Integer> flowInstanceIDs = event.getFlowInstanceIDs();
+		
+		if (!CollectionUtils.isEmpty(flowInstanceIDs)) {
+			
+			for (Integer flowInstanceID : flowInstanceIDs) {
+				
+				FlowInstance flowInstance = getFlowInstance(flowInstanceID);
+				
+				if (flowInstance == null) {
+					
+					continue;
+				}
+				
+				FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+				
+				SiteProfile siteProfile = event.getSiteProfile(flowInstance);
+				
+				if (notificationSettings.isSendFlowInstanceExpiredManagerEmail() || notificationSettings.isSendFlowInstanceExpiredGlobalEmail()) {
+
+					Contact contact = getPosterContact(flowInstance, siteProfile);
+
+					if (notificationSettings.isSendFlowInstanceExpiredManagerEmail()) {
+
+						sendManagerEmails(flowInstance, contact, notificationSettings.getFlowInstanceExpiredManagerEmailSubject(), notificationSettings.getFlowInstanceExpiredManagerEmailMessage(), null, false);
+					}
+					
+					if (notificationSettings.isSendFlowInstanceExpiredGlobalEmail() && notificationSettings.getFlowInstanceExpiredGlobalEmailAddresses() != null) {
+
+						for (String email : notificationSettings.getFlowInstanceExpiredGlobalEmailAddresses()) {
+
+							sendGlobalEmail(siteProfile, flowInstance, contact, email, notificationSettings.getFlowInstanceExpiredGlobalEmailSubject(), notificationSettings.getFlowInstanceExpiredGlobalEmailMessage(), null, false);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	public ForegroundModuleDescriptor getModuleDescriptor() {
@@ -2967,4 +3045,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return statusChangedUserSMS;
 	}
+
+	@Override
+	public boolean isAnyFlowInstanceExpiredNotificationsEnabled(ImmutableFlowFamily flowFamily) throws SQLException {
+
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowFamily);
+
+		return notificationSettings.isSendFlowInstanceExpiredManagerEmail() || notificationSettings.isSendFlowInstanceExpiredGlobalEmail();
+	}
+	
 }

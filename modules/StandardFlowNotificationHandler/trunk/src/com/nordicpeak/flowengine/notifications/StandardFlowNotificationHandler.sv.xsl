@@ -227,6 +227,23 @@
 		&lt;/p&gt;
 	
 	</xsl:variable>
+	
+	<xsl:variable name="java.flowInstanceExpiredManagerEmailSubject">Förfallet ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceExpiredManagerEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett ärende har förfallit, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
+		
+		&lt;p&gt;Denna notifikation skickas endast en gång.&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
 		
 	<xsl:variable name="java.externalMessageReceivedGroupEmailSubject">Nytt meddelande kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.externalMessageReceivedGroupEmailMessage">
@@ -333,6 +350,23 @@
 	
 	</xsl:variable>	
 	
+	<xsl:variable name="java.flowInstanceExpiredGlobalEmailSubject">Förfallet ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.flowInstanceExpiredGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett ärende har förfallit, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
+		
+		&lt;p&gt;Denna notifikation skickas endast en gång.&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.managerMentionedEmailSubject">$poster.firstname $poster.lastname har nämnt dig i en kommentar</xsl:variable>
 	<xsl:variable name="java.managerMentionedEmailMessage">
 	
@@ -397,6 +431,10 @@
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmailSubject">Rubrik på e-postmeddelande till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedManagerEmailMessage">Innehåll i e-postmeddelande till samtliga behöriga handläggare när nya ärenden skickas in</xsl:variable>
 	<xsl:variable name="i18n.NoNotificationsEnabled">Inga notifikationer är aktiverade för denna e-tjänst</xsl:variable>
+	
+	<xsl:variable name="i18n.SendFlowInstanceExpiredManagerEmail">E-post till tilldelade handläggare när ärenden förfaller</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceExpiredManagerEmailSubject">Rubrik på e-postmeddelande till tilldelade handläggare när  ärenden förfaller</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceExpiredManagerEmailMessage">Innehåll i e-postmeddelande till tilldelade handläggare när ärenden förfaller</xsl:variable>
 	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserSMS">Innehåll i SMS vid inskickat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserSMS">Innehåll i SMS vid inskickat ärende (ej inloggad användare)</xsl:variable>
@@ -502,6 +540,11 @@
 	
 	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörd handläggarbehörighet</xsl:variable>
 	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörd handläggarbehörighet (en adress per rad)</xsl:variable>
+
+	<xsl:variable name="i18n.SendFlowInstanceExpiredGlobalEmail">E-post när ärenden förfaller</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceExpiredGlobalEmailAddresses">E-postadresser för notifiering om förfallna ärenden (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceExpiredGlobalEmailMessage">Innehåll på e-postmeddelande till myndighetsbrevlåda vid förfallet ärende</xsl:variable>
+	<xsl:variable name="i18n.FlowInstanceExpiredGlobalEmailSubject">Rubrik på e-postmeddelande till myndighetsbrevlåda vid förfallet ärende</xsl:variable>
 	
 	<xsl:variable name="i18n.StatusChangedUserEmailSubject">Rubrik på e-postmeddelande vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.StatusChangedUserEmailMessage">Innehåll i e-postmeddelande vid byte av status</xsl:variable>
