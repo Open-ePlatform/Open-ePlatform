@@ -194,7 +194,7 @@
 	<xsl:variable name="i18n.defaultStatusMappings.description">Använd denna status vid följande händelser.</xsl:variable>
 	<xsl:variable name="i18n.managingTime">Handläggningstid</xsl:variable>
 	<xsl:variable name="i18n.required">obligatorisk</xsl:variable>
-	<xsl:variable name="i18n.managingTime.description">Antalet dagar som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
+	<xsl:variable name="i18n.managingTime.description">Antalet vardagar (lördagar och söndagar räknas ej) som ärenden får befinna sig i denna status innan de för handläggaren blir markerad som akuta.</xsl:variable>
 	<xsl:variable name="i18n.newExternalMessagesDisallowed">Tillåt ej nya meddelanden på ärenden med denna status</xsl:variable>
 	<xsl:variable name="i18n.newExternalMessagesAllowedDays">Antal dagar som nya meddelanden är tillåtna efter byte till denna status</xsl:variable>		
 	<xsl:variable name="i18n.addExternalMessage">Kräv att handläggaren lägger till ett meddelande vid byte till denna status</xsl:variable>
