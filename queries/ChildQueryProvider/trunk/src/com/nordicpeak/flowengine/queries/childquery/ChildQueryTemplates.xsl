@@ -97,7 +97,7 @@
 										
 									</xsl:if>
 									
-									<xsl:apply-templates select="ChildQueryInstance/ChildQuery/ChildQueryFilterEndpoint">
+									<xsl:apply-templates select="ChildQueryFilterEndpoint">
 										<xsl:with-param name="attributes" select="ChildQueryInstance/ChildAttributes" />
 										<xsl:with-param name="selectedAttributes" select="ChildQueryInstance/ChildQuery/SelectedChildAttributes" />
 									</xsl:apply-templates>
