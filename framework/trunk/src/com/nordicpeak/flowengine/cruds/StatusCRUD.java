@@ -411,6 +411,11 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 			errors.add(FlowAdminModule.EXTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR);
 		}
 		
+		if (bean.isAddInternalMessage() && bean.isRequireSigning()) {
+			
+			errors.add(FlowAdminModule.INTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR);
+		}
+		
 		validateMessageTemplate(bean.getDefaultExternalMessageTemplateID(), flowFamily, MessageTemplateType.EXTERNAL, "defaultExternalMessageTemplate", errors);
 		validateMessageTemplate(bean.getDefaultInternalMessageTemplateID(), flowFamily, MessageTemplateType.INTERNAL, "defaultInternalMessageTemplate", errors);
 		

@@ -50,17 +50,14 @@ $(document).ready(function() {
 		
 		var $addExternalMessage = $('#addExternalMessage');
 		var $addInternalMessage = $('#addInternalMessage');
+		var $newExternalMessagesDisallowed = $('#newExternalMessagesDisallowed');
+		var $requireSigning = $('#requireSigning');
 
-		$('#newExternalMessagesDisallowed').change(function(){
-			
-			if (this.checked) {
-				
-				$addExternalMessage.prop('checked', false).change();
-			}
+		$newExternalMessagesDisallowed.change(function(){
 			
 			$('#newExternalMessagesAllowedDays').prop('disabled', this.checked);
-			
-			$addExternalMessage.prop('disabled', this.checked);
+
+			toggleAddExternalMessage();
 			
 		}).change();
 		
@@ -68,38 +65,60 @@ $(document).ready(function() {
 			
 			$('#defaultExternalMessageTemplate').parent().toggle(this.checked);
 			
+			toggleRequireSigning();
+			
 		}).change();
 		
 		$addInternalMessage.change(function(){
 			
 			$('#defaultInternalMessageTemplate').parent().toggle(this.checked);
 			
+			toggleRequireSigning();
+			
 		}).change();
 		
-		makeCheckboxesMutualExclusive($('#requireSigning'), $addExternalMessage);
-		
-		function makeCheckboxesMutualExclusive($first, $second) {
+		$requireSigning.change(function(){
 			
-			[$first, $second].forEach(function($current, index){
+			toggleAddExternalMessage();
+			toggleAddInternalMessage();
+			
+		}).change();
+		
+		function toggleAddExternalMessage() {
+			
+			toggleSetting($addExternalMessage, [$newExternalMessagesDisallowed, $requireSigning]);
+		}
+
+		function toggleAddInternalMessage() {
+			
+			toggleSetting($addInternalMessage, [$requireSigning]);
+		}
+
+		function toggleRequireSigning() {
+			
+			toggleSetting($requireSigning, [$addExternalMessage, $addInternalMessage]);
+		}
+		
+		function toggleSetting($setting, disablingSettings) {
+			
+			var wasChecked = $setting.prop("checked");
+			
+			var disabled = disablingSettings.some(function($disablingSetting) {
 				
-				var $other = index == 0 ? $second : $first;
-				
-				$current.change(function(){
-					
-					if (this.checked) {
-						
-						$other.prop({
-							'checked': false,
-							'disabled': true
-						}).trigger('change');
-						
-					} else {
-						
-						$other.prop('disabled', false);
-					}
-					
-				}).change();
+				return $disablingSetting.prop("checked");
 			});
+			
+			$setting.prop("disabled", disabled);
+			
+			if (disabled) {
+				
+				$setting.prop("checked", false);
+			}
+			
+			if (wasChecked != $setting.prop("checked")) {
+				
+				$setting.change();
+			}
 		}
 	}
 	
