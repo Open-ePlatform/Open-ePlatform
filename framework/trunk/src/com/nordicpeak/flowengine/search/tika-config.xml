@@ -77,5 +77,37 @@
 			<parser-exclude class="org.apache.tika.parser.xliff.XLIFF12Parser" />
 			<parser-exclude class="org.apache.tika.parser.xliff.XLZParser" />
 		</parser>
+		
+		<parser class="org.apache.tika.parser.EmptyParser">
+			<!-- Disable image extraction as there's no text to be found -->
+			<mime>image/bmp</mime>
+			<mime>image/gif</mime>
+			<mime>image/jpeg</mime>
+			<mime>image/png</mime>
+			<mime>image/tiff</mime>
+			<mime>image/vnd.wap.wbmp</mime>
+			<mime>image/x-icon</mime>
+			<mime>image/x-psd</mime>
+			<mime>image/x-xcf</mime>
+			<mime>image/vnd.dwg</mime>
+			<mime>image/svg+xml</mime>
+			
+			<!-- Disable video extraction as there's no text to be found -->
+			<mime>video/x-msvideo</mime>
+			<mime>video/quicktime</mime>
+			<mime>video/mp4</mime>
+			<mime>video/mpeg</mime>
+			<mime>video/x-flv</mime>
+			
+			<!-- Disable audio extraction as there's no text to be found -->
+			<mime>audio/mpeg</mime>
+			<mime>audio/x-wav</mime>
+			<mime>audio/midi</mime>
+			
+			<!-- Disable some application types -->
+			<mime>application/x-sqlite3</mime>
+			<mime>application/vnd.ms-outlook</mime>
+			<mime>application/acad</mime>
+		</parser>		
 	</parsers>
 </properties>
