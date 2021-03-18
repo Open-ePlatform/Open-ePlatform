@@ -681,14 +681,17 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			serializer.serialize(metadata, baos, false);
 			metadataStream.importXMPMetadata(baos.toByteArray());
 
-			InputStream colorProfile = PDFGeneratorModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
-
-			PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
-			oi.setInfo("sRGB IEC61966-2.1");
-			oi.setOutputCondition("sRGB IEC61966-2.1");
-			oi.setOutputConditionIdentifier("sRGB IEC61966-2.1");
-			oi.setRegistryName("http://www.color.org");
-			catalog.addOutputIntent(oi);
+			if(!hasColorProfile(catalog)) {
+			
+				InputStream colorProfile = PDFGeneratorModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
+	
+				PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
+				oi.setInfo("sRGB IEC61966-2.1");
+				oi.setOutputCondition("sRGB IEC61966-2.1");
+				oi.setOutputConditionIdentifier("sRGB IEC61966-2.1");
+				oi.setRegistryName("http://www.color.org");
+				catalog.addOutputIntent(oi);
+			}
 
 			document.save(outputFile);
 
@@ -700,6 +703,21 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return outputFile;
 	}
 
+	private boolean hasColorProfile(PDDocumentCatalog catalog) {
+
+		List<PDOutputIntent> list = catalog.getOutputIntents();
+
+		for (PDOutputIntent outputIntent : list) {
+			
+			if(outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private File getFile(Integer flowInstanceID, FlowInstanceEvent event) {
 
 		if (flowInstanceID == null) {
