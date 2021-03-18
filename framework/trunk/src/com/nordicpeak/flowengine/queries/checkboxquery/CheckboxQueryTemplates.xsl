@@ -208,6 +208,13 @@
 								<xsl:if test="CheckboxQueryInstance/freeTextAlternativeValue">true</xsl:if>
 							</xsl:with-param>
 							<xsl:with-param name="disabled" select="Locked"/>
+							<xsl:with-param name="aria-label">
+								<xsl:value-of select="$freeTextAlternativeName" />
+								<xsl:if test="not(CheckboxQueryInstance/CheckboxQuery/hideTitle = 'true')">
+									<xsl:value-of select="' - '" />
+									<xsl:value-of select="CheckboxQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name" />
+								</xsl:if>
+							</xsl:with-param>
 						</xsl:call-template>
 						
 						<label for="{$freeTextAlternativeName}" class="checkbox">
@@ -287,6 +294,13 @@
 				<xsl:with-param name="element" select="../../../Alternatives/CheckboxAlternative[alternativeID = $alternativeID]" />
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 				<xsl:with-param name="disabled" select="../../../../Locked"/>
+				<xsl:with-param name="aria-label">
+					<xsl:value-of select="name" />
+					<xsl:if test="not(../../hideTitle = 'true')">
+						<xsl:value-of select="' - '" />
+						<xsl:value-of select="../../../QueryInstanceDescriptor/QueryDescriptor/name" />
+					</xsl:if>
+				</xsl:with-param>
 			</xsl:call-template>
 			
 			<label for="{$checkboxID}" class="checkbox">

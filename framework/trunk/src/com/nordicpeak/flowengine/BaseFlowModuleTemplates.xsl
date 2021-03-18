@@ -46,13 +46,13 @@
 				
 				<div class="service-navigator-wrap">
 					<div>
-						<a data-icon-after="&lt;" href="#" class="js-prev">
+						<a data-icon-after="&lt;" href="#" class="js-prev" aria-label="{$i18n.Previous}">
 		  					<span><xsl:value-of select="$i18n.Previous" /></span>
 		  				</a>
 						<ul class="service-navigator primary">
 							<xsl:apply-templates select="FlowInstance/Flow/Steps"/>
 						</ul>
-						<a data-icon-after="&gt;" href="#" class="js-next">
+						<a data-icon-after="&gt;" href="#" class="js-next" aria-label="{$i18n.Next}">
 		  					<span><xsl:value-of select="$i18n.Next" /></span>
 		  				</a>
 					</div>
@@ -132,13 +132,13 @@
 				
 				<div class="service-navigator-wrap">
 					<div>
-						<a data-icon-after="&lt;" href="#" class="js-prev">
+						<a data-icon-after="&lt;" href="#" class="js-prev" aria-label="{$i18n.Previous}">
 		  					<span><xsl:value-of select="$i18n.Previous" /></span>
 		  				</a>
 						<ul class="service-navigator primary">
 							<xsl:apply-templates select="FlowInstance/Flow/Steps"/>
 						</ul>
-						<a data-icon-after="&gt;" href="#" class="js-next">
+						<a data-icon-after="&gt;" href="#" class="js-next" aria-label="{$i18n.Next}">
 		  					<span><xsl:value-of select="$i18n.Next" /></span>
 		  				</a>
 					</div>
@@ -268,13 +268,13 @@
 			
 				<div class="service-navigator-wrap">
 					<div>
-						<a data-icon-after="&lt;" href="#" class="js-prev">
+						<a data-icon-after="&lt;" href="#" class="js-prev" aria-label="{$i18n.Previous}">
 		  					<span><xsl:value-of select="$i18n.Previous" /></span>
 		  				</a>
 						<ul class="service-navigator primary">
 							<xsl:apply-templates select="FlowInstance/Flow/Steps"/>
 						</ul>
-						<a data-icon-after="&gt;" href="#" class="js-next">
+						<a data-icon-after="&gt;" href="#" class="js-next" aria-label="{$i18n.Next}">
 		  					<span><xsl:value-of select="$i18n.Next" /></span>
 		  				</a>
 					</div>
@@ -615,13 +615,13 @@
 				
 				<div class="service-navigator-wrap">
 					<div>
-						<a data-icon-after="&lt;" href="#" class="js-prev">
+						<a data-icon-after="&lt;" href="#" class="js-prev" aria-label="{$i18n.Previous}">
 		  					<span><xsl:value-of select="$i18n.Previous" /></span>
 		  				</a>
 						<ul class="service-navigator primary">
 							<xsl:apply-templates select="FlowInstance/Flow/Steps"/>
 						</ul>
-						<a data-icon-after="&gt;" href="#" class="js-next">
+						<a data-icon-after="&gt;" href="#" class="js-next" aria-label="{$i18n.Next}">
 		  					<span><xsl:value-of select="$i18n.Next" /></span>
 		  				</a>
 					</div>
@@ -782,6 +782,7 @@
 			<li>
 				<xsl:if test="/Document/FlowInstanceManagerPreview">
 					<xsl:attribute name="class">active</xsl:attribute>
+					<xsl:attribute name="aria-current">step</xsl:attribute>
 				</xsl:if>
 				
 				<span data-step="{$stepCount + 1}">
@@ -801,6 +802,7 @@
 				<li>
 					<xsl:if test="/Document/InlinePaymentForm or StandalonePaymentForm">
 						<xsl:attribute name="class">active</xsl:attribute>
+						<xsl:attribute name="aria-current">step</xsl:attribute>
 					</xsl:if>
 					
 					<span data-step="{$stepCount + 2 + $previewOffset}">
@@ -814,6 +816,7 @@
 				<li>
 					<xsl:if test="/Document/InlinePaymentForm or StandalonePaymentForm">
 						<xsl:attribute name="class">active</xsl:attribute>
+						<xsl:attribute name="aria-current">step</xsl:attribute>
 					</xsl:if>
 					
 					<span data-step="{$stepCount + 1 + $previewOffset}">
@@ -852,6 +855,7 @@
 		<li>
 			<xsl:if test="/Document/SigningForm">
 				<xsl:attribute name="class">active</xsl:attribute>
+				<xsl:attribute name="aria-current">step</xsl:attribute>
 			</xsl:if>
 				
 			<span data-step="{$step}"><xsl:value-of select="$submitText" /></span>
@@ -867,7 +871,7 @@
 		<li>
 			
 			<xsl:choose>
-				<xsl:when test="$currentStepID = stepID"><xsl:attribute name="class">active</xsl:attribute></xsl:when>
+				<xsl:when test="$currentStepID = stepID"><xsl:attribute name="class">active</xsl:attribute><xsl:attribute name="aria-current">step</xsl:attribute></xsl:when>
 				<xsl:when test="$currentStepIndex >= sortIndex">
 					<xsl:attribute name="class">
 						<xsl:text>completed</xsl:text>

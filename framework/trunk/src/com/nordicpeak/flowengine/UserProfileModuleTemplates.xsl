@@ -28,7 +28,7 @@
 	
 	<xsl:template match="UpdateUser">
 
-		<div class="contentitem">
+		<div id="UserProfileModule" class="contentitem">
 
 			<xsl:if test="UserUpdated">
 				<span class="user-updated-message hidden"><xsl:value-of select="$i18n.UserUpdatedMessage"/></span>

@@ -146,6 +146,7 @@
 					<xsl:with-param name="value" select="TextAreaQueryInstance/value"/>
 					<xsl:with-param name="width" select="'98%'"/>
 					<xsl:with-param name="disabled" select="Locked"/>
+					<xsl:with-param name="aria-label" select="TextAreaQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
 				</xsl:call-template>
 				
 			</article>

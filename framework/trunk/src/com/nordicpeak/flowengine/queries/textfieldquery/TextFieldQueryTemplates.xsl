@@ -225,10 +225,18 @@
 				</xsl:when>
 			</xsl:choose>
 
+			<xsl:variable name="id">
+				<xsl:value-of select="'q'"/>
+				<xsl:value-of select="../../queryID"/>
+				<xsl:value-of select="'_field'"/>
+				<xsl:value-of select="textFieldID"/>
+			</xsl:variable>
+
 			<label>
 				<xsl:if test="required = 'true'">
 					<xsl:attribute name="class">required</xsl:attribute>
 				</xsl:if>
+				<xsl:attribute name="for"><xsl:value-of select="$id" /></xsl:attribute>
 				<xsl:value-of select="label"/>
 			</label>
 
@@ -248,12 +256,8 @@
 			</xsl:variable>
 			
 			<xsl:call-template name="createTextField">
-				<xsl:with-param name="name">
-					<xsl:value-of select="'q'"/>
-					<xsl:value-of select="../../queryID"/>
-					<xsl:value-of select="'_field'"/>
-					<xsl:value-of select="textFieldID"/>
-				</xsl:with-param>
+				<xsl:with-param name="id" select="$id" />
+				<xsl:with-param name="name" select="$id" />
 				<xsl:with-param name="title" select="label"/>
 				<xsl:with-param name="value" select="../../../Values/TextFieldValue[TextField/textFieldID = $textFieldID]/value"/>
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
@@ -275,10 +279,16 @@
 						<xsl:text>true</xsl:text>
 					</xsl:if>
 				</xsl:with-param>
-				
+				<xsl:with-param name="aria-describedby">
+					<xsl:value-of select="$id" />
+					<xsl:value-of select="'_error'" />
+				</xsl:with-param>
+				<xsl:with-param name="aria-required"><xsl:if test="required = 'true'">true</xsl:if></xsl:with-param>
 			</xsl:call-template>
 			
-			<xsl:apply-templates select="../../../../ValidationErrors/validationError[fieldName = $textFieldID]"/>
+			<xsl:apply-templates select="../../../../ValidationErrors/validationError[fieldName = $textFieldID]">
+				<xsl:with-param name="id"><xsl:value-of select="$id" /><xsl:value-of select="'_error'" /></xsl:with-param>
+			</xsl:apply-templates>
 		
 		</div>
 	
@@ -320,7 +330,10 @@
 	
 	<xsl:template match="validationError[messageKey = 'APIRequestException']">
 		
+		<xsl:param name="id" />
+		
 		<span>
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
 			<xsl:value-of select="$i18n.APIRequestException" />
 		</span>
 		
@@ -328,13 +341,19 @@
 	
 	<xsl:template match="validationError[validationErrorType = 'RequiredField']">
 		
-		<i data-icon-after="!" title="{$i18n.RequiredField}"></i>
+		<xsl:param name="id" />
+		
+		<i data-icon-after="!" title="{$i18n.RequiredField}" tabindex="0">
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
+		</i>
 		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'TooShort']">
 		
-		<i data-icon-after="!">
+		<xsl:param name="id" />
+		
+		<i data-icon-after="!" tabindex="0">
 			<xsl:attribute name="title">
 				<xsl:value-of select="$i18n.TooShortFieldContent.part1"/>
 				<xsl:value-of select="currentLength"/>
@@ -342,13 +361,16 @@
 				<xsl:value-of select="minLength"/>
 				<xsl:value-of select="$i18n.TooShortFieldContent.part3"/>
 			</xsl:attribute>
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
 		</i>
 		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'TooLong']">
 		
-		<i data-icon-after="!">
+		<xsl:param name="id" />
+		
+		<i data-icon-after="!" tabindex="0">
 			<xsl:attribute name="title">
 				<xsl:value-of select="$i18n.TooLongFieldContent.part1"/>
 				<xsl:value-of select="currentLength"/>
@@ -356,13 +378,16 @@
 				<xsl:value-of select="maxLength"/>
 				<xsl:value-of select="$i18n.TooLongFieldContent.part3"/>
 			</xsl:attribute>
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
 		</i>
 		
 	</xsl:template>
 	
 	<xsl:template match="validationError[validationErrorType = 'InvalidFormat']">
 		
-		<i data-icon-after="!">
+		<xsl:param name="id" />
+		
+		<i data-icon-after="!" tabindex="0">
 			<xsl:attribute name="title">
 				<xsl:choose>
 					<xsl:when test="invalidFormatMessage">
@@ -373,13 +398,18 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:attribute>
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
 		</i>
 		
 	</xsl:template>
 		
 	<xsl:template match="validationError">
 		
-		<i data-icon-after="!" title="{$i18n.UnknownValidationError}"></i>
+		<xsl:param name="id" />
+		
+		<i data-icon-after="!" title="{$i18n.UnknownValidationError}" tabindex="0">
+			<xsl:if test="$id"><xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute></xsl:if>
+		</i>
 		
 	</xsl:template>
 	

@@ -145,7 +145,7 @@
 
 						<xsl:variable name="selectedAlternativeID" select="DropDownQueryInstance/DropDownAlternative/alternativeID" />
 					
-						<select name="{$dropDownName}" style="width: 100%;">
+						<select name="{$dropDownName}" style="width: 100%;" aria-label="{DropDownQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name}">
 							<xsl:if test="Locked">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>

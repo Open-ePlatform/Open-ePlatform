@@ -167,6 +167,13 @@
 							<xsl:with-param name="value" select="'freeTextAlternative'" />
 							<xsl:with-param name="checked" select="RadioButtonQueryInstance/freeTextAlternativeValue" />
 							<xsl:with-param name="disabled" select="$locked"/>
+							<xsl:with-param name="aria-label">
+								<xsl:value-of select="$freeTextAlternativeName" />
+								<xsl:if test="not(RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true')">
+									<xsl:value-of select="' - '" />
+									<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name" />
+								</xsl:if>
+							</xsl:with-param>
 						</xsl:call-template>
 						
 						<xsl:text>&#x20;</xsl:text>
@@ -252,6 +259,13 @@
 				<xsl:with-param name="element" select="../../../RadioButtonAlternative[alternativeID = $alternativeID]" />
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 				<xsl:with-param name="disabled" select="$locked"/>
+				<xsl:with-param name="aria-label">
+					<xsl:value-of select="name" />
+					<xsl:if test="not(../../../hideTitle = 'true')">
+						<xsl:value-of select="' - '" />
+						<xsl:value-of select="../../../QueryInstanceDescriptor/QueryDescriptor/name" />
+					</xsl:if>
+				</xsl:with-param>
 			</xsl:call-template>
 			
 			<label for="{$radioID}" class="radio">

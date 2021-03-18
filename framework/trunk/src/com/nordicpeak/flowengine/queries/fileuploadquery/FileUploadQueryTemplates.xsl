@@ -176,7 +176,7 @@
 									<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/maxFileCount"/>
 								</xsl:variable>
 								
-								<input id="{$queryID}_fileuploader" type="file" name="{concat('q', FileUploadQueryInstance/FileUploadQuery/queryID,'_newfile')}" multiple="multiple" size="55" class="fileuploader bigmarginbottom hidden" data-allowedfilesregex="{$allowedFileExtensionsRegex}" data-filecountlimit="{$fileCountLimit}"/>
+								<input id="{$queryID}_fileuploader" type="file" name="{concat('q', FileUploadQueryInstance/FileUploadQuery/queryID,'_newfile')}" multiple="multiple" size="55" class="fileuploader bigmarginbottom hidden" data-allowedfilesregex="{$allowedFileExtensionsRegex}" data-filecountlimit="{$fileCountLimit}" aria-label="{$i18n.ChooseFiles}" />
 							</span>
 							
 							<span>
