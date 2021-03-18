@@ -784,7 +784,7 @@
 										<div class="upload clearboth">
 											<span class="btn btn-upload btn-blue">
 												<xsl:value-of select="$i18n.ChooseFiles" />
-												<input id="external-message" type="file" name="attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
+												<input id="external-message" type="file" name="externalmessage-attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
 											</span>
 											<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
 											
