@@ -640,7 +640,7 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 		
 		}else{
 			
-			log.error("NotificationSource " + notificationSource + " is already registered");
+			log.warn("NotificationSource " + notificationSource + " is already registered");
 		}
 	}
 	
