@@ -27,7 +27,7 @@
 			<xsl:if test="not(externalLink)">true</xsl:if>
 		</xsl:variable>
 		
-		<section class="no-pad-tablet">
+		<section class="no-pad-tablet flow-overview">
 		
 				<div class="section-inside">
 	  				<div class="heading-wrapper">
@@ -74,7 +74,7 @@
 	  					<div class="position-relative">
 	  						<xsl:if test="../useExpandableFlowDescription = 'true'">
 	  							<xsl:attribute name="class">position-relative use-expandable</xsl:attribute>
-	  							<a class="btn btn-light btn-inline btn-readmore">LÄS MER</a>
+	  							<a class="btn btn-light btn-inline btn-readmore" title="{$i18n.ReadMore}">LÄS MER</a>
 	  						</xsl:if>
 		  					<div class="readmore-text">
 			  					<xsl:choose>
@@ -226,7 +226,7 @@
 						<div class="service-navigator-wrap summary">
 							<div>
 							
-								<a data-icon-after="&lt;" href="#" class="js-prev disabled">
+								<a data-icon-after="&lt;" href="#" class="js-prev disabled" aria-label="{$i18n.Previous}">
 									<span><xsl:value-of select="$i18n.Previous" /></span>
 								</a>
 								
@@ -299,7 +299,7 @@
 			  					
 		  					</ul>
 		  					
-		  					<a data-icon-after="&gt;" href="#" class="js-next">
+		  					<a data-icon-after="&gt;" href="#" class="js-next" aria-label="{$i18n.Next}">
 			  					<span><xsl:value-of select="$i18n.Next" /></span>
 			  				</a>
 		  					

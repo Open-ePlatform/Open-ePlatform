@@ -26,5 +26,6 @@
 	<xsl:variable name="i18n.MostUsedFLows">Mest använda e-tjänsterna</xsl:variable>
 	<xsl:variable name="i18n.AllFlows">Alla e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.ShowAll">Visa alla</xsl:variable>
+	<xsl:variable name="i18n.ReadMore">Läs mer</xsl:variable>
 
 </xsl:stylesheet>
