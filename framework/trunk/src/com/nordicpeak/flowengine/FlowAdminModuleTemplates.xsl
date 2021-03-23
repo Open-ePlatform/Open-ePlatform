@@ -634,19 +634,19 @@
 						</div>
 					</div>
 				
-					<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
-					
-						<div class="floatleft">
-							<label for="hideFromOverview">
-								<xsl:choose>
-									<xsl:when test="Flow/hideFromOverview = 'true'"><img src="{$imgPath}/invisible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" width="16px" /><xsl:value-of select="$i18n.hiddenFromOverview" /></xsl:when>
-									<xsl:otherwise><img src="{$imgPath}/visible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.shownOnOverview" /></xsl:otherwise>
-								</xsl:choose>
-							</label>
-						</div>
-					</div>
-					
 				</xsl:if>
+				
+				<div class="floatleft min-width-thirtytree bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<label for="hideFromOverview">
+							<xsl:choose>
+								<xsl:when test="Flow/hideFromOverview = 'true'"><img src="{$imgPath}/invisible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" width="16px" /><xsl:value-of select="$i18n.hiddenFromOverview" /></xsl:when>
+								<xsl:otherwise><img src="{$imgPath}/visible.png" alt="" class="marginright vertical-align-bottom flow-setting-icon" /><xsl:value-of select="$i18n.shownOnOverview" /></xsl:otherwise>
+							</xsl:choose>
+						</label>
+					</div>
+				</div>
 				
 				<div class="showflow-moreinfo-wrapper">
 				
@@ -2715,21 +2715,25 @@
 						</label>
 					</div>
 				</div>
+			
+			</xsl:if>
 				
-				<div class="floatleft full bigmarginbottom margintop internal">
-				
-					<div class="floatleft">
-						<xsl:call-template name="createCheckbox">
-							<xsl:with-param name="name" select="'hideFromOverview'" />
-							<xsl:with-param name="id" select="'hideFromOverview'" />
-							<xsl:with-param name="element" select="Flow" />
-						</xsl:call-template>
-						
-						<label for="hideFromOverview">
-							<xsl:value-of select="$i18n.hideFromOverview" />
-						</label>
-					</div>
-				</div>				
+			<div class="floatleft full bigmarginbottom margintop">
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'hideFromOverview'" />
+						<xsl:with-param name="id" select="'hideFromOverview'" />
+						<xsl:with-param name="element" select="Flow" />
+					</xsl:call-template>
+					
+					<label for="hideFromOverview">
+						<xsl:value-of select="$i18n.hideFromOverview" />
+					</label>
+				</div>
+			</div>				
+			
+			<xsl:if test="$isInternal = 'true'">
 				
 				<div class="floatleft full bigmarginbottom margintop internal">
 				
