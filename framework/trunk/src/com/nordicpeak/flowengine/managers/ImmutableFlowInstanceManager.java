@@ -130,13 +130,13 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		for(int stepIndex=0; stepIndex < this.managedSteps.size(); stepIndex++){
 
-			managerResponses.add(getStepShowHTML(stepIndex, req, user, flowEngineInterface, onlyPopulatedQueries, baseUpdateURL, baseQueryRequestURL));
+			managerResponses.add(getStepShowHTML(stepIndex, req, user, flowEngineInterface, onlyPopulatedQueries, baseUpdateURL, baseQueryRequestURL, requestMetadata));
 		}
 
 		return managerResponses;
 	}
 
-	public ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL) throws UnableToGetQueryInstanceShowHTMLException {
+	public ManagerResponse getStepShowHTML(int stepIndex, HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
 
 		ImmutableManagedStep managedStep = managedSteps.get(stepIndex);
 
@@ -160,7 +160,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 			if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !queryInstance.getQueryInstanceDescriptor().isPopulated())){
 
 				try{
-					queryResponses.add(queryInstance.getShowHTML(req, user, flowInstance.getPoster(), flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(queryInstance, baseQueryRequestURL), attributeHandler));
+					queryResponses.add(queryInstance.getShowHTML(req, user, flowInstance.getPoster(), flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(queryInstance, baseQueryRequestURL), requestMetadata, attributeHandler));
 				}catch(Throwable e){
 					throw new UnableToGetQueryInstanceShowHTMLException(queryInstance.getQueryInstanceDescriptor(), e);
 				}

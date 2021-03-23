@@ -19,7 +19,7 @@ public interface ImmutableQueryInstance {
 
 	//TODO add attribute handler
 	
-	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, AttributeHandler attributeHandler) throws Throwable;
+	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable;
 
 	public QueryResponse getFormHTML(HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, QueryHandler queryHandler, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable;
 

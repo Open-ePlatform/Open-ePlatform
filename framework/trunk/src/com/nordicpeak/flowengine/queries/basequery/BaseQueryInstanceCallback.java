@@ -20,7 +20,7 @@ import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 
 public interface BaseQueryInstanceCallback<QI extends BaseQueryInstance> {
 
-	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, AttributeHandler attributeHandler) throws Throwable;
+	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable;
 
 	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable;
 

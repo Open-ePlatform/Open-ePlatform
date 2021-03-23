@@ -58,9 +58,9 @@ public abstract class BaseQueryInstance extends GeneratedElementable implements 
 	}
 
 	@Override
-	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
-		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getShowHTML(this, req, user, poster, updateURL, queryRequestURL, attributeHandler);
+		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getShowHTML(this, req, user, poster, updateURL, queryRequestURL, requestMetadata, attributeHandler);
 	}
 
 	@Override

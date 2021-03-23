@@ -756,7 +756,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			if(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().isPopulated())){
 
 				try{
-					queryResponses.add(managedQueryInstance.getQueryInstance().getShowHTML(req, user, resolvedPoster, flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), attributeHandler));
+					queryResponses.add(managedQueryInstance.getQueryInstance().getShowHTML(req, user, resolvedPoster, flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, attributeHandler));
 				}catch(Throwable e){
 					throw new UnableToGetQueryInstanceShowHTMLException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
 				}

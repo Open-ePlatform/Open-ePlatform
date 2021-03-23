@@ -272,7 +272,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	@Override
-	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
 
 		Document doc = createDocument(req, poster);
 
@@ -282,6 +282,8 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "updateURL", updateURL);
 		XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "queryRequestURL", queryRequestURL);
 
+		showQueryValuesElement.appendChild(requestMetadata.toXML(doc));
+		
 		appendQueryInstance(queryInstance, doc, showQueryValuesElement, attributeHandler);
 
 		return createQueryResponse(doc, queryInstance.getQueryInstanceDescriptor().getQueryDescriptor());
