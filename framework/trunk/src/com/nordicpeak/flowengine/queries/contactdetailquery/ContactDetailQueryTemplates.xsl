@@ -127,7 +127,7 @@
 					</fieldset>
 					
 					<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/useOfficalAddress = 'true' and ContactDetailQueryInstance/officalAddress = 'false' and RequestMetadata/manager = 'true'">
-						<p><xsl:value-of select="$i18n.OfficialAddressMissing" /></p>	
+						<p class="bigmarginbottom"><xsl:value-of select="$i18n.OfficialAddressMissing" /></p>	
 					</xsl:if>
 					
 					
