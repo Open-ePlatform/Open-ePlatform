@@ -260,11 +260,11 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 
 	@Override
-	public QueryResponse getShowHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getShowHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
 	
 		queryInstance.generateNodeHierarchy();
 		
-		return super.getShowHTML(queryInstance, req, user, poster, updateURL, queryRequestURL, attributeHandler);
+		return super.getShowHTML(queryInstance, req, user, poster, updateURL, queryRequestURL, requestMetadata, attributeHandler);
 	}
 	
 	@Override
