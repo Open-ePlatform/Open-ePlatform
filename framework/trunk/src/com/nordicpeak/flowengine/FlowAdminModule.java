@@ -4304,6 +4304,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			flow.setFlowType(flowType);
 
+			Integer importVersion = xmlParser.getInteger("version");
+			
 			if (relatedFlow == null) {
 
 				flow.setVersion(1);
@@ -4646,7 +4648,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flow.getFlowFamily()), EventTarget.ALL);
 				}
 
-				addFlowFamilyEvent(eventImportFlowMessage + " \"" + flow.getName() + "\"", flow, user);
+				addFlowFamilyEvent(eventImportFlowMessage + " \"" + flow.getName() + "\"" + (importVersion != null ? " (" + importVersion + ")" : ""), flow, user);
 
 				redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
 
