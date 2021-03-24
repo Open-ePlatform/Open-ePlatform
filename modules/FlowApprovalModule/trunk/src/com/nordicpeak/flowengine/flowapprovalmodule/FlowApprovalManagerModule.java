@@ -3,7 +3,6 @@ package com.nordicpeak.flowengine.flowapprovalmodule;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
