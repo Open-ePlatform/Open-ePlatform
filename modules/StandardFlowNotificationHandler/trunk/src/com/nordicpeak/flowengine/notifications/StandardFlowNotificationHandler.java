@@ -548,7 +548,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(id = "flowInstanceSubmittedGlobalEmailPDFSizeLimit", name = "Attachment size limit for flow instance emails (global)", description = "The size limit in megabyte for documents attached to email messages. If this size is exceeded no file is attached. No value set means no size limit.")
+	@TextFieldSettingDescriptor(id = "flowInstanceSubmittedGlobalEmailPDFSizeLimit", name = "Attachment size limit for flow instance emails (global)", description = "The size limit in megabyte for documents attached to email messages. If this size is exceeded no file is attached. No value set means no size limit.", formatValidator = EmailAttachmentSizeFormatValidator.class)
 	private Integer flowInstanceGlobalEmailAttachmentSizeLimit;
 
 	@ModuleSetting
@@ -2667,20 +2667,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			if (pdfFile != null && pdfFilename != null) {
 				
-				boolean attachPDF = false;
-				
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 
-					attachPDF = true;
-
-				} else {
-
-					log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
-				}
-
-				if (attachPDF) {
 					generatedPDFFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".pdf");
-	
+					
 					if (!sendPDFAttachmentsSeparately) {
 	
 						email.add(new FileAttachment(pdfFile, generatedPDFFilename));
@@ -2710,15 +2700,28 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 							}
 						}
 					}
+
+				} else {
+
+					log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
+
+
 			}
 
-			File xmlFile = options != null ? options.getXmlFile() : null;
+			File xmlFile = options != null ? options.getXMLFile() : null;
 
 			if (xmlFile != null && xmlFilename != null) {
 
-				generatedXMLFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(xmlFilename) + ".xml");
-				email.add(new FileAttachment(xmlFile, generatedXMLFilename));
+				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
+					
+					generatedXMLFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(xmlFilename) + ".xml");
+					email.add(new FileAttachment(xmlFile, generatedXMLFilename));					
+					
+				}else {
+
+					log.warn("XML file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+				}
 			}
 
 			if (!CollectionUtils.isEmpty(notificationEmailFilters)) {

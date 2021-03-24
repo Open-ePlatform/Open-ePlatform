@@ -23,12 +23,12 @@ public class NotificationOptions {
 		this.senderAddress = senderAddress;
 	}
 
-	public File getXmlFile() {
+	public File getXMLFile() {
 
 		return xmlFile;
 	}
 
-	public void setXmlFile(File xmlFile) {
+	public void setXMLFile(File xmlFile) {
 
 		this.xmlFile = xmlFile;
 	}
