@@ -2666,35 +2666,48 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			String generatedXMLFilename = null;
 
 			if (pdfFile != null && pdfFilename != null) {
+				
+				boolean attachPDF = false;
+				
+				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 
-				generatedPDFFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".pdf");
-
-				if (!sendPDFAttachmentsSeparately) {
-
-					email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+					attachPDF = true;
 
 				} else {
 
-					email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
+					log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+				}
 
-					List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
-
-					if (!CollectionUtils.isEmpty(attachments)) {
-
-						for (PDFByteAttachment attachment : attachments) {
-
-							String attachmentName;
-
-							if (attachment.getAttachmentName().equals(attachment.getFilename())) {
-
-								attachmentName = attachment.getFilename();
-
-							} else {
-
-								attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
+				if (attachPDF) {
+					generatedPDFFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".pdf");
+	
+					if (!sendPDFAttachmentsSeparately) {
+	
+						email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+	
+					} else {
+	
+						email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
+	
+						List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
+	
+						if (!CollectionUtils.isEmpty(attachments)) {
+	
+							for (PDFByteAttachment attachment : attachments) {
+	
+								String attachmentName;
+	
+								if (attachment.getAttachmentName().equals(attachment.getFilename())) {
+	
+									attachmentName = attachment.getFilename();
+	
+								} else {
+	
+									attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
+								}
+	
+								email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
 							}
-
-							email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
 						}
 					}
 				}
