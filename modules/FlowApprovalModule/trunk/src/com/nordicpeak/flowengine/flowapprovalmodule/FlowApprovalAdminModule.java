@@ -143,6 +143,8 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGr
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalReminder;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
@@ -289,6 +291,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
 	private AnnotatedDAO<FlowApprovalActivityProgress> activityProgressDAO;
+	private AnnotatedDAO<FlowApprovalReminder> reminderDAO;
 
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivity, Integer> activityDAOWrapper;
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivityGroup, Integer> activityGroupDAOWrapper;
@@ -357,6 +360,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activityGroupDAO = daoFactory.getDAO(FlowApprovalActivityGroup.class);
 		activityRoundDAO = daoFactory.getDAO(FlowApprovalActivityRound.class);
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
+		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityDAOWrapper = activityDAO.getAdvancedWrapper(Integer.class);
 		activityDAOWrapper.getAddQuery().addRelations(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
@@ -2030,6 +2034,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					activityMap.put(activityProgress.getActivity(), activityProgress);
 
 					activityProgress.setAutomaticReminderSent(true);
+					
+					FlowApprovalReminder reminder = new FlowApprovalReminder(activityProgress, TimeUtils.getCurrentTimestamp(), ReminderType.AUTOMATIC, null);
+
+					reminderDAO.add(reminder);
 				}
 
 				for (Entry<Integer, Map<FlowApprovalActivity, FlowApprovalActivityProgress>> entry : flowInstanceMap.entrySet()) {

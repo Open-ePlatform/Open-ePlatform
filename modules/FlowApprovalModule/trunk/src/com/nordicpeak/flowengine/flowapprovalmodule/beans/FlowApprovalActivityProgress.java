@@ -32,6 +32,7 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 
 	public static final Field ACTIVITY_RELATION = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "activity");
 	public static final Field ACTIVITY_ROUND_RELATION = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "activityRound");
+	public static final Field ACTIVITY_REMINDER_RELATION = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "reminders");
 
 	public static final Field FIELD_SIGNING_DATA = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "signingData");
 	public static final Field FIELD_SIGNATURE_DATA = ReflectionUtils.getField(FlowApprovalActivityProgress.class, "signatureData");
@@ -94,6 +95,11 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 
 	@DAOManaged
 	private String signatureData;
+
+	@DAOManaged
+	@OneToMany
+	@XMLElement(fixCase = true)
+	private List<FlowApprovalReminder> reminders;
 
 	public Integer getActivityProgressID() {
 
@@ -235,6 +241,14 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 		this.signatureData = signatureData;
 	}
 
+	public List<FlowApprovalReminder> getReminders() {
+		return reminders;
+	}
+
+	public void setReminders(List<FlowApprovalReminder> reminders) {
+		this.reminders = reminders;
+	}
+	
 	@Override
 	public Element toXML(Document doc) {
 

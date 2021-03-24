@@ -414,5 +414,25 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="20">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_reminders` (
+					`reminderID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`reminderType` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'latin1_swedish_ci',
+					`userID` INT(11) UNSIGNED,
+					PRIMARY KEY (`reminderID`) USING BTREE,
+					INDEX `FK__flowapproval_activity_progress` (`activityProgressID`) USING BTREE,
+					CONSTRAINT `FK__flowapproval_activity_progress` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB
+				;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

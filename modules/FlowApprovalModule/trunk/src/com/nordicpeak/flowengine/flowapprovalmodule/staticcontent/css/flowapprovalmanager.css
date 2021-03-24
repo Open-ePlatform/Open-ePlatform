@@ -18,3 +18,14 @@
 	border-bottom: 1px solid black !important;
 }
 
+#flow-approval .history-button:focus {
+	outline: none;	
+}
+
+#flow-approval .history-button:after {
+	font-size: 33px;
+}
+
+#flow-approval a.history-button:hover {
+    color: #1b447c;
+}

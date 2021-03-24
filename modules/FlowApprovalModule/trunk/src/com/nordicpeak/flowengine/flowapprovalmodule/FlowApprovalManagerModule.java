@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.flowapprovalmodule;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
@@ -52,6 +54,8 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalReminder;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
 
 public class FlowApprovalManagerModule extends AnnotatedForegroundModule implements FlowInstanceOverviewExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
@@ -66,6 +70,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
 	private AnnotatedDAO<FlowApprovalActivityProgress> activityProgressDAO;
+	private AnnotatedDAO<FlowApprovalReminder> reminderDAO;
 
 	private AdvancedAnnotatedDAOWrapper<FlowApprovalActivityProgress, Integer> activityProgressDAOWrapper;
 
@@ -101,9 +106,10 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		activityGroupDAO = daoFactory.getDAO(FlowApprovalActivityGroup.class);
 		activityRoundDAO = daoFactory.getDAO(FlowApprovalActivityRound.class);
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
+		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		activityRoundIDParamFactory = activityRoundDAO.getParamFactory("activityRoundID", Integer.class);
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
@@ -179,7 +185,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 		Element tabElement = XMLUtils.appendNewElement(doc, documentElement, "TabContents");
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		XMLUtils.append(doc, tabElement, "ActivityGroups", activityGroups);
 
@@ -220,6 +226,10 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			if (round.getCompleted() == null && round.getCancelled() == null && activityProgress.getCompleted() == null) {
 
 				approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
+				
+				FlowApprovalReminder reminder = new FlowApprovalReminder(activityProgress, TimeUtils.getCurrentTimestamp(), ReminderType.MANUAL, user);
+
+				reminderDAO.add(reminder);
 			}
 
 		} else if (signatureActivityProgressID != null) {

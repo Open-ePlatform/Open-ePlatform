@@ -61,6 +61,7 @@
 								</xsl:if>
 								<th><xsl:value-of select="$i18n.ActivityProgress.CompletingUser" /></th>
 								<th><xsl:value-of select="$i18n.Activity.responsible" /></th>
+								<th><xsl:value-of select="$i18n.Activity.reminders" /></th>
 								<th style="width: 200px;" />
 							</tr>
 						</thead>
@@ -111,7 +112,7 @@
 		<xsl:param name="showApproveDeny"/>
 		
 		<tr class="activitygroup">
-			<td colspan="6">
+			<td colspan="7">
 				<h3>
 					<xsl:value-of select="name" />
 				</h3>
@@ -171,7 +172,7 @@
 			<xsl:otherwise>
 				
 				<tr class="activity">
-					<td colspan="6">
+					<td colspan="7">
 						<xsl:value-of select="$i18n.NoActivities"/>
 					</td>
 				</tr>
@@ -186,7 +187,7 @@
 		
 		<xsl:if test="position() > 1">
 			<tr class="activityround">
-				<td colspan="6">
+				<td colspan="7">
 					
 					<div>
 						<span>
@@ -246,7 +247,7 @@
 			<xsl:otherwise>
 				
 				<tr class="activity">
-					<td colspan="6">
+					<td colspan="7">
 						<xsl:value-of select="$i18n.NoActivities"/>
 					</td>
 				</tr>
@@ -366,6 +367,30 @@
 				</xsl:choose>
 			</td>
 			<td>
+				<xsl:if test="Reminders/Reminder">
+					<a class="history-button open-help" href="#" data-icon-after="n" data-help-box="show-history-{activityProgressID}"></a>
+					
+					<div class="help-box" data-help-box="show-history-{activityProgressID}">
+						<div>
+				  			<div> 
+				  				<a class="close" href="#" data-icon-after="x"></a>
+				  				
+				  				<h2>Skickade påminnelser</h2>
+
+				  				<xsl:for-each select="Reminders/Reminder">
+							        <xsl:if test="position() &lt;= 10">
+							            <xsl:apply-templates select="." />
+							        </xsl:if>
+							    </xsl:for-each>
+							    <br/>
+							    <xsl:value-of select="$i18n.Total" /><xsl:text>&#160;</xsl:text><xsl:value-of select="count(Reminders/Reminder)" /><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.RemindersSent" />
+				  			</div> 
+						</div>
+					</div>
+					
+				</xsl:if>
+			</td>
+			<td>
 				<xsl:if test="../../../../../../UserModuleURL">
 					<a class="btn btn-inline btn-green" href="{../../../../../../UserModuleURL}/show/{activityProgressID}" title="{$i18n.ShowActivity}">
 						<xsl:value-of select="$i18n.Open" />
@@ -381,7 +406,21 @@
 				</xsl:if>
 			</td>
 		</tr>
+
+	</xsl:template>
 	
+	<xsl:template match="Reminder">
+	
+		<div><xsl:value-of select="added" />
+			<xsl:choose>
+				<xsl:when test="reminderType = 'MANUAL'">
+					<xsl:text> - </xsl:text><xsl:value-of select="$i18n.ManualReminder" /><xsl:text>&#160;</xsl:text><xsl:value-of select="user/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="user/lastname" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text> - </xsl:text><xsl:value-of select="$i18n.AutomaticReminder" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</div>
 	</xsl:template>
 	
 	<xsl:template match="user" mode="inline-list">
