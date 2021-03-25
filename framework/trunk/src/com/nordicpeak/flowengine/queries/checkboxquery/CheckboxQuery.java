@@ -59,6 +59,11 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 	private Integer maxChecked;
 
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean showCheckAllBoxes = false;
+
+	@DAOManaged
 	@OneToMany(autoUpdate = true, autoAdd = true)
 	@XMLElement(fixCase = true)
 	private List<CheckboxAlternative> alternatives;
@@ -177,6 +182,14 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 		this.maxChecked = maxChecked;
 	}
 
+	public boolean isShowCheckAllBoxes() {
+		return showCheckAllBoxes;
+	}
+
+	public void setShowCheckAllBoxes(boolean showCheckAllBoxes) {
+		this.showCheckAllBoxes = showCheckAllBoxes;
+	}
+	
 	public Columns getColumns() {
 
 		return columns;
@@ -244,6 +257,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
+		showCheckAllBoxes = xmlParser.getPrimitiveBoolean("showCheckAllBoxes");
 
 		minChecked = XMLValidationUtils.validateParameter("minChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxChecked = XMLValidationUtils.validateParameter("maxChecked", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);

@@ -192,5 +192,13 @@
 			]]>
 		</Query>
 	</Script>	
+
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `showCheckAllBoxes` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `maxChecked`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

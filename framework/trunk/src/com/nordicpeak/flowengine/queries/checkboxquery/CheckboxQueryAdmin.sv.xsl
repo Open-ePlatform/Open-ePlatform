@@ -19,6 +19,7 @@ Frågetypen Kryssrutefråga används när användaren skall kunna välja mellan olika 
 	<xsl:variable name="i18n.MaxChecked">Max antal valda alternativ</xsl:variable>
 	<xsl:variable name="i18n.minChecked">minst antal valda alternativ</xsl:variable>
 	<xsl:variable name="i18n.maxChecked">max antal valda alternativ</xsl:variable>
+	<xsl:variable name="i18n.ShowCheckAllBoxes">Visa kryssruta som markerar alla alternativ</xsl:variable>
 	<xsl:variable name="i18n.MinCheckedBiggerThanMaxChecked">Minst antal valda alternativ får inte vara större än max!</xsl:variable>
 	<xsl:variable name="i18n.MaxCheckedToBig">Max antal valda alternativ får inte överstiga antalet alternativ!</xsl:variable>
 	<xsl:variable name="i18n.MinCheckedToBig">Minst antal valda alternativ får inte överstiga antalet alternativ!</xsl:variable>

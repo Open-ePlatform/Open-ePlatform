@@ -5,6 +5,8 @@
 	<xsl:include href="classpath://com/nordicpeak/flowengine/queries/common/xsl/QueryCommon.sv.xsl"/>
 	<xsl:include href="CheckboxQueryTemplates.xsl"/>
 	
+	<xsl:variable name="i18n.CheckAllBoxes">Markera alla</xsl:variable>
+	
 	<xsl:variable name="i18n.TooManyAlternativesSelected.part1">Du har valt för många alternativ. Du får max välja </xsl:variable>
 	<xsl:variable name="i18n.TooManyAlternativesSelected.part2"> alternativ och du har valt </xsl:variable>
 	<xsl:variable name="i18n.TooManyAlternativesSelected.part3"> alternativ!</xsl:variable>

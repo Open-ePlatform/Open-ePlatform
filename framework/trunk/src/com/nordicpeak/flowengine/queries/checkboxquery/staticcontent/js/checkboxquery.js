@@ -1,7 +1,6 @@
 $(document).ready(function() {
 	
 	setQueryRequiredFunctions["CheckboxQueryInstance"] = makeCheckBoxQueryRequired;
-	
 });
 
 function initCheckBoxQuery(queryID) {
@@ -9,6 +8,8 @@ function initCheckBoxQuery(queryID) {
 	var $query = $("#query_" + queryID);
 	
 	var $freeTextAlternative = $query.find("input[type='checkbox'].freeTextAlternative")
+	
+	var $checkboxes = $query.find("input[type='checkbox'][name!='checkAllBoxes']");
 	
 	if($freeTextAlternative.length > 0) { 
 	
@@ -28,7 +29,7 @@ function initCheckBoxQuery(queryID) {
 		
 		if($query.hasClass("enableAjaxPosting")) {
 			
-			bindCheckBoxChangeEvent($query.find("input[type='checkbox']"), queryID);
+			bindCheckBoxChangeEvent($checkboxes, queryID);
 			bindCheckBoxChangeEvent($query.find("input[type='text']"), queryID);
 		}
 		
@@ -36,7 +37,7 @@ function initCheckBoxQuery(queryID) {
 		
 		if($query.hasClass("enableAjaxPosting")) {
 			
-			bindCheckBoxChangeEvent($query.find("input[type='checkbox']"), queryID);
+			bindCheckBoxChangeEvent($checkboxes, queryID);
 		}
 		
 	}
@@ -45,14 +46,26 @@ function initCheckBoxQuery(queryID) {
 	
 	if (maxChecked != undefined) {
 		
-		var checkboxes = $query.find("input[type='checkbox']");
+		runCheckBoxMaxAlternatives($checkboxes, maxChecked);
 		
-		runCheckBoxMaxAlternatives(checkboxes, maxChecked);
-		
-		checkboxes.change(function() {
-			runCheckBoxMaxAlternatives(checkboxes, maxChecked);
+		$checkboxes.change(function() {
+			runCheckBoxMaxAlternatives($checkboxes, maxChecked);
 		});
 	}
+
+	$("#query_" + queryID + "checkAllBoxes").click(function(){
+    	
+    	var $checkAll = $(this);
+    	
+   		$checkboxes.each(function() {
+    	
+    		$(this).prop('checked', $checkAll.is(':checked'));
+    	});
+    	
+    	$checkboxes.last().change();
+	});	
+
+	$checkboxes.last().change();
 }
 
 function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
@@ -88,6 +101,21 @@ function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
 function bindCheckBoxChangeEvent($checkboxes, queryID) {
 	
 	$checkboxes.change(function() {
+	   
+		var $checkAll = $("#query_" + queryID + "checkAllBoxes");
+		var $currentCheckbox = $(this);
+		
+		if ($currentCheckbox.is(":checked")) {
+			
+			if ($("#query_" + queryID + " input[type = 'checkbox'][name != 'checkAllBoxes']:not(':checked')").length === 0) {
+			
+				$checkAll.prop("checked", true);
+			}
+		}
+		else {
+			
+			$checkAll.prop("checked", false);
+		}
 		
 		runCheckBoxEvaluators($(this), queryID);
 	});

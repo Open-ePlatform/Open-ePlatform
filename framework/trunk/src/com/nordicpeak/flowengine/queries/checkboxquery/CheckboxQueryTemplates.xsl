@@ -179,6 +179,23 @@
 					</div>
 				</xsl:if>
 				
+				<xsl:if test="CheckboxQueryInstance/CheckboxQuery/showCheckAllBoxes = 'true'"> 
+
+					<div class="floatleft full bigmarginbottom">
+						<div class="floatleft full">
+							<xsl:call-template name="createCheckbox">
+								<xsl:with-param name="id" select="concat($queryID, 'checkAllBoxes')" />
+								<xsl:with-param name="name" select="'checkAllBoxes'" />
+							</xsl:call-template>
+							
+							<label for="{concat($queryID, 'checkAllBoxes')}" class="checkbox">
+								<xsl:value-of select="$i18n.CheckAllBoxes" />
+							</label>
+						</div>
+					</div>
+				
+				</xsl:if>
+				
 				<xsl:apply-templates select="CheckboxQueryInstance/CheckboxQuery/Alternatives/CheckboxAlternative" mode="form"/>
 	
 				<xsl:if test="CheckboxQueryInstance/CheckboxQuery/freeTextAlternative">
