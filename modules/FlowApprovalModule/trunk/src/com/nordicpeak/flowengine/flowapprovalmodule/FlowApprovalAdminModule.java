@@ -1,12 +1,12 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
-import it.sauronsoftware.cron4j.Scheduler;
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,17 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Level;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -123,11 +135,13 @@ import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.lowagie.text.pdf.PdfArray;
 import com.lowagie.text.pdf.PdfFileSpecification;
+import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
-
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
@@ -156,6 +170,8 @@ import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 public class FlowApprovalAdminModule extends AnnotatedForegroundModule implements FlowAdminFragmentExtensionViewProvider, ViewFragmentModule<ForegroundModuleDescriptor>, CRUDCallback<User>, Runnable {
 
 	private static final AnnotatedBeanTagSourceFactory<FlowApprovalActivityGroup> ACTIVITY_GROUP_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<>(FlowApprovalActivityGroup.class, "$activityGroup.");
@@ -163,6 +179,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOW_INSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<>(FlowInstance.class, "$flowInstance.");
 	private static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<>(Flow.class, "$flow.");
 
+	private static final ITextPDFCreationListener ITEXT_PDF_CREATION_LISTENER = new ITextPDFCreationListener();
+	
 	@XSLVariable(prefix = "java.")
 	private String adminExtensionViewTitle = "Flow approval settings";
 
@@ -2137,7 +2155,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return new File(pdfDir + File.separator + round.getFlowInstanceID() + File.separator + "activity-round-" + round.getActivityRoundID() + "-signatures.pdf");
 	}
-
+	
 	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
 
 		if (pdfDir == null || tempDir == null) {
@@ -2150,7 +2168,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		FileUtils.createMissingDirectories(outputFile);
 
-		File tmpFile = null;
+		File tmpFile1 = null;
+		File tmpFile2 = null;
 		RandomAccessFileOrArray randomAccessFile = null;
 		OutputStream outputStream = null;
 
@@ -2197,11 +2216,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			XMLUtils.appendNewCDATAElement(doc, documentElement, "Logotype", logotype);
 
-			StringWriter writer = new StringWriter();
+			StringWriter stringWriter = new StringWriter();
 
-			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, writer, "UTF-8", "1.1");
+			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, stringWriter, "UTF-8", "1.1");
 
-			String xml = writer.toString();
+			String xml = stringWriter.toString();
 
 			Document document;
 
@@ -2214,15 +2233,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				document = PDFXMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 			}
 
-			tmpFile = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp-", ".pdf", new File(tempDir));
+			tmpFile1 = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp1-", ".pdf", new File(tempDir));
 
 			try {
-				outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile));
+				outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile1));
 
 				ITextRenderer renderer = new ITextRenderer();
 				ResourceLoaderAgent callback = new ResourceLoaderAgent(renderer.getOutputDevice());
 				callback.setSharedContext(renderer.getSharedContext());
 				renderer.getSharedContext().setUserAgentCallback(callback);
+				renderer.setListener(ITEXT_PDF_CREATION_LISTENER);
 
 				if (includedFonts != null) {
 
@@ -2244,10 +2264,20 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			// Append signature attachments
 
-			randomAccessFile = new RandomAccessFileOrArray(tmpFile.getAbsolutePath(), false, false);
+			tmpFile2 = File.createTempFile("activity-round-" + round.getActivityRoundID() + "-tmp2-", ".pdf", new File(tempDir));
+			randomAccessFile = new RandomAccessFileOrArray(tmpFile1.getAbsolutePath(), false, false);
 			PdfReader reader = new PdfReader(randomAccessFile, null);
-			outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+			outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile2));
 			PdfStamper stamper = new PdfStamper(reader, outputStream);
+			PdfWriter writer = stamper.getWriter();
+			
+			PdfArray associatedFilesArray = reader.getCatalog().getAsArray(new PdfName("AF"));
+			
+			if (associatedFilesArray == null) {
+				
+				associatedFilesArray = new PdfArray();
+				reader.getCatalog().put(new PdfName("AF"), associatedFilesArray);
+			}
 
 			for (FlowApprovalActivityProgress activityProgress : round.getActivityProgresses()) {
 
@@ -2256,8 +2286,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					String signingDataAttachmentName = pdfSigningDataAttachment + " - " + activityProgress.getActivity().getName() + " - " + activityProgress.getActivityProgressID();
 
 					try {
-						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(stamper.getWriter(), new ByteArrayInputStream(activityProgress.getSigningData().getBytes("ISO-8859-1")), signingDataAttachmentName + ".txt");
-						stamper.getWriter().addFileAttachment(signingDataAttachmentName, fs);
+						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, new ByteArrayInputStream(activityProgress.getSigningData().getBytes("ISO-8859-1")), signingDataAttachmentName + ".txt");
+						writer.addFileAttachment(signingDataAttachmentName, fs);
+						associatedFilesArray.add(fs.getReference());
 
 					} catch (Exception e) {
 						log.error("Error appending signing data for " + activityProgress, e);
@@ -2266,17 +2297,24 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					String signatureAttachmentName = pdfSignatureAttachment + " - " + activityProgress.getActivity().getName() + " - " + activityProgress.getActivityProgressID();
 
 					try {
-						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(stamper.getWriter(), new ByteArrayInputStream(activityProgress.getSignatureData().getBytes("ISO-8859-1")), signatureAttachmentName + ".txt");
-						stamper.getWriter().addFileAttachment(signatureAttachmentName, fs);
+						PdfFileSpecification fs = StreamPdfFileSpecification.fileEmbedded(writer, new ByteArrayInputStream(activityProgress.getSignatureData().getBytes("ISO-8859-1")), signatureAttachmentName + ".txt");
+						writer.addFileAttachment(signatureAttachmentName, fs);
+						associatedFilesArray.add(fs.getReference());
 
 					} catch (Exception e) {
 						log.error("Error appending signature data for " + activityProgress, e);
 					}
 				}
 			}
+			
+			if (associatedFilesArray.isEmpty()) {
+				reader.getCatalog().put(new PdfName("AF"), null);
+			}
 
 			stamper.close();
-
+			
+			writePDFA(tmpFile2, outputFile);
+			
 			round.setPdf(true);
 
 		} catch (Exception e) {
@@ -2285,6 +2323,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			FileUtils.deleteFile(outputFile);
 
 		} finally {
+			
 			CloseUtils.close(outputStream);
 
 			if (randomAccessFile != null) {
@@ -2294,8 +2333,84 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				} catch (IOException e) {}
 			}
 
-			FileUtils.deleteFile(tmpFile);
+			FileUtils.deleteFile(tmpFile1);
+			FileUtils.deleteFile(tmpFile2);
 		}
+	}
+	
+	private void writePDFA(File inputFile, File outputFile) throws Exception {
+
+		PDDocument document = PDDocument.load(inputFile);
+
+		try {
+			PDDocumentCatalog catalog = document.getDocumentCatalog();
+			PDDocumentInformation info = document.getDocumentInformation();
+
+			XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+
+			PDFAIdentificationSchema id = metadata.createAndAddPFAIdentificationSchema();
+			id.setPart(3);
+			id.setConformance("A");
+
+			AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
+			pdfSchema.setKeywords("Open ePlatform");
+			pdfSchema.setProducer("Open ePlatform");
+
+			GregorianCalendar calendar = new GregorianCalendar();
+
+			XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
+			basicSchema.setModifyDate(calendar);
+			basicSchema.setCreateDate(calendar);
+			basicSchema.setCreatorTool("Open ePlatform");
+			basicSchema.setMetadataDate(new GregorianCalendar());
+
+			DublinCoreSchema dcSchema = metadata.createAndAddDublinCoreSchema();
+			dcSchema.setTitle(info.getTitle());
+			dcSchema.addCreator("Open ePlatform");
+			dcSchema.setDescription("Open ePlatform");
+
+			PDMetadata metadataStream = new PDMetadata(document);
+			catalog.setMetadata(metadataStream);
+
+			XmpSerializer serializer = new XmpSerializer();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			serializer.serialize(metadata, baos, false);
+			metadataStream.importXMPMetadata(baos.toByteArray());
+
+			if (!hasColorProfile(catalog)) {
+			
+				InputStream colorProfile = FlowApprovalAdminModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
+
+				PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
+				oi.setInfo("sRGB IEC61966-2.1");
+				oi.setOutputCondition("sRGB IEC61966-2.1");
+				oi.setOutputConditionIdentifier("sRGB IEC61966-2.1");
+				oi.setRegistryName("http://www.color.org");
+				catalog.addOutputIntent(oi);
+
+			}
+			
+			document.save(outputFile);
+
+		} finally {
+
+			document.close();
+		}
+	}
+	
+	private boolean hasColorProfile(PDDocumentCatalog catalog) {
+
+		List<PDOutputIntent> list = catalog.getOutputIntents();
+
+		for (PDOutputIntent outputIntent : list) {
+			
+			if(outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public String getSignaturesFilename() {

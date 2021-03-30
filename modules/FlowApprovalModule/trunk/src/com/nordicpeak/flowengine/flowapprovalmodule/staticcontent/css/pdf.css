@@ -20,6 +20,10 @@
     content: counter(pages);
 }
 
+body {
+	font-family: "Source Sans Pro";
+}
+
 div.header{
 }
 
