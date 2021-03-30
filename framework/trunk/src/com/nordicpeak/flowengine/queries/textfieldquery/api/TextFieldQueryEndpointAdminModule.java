@@ -43,6 +43,7 @@ import se.unlogic.standardutils.datatypes.SimpleEntry;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.TagReplacer;
+import se.unlogic.standardutils.string.URLEncodingTagReplacer;
 import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPResponse;
@@ -59,12 +60,17 @@ import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.textfieldquery.TextFieldQuery;
+import com.nordicpeak.flowengine.utils.CurrentUserAttributeTagUtils;
 import com.nordicpeak.flowengine.utils.UserAttributeTagUtils;
 
 public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule implements CRUDCallback<User> {
 
 	public static final AnnotatedBeanTagSourceFactory<User> USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$user.");
+	
+	public static final AnnotatedBeanTagSourceFactory<User> CURRENT_USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$currentUser.");
 
+	public static final User EMPTY_USER = new SimpleUser();
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection timeout", description = "The maximum time in seconds to wait for a connection")
 	private Integer connectionTimeout = 10;
@@ -237,40 +243,48 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		return doc;
 	}
 
-	public String getEndpointURL(TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) {
+	public String getEndpointURL(TextFieldQueryEndpoint endpoint, User poster, User currentUser, AttributeHandler attributeHandler) {
 		
 		if (endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
 			return null;
 		}
 
-		String address = endpoint.getAddress();
-
-		User usedPoster = poster;
-		
-		if (usedPoster == null) {
+		//Less than beatiful or optimal workaround only retained for backwards compability reasons
+		if(poster == null) {
 			
-			usedPoster = new SimpleUser();
+			poster = EMPTY_USER;
 		}
 		
-		TagReplacer tagReplacer = new TagReplacer();
-		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(usedPoster));
+		//Less than beatiful or optimal workaround only retained for backwards compability reasons
+		if(currentUser == null) {
+			
+			currentUser = EMPTY_USER;
+		}
+		
+		String address = endpoint.getAddress();
+
+		TagReplacer tagReplacer = new URLEncodingTagReplacer();
+		
+		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(poster));
+		tagReplacer.addTagSource(CURRENT_USER_TAG_SOURCE_FACTORY.getTagSource(currentUser));
 		
 		address = tagReplacer.replace(address);
 
-		address = UserAttributeTagUtils.replaceTags(address, usedPoster, true);
+		address = UserAttributeTagUtils.replaceTags(address, poster, true);
+		address = CurrentUserAttributeTagUtils.replaceTags(address, currentUser, true);
 		
 		address = AttributeTagUtils.replaceTags(address, attributeHandler, false, true);
 		
 		return address;
 	}
 	
-	public Map<String, String> getAPIFieldValues(String address, TextFieldQueryEndpoint endpoint, User poster, AttributeHandler attributeHandler) throws TextFieldAPIRequestException {
+	public Map<String, String> getAPIFieldValues(String address, TextFieldQueryEndpoint endpoint, User currentUser) throws TextFieldAPIRequestException {
 		
 		if (address == null || endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
 			return null;
 		}
 
-		log.info("User " + poster + " getting field values for api endpoint " + endpoint + " from: " + address);
+		log.info("User " + currentUser + " getting field values for api endpoint " + endpoint + " from: " + address);
 
 		SimpleRequest simpleRequest = new SimpleRequest(address);
 

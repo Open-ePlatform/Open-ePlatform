@@ -44,7 +44,7 @@
 	
 	<xsl:variable name="i18n.TagsTable.description.part1">Exempel på en attributfiltrerad url som utnyttjar attribut/taggar:</xsl:variable>
 	<xsl:variable name="i18n.DynamicURLExample">https://api.organisationen.se/anrop?fastparam=fastvärde&amp;dynamiskparam1=$attribute{mitt_attributnamn}&amp;dynamiskparam2=$user.attribute{citizenIdentifier}&amp;dynamiskparam3=$user.email</xsl:variable>
-	<xsl:variable name="i18n.TagsTable.description.part2">Följande taggar kan användas (kan finnas fler):</xsl:variable>
+	<xsl:variable name="i18n.TagsTable.description.part2">Följande taggar kan användas, $user alltid avser den sökande medan $currentUser den inloggade användaren för tillfället ex. handläggare eller den sökande:</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.Description">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.UserFirstnameTag">Användarens förnamn</xsl:variable>

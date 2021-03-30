@@ -322,6 +322,56 @@
 							<xsl:value-of select="$i18n.UserCitizenIdentifierTag"/>
 						</td>
 					</tr>
+					
+					<tr>
+						<td>
+							<xsl:text>$currentUser.firstname</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserFirstnameTag"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$currentUser.lastname</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserLastnameTag"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$currentUser.email</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserEmailTag"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$currentUser.username</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserUsernameTag"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$currentUser.userID</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserUserIDTag"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$currentUser.attribute{citizenIdentifier}</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.UserCitizenIdentifierTag"/>
+						</td>
+					</tr>					
+					
 					<tr>
 						<td>
 							<xsl:text>$attribute{attributnamn}</xsl:text>
