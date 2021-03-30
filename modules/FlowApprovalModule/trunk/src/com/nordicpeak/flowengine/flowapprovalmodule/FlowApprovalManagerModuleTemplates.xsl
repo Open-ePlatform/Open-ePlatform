@@ -8,6 +8,7 @@
 
 	<xsl:variable name="globalscripts">
 		/featherlight/js/featherlight.min.js
+		/js/confirmpost.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
@@ -387,6 +388,7 @@
 				  			</div> 
 						</div>
 					</div>
+					<div class="help-backdrop" data-help-box="show-history-{activityProgressID}" />
 					
 				</xsl:if>
 			</td>
@@ -394,14 +396,12 @@
 				<xsl:if test="../../../../../../UserModuleURL">
 					<a class="btn btn-inline btn-green" href="{../../../../../../UserModuleURL}/show/{activityProgressID}" title="{$i18n.ShowActivity}">
 						<xsl:value-of select="$i18n.Open" />
-<!-- 						<img src="{$imgPath}/magnifying_glass.png" alt="" /> -->
 					</a>
 				</xsl:if>
 				
 				<xsl:if test="not(completed) and not(../../cancelled)">
-					<a class="btn btn-inline btn-light" href="{../../../../../../PostURL}?sendreminder={activityProgressID}" title="{$i18n.SendReminderLong}">
+					<a class="btn btn-inline btn-light" href="{../../../../../../PostURL}?sendreminder={activityProgressID}" title="{$i18n.SendReminderLong}" onclick="return confirmHyperlinkPost(this);">
 						<xsl:value-of select="$i18n.SendReminder" />
-<!-- 						<img src="{$imgPath}/mail_reload.png" alt="" /> -->
 					</a>
 				</xsl:if>
 			</td>

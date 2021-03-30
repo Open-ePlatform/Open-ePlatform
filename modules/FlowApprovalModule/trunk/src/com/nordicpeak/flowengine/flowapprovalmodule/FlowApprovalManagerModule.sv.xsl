@@ -14,7 +14,7 @@
 	<xsl:variable name="i18n.Open">Öppna</xsl:variable>
 	<xsl:variable name="i18n.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.SendReminder">Påminnelse</xsl:variable>
-	<xsl:variable name="i18n.SendReminderLong">Skicka påminnelse till ansvariga</xsl:variable>
+	<xsl:variable name="i18n.SendReminderLong">Vill du skicka en påminnelse till ansvariga</xsl:variable>
 	<xsl:variable name="i18n.DownloadSignature">Hämta signatur</xsl:variable>
 	<xsl:variable name="i18n.DownloadSignatures">Hämta bekräftelse med signaturer</xsl:variable>
 	

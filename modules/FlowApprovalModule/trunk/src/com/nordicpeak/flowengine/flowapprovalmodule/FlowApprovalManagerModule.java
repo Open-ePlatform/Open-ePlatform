@@ -208,6 +208,11 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 		if (sendReminderForActivityProgressID != null) {
 
+			if(!HTTPUtils.isPost(req)) {
+				
+				throw new AccessDeniedException("Sending reminder using method " + req.getMethod() + " are not allowed.");
+			}
+			
 			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(sendReminderForActivityProgressID);
 
 			if (activityProgress == null) {
