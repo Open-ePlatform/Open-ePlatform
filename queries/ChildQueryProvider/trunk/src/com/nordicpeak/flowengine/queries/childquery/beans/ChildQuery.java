@@ -488,7 +488,6 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		emptyFilterDescription = XMLValidationUtils.validateParameter("emptyFilterDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		filteredChildrenDescription = XMLValidationUtils.validateParameter("filteredChildrenDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		filterEndpoint = XMLValidationUtils.validateParameter("filterEndpoint", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		communicationErrorDescription = XMLValidationUtils.validateParameter("communicationErrorDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		
 		if (attributeName != null) {
