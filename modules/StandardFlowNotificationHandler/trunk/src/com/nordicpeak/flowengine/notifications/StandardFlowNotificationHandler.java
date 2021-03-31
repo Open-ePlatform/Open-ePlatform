@@ -547,9 +547,9 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@CheckboxSettingDescriptor(name = "Attach PDF attachments to flow instance submitted emails (global) separately", description = "Controls if attachments for generated PDF documents are attached to email messages separately when new flow instances are submitted.")
 	private boolean flowInstanceSubmittedGlobalEmailAttachPDFAttachmentsSeparately;
 
-	@ModuleSetting
+	@ModuleSetting(id = "flowInstanceSubmittedGlobalEmailPDFSizeLimit")
 	@TextFieldSettingDescriptor(id = "flowInstanceSubmittedGlobalEmailPDFSizeLimit", name = "Attachment size limit for flow instance emails (global)", description = "The size limit in megabyte for documents attached to email messages. If this size is exceeded no file is attached. No value set means no size limit.", formatValidator = EmailAttachmentSizeFormatValidator.class)
-	private Integer flowInstanceGlobalEmailAttachmentSizeLimit;
+	private Integer flowInstanceGlobalEmailAttachmentSizeLimit = 20;
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when flow instances are assigned new managers", description = "Controls if email messages are the sent to specified address when flow instances are assigned new managers.")
