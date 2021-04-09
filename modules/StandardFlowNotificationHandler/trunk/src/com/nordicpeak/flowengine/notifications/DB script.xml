@@ -463,5 +463,18 @@
 			]]>
 		</Query>		
 	</Script>
+
+	<Script version="34">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendFlowInstanceCompletionManagerEmail` TINYINT(1) NOT NULL AFTER `statusChangedManagerEmailMessage`,
+					ADD COLUMN `managerCompletionSubmittedEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendFlowInstanceCompletionManagerEmail`,
+					ADD COLUMN `managerCompletionSubmittedEmailMessage` TEXT NULL AFTER `managerCompletionSubmittedEmailSubject`;
+			]]>
+		</Query>
+	</Script>
+
+
 	
 </DBScripts>

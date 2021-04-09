@@ -111,6 +111,12 @@
 						<xsl:value-of select="$i18n.SendFlowInstanceAssignedManagerEmail"/>
 					</li>
 				</xsl:if>
+
+				<xsl:if test="NotificationSettings/sendFlowInstanceCompletionManagerEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendFlowInstanceCompletionManagerEmail"/>
+					</li>
+				</xsl:if>
 				
 				<xsl:if test="NotificationSettings/sendStatusChangedManagerEmail = 'true'">
 					<li>
@@ -288,6 +294,11 @@
 			function toggleManagerStatusChangedMessage(){
 				
 				$("#manager-status-changed-subject, #manager-status-changed-message").toggleClass("hidden");
+			}
+
+			function toggleManagerCompletionSubmittedMessage(){
+				
+				$("#manager-completion-submitted-subject, #manager-completion-submitted-message").toggleClass("hidden");
 			}
 			
 			function toggleManagerGroupStatusChangedMessage(){
@@ -982,6 +993,66 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'flowInstanceAssignedManagerEmailMessage'"/>
 					<xsl:with-param name="name" select="'flowInstanceAssignedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendFlowInstanceCompletionManagerEmail'" />
+					<xsl:with-param name="id" select="'sendFlowInstanceCompletionManagerEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendFlowInstanceCompletionManagerEmail">
+					<xsl:value-of select="$i18n.SendFlowInstanceCompletionManagerEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerCompletionSubmittedMessage();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-completion-submitted-subject">
+		
+			<xsl:if test="not($errFieldNames = 'managerCompletionSubmittedEmailSubject') and not($errFieldNames = 'managerCompletionSubmittedEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="managerCompletionSubmittedEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ManagerCompletionSubmittedEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'managerCompletionSubmittedEmailSubject'"/>
+					<xsl:with-param name="name" select="'managerCompletionSubmittedEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-completion-submitted-message">
+			
+			<xsl:if test="not($errFieldNames = 'managerCompletionSubmittedEmailSubject') and not($errFieldNames = 'managerCompletionSubmittedEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="managerCompletionSubmittedEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ManagerCompletionSubmittedEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'managerCompletionSubmittedEmailMessage'"/>
+					<xsl:with-param name="name" select="'managerCompletionSubmittedEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>

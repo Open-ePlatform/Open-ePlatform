@@ -219,6 +219,23 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean sendFlowInstanceCompletionManagerEmail;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@Templated
+	@XMLElement
+	private String managerCompletionSubmittedEmailSubject;
+
+	@DAOManaged
+	@WebPopulate(maxLength = 65536)
+	@Templated
+	@XMLElement
+	private String managerCompletionSubmittedEmailMessage;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean sendFlowInstanceSubmittedManagerEmail;
 
 	@DAOManaged
@@ -746,6 +763,36 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.statusChangedManagerEmailMessage = statusChangedManagerEmailMessage;
 	}
 
+	public boolean isSendFlowInstanceCompletionManagerEmail() {
+		
+		return sendFlowInstanceCompletionManagerEmail;
+	}
+
+	public void setSendFlowInstanceCompletionManagerEmail(boolean sendFlowInstanceCompletionManagerEmail) {
+		
+		this.sendFlowInstanceCompletionManagerEmail = sendFlowInstanceCompletionManagerEmail;
+	}
+	
+	public String getManagerCompletionSubmittedEmailSubject() {
+		
+		return managerCompletionSubmittedEmailSubject;
+	}
+
+	public void setManagerCompletionSubmittedEmailSubject(String managerCompletionSubmittedEmailSubject) {
+		
+		this.managerCompletionSubmittedEmailSubject = managerCompletionSubmittedEmailSubject;
+	}
+
+	public String getManagerCompletionSubmittedEmailMessage() {
+		
+		return managerCompletionSubmittedEmailMessage;
+	}
+
+	public void setManagerCompletionSubmittedEmailMessage(String managerCompletionSubmittedEmailMessage) {
+		
+		this.managerCompletionSubmittedEmailMessage = managerCompletionSubmittedEmailMessage;
+	}
+	
 	public boolean isSendFlowInstanceSubmittedManagerEmail() {
 
 		return sendFlowInstanceSubmittedManagerEmail;
@@ -876,7 +923,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledUserNotifications");
 		}
 
-		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail || sendInternalMessageAddedManagerEmail) {
+		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail || sendInternalMessageAddedManagerEmail || sendFlowInstanceCompletionManagerEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}

@@ -423,6 +423,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private String statusChangedManagerEmailMessage;
 
 	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managers on submitted completion", description = "Controls if email messages are sent to the managers when a completion of flow instances they are assigned to are submitted.")
+	private boolean sendFlowInstanceCompletionManagerEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Completion submitted email subject (managers)", description = "The subject of emails sent to the managers when completion of their flow instance is submitted", required = true)
+	@XSLVariable(prefix = "java.")
+	private String managerCompletionSubmittedEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Completion submitted email message (managers)", description = "The message of emails sent to the managers when completion of their flow instance is submitteed", required = true)
+	@XSLVariable(prefix = "java.")
+	private String managerCompletionSubmittedEmailMessage;
+	
+	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managergroups on status change", description = "Controls if email messages are the sent to the managergroups when the status of flow instances they are assigned to changes.")
 	private boolean sendStatusChangedManagerGroupEmail;
 
@@ -1098,6 +1112,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
 
 		notificationSettings.setSendFlowInstanceAssignedManagerEmail(sendFlowInstanceAssignedManagerEmail);
+		
+		notificationSettings.setSendFlowInstanceCompletionManagerEmail(sendFlowInstanceCompletionManagerEmail);
 
 		notificationSettings.setSendStatusChangedManagerEmail(sendStatusChangedManagerEmail);
 		notificationSettings.setSendStatusChangedUserEmail(sendStatusChangedUserEmail);
@@ -1517,7 +1533,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			ImmutableFlowInstance flowInstance = event.getFlowInstanceManager().getFlowInstance();
 
 			FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-
+			
 			File pdfFile = null;
 			File xmlFile = null;
 
@@ -1570,7 +1586,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 						}
 
 						for (Contact contact : contacts) {
-
+							
 							sendContactEmail(flowInstance, contact, notificationSettings.getFlowInstanceSubmittedUserEmailSubject(), message, attachPDF ? pdfFile : null);
 						}
 					}
@@ -1586,6 +1602,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceSubmittedManagerEmailSubject(), notificationSettings.getFlowInstanceSubmittedManagerEmailMessage(), null, true);
 				}
 
+				if(notificationSettings.isSendFlowInstanceCompletionManagerEmail()) {
+					
+					sendManagerEmails(flowInstance, posterContact, notificationSettings.getManagerCompletionSubmittedEmailSubject(), notificationSettings.getManagerCompletionSubmittedEmailMessage(), null, false);
+				}
+				
 				if (notificationSettings.isSendFlowInstanceSubmittedGlobalEmail() && notificationSettings.getFlowInstanceSubmittedGlobalEmailAddresses() != null) {
 
 					boolean attachPDF = false;

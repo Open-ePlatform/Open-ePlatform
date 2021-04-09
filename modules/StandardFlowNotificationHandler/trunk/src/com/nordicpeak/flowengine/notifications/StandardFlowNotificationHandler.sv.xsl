@@ -197,7 +197,22 @@
 		&lt;/p&gt;
 	
 	</xsl:variable>
+
+	<xsl:variable name="java.managerCompletionSubmittedEmailSubject">En komplettering av ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har skickats in</xsl:variable>
+	<xsl:variable name="java.managerCompletionSubmittedEmailMessage">
 	
+		&lt;p&gt;Hej $manager.firstname,&lt;/p&gt;
+		
+		&lt;p&gt;En komplettering av ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) som du är tilldelad har skickats in.&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.url"&gt;$flowInstance.url&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+
 	<xsl:variable name="java.statusChangedManagerGroupEmailSubject">Statusen för ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID) har ändrats till $status.name</xsl:variable>
 	<xsl:variable name="java.statusChangedManagerGroupEmailMessage">
 	
@@ -563,5 +578,9 @@
 	
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailSubject">Rubrik på e-postmeddelande vid tilldelning av ärende</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceAssignedManagerEmailMessage">Innehåll i e-postmeddelande vid tilldelning av ärende</xsl:variable>
+	
+	<xsl:variable name="i18n.SendFlowInstanceCompletionManagerEmail">E-post till tilldelade handläggare vid inskickad komplettering</xsl:variable>
+	<xsl:variable name="i18n.ManagerCompletionSubmittedEmailSubject">Rubrik på e-postmeddelande vid inskickad komplettering</xsl:variable>
+	<xsl:variable name="i18n.ManagerCompletionSubmittedEmailMessage">Innehåll i e-postmeddelande vid inskickad komplettering</xsl:variable>
 	
 </xsl:stylesheet>
