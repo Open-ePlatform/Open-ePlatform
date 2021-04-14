@@ -248,7 +248,7 @@
 	
 		&lt;p&gt;Hej,&lt;/p&gt;
 		
-		&lt;p&gt;Ett ärende har förfallit, $flow.name (ärende nr. $flowInstance.flowInstanceID). Ärendet är inskickat av $contact.firstname $contact.lastname&lt;/p&gt;
+		&lt;p&gt;Handläggningstiden för ärende $flow.name (ärende nr. $flowInstance.flowInstanceID) i statusen $status.name har passerat. Ärendet finns under fliken Förfallna.&lt;/p&gt;
 		
 		&lt;p&gt;Denna notifikation skickas endast en gång.&lt;/p&gt;
 		
