@@ -10,6 +10,7 @@
 		/jquery/jquery.js
 		/featherlight/js/featherlight.min.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
@@ -17,7 +18,6 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/datatables.min.js
 		/js/flowcatalog.js
