@@ -10,10 +10,10 @@
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
 		/js/flowapprovaladmin.js?v=4

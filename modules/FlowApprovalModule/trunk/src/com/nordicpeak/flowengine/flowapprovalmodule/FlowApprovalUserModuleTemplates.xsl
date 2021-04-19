@@ -7,11 +7,11 @@
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
 		/js/flowengine.helpdialog.js
-		/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
