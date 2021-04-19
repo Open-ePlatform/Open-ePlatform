@@ -86,7 +86,7 @@
 					<xsl:call-template name="createCheckbox">
 						<xsl:with-param name="id" select="'setAsAttribute'" />
 						<xsl:with-param name="name" select="'setAsAttribute'" />
-						<xsl:with-param name="element" select="ContactDetailQuery" /> 
+						<xsl:with-param name="element" select="OrganizationDetailQuery" /> 
 						<xsl:with-param name="class" select="'vertical-align-middle'" />
 					</xsl:call-template>
 						
@@ -103,7 +103,7 @@
 						<xsl:with-param name="id" select="'attributeName'"/>
 						<xsl:with-param name="name" select="'attributeName'"/>
 						<xsl:with-param name="title" select="$i18n.attributeName"/>
-						<xsl:with-param name="element" select="ContactDetailQuery" />
+						<xsl:with-param name="element" select="OrganizationDetailQuery" />
 					</xsl:call-template>
 				</div>
 			</div>
