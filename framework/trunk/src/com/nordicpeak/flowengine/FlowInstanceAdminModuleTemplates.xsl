@@ -9,6 +9,7 @@
 		/jquery/jquery-migrate.js
 		/jquery/plugins/jquery.qloader.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
@@ -19,7 +20,6 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/flowinstanceadminmodule.js?v=2
 		/js/jquery.qloader-init.js

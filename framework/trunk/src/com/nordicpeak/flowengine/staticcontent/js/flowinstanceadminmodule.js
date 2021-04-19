@@ -181,7 +181,7 @@ function searchFlowInstance() {
 			error: function (xhr, ajaxOptions, thrownError) { },
 			success: function(response) {
 
-				var result = eval(response);
+				var result = response;
 				
 				$searchResultTable.html("");
 				

@@ -9,13 +9,13 @@
 		/jquery/jquery-migrate.js
 		/jquery/plugins/jquery.qloader.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
 		/js/jquery.blockui.js
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/userflowinstancemodule.js?v=1
 		/js/jquery.qloader-init.js

@@ -8,10 +8,10 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/jquery.tablesorter.min.js
 		/js/userorganizationsmodule.js
 	</xsl:variable>
 	

@@ -3,8 +3,8 @@ $(document).ready(function() {
 	$.tablesorter.addWidget({ 
 	    id: "onSortEvent", 
 	    format: function(table) { 
-	    	$("thead th.headerSortDown span", table).attr("data-icon-after", "^");
-	    	$("thead th.headerSortUp span", table).attr("data-icon-after", "_");
+	    	$("thead th.tablesorter-headerDesc span", table).attr("data-icon-after", "^");
+	    	$("thead th.tablesorter-headerAsc span", table).attr("data-icon-after", "_");
 	    }
 	});
 	
@@ -44,7 +44,7 @@ $(document).ready(function() {
 			
 			$table.tablesorter({
 				widgets: ['zebra','onSortEvent'],
-				headers: eval(headers),
+				headers: headers,
 				sortList: defaultSort
 			});
 		}

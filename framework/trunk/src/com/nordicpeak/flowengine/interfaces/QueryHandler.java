@@ -26,7 +26,7 @@ public interface QueryHandler {
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws QueryProviderNotFoundException, QueryProviderErrorException;
 	
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderNotFoundException, QueryProviderErrorException;
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws QueryProviderNotFoundException, QueryProviderErrorException;
 
 	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws QueryProviderNotFoundException, QueryNotFoundInQueryProviderException, QueryProviderErrorException;
 

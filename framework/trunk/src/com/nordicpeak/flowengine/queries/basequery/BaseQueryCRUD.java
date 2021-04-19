@@ -60,6 +60,8 @@ public class BaseQueryCRUD<BeanType extends BaseQuery, CallbackType extends Base
 			URLRewriter.removeAbsoluteLinkUrls(bean, req);
 		}
 
+		callback.getFlowAdminModule().filterHTML(bean);
+		
 		TransactionHandler transactionHandler = null;
 
 		try {

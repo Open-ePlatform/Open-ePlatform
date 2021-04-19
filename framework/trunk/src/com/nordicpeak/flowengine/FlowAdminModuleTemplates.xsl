@@ -17,6 +17,7 @@
 		/ckeditor/init.js
 		/featherlight/js/featherlight.min.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
@@ -32,7 +33,6 @@
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
 		/js/flowadminmodule.js?v=13
-		/js/jquery.tablesorter.min.js
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js

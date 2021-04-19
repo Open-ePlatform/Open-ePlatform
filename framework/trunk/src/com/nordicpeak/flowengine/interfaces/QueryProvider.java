@@ -17,7 +17,7 @@ public interface QueryProvider {
 
 	public Query createQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler) throws Throwable;
 	
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable;
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable;
 
 	public Query getQuery(MutableQueryDescriptor descriptor, boolean extraData) throws Throwable;
 

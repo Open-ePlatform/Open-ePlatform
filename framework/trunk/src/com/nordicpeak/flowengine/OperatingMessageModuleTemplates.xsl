@@ -12,6 +12,7 @@
 		/jquery/jquery-ui.js
 		/timepicker/js/jquery.timepicker.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 
 	<xsl:variable name="globallinks">
@@ -21,7 +22,6 @@
 
 	<xsl:variable name="scripts">
 		/js/jquery.ui.datepicker-sv.js
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
 		/js/operatingmessagemodule.js

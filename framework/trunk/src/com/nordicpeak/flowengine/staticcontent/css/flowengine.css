@@ -99,7 +99,7 @@ table.oep-table thead.sortable tr .header {
 	cursor: pointer;
 }
 
-table.oep-table thead.sortable th.headerSortDown span:after, table.oep-table thead.sortable th.headerSortUp span:after {
+table.oep-table thead.sortable th.tablesorter-headerDesc span:after, table.oep-table thead.sortable th.tablesorter-headerAsc span:after {
 	display: inline-block;
 }
 

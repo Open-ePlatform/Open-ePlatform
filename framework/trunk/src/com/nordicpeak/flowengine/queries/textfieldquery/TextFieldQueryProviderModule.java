@@ -72,6 +72,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
@@ -166,13 +167,15 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable {
 
 		TextFieldQuery query = new TextFieldQuery();
 
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
+		
+		contentFilter.filterHTML(query);
 
 		List<Integer> oldTextFieldIDs = new ArrayList<Integer>();
 

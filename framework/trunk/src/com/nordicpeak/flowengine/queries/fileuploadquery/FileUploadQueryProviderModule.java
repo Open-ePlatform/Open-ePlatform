@@ -81,6 +81,7 @@ import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.PDFAttachment;
 import com.nordicpeak.flowengine.interfaces.PDFResourceProvider;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
@@ -216,13 +217,15 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	}
 
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable {
 
 		FileUploadQuery query = new FileUploadQuery();
 
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
+		
+		contentFilter.filterHTML(query);
 
 		this.queryDAO.add(query, transactionHandler, null);
 

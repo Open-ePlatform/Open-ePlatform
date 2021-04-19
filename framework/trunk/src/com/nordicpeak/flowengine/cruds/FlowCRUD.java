@@ -318,6 +318,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void validateAddPopulation(Flow bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
+		callback.filterHTML(bean);
+		
 		if (bean.isInternal()) {
 
 			bean.setEnabled(false);
@@ -431,6 +433,8 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void validateUpdatePopulation(Flow bean, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, SQLException, Exception {
 
+		callback.filterHTML(bean);
+		
 		FLOW_FAMILY_POULATOR.populate(bean.getFlowFamily(), req);
 		
 		List<ValidationError> errors = new ArrayList<ValidationError>();

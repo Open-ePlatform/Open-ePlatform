@@ -13,11 +13,11 @@
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
 		/js/jquery.cookie.js
-		/js/jquery.tablesorter.min.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.helpdialog.js
 		/js/flowengine.tablefilter.js

@@ -56,10 +56,10 @@ import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.PDFAttachment;
 import com.nordicpeak.flowengine.interfaces.PDFResourceProvider;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryProvider;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
-
 
 public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> extends AnnotatedForegroundModule implements QueryProvider, BaseQueryInstanceCallback<QI>, InstanceListener<QueryHandler>, BaseQueryCRUDCallback {
 
@@ -68,7 +68,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	@XSLVariable(prefix = "java.")
 	protected String queryDescription = "";
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Query XSL stylesheet", description = "The path in classpath relative from this class to the XSL stylesheet used to transform the HTML of queries", required = true)
 	protected String queryStyleSheet;
@@ -78,7 +78,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	protected String pdfStyleSheet;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Include debug data",description="Controls whether or not debug data should be included in the query response objects")
+	@CheckboxSettingDescriptor(name = "Include debug data", description = "Controls whether or not debug data should be included in the query response objects")
 	protected boolean includeDebugData = false;
 
 	@ModuleSetting(allowsNull = true)
@@ -86,17 +86,17 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	protected String cssPath;
 
 	@ModuleSetting(allowsNull = true)
-	@TextFieldSettingDescriptor(name="CKEditor connector module alias", description="The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
+	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
 	protected String ckConnectorModuleAlias;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name="Query type ID", description="The ID used to be used for queries of this type (this ID should not be changes if there are users with open flow instances in their session)", required=true)
+	@TextFieldSettingDescriptor(name = "Query type ID", description = "The ID used to be used for queries of this type (this ID should not be changes if there are users with open flow instances in their session)", required = true)
 	protected String queryTypeID = this.getClass().getName();
-	
+
 	protected String oldQueryTypeID;
-	
+
 	protected FlowAdminModule flowAdminModule;
-	
+
 	protected QueryTypeDescriptor queryTypeDescriptor;
 
 	protected XSLTransformer queryTransformer;
@@ -110,39 +110,39 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	protected synchronized void moduleConfigured() throws Exception {
 
 		super.moduleConfigured();
-		
+
 		createQueryTransformer();
-		
-		if(queryTypeDescriptor == null){
-			
+
+		if (queryTypeDescriptor == null) {
+
 			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, queryDescription, getQueryInstanceClass());
-			
+
 			//Rename legacy integer based queryTypeID's on module startup
 			oldQueryTypeID = this.moduleDescriptor.getModuleID().toString();
-			
+
 			systemInterface.getInstanceHandler().addInstanceListener(QueryHandler.class, this);
-			
-		}else if(!queryTypeDescriptor.getQueryTypeID().equals(queryTypeID)){
-			
+
+		} else if (!queryTypeDescriptor.getQueryTypeID().equals(queryTypeID)) {
+
 			//queryTypeID has been changed since the module was started
-			
+
 			oldQueryTypeID = queryTypeDescriptor.getQueryTypeID();
-			
+
 			QueryHandler queryHandler = systemInterface.getInstanceHandler().getInstance(QueryHandler.class);
 
-			if(queryHandler != null){
+			if (queryHandler != null) {
 
 				queryHandler.removeQueryProvider(queryTypeDescriptor, this);
 			}
-			
+
 			queryTypeDescriptor = new QueryTypeDescriptor(queryTypeID, queryTypeName, queryDescription, getQueryInstanceClass());
-			
-			if(queryHandler != null){
+
+			if (queryHandler != null) {
 
 				addQueryProvider(queryHandler);
 			}
 		}
-		
+
 		checkOldQueryTypeID();
 	}
 
@@ -150,8 +150,8 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	protected void checkOldQueryTypeID() throws SQLException {
 
-		if(flowAdminModule != null && oldQueryTypeID != null && flowAdminModule.getQueryCount(oldQueryTypeID) > 0){
-			
+		if (flowAdminModule != null && oldQueryTypeID != null && flowAdminModule.getQueryCount(oldQueryTypeID) > 0) {
+
 			QueryHandler queryHandler = systemInterface.getInstanceHandler().getInstance(QueryHandler.class);
 
 			if (queryHandler == null || (queryHandler != null && queryHandler.getQueryProvider(oldQueryTypeID) == null)) {
@@ -162,7 +162,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 				log.info("Another query provider is still registered for '" + oldQueryTypeID + "', avoiding query type rename.");
 			}
-			
+
 			this.oldQueryTypeID = null;
 		}
 	}
@@ -174,76 +174,76 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		QueryHandler queryHandler = systemInterface.getInstanceHandler().getInstance(QueryHandler.class);
 
-		if(queryHandler != null){
+		if (queryHandler != null) {
 
 			queryHandler.removeQueryProvider(queryTypeDescriptor, this);
 		}
 
 		this.flowAdminModule = null;
-		
+
 		super.unload();
 	}
 
-	public void createQueryTransformer(){
+	public void createQueryTransformer() {
 
-		if(queryStyleSheet == null){
+		if (queryStyleSheet == null) {
 
 			queryTransformer = null;
 
-		}else{
+		} else {
 
 			URL styleSheetURL = this.getClass().getResource(queryStyleSheet);
 
-			if(styleSheetURL != null){
+			if (styleSheetURL != null) {
 
 				try {
-					queryTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
+					queryTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(), ClassPathURIResolver.getInstance(), true);
 
 					parseQueryXSLStyleSheet(styleSheetURL);
 
 					log.debug("Succesfully parsed query stylesheet " + queryStyleSheet);
 
-				} catch (Exception e){
+				} catch (Exception e) {
 
-					log.error("Unable to cache query style sheet " + queryStyleSheet,e);
+					log.error("Unable to cache query style sheet " + queryStyleSheet, e);
 
 					queryTransformer = null;
 				}
 
-			}else{
+			} else {
 				log.error("Unable to cache query style sheet. Resource " + queryStyleSheet + " not found");
 			}
 		}
 
-		if(pdfStyleSheet == null){
+		if (pdfStyleSheet == null) {
 
 			pdfTransformer = null;
 
-		}else{
+		} else {
 
 			URL styleSheetURL = this.getClass().getResource(pdfStyleSheet);
 
-			if(styleSheetURL != null){
+			if (styleSheetURL != null) {
 
 				try {
-					pdfTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(),ClassPathURIResolver.getInstance(), true);
+					pdfTransformer = systemInterface.getStandaloneXSLTransformerFactory().getXSLTransformer(styleSheetURL.toURI(), ClassPathURIResolver.getInstance(), true);
 
 					log.debug("Succesfully parsed PDF stylesheet " + pdfStyleSheet);
 
-				} catch (Exception e){
+				} catch (Exception e) {
 
-					log.error("Unable to cache PDF style sheet " + pdfStyleSheet,e);
+					log.error("Unable to cache PDF style sheet " + pdfStyleSheet, e);
 
 					pdfTransformer = null;
 				}
 
-			}else{
+			} else {
 				log.error("Unable to cache PDF style sheet. Resource " + pdfStyleSheet + " not found");
 			}
 		}
 	}
 
-	protected XSLVariableReader parseQueryXSLStyleSheet(URL styleSheetURL){
+	protected XSLVariableReader parseQueryXSLStyleSheet(URL styleSheetURL) {
 
 		try {
 			XSLVariableReader variableReader = new XSLVariableReader(styleSheetURL.toURI());
@@ -251,22 +251,22 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 			List<ScriptTag> globalScripts = ModuleUtils.getGlobalScripts(variableReader);
 			List<ScriptTag> localScripts = ModuleUtils.getScripts(variableReader, sectionInterface, "f", moduleDescriptor);
 
-			this.queryScripts = CollectionUtils.combine(globalScripts,localScripts);
+			this.queryScripts = CollectionUtils.combine(globalScripts, localScripts);
 
 			List<LinkTag> globalLinks = ModuleUtils.getGlobalLinks(variableReader);
 			List<LinkTag> localLinks = ModuleUtils.getLinks(variableReader, sectionInterface, "f", moduleDescriptor);
-			
+
 			this.queryLinks = CollectionUtils.combine(globalLinks, localLinks);
-			
+
 			return variableReader;
 
 		} catch (Exception e) {
 
-			log.error("Unable to get scripts and links from query style sheet " + queryStyleSheet,e);
+			log.error("Unable to get scripts and links from query style sheet " + queryStyleSheet, e);
 
 			this.queryScripts = null;
 			this.queryLinks = null;
-			
+
 			return null;
 		}
 	}
@@ -283,7 +283,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		XMLUtils.appendNewCDATAElement(doc, showQueryValuesElement, "queryRequestURL", queryRequestURL);
 
 		showQueryValuesElement.appendChild(requestMetadata.toXML(doc));
-		
+
 		appendQueryInstance(queryInstance, doc, showQueryValuesElement, attributeHandler);
 
 		return createQueryResponse(doc, queryInstance.getQueryInstanceDescriptor().getQueryDescriptor());
@@ -293,31 +293,31 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		Document doc = createDocument(req, poster);
-		
+
 		return getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler, doc);
 	}
-	
+
 	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler, Document doc) throws Throwable {
 
 		Element showQueryFormElement = doc.createElement("ShowQueryForm");
 		doc.getDocumentElement().appendChild(showQueryFormElement);
 
 		XMLUtils.appendNewCDATAElement(doc, showQueryFormElement, "queryRequestURL", queryRequestURL);
-		
+
 		appendQueryInstance(queryInstance, doc, showQueryFormElement, attributeHandler);
-		
+
 		if (!CollectionUtils.isEmpty(validationErrors) && req.getMethod().equalsIgnoreCase("POST")) {
 
 			showQueryFormElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
 
 		if (enableAjaxPosting) {
-			
+
 			showQueryFormElement.appendChild(doc.createElement("EnableAjaxPosting"));
 		}
 
 		XMLUtils.append(doc, showQueryFormElement, "ValidationErrors", validationErrors);
-		
+
 		showQueryFormElement.appendChild(requestMetadata.toXML(doc));
 
 		return createQueryResponse(doc, queryInstance.getQueryInstanceDescriptor().getQueryDescriptor());
@@ -326,19 +326,19 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	@Override
 	public PDFQueryResponse getPDFContent(QI queryInstance, AttributeHandler attributeHandler) throws Throwable {
 
-		if(pdfTransformer == null){
-			
+		if (pdfTransformer == null) {
+
 			throw new ModuleConfigurationException("No PDF style sheet set for module " + moduleDescriptor);
 		}
-		
+
 		Document doc = createDocument();
 
 		Element showQueryValuesElement = doc.createElement("ShowQueryValues");
 		doc.getDocumentElement().appendChild(showQueryValuesElement);
 
 		appendPDFData(doc, showQueryValuesElement, queryInstance, attributeHandler);
-		
-		if(this.includeDebugData){
+
+		if (this.includeDebugData) {
 
 			return new PDFQueryResponse(transformQuery(doc, pdfTransformer, true), doc, queryInstance.getQueryInstanceDescriptor().getQueryDescriptor(), getPDFResourceProvider(queryInstance), getPDFAttachments(queryInstance));
 		}
@@ -348,23 +348,23 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	protected void appendQueryInstance(QI queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
 
-		if(queryInstance.getQuery().hasTags()) {
+		if (queryInstance.getQuery().hasTags()) {
 
 			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
-			
+
 			generatorDocument.addIgnoredField(BaseQuery.HELP_TEXT_FIELD);
 			generatorDocument.addIgnoredField(BaseQuery.DESCRIPTION_FIELD);
-			
+
 			generatorDocument.addAssignableFieldElementableListener(BaseQuery.class, new BaseQueryTextsListener(attributeHandler));
-			
+
 			targetElement.appendChild(queryInstance.toXML(generatorDocument));
-		
-		}else {
+
+		} else {
 
 			targetElement.appendChild(queryInstance.toXML(doc));
 		}
 	}
-	
+
 	protected List<PDFAttachment> getPDFAttachments(QI queryInstance) {
 
 		return null;
@@ -382,7 +382,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	protected QueryResponse createQueryResponse(Document doc, ImmutableQueryDescriptor queryDescriptor) throws TransformerConfigurationException, TransformerException {
 
-		if(this.includeDebugData){
+		if (this.includeDebugData) {
 
 			return new QueryResponse(transformQuery(doc, queryTransformer, false), doc, queryScripts, queryLinks, queryDescriptor);
 		}
@@ -394,12 +394,12 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		StringWriter stringWriter = new StringWriter();
 
-		if(pdf){
+		if (pdf) {
 
 			XMLTransformer.transformToWriter(xslTransformer.getTransformer(), doc, stringWriter, "UTF-8", "1.1");
-			
-		}else{
-			
+
+		} else {
+
 			XMLTransformer.transformToWriter(xslTransformer.getTransformer(), doc, stringWriter, systemInterface.getEncoding());
 		}
 
@@ -442,7 +442,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 		XMLUtils.appendNewElement(doc, documentElement, "cssPath", cssPath);
 		XMLUtils.appendNewElement(doc, documentElement, "useCKEditorForDescription", true);
 		XMLUtils.appendNewElement(doc, documentElement, "ckConnectorModuleAlias", ckConnectorModuleAlias);
-		
+
 		doc.appendChild(documentElement);
 		return doc;
 	}
@@ -470,15 +470,15 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		instance.removeQueryProvider(queryTypeDescriptor, this);
 	}
-	
-	protected void addQueryProvider(QueryHandler queryHandler){
-		
-		if(!queryHandler.addQueryProvider(this)){
-			
+
+	protected void addQueryProvider(QueryHandler queryHandler) {
+
+		if (!queryHandler.addQueryProvider(this)) {
+
 			log.error("Unable to add query provider " + this + " to query handler, a query provider with ID " + queryTypeID + " is already registered");
 		}
 	}
-	
+
 	@Override
 	public ImmutableQueryInstance getImmutableQueryInstance(MutableQueryInstanceDescriptor descriptor, HttpServletRequest req, InstanceMetadata instanceMetadata) throws Throwable {
 
@@ -487,6 +487,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 	@Override
 	public FlowAdminModule getFlowAdminModule() {
+
 		return flowAdminModule;
 	}
 
@@ -501,43 +502,42 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 
 		return null;
 	}
-	
-	@InstanceManagerDependency(required=true)
-	public synchronized void setFlowAdminModule(FlowAdminModule flowAdminModule) throws SQLException{
-		
+
+	@InstanceManagerDependency(required = true)
+	public synchronized void setFlowAdminModule(FlowAdminModule flowAdminModule) throws SQLException {
+
 		this.flowAdminModule = flowAdminModule;
-		
+
 		checkOldQueryTypeID();
 	}
-	
+
 	//This method is only use for CRUD's
 	@Override
 	public String getAbsoluteFileURL(URIParser uriParser, Object bean) {
 
-		if(ckConnectorModuleAlias != null){
-			
+		if (ckConnectorModuleAlias != null) {
+
 			return uriParser.getContextPath() + ckConnectorModuleAlias;
 		}
 
 		return null;
 	}
-	
+
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable {
 
 		throw new RuntimeException("Query import not supported for query type " + queryTypeDescriptor);
 	}
 
-	
 	@Override
 	public String getQueryTypeName() {
-	
+
 		return queryTypeName;
 	}
-	
+
 	@Override
 	public String getQueryDescription() {
-		
+
 		return queryDescription;
 	}
 }

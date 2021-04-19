@@ -47,6 +47,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
@@ -106,13 +107,15 @@ public class TextAreaQueryProviderModule extends BaseQueryProviderModule<TextAre
 	}
 
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable {
 
 		TextAreaQuery query = new TextAreaQuery();
 
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
+		
+		contentFilter.filterHTML(query);
 
 		this.queryDAO.add(query, transactionHandler, null);
 

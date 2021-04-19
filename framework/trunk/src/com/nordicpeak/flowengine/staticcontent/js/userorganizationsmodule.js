@@ -10,8 +10,8 @@ $(document).ready(function() {
 	$.tablesorter.addWidget({
 		id : "onSortEvent",
 		format : function(table) {
-			$("thead th.headerSortDown span", table).attr("data-icon-after", "^");
-			$("thead th.headerSortUp span", table).attr("data-icon-after", "_");
+			$("thead th.tablesorter-headerDesc span", table).attr("data-icon-after", "^");
+			$("thead th.tablesorter-headerAsc span", table).attr("data-icon-after", "_");
 		}
 	});
 
@@ -25,10 +25,14 @@ $(document).ready(function() {
 			var columns = $table.find("thead tr th");
 
 			var sortColumn = columns.length - 3;
-			var headers = "{ 0: { sorter: false }, " + (columns.length - 1) + ": { sorter: false } }";
+			
+			var headers = {};
+			headers[0] = { sorter: false };
+			headers[columns.length - 1] = { sorter: false };
+			
 			$table.tablesorter({
 				widgets : [ 'zebra', 'onSortEvent' ],
-				headers : eval("(" + headers + ")"),
+				headers : headers,
 				sortList : [ [ sortColumn, 1 ] ]
 			});
 		}

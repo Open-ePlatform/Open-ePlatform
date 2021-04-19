@@ -32,6 +32,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryProvider;
@@ -382,7 +383,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 	}
 	
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws QueryProviderNotFoundException, QueryProviderErrorException {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws QueryProviderNotFoundException, QueryProviderErrorException {
 
 		QueryProvider queryProvider = queryProviderMap.get(descriptor.getQueryTypeID());
 
@@ -392,7 +393,7 @@ public class QueryHandlerModule extends AnnotatedForegroundModule implements Que
 		}
 
 		try{
-			return queryProvider.importQuery(descriptor, transactionHandler, statusConversionMap);
+			return queryProvider.importQuery(descriptor, transactionHandler, statusConversionMap, contentFilter);
 		}catch(Throwable t){
 			throw new QueryProviderErrorException("Exception thrown by query provider for query type " + queryProvider.getQueryType() + " while importing query " + descriptor, t, queryProvider);
 		}

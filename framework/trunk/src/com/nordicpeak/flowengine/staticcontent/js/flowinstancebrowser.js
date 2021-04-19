@@ -134,23 +134,6 @@ $(document).ready(function() {
 		
 	});
 	
-	$(document).on("click", "i.favourite", function(e) {
-
-		var $this = $(this);
-		
-		if($this.hasClass("gray")) {
-		
-			e.preventDefault();
-			e.stopPropagation();
-			
-			var flowFamilyID = $this.attr("id");
-			
-			addUserFavourite($this, flowFamilyID.split("_")[1]);
-		
-		}
-		
-	});
-	
 	$("#search").keyup(function () {
 		
 		$(this).parent().removeClass("searching");
@@ -269,41 +252,6 @@ function showCategoryFlows($category, $categories, $flowList) {
 	
 }
 
-function addUserFavourite($trigger, flowFamilyID) {
-	
-	$.ajax({
-		cache: false,
-		url: userFavouriteModuleURI + "/addfavourite/" + $.trim(flowFamilyID),
-		dataType: "json",
-		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
-		error: function (xhr, ajaxOptions, thrownError) { },
-		success: function(response) {
-
-			var result = eval(response);
-			
-			if(result.AddSuccess) {
-			
-				showNotificationDialog("success", notificationDialogDelay, "Sparad som favorit.");
-				$trigger.removeClass("gray");
-				$("i.favourite#flowFamily_" + flowFamilyID).removeClass("gray");
-				notifyUserFavouriteBackgroundModules(result);
-				
-			}
-			
-//			} else if(result.DeleteSuccess) {
-//				
-//				showNotificationDialog("success", notificationDialogDelay, "Borttagen som favorit.");
-//				$trigger.addClass("gray");
-//				$("#flow_" + flowID + " i.favourite").addClass("gray");
-//				notifyUserFavouriteBackgroundModules(result);
-//				
-//			}		
-			
-		}
-	});
-	
-}
-
 function notifyUserFavouriteBackgroundModules(result) {
 	
 	if(typeof reloadUserFavourites === 'function') {
@@ -337,7 +285,7 @@ function searchFlow() {
 			error: function (xhr, ajaxOptions, thrownError) { },
 			success: function(response) {
 
-				var result = eval(response);
+				var result = response;
 				var hits = 0;
 				
 				$searchResultList.html("");

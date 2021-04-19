@@ -87,6 +87,7 @@ import se.unlogic.hierarchy.core.handlers.GroupHandler;
 import se.unlogic.hierarchy.core.handlers.UserHandler;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.HTMLContentFilter;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.events.EventHandler;
@@ -259,6 +260,7 @@ import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
 import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.StatusFormExtensionProvider;
 import com.nordicpeak.flowengine.interfaces.XSDExtensionProvider;
 import com.nordicpeak.flowengine.listeners.EvaluatorDescriptorElementableListener;
@@ -269,6 +271,7 @@ import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
+import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 import com.nordicpeak.flowengine.runnables.ExpiredManagerRemover;
 import com.nordicpeak.flowengine.runnables.StaleFlowInstancesRemover;
 import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
@@ -285,7 +288,7 @@ import com.nordicpeak.flowengine.validationerrors.QueryTypeNotFoundValidationErr
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback, UserAdminExtensionProvider, GroupAdminExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
+public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCRUDCallback<User>, AccessInterface, FlowProcessCallback, FlowFamilyEventHandler, MultipartLimitProvider, SystemStartupListener, FlowAdminCRUDCallback, UserAdminExtensionProvider, GroupAdminExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor>, QueryContentFilter {
 
 	//@formatter:off
 	private static final Field[] FLOW_FAMILY_CACHE_RELATIONS = {
@@ -632,6 +635,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
+	
+	@InstanceManagerDependency
+	private HTMLContentFilter htmlContentFilter;
 	
 	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
 	
@@ -4301,6 +4307,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			XMLParser xmlParser = new XMLParser(docElement);
 
 			flow.populate(xmlParser);
+			
+			this.filterHTML(flow);
 
 			flow.setFlowType(flowType);
 
@@ -4550,7 +4558,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 								try {
 									queryDescriptor.setStep(null);
-									importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler, statusConversionMap));
+									importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler, statusConversionMap, this));
 
 								} catch (Exception e) {
 
@@ -4840,7 +4848,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 						try {
 							queryDescriptor.setStep(null);
-							queryHandler.importQuery(queryDescriptor, transactionHandler, Collections.emptyMap());
+							queryHandler.importQuery(queryDescriptor, transactionHandler, Collections.emptyMap(), this);
 
 						} catch (Exception e) {
 
@@ -6853,6 +6861,47 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		return latestPublishedFlow;
+	}
+
+	public void filterHTML(Flow flow) {
+
+		if(htmlContentFilter == null) {
+			
+			return;
+		}
+		
+		flow.setShortDescription(htmlContentFilter.filterHTML(flow.getShortDescription()));
+		flow.setLongDescription(htmlContentFilter.filterHTML(flow.getLongDescription()));
+		flow.setSubmittedMessage(htmlContentFilter.filterHTML(flow.getSubmittedMessage()));
+	}
+
+	public void filterHTML(BaseQuery query) {
+
+		if(htmlContentFilter == null) {
+			
+			return;
+		}
+		
+		if(query.getDescription() != null){
+			
+			query.setDescription(htmlContentFilter.filterHTML(query.getDescription()));
+		}
+		
+		if(query.getHelpText() != null) {
+			
+			query.setHelpText(htmlContentFilter.filterHTML(query.getHelpText()));
+		}
+	}
+
+	@Override
+	public String filterHTML(String html) {
+
+		if(htmlContentFilter == null) {
+			
+			return html;
+		}
+		
+		return htmlContentFilter.filterHTML(html);
 	}
 	
 }
