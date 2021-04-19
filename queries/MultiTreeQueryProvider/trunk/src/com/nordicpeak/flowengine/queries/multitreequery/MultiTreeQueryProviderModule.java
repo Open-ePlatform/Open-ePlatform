@@ -62,6 +62,7 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
 import com.nordicpeak.flowengine.queries.multitreequery.beans.MultiTreeQuery;
@@ -161,13 +162,15 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 
 	@Override
-	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap) throws Throwable {
+	public Query importQuery(MutableQueryDescriptor descriptor, TransactionHandler transactionHandler, Map<Integer, ImmutableStatus> statusConversionMap, QueryContentFilter contentFilter) throws Throwable {
 
 		MultiTreeQuery query = new MultiTreeQuery();
 
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
+		
+		contentFilter.filterHTML(query);
 
 		this.queryDAO.add(query, transactionHandler, null);
 
