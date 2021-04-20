@@ -666,8 +666,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			
 		} else {
 			
-			for (StoredGuardian storedGuardian : storedGuardians) {
-				storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
+			if(storedGuardians != null) {
+				
+				for (StoredGuardian storedGuardian : storedGuardians) {
+					
+					storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
+				}
 			}
 		}
 		
