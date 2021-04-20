@@ -664,15 +664,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				}
 			}
 			
-		} else {
+		} else if (queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
 			
-			if(storedGuardians != null) {
-				
 				for (StoredGuardian storedGuardian : storedGuardians) {
 					
 					storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
 				}
-			}
 		}
 		
 		return storedGuardians;
