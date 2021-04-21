@@ -1753,11 +1753,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
+		Contact posterContact = getPosterContact(flowInstance, event.getSiteProfile());
+		
 		if (notificationSettings.isSendInternalMessageAddedManagerEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
 
 			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
 
-			sendManagerEmails(flowInstance, null, notificationSettings.getInternalMessageAddedManagerEmailSubject(), notificationSettings.getInternalMessageAddedManagerEmailMessage(), excludedManagers, false);
+			sendManagerEmails(flowInstance, posterContact, notificationSettings.getInternalMessageAddedManagerEmailSubject(), notificationSettings.getInternalMessageAddedManagerEmailMessage(), excludedManagers, false);
 		}
 
 		if (notificationSettings.isSendInternalMessageAddedGroupEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups())) {
@@ -1766,7 +1768,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			for (String email : managerGroupEmailRecipientAddresses) {
 
-				sendGlobalEmail(event.getSiteProfile(), flowInstance, null, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);
+				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);
 			}
 		}
 	}
