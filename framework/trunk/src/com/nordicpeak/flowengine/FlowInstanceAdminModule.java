@@ -171,6 +171,7 @@ import com.nordicpeak.flowengine.listeners.FlowInstanceExternalMessageElementabl
 import com.nordicpeak.flowengine.listeners.FlowStatusManagerAccessElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
+import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
@@ -1401,6 +1402,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 				TransactionHandler.autoClose(transactionHandler);
 			}
 
+			int closedCount = FlowInstanceManagerRegistery.getInstance().closeInstances(flowInstance.getFlowInstanceID(), queryHandler);
+
+			if (closedCount > 0) {
+				log.info("Closed " + closedCount + " flow instance managers for flow instance " + flowInstance);
+			}
+			
 			eventHandler.sendEvent(FlowInstance.class, new CRUDEvent<FlowInstance>(CRUDAction.DELETE, flowInstance), EventTarget.ALL);
 
 			eventHandler.sendEvent(FlowInstance.class, new DeletedByManagerEvent(flowInstance, user), EventTarget.ALL);
