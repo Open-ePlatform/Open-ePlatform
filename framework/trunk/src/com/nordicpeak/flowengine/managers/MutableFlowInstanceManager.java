@@ -225,34 +225,40 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 			int closedCounter = 0;
 
+			ArrayList<MutableFlowInstanceManager> copyOfSessionBoundInstanceManagers;
+			ArrayList<MutableFlowInstanceManager> copyOfnonSessionBoundInstanceManagers;
+			
 			try{
-				w.lock();
+				r.lock();
 
-				for(MutableFlowInstanceManager manager : sessionBoundInstanceManagers){
-
-					if(manager.getFlowInstanceID() != null && manager.getFlowInstanceID().equals(flowInstanceID)){
-
-						manager.close(queryHandler);
-
-						closedCounter++;
-					}
-				}
-
-				for(MutableFlowInstanceManager manager : nonSessionBoundInstanceManagers){
-
-					if(manager.getFlowInstanceID() != null && manager.getFlowInstanceID().equals(flowInstanceID)){
-
-						manager.close(queryHandler);
-
-						closedCounter++;
-					}
-				}
-
-				return closedCounter;
+				copyOfSessionBoundInstanceManagers = new ArrayList<>(sessionBoundInstanceManagers);
+				copyOfnonSessionBoundInstanceManagers = new ArrayList<>(nonSessionBoundInstanceManagers);
 
 			}finally{
-				w.unlock();
+				r.unlock();
 			}
+			
+			for(MutableFlowInstanceManager manager : copyOfSessionBoundInstanceManagers){
+
+				if(manager.getFlowInstanceID() != null && manager.getFlowInstanceID().equals(flowInstanceID)){
+
+					manager.close(queryHandler);
+
+					closedCounter++;
+				}
+			}
+
+			for(MutableFlowInstanceManager manager : copyOfnonSessionBoundInstanceManagers){
+
+				if(manager.getFlowInstanceID() != null && manager.getFlowInstanceID().equals(flowInstanceID)){
+
+					manager.close(queryHandler);
+
+					closedCounter++;
+				}
+			}
+
+			return closedCounter;
 		}
 
 		public int closeInstances(Flow flow, QueryHandler queryHandler) {
@@ -269,34 +275,40 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			
 			int closedCounter = 0;
 
+			ArrayList<MutableFlowInstanceManager> copyOfSessionBoundInstanceManagers;
+			ArrayList<MutableFlowInstanceManager> copyOfnonSessionBoundInstanceManagers;
+			
 			try{
-				w.lock();
+				r.lock();
 
-				for(MutableFlowInstanceManager manager : sessionBoundInstanceManagers){
-
-					if(manager.getFlowInstance().getFlow().getFlowID().equals(flow.getFlowID()) && !manager.isClosed()){
-
-						manager.close(queryHandler);
-
-						closedCounter++;
-					}
-				}
-
-				for(MutableFlowInstanceManager manager : nonSessionBoundInstanceManagers){
-
-					if(manager.getFlowInstance().getFlow().getFlowID().equals(flow.getFlowID()) && !manager.isClosed()){
-
-						manager.close(queryHandler);
-
-						closedCounter++;
-					}
-				}
-
-				return closedCounter;
+				copyOfSessionBoundInstanceManagers = new ArrayList<>(sessionBoundInstanceManagers);
+				copyOfnonSessionBoundInstanceManagers = new ArrayList<>(nonSessionBoundInstanceManagers);
 
 			}finally{
-				w.unlock();
+				r.unlock();
 			}
+			
+			for(MutableFlowInstanceManager manager : copyOfSessionBoundInstanceManagers){
+
+				if(manager.getFlowInstance().getFlow().getFlowID().equals(flow.getFlowID()) && !manager.isClosed()){
+
+					manager.close(queryHandler);
+
+					closedCounter++;
+				}
+			}
+
+			for(MutableFlowInstanceManager manager : copyOfnonSessionBoundInstanceManagers){
+
+				if(manager.getFlowInstance().getFlow().getFlowID().equals(flow.getFlowID()) && !manager.isClosed()){
+
+					manager.close(queryHandler);
+
+					closedCounter++;
+				}
+			}
+
+			return closedCounter;
 		}
 	}
 
