@@ -112,77 +112,74 @@ import com.nordicpeak.flowengine.utils.TextTagReplacer;
 public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQueryInstance> implements BaseQueryCRUDCallback, MultiSigningQueryProvider, ExtensionLinkProvider {
 
 	private static final String SESSION_TEST_CHILDREN = "childQueryTestChildren";
-	
+
 	public static final PooledSimpleDateFormat CITIZEN_ID_DATE_FORMATTER = new PooledSimpleDateFormat("yyyyMMdd");
-	
-	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" +
-			"INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" +
-			"INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" +
-			"WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
-	
+
+	private static final String GET_OTHER_PARTIES_SQL = "SELECT child_query_guardians.queryInstanceID FROM child_query_guardians\n" + "INNER JOIN child_query_instances ON child_query_guardians.queryInstanceID = child_query_instances.queryInstanceID\n" + "INNER JOIN child_queries ON child_query_instances.queryID = child_queries.queryID\n" + "WHERE child_queries.useMultipartSigning = true AND child_query_guardians.poster = false AND child_query_guardians.citizenIdentifier = ?;";
+
 	@XSLVariable(prefix = "java.")
 	protected String testChildrenMenuName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String childSelectedAlternativeName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String singleGuardianAlternativeName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String multiGuardianAlternativeName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenFirstName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenLastName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildCitizenIdentifier = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildAdress = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildPostalAdress = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportChildZipCode = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianName = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianEmail = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianPhone = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianCitizenIdentifier = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianAdress = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianPostalAdress = "This variable should be set by your stylesheet";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String exportOtherGuardianZipCode = "This variable should be set by your stylesheet";
-	
+
 	protected String communicationErrorDescription;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User phone attribute", description = "Attribute to get phone from", required = true)
 	private String phoneAttribute = "mobilePhone";
 
 	@InstanceManagerDependency(required = true)
 	private ChildRelationProvider childRelationProvider;
-	
+
 	protected StaticContentModule staticContentModule;
 
 	private AnnotatedDAO<ChildQuery> queryDAO;
@@ -198,11 +195,11 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	private ImmutableAlternative childSelectedAlternative;
 	private ImmutableAlternative singleGuardianAlternative;
 	private ImmutableAlternative multiGuardianAlternative;
-	
+
 	protected ExtensionLink flowListExtensionLink;
-	
+
 	protected CopyOnWriteArrayList<ChildQueryFilterProvider> filterProviders = new CopyOnWriteArrayList<>();
-	
+
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
@@ -213,7 +210,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			throw new RuntimeException("Unable to register module " + moduleDescriptor + " in global instance handler using key " + ChildQueryProviderModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 	}
-	
+
 	@Override
 	protected void moduleConfigured() throws Exception {
 
@@ -228,19 +225,19 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	@Override
 	protected XSLVariableReader parseQueryXSLStyleSheet(URL styleSheetURL) {
-		
+
 		XSLVariableReader variableReader = super.parseQueryXSLStyleSheet(styleSheetURL);
-		
+
 		if (variableReader != null) {
 			try {
 				communicationErrorDescription = variableReader.getValue("i18n.Error.Provider.CommunicationError");
-	
+
 			} catch (Exception e) {
-	
-				log.error("Unable to get i18n.Error.Provider.CommunicationError from query style sheet " + queryStyleSheet,e);
+
+				log.error("Unable to get i18n.Error.Provider.CommunicationError from query style sheet " + queryStyleSheet, e);
 			}
 		}
-		
+
 		return variableReader;
 	}
 
@@ -265,59 +262,59 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryFilterEndpointNameParamFactory = queryDAO.getParamFactory("filterEndpoint", String.class);
 		queryInstanceIDParamFactory = queryInstanceDAO.getParamFactory("queryInstanceID", Integer.class);
-		
+
 		FlowEngineDAOFactory flowDAOFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
-		
+
 		queryDescriptorDAOWrapper = flowDAOFactory.getQueryDescriptorDAO().getWrapper(Integer.class);
 		queryDescriptorDAOWrapper.addRelations(QueryDescriptor.STEP_RELATION, Step.FLOW_RELATION, Flow.FLOW_TYPE_RELATION, Flow.CATEGORY_RELATION);
 		queryDescriptorDAOWrapper.setUseRelationsOnGet(true);
 	}
-	
+
 	@InstanceManagerDependency(required = true)
 	public void setStaticContentModule(StaticContentModule staticContentModule) {
-		
+
 		generateExtensionLinks(staticContentModule);
-		
+
 		this.staticContentModule = staticContentModule;
 	}
-	
+
 	@Override
 	@InstanceManagerDependency
 	public void setFlowAdminModule(FlowAdminModule flowAdminModule) throws SQLException {
-		
+
 		if (flowAdminModule != null) {
-			
+
 			flowAdminModule.addFlowListExtensionLinkProvider(this);
-			
+
 		} else if (this.flowAdminModule != null) {
-			
+
 			this.flowAdminModule.removeFlowListExtensionLinkProvider(this);
 		}
-		
+
 		super.setFlowAdminModule(flowAdminModule);
 	}
-	
+
 	@Override
 	public void unload() throws Exception {
-		
+
 		if (flowAdminModule != null) {
-			
+
 			flowAdminModule.removeFlowListExtensionLinkProvider(this);
 		}
-		
+
 		systemInterface.getInstanceHandler().removeInstance(ChildQueryProviderModule.class, this);
-		
+
 		super.unload();
 	}
-	
+
 	private void generateExtensionLinks(StaticContentModule staticContentModule) {
-		
+
 		if (staticContentModule != null) {
-			
+
 			flowListExtensionLink = new ExtensionLink(testChildrenMenuName, systemInterface.getContextPath() + getFullAlias() + "/testchildren", staticContentModule.getModuleContentURL(moduleDescriptor) + "/pics/group.png", "bottom-right");
-			
+
 		} else {
-			
+
 			flowListExtensionLink = null;
 		}
 	}
@@ -348,7 +345,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
-		
+
 		contentFilter.filterHTML(query);
 
 		this.queryDAO.add(query, transactionHandler, null);
@@ -466,9 +463,9 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	@Override
 	protected void appendQueryInstance(ChildQueryInstance queryInstance, Document doc, Element targetElement, AttributeHandler attributeHandler) {
-		
+
 		super.appendQueryInstance(queryInstance, doc, targetElement, attributeHandler);
-		
+
 		ChildQuery query = queryInstance.getQuery();
 
 		if (query.getFilterEndpointName() != null) {
@@ -523,14 +520,14 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
 		}
 	}
-	
+
 	@Override
 	public void populate(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-		
+
 		if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
 
 			populateGuardians(queryInstance.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
@@ -541,7 +538,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			queryInstance.getQueryInstanceDescriptor().setPopulated(true);
 			queryInstance.setAttributes(attributeHandler);
-			
+
 			return;
 		}
 
@@ -551,7 +548,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.reset(attributeHandler);
 			return;
 		}
-		
+
 		if (!allowPartialPopulation && childCitizenIdentifier == null) {
 			validationErrors.add(new ValidationError("Required"));
 		}
@@ -576,7 +573,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		if (selectedChild != null) {
 
 			List<StoredGuardian> storedGuardians = populateGuardians(selectedChild.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
-			
+
 			if (!validationErrors.isEmpty()) {
 				throw new ValidationException(validationErrors);
 			}
@@ -607,12 +604,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			queryInstance.getQueryInstanceDescriptor().setPopulated(false);
 		}
 	}
-	
+
 	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
-		
+
 		Integer queryID = queryInstance.getQuery().getQueryID();
 		String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
-		
+
 		if (queryInstance.getQuery().isUseMultipartSigning()) {
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
@@ -663,15 +660,15 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					}
 				}
 			}
-			
+
 		} else if (queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
-			
-				for (StoredGuardian storedGuardian : storedGuardians) {
-					
-					storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
-				}
+
+			for (StoredGuardian storedGuardian : storedGuardians) {
+
+				storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
+			}
 		}
-		
+
 		return storedGuardians;
 	}
 
@@ -746,29 +743,29 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	private Map<String, StoredChild> getChildrenWithGuardians(ChildQueryInstance queryInstance, User poster, RequestMetadata requestMetadata, AttributeHandler attributeHandler) {
-		
+
 		ChildQuery query = queryInstance.getQuery();
-		
+
 		if (poster != null) {
-			
+
 			if ((requestMetadata == null || !requestMetadata.isManager()) && SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession()) != null) {
-				
+
 				queryInstance.setHasChildrenUnderSecrecy(false);
-				
+
 				@SuppressWarnings("unchecked")
 				Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
-				
+
 				return storedChildMap;
 			}
-			
+
 			if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
 				return null;
 			}
-			
+
 			String citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
-			
+
 			if (citizenIdentifier != null) {
-				
+
 				if (childRelationProvider == null) {
 
 					log.error("Missing required instance manager dependency: childRelationProvider");
@@ -777,22 +774,22 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				}
 
 				log.info("Getting children information for user " + poster);
-				
+
 				queryInstance.setFilteredChildrenText(null);
 				queryInstance.setAgeFilteredChildren(false);
-				
+
 				try {
 					ChildrenResponse childrenResponse = childRelationProvider.getChildren(citizenIdentifier, true, query.isUseMultipartSigning());
-					
+
 					if (childrenResponse != null) {
-						
+
 						queryInstance.setHasChildrenUnderSecrecy(childrenResponse.hasChildrenUnderSecrecy());
-						
+
 						Map<String, StoredChild> storedChildMap = new LinkedHashMap<String, StoredChild>();
 						Map<String, Child> navetChildMap = childrenResponse.getChildren();
 
 						if (query.getFilterEndpointName() != null) {
-							
+
 							ChildQueryFilterEndpoint filterEndpoint = getFilterEndpoint(query.getFilterEndpointName());
 
 							if (filterEndpoint == null) {
@@ -801,46 +798,46 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 								queryInstance.setFetchChildrenException(new CommunicationException("Missing required filter endpoint: " + query.getFilterEndpointName()));
 								return null;
 							}
-							
+
 							if (query.getMinAge() != null || query.getMaxAge() != null) {
 								for (Iterator<Child> it = navetChildMap.values().iterator(); it.hasNext();) {
-									
+
 									Child child = it.next();
-									
+
 									int age = StoredChild.getAge(child.getCitizenIdentifier());
-									
+
 									if ((query.getMinAge() != null && age < query.getMinAge()) || (query.getMaxAge() != null && age > query.getMaxAge())) {
-										
+
 										log.info("Removing child " + child + " before filter endpoint due to age " + age + " outside limits " + query.getMinAge() + "-" + query.getMaxAge());
 										it.remove();
 										queryInstance.setAgeFilteredChildren(true);
 									}
 								}
 							}
-							
+
 							ImmutableFlow flow = queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getStep().getFlow();
 
 							Map<String, FilterAPIChild> filterChildren = filterEndpoint.getChildren(navetChildMap, poster, citizenIdentifier, flow, attributeHandler);
 
 							if (filterChildren == null) {
-								
+
 								queryInstance.setFetchChildrenException(new CommunicationException("Got no response from filtering API: " + filterEndpoint));
 								return null;
-								
+
 							} else if (filterChildren.isEmpty()) {
-								
+
 								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("Empty response from filtering API: " + filterEndpoint));
 								return null;
 							}
 
 							StringBuilder filteredChildrenNames = null;
-							
+
 							if (query.getFilteredChildrenDescription() != null) {
 								filteredChildrenNames = new StringBuilder();
 							}
 
 							for (Entry<String, Child> entry : navetChildMap.entrySet()) {
-								
+
 								FilterAPIChild filterChild = filterChildren.get(entry.getKey());
 
 								if (filterChild == null) {
@@ -872,29 +869,29 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 								queryInstance.setFetchChildrenException(new IncompleteFilterAPIDataException("No remaining children after filtering API: " + filterEndpoint));
 								return null;
 							}
-							
+
 						} else {
-							
+
 							for (Entry<String, Child> entry : navetChildMap.entrySet()) {
-								
+
 								storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
 							}
 						}
-						
+
 						return storedChildMap;
-						
+
 					} else {
-						
+
 						queryInstance.setHasChildrenUnderSecrecy(false);
 					}
-					
+
 				} catch (ChildRelationProviderException e) {
 
 					queryInstance.setFetchChildrenException(e);
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -920,83 +917,83 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	@Override
 	public List<Integer> getQueryInstanceIDs(String citizenIdentifier) throws SQLException {
-		
+
 		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(queryInstanceDAO.getDataSource(), GET_OTHER_PARTIES_SQL, IntegerPopulator.getPopulator());
-		
+
 		query.setString(1, citizenIdentifier);
-		
+
 		return query.executeQuery();
 	}
 
 	public List<String> getExportLabels(ChildQuery query) {
-		
+
 		List<String> labels = new ArrayList<String>();
-		
+
 		labels.add(exportChildCitizenName);
 		labels.add(exportChildCitizenIdentifier);
-		
+
 		if (query.isShowAddress()) {
-			
+
 			labels.add(exportChildAdress);
 			labels.add(exportChildPostalAdress);
 			labels.add(exportChildZipCode);
 		}
-		
+
 		labels.add(exportOtherGuardianName);
-		
+
 		if (!query.isHideSSNForOtherGuardians()) {
 			labels.add(exportOtherGuardianCitizenIdentifier);
 		}
-		
+
 		labels.add(exportOtherGuardianEmail);
 		labels.add(exportOtherGuardianPhone);
-		
+
 		if (query.isShowGuardianAddress()) {
-			
+
 			labels.add(exportOtherGuardianAdress);
 			labels.add(exportOtherGuardianPostalAdress);
 			labels.add(exportOtherGuardianZipCode);
 		}
-		
+
 		return labels;
 	}
-	
+
 	@Override
 	public ExtensionLink getExtensionLink(User user) {
-		
+
 		if (hasRequiredDependencies) {
-			
+
 			return flowListExtensionLink;
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public AccessInterface getAccessInterface() {
-		
+
 		return moduleDescriptor;
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse testChildren(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		if(flowAdminModule == null || !AccessUtils.checkAccess(user, flowAdminModule.getAccessInterface())){
-			
+		if (flowAdminModule == null || !AccessUtils.checkAccess(user, flowAdminModule.getAccessInterface())) {
+
 			throw new AccessDeniedException("Access to toggling of test children denied");
 		}
-		
+
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
 			if ("true".equals(req.getParameter("enable"))) {
-				
+
 				log.info("User " + user + " enabling test children");
-				
+
 				String userCitizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 				StoredGuardian guardian = new StoredGuardian(user.getFirstname(), user.getLastname(), userCitizenID);
-				
+
 				Map<String, StoredChild> children = new LinkedHashMap<String, StoredChild>();
-				
+
 				for (int i = 0; i < 18; i++) {
 
 					Calendar calendar = Calendar.getInstance();
@@ -1005,7 +1002,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					calendar.set(Calendar.SECOND, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
 					calendar.add(Calendar.YEAR, -i);
-					
+
 					StoredChild child = new StoredChild("Testbarn", i + "år", CITIZEN_ID_DATE_FORMATTER.format(calendar.getTime()) + "TEST");
 					child.setTestChild(true);
 					child.setMunicipalityCode("4321");
@@ -1015,16 +1012,16 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					child.setGuardians(Collections.singletonList(guardian));
 					children.put(child.getCitizenIdentifier(), child);
 				}
-				
+
 				SessionUtils.setAttribute(SESSION_TEST_CHILDREN, children, user.getSession());
-				
+
 			} else {
-				
+
 				log.info("User " + user + " disabling test children");
-				
+
 				SessionUtils.removeAttribute(SESSION_TEST_CHILDREN, user.getSession());
 			}
-			
+
 			this.flowAdminModule.redirectToDefaultMethod(req, res);
 		}
 
@@ -1041,7 +1038,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	public ChildQueryFilterEndpoint getFilterEndpoint(String name) {
-		
+
 		for (ChildQueryFilterProvider provider : filterProviders) {
 
 			try {
@@ -1050,26 +1047,26 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				if (endpoint != null) {
 					return endpoint;
 				}
-				
+
 			} catch (Exception e) {
 				log.error("Error getting filter endpoint with name \"" + name + "\" from provider " + provider, e);
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public List<ChildQueryFilterEndpoint> getFilterEndpoints() {
-		
+
 		List<ChildQueryFilterEndpoint> endpoints = new ArrayList<>();
-		
+
 		for (ChildQueryFilterProvider provider : filterProviders) {
 
 			try {
 				List<? extends ChildQueryFilterEndpoint> providerEndpoints = provider.getEndpoints();
-				
-				if(providerEndpoints != null) {
-					
+
+				if (providerEndpoints != null) {
+
 					endpoints.addAll(providerEndpoints);
 				}
 
@@ -1077,39 +1074,41 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				log.error("Error getting filter endpoints from provider " + provider, e);
 			}
 		}
-		
+
 		return endpoints;
 	}
-	
+
 	public boolean addChildQueryFilterProvider(ChildQueryFilterProvider provider) {
+
 		return filterProviders.add(provider);
 	}
-	
+
 	public boolean removeChildQueryFilterProvider(ChildQueryFilterProvider provider) {
+
 		return filterProviders.remove(provider);
 	}
 
 	public List<ChildQuery> getQueriesUsingFilterEndpoint(String name) throws SQLException {
-		
+
 		HighLevelQuery<ChildQuery> query = new HighLevelQuery<ChildQuery>();
 		query.addParameter(queryFilterEndpointNameParamFactory.getParameter(name));
 
 		List<ChildQuery> queries = queryDAO.getAll(query);
-		
+
 		if (queries != null) {
 
 			for (Iterator<ChildQuery> it = queries.iterator(); it.hasNext();) {
-				
+
 				ChildQuery childQuery = it.next();
-				
+
 				QueryDescriptor queryDescriptor = queryDescriptorDAOWrapper.get(childQuery.getQueryID());
 
 				if (queryDescriptor != null) {
 
 					childQuery.init(queryDescriptor, getFullAlias() + "/config/" + queryDescriptor.getQueryID());
-					
+
 				} else {
-					
+
 					it.remove();
 				}
 			}
