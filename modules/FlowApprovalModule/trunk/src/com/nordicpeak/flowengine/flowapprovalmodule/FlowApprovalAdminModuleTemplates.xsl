@@ -16,7 +16,7 @@
 	<xsl:variable name="scripts">
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=4
+		/js/flowapprovaladmin.js?v=5
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -1157,6 +1157,43 @@
 				
 			</xsl:if>
 			
+			<xsl:if test="Activity/allowManagersToAssignOwner = 'true'">
+				
+				<div class="bigmarginbottom">
+					<strong class="bigmargintop">
+						<xsl:value-of select="$i18n.Activity.allowManagersToAssignOwner" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+					
+				</div>
+				
+				<xsl:if test="Activity/AssignableGroups">
+					
+					<div class="bigmarginbottom">
+						<strong class="bigmargintop">
+							<xsl:value-of select="$i18n.Activity.assignableGroups" />
+						</strong>
+						
+						<xsl:apply-templates select="Activity/AssignableGroups/group" mode="list"/>
+					</div>
+					
+				</xsl:if>
+				
+				<xsl:if test="Activity/AssignableUsers">
+				
+					<div class="bigmarginbottom">
+						<strong class="bigmargintop">
+							<xsl:value-of select="$i18n.Activity.assignableUsers" />
+						</strong>
+						
+						<xsl:apply-templates select="Activity/AssignableUsers/user" mode="list"/>
+					</div>
+					
+				</xsl:if>
+				
+			</xsl:if>
+			
 			<div class="floatleft">
 				<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/showactivitygroup/{Activity/ActivityGroup/activityGroupID}" title="{$i18n.BackToActivityGroup}">
 					<xsl:value-of select="$i18n.BackToActivityGroup"/>
@@ -1167,38 +1204,38 @@
 		
 	</xsl:template>
 	
-<!-- 	<xsl:template match="user" mode="list"> -->
+	<xsl:template match="user" mode="list">
 		
-<!-- 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable> -->
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
-<!-- 		<div> -->
+		<div>
 			
-<!-- 			<xsl:choose> -->
-<!-- 				<xsl:when test="enabled='true'"> -->
-<!-- 					<img class="marginright" src="{$imgPath}/user.png" alt="" /> -->
-<!-- 				</xsl:when> -->
-<!-- 				<xsl:otherwise> -->
-<!-- 					<img class="marginright" src="{$imgPath}/user_disabled.png" alt="" /> -->
-<!-- 				</xsl:otherwise> -->
-<!-- 			</xsl:choose> -->
+			<xsl:choose>
+				<xsl:when test="enabled='true'">
+					<img class="marginright" src="{$imgPath}/user.png" alt="" />
+				</xsl:when>
+				<xsl:otherwise>
+					<img class="marginright" src="{$imgPath}/user_disabled.png" alt="" />
+				</xsl:otherwise>
+			</xsl:choose>
 			
-<!-- 			<xsl:value-of select="firstname"/> -->
+			<xsl:value-of select="firstname"/>
 			
-<!-- 			<xsl:text>&#x20;</xsl:text> -->
+			<xsl:text>&#x20;</xsl:text>
 			
-<!-- 			<xsl:value-of select="lastname"/> -->
+			<xsl:value-of select="lastname"/>
 			
-<!-- 			<xsl:if test="username"> -->
-<!-- 				<xsl:text>&#x20;</xsl:text> -->
+			<xsl:if test="username">
+				<xsl:text>&#x20;</xsl:text>
 				
-<!-- 				<xsl:text>(</xsl:text> -->
-<!-- 					<xsl:value-of select="username"/> -->
-<!-- 				<xsl:text>)</xsl:text> -->
-<!-- 			</xsl:if> -->
+				<xsl:text>(</xsl:text>
+					<xsl:value-of select="username"/>
+				<xsl:text>)</xsl:text>
+			</xsl:if>
 			
-<!-- 		</div> -->
+		</div>
 		
-<!-- 	</xsl:template> -->
+	</xsl:template>
 	
 	<xsl:template match="group" mode="list">
 		
@@ -1461,6 +1498,56 @@
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'responsible-user-fallback'"/>
 				<xsl:with-param name="users" select="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'true']" />
+			</xsl:call-template>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'allowManagersToAssignOwner'" />
+					<xsl:with-param name="name" select="'allowManagersToAssignOwner'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="allowManagersToAssignOwner">
+					<xsl:value-of select="$i18n.Activity.allowManagersToAssignOwner" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom allowManagersToAssignOwner">
+			
+			<label class="floatleft full">
+				<xsl:value-of select="$i18n.Activity.assignableGroups" />
+			</label>
+			
+			<xsl:call-template name="GroupList">
+				<xsl:with-param name="connectorURL">
+					<xsl:value-of select="/Document/requestinfo/contextpath"/>
+					<xsl:value-of select="extensionRequestURL"/>
+					<xsl:text>/groups</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name" select="'assignable-group'"/>
+				<xsl:with-param name="groups" select="Activity/AssignableGroups" />
+			</xsl:call-template>
+			
+		</div>
+		
+		<div class="floatleft full bigmarginbottom allowManagersToAssignOwner">
+			
+			<label class="floatleft full">
+				<xsl:value-of select="$i18n.Activity.assignableUsers" />
+			</label>
+			
+			<xsl:call-template name="UserList">
+				<xsl:with-param name="connectorURL">
+					<xsl:value-of select="/Document/requestinfo/contextpath"/>
+					<xsl:value-of select="extensionRequestURL"/>
+					<xsl:text>/users</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name" select="'assignable-user'"/>
+				<xsl:with-param name="users" select="Activity/AssignableUsers" />
 			</xsl:call-template>
 		</div>
 		
@@ -1913,6 +2000,14 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='AssignableRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.AssignableRequired"/>
+		</p>
+		
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
 			<p class="error">
@@ -1975,6 +2070,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'responsibleGroup'">
 						<xsl:value-of select="$i18n.Activity.responsibleGroups"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'assignable-user'">
+						<xsl:value-of select="$i18n.Activity.assignableUsers"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'assignable-group'">
+						<xsl:value-of select="$i18n.Activity.assignableGroups"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'attributeName'">
 						<xsl:value-of select="$i18n.Activity.AttributeName"/>

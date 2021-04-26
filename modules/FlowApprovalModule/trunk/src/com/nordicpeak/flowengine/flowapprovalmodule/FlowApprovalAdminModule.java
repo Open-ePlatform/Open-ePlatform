@@ -381,12 +381,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityDAOWrapper = activityDAO.getAdvancedWrapper(Integer.class);
-		activityDAOWrapper.getAddQuery().addRelations(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
-		activityDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
-		activityDAOWrapper.getGetQuery().addRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityDAOWrapper.getAddQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityDAOWrapper.getGetQuery().addRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 
 		activityGroupDAOWrapper = activityGroupDAO.getAdvancedWrapper(Integer.class);
-		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityRoundActivityGroupParamFactory = activityRoundDAO.getParamFactory("activityGroup", FlowApprovalActivityGroup.class);
@@ -1103,7 +1103,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	private void startActivityGroups(FlowInstance flowInstance, Status newStatus) throws SQLException {
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 
 		if (activityGroups != null) {
 
@@ -1669,7 +1669,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 							if (activityGroup.getActivities() != null) {
 
-								FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+								FlowApprovalActivityRound round = getLatestActivityRound(activityGroup, flowInstance, FlowApprovalActivityRound.ACTIVITY_PROGRESSES_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 
 								if (activityGroup.isAllowRestarts()) {
 
@@ -1796,7 +1796,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
 
-	private List<User> getResponsibleUsersFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
+	List<User> getResponsibleUsersFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
 
 		List<User> users = null;
 
@@ -2029,8 +2029,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			);
 			// @formatter:on
 
-			query.addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
-			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+			query.addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+			query.addCachedRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 
 			List<FlowApprovalActivityProgress> activityProgresses = activityProgressDAO.getAll(query);
 
@@ -2119,7 +2119,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activity.setActivityID(null);
 		activity.setName(StringUtils.substring(activity.getName() + copySuffix, 255));
 
-		RelationQuery query = new RelationQuery(FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		RelationQuery query = new RelationQuery(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 		activityDAO.add(activity, query);
 
 		addFlowFamilyEvent(eventActivityCopied + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
@@ -2143,7 +2143,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		RelationQuery query = new RelationQuery(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION);
+		RelationQuery query = new RelationQuery(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 		activityGroupDAO.add(activityGroup, query);
 
 		addFlowFamilyEvent(eventActivityGroupCopied + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);

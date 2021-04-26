@@ -61,6 +61,7 @@
 	
 	<xsl:variable name="i18n.Validation.ActivityNotFound">Den begärda aktiviteten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupNotFound">Den begärda aktivitetsgruppen hittades inte.</xsl:variable>
+	<xsl:variable name="i18n.Validation.AssignableRequired">Du måste välja minst en valbar grupp eller användare om du har markerat Tillåt handläggare att byta ansvarig användare</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleRequired">Aktiviteten måste ha någon ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleFallbackRequired">Aktiviteten måste ha någon reserv eller vanlig ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Validation.MultipleCompletionStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika målstatusar!</xsl:variable>
@@ -109,6 +110,9 @@
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireSigning">Kräv signering vid klarmarkera / godkänn / neka</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireComment">Kräv att kommentar anges</xsl:variable>
+	<xsl:variable name="i18n.Activity.allowManagersToAssignOwner">Tillåt handläggare att byta ansvarig användare</xsl:variable>
+	<xsl:variable name="i18n.Activity.assignableUsers">Valbara användare vid byte av ansvarig</xsl:variable>
+	<xsl:variable name="i18n.Activity.assignableGroups">Valbara grupper vid byte av ansvarig</xsl:variable>
 	
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useCustomApprovedText">Använd annat namn för klarmarkerad / godkänd / nekad</xsl:variable>

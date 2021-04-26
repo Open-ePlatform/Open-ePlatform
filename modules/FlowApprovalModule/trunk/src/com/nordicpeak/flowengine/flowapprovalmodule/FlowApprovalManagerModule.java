@@ -3,8 +3,13 @@ package com.nordicpeak.flowengine.flowapprovalmodule;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +21,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
@@ -23,6 +29,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
+import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
@@ -30,6 +37,7 @@ import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AdvancedAnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
@@ -39,6 +47,7 @@ import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.xml.XMLUtils;
@@ -63,6 +72,10 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	protected String tabTitle;
 
 	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Title attribute name", description = "The name of the user attribute that contains their title", required = false)
+	protected String titleAttribute = "title";
+	
+	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmententXML;
 
@@ -86,7 +99,18 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 	protected FlowApprovalAdminModule approvalAdminModule;
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
+	
+	protected UserGroupListConnectorWithFilter userGroupListConnector;
 
+	@Override
+	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
+
+		super.init(moduleDescriptor, sectionInterface, dataSource);
+
+		userGroupListConnector = new UserGroupListConnectorWithFilter(systemInterface, titleAttribute);
+		userGroupListConnector.setOnlyEnabledUsers(true);
+	}
+	
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
 
@@ -108,7 +132,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		activityRoundIDParamFactory = activityRoundDAO.getParamFactory("activityRoundID", Integer.class);
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
@@ -184,7 +208,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 		Element tabElement = XMLUtils.appendNewElement(doc, documentElement, "TabContents");
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.USERS_RELATION, FlowApprovalActivity.GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		XMLUtils.append(doc, tabElement, "ActivityGroups", activityGroups);
 
@@ -205,12 +229,14 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		Integer sendReminderForActivityProgressID = NumberUtils.toInt(req.getParameter("sendreminder"));
 		Integer signatureActivityProgressID = NumberUtils.toInt(req.getParameter("signature"));
 		Integer signatureActivityRoundID = NumberUtils.toInt(req.getParameter("signatures"));
+		Integer assignOwnerActivityProgressID = NumberUtils.toInt(req.getParameter("assignowner"));
+		Integer assignOwnerSearchActivityProgressID = NumberUtils.toInt(req.getParameter("assignownersearch"));
 
 		if (sendReminderForActivityProgressID != null) {
 
-			if(!HTTPUtils.isPost(req)) {
+			if (!HTTPUtils.isPost(req)) {
 				
-				throw new AccessDeniedException("Sending reminder using method " + req.getMethod() + " are not allowed.");
+				throw new AccessDeniedException("Sending reminder using method " + req.getMethod() + " is not allowed.");
 			}
 			
 			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(sendReminderForActivityProgressID);
@@ -235,6 +261,8 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 				reminderDAO.add(reminder);
 			}
+			
+			//TODO show notification that reminder was sent
 
 		} else if (signatureActivityProgressID != null) {
 
@@ -270,6 +298,8 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			FlowApprovalActivityRound round = activityRoundDAO.get(query);
 
 			if (round == null) {
+				
+				log.warn("FlowApprovalActivityRound with ID " + signatureActivityRoundID + " not found");
 				throw new URINotFoundException(uriParser);
 			}
 
@@ -297,9 +327,132 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			}
 
 			return null;
-		}
+			
+		} else if (assignOwnerActivityProgressID != null) {
+			
+			if (!HTTPUtils.isPost(req)) {
+				
+				throw new AccessDeniedException("Assigning owner using method " + req.getMethod() + " is not allowed.");
+			}
+			
+			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(assignOwnerActivityProgressID);
 
-		//TODO show notification that reminder was sent
+			if (activityProgress == null) {
+				log.warn("ActivityProgress with ID " + signatureActivityProgressID + " not found");
+				throw new URINotFoundException(uriParser);
+			}
+
+			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				throw new AccessDeniedException("Wrong flow instance");
+			}
+			
+			FlowApprovalActivityRound round = activityProgress.getActivityRound();
+			FlowApprovalActivity activity = activityProgress.getActivity();
+			FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
+
+			if (round.getCompleted() != null || round.getCancelled() != null || activityProgress.getCompleted() != null) {
+				throw new AccessDeniedException("ActivityProgress " + activityProgress + " is not in a mutable state");
+			}
+			
+			if (!activity.isAllowManagersToAssignOwner() || activity.getResponsibleUserAttributeNames() == null) {
+				throw new AccessDeniedException("ActivityProgress " + activityProgress + " does not allow managers to assign owners");
+			}
+			
+			String[] assignUserIDs = req.getParameterValues("assign-user");
+			
+			if (assignUserIDs != null) {
+				
+				List<User> users = new ArrayList<User>(assignUserIDs.length);
+				
+				for (String userIDString : assignUserIDs) {
+					Integer userID = NumberUtils.toInt(userIDString);
+					
+					if (userID != null) {
+						
+						User assignUser = systemInterface.getUserHandler().getUser(userID, true, true);
+						
+						if (assignUser != null) {
+							users.add(assignUser);
+						}
+					}
+				}
+				
+				if (users.size() != assignUserIDs.length) {
+					
+					log.warn("User count != to user parameters: " + StringUtils.toCommaSeparatedString(users) + "  != " + assignUserIDs);
+					throw new URINotFoundException(uriParser);
+				}
+				
+				log.info("User " + user + " assigning activity progress ID  " + activityProgress.getActivityProgressID() + " from " + (activityProgress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(activityProgress.getResponsibleAttributedUsers()) : "null") + " to " + (users != null ? StringUtils.toCommaSeparatedString(users) : "null"));
+				
+				activityProgress.setResponsibleAttributedUsers(users);
+				activityProgressDAO.update(activityProgress);
+				
+				//TODO flow family events?
+				
+				if (activityGroup.isSendActivityGroupStartedEmail()) {
+
+					Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(1);
+					updatedActivities.put(activity, activityProgress);
+					
+					approvalAdminModule.sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+				}
+
+			} else {
+
+				List<User> responsibleUsers = approvalAdminModule.getResponsibleUsersFromAttribute(activity, flowInstance);
+
+				boolean responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(activityProgress.getResponsibleAttributedUsers());
+
+				if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
+
+					Set<User> oldUsers = new HashSet<>(activityProgress.getResponsibleAttributedUsers());
+					Set<User> newUsers = new HashSet<>(responsibleUsers);
+
+					responsibleUsersChanged = !oldUsers.equals(newUsers);
+				}
+
+				if (responsibleUsersChanged) {
+
+					log.info("User " + user + " assigning activity progress ID " + activityProgress.getActivityProgressID() + " from " + (activityProgress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(activityProgress.getResponsibleAttributedUsers()) : "null") + " to default " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
+
+					activityProgress.setResponsibleAttributedUsers(responsibleUsers);
+					activityProgressDAO.update(activityProgress);
+					
+					//TODO flow family events?
+
+//					if (activityGroup.isSendActivityGroupStartedEmail()) {
+//
+//						Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(1);
+//						updatedActivities.put(activity, activityProgress);
+//
+//						approvalAdminModule.sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+//					}
+					
+				} else {
+					
+					log.info("User " + user + " tried assigning activity progress ID " + activityProgress.getActivityProgressID() + " to default owners but is was already.");
+				}
+			}
+			
+		} else if (assignOwnerSearchActivityProgressID != null) {
+			
+			HighLevelQuery<FlowApprovalActivityProgress> query = new HighLevelQuery<>(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+			query.addParameter(activityProgressDAOWrapper.getParameterFactory().getParameter(assignOwnerSearchActivityProgressID));
+			
+			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.getAnnotatedDAO().get(query);
+
+			if (activityProgress == null) {
+				throw new URINotFoundException(uriParser);
+			}
+
+			if (!activityProgress.getActivityRound().getFlowInstanceID().equals(flowInstance.getFlowInstanceID())) {
+				throw new AccessDeniedException("Wrong flow instance");
+			}
+			
+			return userGroupListConnector.getUsers(activityProgress.getActivity().getAssignableUsers(), activityProgress.getActivity().getAssignableGroups(), req, res, user, uriParser);
+		}
+		
 		res.sendRedirect(RequestUtils.getFullContextPathURL(req) + flowInstanceAdminModule.getFullAlias() + "/overview/" + flowInstance.getFlowInstanceID() + "#flow-approval");
 		return null;
 	}

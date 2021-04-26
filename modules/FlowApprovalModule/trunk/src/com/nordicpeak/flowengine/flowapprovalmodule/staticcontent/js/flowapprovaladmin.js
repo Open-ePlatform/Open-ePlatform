@@ -72,10 +72,18 @@ $(document).ready(function() {
 	
 	if ($("#activityForm").length > 0) {
 		
+		$('#allowManagersToAssignOwner').change(function(){
+			
+			$(".allowManagersToAssignOwner").toggle(this.checked && !this.disabled);
+			
+		});
+		
 		$('#useResponsibleUserAttributeName').change(function(){
 			
 			$(".useResponsibleUserAttributeName").toggle(this.checked);
 			$("#responsibleUserAttributeNames").prop('disabled', !this.checked);
+			
+			$("#allowManagersToAssignOwner").prop('disabled', !this.checked).change().parent().parent().toggle(this.checked);
 			
 		}).change();
 		

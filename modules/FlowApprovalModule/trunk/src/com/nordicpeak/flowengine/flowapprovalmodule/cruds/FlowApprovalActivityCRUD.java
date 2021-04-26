@@ -148,9 +148,11 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		List<ValidationError> validationErrors = new ArrayList<>();
 
+		List<Integer> assignableUserIDs = ValidationUtils.validateParameters("assignable-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleFallbackUserIDs = ValidationUtils.validateParameters("responsible-user-fallback", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
+		List<User> assignableUsers = null;
 		List<FlowApprovalActivityResponsibleUser> responsibleUsers = null;
 
 		if (responsibleUserIDs != null || responsibleFallbackUserIDs != null) {
@@ -191,18 +193,38 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 		}
+		
+		if (assignableUserIDs != null) {
 
+			assignableUsers = new ArrayList<>(assignableUserIDs.size());
+
+			for (Integer userID : assignableUserIDs) {
+
+				User assignableUser = callback.getUserHandler().getUser(userID, false, false);
+
+				if (assignableUser != null) {
+
+					assignableUsers.add(assignableUser);
+
+				} else {
+
+					validationErrors.add(new ValidationError("assignable-user", ValidationErrorType.InvalidFormat));
+				}
+			}
+		}
+
+		activity.setAssignableUsers(assignableUsers);
 		activity.setResponsibleUsers(responsibleUsers);
 
+		List<Integer> assignableGroupIDs = ValidationUtils.validateParameters("assignable-group", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleGroupIDs = ValidationUtils.validateParameters("responsibleGroup", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
-		if (responsibleGroupIDs == null) {
+		List<Group> assignableGroups = null;
+		List<Group> responsibleGroups = null;
+		
+		if (responsibleGroupIDs != null) {
 
-			activity.setResponsibleGroups(null);
-
-		} else {
-
-			List<Group> responsibleGroups = new ArrayList<>(responsibleGroupIDs.size());
+			responsibleGroups = new ArrayList<>(responsibleGroupIDs.size());
 
 			for (Integer groupID : responsibleGroupIDs) {
 
@@ -217,9 +239,29 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 					validationErrors.add(new ValidationError("responsibleGroup", ValidationErrorType.InvalidFormat));
 				}
 			}
-
-			activity.setResponsibleGroups(responsibleGroups);
 		}
+		
+		if (assignableGroupIDs != null) {
+
+			assignableGroups = new ArrayList<>(assignableGroupIDs.size());
+
+			for (Integer groupID : assignableGroupIDs) {
+
+				Group group = callback.getGroupHandler().getGroup(groupID, false);
+
+				if (group != null) {
+
+					assignableGroups.add(group);
+
+				} else {
+
+					validationErrors.add(new ValidationError("assignable-group", ValidationErrorType.InvalidFormat));
+				}
+			}
+		}
+		
+		activity.setAssignableGroups(assignableGroups);
+		activity.setResponsibleGroups(responsibleGroups);
 
 		if (activity.getResponsibleUserAttributeNames() != null) {
 
@@ -234,6 +276,11 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
+		}
+		
+		if (activity.isAllowManagersToAssignOwner() && assignableUsers == null && assignableGroups == null) {
+			
+			validationErrors.add(new ValidationError("AssignableRequired"));
 		}
 
 		if (!validationErrors.isEmpty()) {

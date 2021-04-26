@@ -12,10 +12,12 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/flowapprovalmanager.js
+		/js/UserGroupList.js
+		/js/flowapprovalmanager.js?v=1
 	</xsl:variable>
 
 	<xsl:variable name="links">
+		/css/UserGroupList.css
 		/css/flowapprovalmanager.css
 	</xsl:variable>
 
@@ -89,6 +91,51 @@
 									<p/>
 									
 									<input class="btn btn-light close bigmargintop floatright" type="button" value="{$i18n.Close}" />
+									
+								</div>
+								
+							</div>
+						</div>
+					
+					</div>
+					
+					<div style="display: none;">
+					
+						<div id="flow-approval-assign-owner-modal" class="comment-modal contentitem">
+							<div class="modal-content">
+							
+								<div class="modal-header bigmarginbottom">
+									<h1>
+										<xsl:value-of select="$i18n.AssignOwner.title" />
+										<span/>
+									</h1>
+								</div>
+								
+								<div class="modal-body">
+									
+									<form id="assignOwnerForm" method="post" action="{PostURL}" data-baseurl="{PostURL}?assignowner=">
+										
+										<div class="full marginbottom">
+											
+											<p>
+												<xsl:value-of select="$i18n.AssignOwner.description" />
+											</p>
+											
+											<xsl:call-template name="UserList">
+												<xsl:with-param name="connectorURL">
+													<xsl:value-of select="PostURL"/>
+													<xsl:text>?assignownersearch=</xsl:text>
+												</xsl:with-param>
+												<xsl:with-param name="name" select="'assign-user'"/>
+											</xsl:call-template>
+										</div>
+											
+										<div class="floatright clearboth bigmargintop">
+											<input class="btn btn-green bigmargintop display-inline bigmarginright" type="submit" value="{$i18n.AssignOwner.submit}" />
+											<input class="btn btn-light bigmargintop display-inline close" type="button" value="{$i18n.Cancel}" />
+										</div>
+										
+									</form>
 									
 								</div>
 								
@@ -366,6 +413,14 @@
 						
 					</xsl:otherwise>
 				</xsl:choose>
+				
+				<xsl:if test="Activity/allowManagersToAssignOwner = 'true' and not(completed) and not(../../cancelled)">
+					
+					<a class="btn btn-inline btn-light marginleft" href="#" onclick="flowApprovalAssignOwner(event, this);" title="{$i18n.AssignOwner}" data-activity-progress-id="{activityProgressID}">
+						<xsl:value-of select="$i18n.AssignOwner" />
+					</a>
+					
+				</xsl:if>
 			</td>
 			<td>
 				<xsl:if test="Reminders/Reminder">

@@ -435,4 +435,37 @@
 		</Query>
 	</Script>
 	
+	<Script version="21">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`
+					ADD COLUMN `allowManagersToAssignOwner` TINYINT(1) UNSIGNED NOT NULL AFTER `onlyUseGlobalNotifications`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_assignable_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_assignable_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_assignable_groups` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`groupID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `groupID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_assignable_groups_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

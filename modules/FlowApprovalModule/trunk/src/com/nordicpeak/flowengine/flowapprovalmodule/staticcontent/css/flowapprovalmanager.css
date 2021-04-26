@@ -27,5 +27,9 @@
 }
 
 #flow-approval a.history-button:hover {
-    color: #1b447c;
+	color: #1b447c;
+}
+
+.ui-autocomplete.ui-front {
+	z-index: 2147483647;
 }
