@@ -477,6 +477,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				XMLUtils.appendNewElement(doc, flowElement, "LongDescription", flow.getLongDescription());
 				XMLUtils.appendNewElement(doc, flowElement, "RequiresAuthentication", flow.requiresAuthentication());
 				XMLUtils.appendNewElement(doc, flowElement, "RequiresSigning", flow.requiresSigning());
+				XMLUtils.appendNewElement(doc, flowElement, "PaymentSupportEnabled", flow.isPaymentSupportEnabled());
 				XMLUtils.appendNewElement(doc, flowElement, "Enabled", flow.isEnabled());
 				
 				if(flow.getFlowFamily().getAliases() != null) {
@@ -519,6 +520,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 				flowsJson.putField("LongDescription", flow.getLongDescription());
 				flowsJson.putField("RequiresAuthentication", flow.requiresAuthentication());
 				flowsJson.putField("RequiresSigning", flow.requiresSigning());
+				flowsJson.putField("PaymentSupportEnabled", flow.isPaymentSupportEnabled());
 				flowsJson.putField("Enabled", flow.isEnabled());
 
 				if(flow.getFlowFamily().getAliases() != null) {
