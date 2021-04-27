@@ -33,6 +33,9 @@
 	<xsl:variable name="java.eventActivityGroupDenied">Nekad aktivitetsgrupp:</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupSkipped">Hoppade över aktivitetsgrupp:</xsl:variable>
 	
+	<xsl:variable name="java.eventActivityOwnerChanged">Ändrat ansvarig för aktivitet $activity från $from till $to</xsl:variable>
+	<xsl:variable name="java.eventActivityOwnerDefault">ordinarie</xsl:variable>
+	
 	<xsl:variable name="java.reminderEmailPrefix">Påminnelse: </xsl:variable>
 	<xsl:variable name="java.activityGroupStartedEmailSubject">Nya aktiviteter för $activityGroup.name i ärende $flowInstance.flowInstanceID </xsl:variable>
 	<xsl:variable name="java.activityGroupStartedEmailMessage">

@@ -243,6 +243,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupSkipped;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityOwnerChanged;
+	
+	@XSLVariable(prefix = "java.")
+	private String eventActivityOwnerDefault = "default";
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF dir", description = "The directory where PDF files be stored", required = true)
@@ -1725,6 +1731,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 									try {
 										Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(activityGroup.getActivities().size());
+										List<String> flowInstanceEventMessages = new ArrayList<>();
 
 										for (FlowApprovalActivityProgress progress : round.getActivityProgresses()) {
 
@@ -1747,6 +1754,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 												if (responsibleUsersChanged) {
 
 													log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
+													
+													String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
+													String namesTo = eventActivityOwnerDefault;
+													
+													if (responsibleUsers != null) {
+														namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
+													}
+													
+													flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
+													
 													progress.setResponsibleAttributedUsers(responsibleUsers);
 
 													progress.setActivity(activity);
@@ -1765,6 +1782,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 											if (activityGroup.isSendActivityGroupStartedEmail()) {
 
 												sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+											}
+											
+											for (String eventMessage : flowInstanceEventMessages) {
+												
+												flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventMessage, null);
 											}
 										}
 
@@ -2422,4 +2444,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return userApprovalModuleAlias;
 	}
+	
+	public String getEventActivityOwnerChanged() {
+		return eventActivityOwnerChanged;
+	}
+
+	public String getEventActivityOwnerDefault() {
+		return eventActivityOwnerDefault;
+	}
+
 }

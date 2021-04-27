@@ -58,6 +58,7 @@ import se.unlogic.webutils.http.enums.ContentDisposition;
 
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
@@ -65,6 +66,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRo
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalReminder;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
 import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvider;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 
 public class FlowApprovalManagerModule extends AnnotatedForegroundModule implements FlowInstanceOverviewExtensionProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
@@ -383,12 +385,15 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 					throw new URINotFoundException(uriParser);
 				}
 				
-				log.info("User " + user + " assigning activity progress ID  " + activityProgress.getActivityProgressID() + " from " + (activityProgress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(activityProgress.getResponsibleAttributedUsers()) : "null") + " to " + (users != null ? StringUtils.toCommaSeparatedString(users) : "null"));
+				log.info("User " + user + " assigning activity progress ID  " + activityProgress.getActivityProgressID() + " from " + (activityProgress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(activityProgress.getResponsibleAttributedUsers()) : "null") + " to " + StringUtils.toCommaSeparatedString(users));
+				
+				String namesFrom = activityProgress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(activityProgress.getResponsibleAttributedUsers(), null) : approvalAdminModule.getEventActivityOwnerDefault();
+				String eventMessage = approvalAdminModule.getEventActivityOwnerChanged().replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", FlowInstanceUtils.getManagersString(users, null));
 				
 				activityProgress.setResponsibleAttributedUsers(users);
 				activityProgressDAO.update(activityProgress);
 				
-				//TODO flow family events?
+				flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventMessage, user);
 				
 				if (activityGroup.isSendActivityGroupStartedEmail()) {
 
@@ -414,20 +419,23 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 				if (responsibleUsersChanged) {
 
-					log.info("User " + user + " assigning activity progress ID " + activityProgress.getActivityProgressID() + " from " + (activityProgress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(activityProgress.getResponsibleAttributedUsers()) : "null") + " to default " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
-
+					String namesFromLog = activityProgress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(activityProgress.getResponsibleAttributedUsers(), null) : "null";
+					String namesToLog = responsibleUsers != null ? FlowInstanceUtils.getManagersString(responsibleUsers, null) : "null";
+					log.info("User " + user + " assigning activity progress ID " + activityProgress.getActivityProgressID() + " from " + namesFromLog + " to default " + namesToLog);
+					
+					String namesFrom = activityProgress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(activityProgress.getResponsibleAttributedUsers(), null) : approvalAdminModule.getEventActivityOwnerDefault();
+					String namesTo = approvalAdminModule.getEventActivityOwnerDefault();
+					
+					if (responsibleUsers != null) {
+						namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
+					}
+					
+					String eventMessage = approvalAdminModule.getEventActivityOwnerChanged().replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo);
+					
 					activityProgress.setResponsibleAttributedUsers(responsibleUsers);
 					activityProgressDAO.update(activityProgress);
 					
-					//TODO flow family events?
-
-//					if (activityGroup.isSendActivityGroupStartedEmail()) {
-//
-//						Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(1);
-//						updatedActivities.put(activity, activityProgress);
-//
-//						approvalAdminModule.sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
-//					}
+					flowInstanceAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventMessage, user);
 					
 				} else {
 					
