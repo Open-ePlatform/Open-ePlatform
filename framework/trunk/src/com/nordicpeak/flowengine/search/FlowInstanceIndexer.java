@@ -77,6 +77,7 @@ import com.nordicpeak.flowengine.search.events.DeleteFlowFamilyEvent;
 import com.nordicpeak.flowengine.search.events.DeleteFlowInstanceEvent;
 import com.nordicpeak.flowengine.search.events.InitialFlowInstanceIndexingEvent;
 import com.nordicpeak.flowengine.search.events.QueuedIndexEvent;
+import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 
 @SuppressWarnings("deprecation")
 public class FlowInstanceIndexer {
@@ -496,7 +497,7 @@ public class FlowInstanceIndexer {
 			
 			if (citizenIdentifier == null && flowInstance.getPoster() != null) {
 				
-				citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(CITIZEN_IDENTIFIER);
+				citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(flowInstance.getPoster());
 			}
 			
 			if (citizenIdentifier != null) {
