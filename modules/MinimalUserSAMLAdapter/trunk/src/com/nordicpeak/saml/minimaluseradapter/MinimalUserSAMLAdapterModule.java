@@ -26,6 +26,7 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 
 import com.nordicpeak.saml.SAMLUserAdapter;
+import com.nordicpeak.saml.SAMLUserAdapterResponse;
 
 public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule implements SAMLUserAdapter {
 
@@ -99,7 +100,7 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 		}
 	}
 
-	public User getUser(Assertion assertion) {
+	public SAMLUserAdapterResponse getUser(Assertion assertion) {
 
 		HashMap<String, String> attributeMap = new HashMap<String, String>(assertion.getAttributeStatements().size());
 
@@ -224,7 +225,7 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 				}
 			}
 
-			return user;
+			return new SAMLUserAdapterResponse(user);
 		}
 
 		MinimalUser minimalUser = createUser(userIdentifier, firstName, lastName, attributeMap);
@@ -240,7 +241,7 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 			return null;
 		}
 
-		return minimalUser;
+		return new SAMLUserAdapterResponse(minimalUser);
 	}
 
 	private boolean updateAttribute(String attributeName, String attributeValue, MutableAttributeHandler attributeHandler) {
