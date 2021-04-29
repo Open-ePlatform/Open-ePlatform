@@ -17,6 +17,8 @@ public interface FlowNotificationHandler {
 
 	void updateSettings(ImmutableFlow flow, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception;
 
+	String getInstallationBaseURL(Integer profileID);
+	
 	String getEmailSenderName(ImmutableFlowInstance flowInstance);
 
 	String getEmailSenderAddress(ImmutableFlowInstance flowInstance);
