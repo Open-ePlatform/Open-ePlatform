@@ -1597,12 +1597,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				Contact posterContact = getPosterContact(event.getFlowInstanceManager().getFlowInstance());
 
-				if (notificationSettings.isSendFlowInstanceSubmittedManagerEmail()) {
+				if (event.getActionID().equals(FlowBrowserModule.SUBMIT_ACTION_ID) && notificationSettings.isSendFlowInstanceSubmittedManagerEmail()) {
 
 					sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceSubmittedManagerEmailSubject(), notificationSettings.getFlowInstanceSubmittedManagerEmailMessage(), null, true);
 				}
 
-				if(notificationSettings.isSendFlowInstanceCompletionManagerEmail()) {
+				if(event.getActionID().equals(UserFlowInstanceModule.SUBMIT_COMPLETION_ACTION_ID) && notificationSettings.isSendFlowInstanceCompletionManagerEmail()) {
 					
 					sendManagerEmails(flowInstance, posterContact, notificationSettings.getManagerCompletionSubmittedEmailSubject(), notificationSettings.getManagerCompletionSubmittedEmailMessage(), null, false);
 				}
