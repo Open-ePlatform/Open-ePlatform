@@ -165,6 +165,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	private boolean debugFragmententXML;
 
 	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Installation base URL", description = "The installations base URL ", required = true)
+	protected String installationBaseURL  = "Not set";
+
+	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "SMS sender name", description = "The name of the sender used for SMS messages", required = true)
 	private String smsSenderName = "Not set";
 
@@ -2966,6 +2970,22 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 	}
 
+	@Override
+	public String getInstallationBaseURL(Integer profileID) {
+		
+		//Failsafe if setting is not set
+		if("Not set".equals(installationBaseURL)) {
+			
+			String baseURL = getUserFlowInstanceModuleAlias(null);
+			
+			log.error("Missing setting: installationBaseURL. Using fail-safe.");
+
+			return StringUtils.substringBeforeLast(baseURL, StringUtils.substringAfterLast(baseURL, "/"));
+		}
+		
+		return installationBaseURL;
+	}
+	
 	@Override
 	public String getEmailSenderName(ImmutableFlowInstance flowInstance) {
 
