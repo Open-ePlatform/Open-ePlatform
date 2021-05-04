@@ -65,7 +65,10 @@ function initCheckBoxQuery(queryID) {
     	$checkboxes.last().change();
 	});	
 
-	$checkboxes.last().change();
+	if($freeTextAlternative.length > 0) {
+	
+		$freeTextAlternative.change();
+	}
 }
 
 function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
