@@ -5,7 +5,6 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -21,6 +20,8 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
+
+import com.nordicpeak.flowengine.populators.EmailAttributeTagPopulator;
 
 @Table(name = "flow_familiy_notification_settings")
 @XMLElement(name = "NotificationSettings")
@@ -353,7 +354,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_submitglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceSubmittedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
@@ -396,7 +397,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_assignedglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceAssignedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
@@ -424,7 +425,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@Templated
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_archivedglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceArchivedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
@@ -449,7 +450,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_extmessageglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendExternalMessageReceivedGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
@@ -464,7 +465,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_managerexpiredglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendManagerExpiredGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
@@ -492,7 +493,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@Templated
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flow_familiy_notification_setting_expiredglobal", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendFlowInstanceExpiredGlobalEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)

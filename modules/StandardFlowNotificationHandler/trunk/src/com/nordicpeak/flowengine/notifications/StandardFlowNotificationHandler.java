@@ -2655,6 +2655,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return;
 		}
 
+		if (!EmailUtils.isValidEmailAddress(address)) {
+
+			address = AttributeTagUtils.replaceTags(address, flowInstance.getAttributeHandler());
+
+			if (!EmailUtils.isValidEmailAddress(address)) {
+
+				log.warn("The string \"" + address + "\" is not a valid email address, skipping recipient for global notification email generated for flow instance " + flowInstance);
+				
+				return;
+				
+			}
+
+		}
+		
 		TagReplacer tagReplacer = new TagReplacer();
 
 		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
