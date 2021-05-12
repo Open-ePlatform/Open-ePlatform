@@ -401,7 +401,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
 
 		if (CollectionUtils.isEmpty(queryInstance.getQuery().getFiles())) {
 

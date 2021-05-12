@@ -1158,7 +1158,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			}
 
 			try {
-				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, queryHandler);
+				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, poster, uriParser, queryHandler);
 
 			} catch (Exception e) {
 

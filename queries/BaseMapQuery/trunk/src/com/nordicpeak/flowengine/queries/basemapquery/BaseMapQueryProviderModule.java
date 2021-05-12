@@ -1363,7 +1363,7 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(MapQueryInstanceType queryInstance, HttpServletRequest req, User user) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(MapQueryInstanceType queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
 
 		if (previewMode.equals(BaseMapQueryPreviewMode.WEB_MAP) || req.getParameter("mapimage") == null) {
 

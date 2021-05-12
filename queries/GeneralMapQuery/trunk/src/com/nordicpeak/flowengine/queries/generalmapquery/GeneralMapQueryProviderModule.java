@@ -1119,7 +1119,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(GeneralMapQueryInstance queryInstance, HttpServletRequest req, User user) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(GeneralMapQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
 
 		if (req.getParameter("mapimage") != null && queryInstance.getMapPrints() != null) {
 

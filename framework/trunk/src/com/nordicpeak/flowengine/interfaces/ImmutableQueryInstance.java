@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryResponse;
@@ -27,7 +28,7 @@ public interface ImmutableQueryInstance {
 
 	public ImmutableQueryInstanceDescriptor getQueryInstanceDescriptor();
 
-	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, QueryHandler queryHandler) throws Exception;
+	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler) throws Exception;
 
 	public Element toExportXML(Document doc, QueryHandler queryHandler) throws Exception;
 }

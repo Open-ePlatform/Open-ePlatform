@@ -498,7 +498,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user) throws Exception {
+	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws Exception {
 
 		return null;
 	}

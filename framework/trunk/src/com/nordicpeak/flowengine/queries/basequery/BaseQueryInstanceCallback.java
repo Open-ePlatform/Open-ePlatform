@@ -10,6 +10,7 @@ import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryResponse;
@@ -30,5 +31,5 @@ public interface BaseQueryInstanceCallback<QI extends BaseQueryInstance> {
 
 	public void populate(QI queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException;
 
-	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user) throws Exception;
+	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws Exception;
 }

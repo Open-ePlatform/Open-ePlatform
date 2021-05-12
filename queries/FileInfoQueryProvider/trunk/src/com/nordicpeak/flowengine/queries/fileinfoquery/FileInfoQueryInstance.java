@@ -14,6 +14,7 @@ import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.interfaces.NonColumnExportableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -56,9 +57,9 @@ public class FileInfoQueryInstance extends BaseQueryInstance implements NonColum
 	}
 	
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, QueryHandler queryHandler) throws Exception {
+	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler) throws Exception {
 
-		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getQueryRequestProcessor(this, req, user);
+		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getQueryRequestProcessor(this, req, user, poster, uriParser);
 	}
 
 	@Override
