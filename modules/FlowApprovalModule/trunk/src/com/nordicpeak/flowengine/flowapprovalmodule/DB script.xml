@@ -468,4 +468,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="22">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `hideFlowinstanceIDInPDF` BOOLEAN NOT NULL AFTER `suppressChangeStatusManagerNotifications`;				
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

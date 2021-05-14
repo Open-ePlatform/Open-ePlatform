@@ -13,10 +13,13 @@
 				
 				<title>
 					<xsl:value-of select="Signatures/ActivityGroup/name" />
-					<xsl:text> - </xsl:text>
-					<xsl:value-of select="$i18n.FlowInstanceID" />
-					<xsl:text> #</xsl:text>
-					<xsl:value-of select="Signatures/FlowInstance/flowInstanceID" />
+					
+					<xsl:if test="ActivityGroup/hideFlowinstanceIDInPDF = 'false'">
+						<xsl:text> - </xsl:text>
+						<xsl:value-of select="$i18n.FlowInstanceID" />
+						<xsl:text> #</xsl:text>
+						<xsl:value-of select="Signatures/FlowInstance/flowInstanceID" />
+					</xsl:if>
 				</title>
 				
 				<link rel="stylesheet" type="text/css" href="classpath://com/nordicpeak/flowengine/flowapprovalmodule/staticcontent/css/pdf.css" />
@@ -52,14 +55,18 @@
 						<xsl:value-of select="FlowInstance/Flow/name" />
 					</div>
 					
-					<div>
-						<strong>
-							<xsl:value-of select="$i18n.FlowInstanceID" />
-							<xsl:text>:&#160;</xsl:text>
-						</strong>
+					<xsl:if test="ActivityGroup/hideFlowinstanceIDInPDF = 'false'">
+					
+						<div>
+							<strong>
+								<xsl:value-of select="$i18n.FlowInstanceID" />
+								<xsl:text>:&#160;</xsl:text>
+							</strong>
+							
+							<xsl:value-of select="FlowInstance/flowInstanceID" />
+						</div>
 						
-						<xsl:value-of select="FlowInstance/flowInstanceID" />
-					</div>
+					</xsl:if>
 					
 					<div>
 						<strong>

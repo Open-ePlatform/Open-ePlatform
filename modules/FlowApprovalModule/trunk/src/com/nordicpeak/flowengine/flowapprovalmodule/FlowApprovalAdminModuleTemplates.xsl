@@ -440,6 +440,21 @@
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'hideFlowinstanceIDInPDF'" />
+					<xsl:with-param name="id" select="'hideFlowinstanceIDInPDF'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="hideFlowinstanceIDInPDF">
+					<xsl:value-of select="$i18n.ActivityGroup.hideFlowinstanceIDInPDF" />
+				</label>
+			</div>
+		</div>		
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'onlyRestartIfActivityChanges'" />
 					<xsl:with-param name="id" select="'onlyRestartIfActivityChanges'" />
 					<xsl:with-param name="element" select="ActivityGroup" />

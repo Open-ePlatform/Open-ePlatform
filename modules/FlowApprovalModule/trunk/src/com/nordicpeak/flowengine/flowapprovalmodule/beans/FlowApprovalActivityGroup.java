@@ -98,8 +98,13 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean allowRestarts;
+	private boolean hideFlowinstanceIDInPDF;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean allowRestarts;
+	
 	@DAOManaged
 	@WebPopulate
 	@XMLElement

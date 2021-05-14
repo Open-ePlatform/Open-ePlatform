@@ -156,4 +156,6 @@
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	<xsl:variable name="i18n.row">rad</xsl:variable>
 	
+	<xsl:variable name="i18n.ActivityGroup.hideFlowinstanceIDInPDF">Dölj ärendenummer aktivitetgruppens PDF</xsl:variable>
+	
 </xsl:stylesheet>
