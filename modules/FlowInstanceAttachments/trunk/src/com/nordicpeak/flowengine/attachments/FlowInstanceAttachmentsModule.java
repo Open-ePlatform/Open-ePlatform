@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.fileupload.FileItem;
@@ -86,6 +85,7 @@ import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.UserFlowInstanceModule;
+import com.nordicpeak.flowengine.attachments.beans.FlowInstanceAttachmentsSettings;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.enums.ContentType;
@@ -93,8 +93,10 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.notifications.FlowFamililyNotificationSettings;
 import com.nordicpeak.flowengine.notifications.StandardFlowNotificationHandler;
 
-public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule implements ViewFragmentModule<ForegroundModuleDescriptor> {
+public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule implements ViewFragmentModule<ForegroundModuleDescriptor>{
 	
+	private static final String ATTACHMENT_ID = "attachmentID";
+
 	//TODO create converter dynamically based on system encoding
 	private static final StringConverter ISO_TO_UTF8_STRING_DECODER = new SimpleStringConverter(Charset.forName("ISO-8859-1"), Charset.forName("UTF-8"));
 	
@@ -148,6 +150,8 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 	
 	private QueryParameterFactory<Attachment, Integer> attachmentFlowInstanceIDParameterFactory;
 	
+	private AnnotatedDAOWrapper<FlowInstanceAttachmentsSettings, Integer> attachmentSettingsDAOWrapper;
+	
 	private UserFlowInstanceModule userFlowInstanceModule;
 	private FlowInstanceAdminModule flowInstanceAdminModule;
 	
@@ -168,7 +172,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 			log.error("Filestore not found/readable");
 		}
 		
-		viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+		viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		viewFragmentTransformer.setDebugXML(debugFragmententXML);
 	}
 	
@@ -189,6 +193,8 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		attachmentDAOWrapper = attachmentDAO.getWrapper(Integer.class);
 		
 		attachmentFlowInstanceIDParameterFactory = attachmentDAO.getParamFactory("flowInstanceID", Integer.class);
+		
+		attachmentSettingsDAOWrapper = daoFactory.getDAO(FlowInstanceAttachmentsSettings.class).getWrapper(Integer.class);
 	}
 	
 	@Override
@@ -211,7 +217,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		Integer attachmentID;
 		
-		if (IntegerPopulator.getPopulator().validateFormat(req.getParameter("attachmentID")) && (attachmentID = Integer.parseInt(req.getParameter("attachmentID"))) != null) {
+		if (IntegerPopulator.getPopulator().validateFormat(req.getParameter(ATTACHMENT_ID)) && (attachmentID = Integer.parseInt(req.getParameter(ATTACHMENT_ID))) != null) {
 			
 			Attachment attachment = attachmentDAOWrapper.get(attachmentID);
 			
@@ -250,7 +256,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		Integer attachmentID;
 		
-		if (IntegerPopulator.getPopulator().validateFormat(req.getParameter("attachmentID")) && (attachmentID = Integer.parseInt(req.getParameter("attachmentID"))) != null) {
+		if (IntegerPopulator.getPopulator().validateFormat(req.getParameter(ATTACHMENT_ID)) && (attachmentID = Integer.parseInt(req.getParameter(ATTACHMENT_ID))) != null) {
 			
 			Attachment attachment = attachmentDAOWrapper.get(attachmentID);
 			
@@ -299,7 +305,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 	}
 	
-	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
+	public Document createDocument(HttpServletRequest req, URIParser uriParser) {
 		
 		Document doc = XMLUtils.createDomDocument();
 		Element document = doc.createElement("Document");
@@ -319,7 +325,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 	
 	public List<Attachment> getAttachments(Integer flowInstanceID) throws SQLException {
 		
-		HighLevelQuery<Attachment> query = new HighLevelQuery<Attachment>();
+		HighLevelQuery<Attachment> query = new HighLevelQuery<>();
 		query.addParameter(attachmentFlowInstanceIDParameterFactory.getParameter(flowInstanceID));
 		
 		return attachmentDAO.getAll(query);
@@ -327,7 +333,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 	
 	public Integer getAttachmentsCount(Integer flowInstanceID) throws SQLException {
 		
-		HighLevelQuery<Attachment> query = new HighLevelQuery<Attachment>();
+		HighLevelQuery<Attachment> query = new HighLevelQuery<>();
 		query.addParameter(attachmentFlowInstanceIDParameterFactory.getParameter(flowInstanceID));
 		
 		return attachmentDAO.getCount(query);
@@ -377,7 +383,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 	
 	public ViewFragment getOverviewTabContentsViewFragment(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, User user, boolean manager) throws Exception {
 		
-		return getTabContentsViewFragment(flowInstance, req, uriParser, user, null, manager);
+		return getTabContentsViewFragment(flowInstance, req, uriParser, null, manager);
 	}
 	
 	public ForegroundModuleResponse processOverviewExtensionRequest(FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, boolean manager) throws Exception {
@@ -412,9 +418,17 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		throw new URINotFoundException(uriParser);
 	}
 	
-	public ViewFragment getTabContentsViewFragment(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, User user, List<ValidationError> validationErrors, boolean manager) throws SQLException, TransformerConfigurationException, TransformerException {
+	public ViewFragment getTabContentsViewFragment(FlowInstance flowInstance, HttpServletRequest req, URIParser uriParser, List<ValidationError> validationErrors, boolean manager) throws SQLException, TransformerException {
 		
-		Document doc = createDocument(req, uriParser, user);
+		FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+		
+		//dölj tabben Handlingar om den är inaktiverad
+		if(settings == null || !settings.isModuleEnabled())
+		{
+			return null;
+		}
+		
+		Document doc = createDocument(req, uriParser);
 		Element documentElement = doc.getDocumentElement();
 		
 		Element tabElement = XMLUtils.appendNewElement(doc, documentElement, "TabContents");
@@ -445,15 +459,15 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		XMLUtils.appendNewElement(doc, tabElement, "TabTitle", tabTitle);
 		
 		XMLUtils.append(doc, tabElement, validationErrors);
-		
+
 		return viewFragmentTransformer.createViewFragment(doc);
 	}
 	
-	public void addAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstance flowInstance) throws SQLException, URINotFoundException, AccessDeniedException, IOException, TransformerConfigurationException, TransformerException {
+	public void addAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstance flowInstance) throws SQLException, IOException, TransformerException {
 		
 		log.info("User " + user + " adding attachment to flow instance " + flowInstance);
 		
-		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+		List<ValidationError> validationErrors = new ArrayList<>();
 		
 		if (MultipartRequest.isMultipartRequest(req)) {
 			
@@ -491,7 +505,7 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 						}
 					}
 					
-					attachments = new ArrayList<Attachment>();
+					attachments = new ArrayList<>();
 					
 					for (FileItem fileItem : files) {
 						
@@ -520,21 +534,23 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 					
 					FlowFamililyNotificationSettings notificationSettings = flowNotificationHandler.getNotificationSettings(flowInstance.getFlow());
 					
+					FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
+					
 					if (!CollectionUtils.isEmpty(flowInstance.getOwners()) && (notificationSettings.isSendExternalMessageReceivedUserEmail() || notificationSettings.isSendExternalMessageReceivedUserSMS())) {
 						
 						Collection<Contact> contacts = flowNotificationHandler.getContactsFromDB(flowInstance);
 						
-						if (contacts != null) {
+						if (contacts != null && settings != null) {
 							
 							for (Contact contact : contacts) {
 								
-								if (notificationSettings.isSendExternalMessageReceivedUserEmail()) {
-									
+								if(settings.isEmailEnabled())
+								{
 									flowNotificationHandler.sendContactEmail(flowInstance, contact, newAttachmentsUserEmailSubject, newAttachmentsUserEmailMessage, null);
 								}
 								
-								if (notificationSettings.isSendExternalMessageReceivedUserSMS()) {
-									
+								if(settings.isSmsEnabled())
+								{	
 									flowNotificationHandler.sendContactSMS(flowInstance, contact, newAttachmentsUserSMS);
 								}
 							}
@@ -570,19 +586,19 @@ public class FlowInstanceAttachmentsModule extends AnnotatedForegroundModule imp
 		
 		if (validationErrors.isEmpty()) {
 			
-			jsonResponse.putField("response", getTabContentsViewFragment(flowInstance, req, uriParser, user, validationErrors, true).getHTML());
+			jsonResponse.putField("response", getTabContentsViewFragment(flowInstance, req, uriParser, validationErrors, true).getHTML());
 			
 		} else {
 			
-			jsonResponse.putField("errors", getValidationErrorsViewFragment(req, uriParser, user, validationErrors).getHTML());
+			jsonResponse.putField("errors", getValidationErrorsViewFragment(req, uriParser, validationErrors).getHTML());
 		}
 		
 		HTTPUtils.sendReponse(jsonResponse.toJson(), JsonUtils.getContentType(), res);
 	}
 	
-	public ViewFragment getValidationErrorsViewFragment(HttpServletRequest req, URIParser uriParser, User user, List<ValidationError> validationErrors) throws TransformerConfigurationException, TransformerException {
+	public ViewFragment getValidationErrorsViewFragment(HttpServletRequest req, URIParser uriParser, List<ValidationError> validationErrors) throws TransformerException {
 		
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 		Element documentElement = doc.getDocumentElement();
 		
 		XMLUtils.append(doc, documentElement, "ValidationErrors", validationErrors);
