@@ -114,7 +114,7 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 			children.put(child2.getCitizenIdentifier(), child2);
 		}
 		
-		return new ChildrenResponse(children, secret1 || secret2);
+		return new ChildrenResponse(children, 2, secret1 || secret2);
 	}
 	
 }
