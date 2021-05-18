@@ -19,21 +19,31 @@ public class SimpleSigningRequest implements GenericSigningRequest {
 	private final String processSigningURL;
 
 	public SimpleSigningRequest(String description, String dataToSign, String signingFormURL, String processSigningURL) {
+		
+		this(description, dataToSign, HashAlgorithms.SHA1, signingFormURL, processSigningURL);
+	}
+	
+	public SimpleSigningRequest(String description, String dataToSign, String hashAlgorithm, String signingFormURL, String processSigningURL) {
 
 		super();
 
 		this.description = description;
-		this.hashToSign = HashUtils.hash(dataToSign, HashAlgorithms.SHA1);
+		this.hashToSign = HashUtils.hash(dataToSign, hashAlgorithm);
 		this.signingFormURL = signingFormURL;
 		this.processSigningURL = processSigningURL;
 	}
 	
 	public SimpleSigningRequest(String description, File fileToSign, String signingFormURL, String processSigningURL) throws IOException {
+		
+		this(description, fileToSign, HashAlgorithms.SHA1, signingFormURL, processSigningURL);
+	}
+	
+	public SimpleSigningRequest(String description, File fileToSign, String hashAlgorithm, String signingFormURL, String processSigningURL) throws IOException {
 
 		super();
 
 		this.description = description;
-		this.hashToSign = HashUtils.hash(fileToSign, HashAlgorithms.SHA1);
+		this.hashToSign = HashUtils.hash(fileToSign, hashAlgorithm);
 		this.signingFormURL = signingFormURL;
 		this.processSigningURL = processSigningURL;
 	}
