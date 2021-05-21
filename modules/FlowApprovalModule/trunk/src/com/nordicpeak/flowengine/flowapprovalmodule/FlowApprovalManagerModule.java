@@ -5,10 +5,8 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -397,10 +395,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 				
 				if (activityGroup.isSendActivityGroupStartedEmail()) {
 
-					Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(1);
-					updatedActivities.put(activity, activityProgress);
-					
-					approvalAdminModule.sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
+					approvalAdminModule.sendActivityAssignedNotifications(users, activityProgress, activity, activityGroup, flowInstance, false);
 				}
 
 			} else {

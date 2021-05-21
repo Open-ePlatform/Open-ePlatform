@@ -1468,6 +1468,69 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 	}
+	
+	public void sendActivityAssignedNotifications(List<User> newManagers, FlowApprovalActivityProgress activityProgress, FlowApprovalActivity activity, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance, boolean reminder) throws SQLException {
+
+		if (newManagers == null) {
+			return;
+		}
+		
+		if (activity.isOnlyUseGlobalNotifications() && activity.getGlobalEmailAddress() != null) {
+			return;
+		}
+		
+		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailSubject(), activityGroupStartedEmailSubject);
+		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailMessage(), activityGroupStartedEmailMessage);
+
+		if (subject == null || message == null) {
+
+			log.warn("no subject or message set, unable to send notifications");
+			return;
+		}
+		
+		if (reminder) {
+			subject = reminderEmailPrefix + subject;
+		}
+
+		List<TagSource> sharedTagSources = new ArrayList<>(4);
+
+		sharedTagSources.add(ACTIVITY_GROUP_TAG_SOURCE_FACTORY.getTagSource(activityGroup));
+		sharedTagSources.add(FLOW_INSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
+		sharedTagSources.add(FLOW_TAG_SOURCE_FACTORY.getTagSource((Flow) flowInstance.getFlow()));
+
+		sharedTagSources.add(new SingleTagSource("$myActivitiesURL", getUserApprovalModuleAlias(flowInstance)));
+
+		log.info("Sending emails for assigned activity " + activityProgress+ " for flow instance " + flowInstance + " to " + StringUtils.toCommaSeparatedString(newManagers));
+
+		for (User manager : newManagers) {
+
+			if (!StringUtils.isEmpty(manager.getEmail())) {
+
+				TagReplacer tagReplacer = new TagReplacer();
+
+				tagReplacer.addTagSources(sharedTagSources);
+				tagReplacer.addTagSource(MANAGER_TAG_SOURCE_FACTORY.getTagSource(manager));
+				tagReplacer.addTagSource(new SingleTagSource("$activities", activity.getName()));
+
+				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+
+				try {
+					email.addRecipient(manager.getEmail());
+					email.setMessageContentType(SimpleEmail.HTML);
+					email.setSenderName(notificationHandler.getEmailSenderName(flowInstance));
+					email.setSenderAddress(notificationHandler.getEmailSenderAddress(flowInstance));
+					email.setSubject(tagReplacer.replace(subject));
+					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
+
+					systemInterface.getEmailHandler().send(email);
+
+				} catch (Exception e) {
+
+					log.info("Error generating/sending email " + email, e);
+				}
+			}
+		}
+	}
 
 	public void sendActivityGroupCompletedNotifications(List<FlowApprovalActivityProgress> activityProgresses, FlowApprovalActivityRound round, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance) throws SQLException {
 
