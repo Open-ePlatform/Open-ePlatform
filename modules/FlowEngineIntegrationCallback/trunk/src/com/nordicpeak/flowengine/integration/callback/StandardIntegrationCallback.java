@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -64,6 +66,7 @@ import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 import com.nordicpeak.flowengine.integration.callback.listeners.FieldInstanceListener;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -187,7 +190,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 						throw new RuntimeException(e);
 					}
 
-					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, principalUser, null);
+					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, principalUser, null, null);
 
 					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 
@@ -222,7 +225,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				log.info("User " + callback.getUser() + " requested add event for flow instance " + flowInstance + " using principal " + principal);
 
-				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, message, principalUser, TimeUtils.getTimeStamp(date));
+				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, message, principalUser, TimeUtils.getTimeStamp(date), null);
 
 				return flowInstanceEvent.getEventID();
 
@@ -282,7 +285,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					TransactionHandler.autoClose(transactionHandler);
 				}
 
-				FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded());
+				
+				FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded(), ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 
@@ -593,7 +597,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 						eventUser = null;
 					}
 
-					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null);
+					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null, null);
 
 					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
 					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, previousManagerGroups, eventUser), EventTarget.ALL);
@@ -805,7 +809,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		}
 	}
 
-	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp) {
+	public FlowInstanceEvent addFlowInstanceEvent(ImmutableFlowInstance flowInstance, EventType eventType, String details, User user, Timestamp timestamp, Map<String, String> attributes) {
 
 		FlowInstanceEvent flowInstanceEvent = new FlowInstanceEvent();
 		flowInstanceEvent.setFlowInstance((FlowInstance) flowInstance);
@@ -816,6 +820,14 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		flowInstanceEvent.setStatusDescription(flowInstance.getStatus().getDescription());
 
 		flowInstanceEvent.getAttributeHandler().setAttribute("integration", true);
+		
+		if(attributes != null) {
+			
+			for(Entry<String,String> entry : attributes.entrySet()){
+
+				flowInstanceEvent.getAttributeHandler().setAttribute(entry.getKey(), entry.getValue());
+			}
+		}
 
 		if (timestamp == null) {
 
