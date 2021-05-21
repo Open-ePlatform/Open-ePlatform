@@ -513,17 +513,17 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			boolean completed = false;
 
-			if (activityGroup.isUseApproveDeny()) {
+			if(activityGroup.isUseApproveDeny()) {
 
-				if ("approved".equals(req.getParameter("completed"))) {
-
+				if(!StringUtils.isEmpty(req.getParameter("approved"))) {
+					
 					log.info("User " + user + " approved activity progress " + activityProgress);
 
 					activityProgress.setDenied(false);
 					completed = true;
 
-				} else if ("denied".equals(req.getParameter("completed"))) {
-
+				} else if (!StringUtils.isEmpty(req.getParameter("denied")))	{
+					
 					log.info("User " + user + " denied activity progress " + activityProgress);
 
 					activityProgress.setDenied(true);
@@ -532,7 +532,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			} else {
 
-				if ("true".equals(req.getParameter("completed"))) {
+				if(!StringUtils.isEmpty(req.getParameter("completed"))) {
 
 					log.info("User " + user + " completing activity progress " + activityProgress);
 

@@ -342,6 +342,67 @@
 								
 								<br/>
 								
+								<xsl:if test="$disabled = 'true'">
+									
+									<strong>
+										<xsl:value-of select="$i18n.ActivityProgress.completed" />
+										<xsl:text>:&#160;</xsl:text>
+									</strong>
+									<xsl:value-of select="ActivityProgress/completed" />
+									
+									<br/>
+
+									<strong>
+										<xsl:value-of select="$i18n.ActivityProgress.result" />
+										<xsl:text>:&#160;</xsl:text>
+									</strong>
+								
+									<xsl:choose>
+										<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'true' and ActivityProgress/completed">
+	
+											<xsl:choose>
+												<xsl:when test="ActivityProgress/denied = 'true'">
+													<xsl:choose>
+														<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
+															<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:value-of select="$i18n.ActivityProgress.denied" />
+														</xsl:otherwise>
+													</xsl:choose>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:choose>
+														<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+															<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:value-of select="$i18n.ActivityProgress.approved" />
+														</xsl:otherwise>
+													</xsl:choose>
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:when>
+									
+										<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'false' and ActivityProgress/completed">
+											<xsl:choose>
+												<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="$i18n.ActivityProgress.approved" />
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:when>
+
+									</xsl:choose>
+									
+									<br/>
+									
+								</xsl:if>
+								
+								<br/>
+								
 								<strong>
 									<xsl:value-of select="$i18n.Flow.name" />
 									<xsl:text>:&#160;</xsl:text>
@@ -390,106 +451,6 @@
 									</div>
 								</div>
 							</xsl:if>
-								
-							<xsl:choose>
-								<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'true'">
-									
-									<div>
-										
-										<xsl:call-template name="createRadio">
-											<xsl:with-param name="id" select="'approved'" />
-											<xsl:with-param name="name" select="'completed'" />
-											<xsl:with-param name="value" select="'approved'" />
-											<xsl:with-param name="checked">
-												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'">true</xsl:if>
-											</xsl:with-param>
-											<xsl:with-param name="disabled" select="$disabled" />
-										</xsl:call-template>
-										
-										<label for="approved">
-											<xsl:attribute name="class">
-												<xsl:text>radio</xsl:text>
-												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'"> disabled</xsl:if>
-											</xsl:attribute>
-											
-											<xsl:choose>
-												<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
-													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="$i18n.ActivityProgress.approved" />
-												</xsl:otherwise>
-											</xsl:choose>
-										</label>
-										
-									</div>
-									
-									<div>
-										
-										<xsl:call-template name="createRadio">
-											<xsl:with-param name="id" select="'denied'" />
-											<xsl:with-param name="name" select="'completed'" />
-											<xsl:with-param name="value" select="'denied'" />
-											<xsl:with-param name="checked">
-												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied = 'true'">true</xsl:if>
-											</xsl:with-param>
-											<xsl:with-param name="disabled" select="$disabled" />
-										</xsl:call-template>
-										
-										<label for="denied">
-											<xsl:attribute name="class">
-												<xsl:text>radio</xsl:text>
-												<xsl:if test="ActivityProgress/completed != '' and ActivityProgress/denied != 'true'"> disabled</xsl:if>
-											</xsl:attribute>
-											
-											<xsl:choose>
-												<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
-													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="$i18n.ActivityProgress.denied" />
-												</xsl:otherwise>
-											</xsl:choose>
-										</label>
-										
-									</div>
-									
-								</xsl:when>
-								<xsl:otherwise>
-									
-									<div>
-										
-										<xsl:call-template name="createCheckbox">
-											<xsl:with-param name="id" select="'completed'" />
-											<xsl:with-param name="name" select="'completed'" />
-											<xsl:with-param name="value" select="'true'" />
-											<xsl:with-param name="checked">
-												<xsl:if test="ActivityProgress/completed != ''">true</xsl:if>
-											</xsl:with-param>
-											<xsl:with-param name="disabled" select="$disabled" />
-										</xsl:call-template>
-										
-										<label for="completed">
-											<xsl:attribute name="class">
-												<xsl:text>checkbox</xsl:text>
-												<xsl:if test="ActivityProgress/completed != ''"> disabled</xsl:if>
-											</xsl:attribute>
-											
-											<xsl:choose>
-												<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
-													<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="$i18n.ActivityProgress.complete" />
-												</xsl:otherwise>
-											</xsl:choose>
-										</label>
-										
-									</div>
-								
-								</xsl:otherwise>
-							
-							</xsl:choose>
 							
 							<xsl:if test="ActivityProgress/completed and ActivityProgress/signedDate">
 								<div>
@@ -531,20 +492,84 @@
 						
 						<div class="divider" />
 						
-						<article class="buttons floatright">
-						
-							<xsl:if test="$disabled != 'true'">
-								<input type="submit" value="{$i18n.SaveChanges}" class="btn btn-green btn-inline" style="width: auto;" />
-							</xsl:if>
-							
+
+
+						<xsl:variable name="approvedText">
 							<xsl:choose>
-								<xsl:when test="$disabled = 'true'">
-									<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/listcompleted" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+								<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+									<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
 								</xsl:when>
 								<xsl:otherwise>
-									<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+									<xsl:value-of select="$i18n.ActivityProgress.approvebutton" />
 								</xsl:otherwise>
 							</xsl:choose>
+						</xsl:variable>
+
+						<xsl:variable name="deniedTex">
+							<xsl:choose>
+								<xsl:when test="ActivityProgress/Activity/ActivityGroup/deniedText">
+									<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/deniedText" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.ActivityProgress.deniebutton" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+
+						<xsl:variable name="completedText">
+							<xsl:choose>
+								<xsl:when test="ActivityProgress/Activity/ActivityGroup/approvedText">
+									<xsl:value-of select="ActivityProgress/Activity/ActivityGroup/approvedText" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.ActivityProgress.completebutton" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+						
+						<xsl:variable name="class">
+							<xsl:if test="$disabled != 'true'">
+								<xsl:if test="string-length($approvedText) + string-length($deniedTex) > 80">block</xsl:if>
+							</xsl:if>
+						</xsl:variable>
+
+						<article class="buttons flexright {$class}">
+													
+							<xsl:if test="$disabled != 'true'">
+							
+								<xsl:choose>
+									<xsl:when test="ActivityProgress/Activity/ActivityGroup/useApproveDeny = 'true'">
+										
+										<div class="">
+											<input type="submit" value="{$approvedText}" name="approved" class="btn btn-green btn-inline" title="Är du säker på att du vill godkänna denna aktivitet?" onclick="return confirm('{$i18n.ActivityProgress.confirm.approve}');" />
+										</div>
+										
+										<div class="">
+											<input type="submit" value="{$deniedTex}" name="denied" class="btn btn-red btn-inline" title="Är du säker på att du vill avslå denna aktivitet?" onclick="return confirm('{$i18n.ActivityProgress.confirm.denie}');" />
+										</div>
+										
+									</xsl:when>
+									<xsl:otherwise>
+										
+										<div class="">
+											<input type="submit" value="{$completedText}" name="completed" class="btn btn-green btn-inline" title="Är du säker på att du vill godkänna denna aktivitet?" onclick="return confirm('{$i18n.ActivityProgress.confirm.complete}');" />
+										</div>
+									
+									</xsl:otherwise>
+								
+								</xsl:choose>
+							</xsl:if>
+						
+							<div>
+								<xsl:choose>
+									<xsl:when test="$disabled = 'true'">
+										<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/listcompleted" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+									</xsl:when>
+									<xsl:otherwise>
+										<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}" class="btn btn-light btn-inline"><xsl:value-of select="$i18n.Back" /></a>
+									</xsl:otherwise>
+								</xsl:choose>
+							</div>
 						</article>
 						
 					</form>

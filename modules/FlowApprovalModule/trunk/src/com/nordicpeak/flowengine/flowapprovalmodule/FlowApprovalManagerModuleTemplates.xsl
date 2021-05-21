@@ -41,25 +41,7 @@
 								<th><xsl:value-of select="$i18n.ActivityProgress.completed" /></th>
 								<xsl:if test="ActivityGroups/ActivityGroup/useApproveDeny = 'true'">
 									<th>
-										<xsl:choose>
-											<xsl:when test="ActivityGroups/ActivityGroup/approvedText">
-												<xsl:value-of select="ActivityGroups/ActivityGroup/approvedText" />
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$i18n.ActivityProgress.approved" />
-											</xsl:otherwise>
-										</xsl:choose>
-										
-										<xsl:text>/</xsl:text>
-										
-										<xsl:choose>
-											<xsl:when test="ActivityGroups/ActivityGroup/deniedText">
-												<xsl:value-of select="ActivityGroups/ActivityGroup/deniedText" />
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$i18n.ActivityProgress.denied" />
-											</xsl:otherwise>
-										</xsl:choose>
+										<xsl:value-of select="$i18n.ActivityProgress.result" />
 									</th>
 								</xsl:if>
 								<th><xsl:value-of select="$i18n.ActivityProgress.CompletingUser" /></th>
@@ -341,31 +323,42 @@
 			<xsl:if test="$showApproveDeny = 'true'">
 				<td>
 				
-					<xsl:if test="../../../../useApproveDeny = 'true' and completed">
-						<xsl:choose>
-							<xsl:when test="denied = 'true'">
-								<xsl:choose>
-									<xsl:when test="../../../../deniedText">
-										<xsl:value-of select="../../../../deniedText" />
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="$i18n.ActivityProgress.denied" />
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:choose>
-									<xsl:when test="../../../../approvedText">
-										<xsl:value-of select="../../../../approvedText" />
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="$i18n.ActivityProgress.approved" />
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:if>
-					
+					<xsl:choose>
+						<xsl:when test="../../../../useApproveDeny = 'true' and completed">
+							<xsl:choose>
+								<xsl:when test="denied = 'true'">
+									<xsl:choose>
+										<xsl:when test="../../../../deniedText">
+											<xsl:value-of select="../../../../deniedText" />
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$i18n.ActivityProgress.denied" />
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:choose>
+										<xsl:when test="../../../../approvedText">
+											<xsl:value-of select="../../../../approvedText" />
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$i18n.ActivityProgress.approved" />
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:when test="../../../../useApproveDeny = 'false' and completed">
+							<xsl:choose>
+								<xsl:when test="../../../../approvedText">
+									<xsl:value-of select="../../../../approvedText" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.ActivityProgress.approved" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
 				</td>
 			</xsl:if>
 			<td>
