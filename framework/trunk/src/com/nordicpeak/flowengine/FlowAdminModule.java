@@ -5970,6 +5970,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public ForegroundModuleResponse unPublishFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		if (!hasPublishAccess(user)) {
+			
 			throw new AccessDeniedException("User does not have publishing access");
 		}
 		
@@ -5987,7 +5988,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		List<Flow> flows = getFlowVersions(flowFamily);
 
-		if (!AccessUtils.checkAccess(user, flows.get(0).getFlowType().getAdminAccessInterface())) {
+		if (hasFlowAccess(user, flows.get(0))) {
 			
 			throw new AccessDeniedException("User does not have access to flow type " + flows.get(0).getFlowType());
 		}
