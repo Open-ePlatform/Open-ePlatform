@@ -425,6 +425,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					
 				} else {
 					
+					//TODO remove!!
 					InputStreamReader reader = null;
 					StringWriter stringWriter = new StringWriter();
 					
