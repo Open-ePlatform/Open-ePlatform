@@ -1838,18 +1838,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				} else if (multipartRequest.getFileCount() > 0 && !StringUtils.isEmpty(multipartRequest.getFile(0).getName())) {
 
-					FileItem file = multipartRequest.getFile(0);
+					FileItem fileItem = multipartRequest.getFile(0);
 
-					String lowerCasefileName = file.getName().toLowerCase();
-
-					if (!(lowerCasefileName.endsWith(".png") || lowerCasefileName.endsWith(".jpg") || lowerCasefileName.endsWith(".gif") || lowerCasefileName.endsWith(".bmp"))) {
+					String lowerCasefileName = FilenameUtils.getName(fileItem.getName());
+					
+					if (!Flow.ICON_FILE_EXTENSION_POPULATOR.validateFormat(lowerCasefileName)) {
 
 						validationError = new ValidationError("InvalidIconFileFormat");
 
 					} else {
 
 						try {
-							BufferedImage image = ImageUtils.getImage(file.get());
+							BufferedImage image = ImageUtils.getImage(fileItem.get());
 
 							if (image == null) {
 
@@ -1859,7 +1859,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 								image = ImageUtils.cropAsSquare(image);
 
-								String filename = FilenameUtils.getName(file.getName());
+								String filename = FilenameUtils.getName(fileItem.getName());
 
 								if (image.getWidth() > maxFlowIconWidth || image.getHeight() > maxFlowIconHeight) {
 
@@ -1874,7 +1874,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 								} else {
 
-									flow.setIcon(new SerialBlob(file.get()));
+									flow.setIcon(new SerialBlob(fileItem.get()));
 									flow.setIconFileName(FilenameUtils.getName(filename));
 								}
 

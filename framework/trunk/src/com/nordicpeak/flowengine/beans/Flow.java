@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.beans;
 
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.sql.Blob;
 import java.sql.Date;
@@ -34,6 +35,8 @@ import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.date.DateStringyfier;
 import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.image.ImageUtils;
+import se.unlogic.standardutils.populators.EndsWithStringPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.populators.YearLimitedDatePopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
@@ -65,6 +68,8 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 	private static final long serialVersionUID = -1533312692687401406L;
 
+	public static final EndsWithStringPopulator ICON_FILE_EXTENSION_POPULATOR = new EndsWithStringPopulator(".png", ".jpg", ".gif", ".bmp");
+	
 	public static final Field DEFAULT_FLOW_STATE_MAPPINGS_RELATION = ReflectionUtils.getField(Flow.class, "defaultFlowStateMappings");
 	public static final Field FLOW_TYPE_RELATION = ReflectionUtils.getField(Flow.class, "flowType");
 	public static final Field CATEGORY_RELATION = ReflectionUtils.getField(Flow.class, "category");
@@ -925,19 +930,31 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 		this.longDescription = XMLValidationUtils.validateParameter("longDescription", xmlParser, !skipOverview, 1, 16777215, StringPopulator.getPopulator(), errors);
 
-		this.iconFileName = XMLValidationUtils.validateParameter("iconFileName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.iconLastModified = TimeUtils.getCurrentTimestamp();
 
 		String icon = xmlParser.getString("icon");
 
 		if (!StringUtils.isEmpty(icon)) {
 
+			this.iconFileName = XMLValidationUtils.validateParameter("iconFileName", xmlParser, true, 1, 255, ICON_FILE_EXTENSION_POPULATOR, errors);
+			
 			try {
-				this.icon = new SerialBlob(Base64.decode(icon));
-
+				byte[] imageData = Base64.decode(icon);
+				
+				BufferedImage bufferedImage = ImageUtils.getImage(imageData);
+				
+				if(bufferedImage != null) {
+					
+					this.icon = new SerialBlob(imageData);
+					
+				}else {
+					
+					errors.add(new ValidationError("UnableToParseIcon"));
+				}
+				
 			} catch (Exception e) {
 
-				errors.add(new ValidationError("ErrorParsingFlowIcon"));
+				errors.add(new ValidationError("UnableToParseIcon"));
 			}
 		}
 
