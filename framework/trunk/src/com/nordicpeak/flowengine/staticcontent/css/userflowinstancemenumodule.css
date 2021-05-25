@@ -1,0 +1,11 @@
+@CHARSET "ISO-8859-1";
+
+@media screen and (min-width: 1005px) {
+	aside.first {
+		width: 19.0625%;
+	}
+	
+	.content.omega {
+		width: 79.6875%
+	}
+}

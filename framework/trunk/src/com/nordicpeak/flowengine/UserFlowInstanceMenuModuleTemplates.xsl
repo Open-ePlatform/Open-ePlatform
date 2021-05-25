@@ -3,6 +3,10 @@
 	version="1.0">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1" />
 
+	<xsl:variable name="links">
+		/css/userflowinstancemenumodule.css
+	</xsl:variable>
+
 	<xsl:variable name="scripts">
 		/js/userflowinstancemenumodule.js
 	</xsl:variable>
@@ -21,7 +25,7 @@
 	  	</div>
 
 	</xsl:template>
-
+	
 	<xsl:template match="menuitem">
 
 		<li>
@@ -69,6 +73,10 @@
 			<xsl:choose>
 				<xsl:when test="url">
 					
+					<xsl:if test="position() mod 2 = 0">
+						<xsl:attribute name="class">odd</xsl:attribute>
+					</xsl:if>
+					
 					<a href="{/Document/contextpath}{url}">
 						<xsl:attribute name="class">
 							<xsl:text>btn btn-light</xsl:text>
@@ -89,7 +97,10 @@
 				</xsl:when>
 				<xsl:otherwise>
 					
-					<xsl:attribute name="class">no-url</xsl:attribute>
+					<xsl:attribute name="class">
+						no-url
+						<xsl:if test="position() mod 2 = 0"> odd</xsl:if>
+					</xsl:attribute>
 						
 					<xsl:value-of select="name"/>
 					
