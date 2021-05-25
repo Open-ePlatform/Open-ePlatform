@@ -60,8 +60,8 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
@@ -317,7 +317,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 	}
 
 	@Override
-	public void save(FileInfoQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(FileInfoQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -332,7 +332,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 	}
 
 	@Override
-	public void populate(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		queryInstance.getQueryInstanceDescriptor().setPopulated(!queryInstance.getQuery().isDontSetPopulated());
 	}
@@ -401,7 +401,7 @@ public class FileInfoQueryProviderModule extends BaseQueryProviderModule<FileInf
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(FileInfoQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser, InstanceRequestMetadata requestMetadata) throws IOException {
 
 		if (CollectionUtils.isEmpty(queryInstance.getQuery().getFiles())) {
 

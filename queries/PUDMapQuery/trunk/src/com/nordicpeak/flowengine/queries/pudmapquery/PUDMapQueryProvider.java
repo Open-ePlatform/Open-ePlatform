@@ -25,7 +25,7 @@ import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.SimpleRequest;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.queries.basemapquery.BaseMapQueryProviderModule;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -55,7 +55,7 @@ public class PUDMapQueryProvider extends BaseMapQueryProviderModule<PUDMapQuery,
 	}
 
 	@Override
-	public void populate(PUDMapQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(PUDMapQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		super.populate(queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata);
 

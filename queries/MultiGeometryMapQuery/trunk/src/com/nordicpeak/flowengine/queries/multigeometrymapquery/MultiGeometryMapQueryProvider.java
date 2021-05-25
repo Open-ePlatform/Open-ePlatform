@@ -29,7 +29,7 @@ import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.queries.basemapquery.BaseMapQueryProviderModule;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -63,7 +63,7 @@ public class MultiGeometryMapQueryProvider extends BaseMapQueryProviderModule<Mu
 	}
 
 	@Override
-	public void populate(MultiGeometryMapQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(MultiGeometryMapQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 

@@ -78,8 +78,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
@@ -436,7 +435,7 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 	}
 
 	@Override
-	public void populate(MapQueryInstanceType queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(MapQueryInstanceType queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 
@@ -927,7 +926,7 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 	}
 
 	@Override
-	public void save(MapQueryInstanceType queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(MapQueryInstanceType queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -1363,7 +1362,7 @@ public abstract class BaseMapQueryProviderModule<MapQueryType extends BaseMapQue
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(MapQueryInstanceType queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(MapQueryInstanceType queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser, InstanceRequestMetadata requestMetadata) throws IOException {
 
 		if (previewMode.equals(BaseMapQueryPreviewMode.WEB_MAP) || req.getParameter("mapimage") == null) {
 

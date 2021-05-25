@@ -50,6 +50,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.SimpleImmutableAlternative;
@@ -263,7 +264,7 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 
 	@Override
-	public QueryResponse getShowHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getShowHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
 	
 		queryInstance.generateNodeHierarchy();
 		
@@ -271,7 +272,7 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		if (queryInstance.getFullTree() == null) {
 
@@ -309,7 +310,7 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 
 	@Override
-	public void save(MultiTreeQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(MultiTreeQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -324,7 +325,7 @@ public class MultiTreeQueryProviderModule extends BaseQueryProviderModule<MultiT
 	}
 
 	@Override
-	public void populate(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(MultiTreeQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 

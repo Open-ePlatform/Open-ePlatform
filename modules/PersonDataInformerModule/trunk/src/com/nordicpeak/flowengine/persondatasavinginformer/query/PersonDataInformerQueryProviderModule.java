@@ -42,7 +42,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
@@ -305,7 +305,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 	}
 
 	@Override
-	public void save(PersonDataInformerQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(PersonDataInformerQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		//Check if the query instance has an ID set and if the ID of the descriptor has changed
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
@@ -321,7 +321,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 	}
 
 	@Override
-	public void populate(PersonDataInformerQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(PersonDataInformerQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 

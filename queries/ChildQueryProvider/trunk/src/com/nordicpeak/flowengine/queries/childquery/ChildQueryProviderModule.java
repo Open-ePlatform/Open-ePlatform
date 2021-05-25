@@ -76,6 +76,7 @@ import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderExce
 import com.nordicpeak.childrelationprovider.exceptions.CommunicationException;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
@@ -451,7 +452,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	@Override
-	public QueryResponse getFormHTML(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		if (queryInstance.getChildren() == null) {
 
@@ -507,7 +508,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	@Override
-	public void save(ChildQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(ChildQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -522,7 +523,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	}
 
 	@Override
-	public void populate(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 

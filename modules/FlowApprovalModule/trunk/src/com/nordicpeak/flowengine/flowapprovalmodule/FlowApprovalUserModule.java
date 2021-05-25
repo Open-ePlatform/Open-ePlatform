@@ -75,7 +75,6 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.SimpleSigningRequest;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
@@ -613,7 +612,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		if (activity.isShowFlowInstance()) {
 			try {
-				List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), new RequestMetadata(false));
+				List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), BaseFlowModule.OWNER_REQUEST_METADATA);
 				XMLUtils.append(doc, showActivity, "ManagerResponses", managerResponses);
 
 			} catch (UnableToGetQueryInstanceShowHTMLException e) {
@@ -952,7 +951,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return flowAdminModule.processImmutableQueryRequest(req, res, user, uriParser, new FlowApprovalFlowInstanceAccessController(this), true, false);
+		return flowAdminModule.processImmutableQueryRequest(req, res, user, uriParser, new FlowApprovalFlowInstanceAccessController(this), true, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@Override

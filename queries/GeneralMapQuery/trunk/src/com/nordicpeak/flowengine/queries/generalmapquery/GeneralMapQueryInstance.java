@@ -19,6 +19,7 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
@@ -169,9 +170,9 @@ public class GeneralMapQueryInstance extends BaseQueryInstance {
 	}
 	
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler) throws Exception {
+	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler, InstanceRequestMetadata requestMetadata) throws Exception {
 
-		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getQueryRequestProcessor(this, req, user, poster, uriParser);
+		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getQueryRequestProcessor(this, req, user, poster, uriParser, requestMetadata);
 	}
 	
 }

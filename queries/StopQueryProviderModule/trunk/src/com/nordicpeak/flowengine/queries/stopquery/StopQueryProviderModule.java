@@ -33,7 +33,7 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
@@ -211,7 +211,7 @@ public class StopQueryProviderModule extends BaseQueryProviderModule<StopQueryIn
 	}
 
 	@Override
-	public void save(StopQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(StopQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -226,7 +226,7 @@ public class StopQueryProviderModule extends BaseQueryProviderModule<StopQueryIn
 	}
 
 	@Override
-	public void populate(StopQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(StopQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		if(!allowPartialPopulation){
 			
