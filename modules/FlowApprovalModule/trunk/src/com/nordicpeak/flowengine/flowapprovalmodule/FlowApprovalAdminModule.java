@@ -1680,6 +1680,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		if (event.getAction() == CRUDAction.DELETE) {
 
+			//TODO wrap loop in transaction and use transaction commit listener to delete files
+			
 			for (FlowInstance flowInstance : event.getBeans()) {
 
 				if (flowInstance.getFirstSubmitted() != null) {

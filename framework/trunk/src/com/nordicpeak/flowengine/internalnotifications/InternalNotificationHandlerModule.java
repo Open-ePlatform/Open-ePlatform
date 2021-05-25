@@ -716,6 +716,8 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 		
 		if (event.getAction() == CRUDAction.DELETE) {
 			
+			//TODO wrap loop in transaction
+			
 			for (FlowInstance flowInstance : event.getBeans()) {
 				
 				try {
