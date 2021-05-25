@@ -1325,18 +1325,28 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		HashSet<User> managers = new HashSet<>();
 		HashSet<String> globalRecipients = new HashSet<>();
 
-		for (FlowApprovalActivity activity : createdActivities.keySet()) {
+		for (Entry<FlowApprovalActivity, FlowApprovalActivityProgress> entry : createdActivities.entrySet()) {
 
+			FlowApprovalActivity activity = entry.getKey();
+			FlowApprovalActivityProgress activityProgress = entry.getValue();
+			
 			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
 
 				boolean useFallbackUsers = true;
-
-				if (activity.getResponsibleUserAttributeNames() != null) {
-
+				
+				if (activityProgress.getResponsibleAttributedUsers() != null) {
+					
+						useFallbackUsers = false;
+						managers.addAll(activityProgress.getResponsibleAttributedUsers());
+						
+				} else if (activity.getResponsibleUserAttributeNames() != null) {
+					
 					List<User> users = getResponsibleUsersFromAttribute(activity, flowInstance);
 
 					if (users != null) {
 
+						log.warn("Users not set on activity progress " + activityProgress + ", using attribute directly!");
+						
 						useFallbackUsers = false;
 						managers.addAll(users);
 					}
@@ -1475,10 +1485,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			return;
 		}
 		
-		if (activity.isOnlyUseGlobalNotifications() && activity.getGlobalEmailAddress() != null) {
-			return;
-		}
-		
 		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailSubject(), activityGroupStartedEmailSubject);
 		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailMessage(), activityGroupStartedEmailMessage);
 
@@ -1500,7 +1506,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		sharedTagSources.add(new SingleTagSource("$myActivitiesURL", getUserApprovalModuleAlias(flowInstance)));
 
-		log.info("Sending emails for assigned activity " + activityProgress+ " for flow instance " + flowInstance + " to " + StringUtils.toCommaSeparatedString(newManagers));
+		log.info("Sending emails for assigned activity " + activityProgress + " for flow instance " + flowInstance + " to " + StringUtils.toCommaSeparatedString(newManagers));
 
 		for (User manager : newManagers) {
 

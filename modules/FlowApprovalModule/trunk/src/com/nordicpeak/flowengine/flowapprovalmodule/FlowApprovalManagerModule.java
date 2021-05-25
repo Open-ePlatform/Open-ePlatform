@@ -254,7 +254,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 			if (round.getCompleted() == null && round.getCancelled() == null && activityProgress.getCompleted() == null) {
-
+				
 				approvalAdminModule.sendActivityGroupStartedNotifications(Collections.singletonMap(activityProgress.getActivity(), activityProgress), activityProgress.getActivity().getActivityGroup(), flowInstance, true);
 				
 				FlowApprovalReminder reminder = new FlowApprovalReminder(activityProgress, TimeUtils.getCurrentTimestamp(), ReminderType.MANUAL, user);
