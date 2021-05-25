@@ -310,6 +310,8 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	
 	public void resetAttributes(MutableAttributeHandler attributeHandler) {
 
+		attributeHandler.removeAttribute(query.getAttributeName() + ".organizationName");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".organizationNumber");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".citizenIdentifier");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".firstname");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".lastname");
