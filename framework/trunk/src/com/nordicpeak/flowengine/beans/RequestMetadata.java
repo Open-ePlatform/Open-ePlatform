@@ -18,11 +18,14 @@ public class RequestMetadata extends GeneratedElementable implements Serializabl
 	private static final long serialVersionUID = -2715157789979993384L;
 	
 	@XMLElement
-	private final boolean manager;
+	protected boolean manager;
 	
 	protected List<SimpleAttribute> attributes;
 	
-	private SourceAttributeHandler attributeHandler;
+	protected SourceAttributeHandler attributeHandler;
+	
+	
+	public RequestMetadata() {}
 	
 	public RequestMetadata(boolean manager) {
 		super();

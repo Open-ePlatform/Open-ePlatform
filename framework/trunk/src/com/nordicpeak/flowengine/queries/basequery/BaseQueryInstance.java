@@ -18,17 +18,15 @@ import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryInstance;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
 
-
-
-public abstract class BaseQueryInstance extends GeneratedElementable implements QueryInstance{
+public abstract class BaseQueryInstance extends GeneratedElementable implements QueryInstance {
 
 	private static final long serialVersionUID = -4177738017399293462L;
 
@@ -47,42 +45,42 @@ public abstract class BaseQueryInstance extends GeneratedElementable implements 
 	}
 
 	@Override
-	public void populate(HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, QueryHandler queryHandler, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, QueryHandler queryHandler, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).populate(this, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata);
 	}
 
 	@Override
-	public void save(TransactionHandler transactionHandler, QueryHandler queryHandler) throws Throwable {
+	public void save(TransactionHandler transactionHandler, QueryHandler queryHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
-		BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).save(this, transactionHandler);
+		BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).save(this, transactionHandler, requestMetadata);
 	}
 
 	@Override
-	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getShowHTML(HttpServletRequest req, User user, User poster, QueryHandler queryHandler, String updateURL, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getShowHTML(this, req, user, poster, updateURL, queryRequestURL, requestMetadata, attributeHandler);
 	}
 
 	@Override
-	public QueryResponse getFormHTML(HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, QueryHandler queryHandler, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, QueryHandler queryHandler, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getFormHTML(this, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler);
 	}
 
 	@Override
-	public void close(QueryHandler queryHandler){}
+	public void close(QueryHandler queryHandler) {}
 
 	@Override
 	public void reset(MutableAttributeHandler attributeHandler) {
 
-		if(this.queryInstanceDescriptor != null){
+		if (this.queryInstanceDescriptor != null) {
 			this.queryInstanceDescriptor.setPopulated(false);
 		}
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler) throws Exception {
+	public QueryRequestProcessor getQueryRequestProcessor(HttpServletRequest req, User user, User poster, URIParser uriParser, QueryHandler queryHandler, InstanceRequestMetadata requestMetadata) throws Exception {
 
 		return null;
 	}
@@ -93,7 +91,7 @@ public abstract class BaseQueryInstance extends GeneratedElementable implements 
 		return BaseQueryUtils.getGenericQueryInstanceProvider(this.getClass(), queryHandler, queryInstanceDescriptor.getQueryDescriptor().getQueryTypeID()).getPDFContent(this, attributeHandler);
 	}
 
-	public Element getBaseExportXML(Document doc) throws Exception{
+	public Element getBaseExportXML(Document doc) throws Exception {
 
 		Element queryInstanceElement = doc.createElement(queryInstanceDescriptor.getQueryDescriptor().getXSDElementName());
 

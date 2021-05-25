@@ -662,7 +662,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, user, null, uriParser, req, true, true, true, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, this, req.getSession(true), user, user, null, uriParser, req, true, true, true, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -673,7 +673,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			} else if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
 
 				//Get saved instance from DB or session
-				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, new FlowBrowserAccessController(this, req.getSession(false)), req.getSession(true), user, uriParser, req, false, true, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, new FlowBrowserAccessController(this, req.getSession(false)), req.getSession(true), user, uriParser, req, false, true, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -731,7 +731,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		}
 
 		try {
-			return processFlowRequest(instanceManager, this, this, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, this, this, req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -752,11 +752,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		} catch (QueryInstanceHTMLException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, BaseFlowModule.OWNER_REQUEST_METADATA, e);
 
 		} catch (RuntimeException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, BaseFlowModule.OWNER_REQUEST_METADATA, e);
 		}
 	}
 	
@@ -810,13 +810,13 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, user, uriParser, this, true, true, true, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, this, true, true, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return processImmutableQueryRequest(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), true, false);
+		return processImmutableQueryRequest(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), true, OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1377,7 +1377,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
 		try {
-			return super.showImmutableFlowInstance(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
+			return super.showImmutableFlowInstance(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, ShowMode.SUBMIT, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (AccessDeniedException e) {
 
@@ -1402,11 +1402,11 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 
 		if (user == null) {
 			
-			return super.showPaymentForm(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, false);
+			return super.showPaymentForm(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this, OWNER_REQUEST_METADATA);
 			
 		} else {
 			
-			return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this, false);
+			return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this, OWNER_REQUEST_METADATA);
 		}
 	}
 
@@ -1535,7 +1535,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 		if (flowInstanceID != null) {
 			
 			try {
-				getSavedMutableFlowInstanceManager(flowID, flowInstanceID, this, req.getSession(true), user, uriParser, req, true, true, true, DEFAULT_REQUEST_METADATA);
+				getSavedMutableFlowInstanceManager(flowID, flowInstanceID, this, req.getSession(true), user, uriParser, req, true, true, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 				
 			} catch (Exception e) {
 				

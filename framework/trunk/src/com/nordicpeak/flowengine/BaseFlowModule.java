@@ -68,6 +68,7 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
 import se.unlogic.standardutils.string.TagReplacer;
+import se.unlogic.standardutils.threads.MutexKey;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
 import se.unlogic.standardutils.time.MillisecondTimeUnits;
 import se.unlogic.standardutils.time.TimeUtils;
@@ -87,6 +88,7 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
 import com.nordicpeak.flowengine.beans.QueryResponse;
@@ -204,6 +206,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	private static final AnnotatedBeanTagSourceFactory<FlowInstance> FLOWINSTANCE_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<FlowInstance>(FlowInstance.class, "$flowInstance.");
 	public static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<Flow>(Flow.class, "$flow.");
 	
+	public static final RequestMetadata OWNER_REQUEST_METADATA = new RequestMetadata(false);
+	public static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
+	
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Temp dir", description = "Directory for temporary files. Should be on the same filesystem as the file store for best performance. If not set system default temp directory will be used", required = true)
 	protected String tempDir;
@@ -236,7 +241,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	protected FlowEngineDAOFactory daoFactory;
 	
-	protected MutexKeyProvider<Object> submitMutexKeyProvider = new MutexKeyProvider<>();
+	protected static MutexKeyProvider<Object> submitMutexKeyProvider = new MutexKeyProvider<>();
 
 	protected QueryParameterFactory<Flow, Integer> flowIDParamFactory;
 	protected QueryParameterFactory<FlowType, Integer> flowTypeIDParamFactory;
@@ -499,7 +504,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return false;
 	}
 
-	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(int flowInstanceID, FlowInstanceAccessController accessController, User user, boolean checkEnabled, HttpServletRequest req, URIParser uriParser, boolean manager) throws AccessDeniedException, SQLException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
+	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(int flowInstanceID, FlowInstanceAccessController accessController, User user, boolean checkEnabled, HttpServletRequest req, URIParser uriParser, RequestMetadata requestMetadata) throws AccessDeniedException, SQLException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
 		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
 
@@ -513,7 +518,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			accessController.checkFlowInstanceAccess(flowInstance, user);
 		}
 
-		if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, manager))) {
+		if (checkEnabled && (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, requestMetadata.isManager()))) {
 
 			throw new FlowDisabledException(flowInstance.getFlow());
 		}
@@ -745,7 +750,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					
 					if(hasSubmitChecks) {
 						
-						submitLock = instanceManager.getFlowInstance().getFlow().getFlowFamily();
+						submitLock = instanceManager.getFlowInstance().getFlow().getFlowFamily().getFlowFamilyID();
 						
 					}else {
 						
@@ -1142,7 +1147,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected void processQueryRequest(FlowInstanceManager instanceManager, int queryID, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser) throws QueryInstanceNotFoundInFlowInstanceManagerException, QueryRequestsNotSupported, QueryRequestException {
+	protected void processQueryRequest(FlowInstanceManager instanceManager, int queryID, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, InstanceRequestMetadata requestMetadata) throws QueryInstanceNotFoundInFlowInstanceManagerException, QueryRequestsNotSupported, QueryRequestException {
 
 		ImmutableQueryInstance queryInstance;
 
@@ -1158,7 +1163,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			}
 
 			try {
-				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, poster, uriParser, queryHandler);
+				queryRequestProcessor = queryInstance.getQueryRequestProcessor(req, user, poster, uriParser, queryHandler, requestMetadata);
 
 			} catch (Exception e) {
 
@@ -1244,7 +1249,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			saveTimestamp = instanceManager.getFlowInstance().getLastStatusChange();
 		}
 		
-		Timestamp savedTimestamp = instanceManager.saveInstance(this, user, poster, eventType, saveTimestamp);
+		Timestamp savedTimestamp = instanceManager.saveInstance(this, user, poster, eventType, saveTimestamp, requestMetadata);
 
 		CRUDAction crudAction;
 
@@ -1507,7 +1512,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
 
 				//Get saved instance from DB or session
-				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, requestMetadata.isManager());
+				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, requestMetadata);
 
 				if (instanceManager == null) {
 
@@ -1855,7 +1860,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 				throw new URINotFoundException(uriParser);
 			}
 
-			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getPoster(poster), uriParser);
+			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getPoster(poster), uriParser, new InstanceRequestMetadata(requestMetadata, instanceManager));
 
 		} catch (QueryInstanceNotFoundInFlowInstanceManagerException e) {
 
@@ -1887,7 +1892,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkEnabled, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
+	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean checkEnabled, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
 		Integer flowInstanceID = null;
 		Integer queryID = null;
@@ -1900,14 +1905,14 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ImmutableFlowInstanceManager instanceManager = null;
 
 		try {
-			instanceManager = this.getImmutableFlowInstanceManager(flowInstanceID, accessController, user, checkEnabled, req, uriParser, manager);
+			instanceManager = this.getImmutableFlowInstanceManager(flowInstanceID, accessController, user, checkEnabled, req, uriParser, requestMetadata);
 
 			if (instanceManager == null) {
 
 				throw new URINotFoundException(uriParser);
 			}
 
-			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getFlowInstance().getPoster(), uriParser);
+			processQueryRequest(instanceManager, queryID, req, res, user, instanceManager.getFlowInstance().getPoster(), uriParser, new InstanceRequestMetadata(requestMetadata, instanceManager));
 
 		} catch (QueryInstanceNotFoundInFlowInstanceManagerException e) {
 
@@ -2103,7 +2108,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
-	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, boolean manager) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException, IOException {
+	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController accessController, FlowProcessCallback callback, RequestMetadata requestMetadata) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException, IOException {
 
 		Integer flowInstanceID = null;
 		ImmutableFlowInstanceManager instanceManager;
@@ -2113,7 +2118,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			if (uriParser.size() == 3 && (flowInstanceID = uriParser.getInt(2)) != null) {
 
 				//Get saved instance from DB or session
-				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, manager);
+				instanceManager = getImmutableFlowInstanceManager(flowInstanceID, accessController, user, true, req, uriParser, requestMetadata);
 
 				if (instanceManager == null) {
 
@@ -2556,5 +2561,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	
 	public String getFlowInstanceSessionPrefix() {
 		return Constants.FLOW_INSTANCE_SESSION_PREFIX;
+	}
+
+	public static MutexKey<Object> getSubmitLockMutexKey(Integer flowFamilyID) {
+
+		return submitMutexKeyProvider.getKey(flowFamilyID);
 	}
 }

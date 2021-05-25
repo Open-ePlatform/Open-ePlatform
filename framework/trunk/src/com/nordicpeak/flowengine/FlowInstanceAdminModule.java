@@ -104,7 +104,6 @@ import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.SimpleSigningRequest;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.beans.Step;
@@ -216,8 +215,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_USERS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerUsersNotFoundError");
 	public static final ValidationError ONE_OR_MORE_SELECTED_MANAGER_GROUPS_NOT_FOUND_VALIDATION_ERROR = new ValidationError("OneOrMoreSelectedManagerGroupsNotFoundError");
-
-	protected static final RequestMetadata MANAGER_REQUEST_METADATA = new RequestMetadata(true);
 
 	@XSLVariable(prefix = "java.")
 	protected String noManagersSelected = "No managers selected";
@@ -1486,7 +1483,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return processImmutableQueryRequest(req, res, user, uriParser, getGeneralAccessController(), true, true);
+		return processImmutableQueryRequest(req, res, user, uriParser, getGeneralAccessController(), true, MANAGER_REQUEST_METADATA);
 	}
 
 	private UserBookmark getBookmark(User user, FlowInstance flowInstance) throws SQLException {
@@ -1647,11 +1644,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		} catch (QueryInstanceHTMLException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, null, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, null, uriParser, MANAGER_REQUEST_METADATA, e);
 
 		} catch (RuntimeException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, null, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, null, uriParser, MANAGER_REQUEST_METADATA, e);
 		}
 	}
 

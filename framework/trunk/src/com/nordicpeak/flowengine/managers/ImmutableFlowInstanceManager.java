@@ -18,6 +18,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.webutils.url.URLRewriter;
 
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
@@ -160,7 +161,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 			if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !queryInstance.getQueryInstanceDescriptor().isPopulated())){
 
 				try{
-					queryResponses.add(queryInstance.getShowHTML(req, user, flowInstance.getPoster(), flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(queryInstance, baseQueryRequestURL), requestMetadata, attributeHandler));
+					queryResponses.add(queryInstance.getShowHTML(req, user, flowInstance.getPoster(), flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(queryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), attributeHandler));
 				}catch(Throwable e){
 					throw new UnableToGetQueryInstanceShowHTMLException(queryInstance.getQueryInstanceDescriptor(), e);
 				}
@@ -344,6 +345,12 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		}
 		
 		return sessionAttributeHandler;
+	}
+	
+	@Override
+	public String getInstanceManagerID() {
+	
+		return null;
 	}
 	
 }

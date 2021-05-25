@@ -37,6 +37,7 @@ import se.unlogic.webutils.url.URLRewriter;
 import com.nordicpeak.flowengine.beans.EvaluationResponse;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
@@ -643,7 +644,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			if(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN){
 
 				try{
-					queryResponses.add(managedQueryInstance.getQueryInstance().getFormHTML(req, user, getPoster(poster), null, queryHandler, requiresAjaxPosting(managedQueryInstance, currentStep), getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, flowInstance.getAttributeHandler()));
+					queryResponses.add(managedQueryInstance.getQueryInstance().getFormHTML(req, user, getPoster(poster), null, queryHandler, requiresAjaxPosting(managedQueryInstance, currentStep), getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), flowInstance.getAttributeHandler()));
 				}catch(Throwable e){
 					throw new UnableToGetQueryInstanceFormHTMLException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
 				}
@@ -672,7 +673,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				if (managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN) {
 
 					try {
-						queryResponses.add(managedQueryInstance.getQueryInstance().getFormHTML(req, user, getPoster(poster), null, queryHandler, false, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, flowInstance.getAttributeHandler()));
+						queryResponses.add(managedQueryInstance.getQueryInstance().getFormHTML(req, user, getPoster(poster), null, queryHandler, false, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), flowInstance.getAttributeHandler()));
 
 					} catch (Throwable e) {
 						throw new UnableToGetQueryInstanceFormHTMLException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
@@ -768,7 +769,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			if(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor().isPopulated())){
 
 				try{
-					queryResponses.add(managedQueryInstance.getQueryInstance().getShowHTML(req, user, resolvedPoster, flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, attributeHandler));
+					queryResponses.add(managedQueryInstance.getQueryInstance().getShowHTML(req, user, resolvedPoster, flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), attributeHandler));
 				}catch(Throwable e){
 					throw new UnableToGetQueryInstanceShowHTMLException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
 				}
@@ -823,7 +824,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		List<ValidationError> validationErrors = null;
 
 		try{
-			managedQueryInstance.getQueryInstance().populate(req, user, resolvedPoster, true, queryHandler, flowInstance.getAttributeHandler(), requestMetadata);
+			managedQueryInstance.getQueryInstance().populate(req, user, resolvedPoster, true, queryHandler, flowInstance.getAttributeHandler(), new InstanceRequestMetadata(requestMetadata, this));
 
 		}catch(RuntimeException e){
 
@@ -879,7 +880,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 				try {
 
-					modifications.addNode(queryModification.toJson(req, user, resolvedPoster, queryHandler, requiresAjaxPosting(modifiedQuery, managedSteps.get(currentStepIndex)), contextPath, getQueryRequestURL(queryModification.getQueryInstance(), baseQueryRequestURL), requestMetadata));
+					modifications.addNode(queryModification.toJson(req, user, resolvedPoster, queryHandler, requiresAjaxPosting(modifiedQuery, managedSteps.get(currentStepIndex)), contextPath, getQueryRequestURL(queryModification.getQueryInstance(), baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this)));
 
 				} catch (Throwable e) {
 
@@ -1060,7 +1061,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN){
 
 					try{
-						queryInstance.populate(req, user, resolvedPoster, allowPartialPopulation, queryHandler, flowInstance.getAttributeHandler(), requestMetadata);
+						queryInstance.populate(req, user, resolvedPoster, allowPartialPopulation, queryHandler, flowInstance.getAttributeHandler(), new InstanceRequestMetadata(requestMetadata, this));
 
 					}catch(RuntimeException e){
 						throw new UnableToPopulateQueryInstanceException(queryInstance.getQueryInstanceDescriptor(), e);
@@ -1123,7 +1124,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN){
 
 					try{
-						queryResponses.add(queryInstance.getFormHTML(req, user, resolvedPoster, validationErrorMap.get(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID()), queryHandler, requiresAjaxPosting(managedQueryInstance, currentStep), getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), requestMetadata, flowInstance.getAttributeHandler()));
+						queryResponses.add(queryInstance.getFormHTML(req, user, resolvedPoster, validationErrorMap.get(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID()), queryHandler, requiresAjaxPosting(managedQueryInstance, currentStep), getQueryRequestURL(managedQueryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), flowInstance.getAttributeHandler()));
 					}catch(Throwable e){
 						throw new UnableToGetQueryInstanceFormHTMLException(queryInstance.getQueryInstanceDescriptor(), e);
 					}
@@ -1167,7 +1168,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return getCurrentStepFormHTML(queryHandler, req, user, poster, baseQueryRequestURL, requestMetadata);
 	}
 
-	public synchronized Timestamp saveInstance(FlowEngineInterface flowEngineInterface, User user, User poster, EventType eventType, Timestamp saveTimestamp) throws SQLException, UnableToSaveQueryInstanceException, FlowInstanceManagerClosedException {
+	public synchronized Timestamp saveInstance(FlowEngineInterface flowEngineInterface, User user, User poster, EventType eventType, Timestamp saveTimestamp, RequestMetadata requestMetadata) throws SQLException, UnableToSaveQueryInstanceException, FlowInstanceManagerClosedException {
 
 		checkState();
 
@@ -1267,7 +1268,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 				for(ManagedQueryInstance managedQueryInstance : managedStep.getManagedQueryInstances()){
 
 					try{
-						managedQueryInstance.getQueryInstance().save(transactionHandler, flowEngineInterface.getQueryHandler());
+						managedQueryInstance.getQueryInstance().save(transactionHandler, flowEngineInterface.getQueryHandler(), new InstanceRequestMetadata(requestMetadata, this));
 					}catch(Throwable e){
 						throw new UnableToSaveQueryInstanceException(managedQueryInstance.getQueryInstance().getQueryInstanceDescriptor(), e);
 					}

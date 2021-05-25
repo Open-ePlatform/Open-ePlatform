@@ -27,6 +27,8 @@ public interface FlowInstanceManager {
 	public List<PDFManagerResponse> getPDFContent(ImmutableFlowEngineInterface flowEngineInterface) throws FlowInstanceManagerClosedException, UnableToGetQueryInstancePDFContentException;
 
 	public Integer getFlowInstanceID();
+	
+	public String getInstanceManagerID();
 
 	public Integer getFlowID();
 

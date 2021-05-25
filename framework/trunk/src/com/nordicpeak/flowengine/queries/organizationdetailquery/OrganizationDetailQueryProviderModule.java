@@ -50,8 +50,8 @@ import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.UserOrganizationsModule;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.beans.UserOrganization;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
@@ -268,7 +268,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	}
 
 	@Override
-	public void save(OrganizationDetailQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(OrganizationDetailQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -283,7 +283,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	}
 
 	@Override
-	public void populate(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		OrganizationDetailQuery query = queryInstance.getQuery();
 		
@@ -634,7 +634,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(OrganizationDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 		
 		if (dependencyLock != null) {
 

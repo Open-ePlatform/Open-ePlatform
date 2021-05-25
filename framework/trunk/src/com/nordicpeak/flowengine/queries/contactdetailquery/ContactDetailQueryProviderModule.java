@@ -48,6 +48,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
@@ -278,7 +279,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	}
 	
 	@Override
-	public void save(ContactDetailQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(ContactDetailQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 		
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 			
@@ -293,7 +294,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	}
 	
 	@Override
-	public void populate(ContactDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(ContactDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 		
 		StringPopulator stringPopulator = StringPopulator.getPopulator();
 		ContactDetailQuery query = queryInstance.getQuery();
@@ -808,7 +809,7 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(ContactDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(ContactDetailQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 		
 		ContactDetailQuery query = queryInstance.getQuery();
 		

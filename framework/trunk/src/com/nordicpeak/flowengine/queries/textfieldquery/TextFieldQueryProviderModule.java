@@ -60,8 +60,8 @@ import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryResponse;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.formatvalidation.FormatValidationHandler;
 import com.nordicpeak.flowengine.formatvalidation.FormatValidator;
@@ -323,7 +323,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 
 	@Override
-	public void save(TextFieldQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(TextFieldQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
@@ -349,7 +349,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 	
 	@Override
-	public QueryResponse getFormHTML(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		TextFieldQuery query = queryInstance.getQuery();
 
@@ -445,7 +445,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 	}
 	
 	@Override
-	public void populate(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(TextFieldQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		TextFieldQuery query = queryInstance.getQuery();
 		

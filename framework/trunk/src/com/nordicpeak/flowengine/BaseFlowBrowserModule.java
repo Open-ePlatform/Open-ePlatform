@@ -33,10 +33,8 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 
 	public static final ValidationError FLOW_INSTANCE_ERROR_DATA_SAVED_VALIDATION_ERROR = new ValidationError("FlowInstanceErrorDataSaved");
 	public static final ValidationError FLOW_INSTANCE_ERROR_DATA_NOT_SAVED_VALIDATION_ERROR = new ValidationError("FlowInstanceErrorDataNotSaved");
-	
-	public static final RequestMetadata DEFAULT_REQUEST_METADATA = new RequestMetadata(false);
 
-	protected ForegroundModuleResponse processFlowRequestException(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, Exception e) throws SQLException, ModuleConfigurationException {
+	protected ForegroundModuleResponse processFlowRequestException(MutableFlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, RequestMetadata requestMetadata, Exception e) throws SQLException, ModuleConfigurationException {
 
 		log.error("Error processing flow instance " + instanceManager + " belonging to user " + user + ". Trying to save flow instance...", e);
 
@@ -44,7 +42,7 @@ public abstract class BaseFlowBrowserModule extends BaseFlowModule {
 			try {
 				if(instanceManager.getFlowInstance().getStepID() != null){
 				
-					instanceManager.saveInstance(this, user, poster, EventType.UPDATED, instanceManager.getFlowInstance().getLastStatusChange());
+					instanceManager.saveInstance(this, user, poster, EventType.UPDATED, instanceManager.getFlowInstance().getLastStatusChange(), requestMetadata);
 					
 					rebindFlowInstance(req.getSession(), instanceManager);
 					

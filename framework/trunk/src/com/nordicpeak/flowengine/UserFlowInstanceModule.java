@@ -823,7 +823,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 
 				//Get saved instance from DB or session
-				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, DEFAULT_REQUEST_METADATA);
+				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -869,10 +869,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
 
-				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 			}
 
-			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -886,11 +886,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		} catch (QueryInstanceHTMLException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, BaseFlowModule.OWNER_REQUEST_METADATA, e);
 
 		} catch (RuntimeException e) {
 
-			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, e);
+			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, BaseFlowModule.OWNER_REQUEST_METADATA, e);
 		}
 	}
 
@@ -923,13 +923,13 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, user, uriParser, UPDATE_ACCESS_CONTROLLER, true, true, false, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, UPDATE_ACCESS_CONTROLLER, true, true, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return processImmutableQueryRequest(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, true, false);
+		return processImmutableQueryRequest(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, true, OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1003,7 +1003,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public ForegroundModuleResponse showSubmittedMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
 		try {
-			return super.showImmutableFlowInstance(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this.defaultFlowProcessCallback, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
+			return super.showImmutableFlowInstance(req, res, user, uriParser, new SessionAccessController(req.getSession(), SESSION_ACCESS_CONTROLLER_TAG), this.defaultFlowProcessCallback, ShowMode.SUBMIT, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (AccessDeniedException e) {
 
@@ -1026,7 +1026,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "pay")
 	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException, IOException {
 
-		return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false);
+		return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1076,7 +1076,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 
-		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, DEFAULT_REQUEST_METADATA);
+		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@Override

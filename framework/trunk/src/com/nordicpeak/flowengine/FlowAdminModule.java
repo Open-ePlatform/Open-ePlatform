@@ -2881,7 +2881,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCache.getFlowCacheMap().get(flowID) != null) {
 
 				//Create new instance or get instance from session
-				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+				instanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -2912,7 +2912,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		try {
-			return processFlowRequest(instanceManager, this, updateAccessController, req, res, user, user, uriParser, false, DEFAULT_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, this, updateAccessController, req, res, user, user, uriParser, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -2935,7 +2935,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCache.getFlowCacheMap().get(flowID) != null) {
 				
 				//Create new instance or get instance from session, only needed for query request processors
-				MutableFlowInstanceManager normalTestFlowInstanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, DEFAULT_REQUEST_METADATA);
+				MutableFlowInstanceManager normalTestFlowInstanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (normalTestFlowInstanceManager == null) {
 
@@ -2982,14 +2982,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
 
-				MutableFlowInstanceManager instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, user, instanceMetadata, DEFAULT_REQUEST_METADATA, getAbsoluteFileURL(uriParser, flow));
+				MutableFlowInstanceManager instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, user, instanceMetadata, BaseFlowModule.OWNER_REQUEST_METADATA, getAbsoluteFileURL(uriParser, flow));
 				
 				systemInterface.getEventHandler().sendEvent(MutableFlowInstanceManager.class, new NewMutableFlowInstanceManagerCreatedEvent(user, instanceManager), EventTarget.ALL);
 				
 				try {
 					log.info("User " + user + " requested testFlowAllSteps of flow instance " + instanceManager.getFlowInstance());
 		
-					List<ManagerResponse> managerResponses = instanceManager.getFullFormHTML(queryHandler, req, user, user, getMutableQueryRequestBaseURL(req, normalTestFlowInstanceManager), DEFAULT_REQUEST_METADATA);
+					List<ManagerResponse> managerResponses = instanceManager.getFullFormHTML(queryHandler, req, user, user, getMutableQueryRequestBaseURL(req, normalTestFlowInstanceManager), BaseFlowModule.OWNER_REQUEST_METADATA);
 		
 					Document doc = createDocument(req, uriParser, user);
 					Element flowInstanceManagerPreviewElement = doc.createElement("FlowInstanceManagerAllStepsForm");
@@ -3109,7 +3109,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, user, uriParser, updateAccessController, false, false, false, DEFAULT_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, updateAccessController, false, false, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@WebPublic(toLowerCase = true)
@@ -3834,7 +3834,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				flowInstance.getEvents().add(submittedEvent);
 
 				try {
-					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, user, uriParser, instanceManager, previewAccessController, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, DEFAULT_REQUEST_METADATA);
+					ForegroundModuleResponse moduleResponse = showFlowInstance(req, res, user, user, uriParser, instanceManager, previewAccessController, this, "FlowInstanceManagerSubmitted", null, ShowMode.SUBMIT, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 					instanceManager.close(queryHandler);
 

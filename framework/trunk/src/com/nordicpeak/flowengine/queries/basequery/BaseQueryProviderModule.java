@@ -43,10 +43,10 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.PDFQueryResponse;
 import com.nordicpeak.flowengine.beans.QueryResponse;
 import com.nordicpeak.flowengine.beans.QueryTypeDescriptor;
-import com.nordicpeak.flowengine.beans.RequestMetadata;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
@@ -272,7 +272,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	@Override
-	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
+	public QueryResponse getShowHTML(QI queryInstance, HttpServletRequest req, User user, User poster, String updateURL, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws TransformerConfigurationException, TransformerException {
 
 		Document doc = createDocument(req, poster);
 
@@ -290,14 +290,14 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	@Override
-	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
+	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) throws Throwable {
 
 		Document doc = createDocument(req, poster);
 
 		return getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler, doc);
 	}
 
-	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, RequestMetadata requestMetadata, AttributeHandler attributeHandler, Document doc) throws Throwable {
+	public QueryResponse getFormHTML(QI queryInstance, HttpServletRequest req, User user, User poster, List<ValidationError> validationErrors, boolean enableAjaxPosting, String queryRequestURL, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler, Document doc) throws Throwable {
 
 		Element showQueryFormElement = doc.createElement("ShowQueryForm");
 		doc.getDocumentElement().appendChild(showQueryFormElement);
@@ -498,7 +498,7 @@ public abstract class BaseQueryProviderModule<QI extends BaseQueryInstance> exte
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws Exception {
+	public QueryRequestProcessor getQueryRequestProcessor(QI queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser, InstanceRequestMetadata requestMetadata) throws Exception {
 
 		return null;
 	}

@@ -69,7 +69,7 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstance;
@@ -442,7 +442,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	}
 
 	@Override
-	public void save(FileUploadQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(FileUploadQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		checkConfiguration();
 
@@ -502,7 +502,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	}
 
 	@Override
-	public void populate(FileUploadQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(FileUploadQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 
 		checkConfiguration();
 		
@@ -860,7 +860,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 	}
 
 	@Override
-	public QueryRequestProcessor getQueryRequestProcessor(FileUploadQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser) throws IOException {
+	public QueryRequestProcessor getQueryRequestProcessor(FileUploadQueryInstance queryInstance, HttpServletRequest req, User user, User poster, URIParser uriParser, InstanceRequestMetadata requestMetadata) throws IOException {
 
 		if (CollectionUtils.isEmpty(queryInstance.getFiles())) {
 

@@ -40,7 +40,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
-import com.nordicpeak.flowengine.beans.RequestMetadata;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
@@ -239,7 +239,7 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 	}
 
 	@Override
-	public void save(DropDownQueryInstance queryInstance, TransactionHandler transactionHandler) throws Throwable {
+	public void save(DropDownQueryInstance queryInstance, TransactionHandler transactionHandler, InstanceRequestMetadata requestMetadata) throws Throwable {
 
 		if(queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())){
 
@@ -265,7 +265,7 @@ public class DropDownQueryProviderModule extends BaseQueryProviderModule<DropDow
 	}
 
 	@Override
-	public void populate(DropDownQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata) throws ValidationException {
+	public void populate(DropDownQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, InstanceRequestMetadata requestMetadata) throws ValidationException {
 		
 		DropDownQuery query = queryInstance.getQuery();
 		Integer queryID = query.getQueryID();
