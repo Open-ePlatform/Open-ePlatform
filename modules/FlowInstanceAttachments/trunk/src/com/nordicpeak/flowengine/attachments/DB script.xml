@@ -20,7 +20,7 @@
 		</Query>
 	</Script>
 	<Script version="2">
-	<Query>
+		<Query>
 			<![CDATA[
 				CREATE TABLE `flowengine_flow_instance_attachments_settings` (
 					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
