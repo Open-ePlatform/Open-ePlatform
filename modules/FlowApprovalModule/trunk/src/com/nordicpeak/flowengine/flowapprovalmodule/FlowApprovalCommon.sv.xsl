@@ -43,7 +43,7 @@
 	<xsl:variable name="i18n.ActivityProgress.notStarted">Ej aktiverad</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.confirm.complete">Är du säker på att du vill klarmarkera denna aktivitet?</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.confirm.approve">Är du säker på att du vill godkänna denna aktivitet?</xsl:variable>
-	<xsl:variable name="i18n.ActivityProgress.confirm.denie">Är du säker på att du vill avslå denna aktivitet?</xsl:variable>
+	<xsl:variable name="i18n.ActivityProgress.confirm.denie">Är du säker på att du vill neka denna aktivitet?</xsl:variable>
 	
 	<xsl:variable name="i18n.ActivityProgress.result">Utfall</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.completed">Slutförd</xsl:variable>
