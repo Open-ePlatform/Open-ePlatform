@@ -10,8 +10,8 @@
 	<xsl:variable name="i18n.Settings.Active">Visa Handlingar</xsl:variable>
 	<xsl:variable name="i18n.Settings.Active.description">Markera för att aktivera tillägget.</xsl:variable>
 	
-	<xsl:variable name="i18n.Settings.sendEmail">Markera om e-post ska skickas när handlingar läggs till.</xsl:variable>
-	<xsl:variable name="i18n.Settings.sendSms">Markera om sms ska skickas när handlingar läggs till.</xsl:variable>
+	<xsl:variable name="i18n.Settings.sendEmail">Skicka e-postnotifiering när handlingar läggs till</xsl:variable>
+	<xsl:variable name="i18n.Settings.sendSms">Skicka smsnotifiering när handlingar läggs till</xsl:variable>
 	<xsl:variable name="i18n.Enabled">Inställningar för handlingar är aktiverat</xsl:variable>
 	<xsl:variable name="i18n.NotEnabled">Inställningar för handlingar är inaktiverat</xsl:variable>
 	<xsl:variable name="i18n.UpdateSettings">Ändra inställningar</xsl:variable>
