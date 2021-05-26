@@ -28,6 +28,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
+import se.unlogic.standardutils.dao.annotations.OneToOne;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.date.DateUtils;
@@ -62,6 +63,7 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public static final Field ALIASES_RELATION = ReflectionUtils.getField(FlowFamily.class, "aliases");
 	public static final Field EVENTS_RELATION = ReflectionUtils.getField(FlowFamily.class, "events");
 	public static final Field MESSAGE_TEMPLATES_RELATION = ReflectionUtils.getField(FlowFamily.class, "messageTemplates");
+	public static final Field MANAGEMENT_INFO_RELATION = ReflectionUtils.getField(FlowFamily.class, "managementInfo");
 
 	public static final Field AUTO_MANAGER_ASSIGNMENT_RULES_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentRules");
 	public static final Field AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION = ReflectionUtils.getField(FlowFamily.class, "autoManagerAssignmentAlwaysUserIDs");
@@ -224,6 +226,11 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	@XMLElement(fixCase = true)
 	private List<MessageTemplate> messageTemplates;
 
+	@DAOManaged
+	@OneToOne
+	@XMLElement
+	private ManagementInfo managementInfo;
+
 	private boolean hasTextTags;
 
 	@Override
@@ -334,28 +341,28 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		if (this == obj) {
 			return true;
 		}
-		
+
 		if (obj == null) {
 			return false;
 		}
-		
+
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		
+
 		FlowFamily other = (FlowFamily) obj;
-		
+
 		if (flowFamilyID == null) {
-		
+
 			if (other.flowFamilyID != null) {
 				return false;
 			}
-			
+
 		} else if (!flowFamilyID.equals(other.flowFamilyID)) {
-			
+
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -598,10 +605,10 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public boolean hasUpdateManagerAccess(User user) {
 
@@ -810,6 +817,16 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 	public void setMessageTemplates(List<MessageTemplate> messageTemplates) {
 
 		this.messageTemplates = messageTemplates;
+	}
+
+	public ManagementInfo getManagementInfo() {
+
+		return managementInfo;
+	}
+
+	public void setManagementInfo(ManagementInfo managementInfo) {
+
+		this.managementInfo = managementInfo;
 	}
 
 	public Element toXML(Document doc, SiteProfile siteProfile) {

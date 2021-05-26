@@ -48,7 +48,8 @@ $(document).ready(function() {
 			{ name:"flowCategory", searchable: false, visible: FlowAdmin.useCategories },
 			{ name:"versions", searchable: false },
 			{ name:"submittedInstances", searchable: false },
-			{ name:"notSubmittedInstances", searchable: false }
+			{ name:"notSubmittedInstances", searchable: false },
+			{ name:"flowFamilyLastReviewed", type: "date" }
 		]
 		
 		if (getExtraFlowListColumns) {
@@ -98,6 +99,7 @@ $(document).ready(function() {
 			columns: columns,
 			order: [[ 1, "asc"]],
 			dom: '<"toolbar-extension">frtipl',
+			autoWidth: false,
 			lengthMenu: [ 15, 25, 50, 100 ],
 			language: {
 				"decimal":        FlowAdmin.i18n.decimal,
@@ -619,6 +621,19 @@ $(document).ready(function() {
 			belowSummaryDiv.remove();
 		}
     });
+
+	if ($("#updateManagementInfo").length && !Modernizr.inputtypes.date) {
+		
+		("#updateManagementInfo").find("input[type='date']").datepicker({
+			changeMonth: true,
+			changeYear: true,
+			showWeek: true,
+			dayNamesShort: true,
+			onSelect: function() {
+				$(this).trigger("blur");
+			}
+		});
+	}
 	
 });
 

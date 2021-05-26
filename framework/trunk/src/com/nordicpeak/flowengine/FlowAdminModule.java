@@ -175,6 +175,7 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.SessionUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
+import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
 
@@ -195,6 +196,7 @@ import com.nordicpeak.flowengine.beans.FlowForm;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.ManagementInfo;
 import com.nordicpeak.flowengine.beans.MessageTemplate;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.RequestMetadata;
@@ -304,6 +306,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
 			FlowFamily.MESSAGE_TEMPLATES_RELATION,
+			FlowFamily.MANAGEMENT_INFO_RELATION,
 	};
 	
 	private static final Field[] FLOW_CACHE_RELATIONS = {
@@ -337,6 +340,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION,
 			FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION,
 			FlowFamily.MESSAGE_TEMPLATES_RELATION,
+			FlowFamily.MANAGEMENT_INFO_RELATION,
 			
 			FlowType.CATEGORIES_RELATION,
 			FlowType.ALLOWED_ADMIN_USERS_RELATION,
@@ -359,6 +363,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY =    new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
+	protected static final RelationQuery MANAGEMENT_INFO_RELATION_QUERY = new RelationQuery(FlowFamily.MANAGEMENT_INFO_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
 
@@ -366,6 +371,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private static final QueryDescriptorSortIndexComparator QUERY_DESCRIPTOR_COMPARATOR = new QueryDescriptorSortIndexComparator();
 	private static final FlowVersionComparator ASC_FLOW_VERSION_COMPARATOR = new FlowVersionComparator(Order.ASC);
 	private static final FlowVersionComparator DESC_FLOW_VERSION_COMPARATOR = new FlowVersionComparator(Order.DESC);
+
+	private static final AnnotatedRequestPopulator<ManagementInfo> MANAGEMENT_INFO_POPULATOR = new AnnotatedRequestPopulator<>(ManagementInfo.class);
 
 	private final AdminUserFlowInstanceAccessController updateAccessController = new AdminUserFlowInstanceAccessController(this, true);
 	private final AdminUserFlowInstanceAccessController previewAccessController = new AdminUserFlowInstanceAccessController(this, false);
@@ -384,6 +391,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventUpdateNotificationsMessage = "eventUpdateNotificationsMessage";
+	
+	@XSLVariable(prefix = "java.")
+	private String eventUpdateManagementInfoMessage = "eventUpdateManagementInfoMessage";
 
 	@XSLVariable(prefix = "java.")
 	private String eventSortFlowMessage = "eventSortFlowMessage";
@@ -1374,6 +1384,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowJSONArray.addNode(versionCount);
 		flowJSONArray.addNode(submittedInstanceCount);
 		flowJSONArray.addNode(instanceCount - submittedInstanceCount);
+		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getLastReviewed() : null);
 		appendExtraFlowListColumns(flowJSONArray, flow);
 		flowJSONArray.addNode(getFlowDeleteJSON(flow, instanceCount, published));
 		
@@ -6994,6 +7005,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flow.setSubmittedMessage(htmlContentFilter.filterHTML(flow.getSubmittedMessage()));
 	}
 
+	@Override
 	public void filterHTML(BaseQuery query) {
 
 		if(htmlContentFilter == null) {
@@ -7021,6 +7033,77 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 		
 		return htmlContentFilter.filterHTML(html);
+	}
+
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateManagementInfo(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		Flow flow = flowCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.SHOW);
+
+		if (flow == null) {
+
+			return list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
+
+		} else if (!hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+
+		}
+
+		ValidationException validationException = null;
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+
+			try {
+
+				FlowFamily flowFamily = flow.getFlowFamily();
+				ManagementInfo managementInfo = flowFamily.getManagementInfo();
+
+				managementInfo = MANAGEMENT_INFO_POPULATOR.populate(managementInfo, req);
+				
+				if (managementInfo.isPopulated()) {
+					
+					flowFamily.setManagementInfo(managementInfo);
+					
+				} else {
+					
+					flowFamily.setManagementInfo(null);
+				}
+
+				daoFactory.getFlowFamilyDAO().update(flowFamily, MANAGEMENT_INFO_RELATION_QUERY);
+
+				log.info("User " + user + " updated management info for flow " + flow);
+
+				eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.UPDATE, flowFamily), EventTarget.ALL);
+
+				addFlowFamilyEvent(eventUpdateManagementInfoMessage, flow, user);
+
+				redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#managementinfo");
+
+				return null;
+
+			} catch (ValidationException e) {
+
+				validationException = e;
+			}
+
+		}
+
+		log.info("User " + user + " updating management info for flow " + flow);
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element managementInfoElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "UpdateManagementInfo");
+
+		managementInfoElement.appendChild(flow.toXML(doc));
+
+		if (validationException != null) {
+
+			managementInfoElement.appendChild(validationException.toXML(doc));
+			managementInfoElement.appendChild(RequestUtils.getRequestParameters(req, doc));
+		}
+
+		return new SimpleForegroundModuleResponse(doc);
 	}
 	
 }

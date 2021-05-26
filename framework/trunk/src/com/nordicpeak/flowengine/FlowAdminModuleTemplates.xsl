@@ -141,6 +141,8 @@
 					
 					<xsl:apply-templates select="AddMessageTemplate" />
 					<xsl:apply-templates select="UpdateMessageTemplate" />
+
+					<xsl:apply-templates select="UpdateManagementInfo" />
 					
 				</div>
 				
@@ -186,6 +188,7 @@
 					<th width="50"><xsl:value-of select="$i18n.versions" /></th>
 					<th width="50"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
 					<th width="50"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
+					<th width="50"><xsl:value-of select="$i18n.flowFamilyLastReviewed" /></th>
 					<xsl:call-template name="ExtraFlowListColumnsHeader" />
 					<th width="1" />
 				</tr>
@@ -731,6 +734,99 @@
 			
 		</div>
 		
+		<xsl:if test="$isInternal = 'true'">
+		
+			<div class="showflow-wrapper">
+			
+				<a name="managementinfo"/>
+			
+				<h2 class="title">
+					<xsl:value-of select="$i18n.managementInfo"/>
+									
+					<div class="floatright adminicons">
+							
+						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagementinfo/{Flow/flowID}" title="{$i18n.updateManagementInfo}">
+							<img src="{$imgPath}/pen.png" alt="" />
+						</a>
+						
+					</div>
+				</h2>
+				
+				<xsl:variable name="managementInfo" select="Flow/FlowFamily/ManagementInfo" />
+				
+				<div class="showflow-content">
+				
+					<xsl:choose>
+						<xsl:when test="$managementInfo">
+						
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.processOwner" /></label>
+									<div><xsl:value-of select="$managementInfo/processOwner" /></div>
+								</div>
+							</div>
+							
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.flowResponsible" /></label>
+									<div><xsl:value-of select="$managementInfo/flowResponsible" /></div>
+								</div>
+							</div>
+							
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.informationResponsible" /></label>
+									<div><xsl:value-of select="$managementInfo/informationResponsible" /></div>
+								</div>
+							</div>
+							
+							<div class="full clearboth"/>
+							
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.status" /></label>
+									<div><xsl:value-of select="$managementInfo/status" /></div>
+								</div>
+							</div>
+							
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.organization" /></label>
+									<div><xsl:value-of select="$managementInfo/organization" /></div>
+								</div>
+							</div>
+							
+							<div class="floatleft min-width-thirtytree">
+								<div class="floatleft fifty">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.lastReviewed" /></label>
+									<div><xsl:value-of select="$managementInfo/lastReviewed" /></div>
+								</div>
+							</div>
+		
+							<div class="full clearboth"/>
+							
+							<div class="floatleft full">
+								<div class="floatleft">
+									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.aboutFlow" /></label>
+									<div><xsl:value-of select="$managementInfo/aboutFlow" /></div>
+								</div>
+							</div>
+						
+						</xsl:when>
+						<xsl:otherwise>
+						
+							<p><xsl:value-of select="$i18n.noManagementInfo"/></p>
+						
+						</xsl:otherwise>
+					</xsl:choose>
+				
+					
+				</div>
+				
+			</div>
+			
+		</xsl:if>
+
 		<xsl:if test="$isInternal = 'true'">
 		
 			<div class="showflow-wrapper">
@@ -7392,6 +7488,143 @@
 		</div>
 		
 	</xsl:template>
+		
+	<xsl:template match="UpdateManagementInfo">
+		
+		<xsl:variable name="managementInfo" select="Flow/FlowFamily/ManagementInfo" />
+		
+		<h1>
+			<xsl:value-of select="$i18n.updateManagementInfo"/>
+			<xsl:text>&#x20;</xsl:text>
+			<xsl:value-of select="Flow/name"/>
+		</h1>
+		
+		<xsl:apply-templates select="validationException/validationError" />
+		
+		<form id="updateManagementInfo" class="bigmargintop" method="post" action="{/Document/requestinfo/uri}">
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="processOwner" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.processOwner" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'processOwner'"/>
+						<xsl:with-param name="name" select="'processOwner'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="flowResponsible" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.flowResponsible" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'flowResponsible'"/>
+						<xsl:with-param name="name" select="'flowResponsible'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="informationResponsible" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.informationResponsible" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'informationResponsible'"/>
+						<xsl:with-param name="name" select="'informationResponsible'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="status" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.status" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'status'"/>
+						<xsl:with-param name="name" select="'status'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="organization" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.organization" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'organization'"/>
+						<xsl:with-param name="name" select="'organization'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="lastReviewed" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.lastReviewed" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'lastReviewed'"/>
+						<xsl:with-param name="name" select="'lastReviewed'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+						<xsl:with-param name="type" select="'date'"/>
+						<xsl:with-param name="title" select="$i18n.managementInfo.lastReviewed.Details"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				
+				<label for="aboutFlow" class="floatleft nomargin">
+					<xsl:value-of select="$i18n.managementInfo.aboutFlow" />
+				</label>
+				
+				<div class="floatleft full">
+					<xsl:call-template name="createTextArea">
+						<xsl:with-param name="id" select="'aboutFlow'"/>
+						<xsl:with-param name="name" select="'aboutFlow'"/>
+						<xsl:with-param name="element" select="$managementInfo"/>
+						<xsl:with-param name="rows" select="5"/>
+					</xsl:call-template>
+				</div>
+				
+			</div>
+
+			<div class="bigmargintop floatright">
+				<input type="submit" value="{$i18n.updateManagementInfo.submit}" />
+			</div>
+			
+		</form>
+		
+	</xsl:template>
 	
 	<xsl:template match="FlowInstanceManagerAllStepsForm">
 	
@@ -8514,6 +8747,32 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'messageTemplateType'">
 						<xsl:value-of select="$i18n.MessageTemplate.type"/>
+					</xsl:when>
+					
+					<!-- ManagementInfo -->
+					<xsl:when test="fieldName = 'processOwner'">
+						<xsl:value-of select="$i18n.managementInfo.processOwner"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'flowResponsible'">
+						<xsl:value-of select="$i18n.managementInfo.flowResponsible"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'informationResponsible'">
+						<xsl:value-of select="$i18n.managementInfo.informationResponsible"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'status'">
+						<xsl:value-of select="$i18n.managementInfo.status"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'organization'">
+						<xsl:value-of select="$i18n.managementInfo.organization"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'lastReviewed'">
+						<xsl:value-of select="$i18n.managementInfo.lastReviewed"/>
+						<xsl:text> (</xsl:text>
+						<xsl:value-of select="$i18n.managementInfo.lastReviewed.Details"/>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					<xsl:when test="fieldName = 'aboutFlow'">
+						<xsl:value-of select="$i18n.managementInfo.aboutFlow"/>
 					</xsl:when>
 					
 					<xsl:otherwise>

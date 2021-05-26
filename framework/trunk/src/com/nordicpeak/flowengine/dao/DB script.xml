@@ -2760,5 +2760,26 @@
 			]]>
 		</Query>	
 	</Script>	
-
+	
+	<Script version="149">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_management_info` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`processOwner` VARCHAR(255),
+					`flowResponsible` VARCHAR(255),
+					`informationResponsible` VARCHAR(255),
+					`status` VARCHAR(255),
+					`organization` VARCHAR(255),
+					`lastReviewed` DATE,
+					`aboutFlow` TEXT,
+					PRIMARY KEY (`flowFamilyID`),
+					CONSTRAINT `FK_flowengine_flow_family_management_info_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

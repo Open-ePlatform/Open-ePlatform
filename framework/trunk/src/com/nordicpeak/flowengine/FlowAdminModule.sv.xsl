@@ -15,6 +15,7 @@
 	<xsl:variable name="java.eventCopyFlowMessage">Kopierade version</xsl:variable>
 	<xsl:variable name="java.eventUpdateIconMessage">Updaterade ikon till</xsl:variable>
 	<xsl:variable name="java.eventUpdateNotificationsMessage">Uppdaterade notifikationsinställningar</xsl:variable>
+	<xsl:variable name="java.eventUpdateManagementInfoMessage">Uppdaterade förvaltningsinformationen</xsl:variable>
 	<xsl:variable name="java.eventSortFlowMessage">Sorterade frågor och steg</xsl:variable>
 	<xsl:variable name="java.eventImportFlowMessage">Importerade version</xsl:variable>
 	<xsl:variable name="java.eventImportQueriesMessage">Importerade frågor</xsl:variable>
@@ -77,6 +78,7 @@
 	<xsl:variable name="i18n.queries">Frågor</xsl:variable>
 	<xsl:variable name="i18n.SubmittedInstances">Insk. ärenden</xsl:variable>
 	<xsl:variable name="i18n.NotSubmittedInstances">Ej insk. ärenden</xsl:variable>
+	<xsl:variable name="i18n.flowFamilyLastReviewed">Granskad</xsl:variable>
 	<xsl:variable name="i18n.status">Status</xsl:variable>
 	<xsl:variable name="i18n.noFlowsFound">Inga e-tjänster hittades.</xsl:variable>
 	<xsl:variable name="i18n.disabled">Inaktiverad</xsl:variable>
@@ -152,6 +154,19 @@
 	<xsl:variable name="i18n.flowHasNoStatuses">Inga statusar hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.updateFlowBaseInfo.title">Uppdatera e-tjänstens grundinformation</xsl:variable>
+
+	<xsl:variable name="i18n.updateManagementInfo">Uppdatera e-tjänstens förvaltningsinformation</xsl:variable>
+	<xsl:variable name="i18n.noManagementInfo">Det finns ingen förvaltningsinformation för denna e-tjänst</xsl:variable>
+	<xsl:variable name="i18n.managementInfo">Förvaltningsinformation</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.processOwner">Processägare</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.flowResponsible">E-tjänstansvarig</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.informationResponsible">Fakta- och informationsansvarig</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.status">Status</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.organization">Organisation</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.lastReviewed">Senast granskad</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.lastReviewed.Details">Får som senast vara dagens datum</xsl:variable>
+	<xsl:variable name="i18n.managementInfo.aboutFlow">Om e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.updateManagementInfo.submit">Spara förvaltningsinformation</xsl:variable>
 		
 	<xsl:variable name="i18n.stepAndQueryManipulationDisabledHasInstances">Det går inte att redigera frågorna och stegen för denna e-tjänst eftersom det finns ett eller flera ärenden kopplad till den.</xsl:variable>
 	<xsl:variable name="i18n.stepAndQueryManipulationDisabledIsPublished">Det går inte att redigera frågorna och stegen för denna e-tjänst eftersom den är publicerad.</xsl:variable>
