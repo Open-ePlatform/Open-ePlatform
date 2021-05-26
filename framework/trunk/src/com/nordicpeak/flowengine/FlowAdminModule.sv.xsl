@@ -578,7 +578,7 @@
 	<xsl:variable name="i18n.FlowType.iconColor">bakgrundsfärg</xsl:variable>
 	<xsl:variable name="i18n.FlowType.UseIconOnAllFlows">Använd kategorins ikon på samtliga e-tjänster</xsl:variable>
 	
-	<xsl:variable name="i18n.All">Alla</xsl:variable>
+	<xsl:variable name="i18n.All">Visa alla statusar</xsl:variable>
 	<xsl:variable name="i18n.Published">Publicerade</xsl:variable>
 	<xsl:variable name="i18n.Unpublished">Ej publicerade</xsl:variable>
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
@@ -730,5 +730,30 @@
 	<xsl:variable name="i18n.Flow.messagesAndNotes">Meddelanden och noteringar</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideDetailsAndFunctions">Dölj information och funktioner</xsl:variable>
 	<xsl:variable name="i18n.Flow.statuses">Statusar/Handläggningsprocess</xsl:variable>
+
+	<xsl:variable name="i18n.Shortcuts">Verktyg</xsl:variable>
+	
+	<xsl:variable name="i18n.DataTable.decimal">,</xsl:variable>
+	<xsl:variable name="i18n.DataTable.emptyTable">Finns inga e-tjänster att visa</xsl:variable>
+	<xsl:variable name="i18n.DataTable.info">Visar _START_ till _END_ av _TOTAL_ e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.DataTable.infoEmpty">Visar 0 till 0 av 0 e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.DataTable.infoFiltered">(filtrerat från totalt _MAX_ e-tjänster)</xsl:variable>
+	<xsl:variable name="i18n.DataTable.infoPostFix"/>
+	<xsl:variable name="i18n.DataTable.thousands"/>
+	<xsl:variable name="i18n.DataTable.lengthMenu">Visa _MENU_ e-tjänster</xsl:variable>
+	<xsl:variable name="i18n.DataTable.loadingRecords">Hämtar e-tjänster...</xsl:variable>
+	<xsl:variable name="i18n.DataTable.processing">Bearbetar...</xsl:variable>
+	<xsl:variable name="i18n.DataTable.search">Filtrera i listan</xsl:variable>
+	<xsl:variable name="i18n.DataTable.zeroRecords">Inga matchande e-tjänster hittades</xsl:variable>
+	<xsl:variable name="i18n.DataTable.fetchError">Ett fel uppstod vid hämtning av e-tjänster, vänligen försök igen senare.</xsl:variable>
+	<xsl:variable name="i18n.DataTable.paginate.first">Första</xsl:variable>
+	<xsl:variable name="i18n.DataTable.paginate.last">Sista</xsl:variable>
+	<xsl:variable name="i18n.DataTable.paginate.next">Nästa</xsl:variable>
+	<xsl:variable name="i18n.DataTable.paginate.previous">Föregående</xsl:variable>
+	<xsl:variable name="i18n.DataTable.aria.sortAscending">: aktivera för att sortera kolumnen stigande</xsl:variable>
+	<xsl:variable name="i18n.DataTable.aria.sortDescending">: aktivera för att sortera kolumnen fallande</xsl:variable>
+	<xsl:variable name="i18n.DataTable.selection.none">Inga rader markerade</xsl:variable>
+	<xsl:variable name="i18n.DataTable.selection.one">1 rad markerad</xsl:variable>
+	<xsl:variable name="i18n.DataTable.selection.many">%d rader markerade</xsl:variable>	
 	
 </xsl:stylesheet>

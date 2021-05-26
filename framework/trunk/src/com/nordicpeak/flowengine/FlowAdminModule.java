@@ -148,6 +148,8 @@ import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.io.FileUtils;
 import se.unlogic.standardutils.json.JsonArray;
+import se.unlogic.standardutils.json.JsonLeaf;
+import se.unlogic.standardutils.json.JsonNode;
 import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
@@ -1256,44 +1258,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		doc.getDocumentElement().appendChild(listFlowsElement);
 
 		if (hasAnyFlowTypeAccess(user)) {
-
-			XMLGeneratorDocument generatorDocument = new XMLGeneratorDocument(doc);
-			generatorDocument.setIgnoredFields(LIST_FLOWS_IGNORED_FIELDS);
-
+			
 			listFlowsElement.appendChild(doc.createElement("AddAccess"));
-
-			Collection<Flow> flows = this.flowCache.getFlowCacheMap().values();
-
-			if (!AccessUtils.checkAccess(user, this)) {
-
-				//Check access and append flows
-				for (Flow flow : flows) {
-
-					if (AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && flow.isLatestVersion()) {
-
-						Element flowElement = flow.toXML(generatorDocument);
-
-						appendFamilyInformation(doc, flowElement, flow, flows);
-
-						listFlowsElement.appendChild(flowElement);
-					}
-				}
-
-			} else {
-
-				for (Flow flow : flows) {
-
-					if (flow.isLatestVersion()) {
-						Element flowElement = flow.toXML(generatorDocument);
-
-						appendFamilyInformation(doc, flowElement, flow, flows);
-
-						listFlowsElement.appendChild(flowElement);
-					}
-				}
-			}
 		}
-
+		
 		if (AccessUtils.checkAccess(user, this)) {
 			XMLUtils.appendNewElement(doc, listFlowsElement, "AdminAccess");
 		}
@@ -1309,6 +1277,156 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
+	
+	@WebPublic(alias = "flowdata")
+	public ForegroundModuleResponse getFlowData(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		try {
+
+			log.info("Sending flows to user " + user);
+			
+			JsonObject responseJSON = new JsonObject(1);
+			JsonArray flowsJSONArray = new JsonArray();
+			
+			responseJSON.putField("rows", flowsJSONArray);
+			
+			if (hasAnyFlowTypeAccess(user)) {
+				
+				Collection<Flow> flows = this.flowCache.getFlowCacheMap().values();
+				
+				if (!AccessUtils.checkAccess(user, this)) {
+					
+					//Check access and append flows
+					for (Flow flow : flows) {
+						
+						if (AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && flow.isLatestVersion()) {
+							
+							JsonArray flowJSONArray = getFlowJSONArray(flow, flows);
+							
+							flowsJSONArray.addNode(flowJSONArray);
+							
+						}
+					}
+					
+				} else {
+					
+					for (Flow flow : flows) {
+						
+						if (flow.isLatestVersion()) {
+							
+							JsonArray flowJSONArray = getFlowJSONArray(flow, flows);
+							
+							flowsJSONArray.addNode(flowJSONArray);
+						}
+					}
+				}
+			}
+
+			HTTPUtils.sendReponse(responseJSON.toJson(), JsonUtils.getContentType(), res);
+
+		} catch (IOException e) {
+
+			log.warn("Error sending flow data to " + user, e);
+
+		}
+
+		return null;
+	}
+
+	private JsonArray getFlowJSONArray(Flow flow, Collection<Flow> allFlows) {
+
+		int versionCount = 0;
+		int instanceCount = 0;
+		int submittedInstanceCount = 0;
+		boolean published = false;
+		boolean external = false;
+
+		FlowFamily flowFamily = flow.getFlowFamily();
+
+		for (Flow currentFlow : allFlows) {
+
+			if (currentFlow.getFlowFamily().equals(flowFamily)) {
+
+				versionCount++;
+				instanceCount += currentFlow.getFlowInstanceCount();
+				submittedInstanceCount += currentFlow.getFlowSubmittedInstanceCount();
+
+				if (!published && currentFlow.isEnabled() && currentFlow.isPublished()) {
+
+					published = true;
+				}
+
+				if (!currentFlow.isInternal()) {
+
+					external = true;
+				}
+			}
+		}
+
+		JsonArray flowJSONArray = new JsonArray();
+
+		flowJSONArray.addNode(flow.getFlowID());
+		flowJSONArray.addNode(flow.isPublished() ? "published" : "unpublished");
+		flowJSONArray.addNode(getFlowIconJSON(flow));
+		flowJSONArray.addNode(getFlowNameJSON(flow, external));
+		flowJSONArray.addNode(getFlowTypeJSON(flow));
+		flowJSONArray.addNode(flow.getCategory() != null ? flow.getCategory().getName() : "-");
+		flowJSONArray.addNode(versionCount);
+		flowJSONArray.addNode(submittedInstanceCount);
+		flowJSONArray.addNode(instanceCount - submittedInstanceCount);
+		appendExtraFlowListColumns(flowJSONArray, flow);
+		flowJSONArray.addNode(getFlowDeleteJSON(flow, instanceCount, published));
+		
+		return flowJSONArray;
+	}
+
+	private JsonNode getFlowIconJSON(Flow flow) {
+		
+		String json = flow.getFlowID().toString();
+		
+		if (flow.getIconLastModified() != null) {
+			
+			json += "?" + flow.getIconLastModified().getTime();
+		}
+		
+		return new JsonLeaf(json);
+	}
+
+	private JsonNode getFlowNameJSON(Flow flow, boolean external) {
+
+		JsonObject json = new JsonObject(2);
+		
+		json.putField("flowName", flow.getName());
+		json.putField("hasExternalVersions", external);
+		
+		return json;
+	}
+	
+	private JsonNode getFlowTypeJSON(Flow flow) {
+		
+		FlowType flowType = flow.getFlowType();
+		
+		JsonObject json = new JsonObject(2);
+		
+		json.putField("flowTypeName", flowType.getName());
+		json.putField("flowTypeID", flowType.getFlowTypeID());
+		
+		return json;
+	}
+	
+	private JsonNode getFlowDeleteJSON(Flow flow, int instanceCount, boolean published) {
+		
+		JsonObject json = new JsonObject(2);
+		
+		json.putField("hasInstances", instanceCount > 0);
+		json.putField("isPublished", published);
+		json.putField("flowFamilyID", flow.getFlowFamily().getFlowFamilyID());
+		json.putField("flowName", flow.getName());
+		
+		return json;
+	}
+	
+	protected void appendExtraFlowListColumns(JsonArray flowJSONArray, Flow flow) {}
 
 	protected void appendAdditionalListInformation(Document doc, Element listFlowsElement) {
 		
@@ -1358,7 +1476,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			XMLUtils.appendNewElement(doc, flowElement, "HasPublishedVersion");
 		}
 	}
-
+	
 	public boolean hasAnyFlowTypeAccess(User user) {
 
 		if (AccessUtils.checkAccess(user, this) && !this.flowTypeCacheMap.isEmpty()) {

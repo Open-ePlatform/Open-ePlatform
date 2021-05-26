@@ -1,6 +1,189 @@
+var FlowAdmin;
 var validationError = false;
+var flowListDataTable;
+var getExtraFlowListColumns;
 
 $(document).ready(function() {
+	
+	if (FlowAdmin != undefined) {
+	
+		var flowListTable = $(".flow-list-table");
+		
+		var columns = [
+			{ name:"flowID", orderable: false, searchable: false, visible: false },
+			{ name:"published", orderable: false, searchable: false, visible: false },
+			{ name:"icon", orderable: false, searchable: false,
+				render: function(data, type, row) {
+			
+					if (type == "display") {
+						
+						return "<img src='" + FlowAdmin.iconURL + data + "' width='25' alt='' />";
+					}
+					
+					return null;
+				}
+			},
+			{ name:"flowName",
+				render: function(data, type, row) {
+			
+					if (type == "display") {
+						
+						return "<span " + (data.hasExternalVersions ? "data-icon-after='e'" : "") + ">" + $.fn.dataTable.render.text().display(data.flowName) + "</span>";
+					}
+					
+					return data.flowName;
+				}					
+			},
+			{ name:"flowType", searchable: false,
+				render: function(data, type, row) {
+			
+					if (type == "display") {
+						
+						return "<a href='" + FlowAdmin.showFlowTypeURL + data.flowTypeID + "'>" + $.fn.dataTable.render.text().display(data.flowTypeName) + "</a>";
+					}
+					
+					return data.flowTypeName;
+				}
+			},					
+			{ name:"flowCategory", searchable: false, visible: FlowAdmin.useCategories },
+			{ name:"versions", searchable: false },
+			{ name:"submittedInstances", searchable: false },
+			{ name:"notSubmittedInstances", searchable: false }
+		]
+		
+		if (getExtraFlowListColumns) {
+			
+			columns = columns.concat(getExtraFlowListColumns());
+		}
+		
+		columns.push(
+			{ name:"delete", orderable: false, searchable: false,
+				render: function(data, type, row) {
+			
+					if (type == "display") {
+						
+						if (data.hasInstances) {
+							
+							return "<a href='#' onclick='alert(\"" + FlowAdmin.i18n.deleteFlowFamilyDisabledHasInstances + "\"); return false;' title=\"" + FlowAdmin.i18n.deleteFlowFamilyDisabledHasInstances + "\"> \
+										<img class='alignbottom' src='" + FlowAdmin.imgPath + "/delete_gray.png' alt='' /> \
+									</a>";
+									
+						} else if (data.isPublished) {
+							
+							return "<a href='#' onclick='alert(\"" + FlowAdmin.i18n.deleteFlowFamilyDisabledIsPublished + "\"); return false;' title=\"" + FlowAdmin.i18n.deleteFlowFamilyDisabledIsPublished + "\"> \
+										<img class='alignbottom' src='" + FlowAdmin.imgPath + "/delete_gray.png' alt='' /> \
+									</a>";
+									
+						} else {
+							
+							return "<a href='" + FlowAdmin.deleteFlowFamilyURL + data.flowFamilyID + "' onclick='return confirmHyperlinkPost(this)' title='" + FlowAdmin.i18n.deleteFlowFamilyTitle + ": " + $.fn.dataTable.render.text().display(data.flowName) + "'> \
+										<img class='alignbottom' src='" + FlowAdmin.imgPath + "/delete.png' alt='' /> \
+									</a>";
+						}
+					}
+					
+					return null;
+				}
+		});
+		
+		flowListDataTable = flowListTable.DataTable({
+			ajax: {
+				url: flowListTable.data("url"),
+				dataSrc: 'rows',
+				beforeSend: function(jqXHR, settings) {
+					jqXHR.setRequestHeader('NoLoginRedirect', 'true');
+				}
+			},		
+			deferRender: true,
+			columns: columns,
+			order: [[ 1, "asc"]],
+			dom: '<"toolbar-extension">frtipl',
+			lengthMenu: [ 15, 25, 50, 100 ],
+			language: {
+				"decimal":        FlowAdmin.i18n.decimal,
+				"emptyTable":     FlowAdmin.i18n.emptyTable,
+				"info":           FlowAdmin.i18n.info,
+				"infoEmpty":      FlowAdmin.i18n.infoEmpty,
+				"infoFiltered":   FlowAdmin.i18n.infoFiltered,
+				"infoPostFix":    FlowAdmin.i18n.infoPostFix,
+				"thousands":      FlowAdmin.i18n.thousands,
+				"lengthMenu":     FlowAdmin.i18n.lengthMenu,
+				"loadingRecords": FlowAdmin.i18n.loadingRecords,
+				"processing":     FlowAdmin.i18n.processing,
+				"search":         FlowAdmin.i18n.search,
+				"zeroRecords":    FlowAdmin.i18n.zeroRecords,
+				paginate: {
+					"first":      FlowAdmin.i18n.paginate.first,
+					"last":       FlowAdmin.i18n.paginate.last,
+					"next":       FlowAdmin.i18n.paginate.next,
+					"previous":   FlowAdmin.i18n.paginate.previous
+				},
+				aria: {
+					"sortAscending":  FlowAdmin.i18n.aria.sortAscending,
+					"sortDescending": FlowAdmin.i18n.aria.sortDescending
+				},
+				select: {
+					rows: {
+						_: FlowAdmin.i18n.select.rows.many,
+						0: FlowAdmin.i18n.select.rows.none,
+						1: FlowAdmin.i18n.select.rows.one
+					}
+				},
+			},
+			preDrawCallback: function(settings) {
+				
+				// Remove callback
+				settings.aoPreDrawCallback.splice(0, 1);
+				
+				settings.oClasses.sPageButton = "btn btn-inline btn-light";
+				
+				var filterDiv = $(settings.nTableWrapper).find(".dataTables_filter");
+				var filterInput = filterDiv.find("input");
+				var filterLabel = filterDiv.find("label"); 
+				filterInput.attr("placeholder", filterLabel.text());
+				filterDiv.append(filterInput);
+				filterLabel.remove();
+				
+			},		
+		});
+		
+		flowListTable.find("tbody").show();
+		
+		flowListDataTable.on('click', 'tbody td', function(event) {
+		
+			if (event.target.nodeName == "A" || (event.target.nodeName == "IMG" && event.target.parentElement.nodeName == "A")) {
+				return;
+			}
+
+			var td = $(this);
+			var tr = td.parent();
+			
+			if (tr.children("td").first().hasClass("dataTables_empty")) {
+				return;
+			}
+			
+			var flowID = flowListDataTable.cell(tr, "flowID:name").data();
+			var url = FlowAdmin.showFlowURL + flowID;
+			
+			location.href = url;
+		});
+		
+		$.fn.dataTable.ext.search.push(function(settings, data, dataIndex, rowData, counter) {
+	
+			var filterValue = $("#flow-status-filter").val();
+			
+			return filterValue == "all" || filterValue == rowData[flowListDataTable.column("published:name").index()];
+		});
+		
+		$("#flow-status-filter").change(function() {
+			
+			flowListDataTable.draw();
+			
+		});
+		
+		$(".flow-list-filters").appendTo(".toolbar-extension").show();
+
+	}
 	
 	$("table.coloredtable").each(function() {
 		var $this = $(this);
@@ -272,45 +455,6 @@ $(document).ready(function() {
 		$(this).parent().parent().addClass("hidden");
 		$(this).parent().find("input[type='hidden']").removeAttr("disabled").val("true");
 	});
-	
-	$("#flow-status-filter").change(function() {
-		
-		var $this = $(this);
-		
-		$("#flowlist tbody tr").removeClass("status-filtered").hide();
-		
-		if($this.val() == "published") {
-			
-			$("#flowlist tbody tr.published").addClass("status-filtered").show();
-			
-		} else if($this.val() == "unpublished") {
-			
-			$("#flowlist tbody tr:not(.published)").addClass("status-filtered").show();
-			
-		} else {
-			
-			$("#flowlist tbody tr").addClass("status-filtered").show();
-		}
-		
-		$("input[type='text'].flow-filter-input").trigger("keyup");
-		
-	});
-	
-	$("input[type='text'].flow-filter-input").keyup(function() {
-		
-		var $this = $(this);
-		var val = $.trim($this.val()).replace(/ +/g, ' ').toLowerCase();
-	    
-		$("#flowlist").find(".status-filtered").show().filter(function() {
-	        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-	        return !~text.indexOf(val);
-	    }).hide();
-	
-		$("#flowlist").trigger("change");
-		
-	});
-	
-	$("#flow-status-filter").trigger("change");
 	
 	$("input[type='text'].color-input").minicolors();
 	

@@ -39,12 +39,15 @@
 		/js/UserGroupList.js
 		/js/colorpicker/jquery.minicolors.min.js
 		/js/jquery.cookie.js
+		/js/datatables.min.js
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css?v=6
 		/css/UserGroupList.css
 		/js/colorpicker/jquery.minicolors.css
+		/css/datatables.css
+		/css/flowadmin.css
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -95,7 +98,7 @@
 					<xsl:apply-templates select="AddQueryDescriptor" />
 					<xsl:apply-templates select="AddEvaluatorDescriptor" />
 					<xsl:apply-templates select="SortEvaluators" />
-					
+			
 					<xsl:apply-templates select="AddStatus" />
 					<xsl:apply-templates select="UpdateStatus" />
 					<xsl:apply-templates select="SortStatuses" />
@@ -160,192 +163,156 @@
 		
 		</div>
 		
-		<div class="floatright marginbottom">
-			<label for="name" class="marginright margintop"><xsl:value-of select="$i18n.statusFilter" />:</label>
+		<xsl:call-template name="CreateShortcutMenu"/>
+		
+		<div class="hidden flow-list-filters floatleft marginbottom">
 			<select id="flow-status-filter" class="bigmarginright" style="width: 180px">
 				<option value="all"><xsl:value-of select="$i18n.All" /></option>
 				<option value="published"><xsl:value-of select="$i18n.Published" /></option>
 				<option value="unpublished"><xsl:value-of select="$i18n.Unpublished" /></option>
 			</select>
 			<xsl:call-template name="AdditionalListFilters" />
-			<label for="flow-filter-input" class="bigmarginleft marginright margintop"><xsl:value-of select="$i18n.Filter" />:</label>
-			<input type="text" size="20" id="flow-filter-input" class="flow-filter-input" data-tableid="flowlist" />
 		</div>
 		
-		<table id="flowlist" class="clearboth full coloredtable oep-table" cellspacing="0">
-			<thead class="sortable">	
+		<table id="flowlist" class="flow-list-table clearboth full stripe display" data-url="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowdata">
+			<thead>	
 				<tr>
-					<th width="25" class="no-sort"></th>
-					<th class="default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.flowName" /></span></th>
-					<th><span data-icon-after="_"><xsl:value-of select="$i18n.flowType" /></span></th>
-
-					<xsl:if test="/Document/UseCategories">
-						<th><span data-icon-after="_"><xsl:value-of select="$i18n.flowCategory" /></span></th>
-					</xsl:if>
-					
-					<th><span data-icon-after="_"><xsl:value-of select="$i18n.versions" /></span></th>
-					<th width="100"><span data-icon-after="_"><xsl:value-of select="$i18n.SubmittedInstances" /></span></th>
-					<th width="115"><span data-icon-after="_"><xsl:value-of select="$i18n.NotSubmittedInstances" /></span></th>
+					<th width="10"></th>
+					<th width="10"></th>
+					<th width="10"></th>
+					<th><xsl:value-of select="$i18n.flowName" /></th>
+					<th width="150"><xsl:value-of select="$i18n.flowType" /></th>
+					<th><xsl:value-of select="$i18n.flowCategory" /></th>
+					<th width="50"><xsl:value-of select="$i18n.versions" /></th>
+					<th width="50"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
+					<th width="50"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
 					<xsl:call-template name="ExtraFlowListColumnsHeader" />
-					<th width="16" class="no-sort"/>
+					<th width="1" />
 				</tr>
 			</thead>
-			<tbody>
-				<xsl:choose>
-					<xsl:when test="not(Flow)">
-						<tr>
-							<td class="icon"></td>
-							<td colspan="8">
-								<xsl:value-of select="$i18n.noFlowsFound" />
-							</td>
-						</tr>
-					</xsl:when>
-					<xsl:otherwise>
-						
-						<xsl:apply-templates select="Flow[latestVersion = 'true']" mode="list"/>
-						
-					</xsl:otherwise>
-				</xsl:choose>
-			</tbody>
 		</table>
+
+		<script type="text/javascript">
 		
-		<xsl:if test="AddAccess">
-			<br/>
-			<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addflow" title="{$i18n.addFlow}">
-					<xsl:value-of select="$i18n.addFlow"/>
-					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>
-			</div>
-			<br/>
-			<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow" title="{$i18n.importFlow}">
-					<xsl:value-of select="$i18n.importFlow"/>
-					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>
-			</div>
-		</xsl:if>
-		
-		<xsl:if test="AdminAccess">
-			<br/>
-			<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/standardstatuses" title="{$i18n.administrateStandardStatuses}">
-					<xsl:value-of select="$i18n.administrateStandardStatuses"/>
-					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
-				</a>
-			</div>
-			<br/>
-			<div class="floatright marginright clearboth">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtypes" title="{$i18n.administrateFlowTypes}">
-					<xsl:value-of select="$i18n.administrateFlowTypes"/>
-					<img class="marginleft" src="{$imgPath}/folder_edit.png" alt=""/>
-				</a>
-			</div>
-		</xsl:if>
-		
-		<xsl:variable name="extensionLinks" select="ExtensionLink[slot='bottom-right']"/>
-		
-		<xsl:if test="$extensionLinks">
-		
-			<div class="clearboth floatright marginright bottom-right-slot">
-				<xsl:apply-templates select="$extensionLinks"/>
-			</div>
-		
-		</xsl:if>
-		
+			FlowAdmin = {
+				showFlowURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/showflow/",
+				showFlowTypeURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/flowtype/",
+				deleteFlowFamilyURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/deleteflowfamily/",
+				iconURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/icon/",
+				imgPath: "<xsl:value-of select="$imgPath"/>",
+				useCategories: <xsl:choose><xsl:when test="/Document/UseCategories">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
+				i18n: {
+		 			"decimal":        "<xsl:value-of select="$i18n.DataTable.decimal"/>",
+					"emptyTable":     "<xsl:value-of select="$i18n.DataTable.emptyTable"/>",
+					"info":           "<xsl:value-of select="$i18n.DataTable.info"/>",
+					"infoEmpty":      "<xsl:value-of select="$i18n.DataTable.infoEmpty"/>",
+					"infoFiltered":   "<xsl:value-of select="$i18n.DataTable.infoFiltered"/>",
+					"infoPostFix":    "<xsl:value-of select="$i18n.DataTable.infoPostFix"/>",
+					"thousands":      "<xsl:value-of select="$i18n.DataTable.thousands"/>",
+					"lengthMenu":     "<xsl:value-of select="$i18n.DataTable.lengthMenu"/>",
+					"loadingRecords": "<xsl:value-of select="$i18n.DataTable.loadingRecords"/>",
+					"processing":     "<xsl:value-of select="$i18n.DataTable.processing"/>",
+					"search":         "<xsl:value-of select="$i18n.DataTable.search"/>",
+					"zeroRecords":    "<xsl:value-of select="$i18n.DataTable.zeroRecords"/>",
+					"fetchError":     "<xsl:value-of select="$i18n.DataTable.fetchError"/>",
+					paginate: {
+						"first":      "<xsl:value-of select="$i18n.DataTable.paginate.first"/>",
+						"last":       "<xsl:value-of select="$i18n.DataTable.paginate.last"/>",
+						"next":       "<xsl:value-of select="$i18n.DataTable.paginate.next"/>",
+						"previous":   "<xsl:value-of select="$i18n.DataTable.paginate.previous"/>"
+					},
+					aria: {
+						"sortAscending":  "<xsl:value-of select="$i18n.DataTable.aria.sortAscending"/>",
+						"sortDescending": "<xsl:value-of select="$i18n.DataTable.aria.sortDescending"/>"
+					},
+					select: {
+						rows: {
+							many: "<xsl:value-of select="$i18n.DataTable.selection.many"/>",
+							none: "<xsl:value-of select="$i18n.DataTable.selection.none"/>",
+							one: "<xsl:value-of select="$i18n.DataTable.selection.one"/>"
+						}
+					},
+					deleteFlowFamilyDisabledHasInstances: "<xsl:value-of select="$i18n.deleteFlowFamilyDisabledHasInstances"/>",
+					deleteFlowFamilyDisabledIsPublished: "<xsl:value-of select="$i18n.deleteFlowFamilyDisabledIsPublished"/>",
+					deleteFlowFamilyTitle: "<xsl:value-of select="$i18n.deleteFlowFamily.title"/>"
+				}
+			};
+			
+		</script>
+
 	</xsl:template>
 
 	<xsl:template name="AdditionalListFilters" />
 	
-	<xsl:template match="ExtensionLink">
+	<xsl:template name="CreateShortcutMenu">
 	
-		<div class="extensionlink floatright clearboth">
-			
-			<a href="{url}">
-
-				<xsl:value-of select="name"/>
+		<xsl:variable name="extensionLinks" select="ExtensionLink[slot='top-right']"/>
 	
-				<xsl:if test="icon">
-					<xsl:text> </xsl:text>
-					<img src="{icon}"/>
-				</xsl:if>
-			
+		<div id="shortcut-menu" class="flowadmin-menu dd twenty floatright">
+			<a>
+				<span>
+					<xsl:value-of select="$i18n.Shortcuts"/>
+				</span>
+				<div class="menu-arrow"><i>_</i></div>
 			</a>
-		</div>
-	
-	</xsl:template>
-	
-	<xsl:template match="Flow" mode="list">
-		
-		<tr>
-			<xsl:attribute name="class">
-				<xsl:if test="HasPublishedVersion">published</xsl:if>
-			</xsl:attribute>
-			<td class="icon">
-				<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{flowID}?{IconLastModified}" width="25" alt="" />
-			</td>
-			<td data-title="{$i18n.flowName}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}">
+			<div class="submenu">
+				<ul>
 				
-					<xsl:if test="HasExternalVersions">
-						<xsl:attribute name="data-icon-after">e</xsl:attribute>
+					<xsl:if test="AddAccess">
+					
+						<xsl:call-template name="CreateShortcutMenuLink">
+							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/addflow')" />
+							<xsl:with-param name="name" select="$i18n.addFlow" />
+						</xsl:call-template>
+						
+						<xsl:call-template name="CreateShortcutMenuLink">
+							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/importflow')" />
+							<xsl:with-param name="name" select="$i18n.importFlow" />
+						</xsl:call-template>
+						
 					</xsl:if>
 				
-					<xsl:value-of select="name" />
-				</a>
+					<xsl:if test="AdminAccess">
+					
+						<xsl:call-template name="CreateShortcutMenuLink">
+							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/standardstatuses')" />
+							<xsl:with-param name="name" select="$i18n.administrateStandardStatuses" />
+						</xsl:call-template>
+						
+						<xsl:call-template name="CreateShortcutMenuLink">
+							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/flowtypes')" />
+							<xsl:with-param name="name" select="$i18n.administrateFlowTypes" />
+						</xsl:call-template>
+						
+					</xsl:if>
 				
-			</td>
-			<td data-title="{$i18n.flowType}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowtype/{FlowType/flowTypeID}"><xsl:value-of select="FlowType/name" /></a>
-			</td>
+					<xsl:apply-templates select="ExtensionLink[slot='bottom-right']"/>
+					
+				</ul>
+			</div>
+		</div>
+	</xsl:template>
+	
+	<xsl:template name="CreateShortcutMenuLink">
+		<xsl:param name="url" select="url" />
+		<xsl:param name="name" select="name" />
+	
+		<li>
+
+			<a href="{$url}" title="{$name}">
+				
+				<span class="icon arrow"><i data-icon-before=">"></i></span>
+				<span><xsl:value-of select="$name"/></span>
 			
-			<xsl:if test="/Document/UseCategories">
-				<td data-title="{$i18n.flowCategory}">
-					<xsl:choose>
-						<xsl:when test="Category"><a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="Category/name" /></a></xsl:when>
-						<xsl:otherwise>-</xsl:otherwise>
-					</xsl:choose>
-				</td>
-			</xsl:if>
+			</a>
+
+		</li>
 			
-			<td data-title="{$i18n.versions}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="VersionCount" /></a>
-			</td>
-			<td data-title="{$i18n.SubmittedInstances}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="SubmittedInstanceCount" /></a>
-			</td>
-			<td data-title="{$i18n.NotSubmittedInstances}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/showflow/{flowID}"><xsl:value-of select="InstanceCount - SubmittedInstanceCount" /></a>
-			</td>
-			
-			<xsl:call-template name="ExtraFlowListColumns" />
-			
-			<td>
-				<xsl:choose>
-					<xsl:when test="InstanceCount > 0">
-
-						<a href="#" onclick="alert('{$i18n.deleteFlowFamilyDisabledHasInstances}'); return false;" title="{$i18n.deleteFlowFamilyDisabledHasInstances}">
-							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
-						</a>
-
-					</xsl:when>
-					<xsl:when test="HasPublishedVersion">
-
-						<a href="#" onclick="alert('{$i18n.deleteFlowFamilyDisabledIsPublished}'); return false;" title="{$i18n.deleteFlowFamilyDisabledIsPublished}">
-							<img class="alignbottom" src="{$imgPath}/delete_gray.png" alt="" />
-						</a>
-
-					</xsl:when>
-					<xsl:otherwise>
-
-						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/deleteflowfamily/{FlowFamily/flowFamilyID}" onclick="return confirmHyperlinkPost(this)" title="{$i18n.deleteFlowFamily.title}: {name}">
-							<img class="alignbottom" src="{$imgPath}/delete.png" alt="" />
-						</a>
-
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-		</tr>
+	</xsl:template>
+	
+	<xsl:template match="ExtensionLink">
+	
+		<xsl:call-template name="CreateShortcutMenuLink" />
 	
 	</xsl:template>
 	
@@ -7247,8 +7214,6 @@
 	</xsl:template>
 	
 	<xsl:template name="ExtraFlowListColumnsHeader" />
-
-	<xsl:template name="ExtraFlowListColumns" />
 
 	<xsl:template match="validationError[messageKey='UnableToParseFile']">
 	
