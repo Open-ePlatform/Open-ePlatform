@@ -32,6 +32,7 @@
 	<xsl:variable name="i18n.YearsSaved.Finite">Gallras</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Finite.Years">Antal år uppgifterna sparas</xsl:variable>
 	<xsl:variable name="i18n.ExtraInformation">Övriga upplysningar</xsl:variable>
+	<xsl:variable name="i18n.Responsible">Personuppgiftsansvarig</xsl:variable>
 	
 	<xsl:variable name="i18n.validation.requiredField" select="'Du måste fylla i fältet:'"/>
 	<xsl:variable name="i18n.validation.invalidFormat" select="'Felaktigt format på fältet:'"/>
@@ -52,6 +53,7 @@
 	<xsl:variable name="i18n.Column.FlowType">Kategori</xsl:variable>
 	<xsl:variable name="i18n.Column.FlowCategory">Underkategori</xsl:variable>
 	<xsl:variable name="i18n.Column.PersonData">Personuppgifter</xsl:variable>
+	<xsl:variable name="i18n.Column.PersonResponsible">Personuppgiftsansvarig</xsl:variable>
 	<xsl:variable name="i18n.noFlowsFound">Inga tjänster som hanterar personuppgifter hittades.</xsl:variable>
 	
 	<xsl:variable name="i18n.Export">Exportera</xsl:variable>

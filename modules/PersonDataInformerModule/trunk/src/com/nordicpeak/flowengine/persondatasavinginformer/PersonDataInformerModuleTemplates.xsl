@@ -252,6 +252,7 @@
 							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonData" /></span></th>
 							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Reasons" /></span></th>
 							<th><span data-icon-after="_"><xsl:value-of select="$i18n.YearsSaved" /></span></th>
+							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonResponsible" /></span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -328,6 +329,9 @@
 				<ul>
 					<xsl:apply-templates select="FlowFamilyInformerSetting/StorageSettings/StorageSetting" mode="list"/>
 				</ul>
+			</td>
+			<td data-title="{$i18n.Responsible}">
+				<xsl:apply-templates select="FlowFamily/ownerName" mode="show"/>				
 			</td>
 		</tr>
 	
