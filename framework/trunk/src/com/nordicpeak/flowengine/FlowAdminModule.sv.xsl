@@ -593,7 +593,7 @@
 	<xsl:variable name="i18n.FlowType.iconColor">bakgrundsfärg</xsl:variable>
 	<xsl:variable name="i18n.FlowType.UseIconOnAllFlows">Använd kategorins ikon på samtliga e-tjänster</xsl:variable>
 	
-	<xsl:variable name="i18n.All">Visa alla statusar</xsl:variable>
+	<xsl:variable name="i18n.All">Visa alla e-tjänster</xsl:variable>
 	<xsl:variable name="i18n.Published">Publicerade</xsl:variable>
 	<xsl:variable name="i18n.Unpublished">Ej publicerade</xsl:variable>
 	<xsl:variable name="i18n.statusFilter">Visa</xsl:variable>
