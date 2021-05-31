@@ -3,15 +3,14 @@ package com.nordicpeak.flowengine.sharing;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.sql.SQLException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
 import org.w3c.dom.Document;
@@ -42,8 +40,6 @@ import se.unlogic.hierarchy.core.exceptions.ModuleConfigurationException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
-import se.unlogic.hierarchy.core.interfaces.SectionInterface;
-import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.extensionlinks.ExtensionLink;
@@ -56,7 +52,6 @@ import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.populators.NonNegativeStringIntegerPopulator;
-import se.unlogic.standardutils.readwrite.ReadWriteUtils;
 import se.unlogic.standardutils.settings.SettingNode;
 import se.unlogic.standardutils.streams.StreamUtils;
 import se.unlogic.standardutils.string.StringUtils;
@@ -76,16 +71,24 @@ import se.unlogic.webutils.http.enums.ContentDisposition;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.ExternalFlow;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.interfaces.ExternalFlowProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminShowFlowExtensionLinkProvider;
 import com.nordicpeak.flowengine.sharing.beans.RepositoryConfiguration;
 import com.nordicpeak.flowengine.sharing.validators.RepositoryConfigurationValidator;
 
-public class FlowCatalogModule extends AnnotatedForegroundModule implements ExtensionLinkProvider, FlowAdminShowFlowExtensionLinkProvider, Runnable {
+public class FlowCatalogModule extends AnnotatedForegroundModule implements ExtensionLinkProvider, FlowAdminShowFlowExtensionLinkProvider, Runnable, ExternalFlowProvider {
 	
 	
+	private static final String FILENAME_UTF_8 = "filename*=UTF-8''";
+
+	private static final String REPOSITORY_INDEX = "RepositoryIndex";
+
+	private static final String VALIDATION_ERRORS = "ValidationErrors";
+
 	protected static final List<Field> FLOW_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.ALLOWED_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Flow.TAGS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION);
 	
 	protected static final NonNegativeStringIntegerPopulator NON_NEGATIVE_STRING_INTEGER_POPULATOR = new NonNegativeStringIntegerPopulator();
@@ -96,6 +99,8 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	protected static final ValidationError UNKNOWN_REMOTE_ERROR_VALIDATION_ERROR = new ValidationError("UnknownRemoteError");
 	protected static final ValidationError REPOSITORY_COMMUNICATION_FAILED_VALIDATION_ERROR = new ValidationError("RepositoryCommunicationFailed");
 	protected static final ValidationError ERROR_EXPORTING_FLOW_VALIDATION_ERROR = new ValidationError("ErrorExportingFlow");
+	protected static final ValidationError DOWNLOAD_ERROR_VALIDATION_ERROR = new ValidationError("DownloadFailedError");
+	
 	
 	@XSLVariable(prefix = "java.")
 	protected String shareFlowTitle;
@@ -115,7 +120,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	protected FlowAdminModule flowAdminModule;
 	protected StaticContentModule staticContentModule;
 	
-	private List<RepositoryConfiguration> repositories = new ArrayList<RepositoryConfiguration>();
+	private List<RepositoryConfiguration> repositories = new ArrayList<>();
 	
 	protected ExtensionLink flowListExtensionLink;
 	protected ExtensionLink flowShowExtensionLink;
@@ -123,11 +128,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	private Thread cachingThread;
 	private boolean stopCacheThread;
 	
-	@Override
-	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
-		
-		super.init(moduleDescriptor, sectionInterface, dataSource);
-	}
+	private final Object lockObj = new Object();
 	
 	@Override
 	protected void moduleConfigured() throws Exception {
@@ -191,7 +192,9 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			try {
 				cachingThread.interrupt();
 				cachingThread.join();
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+				log.warn("Could not stop Cache Thread");
+			}
 		}
 	}
 	
@@ -202,6 +205,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			flowAdminModule.removeFlowListExtensionLinkProvider(this);
 			flowAdminModule.removeFlowShowExtensionLinkProvider(this);
+			flowAdminModule.removeExternalFlowProvider(this);
 		}
 		
 		stopCacheThread();
@@ -212,14 +216,14 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 		
-		return listRepositories(req, res, user, uriParser, null);
+		return listRepositories(req, user, uriParser, null);
 	}
 	
-	protected ForegroundModuleResponse listRepositories(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws ModuleConfigurationException, SQLException {
+	protected ForegroundModuleResponse listRepositories(HttpServletRequest req, User user, URIParser uriParser, List<ValidationError> validationErrors) throws ModuleConfigurationException {
 		
 		log.info("User " + user + " listing repositories");
 		
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 		
 		Element listFamiliesElement = doc.createElement("ListRepositories");
 		doc.getDocumentElement().appendChild(listFamiliesElement);
@@ -229,7 +233,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		for (int i = 0; i < repositories.size(); i++) {
 			
 			Element repositoryElement = XMLUtils.appendNewElement(doc, repositoriesElement, "Repository");
-			XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", i);
+			XMLUtils.appendNewElement(doc, repositoryElement, REPOSITORY_INDEX, i);
 			
 			RepositoryConfiguration repo = repositories.get(i);
 			fetchRepositoryInfo(repo);
@@ -239,7 +243,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		
 		if (validationErrors != null) {
 			
-			XMLUtils.append(doc, listFamiliesElement, "ValidationErrors", validationErrors);
+			XMLUtils.append(doc, listFamiliesElement, VALIDATION_ERRORS, validationErrors);
 		}
 		
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
@@ -257,7 +261,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		
 		writer.append("{\"rows\":[");
 		
-		boolean first = true;;
+		boolean first = true;
 		JsonArray row = new JsonArray(8);
 		
 		for (int i = 0; i < repositories.size(); i++) {
@@ -295,10 +299,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					row.clearNodes();
 				}
 				
-			} else {
-				
-//				XMLUtils.appendNewElement(doc, repositoryElement, "Missing");
-			}
+			} 
 		}
 		
 		writer.append("]}");
@@ -329,7 +330,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			log.info("User " + user + " listing flow versions in flow family ID " + flowFamilyID);
 			
-			List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+			List<ValidationError> validationErrors = new ArrayList<>();
 			
 			RepositoryConfiguration repo = repositories.get(repositoryIndex);
 			
@@ -342,14 +343,19 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 				
 				if ("OK".equals(status)) {
 					
-					Document doc = createDocument(req, uriParser, user);
+					Document doc = createDocument(req, uriParser);
 					
 					Element listVersionsElement = doc.createElement("ListFlowVersions");
 					doc.getDocumentElement().appendChild(listVersionsElement);
 					
-					XMLUtils.appendNewElement(doc, listVersionsElement, "RepositoryIndex", repositoryIndex);
+					XMLUtils.appendNewElement(doc, listVersionsElement, REPOSITORY_INDEX, repositoryIndex);
 					
 					copyChildrenToOtherDocument(doc, response.getDocumentElement(), listVersionsElement);
+					
+					if(validationError != null)
+					{
+						XMLUtils.append(doc, listVersionsElement, VALIDATION_ERRORS, Arrays.asList(validationError));
+					}
 					
 					return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 					
@@ -368,7 +374,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 				validationErrors.add(REPOSITORY_COMMUNICATION_FAILED_VALIDATION_ERROR);
 			}
 			
-			return listRepositories(req, res, user, uriParser, validationErrors);
+			return listRepositories(req, user, uriParser, validationErrors);
 		}
 		
 		throw new URINotFoundException(uriParser);
@@ -379,8 +385,13 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		
 		Integer repositoryIndex;
 		Integer sharedflowID;
+		Integer flowFamilyID;
+		Integer sourceID;
 		
-		if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
+		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(2)) != null 
+				&& (sourceID = uriParser.getInt(3)) != null &&
+						(flowFamilyID = uriParser.getInt(4)) != null &&
+						(sharedflowID = uriParser.getInt(5)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
 			
 			RepositoryConfiguration repository = repositories.get(repositoryIndex);
 			
@@ -392,19 +403,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			try {
 				
-				if (repository.getUrl().startsWith("http")) {
-					
-					connection = HTTPUtils.getHttpURLConnection(repository.getUrl() + "/download/" + sharedflowID, null);
-					
-				} else {
-					
-					connection = HTTPUtils.getHttpsURLConnection(repository.getUrl() + "/download/" + sharedflowID, null);
-				}
-				
-				if (repository.getUsername() != null && repository.getPassword() != null) {
-					
-					HTTPUtils.setBasicAuthentication(connection, repository.getUsername(), repository.getPassword());
-				}
+				connection = getConnection(repository, "/download/" + sharedflowID);
 				
 				if (connection.getErrorStream() != null) {
 					
@@ -414,46 +413,20 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					
 					inputStream = connection.getInputStream();
 				}
-				
-				if (connection.getResponseCode() == HttpServletResponse.SC_OK) {
-					
+				String filename = null;
+				try
+				{
 					String contentDisposition = connection.getHeaderField("Content-Disposition");
-					String filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf("filename*=UTF-8''") + "filename*=UTF-8''".length()), "UTF-8");
-					
+					filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf(FILENAME_UTF_8) + FILENAME_UTF_8.length()), StandardCharsets.UTF_8.name());
 					HTTPUtils.sendFile(inputStream, filename, "text/oeflow", null, req, res, ContentDisposition.ATTACHMENT, null);
 					return null;
 					
-				} else {
+				} catch(Exception ex)
+				{
+					log.error("Could not download file "+filename, ex);
 					
-					//TODO remove!!
-					InputStreamReader reader = null;
-					StringWriter stringWriter = new StringWriter();
-					
-					try {
-						reader = new InputStreamReader(inputStream);
-						ReadWriteUtils.transfer(reader, stringWriter);
-						
-					} finally {
-						ReadWriteUtils.closeReader(reader);
-					}
-					
-					Document response = XMLUtils.parseXML(stringWriter.toString(), false, false);
-					
-					Document doc = createDocument(req, uriParser, user);
-					
-					Element errorElement = doc.createElement("DownloadError");
-					doc.getDocumentElement().appendChild(errorElement);
-					
-					XMLUtils.appendNewElement(doc, errorElement, "RepositoryIndex", repositoryIndex);
-					
-					copyChildrenToOtherDocument(doc, response.getDocumentElement(), errorElement);
-					
-					return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+					return listFlowVersions(req, res, user, uriParser, repositoryIndex, sourceID, flowFamilyID, DOWNLOAD_ERROR_VALIDATION_ERROR);				
 				}
-				
-			} catch (FileNotFoundException e) {
-				
-				throw new URINotFoundException(uriParser);
 				
 			} finally {
 				
@@ -475,93 +448,13 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		Integer repositoryIndex;
 		Integer sharedflowID;
 		
-		if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
-			
-			RepositoryConfiguration repository = repositories.get(repositoryIndex);
+		if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null 
+				&& (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
 			
 			log.info("User " + user + " importing flow with sharedflowID " + sharedflowID);
 			
-			HttpURLConnection connection = null;
-			
-			InputStream inputStream = null;
-			
-			try {
-				
-				if (repository.getUrl().startsWith("http")) {
-					
-					connection = HTTPUtils.getHttpURLConnection(repository.getUrl() + "/download/" + sharedflowID, null);
-					
-				} else {
-					
-					connection = HTTPUtils.getHttpsURLConnection(repository.getUrl() + "/download/" + sharedflowID, null);
-				}
-				
-				if (repository.getUsername() != null && repository.getPassword() != null) {
-					
-					HTTPUtils.setBasicAuthentication(connection, repository.getUsername(), repository.getPassword());
-				}
-				
-				if (connection.getErrorStream() != null) {
-					inputStream = connection.getErrorStream();
-					
-				} else {
-					inputStream = connection.getInputStream();
-				}
-				
-				if (connection.getResponseCode() == HttpServletResponse.SC_OK) {
-					
-					String contentDisposition = connection.getHeaderField("Content-Disposition");
-					String filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf("filename*=UTF-8''") + "filename*=UTF-8''".length()), "UTF-8");
-					
-					user.getSession().setAttribute("FlowImportFileName", filename);
-					
-					ByteArrayOutputStream buffer = new ByteArrayOutputStream(inputStream.available());
-					
-					StreamUtils.transfer(inputStream, buffer);
-					user.getSession().setAttribute("FlowImportFile", buffer.toByteArray());
-					
-					res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow");
-					return null;
-					
-				} else {
-					
-					InputStreamReader reader = null;
-					StringWriter stringWriter = new StringWriter();
-					
-					try {
-						reader = new InputStreamReader(inputStream);
-						ReadWriteUtils.transfer(reader, stringWriter);
-						
-					} finally {
-						ReadWriteUtils.closeReader(reader);
-					}
-					
-					Document response = XMLUtils.parseXML(stringWriter.toString(), false, false);
-					
-					Document doc = createDocument(req, uriParser, user);
-					
-					Element errorElement = doc.createElement("DownloadError");
-					doc.getDocumentElement().appendChild(errorElement);
-					
-					XMLUtils.appendNewElement(doc, errorElement, "RepositoryIndex", repositoryIndex);
-					
-					copyChildrenToOtherDocument(doc, response.getDocumentElement(), errorElement);
-					
-					return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
-				}
-				
-			} catch (FileNotFoundException e) {
-				
-				throw new URINotFoundException(uriParser);
-				
-			} finally {
-				
-				CloseUtils.close(inputStream);
-				
-				if (connection != null) {
-					connection.disconnect();
-				}
-			}
+			res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow/" +repositoryIndex + "/" + sharedflowID);
+			return null;
 			
 		}
 		
@@ -583,7 +476,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			log.info("User " + user + " deleting flow with sharedflowID " + sharedflowID);
 			
-			List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+			List<ValidationError> validationErrors = new ArrayList<>();
 			
 			RepositoryConfiguration repo = repositories.get(repositoryIndex);
 			
@@ -627,17 +520,17 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 				validationErrors.add(REPOSITORY_COMMUNICATION_FAILED_VALIDATION_ERROR);
 			}
 			
-			return listRepositories(req, res, user, uriParser, validationErrors);
+			return listRepositories(req, user, uriParser, validationErrors);
 		}
 		
 		throw new URINotFoundException(uriParser);
 	}
 	
-	protected ForegroundModuleResponse showShareFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors, Flow flow) throws ModuleConfigurationException, SQLException {
+	protected ForegroundModuleResponse showShareFlowForm(HttpServletRequest req, User user, URIParser uriParser, List<ValidationError> validationErrors, Flow flow) throws ModuleConfigurationException {
 		
 		log.info("User " + user + " requesting share flow form for flow " + flow);
 		
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 		
 		Element shareFlowElement = doc.createElement("ShareFlow");
 		doc.getDocumentElement().appendChild(shareFlowElement);
@@ -664,7 +557,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 				if (responseParser.getNode("/Response/UploadAccess") != null) {
 					
 					Element repositoryElement = XMLUtils.appendNewElement(doc, repositoriesElement, "Repository");
-					XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", i);
+					XMLUtils.appendNewElement(doc, repositoryElement, REPOSITORY_INDEX, i);
 					
 					copyChildrenToOtherDocument(doc, response.getDocumentElement(), repositoryElement);
 				}
@@ -678,7 +571,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		
 		if (validationErrors != null) {
 			
-			XMLUtils.append(doc, shareFlowElement, "ValidationErrors", validationErrors);
+			XMLUtils.append(doc, shareFlowElement, VALIDATION_ERRORS, validationErrors);
 		}
 		
 		shareFlowElement.appendChild(RequestUtils.getRequestParameters(req, doc));
@@ -700,7 +593,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
-				List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+				List<ValidationError> validationErrors = new ArrayList<>();
 				
 				Integer repositoryIndex = ValidationUtils.validateParameter("repositoryIndex", req, true, 0, Integer.toString(repositories.size()).length(), NON_NEGATIVE_STRING_INTEGER_POPULATOR, validationErrors);
 				
@@ -719,15 +612,15 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 							
 							log.info("User " + user + " sharing flow " + flow + " to repository " + repo);
 							
-							List<Entry<String, String>> requestParameters = new ArrayList<Entry<String, String>>();
+							List<Entry<String, String>> requestParameters = new ArrayList<>();
 							
-							requestParameters.add(new SimpleEntry<String, String>("flowFamilyID", flow.getFlowFamily().getFlowFamilyID().toString()));
-							requestParameters.add(new SimpleEntry<String, String>("flowID", flow.getFlowID().toString()));
-							requestParameters.add(new SimpleEntry<String, String>("version", flow.getVersion().toString()));
-							requestParameters.add(new SimpleEntry<String, String>("name", URLEncoder.encode(flow.getName(), systemInterface.getEncoding())));
+							requestParameters.add(new SimpleEntry<>("flowFamilyID", flow.getFlowFamily().getFlowFamilyID().toString()));
+							requestParameters.add(new SimpleEntry<>("flowID", flow.getFlowID().toString()));
+							requestParameters.add(new SimpleEntry<>("version", flow.getVersion().toString()));
+							requestParameters.add(new SimpleEntry<>("name", URLEncoder.encode(flow.getName(), systemInterface.getEncoding())));
 							
 							if (!StringUtils.isEmpty(comment)) {
-								requestParameters.add(new SimpleEntry<String, String>("comment", URLEncoder.encode(comment, systemInterface.getEncoding())));
+								requestParameters.add(new SimpleEntry<>("comment", URLEncoder.encode(comment, systemInterface.getEncoding())));
 							}
 							
 							ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -783,11 +676,11 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 					}
 				}
 				
-				return showShareFlowForm(req, res, user, uriParser, validationErrors, flow);
+				return showShareFlowForm(req, user, uriParser, validationErrors, flow);
 				
 			} else {
 				
-				return showShareFlowForm(req, res, user, uriParser, null, flow);
+				return showShareFlowForm(req, user, uriParser, null, flow);
 			}
 		}
 		
@@ -817,10 +710,10 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			request.setReadTimeout(readTimeout * MillisecondTimeUnits.SECOND);
 			request.setRequestParameters(requestParameters);
 			
-			List<Entry<String, String>> headerEntries = new ArrayList<Entry<String, String>>(2);
+			List<Entry<String, String>> headerEntries = new ArrayList<>(2);
 			
-			headerEntries.add(new SimpleEntry<String, String>("Content-Type", "text/xml; charset=" + systemInterface.getEncoding()));
-			headerEntries.add(new SimpleEntry<String, String>("Content-Length", Long.toString(outputData.available())));
+			headerEntries.add(new SimpleEntry<>("Content-Type", "text/xml; charset=" + systemInterface.getEncoding()));
+			headerEntries.add(new SimpleEntry<>("Content-Length", Long.toString(outputData.available())));
 			
 			request.setHeaders(headerEntries);
 			
@@ -845,7 +738,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	
 	private void fetchRepositoryInfo(RepositoryConfiguration repo) {
 		
-		synchronized(repo) {
+		synchronized(lockObj) {
 			
 			if (repo.getLastUpdate() == null || System.currentTimeMillis() - repo.getLastUpdate() > MillisecondTimeUnits.HOUR) {
 				
@@ -862,7 +755,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	
 	private void updateRepositoryInfo(SettingNode responseParser, RepositoryConfiguration repo) {
 		
-		synchronized(repo) {
+		synchronized(lockObj) {
 			
 			String repoName = responseParser.getString("/Response/Name");
 			
@@ -886,7 +779,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		}
 	}
 	
-	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
+	public Document createDocument(HttpServletRequest req, URIParser uriParser) {
 		
 		Document doc = XMLUtils.createDomDocument();
 		Element documentElement = doc.createElement("Document");
@@ -912,11 +805,13 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 			
 			flowAdminModule.addFlowListExtensionLinkProvider(this);
 			flowAdminModule.addFlowShowExtensionLinkProvider(this);
+			flowAdminModule.addExternalFlowProvider(this);
 			
 		} else if (this.flowAdminModule != null) {
 			
 			this.flowAdminModule.removeFlowListExtensionLinkProvider(this);
 			this.flowAdminModule.removeFlowShowExtensionLinkProvider(this);
+			this.flowAdminModule.removeExternalFlowProvider(this);
 		}
 		
 		this.flowAdminModule = flowAdminModule;
@@ -984,9 +879,82 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 				log.info("Cached information for " + repositories.size() + " repositories in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 			}
 			
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			log.warn("Error caching repository information", t);
 		}
 	}
+
+	@Override
+	public String getProviderID() {
+		return "fg-" + moduleDescriptor.getModuleID();
+	}
+
+	@Override
+	public ExternalFlow getFlow(Integer repositoryIndex, Integer flowID) {
+		
+		HttpURLConnection connection = null;
+		
+		InputStream inputStream = null;
+		
+		RepositoryConfiguration repository = repositories.get(repositoryIndex);
+		
+		try {
+		
+			connection = getConnection(repository,"/download/" + flowID);
+			
+			if (connection.getErrorStream() != null) {
+				inputStream = connection.getErrorStream();
+				
+			} else {
+				inputStream = connection.getInputStream();
+			}
+			
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream(inputStream.available());
+			
+			StreamUtils.transfer(inputStream, buffer);			
+			
+			String contentDisposition = connection.getHeaderField("Content-Disposition");
+			String filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf(FILENAME_UTF_8) + FILENAME_UTF_8.length()), StandardCharsets.UTF_8.name());
+		
+			return new ExternalFlow(filename, buffer.toByteArray());
+			
+		}
+		catch(Exception ioe)
+		{
+			log.error("Exception during connection ", ioe);
+		
+		} 
+		finally {
+			
+			CloseUtils.close(inputStream);
+			
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}
+		
+		return null;
+	}
+
+	private HttpURLConnection getConnection(RepositoryConfiguration repository, String url) throws IOException {
+		HttpURLConnection connection = null;
+		if (repository.getUrl().startsWith("https")) {
+			
+			connection = HTTPUtils.getHttpsURLConnection(repository.getUrl() + url, null);
+			
+		} else {
+			
+			connection = HTTPUtils.getHttpURLConnection(repository.getUrl() + url, null);
+		}
+		
+		if (repository.getUsername() != null && repository.getPassword() != null) {
+			
+			HTTPUtils.setBasicAuthentication(connection, repository.getUsername(), repository.getPassword());
+		}
+
+		return connection;
+	}
+
+	
 	
 }

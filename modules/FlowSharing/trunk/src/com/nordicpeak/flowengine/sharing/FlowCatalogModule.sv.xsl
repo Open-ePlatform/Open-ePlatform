@@ -23,6 +23,7 @@
 	<xsl:variable name="i18n.ValidationError.FlowAlreadyExists">Den här versionen av e-tjänsten finns redan i den valda katalogen</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.FileSizeLimitExceeded">E-tjänsten är för stor för att tas emot av den valda katalogen</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.FileUploadException">Ett fel uppstod när e-tjänsten skulle skickas till katalogen</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.DownloadFailedError">Ett fel uppstod vid nedladdning</xsl:variable>
 	
 	<xsl:variable name="i18n.ErrorConnectingToRepository.1">Det gick inte att ansluta till</xsl:variable>
 	<xsl:variable name="i18n.ErrorConnectingToRepository.2">, försök igen senare.</xsl:variable>

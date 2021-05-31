@@ -6233,6 +6233,35 @@
 
 	<xsl:template match="FlowType" mode="list-import-target">
 	
+	<xsl:variable name="repositoryIndex" select="../../Repository/RepositoryIndex"/>
+	<xsl:variable name="sharedFlowID" select="../../SharedFlow/SharedFlowID"/>
+	
+	<xsl:choose>
+	<xsl:when test="$sharedFlowID">
+    
+		<tr>
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{$repositoryIndex}/{$sharedFlowID}" title="{$i18n.showFlowType}: {name}">
+					<xsl:value-of select="name"/>
+				</a>
+			</td>
+			
+			<xsl:if test="/Document/UseCategories">
+				<td>
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}" title="{$i18n.showFlowType}: {name}">
+						<xsl:value-of select="count(Categories/Category)"/>
+					</a>
+				</td>
+			</xsl:if>
+			
+			<td>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}" title="{$i18n.showFlowType}: {name}">
+					<xsl:value-of select="flowFamilyCount"/>
+				</a>
+			</td>
+		</tr>
+	</xsl:when>
+	<xsl:otherwise>
 		<tr>
 			<td>
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}" title="{$i18n.showFlowType}: {name}">
@@ -6254,6 +6283,8 @@
 				</a>
 			</td>
 		</tr>
+	</xsl:otherwise>	
+	</xsl:choose>
 	
 	</xsl:template>
 

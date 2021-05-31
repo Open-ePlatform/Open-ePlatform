@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -113,6 +114,7 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.PDFManagerResponse;
+import com.nordicpeak.flowengine.pdf.schedule.TempFileChecker;
 import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
@@ -120,8 +122,11 @@ import com.nordicpeak.flowengine.utils.PDFFileAttachment;
 import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
 import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
+import it.sauronsoftware.cron4j.Scheduler;
+
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 
+	private static final String PAGE = " page ";
 	public static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
 	private static final String TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE = "pdf.temp.id";
 
@@ -195,11 +200,17 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private FlowEngineDAOFactory daoFactory;
 
 	protected URIXSLTransformer pdfTransformer;
+	
+	private String pdfCheckerSchedulerID;
+	private Scheduler pdfCheckerScheduler;
+	private static final String SCHEDULER_EVERY_HOUR_CRON_TAB = "0 * * * *";
+	
+	
 
 	protected String signatureAttachmentName = "Signature";
 	protected String signingPDFAttachmentName = "Signing PDF";
 	protected String inlineAttachmentPageNumber1 = "Attachment ";
-	protected String inlineAttachmentPageNumber2 = " page ";
+	protected String inlineAttachmentPageNumber2 = PAGE;
 	protected String inlineAttachmentPageNumber3 = " of ";
 	protected String inlineAttachmentFlowInstanceID = "Flowinstance ID";
 	protected String inlineAttachmentDate = "Date";
@@ -215,10 +226,49 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + PDFProvider.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
+		initScheduler();
+	}
+
+	private synchronized void initScheduler() {
+
+		if (pdfCheckerScheduler != null) {
+
+			log.warn("Invalid state, pdfCheckerScheduler already running!");
+			stopScheduler();
+		}
+
+		pdfCheckerScheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
+		pdfCheckerScheduler.setDaemon(true);
+		pdfCheckerSchedulerID = pdfCheckerScheduler.schedule(SCHEDULER_EVERY_HOUR_CRON_TAB, new TempFileChecker(pdfDir,tempDir));
+
+		pdfCheckerScheduler.start();
+	}
+	
+	private synchronized void stopScheduler() {
+		try {
+			if (pdfCheckerScheduler != null) {
+
+				pdfCheckerScheduler.stop();
+				pdfCheckerScheduler = null;
+			}
+
+		} catch (IllegalStateException e) {
+			log.error("Error stopping pdfCheckerScheduler", e);
+		}
+	}
+
+	@Override
+	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
+
+		super.update(descriptor, dataSource);
+
+		pdfCheckerScheduler.reschedule(pdfCheckerSchedulerID, SCHEDULER_EVERY_HOUR_CRON_TAB);
 	}
 
 	@Override
 	public void unload() throws Exception {
+		
+		stopScheduler();
 
 		systemInterface.getInstanceHandler().removeInstance(PDFProvider.class, this);
 
@@ -300,12 +350,12 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return oldValue;
 	}
 
-	protected File createPDF(FlowInstanceManager instanceManager, SiteProfile siteProfile, User user, FlowInstanceEvent event, boolean temporary, Map<String, String> extraElements) throws Exception {
+	protected File createPDF(FlowInstanceManager instanceManager, SiteProfile siteProfile, FlowInstanceEvent event, boolean temporary, Map<String, String> extraElements) throws Exception {
 
-		return createPDF(pdfTransformer, instanceManager, siteProfile, user, event, temporary, extraElements);
+		return createPDF(pdfTransformer, instanceManager, siteProfile, event, temporary, extraElements);
 	}
 
-	protected File createPDF(URIXSLTransformer pdfTransformer, FlowInstanceManager instanceManager, SiteProfile siteProfile, User user, FlowInstanceEvent event, boolean temporary, Map<String, String> extraElements) throws Exception {
+	protected File createPDF(URIXSLTransformer pdfTransformer, FlowInstanceManager instanceManager, SiteProfile siteProfile, FlowInstanceEvent event, boolean temporary, Map<String, String> extraElements) throws Exception {
 
 		if (dependencyReadLock != null) {
 
@@ -498,20 +548,20 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 			StringWriter writer = new StringWriter();
 
-			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, writer, "UTF-8", "1.1");
+			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, writer, StandardCharsets.UTF_8.name(), "1.1");
 
 			String xml = writer.toString();
 
 			Document document;
 
 			try {
-				if (systemInterface.getEncoding().equalsIgnoreCase("UTF-8")) {
+				if (systemInterface.getEncoding().equalsIgnoreCase(StandardCharsets.UTF_8.name())) {
 
 					document = PDFXMLUtils.parseXML(xml);
 
 				} else {
 
-					document = PDFXMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+					document = PDFXMLUtils.parseXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 				}
 
 			} catch (Exception e) {
@@ -559,8 +609,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 							name += signEvent.getAttributeHandler().getString("firstname") + " " + signEvent.getAttributeHandler().getString("lastname");
 						}
 
-						//TODO check if this encoding should be hardcoded or not
-						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFInputStreamAttachment(new ByteArrayInputStream(signData.getBytes("ISO-8859-1")), name + ".txt", name));
+						//TODO check if this encoding should be hardcoded or not, ISO?
+						extraAttachments = CollectionUtils.addAndInstantiateIfNeeded(extraAttachments, new PDFInputStreamAttachment(new ByteArrayInputStream(signData.getBytes(StandardCharsets.ISO_8859_1)), name + ".txt", name));
 					}
 				}
 
@@ -739,7 +789,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 		if (!StringUtils.isEmpty(tempID)) {
 
-			return new File(pdfDir + File.separator + "temp-" + tempID + ".pdf");
+			return new File(tempDir + File.separator + "temp-" + tempID + ".pdf");
 		}
 
 		return null;
@@ -861,7 +911,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											int writeTextResult = columnText.go();
 
 											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit submitter text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
+												log.warn("Unable to fit submitter text on attachment " + attachment + PAGE + attachmentCounter + ": " + writeTextResult);
 											}
 
 											columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
@@ -871,7 +921,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											writeTextResult = columnText.go();
 
 											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit pagenumbering text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
+												log.warn("Unable to fit pagenumbering text on attachment " + attachment + PAGE + attachmentCounter + ": " + writeTextResult);
 											}
 										}
 
@@ -1125,9 +1175,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			log.info("Generating PDF for flow instance " + event.getFlowInstanceManager().getFlowInstance() + " triggered by flow instance event " + event.getEvent() + " by user " + event.getEvent().getPoster());
 
 			try {
-				createPDF(event.getFlowInstanceManager(), event.getSiteProfile(), event.getEvent().getPoster(), event.getEvent(), false, null);
+				createPDF(event.getFlowInstanceManager(), event.getSiteProfile(), event.getEvent(), false, null);
 
-			} catch (Throwable t) {
+			} catch (Exception t) {
 
 				log.error("Error generating PDF for flow instance " + event.getFlowInstanceManager().getFlowInstance() + " triggered by flow instance event " + event + " by user " + event.getEvent().getPoster(), t);
 
@@ -1138,10 +1188,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(CRUDEvent<FlowInstance> event, EventSource source) {
 
-		if (source.isLocal()) {
+		if (source.isLocal() && event.getAction() == CRUDAction.DELETE) {
 
-			if (event.getAction() == CRUDAction.DELETE) {
-
+			
 				for (FlowInstance flowInstance : event.getBeans()) {
 
 					try {
@@ -1160,7 +1209,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 						log.error("Error deleting PDF files for flow instance " + flowInstance);
 					}
 				}
-			}
+			
 		}
 	}
 
@@ -1243,7 +1292,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	@Override
 	public File createTemporaryPDF(FlowInstanceManager instanceManager, SiteProfile siteProfile, User user, Map<String, String> extraElements, FlowInstanceEvent tempEvent) throws Exception {
 
-		return createPDF(instanceManager, siteProfile, user, tempEvent, true, extraElements);
+		return createPDF(instanceManager, siteProfile, tempEvent, true, extraElements);
 	}
 
 	@Override
@@ -1356,5 +1405,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		return defaultLogotype;
 	}
 
-	//TODO delete old temp files
+	@Override
+	public File getPDFDir(Integer flowInstanceID) {
+
+		if(FileUtils.directoryExists(pdfDir+File.separator+flowInstanceID))
+		{
+			return new File(pdfDir+File.separator+flowInstanceID);
+		}
+		return null;
+	}
 }

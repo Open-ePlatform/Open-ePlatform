@@ -188,6 +188,7 @@ import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
+import com.nordicpeak.flowengine.beans.ExternalFlow;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -247,6 +248,7 @@ import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorExce
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderException;
 import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
 import com.nordicpeak.flowengine.interfaces.EvaluationHandler;
+import com.nordicpeak.flowengine.interfaces.ExternalFlowProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminCRUDCallback;
 import com.nordicpeak.flowengine.interfaces.FlowAdminExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
@@ -695,18 +697,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected UserGroupListConnector unrestrictedUserGroupListConnector;
 	protected UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
 
-	protected CopyOnWriteArrayList<FlowAdminExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>();
-	protected CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider> fragmentExtensionViewProviders = new CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider>();
-	protected CopyOnWriteArrayList<FlowTypeExtensionProvider> flowTypeExtensionProviders = new CopyOnWriteArrayList<FlowTypeExtensionProvider>();
+	protected CopyOnWriteArrayList<FlowAdminExtensionViewProvider> extensionViewProviders = new CopyOnWriteArrayList<>();
+	protected CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider> fragmentExtensionViewProviders = new CopyOnWriteArrayList<>();
+	protected CopyOnWriteArrayList<FlowTypeExtensionProvider> flowTypeExtensionProviders = new CopyOnWriteArrayList<>();
 
-	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<ExtensionLinkProvider>();
-	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider>();
+	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<>();
+	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<>();
 	
 	protected CopyOnWriteArrayList<StatusFormExtensionProvider> statusFormExtensionProviders = new CopyOnWriteArrayList<>();
 	
-	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>();
+	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<>();
 	
-	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<XSDExtensionProvider>();
+	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<>();
+	
+	protected CopyOnWriteArrayList<ExternalFlowProvider> externalFlowProviders = new CopyOnWriteArrayList<>();
 
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
@@ -772,6 +776,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowShowExtensionLinkProviders.clear();
 		
 		statusFormExtensionProviders.clear();
+		
+		externalFlowProviders.clear();
 		
 		if (userGroupAdminExtensionHandler != null) {
 			
@@ -906,7 +912,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		long startTime = System.currentTimeMillis();
 
-		HighLevelQuery<FlowType> query = new HighLevelQuery<FlowType>(
+		HighLevelQuery<FlowType> query = new HighLevelQuery<>(
 		//@formatter:off
 				FlowType.CATEGORIES_RELATION,
 				FlowType.ALLOWED_USERS_RELATION,
@@ -923,11 +929,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (flowTypes == null) {
 
-			flowTypeCacheMap = new LinkedHashMap<Integer, FlowType>(0);
+			flowTypeCacheMap = new LinkedHashMap<>(0);
 
 		} else {
 
-			LinkedHashMap<Integer, FlowType> tempFlowTypeMap = new LinkedHashMap<Integer, FlowType>(flowTypes.size());
+			LinkedHashMap<Integer, FlowType> tempFlowTypeMap = new LinkedHashMap<>(flowTypes.size());
 
 			for (FlowType flowType : flowTypes) {
 
@@ -951,19 +957,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			long startTime = System.currentTimeMillis();
 			
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_CACHE_RELATIONS);
+			HighLevelQuery<Flow> query = new HighLevelQuery<>(FLOW_CACHE_RELATIONS);
 			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
 
 			List<Flow> flows = daoFactory.getFlowDAO().getAll(query, transactionHandler);
 
 			if (flows == null) {
 
-				this.flowCache = new FlowCache(new LinkedHashMap<Integer, Flow>(0), new HashMap<Integer, FlowFamily>(0));
+				this.flowCache = new FlowCache(new LinkedHashMap<>(0), new HashMap<>(0));
 
 			} else {
 
-				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flows.size());
-				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>();
+				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flows.size());
+				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>();
 
 				for (Flow flow : flows) {
 
@@ -989,7 +995,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		long startTime = System.currentTimeMillis();
 		
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>(FLOW_FAMILY_CACHE_RELATIONS);
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<>(FLOW_FAMILY_CACHE_RELATIONS);
 		
 		query.addParameter(flowFamiliyIDParamFactory.getWhereInParameter(flowFamilyIDs));
 		
@@ -1001,8 +1007,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		} else {
 	
-			LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
-			HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+			LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
+			HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 
 			for (FlowFamily flowFamily : flowFamilies) {
 
@@ -1027,8 +1033,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	private synchronized void deleteFlowFamiliesFromCache(List<FlowFamily> flowFamilies) {
 
-		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
-		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
+		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 		
 		for(FlowFamily flowFamily : flowFamilies) {
 			
@@ -1055,7 +1061,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			long startTime = System.currentTimeMillis();
 			
-			HighLevelQuery<Flow> query = new HighLevelQuery<Flow>(FLOW_CACHE_RELATIONS);
+			HighLevelQuery<Flow> query = new HighLevelQuery<>(FLOW_CACHE_RELATIONS);
 			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
 			query.addParameter(flowIDParamFactory.getWhereInParameter(flowIDs));
 
@@ -1067,8 +1073,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} else {
 		
-				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
-				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
+				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 
 				for (Flow flow : flows) {
 
@@ -1105,8 +1111,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	
 	private synchronized void deleteFlowsFromCache(List<Flow> flows) {
 
-		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<Integer, Flow>(flowCache.getFlowCacheMap());
-		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<Integer, FlowFamily>(flowCache.getFlowFamilyCacheMap());
+		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
+		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 		
 		Set<FlowFamily> familiesWithoutLatestVersion = null;
 		
@@ -1181,7 +1187,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	private Boolean isLatestVersion(Flow flow, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>();
+		HighLevelQuery<Flow> query = new HighLevelQuery<>();
 
 		query.addParameter(flowFlowFamilyParamFactory.getParameter(flow.getFlowFamily()));
 		query.addParameter(flowVersionParamFactory.getParameter(flow.getVersion(), QueryOperators.BIGGER_THAN));
@@ -1191,7 +1197,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowInstanceCount(Flow flow, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceFlowParamFactory.getParameter(flow));
 
@@ -1200,7 +1206,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowInstanceCount(Flow flow) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceFlowParamFactory.getParameter(flow));
 
@@ -1209,7 +1215,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowInstanceCount(Status status) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceStatusParamFactory.getParameter(status));
 
@@ -1218,7 +1224,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowInstanceCount(Status status, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceStatusParamFactory.getParameter(status));
 
@@ -1227,7 +1233,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowSubmittedInstanceCount(Flow flow, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceFlowParamFactory.getParameter(flow));
 		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
@@ -1237,7 +1243,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public Integer getFlowSubmittedInstanceCount(Status status, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<FlowInstance> query = new HighLevelQuery<FlowInstance>();
+		HighLevelQuery<FlowInstance> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceStatusParamFactory.getParameter(status));
 		query.addParameter(flowInstanceFirstSubmittedParamFactory.getIsNotNullParameter());
@@ -1246,7 +1252,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@Override
-	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return list(req, res, user, uriParser, (List<ValidationError>) null);
 	}
@@ -1508,7 +1514,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		String validationError = req.getParameter("error");
 
@@ -1535,25 +1541,25 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public synchronized ForegroundModuleResponse deleteFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public synchronized ForegroundModuleResponse deleteFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		if(!HTTPUtils.isPost(req)) {
 			
@@ -1631,7 +1637,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public synchronized ForegroundModuleResponse copyFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public synchronized ForegroundModuleResponse copyFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		Integer flowID = NumberUtils.toInt(req.getParameter("flowID"));
 
@@ -1662,7 +1668,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			if (flow.getFlowFamily().getMessageTemplates() != null) {
 				
-				ArrayList<MessageTemplate> messageTemplates = new ArrayList<MessageTemplate>(flow.getFlowFamily().getMessageTemplates().size());
+				ArrayList<MessageTemplate> messageTemplates = new ArrayList<>(flow.getFlowFamily().getMessageTemplates().size());
 				
 				for (MessageTemplate messageTemplate : flow.getFlowFamily().getMessageTemplates()) {
 					
@@ -1706,7 +1712,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (flowCopy.getStatuses() != null) {
 
-			statusConversionMap = new HashMap<Integer, ImmutableStatus>(flowCopy.getStatuses().size());
+			statusConversionMap = new HashMap<>(flowCopy.getStatuses().size());
 
 			for (Status status : flowCopy.getStatuses()) {
 
@@ -1947,7 +1953,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			MultipartRequest multipartRequest = null;
 
 			try {
-				multipartRequest = MultipartRequest.getMultipartRequest(this.ramThreshold * BinarySizes.KiloByte, this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(this.ramThreshold * BinarySizes.KiloByte, (long) this.maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 
 				if (multipartRequest.getParameter("clearicon") != null) {
 
@@ -2039,7 +2045,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} catch (FileUploadBase.SizeLimitExceededException e) {
 
-				validationError = new RequestSizeLimitExceededValidationError(e.getActualSize(), maxRequestSize * BinarySizes.MegaByte);
+				validationError = new RequestSizeLimitExceededValidationError(e.getActualSize(), (long) maxRequestSize * BinarySizes.MegaByte);
 
 			} catch (FileUploadException e) {
 
@@ -2157,7 +2163,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 			
-			validationErrors = new ArrayList<ValidationError>();
+			validationErrors = new ArrayList<>();
 
 			for (EvaluatorDescriptor evaluatorDescription : queryDescriptor.getEvaluatorDescriptors()) {
 
@@ -2253,7 +2259,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse copyStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+	public ForegroundModuleResponse copyStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, URINotFoundException {
 
 		Integer statusGroupID = uriParser.getInt(2);
 		StandardStatusGroup statusGroup = null;
@@ -2294,7 +2300,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 	
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
+	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, URINotFoundException {
 		
 		Integer statusGroupID = uriParser.getInt(2);
 		StandardStatusGroup statusGroup = null;
@@ -2420,7 +2426,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		List<StandardStatusGroup> statusGroups = getDAOFactory().getStandardStatusGroupDAO().getAll();
 		XMLUtils.append(doc, updateFlowStatusesElement, "StandardStatusGroups", statusGroups);
 
-		if (validationErrors != null) {
+		if (!validationErrors.isEmpty()) {
 
 			XMLUtils.append(doc, updateFlowStatusesElement, "ValidationErrors", validationErrors);
 		}
@@ -2434,7 +2440,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (standardStatuses != null) {
 
-			List<Status> statuses = new ArrayList<Status>(standardStatuses.size());
+			List<Status> statuses = new ArrayList<>(standardStatuses.size());
 
 			for (StandardStatus standardStatus : standardStatuses) {
 
@@ -2442,7 +2448,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				if (standardStatus.getDefaultStandardStatusMappings() != null) {
 
-					List<DefaultStatusMapping> statusMappings = new ArrayList<DefaultStatusMapping>(standardStatus.getDefaultStandardStatusMappings().size());
+					List<DefaultStatusMapping> statusMappings = new ArrayList<>(standardStatus.getDefaultStandardStatusMappings().size());
 
 					for (DefaultStandardStatusMapping defaultStandardStatusMapping : standardStatus.getDefaultStandardStatusMappings()) {
 
@@ -2633,7 +2639,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	private ValidationError parseSortPost(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, IOException {
 
-		List<QueryDescriptor> queryDescriptors = new ArrayList<QueryDescriptor>();
+		List<QueryDescriptor> queryDescriptors = new ArrayList<>();
 
 		//Set sort index for each step
 		for (Step step : flow.getSteps()) {
@@ -2667,14 +2673,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} else {
 
-				step.setQueryDescriptors(new ArrayList<QueryDescriptor>());
+				step.setQueryDescriptors(new ArrayList<>());
 			}
 		}
 
 		Collections.sort(flow.getSteps(), STEP_COMPARATOR);
 		Collections.sort(queryDescriptors, QUERY_DESCRIPTOR_COMPARATOR);
 
-		List<QueryDescriptor> queryDescriptorsCopy = new ArrayList<QueryDescriptor>(queryDescriptors);
+		List<QueryDescriptor> queryDescriptorsCopy = new ArrayList<>(queryDescriptors);
 
 		Iterator<QueryDescriptor> queryIterator = queryDescriptors.iterator();
 
@@ -2706,7 +2712,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		int stepSortIndex = 0;
 
-		List<Integer> addedQueries = new ArrayList<Integer>();
+		List<Integer> addedQueries = new ArrayList<>();
 
 		for (Step step : flow.getSteps()) {
 
@@ -2751,7 +2757,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		log.info("User " + user + " updating sorting of flow " + flow);
 
-		HighLevelQuery<Step> query = new HighLevelQuery<Step>();
+		HighLevelQuery<Step> query = new HighLevelQuery<>();
 
 		query.addRelations(Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION);
 
@@ -2772,43 +2778,43 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return stepCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return stepCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteStep(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return stepCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return statusCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return statusCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return statusCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 		
 		Flow flow = getRequestedFlow(req, user, uriParser);
 		
@@ -2825,97 +2831,97 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowFormCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowFormCRUD.delete(req, res, user, uriParser);
 	}
 	
 	@WebPublic(alias = "standardstatuses")
-	public ForegroundModuleResponse listStandardStatusGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse listStandardStatusGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusGroupCRUD.list(req, res, user, uriParser, null);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusGroupCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusGroupCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusGroupCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse showStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse showStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusGroupCRUD.show(req, res, user, uriParser, null);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteStandardStatus(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return standardStatusCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return queryDescriptorCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return queryDescriptorCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return queryDescriptorCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return evaluatorDescriptorCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return evaluatorDescriptorCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteEvaluator(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return evaluatorDescriptorCRUD.delete(req, res, user, uriParser);
 	}
@@ -2956,7 +2962,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			if (!CollectionUtils.isEmpty(flowBrowserExtensionViewProviders)) {
 
-				extensionViews = new ArrayList<ExtensionView>(flowBrowserExtensionViewProviders.size());
+				extensionViews = new ArrayList<>(flowBrowserExtensionViewProviders.size());
 
 				for (FlowBrowserExtensionViewProvider extensionProvider : flowBrowserExtensionViewProviders) {
 
@@ -3001,7 +3007,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse testFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse testFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		Integer flowID = null;
 		MutableFlowInstanceManager instanceManager;
@@ -3056,7 +3062,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse testFlowAllSteps(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse testFlowAllSteps(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		Integer flowID = null;
 
@@ -3172,37 +3178,37 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(alias = "flowtypes")
-	public ForegroundModuleResponse listFlowTypes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse listFlowTypes(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowTypeCRUD.list(req, res, user, uriParser, null);
 	}
 
 	@WebPublic(alias = "flowtype")
-	public ForegroundModuleResponse showFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse showFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowTypeCRUD.show(req, res, user, uriParser, null);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowTypeCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowTypeCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteFlowType(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowTypeCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		FlowType flowType = flowTypeCRUD.getRequestedBean(req, res, user, uriParser, null);
 
@@ -3218,19 +3224,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return categoryCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteCategory(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return categoryCRUD.delete(req, res, user, uriParser);
 	}
 
 	@WebPublic(alias = "updatemanagers")
-	public ForegroundModuleResponse updateFlowFamilyManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateFlowFamilyManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return flowFamilyCRUD.update(req, res, user, uriParser);
 	}
@@ -3242,19 +3248,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse addMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse addMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return messageTemplateCRUD.add(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse updateMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse updateMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return messageTemplateCRUD.update(req, res, user, uriParser);
 	}
 
 	@WebPublic(toLowerCase = true)
-	public ForegroundModuleResponse deleteMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception, Throwable {
+	public ForegroundModuleResponse deleteMessageTemplate(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return messageTemplateCRUD.delete(req, res, user, uriParser);
 	}
@@ -3288,7 +3294,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 		}else {
 			
-			List<Integer> flowFamilyIDs = new ArrayList<Integer>(event.getBeans().size());
+			List<Integer> flowFamilyIDs = new ArrayList<>(event.getBeans().size());
 			
 			for(FlowFamily flowFamily : event.getBeans()) {
 				
@@ -3336,7 +3342,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flow);
 					
-				}catch(Throwable t) {
+				}catch(Exception t) {
 					
 					log.error("Error deleting file attachments for flow " + flow, t);
 				}
@@ -3344,7 +3350,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 		} else {
 
-			List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+			List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
 
 			for (Flow flow : event.getBeans()) {
 
@@ -3365,7 +3371,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			closeInstanceManagers(step.getFlow());
 		}
 		
-		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
 		
 		for(Step step : event.getBeans()) {
 			
@@ -3392,7 +3398,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			closeInstanceManagers(queryDescriptor.getStep().getFlow());
 		}
 		
-		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
 		
 		for(QueryDescriptor queryDescriptor : event.getBeans()) {
 			
@@ -3412,7 +3418,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
 		}
 		
-		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
 		
 		for(EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
 			
@@ -3427,7 +3433,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " statuses");
 		
-		List<Integer> flowIDs = new ArrayList<Integer>(event.getBeans().size());
+		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
 		
 		for(Status status : event.getBeans()) {
 			
@@ -3494,7 +3500,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flowInstance);
 					
-				}catch(Throwable t) {
+				}catch(Exception t) {
 					
 					log.error("Error deleting file attachments for flow instance " + flowInstance, t);
 				}
@@ -3703,7 +3709,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public List<Flow> getFlowVersions(FlowFamily flowFamily, Order sortOrder) {
 		
-		List<Flow> flows = new ArrayList<Flow>(flowFamily.getVersionCount());
+		List<Flow> flows = new ArrayList<>(flowFamily.getVersionCount());
 
 		for (Flow flow : flowCache.getFlowCacheMap().values()) {
 
@@ -3737,7 +3743,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public List<Flow> getFlows(int flowTypeID) {
 
-		List<Flow> flows = new ArrayList<Flow>();
+		List<Flow> flows = new ArrayList<>();
 
 		for (Flow flow : flowCache.getFlowCacheMap().values()) {
 
@@ -3752,7 +3758,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public List<FlowFamily> getFlowFamilies(int flowTypeID) {
 
-		HashSet<FlowFamily> flowFamilies = new HashSet<FlowFamily>(this.flowCache.getFlowFamilyCacheMap().size());
+		HashSet<FlowFamily> flowFamilies = new HashSet<>(this.flowCache.getFlowFamilyCacheMap().size());
 
 		List<Flow> flows = getFlows(flowTypeID);
 
@@ -3761,7 +3767,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			flowFamilies.add(flow.getFlowFamily());
 		}
 
-		return new ArrayList<FlowFamily>(flowFamilies);
+		return new ArrayList<>(flowFamilies);
 	}
 
 	public Flow getLatestFlowVersion(FlowFamily flowFamily) {
@@ -3773,7 +3779,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public boolean hasFlows(FlowFamily flowFamily, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<Flow> query = new HighLevelQuery<Flow>();
+		HighLevelQuery<Flow> query = new HighLevelQuery<>();
 
 		query.addParameter(flowFlowFamilyParamFactory.getParameter(flowFamily));
 
@@ -3782,7 +3788,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public List<FlowAction> getFlowActions(boolean getOptionalActions) throws SQLException {
 
-		HighLevelQuery<FlowAction> query = new HighLevelQuery<FlowAction>();
+		HighLevelQuery<FlowAction> query = new HighLevelQuery<>();
 
 		if (!getOptionalActions) {
 
@@ -3951,7 +3957,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				if (flowInstance.getEvents() == null) {
 
-					flowInstance.setEvents(new ArrayList<FlowInstanceEvent>(1));
+					flowInstance.setEvents(new ArrayList<>(1));
 				}
 
 				FlowInstanceEvent submittedEvent = new FlowInstanceEvent();
@@ -4043,7 +4049,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			AnnotatedDAO<QueryDescriptor> queryDescriptorDAO = daoFactory.getQueryDescriptorDAO();
 
 			//First check that the new query type ID is not taken already
-			HighLevelQuery<QueryDescriptor> newIdCheckQuery = new HighLevelQuery<QueryDescriptor>();
+			HighLevelQuery<QueryDescriptor> newIdCheckQuery = new HighLevelQuery<>();
 
 			newIdCheckQuery.addParameter(queryDescriptorQueryTypeIDParamFactory.getParameter(newQueryTypeID));
 
@@ -4057,7 +4063,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			//Check if there are any query descriptors using the old ID
-			HighLevelQuery<QueryDescriptor> oldIdCheckQuery = new HighLevelQuery<QueryDescriptor>();
+			HighLevelQuery<QueryDescriptor> oldIdCheckQuery = new HighLevelQuery<>();
 
 			oldIdCheckQuery.addParameter(queryDescriptorQueryTypeIDParamFactory.getParameter(oldQueryTypeID));
 
@@ -4070,14 +4076,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			log.info("Changing queryTypeID for " + oldMatchCount + " query descriptors from " + oldQueryTypeID + " to " + newQueryTypeID);
 
-			LowLevelQuery<QueryDescriptor> descriptorsUpdateQuery = new LowLevelQuery<QueryDescriptor>("UPDATE " + queryDescriptorDAO.getTableName() + " SET " + queryDescriptorQueryTypeIDParamFactory.getColumnName() + " = ? WHERE " + queryDescriptorQueryTypeIDParamFactory.getColumnName() + " = ?");
+			LowLevelQuery<QueryDescriptor> descriptorsUpdateQuery = new LowLevelQuery<>("UPDATE " + queryDescriptorDAO.getTableName() + " SET " + queryDescriptorQueryTypeIDParamFactory.getColumnName() + " = ? WHERE " + queryDescriptorQueryTypeIDParamFactory.getColumnName() + " = ?");
 
 			descriptorsUpdateQuery.addParameter(newQueryTypeID);
 			descriptorsUpdateQuery.addParameter(oldQueryTypeID);
 
 			queryDescriptorDAO.update(descriptorsUpdateQuery, transactionHandler);
 
-			LowLevelQuery<QueryDescriptor> flowTypesUpdateQuery = new LowLevelQuery<QueryDescriptor>("UPDATE flowengine_flow_type_allowed_queries SET queryTypeID = ? WHERE queryTypeID = ?");
+			LowLevelQuery<QueryDescriptor> flowTypesUpdateQuery = new LowLevelQuery<>("UPDATE flowengine_flow_type_allowed_queries SET queryTypeID = ? WHERE queryTypeID = ?");
 
 			flowTypesUpdateQuery.addParameter(newQueryTypeID);
 			flowTypesUpdateQuery.addParameter(oldQueryTypeID);
@@ -4101,7 +4107,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		AnnotatedDAO<QueryDescriptor> queryDescriptorDAO = daoFactory.getQueryDescriptorDAO();
 
-		HighLevelQuery<QueryDescriptor> query = new HighLevelQuery<QueryDescriptor>();
+		HighLevelQuery<QueryDescriptor> query = new HighLevelQuery<>();
 
 		query.addParameter(queryDescriptorQueryTypeIDParamFactory.getParameter(queryTypeID));
 
@@ -4118,7 +4124,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			AnnotatedDAO<EvaluatorDescriptor> evaluatorDescriptorDAO = daoFactory.getEvaluatorDescriptorDAO();
 
 			//First check that the new evaluator type ID is not taken already
-			HighLevelQuery<EvaluatorDescriptor> newIdCheckQuery = new HighLevelQuery<EvaluatorDescriptor>();
+			HighLevelQuery<EvaluatorDescriptor> newIdCheckQuery = new HighLevelQuery<>();
 
 			newIdCheckQuery.addParameter(evaluatorDescriptorEvaluatorTypeIDParamFactory.getParameter(newEvaluatorTypeID));
 
@@ -4132,7 +4138,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			//Check if there are any evaluator descriptors using the old ID
-			HighLevelQuery<EvaluatorDescriptor> oldIdCheckQuery = new HighLevelQuery<EvaluatorDescriptor>();
+			HighLevelQuery<EvaluatorDescriptor> oldIdCheckQuery = new HighLevelQuery<>();
 
 			oldIdCheckQuery.addParameter(evaluatorDescriptorEvaluatorTypeIDParamFactory.getParameter(oldEvaluatorTypeID));
 
@@ -4145,7 +4151,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			log.info("Changing evaluatorTypeID for " + oldMatchCount + " evaluator descriptors from " + oldEvaluatorTypeID + " to " + newEvaluatorTypeID);
 
-			LowLevelQuery<EvaluatorDescriptor> descriptorsUpdateQuery = new LowLevelQuery<EvaluatorDescriptor>("UPDATE " + evaluatorDescriptorDAO.getTableName() + " SET " + evaluatorDescriptorEvaluatorTypeIDParamFactory.getColumnName() + " = ? WHERE " + evaluatorDescriptorEvaluatorTypeIDParamFactory.getColumnName() + " = ?");
+			LowLevelQuery<EvaluatorDescriptor> descriptorsUpdateQuery = new LowLevelQuery<>("UPDATE " + evaluatorDescriptorDAO.getTableName() + " SET " + evaluatorDescriptorEvaluatorTypeIDParamFactory.getColumnName() + " = ? WHERE " + evaluatorDescriptorEvaluatorTypeIDParamFactory.getColumnName() + " = ?");
 
 			descriptorsUpdateQuery.addParameter(newEvaluatorTypeID);
 			descriptorsUpdateQuery.addParameter(oldEvaluatorTypeID);
@@ -4169,7 +4175,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		AnnotatedDAO<EvaluatorDescriptor> evaluatorDescriptorDAO = daoFactory.getEvaluatorDescriptorDAO();
 
-		HighLevelQuery<EvaluatorDescriptor> query = new HighLevelQuery<EvaluatorDescriptor>();
+		HighLevelQuery<EvaluatorDescriptor> query = new HighLevelQuery<>();
 
 		query.addParameter(evaluatorDescriptorEvaluatorTypeIDParamFactory.getParameter(evaluatorTypeID));
 
@@ -4193,7 +4199,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		log.info("User " + user + " exporting flow " + flow);
 
-		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+		List<ValidationError> validationErrors = new ArrayList<>();
 
 		Document doc = getExportFlowDocument(flow, validationErrors);
 
@@ -4271,7 +4277,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			doc.getDocumentElement().appendChild(selectImportTargetFamily);
 
 			appendUserFlowTypes(doc, selectImportTargetFamily, user);
-
+			
+			Integer repositoryIndex;
+			Integer sharedflowID;
+			
+			if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null 
+					&& (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0)
+				{
+				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
+				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
+				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
+				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
+			}
+			
 			return new SimpleForegroundModuleResponse(doc);
 
 		} else if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
@@ -4282,73 +4300,29 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return importFlow(flowType, null, req, res, user, uriParser);
 	}
 
-	public synchronized ForegroundModuleResponse importFlow(FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws InstantiationException, IllegalAccessException, SQLException, IOException {
+	public synchronized ForegroundModuleResponse importFlow(FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
 
 		ValidationException validationException = null;
-
-		if (user.getSession().getAttribute("FlowImportFile") != null) {
+		
+		Integer repositoryIndex;
+		Integer sharedflowID;
+		
+		if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(3)) != null 
+				&& (sharedflowID = uriParser.getInt(4)) != null && repositoryIndex >= 0)
+			{
 
 			log.info("User " + user + " importing flow...");
 
 			try {
-				String filename = (String) user.getSession().getAttribute("FlowImportFileName");
-				byte[] fileData = (byte[]) user.getSession().getAttribute("FlowImportFile");
-
-				user.getSession().setAttribute("FlowImportFileName", null);
-				user.getSession().setAttribute("FlowImportFile", null);
-
-				if (filename != null && !filename.endsWith(".oeflow")) {
-
-					throw new ValidationException(new InvalidFileExtensionValidationError(filename, "oeflow"));
+				
+				ExternalFlow externalFlow = getExternalFlow(repositoryIndex, sharedflowID);
+				if(externalFlow != null)
+				{
+					importFlow(new ByteArrayInputStream(externalFlow.getData()), externalFlow.getFilename(), flowType, relatedFlow, req, res, user);
 				}
-
-				validationException = importFlow(new ByteArrayInputStream(fileData), filename, flowType, relatedFlow, req, res, user, uriParser);
-
-			} catch (ValidationException e) {
-
-				validationException = e;
-
-			} finally {
-
-				if (validationException != null) {
-
-					log.info("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
-				}
-			}
-		}
-
-		if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
-
-			log.info("User " + user + " importing flow...");
-
-			MultipartRequest multipartRequest = null;
-
-			try {
-				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, tempDir, req);
-				req = multipartRequest;
-
-				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
-
-					throw new ValidationException(new ValidationError("NoAttachedFile"));
-				}
-
-				FileItem fileItem = multipartRequest.getFile(0);
-
-				if (!fileItem.getName().endsWith(".oeflow")) {
-
-					throw new ValidationException(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oeflow"));
-				}
-
-				InputStream inputStream = null;
-
-				try {
-					inputStream = fileItem.getInputStream();
-
-					validationException = importFlow(inputStream, FilenameUtils.getName(fileItem.getName()), flowType, relatedFlow, multipartRequest, res, user, uriParser);
-
-				} finally {
-
-					CloseUtils.close(inputStream);
+				else
+				{
+					validationException = new ValidationException(new UnableToParseFileValidationError(""));
 				}
 
 			} catch (ValidationException e) {
@@ -4363,7 +4337,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
 
-			} catch (FileUploadException e) {
+			} catch (Exception e) {
 
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
@@ -4371,7 +4345,61 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				if (validationException != null) {
 
-					log.info("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
+					log.error("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
+				}
+			}
+		}
+
+		if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
+
+			log.info("User " + user + " importing flow...");
+
+			MultipartRequest multipartRequest = null;
+
+			try {
+				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, (long) maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				req = multipartRequest;
+
+				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
+
+					throw new ValidationException(new ValidationError("NoAttachedFile"));
+				}
+
+				FileItem fileItem = multipartRequest.getFile(0);
+
+				if (!fileItem.getName().endsWith(".oeflow")) {
+
+					throw new ValidationException(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oeflow"));
+				}
+
+				
+				try (InputStream inputStream = fileItem.getInputStream()){
+				
+					importFlow(inputStream, FilenameUtils.getName(fileItem.getName()), flowType, relatedFlow, multipartRequest, res, user);
+
+				} 
+
+			} catch (ValidationException e) {
+				
+				validationException = e;
+
+			} catch (SizeLimitExceededException e) {
+				
+				validationException = new ValidationException(new RequestSizeLimitExceededValidationError(e.getActualSize(), e.getPermittedSize()));
+
+			} catch (FileSizeLimitExceededException e) {
+				
+				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
+
+			} catch (Exception e) {
+				
+				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
+
+			} finally {
+
+				if (validationException != null) {
+
+					log.error("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
 				}
 
 				if (multipartRequest != null) {
@@ -4405,12 +4433,34 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
 
-	private synchronized ValidationException importFlow(InputStream inputStream, String filename, FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws InstantiationException, IllegalAccessException, SQLException, IOException {
+	private ExternalFlow getExternalFlow(Integer repositoryIndex, Integer sharedflowID) {
+		
+		ExternalFlow externalFlow = null;
 
-		ValidationException validationException = null;
+		for(ExternalFlowProvider externalFlowProvider : externalFlowProviders) {
+			
+			try {
+				externalFlow = externalFlowProvider.getFlow(repositoryIndex, sharedflowID);
+				if(externalFlow != null)
+					break;
+				
+			}catch(Exception e) {
+				StringBuilder info = new StringBuilder();
+				info.append("Error in externalflowprovider ");
+				info.append(externalFlowProvider);
+				info.append(" while reading file with repositoryIndex ");
+				info.append(repositoryIndex);
+				info.append(" and flowID ");
+				info.append(sharedflowID);
+				log.error(info.toString(), e);
+			}
+		}
+		return externalFlow;
+	}
 
-		try {
-			Document doc = null;
+	private synchronized void importFlow(InputStream inputStream, String filename, FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user) throws Exception {
+
+		Document doc = null;
 
 			try {
 				doc = XMLUtils.parseXML(inputStream, false, false);
@@ -4450,7 +4500,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				FlowFamily flowFamily = new FlowFamily();
 				flowFamily.setVersionCount(1);
 				
-				List<ValidationError> errors = new ArrayList<ValidationError>();
+				List<ValidationError> errors = new ArrayList<>();
 				
 				flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/MessageTemplates/MessageTemplate", MessageTemplate.class, errors));
 				
@@ -4490,11 +4540,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			//Create translation map for query ID's in order to able to update target queries field of evaluators later on
-			HashMap<EvaluatorDescriptor, List<QueryDescriptor>> evaluatorTargetQueriesMap = new HashMap<EvaluatorDescriptor, List<QueryDescriptor>>();
+			HashMap<EvaluatorDescriptor, List<QueryDescriptor>> evaluatorTargetQueriesMap = new HashMap<>();
 
 			if (flow.getSteps() != null) {
 
-				List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+				List<ValidationError> validationErrors = new ArrayList<>();
 
 				for (Step step : flow.getSteps()) {
 
@@ -4615,7 +4665,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			//Clear status ID's
 			if (flow.getStatuses() != null) {
 
-				statusConversionMap = new HashMap<Integer, ImmutableStatus>(flow.getStatuses().size());
+				statusConversionMap = new HashMap<>(flow.getStatuses().size());
 
 				for (Status status : flow.getStatuses()) {
 
@@ -4628,13 +4678,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				statusConversionMap = null;
 			}
 
-			//Create transaction
-			TransactionHandler transactionHandler = null;
+			
 			
 			boolean familyUpdated = false;
-
-			try {
-				transactionHandler = daoFactory.getTransactionHandler();
+			
+			//Create transaction
+			try (TransactionHandler transactionHandler = daoFactory.getTransactionHandler())
+			{
+				
 
 				//Add flow to database
 				if (relatedFlow == null) {
@@ -4662,7 +4713,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				//Set target query ID's on evaluator descriptors
 				for (Entry<EvaluatorDescriptor, List<QueryDescriptor>> entry : evaluatorTargetQueriesMap.entrySet()) {
 
-					List<Integer> targetQueryIDs = new ArrayList<Integer>(entry.getValue().size());
+					List<Integer> targetQueryIDs = new ArrayList<>(entry.getValue().size());
 
 					for (QueryDescriptor queryDescriptor : entry.getValue()) {
 
@@ -4674,7 +4725,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					daoFactory.getEvaluatorDescriptorDAO().update(entry.getKey(), transactionHandler, null);
 				}
 
-				HashMap<QueryDescriptor, Query> importedQueryMap = new HashMap<QueryDescriptor, Query>();
+				HashMap<QueryDescriptor, Query> importedQueryMap = new HashMap<>();
 
 				//Import queries using QueryHandler
 				if (flow.getSteps() != null) {
@@ -4789,29 +4840,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
 
-			} finally {
+			} 
 
-				TransactionHandler.autoClose(transactionHandler);
-			}
-
-		} catch (ValidationException e) {
-
-			validationException = e;
-
-		} finally {
-
-			if (validationException != null) {
-
-				log.info("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
-			}
-		}
-
-		return validationException;
+		
 	}
 
 	private Integer getNextVersion(Integer flowFamilyID, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<FlowFamily> query = new HighLevelQuery<FlowFamily>();
+		HighLevelQuery<FlowFamily> query = new HighLevelQuery<>();
 
 		query.addParameter(flowFamiliyIDParamFactory.getParameter(flowFamilyID));
 
@@ -4848,7 +4884,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			MultipartRequest multipartRequest = null;
 
 			try {
-				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, (long) maxRequestSize * BinarySizes.MegaByte, tempDir, req);
 				req = multipartRequest;
 
 				Integer stepID = NumberUtils.toInt(req.getParameter("stepID"));
@@ -4872,8 +4908,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				Integer sortindex = getCurrentMaxSortIndex(step);
 
-				List<ValidationError> validationErrors = new ArrayList<ValidationError>(multipartRequest.getFileCount());
-				List<QueryDescriptor> queryDescriptors = new ArrayList<QueryDescriptor>(multipartRequest.getFileCount());
+				List<ValidationError> validationErrors = new ArrayList<>(multipartRequest.getFileCount());
+				List<QueryDescriptor> queryDescriptors = new ArrayList<>(multipartRequest.getFileCount());
 
 				for (FileItem fileItem : multipartRequest.getFiles()) {
 
@@ -5055,7 +5091,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public int getCurrentMaxSortIndex(Step step) throws SQLException {
 
-		ObjectQuery<Integer> query = new ObjectQuery<Integer>(dataSource, "SELECT MAX(sortIndex) FROM " + daoFactory.getQueryDescriptorDAO().getTableName() + " WHERE stepID = ?", IntegerPopulator.getPopulator());
+		ObjectQuery<Integer> query = new ObjectQuery<>(dataSource, "SELECT MAX(sortIndex) FROM " + daoFactory.getQueryDescriptorDAO().getTableName() + " WHERE stepID = ?", IntegerPopulator.getPopulator());
 
 		query.setInt(1, step.getStepID());
 
@@ -5126,7 +5162,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	private boolean actionExists(String actionID) throws SQLException {
 
-		HighLevelQuery<FlowAction> query = new HighLevelQuery<FlowAction>();
+		HighLevelQuery<FlowAction> query = new HighLevelQuery<>();
 
 		query.addParameter(flowActionIDParamFactory.getParameter(actionID));
 
@@ -5409,13 +5445,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			log.info("Extension view provider " + flowAdminExtensionProvider + " added");
 			
-			List<FlowAdminExtensionViewProvider> tempProviders = new ArrayList<FlowAdminExtensionViewProvider>(extensionViewProviders);
+			List<FlowAdminExtensionViewProvider> tempProviders = new ArrayList<>(extensionViewProviders);
 			
 			tempProviders.add(flowAdminExtensionProvider);
 			
 			Collections.sort(tempProviders, FlowAdminExtensionViewProviderComparator.getInstance());
 			
-			extensionViewProviders = new CopyOnWriteArrayList<FlowAdminExtensionViewProvider>(tempProviders);
+			extensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 		
 	}
@@ -5438,13 +5474,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			log.info("Fragment extension view provider " + flowAdminFragmentExtensionProvider + " added");
 			
-			List<FlowAdminFragmentExtensionViewProvider> tempProviders = new ArrayList<FlowAdminFragmentExtensionViewProvider>(fragmentExtensionViewProviders);
+			List<FlowAdminFragmentExtensionViewProvider> tempProviders = new ArrayList<>(fragmentExtensionViewProviders);
 			
 			tempProviders.add(flowAdminFragmentExtensionProvider);
 			
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 			
-			fragmentExtensionViewProviders = new CopyOnWriteArrayList<FlowAdminFragmentExtensionViewProvider>(tempProviders);
+			fragmentExtensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 	}
 	
@@ -5478,13 +5514,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			log.info("Flow type extension provider " + flowAdminFragmentExtensionProvider + " added");
 			
-			List<FlowTypeExtensionProvider> tempProviders = new ArrayList<FlowTypeExtensionProvider>(flowTypeExtensionProviders);
+			List<FlowTypeExtensionProvider> tempProviders = new ArrayList<>(flowTypeExtensionProviders);
 			
 			tempProviders.add(flowAdminFragmentExtensionProvider);
 			
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 			
-			flowTypeExtensionProviders = new CopyOnWriteArrayList<FlowTypeExtensionProvider>(tempProviders);
+			flowTypeExtensionProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 	}
 	
@@ -5573,7 +5609,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			throw new NullPointerException();
 		}
 
-		HighLevelQuery<FlowFamilyEvent> query = new HighLevelQuery<FlowFamilyEvent>();
+		HighLevelQuery<FlowFamilyEvent> query = new HighLevelQuery<>();
 
 		query.addParameter(flowFamilyEventFlowFamilyParamFactory.getParameter(flowFamily));
 
@@ -5588,7 +5624,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			throw new NullPointerException();
 		}
 
-		HighLevelQuery<FlowFamilyEvent> query = new HighLevelQuery<FlowFamilyEvent>();
+		HighLevelQuery<FlowFamilyEvent> query = new HighLevelQuery<>();
 
 		query.addParameter(flowFamilyEventFlowFamilyParamFactory.getParameter(flowFamily));
 
@@ -5638,7 +5674,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
-				validationErrors = new ArrayList<ValidationError>();
+				validationErrors = new ArrayList<>();
 				
 				String eventMessage = ValidationUtils.validateParameter("event-message", req, true, 0, 1024, StringPopulator.getPopulator(), validationErrors);
 				
@@ -5855,7 +5891,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
-			validationErrors = new ArrayList<ValidationError>();
+			validationErrors = new ArrayList<>();
 
 			Integer flowTypeID = ValidationUtils.validateParameter("flowTypeID", req, true, IntegerPopulator.getPopulator(), validationErrors);
 			FlowType flowType = null;
@@ -5879,7 +5915,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				try {
 					transactionHandler = daoFactory.getFlowDAO().createTransaction();
 
-					HighLevelQuery<Flow> getQuery = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION);
+					HighLevelQuery<Flow> getQuery = new HighLevelQuery<>(Flow.FLOW_TYPE_RELATION);
 					getQuery.addParameter(flowFlowFamilyParamFactory.getParameter(requestedFlow.getFlowFamily()));
 
 					List<Flow> flows = daoFactory.getFlowDAO().getAll(getQuery);
@@ -5889,7 +5925,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						flow.setFlowType(flowType);
 					}
 
-					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<Flow>(Flow.FLOW_TYPE_RELATION);
+					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<>(Flow.FLOW_TYPE_RELATION);
 					updateQuery.addExcludedFields(Flow.FLOW_FAMILY_RELATION, Flow.CATEGORY_RELATION);
 					updateQuery.disableAutoRelations(true);
 
@@ -5920,7 +5956,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		changeFlowTypeElement.appendChild(requestedFlow.toXML(doc));
 
-		List<FlowType> allowedFlowTypes = new ArrayList<FlowType>();
+		List<FlowType> allowedFlowTypes = new ArrayList<>();
 
 		for (FlowType flowType : getCachedFlowTypes()) {
 
@@ -5989,7 +6025,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			bundle.setUrlType(URLType.RELATIVE_FROM_CONTEXTPATH);
 			bundle.setAccess(moduleDescriptor);
 
-			ArrayList<MenuItemDescriptor> menuItemDescriptors = new ArrayList<MenuItemDescriptor>();
+			ArrayList<MenuItemDescriptor> menuItemDescriptors = new ArrayList<>();
 
 			menuItemDescriptors.add(getMenuItemDescriptor(bundleListFlows, "", moduleDescriptor));
 			menuItemDescriptors.add(getMenuItemDescriptor(bundleAddFlow, "/addflow", moduleDescriptor));
@@ -6127,7 +6163,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		try {
 			transactionHandler = daoFactory.getFlowDAO().createTransaction();
 			
-			List<Flow> unpublishedFlows = new ArrayList<Flow>(flows.size());
+			List<Flow> unpublishedFlows = new ArrayList<>(flows.size());
 			
 			for (Flow flow : flows) {
 				
@@ -6137,7 +6173,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					
 					flow.setPublishDate(null);
 					
-					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<Flow>();
+					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<>();
 					updateQuery.disableAutoRelations(true);
 					
 					daoFactory.getFlowDAO().update(flows, transactionHandler, updateQuery);
@@ -6171,13 +6207,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " added");
 			
-			List<FlowBrowserExtensionViewProvider> tempProviders = new ArrayList<FlowBrowserExtensionViewProvider>(flowBrowserExtensionViewProviders);
+			List<FlowBrowserExtensionViewProvider> tempProviders = new ArrayList<>(flowBrowserExtensionViewProviders);
 			
 			tempProviders.add(flowAdminExtensionProvider);
 			
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
 			
-			flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<FlowBrowserExtensionViewProvider>(tempProviders);
+			flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 		
 	}
@@ -6237,7 +6273,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 				
-				validationErrors = new ArrayList<ValidationError>();
+				validationErrors = new ArrayList<>();
 				
 				List<Integer> noMatchUserIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-user")));
 				List<Integer> noMatchGroupIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-group")));
@@ -6259,7 +6295,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				
 				if (ruleIDs != null) {
 					
-					rules = new ArrayList<AutoManagerAssignmentRule>();
+					rules = new ArrayList<>();
 					
 					for (String ruleID : ruleIDs) {
 						
@@ -6293,8 +6329,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						String usersIDsString = ValidationUtils.validateParameter("auto-manager-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 						String groupIDsString = ValidationUtils.validateParameter("auto-manager-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 						
-						List<Integer> userIDs = new ArrayList<Integer>();
-						List<Integer> groupIDs = new ArrayList<Integer>();
+						List<Integer> userIDs = new ArrayList<>();
+						List<Integer> groupIDs = new ArrayList<>();
 						
 						if (!StringUtils.isEmpty(usersIDsString)) {
 							
@@ -6443,7 +6479,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		
 		if (ruleIDs != null) {
 			
-			rules = new ArrayList<AutoManagerAssignmentStatusRule>();
+			rules = new ArrayList<>();
 			
 			for (String ruleID : ruleIDs) {
 				
@@ -6476,8 +6512,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					String usersIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 					String groupIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 					
-					List<Integer> userIDs = new ArrayList<Integer>();
-					List<Integer> groupIDs = new ArrayList<Integer>();
+					List<Integer> userIDs = new ArrayList<>();
+					List<Integer> groupIDs = new ArrayList<>();
 					
 					if (!StringUtils.isEmpty(usersIDsString)) {
 						
@@ -6728,6 +6764,20 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public void removeXSDExtensionProvider(XSDExtensionProvider provider) {
 
 		xsdExtensionProviders.remove(provider);
+	}
+	
+	public void addExternalFlowProvider(ExternalFlowProvider provider) {
+
+		if (provider == null) {
+			throw new NullPointerException();
+		}
+
+		externalFlowProviders.add(provider);
+	}
+
+	public void removeExternalFlowProvider(ExternalFlowProvider provider) {
+
+		externalFlowProviders.remove(provider);
 	}
 	
 	public String getCkConnectorModuleAlias() {

@@ -355,6 +355,7 @@
 	<xsl:template match="SharedFlow" mode="list-versions">
 		
 		<tr>
+			<xsl:variable name="sourceID" select="Source/sourceID"/>
 			<td data-title="{$i18n.Column.FlowName}">
 				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="name" /></a>
 			</td>
@@ -375,7 +376,7 @@
 				</a>
 			</td>
 			<td>
-				<a class="floatleft marginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/download/{../../RepositoryIndex}/{sharedFlowID}" title="{$i18n.Download.Title} {version}: {name}">
+				<a class="floatleft marginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/download/{../../RepositoryIndex}/{$sourceID}/{flowFamilyID}/{sharedFlowID}" title="{$i18n.Download.Title} {version}: {name}">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/download.png" alt="" />
 				</a>
 				
@@ -523,6 +524,12 @@
 	<xsl:template match="validationError[messageKey='FlowFamilyNotFound']">
 		<p class="error">
 			<xsl:value-of select="$i18n.ValidationError.FlowFamilyNotFound"/>
+		</p>
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='DownloadFailedError']">
+		<p class="error">
+			<xsl:value-of select="$i18n.ValidationError.DownloadFailedError"/>
 		</p>
 	</xsl:template>
 	

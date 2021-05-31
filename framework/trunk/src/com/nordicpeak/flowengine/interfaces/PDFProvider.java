@@ -37,6 +37,8 @@ public interface PDFProvider {
 	public List<String> getIncludedFonts();
 	
 	public File getTempDir();
+	
+	public File getPDFDir(Integer flowInstanceID);
 
 	public String getLogotype(SiteProfile siteProfile);
 
