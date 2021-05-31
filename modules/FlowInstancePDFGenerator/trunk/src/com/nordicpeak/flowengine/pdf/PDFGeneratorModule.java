@@ -126,7 +126,7 @@ import it.sauronsoftware.cron4j.Scheduler;
 
 public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
 
-	private static final String PAGE = " page ";
+	private static final String PDF = ".pdf";
 	public static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
 	private static final String TEMP_PDF_ID_FLOW_INSTANCE_MANAGER_ATTRIBUTE = "pdf.temp.id";
 
@@ -200,17 +200,15 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private FlowEngineDAOFactory daoFactory;
 
 	protected URIXSLTransformer pdfTransformer;
-	
+
 	private String pdfCheckerSchedulerID;
 	private Scheduler pdfCheckerScheduler;
 	private static final String SCHEDULER_EVERY_HOUR_CRON_TAB = "0 * * * *";
-	
-	
 
 	protected String signatureAttachmentName = "Signature";
 	protected String signingPDFAttachmentName = "Signing PDF";
 	protected String inlineAttachmentPageNumber1 = "Attachment ";
-	protected String inlineAttachmentPageNumber2 = PAGE;
+	protected String inlineAttachmentPageNumber2 = " page ";
 	protected String inlineAttachmentPageNumber3 = " of ";
 	protected String inlineAttachmentFlowInstanceID = "Flowinstance ID";
 	protected String inlineAttachmentDate = "Date";
@@ -239,12 +237,13 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 		pdfCheckerScheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
 		pdfCheckerScheduler.setDaemon(true);
-		pdfCheckerSchedulerID = pdfCheckerScheduler.schedule(SCHEDULER_EVERY_HOUR_CRON_TAB, new TempFileChecker(pdfDir,tempDir));
+		pdfCheckerSchedulerID = pdfCheckerScheduler.schedule(SCHEDULER_EVERY_HOUR_CRON_TAB, new TempFileChecker(pdfDir, tempDir));
 
 		pdfCheckerScheduler.start();
 	}
-	
+
 	private synchronized void stopScheduler() {
+
 		try {
 			if (pdfCheckerScheduler != null) {
 
@@ -267,7 +266,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 	@Override
 	public void unload() throws Exception {
-		
+
 		stopScheduler();
 
 		systemInterface.getInstanceHandler().removeInstance(PDFProvider.class, this);
@@ -731,10 +730,10 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			serializer.serialize(metadata, baos, false);
 			metadataStream.importXMPMetadata(baos.toByteArray());
 
-			if(!hasColorProfile(catalog)) {
-			
+			if (!hasColorProfile(catalog)) {
+
 				InputStream colorProfile = PDFGeneratorModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
-	
+
 				PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
 				oi.setInfo("sRGB IEC61966-2.1");
 				oi.setOutputCondition("sRGB IEC61966-2.1");
@@ -758,16 +757,16 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 		List<PDOutputIntent> list = catalog.getOutputIntents();
 
 		for (PDOutputIntent outputIntent : list) {
-			
-			if(outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
-				
+
+			if (outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
+
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	private File getFile(Integer flowInstanceID, FlowInstanceEvent event) {
 
 		if (flowInstanceID == null) {
@@ -850,15 +849,15 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 										Font font;
 
 										if (CollectionUtils.isEmpty(includedFonts)) {
-											   
-										    font = new Font(BaseFont.createFont(), 8f); // Defaults to non-embedded HELVETICA, IText can not embed base 14 fonts (Type 1 fonts).
-										    log.warn("Using non-embedded font " + font.getFamilyname() + " for inline PDF attachment page numbering.");
-										   
+
+											font = new Font(BaseFont.createFont(), 8f); // Defaults to non-embedded HELVETICA, IText can not embed base 14 fonts (Type 1 fonts).
+											log.warn("Using non-embedded font " + font.getFamilyname() + " for inline PDF attachment page numbering.");
+
 										} else {
-										   
-										    font = new Font(BaseFont.createFont(includedFonts.get(0), BaseFont.CP1252, BaseFont.EMBEDDED), 8f);
+
+											font = new Font(BaseFont.createFont(includedFonts.get(0), BaseFont.CP1252, BaseFont.EMBEDDED), 8f);
 										}
-										
+
 										BaseFont baseFont = font.getCalculatedBaseFont(true);
 										float fontHeight = baseFont.getFontDescriptor(BaseFont.ASCENT, font.getSize()) - baseFont.getFontDescriptor(BaseFont.DESCENT, font.getSize());
 
@@ -911,7 +910,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											int writeTextResult = columnText.go();
 
 											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit submitter text on attachment " + attachment + PAGE + attachmentCounter + ": " + writeTextResult);
+												log.warn("Unable to fit submitter text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
 											}
 
 											columnText.setAlignment(com.lowagie.text.Element.ALIGN_LEFT);
@@ -921,7 +920,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 											writeTextResult = columnText.go();
 
 											if (writeTextResult != ColumnText.NO_MORE_TEXT) {
-												log.warn("Unable to fit pagenumbering text on attachment " + attachment + PAGE + attachmentCounter + ": " + writeTextResult);
+												log.warn("Unable to fit pagenumbering text on attachment " + attachment + " page " + attachmentCounter + ": " + writeTextResult);
 											}
 										}
 
@@ -1013,11 +1012,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			PdfReader reader = new PdfReader(inputFileRandomAccess, null);
 			PdfStamper stamper = new PdfStamper(reader, outputStream);
 			PdfWriter writer = stamper.getWriter();
-			
+
 			PdfArray associatedFilesArray = reader.getCatalog().getAsArray(new PdfName("AF"));
-			
+
 			if (associatedFilesArray == null) {
-				
+
 				associatedFilesArray = new PdfArray();
 				reader.getCatalog().put(new PdfName("AF"), associatedFilesArray);
 			}
@@ -1056,7 +1055,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 					}
 				}
 			}
-			
+
 			if (associatedFilesArray.isEmpty()) {
 				reader.getCatalog().put(new PdfName("AF"), null);
 			}
@@ -1190,26 +1189,25 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 		if (source.isLocal() && event.getAction() == CRUDAction.DELETE) {
 
-			
-				for (FlowInstance flowInstance : event.getBeans()) {
+			for (FlowInstance flowInstance : event.getBeans()) {
 
-					try {
-						File instanceDir = new File(pdfDir + File.separator + flowInstance.getFlowInstanceID());
+				try {
+					File instanceDir = new File(pdfDir + File.separator + flowInstance.getFlowInstanceID());
 
-						if (instanceDir.exists()) {
+					if (instanceDir.exists()) {
 
-							log.info("Deleting PDF files for flow instance " + flowInstance);
+						log.info("Deleting PDF files for flow instance " + flowInstance);
 
-							FileUtils.deleteFiles(instanceDir, null, true);
+						FileUtils.deleteFiles(instanceDir, null, true);
 
-							instanceDir.delete();
-						}
-					} catch (Exception e) {
-
-						log.error("Error deleting PDF files for flow instance " + flowInstance);
+						instanceDir.delete();
 					}
+				} catch (Exception e) {
+
+					log.error("Error deleting PDF files for flow instance " + flowInstance);
 				}
-			
+			}
+
 		}
 	}
 
@@ -1240,7 +1238,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	@Override
 	public File getPDF(Integer flowInstanceID, Integer eventID) {
 
-		File pdfFile = new File(pdfDir + File.separator + flowInstanceID + File.separator + eventID + ".pdf");
+		File pdfFile = new File(pdfDir + File.separator + flowInstanceID + File.separator + eventID + PDF);
 
 		if (pdfFile.exists()) {
 
@@ -1408,10 +1406,28 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	@Override
 	public File getPDFDir(Integer flowInstanceID) {
 
-		if(FileUtils.directoryExists(pdfDir+File.separator+flowInstanceID))
-		{
-			return new File(pdfDir+File.separator+flowInstanceID);
+		if (FileUtils.directoryExists(pdfDir + File.separator + flowInstanceID)) {
+			return new File(pdfDir + File.separator + flowInstanceID);
 		}
 		return null;
+	}
+
+	@Override
+	public boolean removePDF(Integer flowInstanceID, Integer eventID) {
+
+		try {
+
+			File signingFile = getPDF(flowInstanceID, eventID);
+			if (signingFile != null) {
+				log.info("Removing unused signing-file " + signingFile.getAbsolutePath());
+				FileUtils.deleteFile(signingFile);
+			}
+
+			return true;
+		} catch (Exception e) {
+			log.error("Error deleting unused signing file with flowinstanceID " + flowInstanceID + " and eventID " + eventID, e);
+		}
+		return false;
+
 	}
 }
