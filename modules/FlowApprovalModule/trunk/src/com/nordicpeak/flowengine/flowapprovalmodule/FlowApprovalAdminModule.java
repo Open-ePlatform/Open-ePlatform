@@ -1891,7 +1891,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	List<User> getResponsibleUsersFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
 
-		List<User> users = null;
+		Set<User> users = null;
 
 		for (String attributeName : activity.getResponsibleUserAttributeNames()) {
 
@@ -1912,7 +1912,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		return users;
+		if (users != null) {
+			return new ArrayList<>(users);
+		}
+		
+		return null;
 	}
 
 	public FlowApprovalActivityGroup getActivityGroup(Integer activityGroupID) throws SQLException {
