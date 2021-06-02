@@ -67,6 +67,7 @@ import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.threads.MutexKey;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
@@ -158,6 +159,7 @@ import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
+import com.nordicpeak.flowengine.interfaces.SavedInstanceMessageProvider;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
@@ -237,6 +239,9 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	@InstanceManagerDependency
 	protected OperatingMessageModule operatingMessageModule;
 
+	@InstanceManagerDependency
+	protected SavedInstanceMessageProvider savedInstanceMessageProvider;
+	
 	protected EventHandler eventHandler;
 
 	protected FlowEngineDAOFactory daoFactory;
@@ -1386,7 +1391,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return null;
 	}
 
-	protected ForegroundModuleResponse showCurrentStepForm(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, ManagerResponse managerResponse, ValidationError validationError, FlowAction lastFlowAction, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceFormHTMLException {
+	protected ForegroundModuleResponse showCurrentStepForm(MutableFlowInstanceManager instanceManager, FlowProcessCallback callback, HttpServletRequest req, HttpServletResponse res, User user, User poster, URIParser uriParser, ManagerResponse managerResponse, ValidationError validationError, FlowAction lastFlowAction, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceFormHTMLException, SQLException {
 
 		log.info("User " + user + " requested form for step " + (instanceManager.getCurrentStepIndex() + 1) + ". " + instanceManager.getCurrentStep() + " in flow instance " + instanceManager.getFlowInstance());
 
@@ -1405,9 +1410,28 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		if (lastFlowAction == null && req.getParameter("saved") != null) {
 			lastFlowAction = FlowAction.SAVE;
 		}
-
+		
 		XMLUtils.appendNewElement(doc, flowInstanceManagerFormElement, "lastFlowAction", lastFlowAction);
+		
+		if(lastFlowAction != null && lastFlowAction.equals(FlowAction.SAVE)) {
+			
+			if(savedInstanceMessageProvider != null) {
 
+				Integer flowFamilyID = instanceManager.getFlowInstance().getFlow().getFlowFamily().getFlowFamilyID();
+				String statusName = instanceManager.getFlowInstance().getStatus().getName();
+				
+				if(flowFamilyID != null) {
+					
+					String message = savedInstanceMessageProvider.getSavedInstanceMessage(flowFamilyID, statusName);
+					
+					if(!StringUtils.isEmpty(message)) {
+						
+						XMLUtils.appendNewElement(doc, flowInstanceManagerFormElement, "SavedInstanceCullingMessage", message);
+					}
+				}
+			}
+		}
+		
 		if (validationError != null) {
 
 			flowInstanceManagerFormElement.appendChild(validationError.toXML(doc));

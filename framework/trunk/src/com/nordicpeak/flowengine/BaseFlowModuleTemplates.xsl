@@ -1002,9 +1002,18 @@
 	<xsl:template match="lastFlowAction">
 		
 		<xsl:if test=". = 'SAVE' or . = 'SAVE_AND_PREVIEW'">
-			
+
 			<section class="modal success">
-				<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
+				<div>
+					<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
+				</div>
+				
+				<xsl:if test="../SavedInstanceCullingMessage">
+					<div>
+						<span><xsl:value-of select="../SavedInstanceCullingMessage" disable-output-escaping="yes" /></span>
+					</div>
+				</xsl:if>
+				
 				<i class="icon close">x</i>
 			</section>
 			
