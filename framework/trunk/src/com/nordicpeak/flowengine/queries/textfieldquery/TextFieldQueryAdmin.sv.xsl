@@ -22,7 +22,7 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 	<xsl:variable name="i18n.TextFields">Textfält</xsl:variable>
 	<xsl:variable name="i18n.AddTextField">Lägg till textfält</xsl:variable>
 	<xsl:variable name="i18n.UpdateTextField">Uppdatera textfält</xsl:variable>
-	<xsl:variable name="i18n.UpdateBaseInformation">Uppdatera basinformation</xsl:variable>
+	<xsl:variable name="i18n.UpdateBaseInformation">Uppdatera grundinformation</xsl:variable>
 	<xsl:variable name="i18n.Add">Lägg till</xsl:variable>
 	<xsl:variable name="i18n.Done">Klar</xsl:variable>
 	<xsl:variable name="i18n.SortTextFields.Title">Sortera textfält</xsl:variable>
