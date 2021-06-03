@@ -2,9 +2,13 @@ package com.nordicpeak.flowengine.beans;
 
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttribute;
 import se.unlogic.hierarchy.core.interfaces.attributes.MutableAttributeHandler;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
@@ -57,7 +61,7 @@ public class InstanceRequestMetadata extends RequestMetadata {
 
 		return flowInstanceManager.getInstanceManagerID();
 	}
-	
+
 	public boolean flowInstanceIsSubmitted() {
 
 		ImmutableFlowInstance flowInstance = flowInstanceManager.getFlowInstance();
@@ -69,6 +73,16 @@ public class InstanceRequestMetadata extends RequestMetadata {
 	public String toString() {
 
 		return getClass().getSimpleName() + " (manager=" + requestMetadata.manager + ", flowInstanceManager=" + flowInstanceManager + ")";
+	}
+
+	@Override
+	public Element toXML(Document doc) {
+
+		Element element = super.toXML(doc);
+
+		XMLUtils.appendNewElement(doc, element, "flowInstanceIsSubmitted", flowInstanceIsSubmitted());
+
+		return element;
 	}
 
 }
