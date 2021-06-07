@@ -352,22 +352,29 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 	}
 	
 	// Used by external modules when poster changes
-	public void forcedInitialize(User poster) {
-		
-		initialize(poster);
-		
-		if (query.getFieldCitizenID() != ContactDetailQueryField.HIDDEN) {
+	@Override
+	public void forcedRepopulate(User poster, MutableAttributeHandler flowInstanceAttributeHandler, QueryHandler queryHandler) {
 
-			AttributeHandler attributeHandler = poster.getAttributeHandler();
-			
-			if (attributeHandler != null) {
-				citizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+		if (isPopulated()) {
+
+			fullReset(flowInstanceAttributeHandler);
+			initialize(poster);
+
+			if (query.getFieldCitizenID() != ContactDetailQueryField.HIDDEN) {
+
+				AttributeHandler attributeHandler = poster.getAttributeHandler();
+
+				if (attributeHandler != null) {
+					citizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+				}
 			}
-		}
-		
-		if (query.getFieldName() != ContactDetailQueryField.HIDDEN) {
-			firstname = poster.getFirstname();
-			lastname = poster.getLastname();
+
+			if (query.getFieldName() != ContactDetailQueryField.HIDDEN) {
+				firstname = poster.getFirstname();
+				lastname = poster.getLastname();
+			}
+
+			getQueryInstanceDescriptor().setPopulated(isPopulated());
 		}
 	}
 	

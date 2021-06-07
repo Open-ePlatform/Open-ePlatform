@@ -325,21 +325,27 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 	}
 	
 	// Used by external modules when poster changes
-	public void forcedInitialize(User poster) {
-		
-		firstname = poster.getFirstname();
-		lastname = poster.getLastname();
-		email = poster.getEmail();
-		
-		citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
-		
-		AttributeHandler attributeHandler = poster.getAttributeHandler();
-		
-		if (attributeHandler != null) {
+	@Override
+	public void forcedRepopulate(User poster, MutableAttributeHandler flowInstanceAttributeHandler, QueryHandler queryHandler) {
+
+		if (isPopulated()) {
+
+			firstname = poster.getFirstname();
+			lastname = poster.getLastname();
+			email = poster.getEmail();
+
+			citizenIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
+
+			AttributeHandler attributeHandler = poster.getAttributeHandler();
+
+			if (attributeHandler != null) {
+
+				mobilePhone = attributeHandler.getString("mobilePhone");
+				phone = attributeHandler.getString("phone");
+				contactBySMS = attributeHandler.getPrimitiveBoolean("contactBySMS");
+			}
 			
-			mobilePhone = attributeHandler.getString("mobilePhone");
-			phone = attributeHandler.getString("phone");
-			contactBySMS = attributeHandler.getPrimitiveBoolean("contactBySMS");
+			getQueryInstanceDescriptor().setPopulated(isPopulated());
 		}
 	}
 
