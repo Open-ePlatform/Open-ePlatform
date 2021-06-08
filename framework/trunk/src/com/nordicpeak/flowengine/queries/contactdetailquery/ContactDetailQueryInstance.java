@@ -375,6 +375,15 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 			}
 
 			getQueryInstanceDescriptor().setPopulated(isPopulated());
+			
+			if(query.isSetAsAttribute()) {
+				
+				resetAttributes(flowInstanceAttributeHandler);
+				
+				ContactDetailQueryProviderModule queryProvider = queryHandler.getQueryProvider(getQueryInstanceDescriptor().getQueryDescriptor().getQueryTypeID(), ContactDetailQueryProviderModule.class);
+				
+				setAttributes(flowInstanceAttributeHandler, queryProvider);
+			}
 		}
 	}
 	

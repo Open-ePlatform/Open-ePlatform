@@ -346,6 +346,12 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 			}
 			
 			getQueryInstanceDescriptor().setPopulated(isPopulated());
+			
+			if(query.isSetAsAttribute()) {
+				
+				resetAttributes(flowInstanceAttributeHandler);
+				setAttributes(flowInstanceAttributeHandler);
+			}
 		}
 	}
 
