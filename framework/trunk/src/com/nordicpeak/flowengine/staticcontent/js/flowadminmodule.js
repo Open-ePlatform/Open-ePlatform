@@ -97,7 +97,7 @@ $(document).ready(function() {
 			},		
 			deferRender: true,
 			columns: columns,
-			order: [[ 1, "asc"]],
+			order: [[ 3, "asc"]],
 			dom: '<"toolbar-extension">frtipl',
 			autoWidth: false,
 			lengthMenu: [ 15, 25, 50, 100 ],
