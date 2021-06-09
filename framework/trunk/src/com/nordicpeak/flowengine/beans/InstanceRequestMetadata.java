@@ -20,7 +20,7 @@ public class InstanceRequestMetadata extends RequestMetadata {
 
 	private RequestMetadata requestMetadata;
 
-	FlowInstanceManager flowInstanceManager;
+	private FlowInstanceManager flowInstanceManager;
 
 	public InstanceRequestMetadata(RequestMetadata requestMetadata, FlowInstanceManager flowInstanceManager) {
 
@@ -64,9 +64,14 @@ public class InstanceRequestMetadata extends RequestMetadata {
 
 	public boolean flowInstanceIsSubmitted() {
 
-		ImmutableFlowInstance flowInstance = flowInstanceManager.getFlowInstance();
+		ImmutableFlowInstance flowInstance = getFlowInstance();
 
 		return flowInstance != null && flowInstance.getFirstSubmitted() != null;
+	}
+
+	protected ImmutableFlowInstance getFlowInstance() {
+
+		return flowInstanceManager.getFlowInstance();
 	}
 
 	@Override
