@@ -152,6 +152,7 @@ public class OrganizationDetailQuery extends BaseQuery {
 
 		appendFieldDefenition("OrganizationName", true, doc, sequenceElement);
 		appendFieldDefenition("OrganizationNumber", true, doc, sequenceElement);
+		appendFieldDefenition("CitizenIdentifier", false, doc, sequenceElement);
 		appendFieldDefenition("Address", false, doc, sequenceElement);
 		appendFieldDefenition("ZipCode", false, doc, sequenceElement);
 		appendFieldDefenition("PostalAddress", false, doc, sequenceElement);

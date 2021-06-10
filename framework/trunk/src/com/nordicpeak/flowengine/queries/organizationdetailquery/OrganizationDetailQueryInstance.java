@@ -368,6 +368,7 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 
 		XMLUtils.appendNewCDATAElement(doc, element, "OrganizationName", name);
 		XMLUtils.appendNewCDATAElement(doc, element, "OrganizationNumber", organizationNumber);
+		XMLUtils.appendNewCDATAElement(doc, element, "CitizenIdentifier", citizenIdentifier);
 		XMLUtils.appendNewCDATAElement(doc, element, "Address", address);
 		XMLUtils.appendNewCDATAElement(doc, element, "ZipCode", zipCode);
 		XMLUtils.appendNewCDATAElement(doc, element, "PostalAddress", postalAddress);
@@ -482,9 +483,10 @@ public class OrganizationDetailQueryInstance extends BaseQueryInstance implement
 			contact.setZipCode(getZipCode());
 			contact.setOrganizationName(getName());
 			contact.setOrganizationNumber(getOrganizationNumber());
-
+						
 			contact.setContactBySMS(isContactBySMS());
 			contact.setContactByEmail(true);
+			
 			contact.setCitizenIdentifier(citizenIdentifier);
 
 			return contact;
