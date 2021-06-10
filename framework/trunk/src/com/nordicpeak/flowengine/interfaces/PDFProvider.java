@@ -33,14 +33,13 @@ public interface PDFProvider {
 
 	public byte[] removePDFAttachments(File pdfFile) throws Exception;
 
-	public List<String> getIncludedFonts();
-
-	public File getTempDir();
-
-	public File getPDFDir(Integer flowInstanceID);
-
-	public boolean removePDF(Integer flowInstanceID, Integer eventID);
+	public boolean deletePDF(Integer flowInstanceID, Integer eventID);
 
 	public String getLogotype(SiteProfile siteProfile);
 
+	@Deprecated
+	public List<String> getIncludedFonts();
+	
+	@Deprecated
+	public File getTempDir();
 }
