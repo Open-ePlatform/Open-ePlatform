@@ -1418,10 +1418,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			if(savedInstanceMessageProvider != null) {
 
 				Integer flowFamilyID = instanceManager.getFlowInstance().getFlow().getFlowFamily().getFlowFamilyID();
-				String statusName = instanceManager.getFlowInstance().getStatus().getName();
 				
-				if(flowFamilyID != null) {
+				if(flowFamilyID != null && instanceManager.getFlowInstance().getStatus() != null) {
 					
+					String statusName = instanceManager.getFlowInstance().getStatus().getName();
 					String message = savedInstanceMessageProvider.getSavedInstanceMessage(flowFamilyID, statusName);
 					
 					if(!StringUtils.isEmpty(message)) {
