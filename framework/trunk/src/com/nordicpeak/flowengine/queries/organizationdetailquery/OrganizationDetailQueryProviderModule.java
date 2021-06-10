@@ -404,12 +404,6 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 		queryInstance.getQueryInstanceDescriptor().setPopulated(queryInstance.isPopulated());
 		
-		if (query.isSetAsAttribute()) {
-
-			queryInstance.resetAttributes(attributeHandler);
-			queryInstance.setAttributes(attributeHandler);
-		}
-		
 		if (poster != null && poster.equals(user)) {
 
 			queryInstance.setCitizenIdentifier(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster));
@@ -442,6 +436,12 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 				}
 			}
+		}
+		
+		if (query.isSetAsAttribute()) {
+
+			queryInstance.resetAttributes(attributeHandler);
+			queryInstance.setAttributes(attributeHandler);
 		}
 	}
 
