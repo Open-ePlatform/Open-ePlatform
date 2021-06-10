@@ -54,185 +54,182 @@ public class FlowInstanceAttachmentsSettingsModule extends AnnotatedForegroundMo
 
 	private static final String FLOW_NOT_FOUND = "FlowNotFound";
 
-
 	@XSLVariable(prefix = "java.")
 	private String adminExtensionViewTitle = "not set";
 
-	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
 	protected int priority = 0;
-	
+
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Temp dir", description = "Directory for temporary files. Should be on the same filesystem as the file store for best performance. If not set system default temp directory will be used")
 	protected String tempDir;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmententXML;
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
-	
+
 	private AnnotatedDAOWrapper<FlowInstanceAttachmentsSettings, Integer> attachmentSettingsDAOWrapper;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmentXML;
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
-	
+
 	protected FlowAdminModule flowAdminModule;
-	
+
 	@Override
 	protected void moduleConfigured() throws Exception {
-		
+
 		super.moduleConfigured();
-		
+
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.WARN);
-		
+
 		if (!StringUtils.isEmpty(tempDir) && !FileUtils.isReadable(tempDir)) {
-			
+
 			log.error("Filestore not found/readable");
 		}
-		
+
 		viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 		viewFragmentTransformer.setDebugXML(debugFragmententXML);
 	}
 
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
-		
+
 		UpgradeResult upgradeResult = TableVersionHandler.upgradeDBTables(dataSource, FlowInstanceAttachmentsModule.class.getName(), new XMLDBScriptProvider(FlowInstanceAttachmentsModule.class.getResourceAsStream("DB script.xml")));
-		
+
 		if (upgradeResult.isUpgrade()) {
-			
+
 			log.info(upgradeResult.toString());
 		}
-		
+
 		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface);
 		attachmentSettingsDAOWrapper = daoFactory.getDAO(FlowInstanceAttachmentsSettings.class).getWrapper(Integer.class);
 	}
-	
+
 	@Override
 	public FlowAdminExtensionShowView getShowView(Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerException, SQLException {
-		
+
 		Document doc = createDocument(req, uriParser);
-		
+
 		Element showViewElement = doc.createElement("ShowSettings");
 		doc.getDocumentElement().appendChild(showViewElement);
-		
+
 		XMLUtils.appendNewElement(doc, showViewElement, "FullAlias", getFullAlias());
 		showViewElement.appendChild(flow.toXML(doc));
-		
-	
 
-			XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ModuleURI", req.getContextPath() + getFullAlias());
-			XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "StaticContentURL", getStaticContentURL());
-		
-		
+		XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ModuleURI", req.getContextPath() + getFullAlias());
+		XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "StaticContentURL", getStaticContentURL());
+
 		FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
 
 		boolean enabled = false;
-		
-		if(settings != null) {
-		
+
+		if (settings != null) {
+
 			XMLUtils.append(doc, showViewElement, settings);
 			enabled = true;
 		}
-		
+
 		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), enabled);
 	}
-	
-	/**
-	 * Metod som populerar bild för att visa inställningar
-	 */
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse showUpdateSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
 		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
-		
+
 		if (flow == null) {
-			
+
 			return flowAdminModule.list(req, res, user, uriParser, new ValidationError(FLOW_NOT_FOUND));
-		} 
-		
+
+		} else if (!flowAdminModule.hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+
 		Document doc = createDocument(req, uriParser);
-		
+
 		Element settingsElement = doc.createElement("ShowUpdateSettings");
 		doc.getDocumentElement().appendChild(settingsElement);
-		
+
 		settingsElement.appendChild(flow.toXML(doc));
-		
+
 		FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
-		
-		//populera settings om det saknas (förutom ID) och använd dessa värden
-		//i bilden
-		if(settings == null)
-		{
+
+		if (settings == null) {
 			settings = new FlowInstanceAttachmentsSettings();
 			settings.setModuleEnabled(false);
 			settings.setEmailEnabled(false);
 			settings.setSmsEnabled(false);
 		}
-		
+
 		XMLUtils.append(doc, settingsElement, settings);
 		XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ModuleURI", req.getContextPath() + getFullAlias());
 		XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "StaticContentURL", getStaticContentURL());
-		
-		
-		
+
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-				
+
 		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
-		
+
 		if (flow == null) {
-			
+
 			return flowAdminModule.list(req, res, user, uriParser, new ValidationError(FLOW_NOT_FOUND));
+
+		} else if (!flowAdminModule.hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
-		
-		//uppdatera basen
+
 		updateSettings(req, flow);
-		
+
 		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#addflowinstanceasmanagersettings");
-		
+
 		return null;
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse deleteSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-		
-		if(!HTTPUtils.isPost(req)) {
-			
+
+		if (!HTTPUtils.isPost(req)) {
+
 			throw new AccessDeniedException("Delete requests using method " + req.getMethod() + " are not allowed.");
 		}
-		
+
 		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
-		
+
 		if (flow == null) {
-			
+
 			return flowAdminModule.list(req, res, user, uriParser, new ValidationError(FLOW_NOT_FOUND));
-			
+
+		} else if (!flowAdminModule.hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
-		
+
 		FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
-		
+
 		if (settings != null) {
-			
+
 			log.info("User " + user + " deleting attachmentsettings for flow " + flow);
 			attachmentSettingsDAOWrapper.delete(settings);
-			
-			
+
 		} else {
-			
+
 			log.warn("User " + user + " trying to delete attachmentsettings for flow " + flow + " which has no settings");
 		}
-		
+
 		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#addflowinstanceasmanagersettings");
-		
+
 		return null;
 	}
 
@@ -241,21 +238,18 @@ public class FlowInstanceAttachmentsSettingsModule extends AnnotatedForegroundMo
 		String[] moduleEnabledParameter = req.getParameterValues("moduleEnabled");
 		String[] emailDisabledParameter = req.getParameterValues("emailEnabled");
 		String[] smsDisabledParameter = req.getParameterValues("smsEnabled");
-		
+
 		boolean moduleEnabled = moduleEnabledParameter != null ? moduleEnabledParameter[0].equals("true") : false;
 		boolean emailDisabled = emailDisabledParameter != null ? emailDisabledParameter[0].equals("true") : false;
 		boolean smsDisabled = smsDisabledParameter != null ? smsDisabledParameter[0].equals("true") : false;
-		
+
 		FlowInstanceAttachmentsSettings settings = attachmentSettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
-		
-		if(settings == null)
-		{
+
+		if (settings == null) {
 			settings = new FlowInstanceAttachmentsSettings();
 			populateSettings(flow, moduleEnabled, emailDisabled, smsDisabled, settings);
 			attachmentSettingsDAOWrapper.add(settings);
-		}
-		else
-		{
+		} else {
 			populateSettings(flow, moduleEnabled, emailDisabled, smsDisabled, settings);
 			attachmentSettingsDAOWrapper.update(settings);
 		}
@@ -268,7 +262,6 @@ public class FlowInstanceAttachmentsSettingsModule extends AnnotatedForegroundMo
 		settings.setEmailEnabled(emailDisabled);
 		settings.setSmsEnabled(smsDisabled);
 	}
-	
 
 	@Override
 	public String getExtensionViewTitle() {
@@ -334,22 +327,21 @@ public class FlowInstanceAttachmentsSettingsModule extends AnnotatedForegroundMo
 
 		return staticContentModule.getModuleContentURL(moduleDescriptor);
 	}
-	
+
 	@InstanceManagerDependency(required = true)
 	public void setFlowAdminModule(FlowAdminModule flowAdminModule) {
-		
+
 		if (flowAdminModule == null && this.flowAdminModule != null) {
-			
+
 			this.flowAdminModule.removeExtensionViewProvider(this);
 		}
-		
+
 		this.flowAdminModule = flowAdminModule;
-		
+
 		if (this.flowAdminModule != null) {
-			
+
 			this.flowAdminModule.addExtensionViewProvider(this);
 		}
 	}
 
 }
-
