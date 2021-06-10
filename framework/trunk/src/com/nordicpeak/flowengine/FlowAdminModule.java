@@ -351,8 +351,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION
 	};
 	//@formatter:on
-	
-	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = {Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION};
+
+	public static final Field[] CACHED_FLOW_CACHE_RELATIONS = { Flow.FLOW_TYPE_RELATION, FlowType.CATEGORIES_RELATION, Flow.CATEGORY_RELATION, Flow.FLOW_FAMILY_RELATION };
 
 	public static final ValidationError FLOW_HAS_NO_CONTENT_VALIDATION_ERROR = new ValidationError("FlowHasNoContent");
 	public static final ValidationError FLOW_HAS_NO_STEPS_AND_SKIP_OVERVIEW_IS_SET_VALIDATION_ERROR = new ValidationError("FlowHasNoStepsAndOverviewSkipIsSet");
@@ -364,7 +364,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public static final ValidationError INTERNAL_MESSAGE_AND_REQUIRED_SIGNING_MUTUAL_EXCLUSIVE_VALIDATION_ERROR = new ValidationError("InternalMessageAndRequiredSigningMutualExclusiveError");
 
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION);
-	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY =    new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
+	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
 	protected static final RelationQuery MANAGEMENT_INFO_RELATION_QUERY = new RelationQuery(FlowFamily.MANAGEMENT_INFO_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
@@ -393,7 +393,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventUpdateNotificationsMessage = "eventUpdateNotificationsMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventUpdateManagementInfoMessage = "eventUpdateManagementInfoMessage";
 
@@ -453,7 +453,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventStatusDeletedMessage = "eventStatusDeletedMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventStatusesReplacedMessage = "eventStatusesReplacedMessage";
 
@@ -471,31 +471,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventStatusSortMessage = "eventStatusSortMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventEvaluatorSortMessage = "eventEvaluatorSortMessage";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventFunctionConfigured = "eventFunctionConfigured";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventFlowInstanceManagerExpired = "eventFlowInstanceManagerExpired";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventUpdateAutoManagerAssignment = "eventUpdateAutoManagerAssignment";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventMessageTemplatesAddedMessage = "message templates added";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventMessageTemplatesUpdatedMessage = "message templates updated";
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventMessageTemplatesDeletedMessage = "message templates deleted";
 
 	@XSLVariable(prefix = "java.")
-	private String bundleListFlows= "List flows";
-	
+	private String bundleListFlows = "List flows";
+
 	@XSLVariable(prefix = "java.")
 	private String bundleAddFlow = "Add flow";
 
@@ -507,7 +507,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String bundleFlowtypes = "Administrate flow types";
-	
+
 	@XSLVariable(prefix = "java.")
 	protected String hiddenQueryText = "(hidden)";
 
@@ -522,7 +522,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
-	
+
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Manager groups", description = "Groups with users that are allowed to be set as managers")
 	protected List<Integer> managerGroupIDs;
@@ -530,7 +530,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Require managers", description = "Controls if it's required to have managers set when publishing a flow")
 	protected boolean requireManagers = false;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show expiry settings modal when adding manager", description = "Controls if the expiry settings modal is show when adding new managers")
 	protected boolean showManagerModalOnAdd = false;
@@ -558,11 +558,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max PDF form file size", description = "Maxmium file size in megabytes allowed", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	protected Integer maxPDFFormFileSize = 15;
-	
+
 	@ModuleSetting
 	@SplitOnLineBreak
 	@TextAreaSettingDescriptor(name = "Flow form file extensions", description = "Allowed file extensions for files uploaded as flow forms")
-	protected List<String> allowedFlowFormFileExtensions = Arrays.asList(new String[]{"pdf", "xls", "xlsx"});
+	protected List<String> allowedFlowFormFileExtensions = Arrays.asList(new String[] { "pdf", "xls", "xlsx" });
 
 	@ModuleSetting(id = "allowSkipOverviewForPDFForms")
 	@CheckboxSettingDescriptor(name = "Allow skip overview for PDF forms", description = "If false always shows the overview if a PDF form is available. Requires special button on step pages if set.")
@@ -603,38 +603,38 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Max flowtype icon height", description = "Max allowed flowtype icon height.")
 	private int maxFlowTypeIconHeight = 100;
-	
+
 	@XSLVariable(prefix = "java.")
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Default login help link name", description = "Name of the login help link.")
 	private String defaultLoginHelpLinkName;
-	
+
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "Default login help url", description = "URL to redirect the user to for login help.", formatValidator = StringURLPopulator.class)
 	private String defaultLoginHelpLinkURL;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Check for expiring managers interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String managersUpdateInterval = "0 0 * * *";
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Check for stale flow instances interval", description = "How often this module should check for expiring flow managers (specified in crontab format)", required = true, formatValidator = CronStringValidator.class)
 	private String removeStaleFlowInstancesInterval = "0 0 * * *";
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Block foreign IDs", description = "Block users logged in with foreign IDs from using flows unless explicity allowed in the flow family")
 	protected boolean blockForeignIDs = false;
-	
+
 	@ModuleSetting
 	@RequiredIfSet(paramNames = "blockForeignIDs")
 	@SplitOnLineBreak
 	@TextAreaSettingDescriptor(name = "Foreign ID attribute", description = "Attribute that is set when user is logged in with a foreign ID")
 	protected List<String> foreignIDattributes;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable fragment XML debug", description = "Enables debugging of fragment XML")
 	private boolean debugFragmentXML;
-	
+
 	@InstanceManagerDependency(required = true)
 	protected SiteProfileHandler siteProfileHandler;
 
@@ -643,18 +643,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@InstanceManagerDependency
 	protected MultiSigningHandler multiSigningHandler;
-	
+
 	@InstanceManagerDependency(required = true)
 	protected StaticContentModule staticContentModule;
-	
+
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
-	
+
 	@InstanceManagerDependency
 	private HTMLContentFilter htmlContentFilter;
-	
+
 	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
-	
+
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
 	private StepCRUD stepCRUD;
@@ -684,13 +684,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected QueryParameterFactory<QueryDescriptor, String> queryDescriptorQueryTypeIDParamFactory;
 	protected QueryParameterFactory<EvaluatorDescriptor, String> evaluatorDescriptorEvaluatorTypeIDParamFactory;
-	
+
 	protected AdvancedAnnotatedDAOWrapper<StandardStatusGroup, Integer> standardStatusGroupDAOWrapper;
-	
+
 	protected OrderByCriteria<Flow> flowVersionOrderByCriteria;
 
 	private LinkedHashMap<Integer, FlowType> flowTypeCacheMap;
-	
+
 	private FlowCache flowCache;
 
 	protected UserGroupListConnector userGroupListConnector;
@@ -703,26 +703,26 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected CopyOnWriteArrayList<ExtensionLinkProvider> flowListExtensionLinkProviders = new CopyOnWriteArrayList<>();
 	protected CopyOnWriteArrayList<FlowAdminShowFlowExtensionLinkProvider> flowShowExtensionLinkProviders = new CopyOnWriteArrayList<>();
-	
+
 	protected CopyOnWriteArrayList<StatusFormExtensionProvider> statusFormExtensionProviders = new CopyOnWriteArrayList<>();
-	
+
 	protected CopyOnWriteArrayList<FlowBrowserExtensionViewProvider> flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<>();
-	
+
 	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<>();
-	
+
 	protected CopyOnWriteArrayList<ExternalFlowProvider> externalFlowProviders = new CopyOnWriteArrayList<>();
 
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
 	private String removeStaleFlowInstancesScheduleID;
-	
+
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
-	
+
 	private UserGroupAdminExtensionHandler userGroupAdminExtensionHandler;
-	
+
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
-		
+
 		viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, sectionInterface.getSystemInterface().getEncoding());
 
 		super.init(moduleDescriptor, sectionInterface, dataSource);
@@ -732,36 +732,36 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
 		userGroupListConnector.setUserGroupFilter(managerGroupIDs);
-		
+
 		unrestrictedUserGroupListConnector = new UserGroupListConnector(systemInterface);
-		
+
 		userGroupListFlowManagersConnector = new UserGroupListFlowManagersConnector(systemInterface, this);
-		
+
 		if (!systemInterface.getInstanceHandler().addInstance(FlowAdminModule.class, this)) {
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
-		
+
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 			systemStarted();
-			
+
 		} else if (systemInterface.getSystemStatus() == SystemStatus.STARTING) {
 			systemInterface.addSystemStartupListener(this);
 		}
 	}
-	
+
 	@Override
 	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
-		
+
 		super.update(descriptor, dataSource);
-		
+
 		scheduler.reschedule(updateManagersScheduleID, managersUpdateInterval);
 		scheduler.reschedule(removeStaleFlowInstancesScheduleID, removeStaleFlowInstancesInterval);
 	}
 
 	@Override
 	public void unload() throws Exception {
-		
+
 		stopScheduler();
 
 		systemInterface.getInstanceHandler().removeInstance(FlowAdminModule.class, this);
@@ -774,16 +774,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowListExtensionLinkProviders.clear();
 
 		flowShowExtensionLinkProviders.clear();
-		
+
 		statusFormExtensionProviders.clear();
-		
+
 		externalFlowProviders.clear();
-		
+
 		if (userGroupAdminExtensionHandler != null) {
-			
+
 			setUserAdminExtensionHandler(null);
 		}
-		
+
 		super.unload();
 	}
 
@@ -848,7 +848,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		AnnotatedDAOWrapper<StandardStatus, Integer> standardStatusDAOWrapper = daoFactory.getStandardStatusDAO().getWrapper("statusID", Integer.class);
 		standardStatusDAOWrapper.addRelations(StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION, StandardStatus.STANDARD_STATUS_GROUP_RELATION);
 		standardStatusDAOWrapper.setUseRelationsOnGet(true);
-		
+
 		standardStatusGroupDAOWrapper = daoFactory.getStandardStatusGroupDAO().getAdvancedWrapper("statusGroupID", Integer.class);
 		standardStatusGroupDAOWrapper.getGetQuery().addRelations(StandardStatusGroup.STANDARD_STATUSES_RELATION);
 
@@ -879,14 +879,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowVersionOrderByCriteria = daoFactory.getFlowDAO().getOrderByCriteria("version", Order.DESC);
 
 		flowFamilyEventFlowFamilyParamFactory = daoFactory.getFlowFamilyEventDAO().getParamFactory("flowFamily", FlowFamily.class);
-		
+
 		HierarchyAnnotatedDAOFactory normalDAOFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, false, false);
-		
+
 		messageTemplateDAO = normalDAOFactory.getDAO(MessageTemplate.class);
 		AnnotatedDAOWrapper<MessageTemplate, Integer> messageTemplateDAOWrapper = messageTemplateDAO.getWrapper(Integer.class);
 		messageTemplateDAOWrapper.setUseRelationsOnGet(true);
 		messageTemplateDAOWrapper.addRelations(MessageTemplate.FLOW_FAMILY_RELATION);
-		
+
 		messageTemplateCRUD = new MessageTemplateCRUD(messageTemplateDAOWrapper, this);
 	}
 
@@ -899,12 +899,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			log.error("Module " + this.moduleDescriptor + " has no/invalid PDF form filestore set, check modulesettings");
 		}
-		
-		if(this.userGroupListConnector != null){
-			
+
+		if (this.userGroupListConnector != null) {
+
 			this.userGroupListConnector.setUserGroupFilter(managerGroupIDs);
 		}
-		
+
 		viewFragmentTransformer.setDebugXML(debugFragmentXML);
 	}
 
@@ -924,7 +924,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		//@formatter:on
 		);
 		query.addCachedRelation(FlowType.CATEGORIES_RELATION);
-		
+
 		List<FlowType> flowTypes = daoFactory.getFlowTypeDAO().getAll(query);
 
 		if (flowTypes == null) {
@@ -956,7 +956,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			transactionHandler = new TransactionHandler(dataSource);
 
 			long startTime = System.currentTimeMillis();
-			
+
 			HighLevelQuery<Flow> query = new HighLevelQuery<>(FLOW_CACHE_RELATIONS);
 			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
 
@@ -973,7 +973,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				for (Flow flow : flows) {
 
-					setCachedFlowDetails(flow,transactionHandler);
+					setCachedFlowDetails(flow, transactionHandler);
 
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
@@ -990,35 +990,35 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			TransactionHandler.autoClose(transactionHandler);
 		}
 	}
-	
+
 	private synchronized void cacheFlowFamilies(List<Integer> flowFamilyIDs) throws SQLException {
 
 		long startTime = System.currentTimeMillis();
-		
+
 		HighLevelQuery<FlowFamily> query = new HighLevelQuery<>(FLOW_FAMILY_CACHE_RELATIONS);
-		
+
 		query.addParameter(flowFamiliyIDParamFactory.getWhereInParameter(flowFamilyIDs));
-		
+
 		List<FlowFamily> flowFamilies = this.daoFactory.getFlowFamilyDAO().getAll(query);
-		
+
 		if (flowFamilies == null) {
 
 			log.error("Flow family ID's " + flowFamilyIDs + " not found in DB, unbable to cache flow families");
 
 		} else {
-	
+
 			LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
 			HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 
 			for (FlowFamily flowFamily : flowFamilies) {
 
 				tempFlowFamilyMap.put(flowFamily.getFlowFamilyID(), flowFamily);
-				
+
 				//Update flow family of cached flows
-				for(Flow flow : tempFlowCacheMap.values()) {
-					
-					if(flow.getFlowFamily().equals(flowFamily)) {
-						
+				for (Flow flow : tempFlowCacheMap.values()) {
+
+					if (flow.getFlowFamily().equals(flowFamily)) {
+
 						flow.setFlowFamily(flowFamily);
 					}
 				}
@@ -1026,31 +1026,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 		}
-		
+
 		log.info("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 		//System.out.println("Cached " + flowFamilyIDs.size() + " flow families in " + TimeUtils.millisecondsToString(System.currentTimeMillis() - startTime) + " ms");
 	}
-	
+
 	private synchronized void deleteFlowFamiliesFromCache(List<FlowFamily> flowFamilies) {
 
 		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
 		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
-		
-		for(FlowFamily flowFamily : flowFamilies) {
-			
-			if(tempFlowFamilyMap.remove(flowFamily.getFlowFamilyID()) != null) {
-				
+
+		for (FlowFamily flowFamily : flowFamilies) {
+
+			if (tempFlowFamilyMap.remove(flowFamily.getFlowFamilyID()) != null) {
+
 				log.info("Removed flow family " + flowFamily + " from cache");
-				
-			}else {
-				
+
+			} else {
+
 				log.warn("Flow family " + flowFamily + " not found in cache");
 			}
 		}
-		
+
 		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 	}
-	
+
 	private synchronized void cacheFlows(List<Integer> flowIDs) throws SQLException {
 
 		TransactionHandler transactionHandler = null;
@@ -1060,7 +1060,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			transactionHandler = new TransactionHandler(dataSource);
 
 			long startTime = System.currentTimeMillis();
-			
+
 			HighLevelQuery<Flow> query = new HighLevelQuery<>(FLOW_CACHE_RELATIONS);
 			query.addCachedRelations(CACHED_FLOW_CACHE_RELATIONS);
 			query.addParameter(flowIDParamFactory.getWhereInParameter(flowIDs));
@@ -1072,31 +1072,31 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				log.error("Flow ID's " + flowIDs + " not found in DB, unbable to cache flows");
 
 			} else {
-		
+
 				LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
 				HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
 
 				for (Flow flow : flows) {
 
-					setCachedFlowDetails(flow,transactionHandler);
+					setCachedFlowDetails(flow, transactionHandler);
 
-					if(flow.isLatestVersion()) {
-						
-						for(Flow cachedFlow : tempFlowCacheMap.values()) {
-							
-							if(cachedFlow.getFlowFamily().equals(flow.getFlowFamily()) && cachedFlow.isLatestVersion()) {
-								
+					if (flow.isLatestVersion()) {
+
+						for (Flow cachedFlow : tempFlowCacheMap.values()) {
+
+							if (cachedFlow.getFlowFamily().equals(flow.getFlowFamily()) && cachedFlow.isLatestVersion()) {
+
 								cachedFlow.setLatestVersion(false);
 							}
 						}
 					}
-					
+
 					tempFlowCacheMap.put(flow.getFlowID(), flow);
 					tempFlowFamilyMap.put(flow.getFlowFamily().getFlowFamilyID(), flow.getFlowFamily());
 				}
 
 				CollectionUtils.sortMapByValue(tempFlowCacheMap, CaseInsensitiveNameComparator.getInstance());
-				
+
 				this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 			}
 
@@ -1106,64 +1106,64 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
-		
+
 	}
-	
+
 	private synchronized void deleteFlowsFromCache(List<Flow> flows) {
 
 		LinkedHashMap<Integer, Flow> tempFlowCacheMap = new LinkedHashMap<>(flowCache.getFlowCacheMap());
 		HashMap<Integer, FlowFamily> tempFlowFamilyMap = new HashMap<>(flowCache.getFlowFamilyCacheMap());
-		
+
 		Set<FlowFamily> familiesWithoutLatestVersion = null;
-		
-		for(Flow flow : flows) {
-			
+
+		for (Flow flow : flows) {
+
 			Flow deletedFlow;
-			
-			if((deletedFlow = tempFlowCacheMap.remove(flow.getFlowID())) != null) {
-				
+
+			if ((deletedFlow = tempFlowCacheMap.remove(flow.getFlowID())) != null) {
+
 				log.info("Removed flow " + flow + " from cache");
-				
-				if(deletedFlow.isLatestVersion()) {
-					
+
+				if (deletedFlow.isLatestVersion()) {
+
 					familiesWithoutLatestVersion = CollectionUtils.addAndInstantiateIfNeeded(familiesWithoutLatestVersion, deletedFlow.getFlowFamily());
 				}
-				
-			}else {
-				
+
+			} else {
+
 				log.warn("Flow " + flow + " not found in cache");
 			}
 		}
-		
-		if(familiesWithoutLatestVersion != null && !tempFlowCacheMap.isEmpty()) {
-			
-			for(FlowFamily flowFamily : familiesWithoutLatestVersion) {
-				
+
+		if (familiesWithoutLatestVersion != null && !tempFlowCacheMap.isEmpty()) {
+
+			for (FlowFamily flowFamily : familiesWithoutLatestVersion) {
+
 				Flow latestVersion = null;
-				
-				for(Flow flow : tempFlowCacheMap.values()) {
-					
-					if(!flow.getFlowFamily().equals(flowFamily)) {
-						
+
+				for (Flow flow : tempFlowCacheMap.values()) {
+
+					if (!flow.getFlowFamily().equals(flowFamily)) {
+
 						continue;
 					}
-					
-					if(latestVersion == null || latestVersion.getVersion() < flow.getVersion()) {
-						
+
+					if (latestVersion == null || latestVersion.getVersion() < flow.getVersion()) {
+
 						latestVersion = flow;
 					}
 				}
-				
-				if(latestVersion != null) {
-					
+
+				if (latestVersion != null) {
+
 					latestVersion.setLatestVersion(true);
 				}
 			}
 		}
-		
+
 		this.flowCache = new FlowCache(tempFlowCacheMap, tempFlowFamilyMap);
 	}
-	
+
 	private void setCachedFlowDetails(Flow flow, TransactionHandler transactionHandler) throws SQLException {
 
 		flow.setFlowInstanceCount(getFlowInstanceCount(flow, transactionHandler));
@@ -1274,14 +1274,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		doc.getDocumentElement().appendChild(listFlowsElement);
 
 		if (hasAnyFlowTypeAccess(user)) {
-			
+
 			listFlowsElement.appendChild(doc.createElement("AddAccess"));
 		}
-		
+
 		if (AccessUtils.checkAccess(user, this)) {
 			XMLUtils.appendNewElement(doc, listFlowsElement, "AdminAccess");
 		}
-		
+
 		appendAdditionalListInformation(doc, listFlowsElement);
 
 		if (validationErrors != null) {
@@ -1293,45 +1293,45 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
-	
+
 	@WebPublic(alias = "flowdata")
 	public ForegroundModuleResponse getFlowData(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		try {
 
 			log.info("Sending flows to user " + user);
-			
+
 			JsonObject responseJSON = new JsonObject(1);
 			JsonArray flowsJSONArray = new JsonArray();
-			
+
 			responseJSON.putField("rows", flowsJSONArray);
-			
+
 			if (hasAnyFlowTypeAccess(user)) {
-				
+
 				Collection<Flow> flows = this.flowCache.getFlowCacheMap().values();
-				
+
 				if (!AccessUtils.checkAccess(user, this)) {
-					
+
 					//Check access and append flows
 					for (Flow flow : flows) {
-						
+
 						if (AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) && flow.isLatestVersion()) {
-							
+
 							JsonArray flowJSONArray = getFlowJSONArray(flow, flows);
-							
+
 							flowsJSONArray.addNode(flowJSONArray);
-							
+
 						}
 					}
-					
+
 				} else {
-					
+
 					for (Flow flow : flows) {
-						
+
 						if (flow.isLatestVersion()) {
-							
+
 							JsonArray flowJSONArray = getFlowJSONArray(flow, flows);
-							
+
 							flowsJSONArray.addNode(flowJSONArray);
 						}
 					}
@@ -1393,63 +1393,63 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getLastReviewed() : null);
 		appendExtraFlowListColumns(flowJSONArray, flow);
 		flowJSONArray.addNode(getFlowDeleteJSON(flow, instanceCount, published));
-		
+
 		return flowJSONArray;
 	}
 
 	private JsonNode getFlowIconJSON(Flow flow) {
-		
+
 		String json = flow.getFlowID().toString();
-		
+
 		if (flow.getIconLastModified() != null) {
-			
+
 			json += "?" + flow.getIconLastModified().getTime();
 		}
-		
+
 		return new JsonLeaf(json);
 	}
 
 	private JsonNode getFlowNameJSON(Flow flow, boolean external) {
 
 		JsonObject json = new JsonObject(2);
-		
+
 		json.putField("flowName", flow.getName());
 		json.putField("hasExternalVersions", external);
-		
+
 		return json;
 	}
-	
+
 	private JsonNode getFlowTypeJSON(Flow flow) {
-		
+
 		FlowType flowType = flow.getFlowType();
-		
+
 		JsonObject json = new JsonObject(2);
-		
+
 		json.putField("flowTypeName", flowType.getName());
 		json.putField("flowTypeID", flowType.getFlowTypeID());
-		
+
 		return json;
 	}
-	
+
 	private JsonNode getFlowDeleteJSON(Flow flow, int instanceCount, boolean published) {
-		
+
 		JsonObject json = new JsonObject(2);
-		
+
 		json.putField("hasInstances", instanceCount > 0);
 		json.putField("isPublished", published);
 		json.putField("flowFamilyID", flow.getFlowFamily().getFlowFamilyID());
 		json.putField("flowName", flow.getName());
-		
+
 		return json;
 	}
-	
+
 	protected void appendExtraFlowListColumns(JsonArray flowJSONArray, Flow flow) {}
 
 	protected void appendAdditionalListInformation(Document doc, Element listFlowsElement) {
-		
+
 		return;
 	}
-	
+
 	public void appendFamilyInformation(Document doc, Element flowElement, Flow lastestFlow, Collection<Flow> flows) {
 
 		int versions = 0;
@@ -1493,7 +1493,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			XMLUtils.appendNewElement(doc, flowElement, "HasPublishedVersion");
 		}
 	}
-	
+
 	public boolean hasAnyFlowTypeAccess(User user) {
 
 		if (AccessUtils.checkAccess(user, this) && !this.flowTypeCacheMap.isEmpty()) {
@@ -1531,9 +1531,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		return flowCRUD.show(req, res, user, uriParser);
-		
+
 	}
-	
+
 	@Override
 	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception {
 
@@ -1561,11 +1561,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@WebPublic(toLowerCase = true)
 	public synchronized ForegroundModuleResponse deleteFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
-		if(!HTTPUtils.isPost(req)) {
-			
+		if (!HTTPUtils.isPost(req)) {
+
 			throw new AccessDeniedException("Delete flow family requests using method " + req.getMethod() + " are not allowed.");
 		}
-		
+
 		FlowFamily flowFamily;
 
 		if (uriParser.size() != 3 || !NumberUtils.isInt(uriParser.get(2)) || (flowFamily = flowCache.getFlowFamilyCacheMap().get(NumberUtils.toInt(uriParser.get(2)))) == null) {
@@ -1665,22 +1665,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			FlowFamily flowFamily = new FlowFamily();
 			flowFamily.setVersionCount(1);
 			flowFamily.setStatisticsMode(flow.getFlowFamily().getStatisticsMode());
-			
+
 			if (flow.getFlowFamily().getMessageTemplates() != null) {
-				
+
 				ArrayList<MessageTemplate> messageTemplates = new ArrayList<>(flow.getFlowFamily().getMessageTemplates().size());
-				
+
 				for (MessageTemplate messageTemplate : flow.getFlowFamily().getMessageTemplates()) {
-					
+
 					MessageTemplate messageTemplateCopy = SerializationUtils.cloneSerializable(messageTemplate);
 					messageTemplateCopy.setTemplateID(null);
-					
+
 					messageTemplates.add(messageTemplateCopy);
 				}
-				
+
 				flowFamily.setMessageTemplates(messageTemplates);
 			}
-			
+
 			flowCopy.setFlowFamily(flowFamily);
 			flowCopy.setVersion(1);
 			flowCopy.setName(flow.getName() + flowNameCopySuffix);
@@ -1758,7 +1758,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		TransactionHandler transactionHandler = null;
-		
+
 		boolean familyUpdated = false;
 
 		try {
@@ -1776,7 +1776,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 					throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
 				}
-				
+
 				if (version.equals(flow.getVersion())) {
 
 					log.error("Duplicate version created from getNextVersion. Original " + flow + ", new version " + version);
@@ -1787,7 +1787,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				daoFactory.getFlowFamilyDAO().update(flowCopy.getFlowFamily(), transactionHandler, null);
 				daoFactory.getFlowDAO().add(flowCopy, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
-				
+
 				familyUpdated = true;
 			}
 
@@ -1894,7 +1894,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					}
 				}
 			}
-			
+
 			try {
 				// Commit
 				transactionHandler.commit();
@@ -1917,10 +1917,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			TransactionHandler.autoClose(transactionHandler);
 		}
-		
+
 		eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flowCopy), EventTarget.ALL);
 		eventHandler.sendEvent(Flow.class, new FlowVersionAdded(flow, statusConversionMap), EventTarget.ALL);
-		
+
 		if (familyUpdated) {
 			eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flowCopy.getFlowFamily()), EventTarget.ALL);
 		}
@@ -1976,7 +1976,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					FileItem fileItem = multipartRequest.getFile(0);
 
 					String lowerCasefileName = FilenameUtils.getName(fileItem.getName());
-					
+
 					if (!Flow.ICON_FILE_EXTENSION_POPULATOR.validateFormat(lowerCasefileName)) {
 
 						validationError = new ValidationError("InvalidIconFileFormat");
@@ -2131,28 +2131,28 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public ForegroundModuleResponse sortEvaluators(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		Integer queryID = uriParser.getInt(2);
-		
+
 		if (queryID == null) {
-			
+
 			return list(req, res, user, uriParser, new ValidationError("QueryNotFound"));
 		}
-		
+
 		QueryDescriptor queryDescriptor = getQueryDescriptor(queryID);
-		
+
 		if (queryDescriptor == null) {
-			
+
 			return list(req, res, user, uriParser, new ValidationError("QueryNotFound"));
 		}
-		
+
 		Flow flow = queryDescriptor.getStep().getFlow();
 
 		if (!hasFlowAccess(user, flow)) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
-		
+
 		if (queryDescriptor.getEvaluatorDescriptors() == null) {
-			
+
 			log.info("User " + user + " requested sort evaluators form for query " + queryDescriptor + " in flow " + flow + " which has no evaluators.");
 
 			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
@@ -2160,15 +2160,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		List<ValidationError> validationErrors = null;
-		
+
 		if (req.getMethod().equalsIgnoreCase("POST")) {
-			
+
 			validationErrors = new ArrayList<>();
 
 			for (EvaluatorDescriptor evaluatorDescription : queryDescriptor.getEvaluatorDescriptors()) {
 
 				Integer sortIndex = ValidationUtils.validateParameter("sortorder_" + evaluatorDescription.getEvaluatorID(), req, true, IntegerPopulator.getPopulator(), validationErrors);
-				
+
 				if (sortIndex != null) {
 
 					evaluatorDescription.setSortIndex(sortIndex);
@@ -2198,7 +2198,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse sortStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
@@ -2257,7 +2257,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse copyStandardStatusGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, URINotFoundException {
 
@@ -2268,7 +2268,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			HighLevelQuery<StandardStatusGroup> query = new HighLevelQuery<>(StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
 			query.addParameter(standardStatusGroupDAOWrapper.getParameterFactory().getParameter(statusGroupID));
-			
+
 			statusGroup = standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
 		}
 
@@ -2281,16 +2281,16 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		statusGroup.setStatusGroupID(null);
 		statusGroup.setName(statusGroup.getName() + flowNameCopySuffix);
 
-		if(statusGroup.getStandardStatuses() != null) {
-		
+		if (statusGroup.getStandardStatuses() != null) {
+
 			for (StandardStatus status : statusGroup.getStandardStatuses()) {
-				
+
 				status.setStatusID(null);
 			}
 		}
 
 		RelationQuery query = new RelationQuery(StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
-		
+
 		daoFactory.getStandardStatusGroupDAO().add(statusGroup, query);
 
 		getEventHandler().sendEvent(StandardStatusGroup.class, new CRUDEvent<StandardStatusGroup>(StandardStatusGroup.class, CRUDAction.ADD, statusGroup), EventTarget.ALL);
@@ -2298,63 +2298,63 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		redirectToMethod(req, res, "/standardstatuses");
 		return null;
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse sortStandardStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, IOException, URINotFoundException {
-		
+
 		Integer statusGroupID = uriParser.getInt(2);
 		StandardStatusGroup statusGroup = null;
 
 		if (statusGroupID != null) {
-			
+
 			statusGroup = standardStatusGroupDAOWrapper.get(statusGroupID);
 		}
-		
+
 		if (statusGroup == null) {
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		List<StandardStatus> statuses = statusGroup.getStandardStatuses();
-		
+
 		if (CollectionUtils.isEmpty(statuses)) {
-			
+
 			log.info("User " + user + " requested sort standard statuses but there are none.");
 			redirectToMethod(req, res, "/standardstatuses");
 		}
-		
+
 		if (req.getMethod().equalsIgnoreCase("POST")) {
-			
+
 			for (StandardStatus status : statuses) {
-				
+
 				status.setStandardStatusGroup(statusGroup);
-				
+
 				String sortIndex = req.getParameter("sortorder_" + status.getStatusID());
-				
+
 				if (NumberUtils.isInt(sortIndex)) {
-					
+
 					status.setSortIndex(NumberUtils.toInt(sortIndex));
 				}
 			}
-			
+
 			daoFactory.getStandardStatusDAO().update(statuses, null);
-			
+
 			getEventHandler().sendEvent(StandardStatus.class, new CRUDEvent<StandardStatus>(StandardStatus.class, CRUDAction.UPDATE, statuses), EventTarget.ALL);
-			
+
 			redirectToMethod(req, res, "/showstandardstatusgroup/" + statusGroup.getStatusGroupID());
 			return null;
 		}
-		
+
 		log.info("User " + user + " requesting sort standard status form");
-		
+
 		Document doc = createDocument(req, uriParser, user);
-		
+
 		Element sortStandardStatusesElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "SortStandardStatuses");
-		
+
 		sortStandardStatusesElement.appendChild(statusGroup.toXML(doc));
-		
+
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse replaceFlowStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
 
@@ -2368,52 +2368,52 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 		}
-		
+
 		if (flow.getStatuses() != null) {
 			for (Status status : flow.getStatuses()) {
 				if (status.getFlowInstanceCount() > 0) {
 
 					log.warn("User " + user + " attempted to replace " + flow + " statuses but it has flow instances");
-					
+
 					redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
 					return null;
 				}
 			}
 		}
-		
+
 		List<ValidationError> validationErrors = new ArrayList<>(1);
 
 		if (req.getMethod().equalsIgnoreCase("POST")) {
-			
+
 			Integer statusGroupID = ValidationUtils.validateParameter("statusGroupID", req, true, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
-			
+
 			if (statusGroupID != null) {
-				
+
 				StandardStatusGroup statusGroup = getStatusGroup(statusGroupID, StandardStatusGroup.STANDARD_STATUSES_RELATION, StandardStatus.DEFAULT_STANDARD_STATUS_MAPPINGS_RELATION);
-		
+
 				if (statusGroup == null) {
-			
+
 					validationErrors.add(new ValidationError("statusGroupID", ValidationErrorType.InvalidFormat));
-					
+
 				} else {
-	
+
 					log.info("User " + user + " replacing " + flow + " statuses with " + statusGroup);
-	
+
 					replaceFlowStatusesWithStandardStatuses(flow, statusGroup);
-	
+
 					RelationQuery query = new RelationQuery(Flow.STATUSES_RELATION, Status.DEFAULT_STATUS_MAPPINGS_RELATION);
 					daoFactory.getFlowDAO().update(flow, query);
-	
+
 					getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(Flow.class, CRUDAction.UPDATE, flow), EventTarget.ALL);
-					
+
 					addFlowFamilyEvent(eventStatusesReplacedMessage + " \"" + statusGroup.getName() + "\"", flow, user);
-	
+
 					redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#statuses");
 					return null;
 				}
 			}
 		}
-		
+
 		log.info("User " + user + " requesting replace statuses form for flow " + flow);
 
 		Document doc = createDocument(req, uriParser, user);
@@ -2422,7 +2422,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		doc.getDocumentElement().appendChild(updateFlowStatusesElement);
 
 		updateFlowStatusesElement.appendChild(flow.toXML(doc));
-		
+
 		List<StandardStatusGroup> statusGroups = getDAOFactory().getStandardStatusGroupDAO().getAll();
 		XMLUtils.append(doc, updateFlowStatusesElement, "StandardStatusGroups", statusGroups);
 
@@ -2433,7 +2433,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 	public void replaceFlowStatusesWithStandardStatuses(Flow flow, StandardStatusGroup statusGroup) {
 
 		List<StandardStatus> standardStatuses = statusGroup.getStandardStatuses();
@@ -2610,17 +2610,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 		}
 
-		for(XSDExtensionProvider xsdExtensionProvider : xsdExtensionProviders) {
-			
+		for (XSDExtensionProvider xsdExtensionProvider : xsdExtensionProviders) {
+
 			try {
 				xsdExtensionProvider.processXSD(flow, doc);
-				
-			}catch(Exception e) {
-				
+
+			} catch (Exception e) {
+
 				log.error("Error in XSD extension provider " + xsdExtensionProvider + " while processing XSD for flow " + flow, e);
 			}
 		}
-		
+
 		res.setHeader("Content-Disposition", "attachment; filename=\"schema-" + flow.getFlowID() + ".xsd\"");
 		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
 		res.setContentType("text/xml");
@@ -2815,18 +2815,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse addFlowForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
-		
+
 		Flow flow = getRequestedFlow(req, user, uriParser);
-		
+
 		if (flow == null) {
-			
+
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		flowFormCRUD.checkFlowTypeAccess(user, flow);
-		
+
 		req.setAttribute("flow", flow);
-		
+
 		return flowFormCRUD.add(req, res, user, uriParser);
 	}
 
@@ -2841,7 +2841,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return flowFormCRUD.delete(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic(alias = "standardstatuses")
 	public ForegroundModuleResponse listStandardStatusGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
@@ -2957,9 +2957,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			if (!flow.isInternal()) {
 				XMLUtils.appendNewElement(doc, showFlowOverviewElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
 			}
-			
+
 			List<ExtensionView> extensionViews = null;
-			
+
 			if (!CollectionUtils.isEmpty(flowBrowserExtensionViewProviders)) {
 
 				extensionViews = new ArrayList<>(flowBrowserExtensionViewProviders.size());
@@ -2979,27 +2979,27 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						log.error("Error getting extension view from provider " + extensionProvider, e);
 					}
 				}
-				
+
 				XMLUtils.append(doc, showFlowOverviewElement, "ExtensionViews", extensionViews);
 			}
-			
+
 			SimpleForegroundModuleResponse response = new SimpleForegroundModuleResponse(doc, flow.getName(), this.getDefaultBreadcrumb());
-			
+
 			if (!CollectionUtils.isEmpty(extensionViews)) {
-				
+
 				for (ExtensionView extensionView : extensionViews) {
-					
+
 					if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getLinks())) {
 						response.addLinks(extensionView.getViewFragment().getLinks());
 					}
-					
+
 					if (!CollectionUtils.isEmpty(extensionView.getViewFragment().getScripts())) {
-						
+
 						response.addScripts(extensionView.getViewFragment().getScripts());
 					}
 				}
 			}
-			
+
 			return response;
 		}
 
@@ -3068,7 +3068,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		try {
 			if (uriParser.size() == 3 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && flowCache.getFlowCacheMap().get(flowID) != null) {
-				
+
 				//Create new instance or get instance from session, only needed for query request processors
 				MutableFlowInstanceManager normalTestFlowInstanceManager = getUnsavedMutableFlowInstanceManager(flowID, updateAccessController, req.getSession(true), user, user, null, uriParser, req, true, false, false, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 
@@ -3118,39 +3118,39 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				InstanceMetadata instanceMetadata = new DefaultInstanceMetadata(profile);
 
 				MutableFlowInstanceManager instanceManager = new MutableFlowInstanceManager(flow, queryHandler, evaluationHandler, getNewInstanceManagerID(user), req, user, user, instanceMetadata, BaseFlowModule.OWNER_REQUEST_METADATA, getAbsoluteFileURL(uriParser, flow));
-				
+
 				systemInterface.getEventHandler().sendEvent(MutableFlowInstanceManager.class, new NewMutableFlowInstanceManagerCreatedEvent(user, instanceManager), EventTarget.ALL);
-				
+
 				try {
 					log.info("User " + user + " requested testFlowAllSteps of flow instance " + instanceManager.getFlowInstance());
-		
+
 					List<ManagerResponse> managerResponses = instanceManager.getFullFormHTML(queryHandler, req, user, user, getMutableQueryRequestBaseURL(req, normalTestFlowInstanceManager), BaseFlowModule.OWNER_REQUEST_METADATA);
-		
+
 					Document doc = createDocument(req, uriParser, user);
 					Element flowInstanceManagerPreviewElement = doc.createElement("FlowInstanceManagerAllStepsForm");
 					doc.getDocumentElement().appendChild(flowInstanceManagerPreviewElement);
-		
+
 					flowInstanceManagerPreviewElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
-		
+
 					XMLUtils.append(doc, flowInstanceManagerPreviewElement, "ManagerResponses", managerResponses);
-		
+
 					appendFormData(doc, flowInstanceManagerPreviewElement, instanceManager, req, user);
-		
+
 					SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, instanceManager.getFlowInstance().getFlow().getName());
-		
+
 					appendLinksAndScripts(moduleResponse, managerResponses);
-		
+
 					return moduleResponse;
-					
+
 				} catch (FlowInstanceManagerClosedException e) {
 
 					log.info("User " + user + " requested flow instance manager for flow instance " + e.getFlowInstance() + " which has already been closed. Removing flow instance manager from session.");
-		
+
 					redirectToMethod(req, res, "/testflowallsteps/" + flowID);
 					return null;
-					
+
 				} finally {
-					
+
 					instanceManager.close(queryHandler);
 				}
 
@@ -3264,47 +3264,47 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return messageTemplateCRUD.delete(req, res, user, uriParser);
 	}
-	
-	@EventListener(channel=FlowType.class)
+
+	@EventListener(channel = FlowType.class)
 	public void processFlowTypeEvent(CRUDEvent<FlowType> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow types");
-		
+
 		cacheFlowTypes();
 		cacheFlows();
 	}
-	
-	@EventListener(channel=Category.class)
+
+	@EventListener(channel = Category.class)
 	public void processCategoryEvent(CRUDEvent<Category> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " categories");
-		
+
 		cacheFlowTypes();
 		cacheFlows();
 	}
-	
-	@EventListener(channel=FlowFamily.class)
+
+	@EventListener(channel = FlowFamily.class)
 	public void processFlowFamilyEvent(CRUDEvent<FlowFamily> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow families");
-		
-		if(event.getAction() == CRUDAction.DELETE) {
+
+		if (event.getAction() == CRUDAction.DELETE) {
 
 			deleteFlowFamiliesFromCache(event.getBeans());
-			
-		}else {
-			
+
+		} else {
+
 			List<Integer> flowFamilyIDs = new ArrayList<>(event.getBeans().size());
-			
-			for(FlowFamily flowFamily : event.getBeans()) {
-				
+
+			for (FlowFamily flowFamily : event.getBeans()) {
+
 				flowFamilyIDs.add(flowFamily.getFlowFamilyID());
 			}
-			
+
 			cacheFlowFamilies(flowFamilyIDs);
 		}
 	}
-	
+
 	@EventListener(channel = Flow.class)
 	public void processFlowEvent(CRUDEvent<Flow> event, EventSource source) throws SQLException {
 
@@ -3318,8 +3318,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 		}
-		
-		if(event.getAction() == CRUDAction.DELETE) {
+
+		if (event.getAction() == CRUDAction.DELETE) {
 
 			//This code may leave loose files if the bean does not have all relations set
 			for (Flow flow : event.getBeans()) {
@@ -3332,22 +3332,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					}
 				}
 			}
-			
+
 			deleteFlowsFromCache(event.getBeans());
 
-			for(Flow flow : event.getBeans()) {
-				
+			for (Flow flow : event.getBeans()) {
+
 				try {
 					log.info("Deleting file attachments for flow " + flow);
-					
+
 					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flow);
-					
-				}catch(Exception t) {
-					
+
+				} catch (Exception t) {
+
 					log.error("Error deleting file attachments for flow " + flow, t);
 				}
 			}
-			
+
 		} else {
 
 			List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
@@ -3360,32 +3360,32 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			cacheFlows(flowIDs);
 		}
 	}
-	
-	@EventListener(channel=Step.class)
+
+	@EventListener(channel = Step.class)
 	public void processStepEvent(CRUDEvent<Step> event, EventSource source) throws SQLException {
-	
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " steps");
-		
+
 		for (Step step : event.getBeans()) {
 
 			closeInstanceManagers(step.getFlow());
 		}
-		
+
 		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
-		
-		for(Step step : event.getBeans()) {
-			
+
+		for (Step step : event.getBeans()) {
+
 			flowIDs.add(step.getFlow().getFlowID());
 		}
-		
+
 		cacheFlows(flowIDs);
 	}
-	
-	@EventListener(channel=QueryDescriptor.class)
+
+	@EventListener(channel = QueryDescriptor.class)
 	public void processQueryDescriptorEvent(CRUDEvent<QueryDescriptor> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " query descriptors");
-		
+
 		for (QueryDescriptor queryDescriptor : event.getBeans()) {
 
 			if (queryDescriptor.getStep() == null || queryDescriptor.getStep().getFlow() == null) {
@@ -3397,57 +3397,57 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			closeInstanceManagers(queryDescriptor.getStep().getFlow());
 		}
-		
+
 		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
-		
-		for(QueryDescriptor queryDescriptor : event.getBeans()) {
-			
+
+		for (QueryDescriptor queryDescriptor : event.getBeans()) {
+
 			flowIDs.add(queryDescriptor.getStep().getFlow().getFlowID());
 		}
-		
+
 		cacheFlows(flowIDs);
 	}
-	
-	@EventListener(channel=EvaluatorDescriptor.class)
+
+	@EventListener(channel = EvaluatorDescriptor.class)
 	public void processEvaluatorDescriptorEvent(CRUDEvent<EvaluatorDescriptor> event, EventSource source) throws SQLException {
-	
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " evaluator descriptors");
-		
+
 		for (EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
 
 			closeInstanceManagers(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow());
 		}
-		
+
 		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
-		
-		for(EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
-			
+
+		for (EvaluatorDescriptor evaluatorDescriptor : event.getBeans()) {
+
 			flowIDs.add(evaluatorDescriptor.getQueryDescriptor().getStep().getFlow().getFlowID());
 		}
-		
+
 		cacheFlows(flowIDs);
 	}
-	
-	@EventListener(channel=Status.class)
+
+	@EventListener(channel = Status.class)
 	public void processStatusEvent(CRUDEvent<Status> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " statuses");
-		
+
 		List<Integer> flowIDs = new ArrayList<>(event.getBeans().size());
-		
-		for(Status status : event.getBeans()) {
-			
+
+		for (Status status : event.getBeans()) {
+
 			flowIDs.add(status.getFlow().getFlowID());
 		}
-		
+
 		cacheFlows(flowIDs);
 	}
-	
-	@EventListener(channel=FlowInstance.class)
+
+	@EventListener(channel = FlowInstance.class)
 	public void processFlowInstanceEvent(CRUDEvent<FlowInstance> event, EventSource source) throws SQLException {
-		
+
 		log.info("Received CRUD event regarding " + event.getAction() + " of " + event.getBeans().size() + " flow instances");
-		
+
 		for (FlowInstance flowInstance : event.getBeans()) {
 
 			Flow flow;
@@ -3497,14 +3497,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				try {
 					log.info("Deleting file attachments for flow instance " + flowInstance);
-					
+
 					FlowEngineFileAttachmentUtils.deleteAttachments(fileAttachmentHandler, flowInstance);
-					
-				}catch(Exception t) {
-					
+
+				} catch (Exception t) {
+
 					log.error("Error deleting file attachments for flow instance " + flowInstance, t);
 				}
-				
+
 				Status status = getCachedStatus(flow, flowInstance.getStatus());
 
 				if (status != null) {
@@ -3551,7 +3551,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return;
 	}
-		
+
 	private Status getCachedStatus(Flow flow, Status status) {
 
 		if (status == null || flow.getStatuses() == null) {
@@ -3569,21 +3569,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return null;
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse reCacheFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, URINotFoundException, IOException {
-		
+
 		Integer flowID;
 		Flow flow;
-		
+
 		if (user != null && user.isAdmin() && uriParser.size() == 3 && (flowID = uriParser.getInt(2)) != null && (flow = getFlow(flowID)) != null) {
-			
+
 			systemInterface.getEventHandler().sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.UPDATE, flow), EventTarget.ALL);
-			
+
 			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
 			return null;
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
 
@@ -3669,7 +3669,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			throw new AccessDeniedException("Changes to queries in flow " + flow + " is not allowed since the flow has one or more flow instances connected to it.");
 		}
 	}
-	
+
 	public DataSource getDataSource() {
 
 		return dataSource;
@@ -3708,7 +3708,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	public List<Flow> getFlowVersions(FlowFamily flowFamily, Order sortOrder) {
-		
+
 		List<Flow> flows = new ArrayList<>(flowFamily.getVersionCount());
 
 		for (Flow flow : flowCache.getFlowCacheMap().values()) {
@@ -3721,21 +3721,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		if (!flows.isEmpty()) {
 
-			if(sortOrder == Order.ASC) {
+			if (sortOrder == Order.ASC) {
 
 				Collections.sort(flows, ASC_FLOW_VERSION_COMPARATOR);
-				
+
 			} else {
-				
+
 				Collections.sort(flows, DESC_FLOW_VERSION_COMPARATOR);
-				
+
 			}
-			
+
 		}
 
 		return flows;
 	}
-	
+
 	public List<Flow> getFlowVersions(FlowFamily flowFamily) {
 
 		return getFlowVersions(flowFamily, Order.ASC);
@@ -3859,7 +3859,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	@Override
-	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String,String> eventAttributes, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
+	protected FlowInstanceEvent save(MutableFlowInstanceManager instanceManager, User user, User poster, HttpServletRequest req, String actionID, EventType eventType, Map<String, String> eventAttributes, RequestMetadata requestMetadata) throws FlowInstanceManagerClosedException, UnableToSaveQueryInstanceException, SQLException, FlowDefaultStatusNotFound {
 
 		return null;
 	}
@@ -4003,7 +4003,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public String getStandalonePaymentURL(FlowInstanceManager instanceManager, HttpServletRequest req) {
 
@@ -4215,7 +4215,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		try {
 			XMLUtils.writeXML(doc, res.getOutputStream(), true, systemInterface.getEncoding());
 		} catch (TransformerException e) {
-			
+
 			log.info("Error sending exported flow " + flow + " to user " + user + ", " + e);
 		}
 
@@ -4235,7 +4235,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Element flowNode = flow.toXML(xmlGeneratorDocument);
 		XMLUtils.append(doc, flowNode, "OverviewAttributes", flow.getOverviewAttributes());
-		
+
 		doc.appendChild(flowNode);
 
 		if (flow.getIcon() != null) {
@@ -4277,19 +4277,17 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			doc.getDocumentElement().appendChild(selectImportTargetFamily);
 
 			appendUserFlowTypes(doc, selectImportTargetFamily, user);
-			
+
 			Integer repositoryIndex;
 			Integer sharedflowID;
-			
-			if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null 
-					&& (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0)
-				{
+
+			if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0) {
 				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
 				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
 				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
 				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
 			}
-			
+
 			return new SimpleForegroundModuleResponse(doc);
 
 		} else if (!AccessUtils.checkAccess(user, flowType.getAdminAccessInterface())) {
@@ -4303,25 +4301,24 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public synchronized ForegroundModuleResponse importFlow(FlowType flowType, Flow relatedFlow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
 
 		ValidationException validationException = null;
-		
+
 		Integer repositoryIndex;
 		Integer sharedflowID;
-		
-		if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(3)) != null 
-				&& (sharedflowID = uriParser.getInt(4)) != null && repositoryIndex >= 0)
-			{
+
+		if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(3)) != null && (sharedflowID = uriParser.getInt(4)) != null && repositoryIndex >= 0) {
 
 			log.info("User " + user + " importing flow...");
 
 			try {
-				
+
 				ExternalFlow externalFlow = getExternalFlow(repositoryIndex, sharedflowID);
-				if(externalFlow != null)
-				{
+				
+				if (externalFlow != null) {
+					
 					importFlow(new ByteArrayInputStream(externalFlow.getData()), externalFlow.getFilename(), flowType, relatedFlow, req, res, user);
-				}
-				else
-				{
+					
+				} else {
+					
 					validationException = new ValidationException(new UnableToParseFileValidationError(""));
 				}
 
@@ -4348,9 +4345,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					log.error("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
 				}
 			}
-		}
 
-		if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
+		} else if (req.getMethod().equalsIgnoreCase("POST") && MultipartRequest.isMultipartRequest(req)) {
 
 			log.info("User " + user + " importing flow...");
 
@@ -4372,27 +4368,26 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					throw new ValidationException(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oeflow"));
 				}
 
-				
-				try (InputStream inputStream = fileItem.getInputStream()){
-				
+				try (InputStream inputStream = fileItem.getInputStream()) {
+
 					importFlow(inputStream, FilenameUtils.getName(fileItem.getName()), flowType, relatedFlow, multipartRequest, res, user);
 
-				} 
+				}
 
 			} catch (ValidationException e) {
-				
+
 				validationException = e;
 
 			} catch (SizeLimitExceededException e) {
-				
+
 				validationException = new ValidationException(new RequestSizeLimitExceededValidationError(e.getActualSize(), e.getPermittedSize()));
 
 			} catch (FileSizeLimitExceededException e) {
-				
+
 				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
 
 			} catch (Exception e) {
-				
+
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
 			} finally {
@@ -4433,28 +4428,27 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
 
+	//TODO use ExternalFlowProvider.getProviderID() to find the provider instead of calling getFlow on all ExternalFlowProvider's
 	private ExternalFlow getExternalFlow(Integer repositoryIndex, Integer sharedflowID) {
-		
+
 		ExternalFlow externalFlow = null;
 
-		for(ExternalFlowProvider externalFlowProvider : externalFlowProviders) {
-			
+		for (ExternalFlowProvider externalFlowProvider : externalFlowProviders) {
+
 			try {
 				externalFlow = externalFlowProvider.getFlow(repositoryIndex, sharedflowID);
-				if(externalFlow != null)
-					break;
 				
-			}catch(Exception e) {
-				StringBuilder info = new StringBuilder();
-				info.append("Error in externalflowprovider ");
-				info.append(externalFlowProvider);
-				info.append(" while reading file with repositoryIndex ");
-				info.append(repositoryIndex);
-				info.append(" and flowID ");
-				info.append(sharedflowID);
-				log.error(info.toString(), e);
+				if (externalFlow != null) {
+					
+					break;
+				}
+
+			} catch (Exception e) {
+
+				log.error("Error in externalflowprovider " + externalFlowProvider + " while reading file with repositoryIndex " + repositoryIndex + " and flowID " + sharedflowID, e);
 			}
 		}
+		
 		return externalFlow;
 	}
 
@@ -4462,89 +4456,267 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Document doc = null;
 
-			try {
-				doc = XMLUtils.parseXML(inputStream, false, false);
+		try {
+			doc = XMLUtils.parseXML(inputStream, false, false);
 
-			} catch (Exception e) {
+		} catch (Exception e) {
 
-				log.info("Unable to parse file " + filename, e);
+			log.info("Unable to parse file " + filename, e);
 
-				throw new ValidationException(new UnableToParseFileValidationError(filename));
+			throw new ValidationException(new UnableToParseFileValidationError(filename));
+		}
+
+		Element docElement = doc.getDocumentElement();
+
+		if (!docElement.getTagName().equals("Flow")) {
+
+			log.info("Error parsing file " + filename + ", unable to find flow element");
+
+			throw new ValidationException(new UnableToParseFileValidationError(filename));
+		}
+
+		Flow flow = Flow.class.newInstance();
+
+		XMLParser xmlParser = new XMLParser(docElement);
+
+		flow.populate(xmlParser);
+
+		this.filterHTML(flow);
+
+		flow.setFlowType(flowType);
+
+		Integer importVersion = xmlParser.getInteger("version");
+
+		if (relatedFlow == null) {
+
+			flow.setVersion(1);
+
+			FlowFamily flowFamily = new FlowFamily();
+			flowFamily.setVersionCount(1);
+
+			List<ValidationError> errors = new ArrayList<>();
+
+			flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/MessageTemplates/MessageTemplate", MessageTemplate.class, errors));
+
+			if (flowFamily.getMessageTemplates() == null) {
+
+				flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", MessageTemplate.class, errors));
 			}
 
-			Element docElement = doc.getDocumentElement();
+			if (!errors.isEmpty()) {
 
-			if (!docElement.getTagName().equals("Flow")) {
-
-				log.info("Error parsing file " + filename + ", unable to find flow element");
-
-				throw new ValidationException(new UnableToParseFileValidationError(filename));
+				throw new ValidationException(errors);
 			}
 
-			Flow flow = Flow.class.newInstance();
+			flow.setFlowFamily(flowFamily);
 
-			XMLParser xmlParser = new XMLParser(docElement);
+		} else {
 
-			flow.populate(xmlParser);
-			
-			this.filterHTML(flow);
+			FlowFamily flowFamily = SerializationUtils.cloneSerializable(relatedFlow.getFlowFamily());
+			flow.setFlowFamily(flowFamily);
+		}
 
-			flow.setFlowType(flowType);
+		Integer categoryID = NumberUtils.toInt(req.getParameter("categoryID"));
 
-			Integer importVersion = xmlParser.getInteger("version");
-			
+		if (categoryID != null && flowType.getCategories() != null) {
+
+			for (Category category : flowType.getCategories()) {
+
+				if (category.getCategoryID().equals(categoryID)) {
+
+					flow.setCategory(category);
+					break;
+				}
+
+			}
+		}
+
+		//Create translation map for query ID's in order to able to update target queries field of evaluators later on
+		HashMap<EvaluatorDescriptor, List<QueryDescriptor>> evaluatorTargetQueriesMap = new HashMap<>();
+
+		if (flow.getSteps() != null) {
+
+			List<ValidationError> validationErrors = new ArrayList<>();
+
+			for (Step step : flow.getSteps()) {
+
+				if (step.getQueryDescriptors() != null) {
+
+					for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
+
+						//Check if a query provider for this query type is available
+						if (queryHandler.getQueryProvider(queryDescriptor.getQueryTypeID()) == null) {
+
+							log.info("Unable to find query provider for query type " + queryDescriptor.getQueryTypeID() + " used by query " + queryDescriptor);
+
+							validationErrors.add(new QueryTypeNotFoundValidationError(queryDescriptor));
+
+						} else {
+
+							//Check if this query type is allowed for the select flowtype
+							if (flowType.getAllowedQueryTypes() == null || !flowType.getAllowedQueryTypes().contains(queryDescriptor.getQueryTypeID())) {
+
+								validationErrors.add(new QueryTypeNotAllowedInFlowTypeValidationError(queryDescriptor, flowType));
+							}
+						}
+
+						if (queryDescriptor.getEvaluatorDescriptors() != null) {
+
+							for (EvaluatorDescriptor evaluatorDescriptor : queryDescriptor.getEvaluatorDescriptors()) {
+
+								//Check if a evaluation provider for this evaluator type is available
+								if (evaluationHandler.getEvaluationProvider(evaluatorDescriptor.getEvaluatorTypeID()) == null) {
+
+									log.info("Unable to find evulation provider for evaluator type " + evaluatorDescriptor.getEvaluatorTypeID() + " used by evaluator " + evaluatorDescriptor);
+
+									validationErrors.add(new EvaluatorTypeNotFoundValidationError(evaluatorDescriptor));
+								}
+
+								if (evaluatorDescriptor.getTargetQueryIDs() != null) {
+
+									List<QueryDescriptor> targetQueries = getTargetQueries(evaluatorDescriptor.getTargetQueryIDs(), flow.getSteps());
+
+									if (targetQueries != null) {
+
+										evaluatorTargetQueriesMap.put(evaluatorDescriptor, targetQueries);
+									}
+
+									evaluatorDescriptor.setTargetQueryIDs(null);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (!validationErrors.isEmpty()) {
+
+				throw new ValidationException(validationErrors);
+			}
+		}
+
+		//Set correct status references on default flow statuses and check actionID's
+		if (flow.getStatuses() != null && flow.getDefaultFlowStateMappings() != null) {
+
+			Iterator<DefaultStatusMapping> iterator = flow.getDefaultFlowStateMappings().iterator();
+
+			mappingLoop: while (iterator.hasNext()) {
+
+				DefaultStatusMapping statusMapping = iterator.next();
+
+				//If the action for this status mapping does not exist in this installation skip this mapping
+				if (!actionExists(statusMapping.getActionID())) {
+
+					log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " from imported flow since it's supported in this installation.");
+					iterator.remove();
+					continue;
+				}
+
+				if (statusMapping.getStatus() == null) {
+
+					log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " since it has no status set.");
+					iterator.remove();
+					continue;
+				}
+
+				Integer statusID = statusMapping.getStatus().getStatusID();
+
+				for (Status status : flow.getStatuses()) {
+
+					if (status.getStatusID().equals(statusID)) {
+
+						statusMapping.setStatus(status);
+
+						continue mappingLoop;
+					}
+				}
+
+				//No matching status found in flow status list, skip this mapping
+				log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " since no matching status could be found.");
+				iterator.remove();
+			}
+		}
+
+		//Clear query descriptor ID's
+		if (flow.getSteps() != null) {
+
+			for (Step step : flow.getSteps()) {
+
+				if (step.getQueryDescriptors() != null) {
+
+					for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
+
+						queryDescriptor.setQueryID(null);
+					}
+				}
+			}
+		}
+
+		Map<Integer, ImmutableStatus> statusConversionMap;
+
+		//Clear status ID's
+		if (flow.getStatuses() != null) {
+
+			statusConversionMap = new HashMap<>(flow.getStatuses().size());
+
+			for (Status status : flow.getStatuses()) {
+
+				statusConversionMap.put(status.getStatusID(), status);
+				status.setStatusID(null);
+			}
+
+		} else {
+
+			statusConversionMap = null;
+		}
+
+		boolean familyUpdated = false;
+
+		//Create transaction
+		try (TransactionHandler transactionHandler = daoFactory.getTransactionHandler()) {
+
+			//Add flow to database
 			if (relatedFlow == null) {
 
-				flow.setVersion(1);
-
-				FlowFamily flowFamily = new FlowFamily();
-				flowFamily.setVersionCount(1);
-				
-				List<ValidationError> errors = new ArrayList<>();
-				
-				flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/MessageTemplates/MessageTemplate", MessageTemplate.class, errors));
-				
-				if (flowFamily.getMessageTemplates() == null) {
-					
-					flowFamily.setMessageTemplates(XMLPopulationUtils.populateBeans(xmlParser, "FlowFamily/ExternalMessageTemplates/ExternalMessageTemplate", MessageTemplate.class, errors));
-				}
-
-				//TODO Import flowfamily settings
-				
-				if (!errors.isEmpty()) {
-
-					throw new ValidationException(errors);
-				}
-				
-				flow.setFlowFamily(flowFamily);
+				daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY);
 
 			} else {
 
-				FlowFamily flowFamily = SerializationUtils.cloneSerializable(relatedFlow.getFlowFamily());
-				flow.setFlowFamily(flowFamily);
-			}
+				Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
 
-			Integer categoryID = NumberUtils.toInt(req.getParameter("categoryID"));
+				if (version == null) {
 
-			if (categoryID != null && flowType.getCategories() != null) {
-
-				for (Category category : flowType.getCategories()) {
-
-					if (category.getCategoryID().equals(categoryID)) {
-
-						flow.setCategory(category);
-						break;
-					}
-
+					throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
 				}
+
+				flow.setVersion(version);
+				flow.getFlowFamily().setVersionCount(version);
+
+				daoFactory.getFlowFamilyDAO().update(flow.getFlowFamily(), transactionHandler, null);
+				daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
+
+				familyUpdated = true;
 			}
 
-			//Create translation map for query ID's in order to able to update target queries field of evaluators later on
-			HashMap<EvaluatorDescriptor, List<QueryDescriptor>> evaluatorTargetQueriesMap = new HashMap<>();
+			//Set target query ID's on evaluator descriptors
+			for (Entry<EvaluatorDescriptor, List<QueryDescriptor>> entry : evaluatorTargetQueriesMap.entrySet()) {
 
+				List<Integer> targetQueryIDs = new ArrayList<>(entry.getValue().size());
+
+				for (QueryDescriptor queryDescriptor : entry.getValue()) {
+
+					targetQueryIDs.add(queryDescriptor.getQueryID());
+				}
+
+				entry.getKey().setTargetQueryIDs(targetQueryIDs);
+
+				daoFactory.getEvaluatorDescriptorDAO().update(entry.getKey(), transactionHandler, null);
+			}
+
+			HashMap<QueryDescriptor, Query> importedQueryMap = new HashMap<>();
+
+			//Import queries using QueryHandler
 			if (flow.getSteps() != null) {
-
-				List<ValidationError> validationErrors = new ArrayList<>();
 
 				for (Step step : flow.getSteps()) {
 
@@ -4552,297 +4724,112 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 						for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
 
-							//Check if a query provider for this query type is available
-							if (queryHandler.getQueryProvider(queryDescriptor.getQueryTypeID()) == null) {
+							try {
+								queryDescriptor.setStep(null);
+								importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler, statusConversionMap, this));
 
-								log.info("Unable to find query provider for query type " + queryDescriptor.getQueryTypeID() + " used by query " + queryDescriptor);
+							} catch (Exception e) {
 
-								validationErrors.add(new QueryTypeNotFoundValidationError(queryDescriptor));
+								log.error("Error importing query " + queryDescriptor + " of type " + queryDescriptor.getQueryTypeID() + " into flow " + flow + " uploaded by user " + user, e);
 
-							} else {
-
-								//Check if this query type is allowed for the select flowtype
-								if (flowType.getAllowedQueryTypes() == null || !flowType.getAllowedQueryTypes().contains(queryDescriptor.getQueryTypeID())) {
-
-									validationErrors.add(new QueryTypeNotAllowedInFlowTypeValidationError(queryDescriptor, flowType));
-								}
+								queryDescriptor.setEvaluatorDescriptors(null);
+								throw new ValidationException(new QueryImportValidationError(queryDescriptor));
 							}
+						}
+					}
+				}
+			}
+
+			//Import evaluator using EvaluationHandler
+			if (flow.getSteps() != null) {
+
+				for (Step step : flow.getSteps()) {
+
+					if (step.getQueryDescriptors() != null) {
+
+						for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
 
 							if (queryDescriptor.getEvaluatorDescriptors() != null) {
 
 								for (EvaluatorDescriptor evaluatorDescriptor : queryDescriptor.getEvaluatorDescriptors()) {
 
-									//Check if a evaluation provider for this evaluator type is available
-									if (evaluationHandler.getEvaluationProvider(evaluatorDescriptor.getEvaluatorTypeID()) == null) {
+									try {
+										evaluatorDescriptor.setQueryDescriptor(null);
+										evaluationHandler.importEvaluator(evaluatorDescriptor, transactionHandler, importedQueryMap.get(queryDescriptor), statusConversionMap);
 
-										log.info("Unable to find evulation provider for evaluator type " + evaluatorDescriptor.getEvaluatorTypeID() + " used by evaluator " + evaluatorDescriptor);
+									} catch (Exception e) {
 
-										validationErrors.add(new EvaluatorTypeNotFoundValidationError(evaluatorDescriptor));
-									}
+										log.error("Error importing evaluator " + evaluatorDescriptor + " of type " + evaluatorDescriptor.getEvaluatorTypeID() + " into flow " + flow + " uploaded by user " + user, e);
 
-									if (evaluatorDescriptor.getTargetQueryIDs() != null) {
-
-										List<QueryDescriptor> targetQueries = getTargetQueries(evaluatorDescriptor.getTargetQueryIDs(), flow.getSteps());
-
-										if (targetQueries != null) {
-
-											evaluatorTargetQueriesMap.put(evaluatorDescriptor, targetQueries);
-										}
-
-										evaluatorDescriptor.setTargetQueryIDs(null);
+										throw new ValidationException(new EvaluatorImportValidationError(evaluatorDescriptor));
 									}
 								}
 							}
 						}
 					}
 				}
-
-				if (!validationErrors.isEmpty()) {
-
-					throw new ValidationException(validationErrors);
-				}
 			}
 
-			//Set correct status references on default flow statuses and check actionID's
-			if (flow.getStatuses() != null && flow.getDefaultFlowStateMappings() != null) {
+			if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
 
-				Iterator<DefaultStatusMapping> iterator = flow.getDefaultFlowStateMappings().iterator();
+				if (flow.getFlowForms().size() == 1) {
 
-				mappingLoop: while (iterator.hasNext()) {
+					String oldFlowForm = xmlParser.getString("/Flow/PDF");
 
-					DefaultStatusMapping statusMapping = iterator.next();
+					// Handle old flow form format
+					if (!StringUtils.isEmpty(oldFlowForm)) {
 
-					//If the action for this status mapping does not exist in this installation skip this mapping
-					if (!actionExists(statusMapping.getActionID())) {
+						byte[] pdfFileContents = Base64.decode(xmlParser.getString("/Flow/PDF"));
 
-						log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " from imported flow since it's supported in this installation.");
-						iterator.remove();
-						continue;
-					}
+						if (pdfFileContents != null) {
 
-					if (statusMapping.getStatus() == null) {
-
-						log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " since it has no status set.");
-						iterator.remove();
-						continue;
-					}
-
-					Integer statusID = statusMapping.getStatus().getStatusID();
-
-					for (Status status : flow.getStatuses()) {
-
-						if (status.getStatusID().equals(statusID)) {
-
-							statusMapping.setStatus(status);
-
-							continue mappingLoop;
-						}
-					}
-
-					//No matching status found in flow status list, skip this mapping
-					log.info("Removing default status mapping for action ID " + statusMapping.getActionID() + " since no matching status could be found.");
-					iterator.remove();
-				}
-			}
-
-			//Clear query descriptor ID's
-			if (flow.getSteps() != null) {
-
-				for (Step step : flow.getSteps()) {
-
-					if (step.getQueryDescriptors() != null) {
-
-						for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
-
-							queryDescriptor.setQueryID(null);
-						}
-					}
-				}
-			}
-
-			Map<Integer, ImmutableStatus> statusConversionMap;
-
-			//Clear status ID's
-			if (flow.getStatuses() != null) {
-
-				statusConversionMap = new HashMap<>(flow.getStatuses().size());
-
-				for (Status status : flow.getStatuses()) {
-
-					statusConversionMap.put(status.getStatusID(), status);
-					status.setStatusID(null);
-				}
-
-			} else {
-
-				statusConversionMap = null;
-			}
-
-			
-			
-			boolean familyUpdated = false;
-			
-			//Create transaction
-			try (TransactionHandler transactionHandler = daoFactory.getTransactionHandler())
-			{
-				
-
-				//Add flow to database
-				if (relatedFlow == null) {
-
-					daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY);
-
-				} else {
-
-					Integer version = getNextVersion(flow.getFlowFamily().getFlowFamilyID(), transactionHandler);
-
-					if (version == null) {
-
-						throw new RuntimeException("Flow family " + flow.getFlowFamily() + " not found in database.");
-					}
-
-					flow.setVersion(version);
-					flow.getFlowFamily().setVersionCount(version);
-
-					daoFactory.getFlowFamilyDAO().update(flow.getFlowFamily(), transactionHandler, null);
-					daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_VERSION_RELATION_QUERY);
-					
-					familyUpdated = true;
-				}
-
-				//Set target query ID's on evaluator descriptors
-				for (Entry<EvaluatorDescriptor, List<QueryDescriptor>> entry : evaluatorTargetQueriesMap.entrySet()) {
-
-					List<Integer> targetQueryIDs = new ArrayList<>(entry.getValue().size());
-
-					for (QueryDescriptor queryDescriptor : entry.getValue()) {
-
-						targetQueryIDs.add(queryDescriptor.getQueryID());
-					}
-
-					entry.getKey().setTargetQueryIDs(targetQueryIDs);
-
-					daoFactory.getEvaluatorDescriptorDAO().update(entry.getKey(), transactionHandler, null);
-				}
-
-				HashMap<QueryDescriptor, Query> importedQueryMap = new HashMap<>();
-
-				//Import queries using QueryHandler
-				if (flow.getSteps() != null) {
-
-					for (Step step : flow.getSteps()) {
-
-						if (step.getQueryDescriptors() != null) {
-
-							for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
-
-								try {
-									queryDescriptor.setStep(null);
-									importedQueryMap.put(queryDescriptor, queryHandler.importQuery(queryDescriptor, transactionHandler, statusConversionMap, this));
-
-								} catch (Exception e) {
-
-									log.error("Error importing query " + queryDescriptor + " of type " + queryDescriptor.getQueryTypeID() + " into flow " + flow + " uploaded by user " + user, e);
-
-									queryDescriptor.setEvaluatorDescriptors(null);
-									throw new ValidationException(new QueryImportValidationError(queryDescriptor));
-								}
-							}
+							FileUtils.writeFile(getFlowFormFilePath(flow.getFlowForms().get(0)), pdfFileContents);
 						}
 					}
 				}
 
-				//Import evaluator using EvaluationHandler
-				if (flow.getSteps() != null) {
+				for (FlowForm flowForm : flow.getFlowForms()) {
 
-					for (Step step : flow.getSteps()) {
+					if (flowForm.getImportFileContents() != null) {
 
-						if (step.getQueryDescriptors() != null) {
-
-							for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
-
-								if (queryDescriptor.getEvaluatorDescriptors() != null) {
-
-									for (EvaluatorDescriptor evaluatorDescriptor : queryDescriptor.getEvaluatorDescriptors()) {
-
-										try {
-											evaluatorDescriptor.setQueryDescriptor(null);
-											evaluationHandler.importEvaluator(evaluatorDescriptor, transactionHandler, importedQueryMap.get(queryDescriptor), statusConversionMap);
-
-										} catch (Exception e) {
-
-											log.error("Error importing evaluator " + evaluatorDescriptor + " of type " + evaluatorDescriptor.getEvaluatorTypeID() + " into flow " + flow + " uploaded by user " + user, e);
-
-											throw new ValidationException(new EvaluatorImportValidationError(evaluatorDescriptor));
-										}
-									}
-								}
-							}
-						}
+						FileUtils.writeFile(new File(getFlowFormFilePath(flowForm)), flowForm.getImportFileContents());
 					}
 				}
+			}
 
+			try {
+				// Commit
+				transactionHandler.commit();
+
+			} catch (SQLException e) {
+
+				// Cleanup
 				if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
-
-					if (flow.getFlowForms().size() == 1) {
-
-						String oldFlowForm = xmlParser.getString("/Flow/PDF");
-
-						// Handle old flow form format
-						if (!StringUtils.isEmpty(oldFlowForm)) {
-
-							byte[] pdfFileContents = Base64.decode(xmlParser.getString("/Flow/PDF"));
-
-							if (pdfFileContents != null) {
-
-								FileUtils.writeFile(getFlowFormFilePath(flow.getFlowForms().get(0)), pdfFileContents);
-							}
-						}
-					}
 
 					for (FlowForm flowForm : flow.getFlowForms()) {
 
-						if (flowForm.getImportFileContents() != null) {
-
-							FileUtils.writeFile(new File(getFlowFormFilePath(flowForm)), flowForm.getImportFileContents());
-						}
+						deleteFlowFormFile(flowForm);
 					}
 				}
 
-				try {
-					// Commit
-					transactionHandler.commit();
+				throw e;
+			}
 
-				} catch (SQLException e) {
+			log.info("User " + user + " succefully imported flow " + flow);
 
-					// Cleanup
-					if (!CollectionUtils.isEmpty(flow.getFlowForms())) {
+			eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flow), EventTarget.ALL);
+			eventHandler.sendEvent(Flow.class, new FlowVersionAdded(flow, statusConversionMap), EventTarget.ALL);
 
-						for (FlowForm flowForm : flow.getFlowForms()) {
+			if (familyUpdated) {
+				eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flow.getFlowFamily()), EventTarget.ALL);
+			}
 
-							deleteFlowFormFile(flowForm);
-						}
-					}
+			addFlowFamilyEvent(eventImportFlowMessage + " \"" + flow.getName() + "\"" + (importVersion != null ? " (" + importVersion + ")" : ""), flow, user);
 
-					throw e;
-				}
+			redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
 
-				log.info("User " + user + " succefully imported flow " + flow);
+		}
 
-				eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(CRUDAction.ADD, flow), EventTarget.ALL);
-				eventHandler.sendEvent(Flow.class, new FlowVersionAdded(flow, statusConversionMap), EventTarget.ALL);
-
-				if (familyUpdated) {
-					eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(CRUDAction.ADD, flow.getFlowFamily()), EventTarget.ALL);
-				}
-
-				addFlowFamilyEvent(eventImportFlowMessage + " \"" + flow.getName() + "\"" + (importVersion != null ? " (" + importVersion + ")" : ""), flow, user);
-
-				redirectToMethod(req, res, "/showflow/" + flow.getFlowID());
-
-			} 
-
-		
 	}
 
 	private Integer getNextVersion(Integer flowFamilyID, TransactionHandler transactionHandler) throws SQLException {
@@ -5077,11 +5064,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		importQueriesElement.appendChild(flow.toXML(doc));
 
-		if(NumberUtils.isInt(req.getParameter("step"))) {
-			
+		if (NumberUtils.isInt(req.getParameter("step"))) {
+
 			XMLUtils.appendNewElement(doc, importQueriesElement, "SelectedStep", req.getParameter("step"));
 		}
-		
+
 		if (validationException != null) {
 			importQueriesElement.appendChild(validationException.toXML(doc));
 		}
@@ -5227,19 +5214,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return unrestrictedUserGroupListConnector.getGroups(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic(alias = "managerusers")
 	public ForegroundModuleResponse getManagerUsers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return userGroupListFlowManagersConnector.getUsers(req, res, user, uriParser);
 	}
-	
+
 	@WebPublic(alias = "managergroups")
 	public ForegroundModuleResponse getManagerGroups(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
 		return userGroupListFlowManagersConnector.getGroups(req, res, user, uriParser);
 	}
-	
+
 	public FlowNotificationHandler getNotificationHandler() {
 
 		return notificationHandler;
@@ -5302,23 +5289,23 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				sendEmptyJSONResponse(res);
 				return null;
 			}
-			
+
 			Set<String> statusNames = new HashSet<>();
 
 			for (Status status : flow.getStatuses()) {
-				
+
 				statusNames.add(status.getName());
 			}
 
 			log.info("User " + user + " getting statuses for flow " + flow + ", found " + statusNames.size() + " hits");
-			
+
 			List<String> sortedStatusNames = new ArrayList<>(statusNames);
 			Collections.sort(sortedStatusNames);
-			
+
 			JsonArray jsonArray = new JsonArray();
 
 			sortedStatusNames.forEach(jsonArray::addNode);
-			
+
 			sendJSONResponse(jsonArray, res);
 			return null;
 		}
@@ -5328,14 +5315,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	protected static void sendEmptyJSONResponse(HttpServletResponse res) throws IOException {
-		
+
 		JsonObject jsonObject = new JsonObject(1);
 		jsonObject.putField("hitCount", "0");
 		HTTPUtils.sendReponse(jsonObject.toJson(), JsonUtils.getContentType(), res);
 	}
-	
+
 	protected void sendJSONResponse(JsonArray jsonArray, HttpServletResponse res) throws IOException {
-		
+
 		JsonObject jsonObject = new JsonObject(2);
 		jsonObject.putField("hitCount", Integer.toString(jsonArray.size()));
 		jsonObject.putField("hits", jsonArray);
@@ -5440,169 +5427,169 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	public synchronized void addExtensionViewProvider(FlowAdminExtensionViewProvider flowAdminExtensionProvider) {
-		
+
 		if (!extensionViewProviders.contains(flowAdminExtensionProvider)) {
-			
+
 			log.info("Extension view provider " + flowAdminExtensionProvider + " added");
-			
+
 			List<FlowAdminExtensionViewProvider> tempProviders = new ArrayList<>(extensionViewProviders);
-			
+
 			tempProviders.add(flowAdminExtensionProvider);
-			
+
 			Collections.sort(tempProviders, FlowAdminExtensionViewProviderComparator.getInstance());
-			
+
 			extensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
-		
+
 	}
-	
+
 	public synchronized void removeExtensionViewProvider(FlowAdminExtensionViewProvider flowAdminExtensionProvider) {
-		
+
 		extensionViewProviders.remove(flowAdminExtensionProvider);
-		
+
 		log.info("Extension view provider " + flowAdminExtensionProvider + " removed");
 	}
-	
+
 	public List<FlowAdminExtensionViewProvider> getExtensionViewProviders() {
-		
+
 		return extensionViewProviders;
 	}
-	
+
 	public synchronized void addFragmentExtensionViewProvider(FlowAdminFragmentExtensionViewProvider flowAdminFragmentExtensionProvider) {
-		
+
 		if (!fragmentExtensionViewProviders.contains(flowAdminFragmentExtensionProvider)) {
-			
+
 			log.info("Fragment extension view provider " + flowAdminFragmentExtensionProvider + " added");
-			
+
 			List<FlowAdminFragmentExtensionViewProvider> tempProviders = new ArrayList<>(fragmentExtensionViewProviders);
-			
+
 			tempProviders.add(flowAdminFragmentExtensionProvider);
-			
+
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
-			
+
 			fragmentExtensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 	}
-	
+
 	public synchronized void removeFragmentExtensionViewProvider(FlowAdminFragmentExtensionViewProvider flowAdminFragmentExtensionProvider) {
-		
+
 		fragmentExtensionViewProviders.remove(flowAdminFragmentExtensionProvider);
-		
+
 		log.info("Fragment extension view provider " + flowAdminFragmentExtensionProvider + " removed");
 	}
-	
+
 	public List<FlowAdminFragmentExtensionViewProvider> getFragmentExtensionViewProviders() {
-		
+
 		return fragmentExtensionViewProviders;
 	}
-	
+
 	public FlowAdminFragmentExtensionViewProvider getFragmentExtensionViewProvider(int moduleID) {
-		
+
 		for (FlowAdminFragmentExtensionViewProvider extension : fragmentExtensionViewProviders) {
-			
+
 			if (extension.getModuleID() == moduleID) {
 				return extension;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public synchronized void addFlowTypeExtensionProvider(FlowTypeExtensionProvider flowAdminFragmentExtensionProvider) {
-		
+
 		if (!flowTypeExtensionProviders.contains(flowAdminFragmentExtensionProvider)) {
-			
+
 			log.info("Flow type extension provider " + flowAdminFragmentExtensionProvider + " added");
-			
+
 			List<FlowTypeExtensionProvider> tempProviders = new ArrayList<>(flowTypeExtensionProviders);
-			
+
 			tempProviders.add(flowAdminFragmentExtensionProvider);
-			
+
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
-			
+
 			flowTypeExtensionProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
 	}
-	
+
 	public synchronized void removeFlowTypeExtensionProvider(FlowTypeExtensionProvider flowAdminFragmentExtensionProvider) {
-		
+
 		flowTypeExtensionProviders.remove(flowAdminFragmentExtensionProvider);
-		
+
 		log.info("Flow type extension provider " + flowAdminFragmentExtensionProvider + " removed");
 	}
-	
+
 	public List<FlowTypeExtensionProvider> getFlowTypeExtensionsProviders() {
-		
+
 		return flowTypeExtensionProviders;
 	}
-	
+
 	public void addFlowListExtensionLinkProvider(ExtensionLinkProvider e) {
-		
+
 		if (!flowListExtensionLinkProviders.contains(e)) {
-			
+
 			flowListExtensionLinkProviders.add(e);
-			
+
 			log.info("List flow extension link provider " + e + " added");
-			
+
 			if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
-				
+
 				sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
 			}
-			
+
 		}
 	}
-	
+
 	public void removeFlowListExtensionLinkProvider(ExtensionLinkProvider e) {
-		
+
 		flowListExtensionLinkProviders.remove(e);
-		
+
 		log.info("List flow extension link provider " + e + " removed");
-		
+
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
-			
+
 			sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
 		}
 	}
-	
+
 	public void addFlowShowExtensionLinkProvider(FlowAdminShowFlowExtensionLinkProvider e) {
-		
+
 		if (!flowShowExtensionLinkProviders.contains(e)) {
-			
+
 			flowShowExtensionLinkProviders.add(e);
-			
+
 			log.info("Show flow extension link provider " + e + " added");
 		}
 	}
-	
+
 	public void removeFlowShowExtensionLinkProvider(FlowAdminShowFlowExtensionLinkProvider e) {
-		
+
 		flowShowExtensionLinkProviders.remove(e);
-		
+
 		log.info("Show flow extension link provider " + e + " removed");
 	}
-	
+
 	public List<FlowAdminShowFlowExtensionLinkProvider> getFlowShowExtensionLinkProviders() {
-		
+
 		return flowShowExtensionLinkProviders;
 	}
-	
+
 	public void addStatusFormExtensionProvider(StatusFormExtensionProvider e) {
-		
+
 		if (!statusFormExtensionProviders.contains(e)) {
-			
+
 			statusFormExtensionProviders.add(e);
-			
+
 			log.info("StatusFormExtensionProvider " + e + " added");
 		}
 	}
-	
+
 	public void removeStatusFormExtensionProvider(StatusFormExtensionProvider e) {
-		
+
 		statusFormExtensionProviders.remove(e);
-		
+
 		log.info("StatusFormExtensionProvider " + e + " removed");
 	}
-	
+
 	public List<FlowFamilyEvent> getRecentFlowFamilyEvents(FlowFamily flowFamily) throws SQLException {
 
 		if (flowFamily == null) {
@@ -5630,65 +5617,65 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return daoFactory.getFlowFamilyEventDAO().getAll(query);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse showFlowFamilyEvents(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-		
+
 		Integer flowID;
 		Flow flow;
-		
+
 		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
-			
+
 			if (!hasFlowAccess(user, flow)) {
-				
+
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
-			
+
 			Document doc = createDocument(req, uriParser, user);
 			Element showFlowFamilyEventsElement = doc.createElement("ShowFlowFamilyEvents");
 			doc.getDocumentElement().appendChild(showFlowFamilyEventsElement);
-			
+
 			showFlowFamilyEventsElement.appendChild(flow.toXML(doc));
 			XMLUtils.append(doc, showFlowFamilyEventsElement, "FlowFamilyEvents", getFlowFamilyEvents(flow.getFlowFamily()));
-			
+
 			return new SimpleForegroundModuleResponse(doc, getTitlePrefix(), getDefaultBreadcrumb(), new Breadcrumb(this, flow.getName(), "/showFlow/" + flow.getFlowID()));
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse addFlowFamilyEvent(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		Integer flowID;
 		Flow flow;
-		
+
 		if (uriParser.size() == 3 && (flowID = PositiveStringIntegerPopulator.getPopulator().getValue(uriParser.get(2))) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null) {
 
 			if (!hasFlowAccess(user, flow)) {
 
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
-			
+
 			List<ValidationError> validationErrors = null;
-			
+
 			if (req.getMethod().equalsIgnoreCase("POST")) {
-				
+
 				validationErrors = new ArrayList<>();
-				
+
 				String eventMessage = ValidationUtils.validateParameter("event-message", req, true, 0, 1024, StringPopulator.getPopulator(), validationErrors);
-				
+
 				if (validationErrors.isEmpty()) {
-					
+
 					log.info("User " + user + " adding flow family event to " + flow);
-					
+
 					addFlowFamilyEvent(eventMessage, flow, user);
-					
+
 					redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#events");
 					return null;
 				}
 			}
-			
+
 			log.info("User " + user + " requesting add flow family event form for flow " + flow);
 
 			Document doc = createDocument(req, uriParser, user);
@@ -5696,7 +5683,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			doc.getDocumentElement().appendChild(addFlowFamilyEventElement);
 
 			addFlowFamilyEventElement.appendChild(flow.toXML(doc));
-			
+
 			if (validationErrors != null) {
 
 				addFlowFamilyEventElement.appendChild(RequestUtils.getRequestParameters(req, doc));
@@ -5731,7 +5718,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private void addFlowFamilyEvent(String message, FlowFamily flowFamily, Integer flowVersion, User user) {
 
 		if (message.length() > 1024) {
-			
+
 			log.warn("Too long message for FlowFamilyEvent, truncating. FlowFamily " + flowFamily + ", version " + flowVersion + ", user " + user);
 			message = StringUtils.substring(message, 1024, "...");
 		}
@@ -5825,7 +5812,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return eventStatusDeletedMessage;
 	}
-	
+
 	public boolean getUseCategories() {
 
 		return useCategories;
@@ -5980,19 +5967,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public Icon getFlowIcon(Integer flowID) {
 
 		Flow flow = flowCache.getFlowCacheMap().get(flowID);
-		
-		if(flow == null) {
-			
+
+		if (flow == null) {
+
 			return null;
 		}
-		
+
 		FlowType flowType = flowTypeCacheMap.get(flow.getFlowType().getFlowTypeID());
-		
-		if(flowType.useIconOnAllFlows()) {
-			
+
+		if (flowType.useIconOnAllFlows()) {
+
 			return flowType;
 		}
-		
+
 		return flow;
 	}
 
@@ -6015,7 +6002,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public List<? extends BundleDescriptor> getVisibleBundles() {
 
 		if (useBundle) {
-			
+
 			SimpleBundleDescriptor bundle = new SimpleBundleDescriptor();
 			bundle.setName(moduleDescriptor.getName());
 			bundle.setUniqueID(moduleDescriptor.getModuleID().toString());
@@ -6064,7 +6051,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return super.getVisibleBundles();
 	}
-	
+
 	private MenuItemDescriptor getMenuItemDescriptor(String name, String alias, AccessInterface accessInterface) {
 
 		SimpleMenuItemDescriptor menuItemDescriptor = new SimpleMenuItemDescriptor();
@@ -6095,158 +6082,159 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@Override
 	public void systemStarted() throws Exception {
-		
+
 		sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
-		
+
 		initScheduler();
 	}
-	
+
 	protected synchronized void initScheduler() {
-		
+
 		if (scheduler != null) {
-			
+
 			log.warn("Invalid state, scheduler already running!");
 			stopScheduler();
 		}
-		
+
 		scheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
 		scheduler.setDaemon(true);
 		updateManagersScheduleID = scheduler.schedule(managersUpdateInterval, new ExpiredManagerRemover(this, daoFactory));
 		removeStaleFlowInstancesScheduleID = scheduler.schedule(removeStaleFlowInstancesInterval, new StaleFlowInstancesRemover(this, daoFactory));
-		
+
 		scheduler.start();
 	}
-	
+
 	protected synchronized void stopScheduler() {
-		
+
 		try {
 			if (scheduler != null) {
-				
+
 				scheduler.stop();
 				scheduler = null;
 			}
-			
+
 		} catch (IllegalStateException e) {
 			log.error("Error stopping scheduler", e);
 		}
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse unPublishFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
 		if (!hasPublishAccess(user)) {
-			
+
 			throw new AccessDeniedException("User does not have publishing access");
 		}
-		
-		if(!HTTPUtils.isPost(req)) {
-			
+
+		if (!HTTPUtils.isPost(req)) {
+
 			throw new AccessDeniedException("Unpublish flow requests using method " + req.getMethod() + " are not allowed.");
 		}
-		
+
 		FlowFamily flowFamily = flowFamilyCRUD.getRequestedBean(req, null, user, uriParser, GenericCRUD.UPDATE);
 
 		if (flowFamily == null) {
 
 			return list(req, res, user, uriParser, new ValidationError("UpdateFailedFlowFamilyNotFound"));
 		}
-		
+
 		List<Flow> flows = getFlowVersions(flowFamily);
 
 		if (hasFlowAccess(user, flows.get(0))) {
-			
+
 			throw new AccessDeniedException("User does not have access to flow type " + flows.get(0).getFlowType());
 		}
-		
+
 		TransactionHandler transactionHandler = null;
-		
+
 		try {
 			transactionHandler = daoFactory.getFlowDAO().createTransaction();
-			
+
 			List<Flow> unpublishedFlows = new ArrayList<>(flows.size());
-			
+
 			for (Flow flow : flows) {
-				
+
 				if (flow.isPublished()) {
-					
+
 					log.info("User " + user + " unpublishing " + flow);
-					
+
 					flow.setPublishDate(null);
-					
+
 					HighLevelQuery<Flow> updateQuery = new HighLevelQuery<>();
 					updateQuery.disableAutoRelations(true);
-					
+
 					daoFactory.getFlowDAO().update(flows, transactionHandler, updateQuery);
-					
+
 					unpublishedFlows.add(flow);
 				}
 			}
-			
+
 			if (!CollectionUtils.isEmpty(unpublishedFlows)) {
-				
+
 				transactionHandler.commit();
-				
+
 				for (Flow flow : unpublishedFlows) {
 					addFlowFamilyEvent(getEventFlowUpdatedMessage(), flow, user);
 				}
-				
+
 				eventHandler.sendEvent(Flow.class, new CRUDEvent<Flow>(Flow.class, CRUDAction.UPDATE, unpublishedFlows), EventTarget.ALL);
 			}
-			
+
 		} finally {
 			TransactionHandler.autoClose(transactionHandler);
 		}
-		
+
 		redirectToMethod(req, res, "/showflow/" + uriParser.get(3) + "#versions");
 		return null;
 	}
-	
+
 	public synchronized void addFlowBrowserExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
-		
+
 		if (!flowBrowserExtensionViewProviders.contains(flowAdminExtensionProvider)) {
-			
+
 			log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " added");
-			
+
 			List<FlowBrowserExtensionViewProvider> tempProviders = new ArrayList<>(flowBrowserExtensionViewProviders);
-			
+
 			tempProviders.add(flowAdminExtensionProvider);
-			
+
 			Collections.sort(tempProviders, PriorityComparator.ASC_COMPARATOR);
-			
+
 			flowBrowserExtensionViewProviders = new CopyOnWriteArrayList<>(tempProviders);
 		}
-		
+
 	}
-	
+
 	public synchronized void removeFlowBrowserExtensionViewProvider(FlowBrowserExtensionViewProvider flowAdminExtensionProvider) {
-		
+
 		flowBrowserExtensionViewProviders.remove(flowAdminExtensionProvider);
-		
+
 		log.info("Flow browser extension view provider " + flowAdminExtensionProvider + " removed");
 	}
 
 	public List<FlowBrowserExtensionViewProvider> getFlowBrowserExtensionViewProviders() {
-		
+
 		return flowBrowserExtensionViewProviders;
 	}
-	
+
 	public String getEventFunctionConfigured() {
-	
+
 		return eventFunctionConfigured;
 	}
-	
+
 	public String getEventFlowInstanceManagerExpired() {
-	
+
 		return eventFlowInstanceManagerExpired;
 	}
 
 	public boolean isShowManagerModalOnAdd() {
+
 		return showManagerModalOnAdd;
 	}
-	
+
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse updateAutoManagerAssignment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
-		
+
 		Integer flowFamilyID;
 		Integer flowID;
 		FlowFamily flowFamily;
@@ -6261,142 +6249,142 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			List<User> allowedManagers = FlowFamilyUtils.getAllowedManagerUsers(flowFamily, systemInterface.getUserHandler());
 			List<Group> allowedManagerGroups = FlowFamilyUtils.getAllowedManagerGroups(flowFamily, systemInterface.getGroupHandler());
-			
+
 			List<User> noMatchUsers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentNoMatchUserIDs(), null);
 			List<Group> noMatchGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentNoMatchGroupIDs(), null);
 			List<User> alwaysUsers = FlowFamilyUtils.filterSelectedManagerUsers(allowedManagers, flowFamily.getAutoManagerAssignmentAlwaysUserIDs(), null);
 			List<Group> alwaysGroups = FlowFamilyUtils.filterSelectedManagerGroups(allowedManagerGroups, flowFamily.getAutoManagerAssignmentAlwaysGroupIDs(), null);
 
 			setRuleUsersAndGroups(flowFamily, allowedManagers, allowedManagerGroups);
-			
+
 			List<ValidationError> validationErrors = null;
-			
+
 			if (req.getMethod().equalsIgnoreCase("POST")) {
-				
+
 				validationErrors = new ArrayList<>();
-				
+
 				List<Integer> noMatchUserIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-user")));
 				List<Integer> noMatchGroupIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-nomatch-group")));
 				List<Integer> alwaysUserIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-always-user")));
 				List<Integer> alwaysGroupIDs = CollectionUtils.removeDuplicates(NumberUtils.toInt(req.getParameterValues("auto-manager-always-group")));
-				
+
 				noMatchUsers = noMatchUserIDs == null ? null : systemInterface.getUserHandler().getUsers(noMatchUserIDs, false, true);
 				noMatchGroups = noMatchGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(noMatchGroupIDs, false);
 				alwaysUsers = alwaysUserIDs == null ? null : systemInterface.getUserHandler().getUsers(alwaysUserIDs, false, true);
 				alwaysGroups = alwaysGroupIDs == null ? null : systemInterface.getGroupHandler().getGroups(alwaysGroupIDs, false);
-				
+
 				FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, noMatchUsers, noMatchUserIDs, validationErrors);
 				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, noMatchGroups, noMatchGroupIDs, validationErrors);
 				FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, alwaysUsers, alwaysUserIDs, validationErrors);
 				FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, alwaysGroups, alwaysGroupIDs, validationErrors);
-				
+
 				String[] ruleIDs = req.getParameterValues("auto-manager-rule");
 				List<AutoManagerAssignmentRule> rules = null;
-				
+
 				if (ruleIDs != null) {
-					
+
 					rules = new ArrayList<>();
-					
+
 					for (String ruleID : ruleIDs) {
-						
+
 						AutoManagerAssignmentRule rule = new AutoManagerAssignmentRule();
 						rule.setGeneratedRuleID(ruleID);
-						
+
 						rules.add(rule);
-						
+
 						String attributeName = ValidationUtils.validateParameter("auto-manager-rule-attribute-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
 						String attributeValues = ValidationUtils.validateParameter("auto-manager-rule-values-" + ruleID, req, true, StringPopulator.getPopulator(), validationErrors);
 						boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-rule-invert-" + ruleID));
-						
+
 						rule.setAttributeName(attributeName);
 						rule.setInverted(invert);
-						
+
 						if (!StringUtils.isEmpty(attributeValues)) {
-							
+
 							List<String> splitValues = StringUtils.splitOnLineBreak(attributeValues, true);
-							
+
 							for (String value : splitValues) {
-								
+
 								if (value.length() > 255) {
-									
+
 									validationErrors.add(new ValidationError("auto-manager-rule-values-" + ruleID, ValidationErrorType.TooLong));
 								}
 							}
-							
+
 							rule.setValues(splitValues);
 						}
-						
+
 						String usersIDsString = ValidationUtils.validateParameter("auto-manager-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 						String groupIDsString = ValidationUtils.validateParameter("auto-manager-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
-						
+
 						List<Integer> userIDs = new ArrayList<>();
 						List<Integer> groupIDs = new ArrayList<>();
-						
+
 						if (!StringUtils.isEmpty(usersIDsString)) {
-							
+
 							String[] splitUsersIDs = usersIDsString.split(",");
-							
+
 							for (String userIDS : splitUsersIDs) {
-								
+
 								Integer userID = NumberUtils.toInt(userIDS);
-								
+
 								if (userID != null) {
-									
+
 									userIDs.add(userID);
-									
+
 								} else {
-									
+
 									validationErrors.add(new ValidationError("auto-manager-rule-users-" + ruleID, ValidationErrorType.InvalidFormat));
 								}
 							}
 						}
-						
+
 						if (!StringUtils.isEmpty(groupIDsString)) {
-							
+
 							String[] splitGroupIDs = groupIDsString.split(",");
-							
+
 							for (String groupIDS : splitGroupIDs) {
-								
+
 								Integer groupID = NumberUtils.toInt(groupIDS);
-								
+
 								if (groupID != null) {
-									
+
 									groupIDs.add(groupID);
-									
+
 								} else {
-									
+
 									validationErrors.add(new ValidationError("auto-manager-rule-groups-" + ruleID, ValidationErrorType.InvalidFormat));
 								}
 							}
 						}
-						
+
 						userIDs = CollectionUtils.removeDuplicates(userIDs);
 						groupIDs = CollectionUtils.removeDuplicates(groupIDs);
-						
+
 						List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
 						List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
-						
+
 						FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, users, userIDs, validationErrors);
 						FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, groups, groupIDs, validationErrors);
-						
+
 						rule.setUsers(users);
 						rule.setGroups(groups);
 					}
 				}
-				
+
 				flowFamily.setAutoManagerAssignmentRules(rules);
 				flowFamily.setAutoManagerAssignmentNoMatchUserIDs(UserUtils.getUserIDs(noMatchUsers));
 				flowFamily.setAutoManagerAssignmentNoMatchGroupIDs(UserUtils.getGroupIDs(noMatchGroups));
 				flowFamily.setAutoManagerAssignmentAlwaysUserIDs(UserUtils.getUserIDs(alwaysUsers));
 				flowFamily.setAutoManagerAssignmentAlwaysGroupIDs(UserUtils.getGroupIDs(alwaysGroups));
-				
+
 				if (!FlowFamilyUtils.isAutoManagerRulesValid(flowFamily, systemInterface.getUserHandler())) {
-					
+
 					validationErrors.add(new ValidationError("FullManagerOrFallbackManagerRequired"));
 				}
-				
+
 				setAutoManagerAssignmentStatusRules(req, flowFamily, allowedManagers, allowedManagerGroups, validationErrors);
-				
+
 				if (validationErrors.isEmpty()) {
 
 					log.info("User " + user + " updating auto manager assignment settings for " + flow);
@@ -6408,7 +6396,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 						RelationQuery updateQuery = new RelationQuery(FlowFamily.AUTO_MANAGER_ASSIGNMENT_RULES_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_ALWAYS_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_USERS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_NO_MATCH_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION);
 						daoFactory.getFlowFamilyDAO().update(flowFamily, transactionHandler, updateQuery);
-						
+
 						transactionHandler.commit();
 
 						eventHandler.sendEvent(FlowFamily.class, new CRUDEvent<FlowFamily>(FlowFamily.class, CRUDAction.UPDATE, flowFamily), EventTarget.ALL);
@@ -6422,172 +6410,172 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					}
 				}
 			}
-			
+
 			log.info("User " + user + " requesting auto manager assignment form for flow " + flow);
-			
+
 			Document doc = createDocument(req, uriParser, user);
-			
+
 			Element autoManagerAssignmentElement = doc.createElement("AutoManagerAssignment");
 			doc.getDocumentElement().appendChild(autoManagerAssignmentElement);
-			
+
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 			genDoc.addIgnoredFields(Flow.FLOW_FAMILY_RELATION);
-			
+
 			autoManagerAssignmentElement.appendChild(flow.toXML(genDoc));
 			autoManagerAssignmentElement.appendChild(flowFamily.toXML(doc));
-			
+
 			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchUsers", noMatchUsers);
 			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentNoMatchGroups", noMatchGroups);
 			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysUsers", alwaysUsers);
 			XMLUtils.append(doc, autoManagerAssignmentElement, "AutoManagerAssignmentAlwaysGroups", alwaysGroups);
-			
+
 			if (validationErrors != null) {
-				
+
 				XMLUtils.append(doc, autoManagerAssignmentElement, "ValidationErrors", validationErrors);
 				autoManagerAssignmentElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 			}
-			
+
 			return new SimpleForegroundModuleResponse(doc);
 		}
 
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	private void setRuleUsersAndGroups(FlowFamily flowFamily, List<User> allowedManagers, List<Group> allowedManagerGroups) {
-		
+
 		if (flowFamily.getAutoManagerAssignmentRules() != null) {
-			
+
 			for (AutoManagerAssignmentRule rule : flowFamily.getAutoManagerAssignmentRules()) {
-				
+
 				rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
 			}
 		}
-		
+
 		if (flowFamily.getAutoManagerAssignmentStatusRules() != null) {
-			
+
 			for (AutoManagerAssignmentStatusRule rule : flowFamily.getAutoManagerAssignmentStatusRules()) {
-				
+
 				rule.setUsersAndGroups(allowedManagers, allowedManagerGroups, true);
 			}
 		}
 	}
-	
+
 	private void setAutoManagerAssignmentStatusRules(HttpServletRequest req, FlowFamily flowFamily, List<User> allowedManagers, List<Group> allowedManagerGroups, List<ValidationError> validationErrors) {
-		
+
 		String[] ruleIDs = req.getParameterValues("auto-manager-status-rule");
 		List<AutoManagerAssignmentStatusRule> rules = null;
-		
+
 		if (ruleIDs != null) {
-			
+
 			rules = new ArrayList<>();
-			
+
 			for (String ruleID : ruleIDs) {
-				
+
 				AutoManagerAssignmentStatusRule rule = new AutoManagerAssignmentStatusRule();
-				
+
 				rule.setGeneratedRuleID(ruleID);
-				
+
 				String statusName = ValidationUtils.validateParameter("auto-manager-status-rule-statusName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
 				boolean addManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-addManagers-" + ruleID));
 				boolean removePreviousManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-removePreviousManagers-" + ruleID));
 				boolean sendNotification = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-sendNotification-" + ruleID));
-				
+
 				if (containsRuleWithStatusName(rules, statusName)) {
-					
+
 					validationErrors.add(new ValidationError("auto-manager-status-rule-statusName-" + ruleID, ValidationErrorType.Other, "DuplicateStatusRule"));
 				}
-				
+
 				if (BooleanUtils.isFalse(addManagers, removePreviousManagers)) {
-					
+
 					validationErrors.add(new ValidationError("auto-manager-status-rule-" + ruleID, ValidationErrorType.Other, "NoActionsSelected"));
 				}
-			
+
 				rule.setStatusName(statusName);
 				rule.setAddManagers(addManagers);
 				rule.setRemovePreviousManagers(removePreviousManagers);
 				rule.setSendNotification(sendNotification);
-				
+
 				if (addManagers) {
-					
+
 					String usersIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
 					String groupIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-groups-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
-					
+
 					List<Integer> userIDs = new ArrayList<>();
 					List<Integer> groupIDs = new ArrayList<>();
-					
+
 					if (!StringUtils.isEmpty(usersIDsString)) {
-						
+
 						String[] splitUsersIDs = usersIDsString.split(",");
-						
+
 						for (String userIDS : splitUsersIDs) {
-							
+
 							Integer userID = NumberUtils.toInt(userIDS);
-							
+
 							if (userID != null) {
-								
+
 								userIDs.add(userID);
-								
+
 							} else {
-								
+
 								validationErrors.add(new ValidationError("auto-manager-status-rule-users-" + ruleID, ValidationErrorType.InvalidFormat));
 							}
 						}
 					}
-					
+
 					if (!StringUtils.isEmpty(groupIDsString)) {
-						
+
 						String[] splitGroupIDs = groupIDsString.split(",");
-						
+
 						for (String groupIDS : splitGroupIDs) {
-							
+
 							Integer groupID = NumberUtils.toInt(groupIDS);
-							
+
 							if (groupID != null) {
-								
+
 								groupIDs.add(groupID);
-								
+
 							} else {
-								
+
 								validationErrors.add(new ValidationError("auto-manager-status-rule-groups-" + ruleID, ValidationErrorType.InvalidFormat));
 							}
 						}
 					}
-					
+
 					userIDs = CollectionUtils.removeDuplicates(userIDs);
 					groupIDs = CollectionUtils.removeDuplicates(groupIDs);
-					
+
 					List<User> users = userIDs.isEmpty() ? null : systemInterface.getUserHandler().getUsers(userIDs, false, true);
 					List<Group> groups = groupIDs.isEmpty() ? null : systemInterface.getGroupHandler().getGroups(groupIDs, false);
-					
+
 					FlowFamilyUtils.validateSelectedManagerUsers(allowedManagers, users, userIDs, validationErrors);
 					FlowFamilyUtils.validateSelectedManagerGroups(allowedManagerGroups, groups, groupIDs, validationErrors);
-					
+
 					rule.setUsers(users);
 					rule.setGroups(groups);
-					
+
 				} else {
-					
+
 					rule.setUsers(null);
 					rule.setGroups(null);
 				}
-				
+
 				if (sendNotification) {
-					
+
 					String fieldName = "auto-manager-status-rule-emailRecipients-" + ruleID;
-					
+
 					ArrayList<String> emailRecipients = StringUtils.splitOnLineBreak(req.getParameter(fieldName), true);
-					
-					if(emailRecipients != null) {
-						
+
+					if (emailRecipients != null) {
+
 						HashSet<String> duplicatesCheck = new HashSet<>();
 						ListIterator<String> iterator = emailRecipients.listIterator();
-						
+
 						while (iterator.hasNext()) {
-							
+
 							String email = iterator.next().trim();
-							
+
 							if (email.isEmpty() || duplicatesCheck.contains(email.toLowerCase())) {
-								
+
 								iterator.remove();
 
 							} else {
@@ -6608,150 +6596,155 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 							}
 						}
 					}
-					
+
 					if (CollectionUtils.isEmpty(emailRecipients)) {
-						
+
 						validationErrors.add(new ValidationError(fieldName, ValidationErrorType.RequiredField));
-						
+
 					}
-					
+
 					rule.setEmailRecipients(emailRecipients);
 				}
-				
+
 				rules.add(rule);
 			}
 		}
-		
+
 		flowFamily.setAutoManagerAssignmentStatusRules(rules);
 	}
 
 	private boolean containsRuleWithStatusName(List<AutoManagerAssignmentStatusRule> rules, String statusName) {
-		
+
 		if (!CollectionUtils.isEmpty(rules)) {
-			
+
 			for (AutoManagerAssignmentStatusRule rule : rules) {
-				
+
 				if (rule.getStatusName() != null && rule.getStatusName().equalsIgnoreCase(statusName)) {
-					
+
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse checkForExpiringManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
-		
+
 		if (user.isAdmin()) {
-			
+
 			new ExpiredManagerRemover(this, daoFactory).run();
 			return new SimpleForegroundModuleResponse("See log", getDefaultBreadcrumb());
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	@WebPublic(requireLogin = true)
 	public ForegroundModuleResponse checkForStaleFlowInstances(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException {
-		
+
 		if (user.isAdmin()) {
-			
+
 			new StaleFlowInstancesRemover(this, daoFactory).run();
 			return new SimpleForegroundModuleResponse("See log", getDefaultBreadcrumb());
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	@Override
 	public boolean hasFlowAccess(User user, Flow flow) {
-		
+
 		return AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface()) || AccessUtils.checkAccess(user, this);
 	}
-	
+
 	@Override
 	public MultiSigningHandler getMultiSigningHandler() {
-		
+
 		return multiSigningHandler;
 	}
-	
+
 	public boolean isBlockForeignIDs() {
+
 		return blockForeignIDs;
 	}
-	
+
 	public List<String> getForeignIDattributes() {
+
 		return foreignIDattributes;
 	}
-	
+
 	@WebPublic(alias = "extension", autoAppendLinks = false, autoAppendScripts = false)
 	public ForegroundModuleResponse processFragmentExtensionView(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-		
+
 		Integer flowID;
 		Integer extensionModuleID;
 		Flow flow;
 		FlowAdminFragmentExtensionViewProvider fragmentExtension;
-		
+
 		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (extensionModuleID = uriParser.getInt(3)) != null && (flow = flowCache.getFlowCacheMap().get(flowID)) != null && (fragmentExtension = getFragmentExtensionViewProvider(extensionModuleID)) != null) {
 
 			if (!hasFlowAccess(user, flow)) {
-				
+
 				throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
 			}
-			
+
 			String extensionRequestURL = getFragmentExtensionViewProviderURL(fragmentExtension, flow);
-			
+
 			if (uriParser.size() >= 4 && "static".equals(uriParser.get(4)) && fragmentExtension instanceof Module) {
-				
+
 				return staticContentModule.processRequest((Module<?>) fragmentExtension, fragmentExtension.getModuleDescriptor(), req, res, user, uriParser.getNextLevel(4));
 			}
-			
+
 			ViewFragment viewFragment = fragmentExtension.processRequest(extensionRequestURL, flow, req, res, user, uriParser);
-			
+
 			if (res.isCommitted()) {
 				return null;
 			}
-			
+
 			if (viewFragment == null) {
-				
+
 				redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#" + fragmentExtension.getExtensionViewLinkName());
 				return null;
 			}
-			
+
 			Document doc = createDocument(req, uriParser, user);
 			Element updateUserElement = doc.createElement("ViewFragmentExtension");
 			doc.getFirstChild().appendChild(updateUserElement);
-			
+
 			updateUserElement.appendChild(viewFragment.toXML(doc));
-			
+
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc);
 			ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment, extensionRequestURL);
-			
+
 			return moduleResponse;
 		}
-		
+
 		throw new URINotFoundException(uriParser);
 	}
-	
+
 	public String getFragmentExtensionViewProviderURL(FlowAdminFragmentExtensionViewProvider fragmentExtensionProvider, Flow flow) {
+
 		return getFullAlias() + "/extension/" + flow.getFlowID() + "/" + fragmentExtensionProvider.getModuleID();
 	}
 
 	public String getAlias() {
+
 		return moduleDescriptor.getAlias();
 	}
 
 	@Override
 	public List<String> getAllowedFlowFormFileExtensions() {
+
 		return allowedFlowFormFileExtensions;
 	}
-	
+
 	public AccessInterface getAccessInterface() {
-		
+
 		return moduleDescriptor;
 	}
-	
+
 	public void addXSDExtensionProvider(XSDExtensionProvider provider) {
 
 		if (provider == null) {
@@ -6765,7 +6758,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		xsdExtensionProviders.remove(provider);
 	}
-	
+
 	public void addExternalFlowProvider(ExternalFlowProvider provider) {
 
 		if (provider == null) {
@@ -6779,7 +6772,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		externalFlowProviders.remove(provider);
 	}
-	
+
 	public String getCkConnectorModuleAlias() {
 
 		return ckConnectorModuleAlias;
@@ -6789,7 +6782,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return cssPath;
 	}
-	
+
 	@Override
 	public String getFileMissing() {
 
@@ -6813,19 +6806,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return eventFlowFormDeletedMessage;
 	}
-	
+
 	@Override
 	public String getEventMessageTemplatesAddedMessage() {
 
 		return eventMessageTemplatesAddedMessage;
 	}
-	
+
 	@Override
 	public String getEventMessageTemplatesUpdatedMessage() {
 
 		return eventMessageTemplatesUpdatedMessage;
 	}
-	
+
 	@Override
 	public String getEventMessageTemplatesDeletedMessage() {
 
@@ -6845,29 +6838,29 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	public FlowFamilyCRUD getFlowFamilyCRUD() {
-		
-		
+
 		return flowFamilyCRUD;
 	}
 
 	public FlowCache getFlowCache() {
+
 		return flowCache;
 	}
-	
+
 	public Transformer getModuleTransformer() {
-		
+
 		try {
-			
+
 			return sectionInterface.getForegroundModuleXSLTCache().getModuleTranformer(moduleDescriptor);
-			
+
 		} catch (TransformerConfigurationException e) {
-			
+
 			log.error("Unable to get module transformer");
 		}
-		
+
 		return null;
 	}
-	
+
 	@InstanceManagerDependency
 	public void setUserAdminExtensionHandler(UserGroupAdminExtensionHandler userGroupAdminExtensionHandler) {
 
@@ -6876,7 +6869,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			this.userGroupAdminExtensionHandler.removeUserAdminExtensionProvider(this);
 			this.userGroupAdminExtensionHandler.removeGroupAdminExtensionProvider(this);
 		}
-		
+
 		this.userGroupAdminExtensionHandler = userGroupAdminExtensionHandler;
 
 		if (userGroupAdminExtensionHandler != null) {
@@ -6918,7 +6911,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			if (flowsWithManagerAccess > 0) {
-				
+
 				XMLUtils.appendNewElement(doc, extensionElement, "FlowAdminURL", req.getContextPath() + sectionInterface.getSectionDescriptor().getFullAlias() + "/" + this.moduleDescriptor.getAlias());
 
 				return viewFragmentTransformer.createViewFragment(doc);
@@ -6927,7 +6920,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return null;
 	}
-	
+
 	@Override
 	public ViewFragment getGroupAdminExtensionViewFragment(Group requestedGroup, HttpServletRequest req, URIParser uriParser, User user) throws Exception {
 
@@ -6960,7 +6953,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			}
 
 			if (flowsWithManagerAccess > 0) {
-				
+
 				XMLUtils.appendNewElement(doc, extensionElement, "FlowAdminURL", req.getContextPath() + sectionInterface.getSectionDescriptor().getFullAlias() + "/" + this.moduleDescriptor.getAlias());
 
 				return viewFragmentTransformer.createViewFragment(doc);
@@ -6969,27 +6962,27 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return null;
 	}
-	
+
 	public boolean hasFlowFamilyManagerAccess(Integer flowFamilyID, User user) {
-		
+
 		FlowFamily flowFamily = getFlowFamily(flowFamilyID);
-		
+
 		return hasFlowFamilyManagerAccess(flowFamily, user);
 	}
-	
+
 	public boolean hasFlowFamilyManagerAccess(FlowFamily flowFamily, User user) {
-		
+
 		return getFlowFamilyManagerAccess(flowFamily, user) != null;
 	}
-	
+
 	protected ManagerAccess getFlowFamilyManagerAccess(FlowFamily flowFamily, User user) {
 
 		return flowFamily.getManagerAccess(user);
 	}
-	
+
 	@Override
 	public int getPriority() {
-	
+
 		return 1;
 	}
 
@@ -7012,14 +7005,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	}
 
 	public StandardStatusGroup getStatusGroup(Integer statusGroupID, Field... relations) throws SQLException {
-		
+
 		HighLevelQuery<StandardStatusGroup> query = new HighLevelQuery<>();
 		query.addParameter(standardStatusGroupDAOWrapper.getParameterFactory().getParameter(statusGroupID));
-		
+
 		if (relations != null) {
 			query.addRelations(relations);
 		}
-		
+
 		return standardStatusGroupDAOWrapper.getAnnotatedDAO().get(query);
 	}
 
@@ -7045,11 +7038,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	public void filterHTML(Flow flow) {
 
-		if(htmlContentFilter == null) {
-			
+		if (htmlContentFilter == null) {
+
 			return;
 		}
-		
+
 		flow.setShortDescription(htmlContentFilter.filterHTML(flow.getShortDescription()));
 		flow.setLongDescription(htmlContentFilter.filterHTML(flow.getLongDescription()));
 		flow.setSubmittedMessage(htmlContentFilter.filterHTML(flow.getSubmittedMessage()));
@@ -7058,18 +7051,18 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@Override
 	public void filterHTML(BaseQuery query) {
 
-		if(htmlContentFilter == null) {
-			
+		if (htmlContentFilter == null) {
+
 			return;
 		}
-		
-		if(query.getDescription() != null){
-			
+
+		if (query.getDescription() != null) {
+
 			query.setDescription(htmlContentFilter.filterHTML(query.getDescription()));
 		}
-		
-		if(query.getHelpText() != null) {
-			
+
+		if (query.getHelpText() != null) {
+
 			query.setHelpText(htmlContentFilter.filterHTML(query.getHelpText()));
 		}
 	}
@@ -7077,11 +7070,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@Override
 	public String filterHTML(String html) {
 
-		if(htmlContentFilter == null) {
-			
+		if (htmlContentFilter == null) {
+
 			return html;
 		}
-		
+
 		return htmlContentFilter.filterHTML(html);
 	}
 
@@ -7110,13 +7103,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				ManagementInfo managementInfo = flowFamily.getManagementInfo();
 
 				managementInfo = MANAGEMENT_INFO_POPULATOR.populate(managementInfo, req);
-				
+
 				if (managementInfo.isPopulated()) {
-					
+
 					flowFamily.setManagementInfo(managementInfo);
-					
+
 				} else {
-					
+
 					flowFamily.setManagementInfo(null);
 				}
 
@@ -7155,5 +7148,5 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return new SimpleForegroundModuleResponse(doc);
 	}
-	
+
 }
