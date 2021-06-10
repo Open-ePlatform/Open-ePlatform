@@ -43,7 +43,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/flowengine.css?v=6
+		/css/flowengine.css?v=8
 		/css/UserGroupList.css
 		/js/colorpicker/jquery.minicolors.css
 		/css/datatables.css
