@@ -47,6 +47,7 @@ import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.ServerStartupListener;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.beans.User;
@@ -114,7 +115,7 @@ import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.PDFManagerResponse;
-import com.nordicpeak.flowengine.pdf.schedule.TempFileChecker;
+import com.nordicpeak.flowengine.pdf.schedule.PDFTemporaryFileDeleter;
 import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
@@ -124,7 +125,7 @@ import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
 
-public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider {
+public class PDFGeneratorModule extends AnnotatedForegroundModule implements FlowEngineInterface, PDFProvider, SiteProfileSettingProvider{
 
 	private static final String PDF = ".pdf";
 	public static final String LOGOTYPE_SETTING_ID = "pdf.flowinstance.logofile";
@@ -161,11 +162,11 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private List<String> includedFonts;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "PDF dir", description = "The directory where PDF files be stored ")
+	@TextFieldSettingDescriptor(name = "PDF dir", description = "The directory where PDF files be stored", required = true)
 	protected String pdfDir;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Temp dir", description = "The directory where temporary files be stored ")
+	@TextFieldSettingDescriptor(name = "Temp dir", description = "The directory where temporary files be stored", required = true)
 	protected String tempDir;
 
 	@ModuleSetting
@@ -201,9 +202,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 	protected URIXSLTransformer pdfTransformer;
 
-	private String pdfCheckerSchedulerID;
-	private Scheduler pdfCheckerScheduler;
-	private static final String SCHEDULER_EVERY_HOUR_CRON_TAB = "0 * * * *";
+	private Scheduler scheduler;
 
 	protected String signatureAttachmentName = "Signature";
 	protected String signingPDFAttachmentName = "Signing PDF";
@@ -224,35 +223,43 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 			throw new RuntimeException("Unable to register module " + this.moduleDescriptor + " in global instance handler using key " + PDFProvider.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
-		initScheduler();
 	}
 
+	@ServerStartupListener
 	private synchronized void initScheduler() {
 
-		if (pdfCheckerScheduler != null) {
+		if (scheduler != null) {
 
-			log.warn("Invalid state, pdfCheckerScheduler already running!");
+			log.error("Invalid state, scheduler already running!");
 			stopScheduler();
 		}
 
-		pdfCheckerScheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
-		pdfCheckerScheduler.setDaemon(true);
-		pdfCheckerSchedulerID = pdfCheckerScheduler.schedule(SCHEDULER_EVERY_HOUR_CRON_TAB, new TempFileChecker(pdfDir, tempDir));
+		if(pdfDir == null || tempDir == null || !FileUtils.directoryExists(pdfDir) || !FileUtils.directoryExists(tempDir)) {
+			
+			log.error("Unable to start scheduler for missing temporary directories due to missing configuration or missing directories");
+			
+		}else {
 
-		pdfCheckerScheduler.start();
+			scheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
+			scheduler.setDaemon(true);
+			scheduler.schedule("0 * * * *", new PDFTemporaryFileDeleter(pdfDir, tempDir));
+
+			scheduler.start();
+		}
 	}
 
 	private synchronized void stopScheduler() {
 
 		try {
-			if (pdfCheckerScheduler != null) {
+			if (scheduler != null) {
 
-				pdfCheckerScheduler.stop();
-				pdfCheckerScheduler = null;
+				scheduler.stop();
+				scheduler = null;
 			}
 
 		} catch (IllegalStateException e) {
-			log.error("Error stopping pdfCheckerScheduler", e);
+			
+			log.error("Error stopping scheduler", e);
 		}
 	}
 
@@ -260,8 +267,9 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	public void update(ForegroundModuleDescriptor descriptor, DataSource dataSource) throws Exception {
 
 		super.update(descriptor, dataSource);
-
-		pdfCheckerScheduler.reschedule(pdfCheckerSchedulerID, SCHEDULER_EVERY_HOUR_CRON_TAB);
+		
+		stopScheduler();
+		initScheduler();
 	}
 
 	@Override
@@ -1404,28 +1412,23 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	}
 
 	@Override
-	public File getPDFDir(Integer flowInstanceID) {
-
-		if (FileUtils.directoryExists(pdfDir + File.separator + flowInstanceID)) {
-			return new File(pdfDir + File.separator + flowInstanceID);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean removePDF(Integer flowInstanceID, Integer eventID) {
+	public boolean deletePDF(Integer flowInstanceID, Integer eventID) {
 
 		try {
 
-			File signingFile = getPDF(flowInstanceID, eventID);
-			if (signingFile != null) {
-				log.info("Removing unused signing-file " + signingFile.getAbsolutePath());
-				FileUtils.deleteFile(signingFile);
+			File pdfFile = getPDF(flowInstanceID, eventID);
+
+			if (pdfFile != null) {
+
+				log.info("Removing PDF file " + pdfFile.getAbsolutePath());
+				FileUtils.deleteFile(pdfFile);
 			}
 
 			return true;
+			
 		} catch (Exception e) {
-			log.error("Error deleting unused signing file with flowinstanceID " + flowInstanceID + " and eventID " + eventID, e);
+			
+			log.error("Error deleting PDF file for flowinstanceID " + flowInstanceID + " and eventID " + eventID, e);
 		}
 		return false;
 
