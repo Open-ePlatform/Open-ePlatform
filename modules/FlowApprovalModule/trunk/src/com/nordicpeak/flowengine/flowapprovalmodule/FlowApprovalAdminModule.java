@@ -1603,7 +1603,30 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				}
 			}
 
-			for (String emailAdress : activityGroup.getActivityGroupCompletedEmailAddresses()) {
+			List<String> recipients = new ArrayList<String>(activityGroup.getActivityGroupCompletedEmailAddresses().size());
+
+			for (String recipient : activityGroup.getActivityGroupCompletedEmailAddresses()) {
+
+				if (EmailUtils.isValidEmailAddress(recipient)) {
+
+					recipients.add(recipient);
+
+				} else {
+
+					recipient = AttributeTagUtils.replaceTags(recipient, flowInstance.getAttributeHandler());
+
+					if (EmailUtils.isValidEmailAddress(recipient)) {
+
+						recipients.add(recipient);
+						
+					} else {
+						
+						log.warn("The string \"" + recipient + "\" is not a valid email address, skipping recipient for email generated for completed activity group " + activityGroup + " for flow instance " + flowInstance);
+					}
+				}
+			}
+			
+			for (String emailAdress : recipients) {
 
 				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
@@ -1639,7 +1662,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	@EventListener(channel = FlowInstanceManager.class, priority = 100)
+	@EventListener(channel = FlowInstanceManager.class)
 	public void processSubmitEvent(SubmitEvent event, EventSource eventSource) {
 
 		try {

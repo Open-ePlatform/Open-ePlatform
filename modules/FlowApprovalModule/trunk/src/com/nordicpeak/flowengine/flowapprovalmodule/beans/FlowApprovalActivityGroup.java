@@ -3,7 +3,6 @@ package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
@@ -23,6 +22,8 @@ import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+
+import com.nordicpeak.flowengine.populators.EmailAttributeTagPopulator;
 
 @Table(name = "flowapproval_activitygroups")
 @XMLElement(name = "ActivityGroup")
@@ -162,7 +163,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowapproval_activitygroups_notify_completed", remoteValueColumnName = "email")
-	@WebPopulate(maxLength = 255, populator = LowerCaseEmailPopulator.class)
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
 	@RequiredIfSet(paramNames = "sendActivityGroupCompletedEmail")
 	@SplitOnLineBreak
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)

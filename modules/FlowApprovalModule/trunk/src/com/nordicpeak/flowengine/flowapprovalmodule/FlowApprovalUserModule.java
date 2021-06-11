@@ -236,7 +236,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		super.moduleConfigured();
 
-		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "b", userMenuExtensionLinkSlot);
+		this.userMenuLink = new ExtensionLink(userMenuTabTitle, getFullAlias(), "c", userMenuExtensionLinkSlot);
 
 		if (userFlowInstanceMenuModule != null) {
 
