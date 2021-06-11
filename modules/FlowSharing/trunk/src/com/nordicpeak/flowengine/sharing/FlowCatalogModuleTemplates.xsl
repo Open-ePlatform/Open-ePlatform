@@ -357,26 +357,26 @@
 		<tr>
 			<xsl:variable name="sourceID" select="Source/sourceID"/>
 			<td data-title="{$i18n.Column.FlowName}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="name" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}"><xsl:value-of select="name" /></a>
 			</td>
 			<td data-title="{$i18n.Column.Source}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="Source/name" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}"><xsl:value-of select="Source/name" /></a>
 			</td>
 			<td data-title="{$i18n.Column.Version}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="version" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}"><xsl:value-of select="version" /></a>
 			</td>
 			<td data-title="{$i18n.Column.LastModified}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}"><xsl:value-of select="added" /></a>
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}"><xsl:value-of select="added" /></a>
 			</td>
 			<td data-title="{$i18n.Column.Comment}">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/import/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}">
 					<xsl:call-template name="replaceLineBreak">
 						<xsl:with-param name="string" select="comment"/>
 					</xsl:call-template>
 				</a>
 			</td>
 			<td>
-				<a class="floatleft marginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/download/{../../RepositoryIndex}/{$sourceID}/{flowFamilyID}/{sharedFlowID}" title="{$i18n.Download.Title} {version}: {name}">
+				<a class="floatleft marginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/download/{../../RepositoryIndex}/{$sourceID}/{flowFamilyID}/{sharedFlowID}/{/Document/module/moduleID}" title="{$i18n.Download.Title} {version}: {name}">
 					<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/download.png" alt="" />
 				</a>
 				
@@ -389,7 +389,7 @@
 							</xsl:call-template>
 						</xsl:variable>
 
-						<a class="floatleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{../../RepositoryIndex}/{sharedFlowID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlow.title} {version}: {name}">
+						<a class="floatleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{../../RepositoryIndex}/{sharedFlowID}/{/Document/module/moduleID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlow.title} {version}: {name}">
 							<img class="alignbottom" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/delete.png" alt="" />
 						</a>
 

@@ -23,6 +23,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.imageio.ImageIO;
@@ -710,7 +711,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected CopyOnWriteArrayList<XSDExtensionProvider> xsdExtensionProviders = new CopyOnWriteArrayList<>();
 
-	protected CopyOnWriteArrayList<ExternalFlowProvider> externalFlowProviders = new CopyOnWriteArrayList<>();
+	protected ConcurrentHashMap<String, ExternalFlowProvider> externalFlowProviders = new ConcurrentHashMap<>();
 
 	private Scheduler scheduler;
 	private String updateManagersScheduleID;
@@ -4280,12 +4281,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			Integer repositoryIndex;
 			Integer sharedflowID;
+			Integer moduleID;
 
-			if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0) {
+			if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (moduleID = uriParser.getInt(4)) != null && repositoryIndex >= 0) {
 				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
 				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
 				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
 				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
+				Element moduleIDElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Module");
+				XMLUtils.appendNewElement(doc, moduleIDElement, "ModuleID", moduleID);
 			}
 
 			return new SimpleForegroundModuleResponse(doc);
@@ -4304,21 +4308,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Integer repositoryIndex;
 		Integer sharedflowID;
+		Integer moduleID;
 
-		if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(3)) != null && (sharedflowID = uriParser.getInt(4)) != null && repositoryIndex >= 0) {
+		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(3)) != null && (sharedflowID = uriParser.getInt(4)) != null && (moduleID = uriParser.getInt(5)) != null && repositoryIndex >= 0) {
 
 			log.info("User " + user + " importing flow...");
 
 			try {
 
-				ExternalFlow externalFlow = getExternalFlow(repositoryIndex, sharedflowID);
-				
+				ExternalFlow externalFlow = getExternalFlow(moduleID, repositoryIndex, sharedflowID);
+
 				if (externalFlow != null) {
-					
+
 					importFlow(new ByteArrayInputStream(externalFlow.getData()), externalFlow.getFilename(), flowType, relatedFlow, req, res, user);
-					
+
 				} else {
-					
+
 					validationException = new ValidationException(new UnableToParseFileValidationError(""));
 				}
 
@@ -4428,27 +4433,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
 
-	//TODO use ExternalFlowProvider.getProviderID() to find the provider instead of calling getFlow on all ExternalFlowProvider's
-	private ExternalFlow getExternalFlow(Integer repositoryIndex, Integer sharedflowID) {
+	private ExternalFlow getExternalFlow(Integer moduleID, Integer repositoryIndex, Integer sharedflowID) {
 
 		ExternalFlow externalFlow = null;
-
-		for (ExternalFlowProvider externalFlowProvider : externalFlowProviders) {
-
-			try {
-				externalFlow = externalFlowProvider.getFlow(repositoryIndex, sharedflowID);
-				
-				if (externalFlow != null) {
-					
-					break;
-				}
-
-			} catch (Exception e) {
-
-				log.error("Error in externalflowprovider " + externalFlowProvider + " while reading file with repositoryIndex " + repositoryIndex + " and flowID " + sharedflowID, e);
-			}
-		}
+		ExternalFlowProvider externalFlowProvider = null;
 		
+		try {
+			externalFlowProvider = externalFlowProviders.get("fg-" + moduleID);
+			return externalFlowProvider != null ? externalFlowProvider.getFlow(repositoryIndex, sharedflowID) : null;
+		} catch (Exception e) {
+
+			log.error("Error in externalflowprovider " + externalFlowProvider + " while reading file with repositoryIndex " + repositoryIndex + " and flowID " + sharedflowID, e);
+		}
+
 		return externalFlow;
 	}
 
@@ -6765,12 +6762,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			throw new NullPointerException();
 		}
 
-		externalFlowProviders.add(provider);
+		externalFlowProviders.put(provider.getProviderID(), provider);
 	}
 
 	public void removeExternalFlowProvider(ExternalFlowProvider provider) {
 
-		externalFlowProviders.remove(provider);
+		externalFlowProviders.remove(provider.getProviderID());
 	}
 
 	public String getCkConnectorModuleAlias() {
