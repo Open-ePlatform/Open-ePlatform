@@ -65,6 +65,9 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 	@DAOManaged(columnName = "queryInstanceID")
 	@ManyToOne
 	private ChildQueryInstance queryInstance;
+	
+	@XMLElement
+	private boolean sameAddressAsPoster;
 
 	public StoredGuardian() {};
 
@@ -188,7 +191,14 @@ public class StoredGuardian extends GeneratedElementable implements Serializable
 		this.poster = poster;
 	}
 
-	
+	public boolean isSameAddressAsPoster() {
+		return sameAddressAsPoster;
+	}
+
+	public void setSameAddressAsPoster(boolean sameAddressAsPoster) {
+		this.sameAddressAsPoster = sameAddressAsPoster;
+	}
+
 	public String getAddressUUID() {
 	
 		return addressUUID;

@@ -166,7 +166,7 @@
 								
 							</table>
 							
-							<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true' and count(ChildQueryInstance/Guardians/Guardian) > 1">
+							<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true' and count(ChildQueryInstance/Guardians/Guardian[sameAddressAsPoster != 'true']) > 1">
 								<p class="tiny">
 									<xsl:value-of select="$i18n.OtherGuardiansNotificationInfo"/>
 								</p>
@@ -341,7 +341,7 @@
 							<xsl:value-of select="$i18n.Error.NoChildren"/>
 							
 						</xsl:when>
-						<xsl:when test="ChildQueryInstance/citizenIdentifier">	<!-- Editing saved instance as admin -->
+						<xsl:when test="ChildQueryInstance/citizenIdentifier">	<!-- Editing saved instance as manager -->
 							
 							<div>
 								<xsl:call-template name="SavedChild"/>
@@ -528,16 +528,18 @@
 			
 			<div class="guardians" style="display: none;">
 				<xsl:for-each select="Guardians/Guardian[not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
-					<div>
-						<xsl:choose>
-							<xsl:when test="citizenIdentifier">
-								<xsl:value-of select="citizenIdentifier"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="generate-id(.)"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</div>
+					<xsl:if test="../../../../ChildQuery/skipMultipartSigningIfSameAddress != 'true' or sameAddressAsPoster != 'true'">
+						<div>
+							<xsl:choose>
+								<xsl:when test="citizenIdentifier">
+									<xsl:value-of select="citizenIdentifier"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="generate-id(.)"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</div>
+					</xsl:if>
 				</xsl:for-each>
 			</div>
 			
@@ -613,7 +615,9 @@
 			
 			<div class="guardians" style="display: none;">
 				<xsl:for-each select="ChildQueryInstance/Guardians/Guardian[not(citizenIdentifier = /Document/user/SocialSecurityNumber)]">
-					<div><xsl:value-of select="citizenIdentifier"/></div>
+					<xsl:if test="../../ChildQuery/skipMultipartSigningIfSameAddress != 'true' or sameAddressAsPoster != 'true'">
+						<div><xsl:value-of select="citizenIdentifier"/></div>
+					</xsl:if>
 				</xsl:for-each>
 			</div>
 			
@@ -636,7 +640,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-	
+		
 		<div class="guardian clearboth floatleft" data-citizenid="{$jsCitizenID}">
 	
 			<xsl:choose>

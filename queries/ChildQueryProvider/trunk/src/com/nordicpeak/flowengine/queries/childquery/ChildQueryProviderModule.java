@@ -446,6 +446,27 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 				queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, null, null));
 			}
+			
+		} else {
+			
+			if (queryInstance.getGuardians() != null) {
+				
+				for (StoredGuardian guardian : queryInstance.getGuardians()) {
+	
+					if (guardian.isPoster()) {
+	
+						for (StoredGuardian guardian2 : queryInstance.getGuardians()) {
+	
+							if (guardian2 != guardian && guardian2.addressEquals(guardian)) {
+	
+								guardian2.setSameAddressAsPoster(true);
+							}
+						}
+	
+						break;
+					}
+				}
+			}
 		}
 
 		return queryInstance;
@@ -608,10 +629,11 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
 
-		Integer queryID = queryInstance.getQuery().getQueryID();
+		ChildQuery query = queryInstance.getQuery();
+		Integer queryID = query.getQueryID();
 		String posterCitizienIdentifier = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster);
 
-		if (queryInstance.getQuery().isUseMultipartSigning()) {
+		if (query.isUseMultipartSigning()) {
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
 
@@ -619,35 +641,37 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 					validationErrors.add(new ValidationError("Provider.IncompleteData"));
 
-				} else if (storedGuardian.getCitizenIdentifier().equals(posterCitizienIdentifier)) {
+				} else if (storedGuardian.isPoster()) {
 
-					storedGuardian.setPoster(true);
 					storedGuardian.setEmail(poster.getEmail());
 					storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
 
 				} else {
 
+					if (query.isSkipMultipartSigningIfSameAddress() && storedGuardian.isSameAddressAsPoster()) {
+						continue;
+					}
+
 					String emailID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email";
 					String phoneID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone";
 
-					String email = ValidationUtils.validateParameter(emailID, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
-					String phone = ValidationUtils.validateParameter(phoneID, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
+					String email = ValidationUtils.validateParameter(emailID, req, query.isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
+					String phone = ValidationUtils.validateParameter(phoneID, req, query.isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
 
-					storedGuardian.setPoster(false);
 					storedGuardian.setEmail(email);
 					storedGuardian.setPhone(phone);
 
-					if (!allowPartialPopulation && !queryInstance.getQuery().isRequireGuardianEmail() && !queryInstance.getQuery().isRequireGuardianPhone() && storedGuardian.getEmail() == null && storedGuardian.getPhone() == null && StringUtils.isEmpty(req.getParameter(emailID)) && StringUtils.isEmpty(req.getParameter(phoneID))) {
+					if (!allowPartialPopulation && !query.isRequireGuardianEmail() && !query.isRequireGuardianPhone() && storedGuardian.getEmail() == null && storedGuardian.getPhone() == null && StringUtils.isEmpty(req.getParameter(emailID)) && StringUtils.isEmpty(req.getParameter(phoneID))) {
 
 						validationErrors.add(new ValidationError("EmailOrPhoneRequired"));
 
-					} else if (queryInstance.getQuery().isRequireGuardianContactInfoVerification() && !requestMetadata.isManager()) {
+					} else if (query.isRequireGuardianContactInfoVerification() && !requestMetadata.isManager()) {
 
 						String emailID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email2";
 						String phoneID2 = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone2";
 
-						String email2 = ValidationUtils.validateParameter(emailID2, req, queryInstance.getQuery().isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
-						String phone2 = ValidationUtils.validateParameter(phoneID2, req, queryInstance.getQuery().isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
+						String email2 = ValidationUtils.validateParameter(emailID2, req, query.isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
+						String phone2 = ValidationUtils.validateParameter(phoneID2, req, query.isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
 
 						if (((email == null && email2 != null) || (email != null && !email.equals(email2))) && !ValidationUtils.containsValidationErrorForField(emailID2, validationErrors)) {
 
@@ -662,7 +686,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				}
 			}
 
-		} else if (queryInstance.getQuery().isAlwaysShowOtherGuardians()) {
+		} else if (query.isAlwaysShowOtherGuardians()) {
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
 
@@ -755,6 +779,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 				@SuppressWarnings("unchecked")
 				Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
+				
+				setGuardianPosterAndSameAddress(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), storedChildMap);
 
 				return storedChildMap;
 			}
@@ -878,6 +904,8 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 								storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
 							}
 						}
+						
+						setGuardianPosterAndSameAddress(citizenIdentifier, storedChildMap);
 
 						return storedChildMap;
 
@@ -895,6 +923,31 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		return null;
 	}
+
+	private void setGuardianPosterAndSameAddress(String posterCitizenIdentifier, Map<String, StoredChild> storedChildMap) {
+
+		for (StoredChild child : storedChildMap.values()) {
+
+			for (StoredGuardian guardian : child.getGuardians()) {
+
+				if (posterCitizenIdentifier.equals(guardian.getCitizenIdentifier())) {
+
+					guardian.setPoster(true);
+
+					for (StoredGuardian guardian2 : child.getGuardians()) {
+
+						if (guardian2 != guardian && guardian2.addressEquals(guardian)) {
+
+							guardian2.setSameAddressAsPoster(true);
+						}
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
 
 	@Override
 	public Document createDocument(HttpServletRequest req, User poster) {
