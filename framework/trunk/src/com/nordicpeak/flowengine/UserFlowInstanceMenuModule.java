@@ -81,7 +81,21 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			return;
 		}
 		
+		SimpleBackgroundModuleDescriptor backgroundModuleDescriptor = (SimpleBackgroundModuleDescriptor) moduleDescriptor;
+		
 		List<String> aliases = new ArrayList<String>();
+		
+		// Keep exclusions from module settings instead of overwriting them
+		if (backgroundModuleDescriptor.getAliases() != null) {
+			
+			for (String alias : backgroundModuleDescriptor.getAliases()) {
+				
+				if (alias.startsWith("exclude:")) {
+					
+					aliases.add(alias);
+				}
+			}
+		}
 		
 		for (UserMenuProvider extensionLinkProvider : extensionLinkProviders) {
 			
@@ -97,7 +111,6 @@ public class UserFlowInstanceMenuModule extends AnnotatedBackgroundModule implem
 			}
 		}
 		
-		SimpleBackgroundModuleDescriptor backgroundModuleDescriptor = (SimpleBackgroundModuleDescriptor) moduleDescriptor;
 		backgroundModuleDescriptor.setAliases(aliases);
 		
 		try {
