@@ -1026,7 +1026,7 @@
 												<span>
 													<xsl:value-of select="$i18n.AllowedFilextentions" />
 													<xsl:text>: </xsl:text>
-													<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension"/>
+													<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension" mode="commaseparated"/>
 												</span>
 											</xsl:if>												
 										</div>
@@ -1149,7 +1149,7 @@
 											<span>
 												<xsl:value-of select="$i18n.AllowedFilextentions" />
 												<xsl:text>: </xsl:text>
-												<xsl:apply-templates select="../AllowedInternalMessageFileExtensions/FileExtension"/>
+												<xsl:apply-templates select="../AllowedInternalMessageFileExtensions/FileExtension" mode="commaseparated"/>
 											</span>
 										</xsl:if>											
 									</div>
@@ -1210,7 +1210,17 @@
  			
 		</section>
 	
-	</xsl:template>	
+	</xsl:template>
+	
+	<xsl:template match="FileExtension" mode="commaseparated">
+	
+		<xsl:value-of select="."/>
+		
+		<xsl:if test="position() != last()">
+			<xsl:text>, </xsl:text>
+		</xsl:if>
+		
+	</xsl:template>
 	
 	<xsl:template match="FlowInstanceEvent">
 		
