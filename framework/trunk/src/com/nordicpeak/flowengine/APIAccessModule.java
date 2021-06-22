@@ -20,6 +20,7 @@ import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.UserMultiListSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
@@ -73,8 +74,16 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 	private String settingsRemoved = "Inactivated API access";
 
 	@ModuleSetting
-	@GroupMultiListSettingDescriptor(name = "Allowed groups", description = "Groups from which Users allowed to access APIs can be chosen from.", required = true)
-	protected List<Integer> allowedGroupIDs;
+	@GroupMultiListSettingDescriptor(name = "Selectable groups", description = "Groups from which users allowed to access APIs can be chosen from.", required = true)
+	protected List<Integer> selectableGroupIDs;
+	
+	@ModuleSetting(allowsNull = true)
+	@UserMultiListSettingDescriptor(name = "Always allowed users", description = "Users which are always allowed to access APIs.", required = false)
+	protected List<Integer> alwaysAllowedUserIDs;
+	
+	@ModuleSetting(allowsNull = true)
+	@GroupMultiListSettingDescriptor(name = "Always allowed groups", description = "Groups which are always allowed to access APIs.", required = false)
+	protected List<Integer> alwaysAllowedGroupIDs;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
@@ -106,7 +115,7 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 		super.init(moduleDescriptor, sectionInterface, dataSource);
 		
 		userGroupListConnector = new UserGroupListConnector(systemInterface);
-		userGroupListConnector.setUserGroupFilter(allowedGroupIDs);
+		userGroupListConnector.setUserGroupFilter(selectableGroupIDs);
 
 		if (!systemInterface.getInstanceHandler().addInstance(APIAccessModule.class, this)) {
 
@@ -134,7 +143,7 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 		viewFragmentTransformer.modifyScriptsAndLinks(true, null);
 		
 		if (userGroupListConnector != null) {
-			userGroupListConnector.setUserGroupFilter(allowedGroupIDs);
+			userGroupListConnector.setUserGroupFilter(selectableGroupIDs);
 		}
 	}
 	
@@ -211,7 +220,7 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 						
 						for (User apiUser : users) {
 							
-							if (!AccessUtils.checkAccess(apiUser, this)) {
+							if (!AccessUtils.checkGroupAccess(apiUser, selectableGroupIDs)) {
 								
 								validationErrors.add(new ValidationError("users", ValidationErrorType.InvalidFormat));
 							}
@@ -321,10 +330,6 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 	@Override
 	public FlowAdminExtensionShowView getShowView(String extensionRequestURL, Flow flow, HttpServletRequest req, User user, URIParser uriParser) throws TransformerConfigurationException, TransformerException, SQLException {
 
-		if (!AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)) {
-			return null;
-		}
-
 		Document doc = createDocument(req, uriParser, user);
 
 		Element showViewElement = doc.createElement("Show");
@@ -344,10 +349,6 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 
 	@Override
 	public ViewFragment processRequest(String extensionRequestURL, Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
-
-		if (!AccessUtils.checkAccess(user, this) && !AccessUtils.checkRecursiveModuleAccess(user, moduleDescriptor, systemInterface)) {
-			throw new AccessDeniedException("User is not allowed to remove flow instances");
-		}
 
 		String method = uriParser.get(4);
 
@@ -407,45 +408,57 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 		return userGroupListConnector.getUsers(req, res, user, uriParser);
 	}
 	
-	public boolean hasAccess(Integer familyID, Integer userID) throws SQLException {
-	
+	public boolean hasAccess(Integer familyID, User user) throws SQLException {
+		
+		if (AccessUtils.checkAccess(user, this)) {
+			return true;
+		}
+		
 		HighLevelQuery<APIAccessSetting> query = new HighLevelQuery<APIAccessSetting>();
 		query.addParameter(settingsFlowFamilyIDParamFactory.getParameter(familyID));
-		query.addParameter(settingsUserIDParamFactory.getParameter(userID));
+		query.addParameter(settingsUserIDParamFactory.getParameter(user.getUserID()));
 
 		return settingsDAO.get(query) != null;
 	}
 	
 	public boolean hasAccess(FlowFamily family, User user) throws SQLException {
 		
-		return hasAccess(family.getFlowFamilyID(), user.getUserID());
+		if (AccessUtils.checkAccess(user, this)) {
+			return true;
+		}
+		
+		HighLevelQuery<APIAccessSetting> query = new HighLevelQuery<APIAccessSetting>();
+		query.addParameter(settingsFlowFamilyIDParamFactory.getParameter(family.getFlowFamilyID()));
+		query.addParameter(settingsUserIDParamFactory.getParameter(user.getUserID()));
+
+		return settingsDAO.get(query) != null;
 	}
 	
 	public boolean hasAccess(Flow flow, User user) throws SQLException {
-		
+
 		FlowFamily flowFamily = flow.getFlowFamily();
-		
+
 		if (flowFamily == null) {
-			
+
 			Flow cachedFlow = flowAdminModule.getCachedFlow(flow.getFlowID());
-			
+
 			if (cachedFlow != null) {
 				flowFamily = cachedFlow.getFlowFamily();
 			}
 		}
-		
+
 		if (flowFamily != null) {
 			return hasAccess(flowFamily, user);
 		}
-		
+
 		log.warn("Unable to determine API access to flow " + flow + " for user " + user + ", flow family not found");
 		return false;
 	}
 	
 	public void accessCheck(Integer flowFamilyID, User user) throws SQLException, AccessDeniedException {
-	
-		if (!hasAccess(flowFamilyID, user.getUserID())) {
-			
+
+		if (!hasAccess(flowFamilyID, user)) {
+
 			log.warn("User " + user + " does not have API access to flow family with ID " + flowFamilyID);
 			throw new AccessDeniedException("User is not allowed to access APIs for flow family with ID " + flowFamilyID);
 		}
@@ -461,22 +474,22 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 	}
 	
 	public void accessCheck(Flow flow, User user) throws SQLException, AccessDeniedException {
-	
+
 		FlowFamily flowFamily = flow.getFlowFamily();
-		
+
 		if (flowFamily == null) {
-			
+
 			Flow cachedFlow = flowAdminModule.getCachedFlow(flow.getFlowID());
-			
+
 			if (cachedFlow != null) {
 				flowFamily = cachedFlow.getFlowFamily();
 			}
 		}
-		
+
 		if (flowFamily != null) {
 			accessCheck(flowFamily, user);
 		}
-		
+
 		log.warn("Unable to determine API access to flow " + flow + " for user " + user + ", flow family not found");
 		throw new AccessDeniedException("Unable to determine API access to flow " + flow + " for user " + user + ", flow family not found");
 	}
@@ -533,12 +546,12 @@ public class APIAccessModule extends AnnotatedForegroundModule implements FlowAd
 
 	@Override
 	public Collection<Integer> getAllowedGroupIDs() {
-		return allowedGroupIDs;
+		return alwaysAllowedGroupIDs;
 	}
 
 	@Override
 	public Collection<Integer> getAllowedUserIDs() {
-		return null;
+		return alwaysAllowedUserIDs;
 	}
 
 }
