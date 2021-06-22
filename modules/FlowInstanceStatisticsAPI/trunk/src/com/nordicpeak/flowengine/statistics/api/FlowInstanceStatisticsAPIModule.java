@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,6 +40,7 @@ import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
 import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
 import se.unlogic.standardutils.collections.CollectionUtils;
+import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.MySQLRowLimiter;
@@ -61,6 +63,7 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.APIAccessModule;
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
@@ -96,6 +99,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	
 	@InstanceManagerDependency(required = false)
 	private FlowSubmitSurveyProvider flowSubmitSurveyProvider;
+	
+	@InstanceManagerDependency(required = false)
+	private APIAccessModule apiAccessModule;
 
 	private AnnotatedDAO<FlowInstance> flowInstanceDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
@@ -402,9 +408,31 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 				}
 
 				log.info("Responding to user " + user + " with flow instance statistics: normalFlowInstances " + normalFlowInstances + ", abortedFlowInstances " + abortedFlowInstances + ", deletedFlowInstances " + extensionFlowInstances);
+				
+				if (apiAccessModule != null && !flowInstanceStatistics.isEmpty()) {
+					
+					int oldSize = flowInstanceStatistics.size();
+					
+					Iterator<FlowInstanceStatistic> it = new ReverseListIterator<>(flowInstanceStatistics).iterator();
+					while (it.hasNext()) {
+						
+						FlowInstanceStatistic instanceStatistic = it.next();
+						Flow flow = flowAdminModule.getCachedFlow(instanceStatistic.getFlowID());
+						
+						if (flow == null || !apiAccessModule.hasAccess(flow.getFlowFamily(), user)) {
+							it.remove();
+						}
+					}
+					
+					int removed = oldSize - flowInstanceStatistics.size();
+					
+					if (removed > 0) {
+						log.info("Removed " + removed + " results from response due to missing flow API access for flow families");
+					}
+				}
 
 				Collections.sort(flowInstanceStatistics);
-
+				
 				XMLUtils.appendNewElement(doc, responseElement, "Count", flowInstanceStatistics.size());
 
 				XMLUtils.append(doc, responseElement, "FlowInstances", flowInstanceStatistics);
@@ -480,7 +508,15 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 					Connection connection = dataSource.getConnection();
 
 					try {
+						int skippedFlows = 0;
+						
 						for (Flow flow : flows) {
+							
+							if (apiAccessModule != null && !apiAccessModule.hasAccess(flow.getFlowFamily(), user)) {
+								
+								skippedFlows++;
+								continue;
+							}
 
 							Element flowElement = XMLUtils.appendNewElement(doc, responseElement, "Flow");
 
@@ -507,11 +543,15 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 							XMLUtils.appendNewElement(doc, flowElement, "Internal", flow.isInternal());
 							XMLUtils.appendNewElement(doc, flowElement, "Visible", !flow.isHideFromOverview());
 							
-							if(flow.getFlowFamily().getStatisticsMode() != null) {
+							if (flow.getFlowFamily().getStatisticsMode() != null) {
 								XMLUtils.appendNewElement(doc, flowElement, "StatisticsMode", flow.getFlowFamily().getStatisticsMode());
 							}
 							
 							responseElement.appendChild(flowElement);
+						}
+						
+						if (skippedFlows > 0) {
+							log.info("Skipped " + skippedFlows + " flows from response due to missing flow API access for flow families");
 						}
 
 					} finally {

@@ -39,6 +39,7 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
 import se.unlogic.standardutils.time.TimeUtils;
 
+import com.nordicpeak.flowengine.APIAccessModule;
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -80,8 +81,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	protected static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
 	
 	private static final Field FLOW_ADMIN_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "flowAdminModule");
-	
 	private static final Field FILE_ATTACHMENT_HANDLER_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "fileAttachmentHandler");
+	private static final Field API_ACCESS_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "apiAccessModule");
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set user on events", description = "Set the API user on generated events")
@@ -92,18 +93,18 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	private boolean enableAttributePrefix = true;
 
 	protected FlowAdminModule flowAdminModule;
-	
 	protected FileAttachmentHandler fileAttachmentHandler;
+	protected APIAccessModule apiAccessModule;
 
 	private FlowEngineDAOFactory daoFactory;
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
 	private QueryParameterFactory<Status, Integer> statusIDParamFactory;
 	private QueryParameterFactory<Status, String> statusNameParamFactory;
 	private QueryParameterFactory<Status, Flow> statusFlowParamFactory;
-
-	private FieldInstanceListener<FlowAdminModule> flowAdminModuleListener = new FieldInstanceListener<>(this, FLOW_ADMIN_MODULE_FIELD, true, null);
 	
+	private FieldInstanceListener<FlowAdminModule> flowAdminModuleListener = new FieldInstanceListener<>(this, FLOW_ADMIN_MODULE_FIELD, true, null);
 	private FieldInstanceListener<FileAttachmentHandler> fileAttachmentHandlerListener = new FieldInstanceListener<>(this, FILE_ATTACHMENT_HANDLER_FIELD, false, null);
+	private FieldInstanceListener<APIAccessModule> apiAccessModuleListener = new FieldInstanceListener<>(this, API_ACCESS_MODULE_FIELD, false, null);
 	
 	private final MutexKeyProvider<FlowInstanceIDMutex> mutexKeyProvider = new MutexKeyProvider<FlowInstanceIDMutex>();
 	
@@ -123,6 +124,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
+		callback.getSystemInterface().getInstanceHandler().addInstanceListener(APIAccessModule.class, apiAccessModuleListener);
 	}
 
 	@Override
@@ -130,10 +132,29 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
+		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(APIAccessModule.class, apiAccessModuleListener);
 		
 		super.unload();
 	}
 
+	private void apiAccessCheck(FlowInstance flowInstance, User callbackUser) throws AccessDeniedException {
+		
+		if (apiAccessModule != null) {
+
+			try {
+				apiAccessModule.accessCheck(flowInstance.getFlow().getFlowFamily(), callbackUser);
+
+			} catch (se.unlogic.hierarchy.core.exceptions.AccessDeniedException e) {
+
+				throw new AccessDeniedException("This user does not have access to this flow family", new AccessDenied());
+
+			} catch (SQLException e) {
+
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -147,6 +168,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				checkDependencies();
 
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+				apiAccessCheck(flowInstance, callback.getUser());
 
 				User principalUser = getPrincipalUser(principal);
 
@@ -221,6 +244,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
 
+				apiAccessCheck(flowInstance, callback.getUser());
+
 				User principalUser = getPrincipalUser(principal);
 
 				log.info("User " + callback.getUser() + " requested add event for flow instance " + flowInstance + " using principal " + principal);
@@ -250,6 +275,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				checkDependencies();
 
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+				apiAccessCheck(flowInstance, callback.getUser());
 
 				User principalUser = getPrincipalUser(principal);
 
@@ -297,7 +324,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				log.error("Error adding message", e);
 
 				throw e;
-			}			
+			}
 		}
 	}
 	
@@ -310,6 +337,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				checkDependencies();
 
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+				apiAccessCheck(flowInstance, callback.getUser());
 
 				User principalUser = getPrincipalUser(principal);
 
@@ -357,7 +386,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				throw e;
 			}
 		}
-	}	
+	}
 
 	private ExternalMessage getExternalMessage(IntegrationMessage message) {
 
@@ -470,6 +499,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			try {
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
 
+				apiAccessCheck(flowInstance, callback.getUser());
+
 				log.info("User " + callback.getUser() + " requested add message for flow instance " + flowInstance + " with delived flag set to " + delivered + " and log message se to " + logMessage);
 
 				if (delivered) {
@@ -542,6 +573,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				checkDependencies();
 
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+				apiAccessCheck(flowInstance, callback.getUser());
 
 				log.info("User " + callback.getUser() + " requested set managers for flow instance " + flowInstance);
 
@@ -616,7 +649,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				log.error("Error setting managers", e);
 
 				throw e;
-			}			
+			}
 		}
 	}
 	
@@ -636,6 +669,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			}
 			
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+			apiAccessCheck(flowInstance, callback.getUser());
 
 			log.info("User " + callback.getUser() + " requested get managers for flow instance " + flowInstance);
 
@@ -882,6 +917,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			checkDependencies();
 
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
+
+			apiAccessCheck(flowInstance, callback.getUser());
 
 			if (StringUtils.isEmpty(name)) {
 				throw new RuntimeException("Name cannot be empty");
