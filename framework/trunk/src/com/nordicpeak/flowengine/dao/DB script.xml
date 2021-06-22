@@ -2780,6 +2780,20 @@
 				ENGINE=InnoDB;
 			]]>
 		</Query>
-	</Script>	
+	</Script>
+	
+	<Script version="150">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_api_access` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `userID`),
+					CONSTRAINT `FK_flowengine_api_access_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>
