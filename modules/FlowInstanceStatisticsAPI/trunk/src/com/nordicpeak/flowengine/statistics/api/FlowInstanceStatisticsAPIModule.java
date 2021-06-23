@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +55,7 @@ import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.CombinedPopulator;
 import se.unlogic.standardutils.populators.DatePopulator;
+import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
 import se.unlogic.standardutils.populators.SwedishSocialSecurityPopulator;
 import se.unlogic.standardutils.populators.TimeStampPopulator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -103,12 +105,16 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	@InstanceManagerDependency(required = false)
 	private APIAccessModule apiAccessModule;
 
-	private AnnotatedDAO<FlowInstance> flowInstanceDAO;
+	private AnnotatedDAO<FlowInstanceMinimizedForStatistics> flowInstanceMinimizedDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
 	private AnnotatedDAO<FeedbackSurvey> flowInstanceFeedbackSurveyDAO;
 
 	protected QueryParameterFactory<FlowInstance, Timestamp> flowInstanceAddedParamFactory;
+	protected QueryParameterFactory<FlowInstanceMinimizedForStatistics, Timestamp> flowInstanceMinimizedAddedParamFactory;
+	protected QueryParameterFactory<FlowInstanceMinimizedForStatistics, Integer> flowInstanceMinimizedFlowIDParamFactory;
 	protected QueryParameterFactory<AbortedFlowInstance, Timestamp> abortedFlowInstanceAddedParamFactory;
+	protected QueryParameterFactory<AbortedFlowInstance, Integer> abortedFlowInstanceFlowIDParamFactory;
+	protected QueryParameterFactory<AbortedFlowInstance, Integer> abortedFlowInstanceFlowFamilyIDParamFactory;
 	protected QueryParameterFactory<FeedbackSurvey, Integer> feedbackSurveyFlowInstanceIDParamFactory;
 	
 	protected CopyOnWriteArrayList<StatisticsAPIExtensionProvider> extensions = new CopyOnWriteArrayList<>();
@@ -130,12 +136,15 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 		FlowEngineDAOFactory flowEngineDAOFactory = new FlowEngineDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler());
 		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface);
 
-		flowInstanceDAO = flowEngineDAOFactory.getFlowInstanceDAO();
+		flowInstanceMinimizedDAO = daoFactory.getDAO(FlowInstanceMinimizedForStatistics.class);
 		abortedFlowInstanceDAO = flowEngineDAOFactory.getAbortedFlowInstanceDAO();
 		flowInstanceFeedbackSurveyDAO = daoFactory.getDAO(FeedbackSurvey.class);
 
-		flowInstanceAddedParamFactory = flowInstanceDAO.getParamFactory("added", Timestamp.class);
+		flowInstanceMinimizedAddedParamFactory = flowInstanceMinimizedDAO.getParamFactory("added", Timestamp.class);
+		flowInstanceMinimizedFlowIDParamFactory = flowInstanceMinimizedDAO.getParamFactory("flowID", Integer.class);
 		abortedFlowInstanceAddedParamFactory = abortedFlowInstanceDAO.getParamFactory("added", Timestamp.class);
+		abortedFlowInstanceFlowIDParamFactory = abortedFlowInstanceDAO.getParamFactory("flowID", Integer.class);
+		abortedFlowInstanceFlowFamilyIDParamFactory = abortedFlowInstanceDAO.getParamFactory("flowFamilyID", Integer.class);
 		feedbackSurveyFlowInstanceIDParamFactory = flowInstanceFeedbackSurveyDAO.getParamFactory("flowInstanceID", Integer.class);
 	}
 	
@@ -154,6 +163,8 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 		Date from = ValidationUtils.validateParameter("from", req, false, DatePopulator.getPopulator(), validationErrors);
 		Date to = ValidationUtils.validateParameter("to", req, false, DatePopulator.getPopulator(), validationErrors);
+		Integer filterFlowID = ValidationUtils.validateParameter("flowid", req, false, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
+		Integer filterFlowFamilyID = ValidationUtils.validateParameter("flowfamilyid", req, false, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
 
 		Charset charset = null;
 		String encoding = req.getParameter("encoding");
@@ -177,7 +188,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 			if (validationErrors.isEmpty()) {
 
-				log.info("User " + user + " requested list flowinstance statistics as " + StringUtils.toLogFormat(responseType, 30) + " from " + from + " to " + to);
+				log.info("User " + user + " requested list flowinstance statistics as " + StringUtils.toLogFormat(responseType, 30) + ", from " + from + " to " + to + ", flowID " + filterFlowID + ", flowFamilyID " + filterFlowFamilyID);
 
 				Timestamp fromTimestamp = null;
 				Timestamp toTimestamp = null;
@@ -193,8 +204,8 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 					toTimestamp = new Timestamp(to.getTime());
 					DateUtils.setTimeToMaximum(toTimestamp);
 				}
-
-				List<FlowInstanceStatistic> flowInstanceStatistics = new ArrayList<FlowInstanceStatistic>();
+				
+				List<FlowInstanceStatistic> flowInstanceStatistics = new ArrayList<FlowInstanceStatistic>(1024);
 
 				int normalFlowInstances = 0;
 				int abortedFlowInstances = 0;
@@ -207,20 +218,22 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 				try {
 
 					{ // Normal flow instances
-						HighLevelQuery<FlowInstance> flowInstancesQuery = new HighLevelQuery<FlowInstance>();
-						flowInstancesQuery.addRelations(FLOW_INSTANCE_RELATIONS);
-						flowInstancesQuery.addCachedRelations(FLOW_INSTANCE_CACHED_RELATIONS);
+						HighLevelQuery<FlowInstanceMinimizedForStatistics> flowInstancesQuery = new HighLevelQuery<FlowInstanceMinimizedForStatistics>();
 						flowInstancesQuery.setRowLimiter(new MySQLRowLimiter(rowLimit));
 
 						if (fromTimestamp != null) {
-							flowInstancesQuery.addParameter(flowInstanceAddedParamFactory.getParameter(fromTimestamp, QueryOperators.BIGGER_THAN_OR_EQUALS));
+							flowInstancesQuery.addParameter(flowInstanceMinimizedAddedParamFactory.getParameter(fromTimestamp, QueryOperators.BIGGER_THAN_OR_EQUALS));
 						}
 
 						if (toTimestamp != null) {
-							flowInstancesQuery.addParameter(flowInstanceAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
+							flowInstancesQuery.addParameter(flowInstanceMinimizedAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
+						}
+						
+						if (filterFlowID != null) {
+							flowInstancesQuery.addParameter(flowInstanceMinimizedFlowIDParamFactory.getParameter(filterFlowID));
 						}
 
-						QueryResultsStreamer<FlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstance, Integer>(flowInstanceDAO, FlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
+						QueryResultsStreamer<FlowInstanceMinimizedForStatistics, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstanceMinimizedForStatistics, Integer>(flowInstanceMinimizedDAO, FlowInstanceMinimizedForStatistics.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
 
 						SwedishSocialSecurityPopulator citizenIDValidatorHyphen = new SwedishSocialSecurityPopulator(true, true, true, false);
 						SwedishSocialSecurityPopulator citizenIDValidatorNoHyphen = new SwedishSocialSecurityPopulator(true, true, true, true);
@@ -228,7 +241,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						@SuppressWarnings("unchecked")
 						CombinedPopulator<String> citizenIDValidator = new CombinedPopulator<String>(String.class, citizenIDValidatorHyphen, citizenIDValidatorNoHyphen);
 						
-						List<FlowInstance> flowInstances = resultsStreamer.getBeans();
+						List<FlowInstanceMinimizedForStatistics> flowInstances = resultsStreamer.getBeans();
+						
+						HashMap<Integer, User> usersMap = new HashMap<>(1024);
 
 						while (flowInstances != null) {
 
@@ -239,22 +254,58 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 								return;
 							}
 
-							for (FlowInstance flowInstance : flowInstances) {
+							List<Integer> missingPosterIDs = new ArrayList<>(flowInstances.size());
+							
+							for (FlowInstanceMinimizedForStatistics flowInstance : flowInstances) {
+								
+								if (!usersMap.containsKey(flowInstance.getPosterID())) {
+									missingPosterIDs.add(flowInstance.getPosterID());
+								}
+							}
+							
+							if (!missingPosterIDs.isEmpty()) {
 
-								FlowInstanceStatistic statistic = new FlowInstanceStatistic(flowInstance.getFlow().getFlowID(), flowInstance.getAdded());
+								List<User> posters = systemInterface.getUserHandler().getUsers(missingPosterIDs, false, true);
+
+								if (posters != null) {
+									
+									for (User poster : posters) {
+										usersMap.put(poster.getUserID(), poster);
+									}
+								}
+							}
+							
+							for (FlowInstanceMinimizedForStatistics flowInstance : flowInstances) {
+								
+								Flow flow = flowAdminModule.getCachedFlow(flowInstance.getFlowID());
+								
+								if (flow == null) {
+									log.warn("Unable to find flow with ID " + flowInstance.getFlowID());
+								}
+								
+								if (filterFlowFamilyID != null) {
+									
+									if (flow == null || !flow.getFlowFamily().getFlowFamilyID().equals(filterFlowFamilyID)) {
+										continue;
+									}
+								}
+								
+								FlowInstanceStatistic statistic = new FlowInstanceStatistic(flowInstance.getFlowID(), flowInstance.getAdded());
 
 								if (flowInstance.getFirstSubmitted() != null) {
 									statistic.setSubmitted(flowInstance.getFirstSubmitted());
 									
-									if(this.flowSubmitSurveyProvider != null) {
+									if (flowSubmitSurveyProvider != null) {
 										
 										statistic.setSurveyAnswer(flowSubmitSurveyProvider.getFlowInstanceSurveyResult(flowInstance.getFlowInstanceID(), connection));
 									}
 								}
 
 								String citizenIdentifier;
+								
+								User poster = usersMap.get(flowInstance.getPosterID());
 
-								if (flowInstance.getPoster() != null && flowInstance.getPoster().getAttributeHandler() != null && (citizenIdentifier = flowInstance.getPoster().getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) != null && citizenIDValidator.validateFormat(citizenIdentifier)) {
+								if (poster != null && poster.getAttributeHandler() != null && (citizenIdentifier = poster.getAttributeHandler().getString(Constants.USER_CITIZEN_IDENTIFIER_ATTRIBUTE)) != null && citizenIDValidator.validateFormat(citizenIdentifier)) {
 
 									if (citizenIdentifier.length() < 12) {
 
@@ -294,12 +345,12 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 										}
 									}
 								}
-
-								if (flowInstance.getFirstSubmitted() == null) {
-
+								
+								if (flowInstance.getFirstSubmitted() == null && flow != null) {
+									
 									int stepIndex = 1;
 
-									for (Step step : flowInstance.getFlow().getSteps()) {
+									for (Step step : flow.getSteps()) {
 
 										if (step.getStepID().equals(flowInstance.getStepID())) {
 											statistic.setSavedStep(stepIndex);
@@ -312,8 +363,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 								flowInstanceStatistics.add(statistic);
 							}
-
+							
 							if (flowInstances.size() == rowLimit) {
+								
 								flowInstances = resultsStreamer.getBeans();
 
 							} else {
@@ -333,7 +385,15 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						if (toTimestamp != null) {
 							flowInstancesQuery.addParameter(abortedFlowInstanceAddedParamFactory.getParameter(toTimestamp, QueryOperators.SMALLER_THAN_OR_EQUALS));
 						}
-
+						
+						if (filterFlowID != null) {
+							flowInstancesQuery.addParameter(abortedFlowInstanceFlowIDParamFactory.getParameter(filterFlowID));
+						}
+						
+						if (filterFlowFamilyID != null) {
+							flowInstancesQuery.addParameter(abortedFlowInstanceFlowFamilyIDParamFactory.getParameter(filterFlowFamilyID));
+						}
+						
 						QueryResultsStreamer<AbortedFlowInstance, Integer> resultsStreamer = new QueryResultsStreamer<AbortedFlowInstance, Integer>(abortedFlowInstanceDAO, AbortedFlowInstance.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
 
 						List<AbortedFlowInstance> flowInstances = resultsStreamer.getBeans();
@@ -383,14 +443,14 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 							}
 						}
 					}
-
+					
 				} finally {
 					DBUtils.closeConnection(connection);
 				}
-				
+
 				for (StatisticsAPIExtensionProvider extension : extensions) {
 					
-					List<FlowInstanceStatistic> extensionStatistics = extension.getFlowInstanceAPIStatistics(fromTimestamp, toTimestamp, rowLimit);
+					List<FlowInstanceStatistic> extensionStatistics = extension.getFlowInstanceAPIStatistics(fromTimestamp, toTimestamp, filterFlowID, filterFlowFamilyID, rowLimit);
 					
 					if (extensionStatistics != null) {
 						
@@ -406,7 +466,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						}
 					}
 				}
-
+				
 				log.info("Responding to user " + user + " with flow instance statistics: normalFlowInstances " + normalFlowInstances + ", abortedFlowInstances " + abortedFlowInstances + ", deletedFlowInstances " + extensionFlowInstances);
 				
 				if (apiAccessModule != null && !flowInstanceStatistics.isEmpty()) {
@@ -464,7 +524,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 				
 				log.warn("Error sending flow instance statistics to " + user, e);
 			}
-
+			
 		} else {
 
 			// Invalid requested response type
