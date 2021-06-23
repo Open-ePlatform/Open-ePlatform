@@ -70,6 +70,7 @@ import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
@@ -165,6 +166,13 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 		Date to = ValidationUtils.validateParameter("to", req, false, DatePopulator.getPopulator(), validationErrors);
 		Integer filterFlowID = ValidationUtils.validateParameter("flowid", req, false, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
 		Integer filterFlowFamilyID = ValidationUtils.validateParameter("flowfamilyid", req, false, PositiveStringIntegerPopulator.getPopulator(), validationErrors);
+		
+		FlowFamily filterFlowFamily = null;
+		
+		if (filterFlowFamilyID != null) {
+
+			filterFlowFamily = flowAdminModule.getFlowFamily(filterFlowFamilyID);
+		}
 
 		Charset charset = null;
 		String encoding = req.getParameter("encoding");
@@ -217,7 +225,9 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 				try {
 
-					{ // Normal flow instances
+					// Normal flow instances
+					if (filterFlowFamilyID == null || filterFlowFamily != null) {
+						
 						HighLevelQuery<FlowInstanceMinimizedForStatistics> flowInstancesQuery = new HighLevelQuery<FlowInstanceMinimizedForStatistics>();
 						flowInstancesQuery.setRowLimiter(new MySQLRowLimiter(rowLimit));
 
@@ -231,6 +241,16 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						
 						if (filterFlowID != null) {
 							flowInstancesQuery.addParameter(flowInstanceMinimizedFlowIDParamFactory.getParameter(filterFlowID));
+							
+						} else if (filterFlowFamily != null) {
+							
+							List<Integer> flowIDs = new ArrayList<>();
+
+							for (Flow flow : flowAdminModule.getFlowVersions(filterFlowFamily)) {
+								flowIDs.add(flow.getFlowID());
+							}
+
+							flowInstancesQuery.addParameter(flowInstanceMinimizedFlowIDParamFactory.getWhereInParameter(flowIDs));
 						}
 
 						QueryResultsStreamer<FlowInstanceMinimizedForStatistics, Integer> resultsStreamer = new QueryResultsStreamer<FlowInstanceMinimizedForStatistics, Integer>(flowInstanceMinimizedDAO, FlowInstanceMinimizedForStatistics.ID_FIELD, Integer.class, Order.ASC, flowInstancesQuery, connection);
@@ -276,19 +296,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 							}
 							
 							for (FlowInstanceMinimizedForStatistics flowInstance : flowInstances) {
-								
-								Flow flow = flowAdminModule.getCachedFlow(flowInstance.getFlowID());
-								
-								if (flow == null) {
-									log.warn("Unable to find flow with ID " + flowInstance.getFlowID());
-								}
-								
-								if (filterFlowFamilyID != null) {
-									
-									if (flow == null || !flow.getFlowFamily().getFlowFamilyID().equals(filterFlowFamilyID)) {
-										continue;
-									}
-								}
 								
 								FlowInstanceStatistic statistic = new FlowInstanceStatistic(flowInstance.getFlowID(), flowInstance.getAdded());
 
@@ -346,18 +353,27 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 									}
 								}
 								
-								if (flowInstance.getFirstSubmitted() == null && flow != null) {
+								if (flowInstance.getFirstSubmitted() == null) {
 									
-									int stepIndex = 1;
+									Flow flow = flowAdminModule.getCachedFlow(flowInstance.getFlowID());
 
-									for (Step step : flow.getSteps()) {
+									if (flow == null) {
+										
+										log.warn("Unable to find flow with ID " + flowInstance.getFlowID());
+										
+									} else {
 
-										if (step.getStepID().equals(flowInstance.getStepID())) {
-											statistic.setSavedStep(stepIndex);
-											break;
+										int stepIndex = 1;
+
+										for (Step step : flow.getSteps()) {
+
+											if (step.getStepID().equals(flowInstance.getStepID())) {
+												statistic.setSavedStep(stepIndex);
+												break;
+											}
+
+											stepIndex++;
 										}
-
-										stepIndex++;
 									}
 								}
 
@@ -388,9 +404,8 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						
 						if (filterFlowID != null) {
 							flowInstancesQuery.addParameter(abortedFlowInstanceFlowIDParamFactory.getParameter(filterFlowID));
-						}
-						
-						if (filterFlowFamilyID != null) {
+							
+						} else if (filterFlowFamilyID != null) {
 							flowInstancesQuery.addParameter(abortedFlowInstanceFlowFamilyIDParamFactory.getParameter(filterFlowFamilyID));
 						}
 						
