@@ -8,7 +8,7 @@ import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 
-public interface APIAccessModule {
+public interface APIAccessController {
 
 	public boolean hasAccess(Integer familyID, User user) throws SQLException;
 	public boolean hasAccess(FlowFamily family, User user) throws SQLException;
