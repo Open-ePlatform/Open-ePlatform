@@ -65,7 +65,7 @@ import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNot
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 import com.nordicpeak.flowengine.integration.callback.listeners.FieldInstanceListener;
-import com.nordicpeak.flowengine.interfaces.APIAccessModule;
+import com.nordicpeak.flowengine.interfaces.APIAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.utils.APIAccessUtils;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
@@ -95,7 +95,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 	protected FlowAdminModule flowAdminModule;
 	protected FileAttachmentHandler fileAttachmentHandler;
-	protected APIAccessModule apiAccessModule;
+	protected APIAccessController apiAccessModule;
 
 	private FlowEngineDAOFactory daoFactory;
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
@@ -105,7 +105,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	
 	private FieldInstanceListener<FlowAdminModule> flowAdminModuleListener = new FieldInstanceListener<>(this, FLOW_ADMIN_MODULE_FIELD, true, null);
 	private FieldInstanceListener<FileAttachmentHandler> fileAttachmentHandlerListener = new FieldInstanceListener<>(this, FILE_ATTACHMENT_HANDLER_FIELD, false, null);
-	private FieldInstanceListener<APIAccessModule> apiAccessModuleListener = new FieldInstanceListener<>(this, API_ACCESS_MODULE_FIELD, false, null);
+	private FieldInstanceListener<APIAccessController> apiAccessModuleListener = new FieldInstanceListener<>(this, API_ACCESS_MODULE_FIELD, false, null);
 	
 	private final MutexKeyProvider<FlowInstanceIDMutex> mutexKeyProvider = new MutexKeyProvider<FlowInstanceIDMutex>();
 	
@@ -125,7 +125,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
-		callback.getSystemInterface().getInstanceHandler().addInstanceListener(APIAccessModule.class, apiAccessModuleListener);
+		callback.getSystemInterface().getInstanceHandler().addInstanceListener(APIAccessController.class, apiAccessModuleListener);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
-		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(APIAccessModule.class, apiAccessModuleListener);
+		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(APIAccessController.class, apiAccessModuleListener);
 		
 		super.unload();
 	}

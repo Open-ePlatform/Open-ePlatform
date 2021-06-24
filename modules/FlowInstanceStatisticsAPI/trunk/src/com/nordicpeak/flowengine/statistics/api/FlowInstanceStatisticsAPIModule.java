@@ -74,7 +74,7 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
-import com.nordicpeak.flowengine.interfaces.APIAccessModule;
+import com.nordicpeak.flowengine.interfaces.APIAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
@@ -105,7 +105,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	private FlowSubmitSurveyProvider flowSubmitSurveyProvider;
 	
 	@InstanceManagerDependency(required = false)
-	private APIAccessModule apiAccessModule;
+	private APIAccessController apiAccessModule;
 
 	private AnnotatedDAO<FlowInstanceMinimizedForStatistics> flowInstanceMinimizedDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
