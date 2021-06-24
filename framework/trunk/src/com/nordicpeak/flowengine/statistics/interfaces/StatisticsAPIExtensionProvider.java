@@ -7,6 +7,6 @@ import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 
 public interface StatisticsAPIExtensionProvider {
 
-	public List<FlowInstanceStatistic> getFlowInstanceAPIStatistics(Timestamp fromTimestamp, Timestamp toTimestamp, int rowLimit);
+	public List<FlowInstanceStatistic> getFlowInstanceAPIStatistics(Timestamp fromTimestamp, Timestamp toTimestamp, Integer filterFlowID, Integer filterFlowFamilyID, int rowLimit);
 
 }
