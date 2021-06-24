@@ -39,7 +39,6 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
 import se.unlogic.standardutils.time.TimeUtils;
 
-import com.nordicpeak.flowengine.APIAccessModule;
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
@@ -66,7 +65,9 @@ import com.nordicpeak.flowengine.integration.callback.exceptions.FlowInstanceNot
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFound;
 import com.nordicpeak.flowengine.integration.callback.exceptions.StatusNotFoundException;
 import com.nordicpeak.flowengine.integration.callback.listeners.FieldInstanceListener;
+import com.nordicpeak.flowengine.interfaces.APIAccessModule;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.utils.APIAccessUtils;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
@@ -139,19 +140,16 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 	private void apiAccessCheck(FlowInstance flowInstance, User callbackUser) throws AccessDeniedException {
 		
-		if (apiAccessModule != null) {
+		try {
+			APIAccessUtils.accessCheck(apiAccessModule, flowInstance.getFlow().getFlowFamily(), callbackUser);
 
-			try {
-				apiAccessModule.accessCheck(flowInstance.getFlow().getFlowFamily(), callbackUser);
+		} catch (se.unlogic.hierarchy.core.exceptions.AccessDeniedException e) {
 
-			} catch (se.unlogic.hierarchy.core.exceptions.AccessDeniedException e) {
+			throw new AccessDeniedException("This user does not have access to this flow family", new AccessDenied());
 
-				throw new AccessDeniedException("This user does not have access to this flow family", new AccessDenied());
+		} catch (SQLException e) {
 
-			} catch (SQLException e) {
-
-				throw new RuntimeException(e);
-			}
+			throw new RuntimeException(e);
 		}
 	}
 	
