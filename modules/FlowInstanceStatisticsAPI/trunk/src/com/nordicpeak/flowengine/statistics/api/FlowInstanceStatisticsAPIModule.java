@@ -65,7 +65,6 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
-import com.nordicpeak.flowengine.APIAccessModule;
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
@@ -75,10 +74,12 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
+import com.nordicpeak.flowengine.interfaces.APIAccessModule;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsExtensionConsumer;
+import com.nordicpeak.flowengine.utils.APIAccessUtils;
 
 public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule implements StatisticsExtensionConsumer {
 
@@ -587,7 +588,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						
 						for (Flow flow : flows) {
 							
-							if (apiAccessModule != null && !apiAccessModule.hasAccess(flow.getFlowFamily(), user)) {
+							if (!APIAccessUtils.hasAccess(apiAccessModule, flow.getFlowFamily(), user)) {
 								
 								skippedFlows++;
 								continue;
