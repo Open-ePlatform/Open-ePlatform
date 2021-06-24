@@ -19,7 +19,6 @@ import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 
-import com.nordicpeak.flowengine.beans.APIAccessSetting;
 import com.nordicpeak.flowengine.beans.AbortedFlowInstance;
 import com.nordicpeak.flowengine.beans.Category;
 import com.nordicpeak.flowengine.beans.DefaultStandardStatusMapping;
@@ -211,11 +210,6 @@ public class FlowEngineDAOFactory {
 	public AnnotatedDAO<FlowInstanceAttribute> getFlowInstanceAttributeDAO(){
 		
 		return daoFactory.getDAO(FlowInstanceAttribute.class);
-	}
-	
-	public AnnotatedDAO<APIAccessSetting> getApiAccessSettingDAO(){
-		
-		return daoFactory.getDAO(APIAccessSetting.class);
 	}
 	
 }
