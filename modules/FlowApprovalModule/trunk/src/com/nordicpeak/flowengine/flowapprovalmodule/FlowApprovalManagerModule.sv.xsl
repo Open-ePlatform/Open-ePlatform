@@ -27,7 +27,7 @@
 	<xsl:variable name="i18n.RemindersSent">påminnelser skickade (max 10 visas).</xsl:variable>
 	<xsl:variable name="i18n.AssignOwner">Byt ansvarig</xsl:variable>
 	<xsl:variable name="i18n.AssignOwner.title">Byt ansvariga för aktivitet: </xsl:variable>
-	<xsl:variable name="i18n.AssignOwner.description">Välj nya ansvariga användare eller lämna tomt för att återgå till ordenarie ansvariga.</xsl:variable>
+	<xsl:variable name="i18n.AssignOwner.description">Välj nya ansvariga användare eller lämna tomt för att återgå till ordinarie ansvariga.</xsl:variable>
 	<xsl:variable name="i18n.AssignOwner.submit">Byt ansvariga</xsl:variable>
 	
 </xsl:stylesheet>
