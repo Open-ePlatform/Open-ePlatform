@@ -446,6 +446,7 @@
 							
 							<xsl:if test="ActivityProgress/Activity/showFlowInstance = 'true'">
 								<div class="service">
+									
 									<div class="queries bigpaddingbottom">
 										<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 									</div>
@@ -570,6 +571,7 @@
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>
+							
 						</article>
 						
 					</form>
@@ -641,13 +643,18 @@
 	<xsl:template match="ManagerResponse">
 
 		<xsl:variable name="stepID" select="currentStepID"/>
-	
+			
 		<div class="section-full preview" style="padding-left: 0; padding-right: 0;">
 			
 			<h2 data-icon-before="c" class="h1">
 				<xsl:value-of select="currentStepIndex + 1"/>
 				<xsl:text>. </xsl:text>
 				<xsl:value-of select="../../FlowInstance/Flow/Steps/Step[stepID = $stepID]/name"/>
+				
+				<xsl:if test="position() = 1">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/downloadpdf/{../../ActivityProgress/activityProgressID}" title="{$i18n.DownloadPDF.title}" class="btn btn-light btn-inline btn-right"><xsl:value-of select="$i18n.DownloadPDF" /></a>
+				</xsl:if>
+				
 			</h2>
 			
 			<xsl:choose>

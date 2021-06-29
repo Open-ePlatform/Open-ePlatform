@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.flowapprovalmodule;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -63,8 +64,10 @@ import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
+import se.unlogic.webutils.http.enums.ContentDisposition;
 import se.unlogic.webutils.validation.ValidationUtils;
 
 import com.nordicpeak.flowengine.BaseFlowModule;
@@ -97,6 +100,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityPr
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.interfaces.GenericSigningProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.SigningResponse;
 import com.nordicpeak.flowengine.interfaces.UserMenuProvider;
@@ -161,6 +165,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	@InstanceManagerDependency(required = true)
 	protected FlowApprovalAdminModule approvalAdminModule;
+	
+	@InstanceManagerDependency
+	protected PDFProvider pdfProvider;
 
 	@InstanceManagerDependency
 	protected GenericSigningProvider genericSigningProvider;
@@ -247,10 +254,10 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
 
-		return listPending(req, res, user, uriParser, null);
+		return listPending(req, user, uriParser, null);
 	}
 
-	public ForegroundModuleResponse listPending(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws AccessDeniedException, SQLException {
+	public ForegroundModuleResponse listPending(HttpServletRequest req, User user, URIParser uriParser, List<ValidationError> validationErrors) throws AccessDeniedException, SQLException {
 
 		if (user == null) {
 			throw new AccessDeniedException("User needs to be logged in");
@@ -258,7 +265,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		log.info("User " + user + " listing pending activities");
 
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 
 		Element listPending = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ListPendingActivities");
 
@@ -276,11 +283,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	}
 
 	@WebPublic(requireLogin = true, toLowerCase = true)
-	public ForegroundModuleResponse listCompleted(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws AccessDeniedException, SQLException {
+	public ForegroundModuleResponse listCompleted(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException {
 
 		log.info("User " + user + " listing completed activities");
 
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 
 		Element listCompleted = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ListCompletedActivities");
 
@@ -473,7 +480,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
 		FlowApprovalActivityGroup activityGroup = activity.getActivityGroup();
-		//		FlowApprovalActivityRound round = activityProgress.getActivityRound();
 
 		FlowInstance flowInstance;
 		ImmutableFlowInstanceManager instanceManager = null;
@@ -501,7 +507,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		if (!flowInstance.getFlow().isEnabled()) {
 
-			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+			return listPending(req, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 
 		List<ValidationError> validationErrors = null;
@@ -598,7 +604,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			activity.setDescription(AttributeTagUtils.replaceTags(activity.getDescription(), flowInstance.getAttributeHandler()));
 		}
 
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 
 		Element showActivity = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ShowActivity");
 
@@ -659,7 +665,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		if (!flowInstance.getFlow().isEnabled()) {
 
-			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+			return listPending(req, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 
 		if (!activityProgress.isMutable()) {
@@ -752,7 +758,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	private ForegroundModuleResponse showSignForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, List<ValidationError> validationErrors) throws Exception {
 
-		Document doc = createDocument(req, uriParser, user);
+		Document doc = createDocument(req, uriParser);
 
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "Signing");
 
@@ -804,7 +810,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		if (!flowInstance.getFlow().isEnabled()) {
 
-			return listPending(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+			return listPending(req, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 		}
 
 		if (!activityProgress.isMutable()) {
@@ -908,8 +914,94 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		return showSignForm(req, res, user, uriParser, activityProgress, flowInstance, validationErrors);
 	}
+	
+	@RESTMethod(alias = "downloadpdf/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
+	public void downloadPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, AccessDeniedException {
 
-	public Document createDocument(HttpServletRequest req, URIParser uriParser, User user) {
+		FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.get(activityProgressID);
+
+		if (activityProgress == null) {
+			throw new URINotFoundException(uriParser);
+		}
+
+		FlowApprovalActivity activity = activityProgress.getActivity();
+		
+		if (activity == null) {
+			throw new URINotFoundException(uriParser);
+		}
+		
+		FlowInstance flowInstance;
+		ImmutableFlowInstanceManager instanceManager = null;
+
+		if (activity.isShowFlowInstance()) {
+
+			instanceManager = flowAdminModule.getImmutableFlowInstanceManager(activityProgress.getActivityRound().getFlowInstanceID());
+			flowInstance = (FlowInstance) instanceManager.getFlowInstance();
+
+		} else {
+
+			flowInstance = flowAdminModule.getFlowInstance(activityProgress.getActivityRound().getFlowInstanceID());
+		}
+
+		if (!AccessUtils.checkAccess(user, activityProgress)) {
+
+			try {
+				FlowInstanceAdminModule.GENERAL_ACCESS_CONTROLLER.checkManagerAccess(flowInstance, user);
+
+			} catch (AccessDeniedException e) {
+
+				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
+			}
+		}
+		
+		FlowInstanceEvent event = getLatestPDFEvent(flowInstance);
+		
+		if(event == null)
+		{
+			throw new URINotFoundException(uriParser);
+		}
+		
+		File pdfFile = pdfProvider.getPDF(activityProgress.getActivityRound().getFlowInstanceID(), event.getEventID());
+
+		if (pdfFile == null) {
+
+			throw new URINotFoundException(uriParser);
+		}
+
+		try {
+			log.info("Sending PDF for flow instance " + flowInstance + ", event " + event.getEventID() + " to user " + user);
+			
+			String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + ".pdf";
+			
+			
+			HTTPUtils.sendFile(pdfFile, filename, req, res, ContentDisposition.ATTACHMENT);
+			
+		} catch (Exception e) {
+			log.info("Error sending PDF for flow instance " + flowInstance + ", event " + event.getEventID() + " to user " + user + ", " + e);
+		}
+	}
+	
+	private FlowInstanceEvent getLatestPDFEvent(FlowInstance flowInstance) {
+
+		if (CollectionUtils.isEmpty(flowInstance.getEvents())) {
+
+			return null;
+		}
+
+		for (int i = flowInstance.getEvents().size() - 1; i > -1; i--) {
+
+			FlowInstanceEvent event = flowInstance.getEvents().get(i);
+
+			if (Boolean.TRUE.equals(event.getAttributeHandler().getBoolean("pdf"))) {
+
+				return event;
+			}
+		}
+
+		return null;
+	}
+
+	public Document createDocument(HttpServletRequest req, URIParser uriParser) {
 
 		Document doc = XMLUtils.createDomDocument();
 		Element document = doc.createElement("Document");

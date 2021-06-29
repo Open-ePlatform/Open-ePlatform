@@ -15,6 +15,9 @@
 	<xsl:variable name="i18n.ShowPending">Visa ej slutförda</xsl:variable>
 	<xsl:variable name="i18n.ShowCompleted">Visa slutförda</xsl:variable>
 	<xsl:variable name="i18n.Back">Bakåt</xsl:variable>
+	<xsl:variable name="i18n.DownloadPDF">Hämta PDF</xsl:variable>
+	<xsl:variable name="i18n.DownloadPDF.title">Hämta senaste PDF-kvittensen</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.Help">Hjälp</xsl:variable>
 	<xsl:variable name="i18n.PendingActivities.help">
