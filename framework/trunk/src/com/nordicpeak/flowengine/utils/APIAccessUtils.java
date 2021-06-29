@@ -7,11 +7,11 @@ import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.interfaces.APIAccessModule;
+import com.nordicpeak.flowengine.interfaces.APIAccessController;
 
 public class APIAccessUtils {
 
-	public static boolean hasAccess(APIAccessModule apiAccessModule, Integer familyID, User user) throws SQLException {
+	public static boolean hasAccess(APIAccessController apiAccessModule, Integer familyID, User user) throws SQLException {
 		
 		if (apiAccessModule != null) {
 			
@@ -21,7 +21,7 @@ public class APIAccessUtils {
 		return true;
 	}
 
-	public static boolean hasAccess(APIAccessModule apiAccessModule, FlowFamily family, User user) throws SQLException {
+	public static boolean hasAccess(APIAccessController apiAccessModule, FlowFamily family, User user) throws SQLException {
 
 		if (apiAccessModule != null) {
 			
@@ -31,7 +31,7 @@ public class APIAccessUtils {
 		return true;
 	}
 
-	public static boolean hasAccess(APIAccessModule apiAccessModule, Flow flow, User user) throws SQLException {
+	public static boolean hasAccess(APIAccessController apiAccessModule, Flow flow, User user) throws SQLException {
 
 		if (apiAccessModule != null) {
 			
@@ -41,7 +41,7 @@ public class APIAccessUtils {
 		return true;
 	}
 
-	public static void accessCheck(APIAccessModule apiAccessModule, Integer flowFamilyID, User user) throws SQLException, AccessDeniedException {
+	public static void accessCheck(APIAccessController apiAccessModule, Integer flowFamilyID, User user) throws SQLException, AccessDeniedException {
 
 		if (apiAccessModule != null) {
 			
@@ -49,7 +49,7 @@ public class APIAccessUtils {
 		}
 	}
 
-	public static void accessCheck(APIAccessModule apiAccessModule, FlowFamily family, User user) throws SQLException, AccessDeniedException {
+	public static void accessCheck(APIAccessController apiAccessModule, FlowFamily family, User user) throws SQLException, AccessDeniedException {
 
 		if (apiAccessModule != null) {
 			
@@ -57,7 +57,7 @@ public class APIAccessUtils {
 		}
 	}
 
-	public static void accessCheck(APIAccessModule apiAccessModule, Flow flow, User user) throws SQLException, AccessDeniedException {
+	public static void accessCheck(APIAccessController apiAccessModule, Flow flow, User user) throws SQLException, AccessDeniedException {
 
 		if (apiAccessModule != null) {
 			
