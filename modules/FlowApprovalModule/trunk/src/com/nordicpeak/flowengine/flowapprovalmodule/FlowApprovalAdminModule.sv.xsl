@@ -73,6 +73,7 @@
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.2">använder statusen</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.3">som inte finns i den här versionen av e-tjänsten!</xsl:variable>
 	<xsl:variable name="i18n.Validation.InvalidStatus">Angiven status finns inte i den här versionen av e-tjänsten:</xsl:variable>
+	<xsl:variable name="i18n.Validation.ResposibleAttributeNamesRequired">Då ansvarig söks upp via attribut så måste minst ett attributnamn anges</xsl:variable>
 	
 	<xsl:variable name="i18n.BackToFlow">Bakåt</xsl:variable>
 	<xsl:variable name="i18n.BackToActivityGroup">Bakåt</xsl:variable>

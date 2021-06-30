@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.lucene.util.CollectionUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -276,6 +277,13 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
+		}
+		
+		boolean useResponsibleUserAttributeName = Boolean.parseBoolean(req.getParameter("useResponsibleUserAttributeName"));
+		
+		if(useResponsibleUserAttributeName && CollectionUtils.isEmpty(activity.getResponsibleUserAttributeNames())) {
+			
+			validationErrors.add(new ValidationError("ResposibleAttributeNamesRequired"));
 		}
 		
 		if (activity.isAllowManagersToAssignOwner() && assignableUsers == null && assignableGroups == null) {

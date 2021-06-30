@@ -2023,6 +2023,14 @@
 		
 	</xsl:template>
 	
+	<xsl:template match="validationError[messageKey='ResposibleAttributeNamesRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResposibleAttributeNamesRequired"/>
+		</p>
+		
+	</xsl:template>
+	
 	<xsl:template match="validationError">
 		<xsl:if test="fieldName and validationErrorType and not(messageKey)">
 			<p class="error">
