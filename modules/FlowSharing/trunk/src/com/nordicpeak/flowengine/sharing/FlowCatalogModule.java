@@ -384,7 +384,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		Integer flowFamilyID;
 		Integer sourceID;
 
-		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(2)) != null && (sourceID = uriParser.getInt(3)) != null && (flowFamilyID = uriParser.getInt(4)) != null && (sharedflowID = uriParser.getInt(5)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
+		if (uriParser.size() >= 6 && (repositoryIndex = uriParser.getInt(2)) != null && (sourceID = uriParser.getInt(3)) != null && (flowFamilyID = uriParser.getInt(4)) != null && (sharedflowID = uriParser.getInt(5)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
 
 			RepositoryConfiguration repository = repositories.get(repositoryIndex);
 
