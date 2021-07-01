@@ -6,6 +6,7 @@
 	<xsl:include href="FlowInstanceAttachmentsModuleTemplates.xsl"/>
 	
 	<xsl:variable name="java.tabTitle">Handlingar</xsl:variable>
+	<xsl:variable name="java.adminExtensionViewTitle">Handlingar</xsl:variable>
 	<xsl:variable name="java.attachmentsUpdatedMessage">Uppdaterade handlingar</xsl:variable>
 	
 	<xsl:variable name="java.newAttachmentsUserSMS">Du har fått nya handlingar kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
@@ -25,6 +26,21 @@
 	</xsl:variable>
 	
 	<xsl:variable name="i18n.Description">Hit bifogas handlingar till ärendet av handläggarna.</xsl:variable>
+	
+	<xsl:variable name="i18n.adminExtensionViewTitle">Inställningar för handlingar av e-tjänst</xsl:variable>
+	<xsl:variable name="i18n.Settings.NotificationTitle">Aktivera notifikationer</xsl:variable>
+	<xsl:variable name="i18n.UpdateSettings.description">Inställningar nedan styr om tillägget "Handlingar" ska visas samt om notifikationer ska skickas.</xsl:variable>
+	<xsl:variable name="i18n.Settings.Active">Visa Handlingar</xsl:variable>
+	<xsl:variable name="i18n.Settings.Active.description">Markera för att aktivera tillägget.</xsl:variable>
+	
+	<xsl:variable name="i18n.Settings.sendEmail">Skicka e-postnotifiering när handlingar läggs till</xsl:variable>
+	<xsl:variable name="i18n.Settings.sendSms">Skicka smsnotifiering när handlingar läggs till</xsl:variable>
+	<xsl:variable name="i18n.Enabled">Inställningar för handlingar är aktiverat</xsl:variable>
+	<xsl:variable name="i18n.NotEnabled">Inställningar för handlingar är inaktiverat</xsl:variable>
+	<xsl:variable name="i18n.UpdateSettings">Ändra inställningar</xsl:variable>
+	<xsl:variable name="i18n.DeleteSettings">Ta bort inställningar</xsl:variable>
+	<xsl:variable name="i18n.DeleteSettings.Confirm">Är du säker på att du vill ta bort alla inställningar för den här e-tjänsten?</xsl:variable>
+	<xsl:variable name="i18n.SaveChanges">Spara ändringar</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.RequiredField">Du måste fylla i fältet</xsl:variable>
 	<xsl:variable name="i18n.validationError.InvalidFormat">Felaktigt format på fältet</xsl:variable>
