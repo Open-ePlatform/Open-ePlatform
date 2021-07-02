@@ -6137,7 +6137,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		List<Flow> flows = getFlowVersions(flowFamily);
 
-		if (hasFlowAccess(user, flows.get(0))) {
+		if (!hasFlowAccess(user, flows.get(0))) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flows.get(0).getFlowType());
 		}
