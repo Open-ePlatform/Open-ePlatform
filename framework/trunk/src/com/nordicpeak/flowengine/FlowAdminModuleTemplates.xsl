@@ -6235,28 +6235,28 @@
 	
 	<xsl:variable name="repositoryIndex" select="../../Repository/RepositoryIndex"/>
 	<xsl:variable name="sharedFlowID" select="../../SharedFlow/SharedFlowID"/>
-	<xsl:variable name="moduleID" select="../../Module/ModuleID"/>
+	<xsl:variable name="providerID" select="../../ProviderID"/>
 	
 	<xsl:choose>
 	<xsl:when test="$sharedFlowID">
     
 		<tr>
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{$repositoryIndex}/{$sharedFlowID}/{$moduleID}" title="{$i18n.showFlowType}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{$repositoryIndex}/{$sharedFlowID}/{$providerID}" title="{$i18n.showFlowType}: {name}">
 					<xsl:value-of select="name"/>
 				</a>
 			</td>
 			
 			<xsl:if test="/Document/UseCategories">
 				<td>
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}/{$moduleID}" title="{$i18n.showFlowType}: {name}">
+					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}/{$providerID}" title="{$i18n.showFlowType}: {name}">
 						<xsl:value-of select="count(Categories/Category)"/>
 					</a>
 				</td>
 			</xsl:if>
 			
 			<td>
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}/{$moduleID}" title="{$i18n.showFlowType}: {name}">
+				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/importflow/{flowTypeID}/{RepositoryIndex}/{sharedFlowID}/{$providerID}" title="{$i18n.showFlowType}: {name}">
 					<xsl:value-of select="flowFamilyCount"/>
 				</a>
 			</td>

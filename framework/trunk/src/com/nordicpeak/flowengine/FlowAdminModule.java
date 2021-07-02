@@ -4281,15 +4281,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			Integer repositoryIndex;
 			Integer sharedflowID;
-			Integer moduleID;
+			String providerID;
 
-			if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (moduleID = uriParser.getInt(4)) != null && repositoryIndex >= 0) {
+			if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (providerID = uriParser.get(4)) != null && repositoryIndex >= 0) {
 				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
 				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
 				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
 				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
-				Element moduleIDElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Module");
-				XMLUtils.appendNewElement(doc, moduleIDElement, "ModuleID", moduleID);
+				XMLUtils.appendNewElement(doc, selectImportTargetFamily, "ProviderID", providerID);
 			}
 
 			return new SimpleForegroundModuleResponse(doc);
@@ -4308,22 +4307,22 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Integer repositoryIndex;
 		Integer sharedflowID;
-		Integer moduleID;
+		String providerID;
 
-		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(3)) != null && (sharedflowID = uriParser.getInt(4)) != null && (moduleID = uriParser.getInt(5)) != null && repositoryIndex >= 0) {
+		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(3)) != null && (sharedflowID = uriParser.getInt(4)) != null && (providerID = uriParser.get(5)) != null && repositoryIndex >= 0) {
 
 			log.info("User " + user + " importing flow...");
 
 			try {
 
-				ExternalFlow externalFlow = getExternalFlow(moduleID, repositoryIndex, sharedflowID);
+				ExternalFlow externalFlow = getExternalFlow(providerID, repositoryIndex, sharedflowID);
 
 				if (externalFlow != null) {
-
+					
 					importFlow(new ByteArrayInputStream(externalFlow.getData()), externalFlow.getFilename(), flowType, relatedFlow, req, res, user);
-
+					
 				} else {
-
+					
 					validationException = new ValidationException(new UnableToParseFileValidationError(""));
 				}
 
@@ -4433,14 +4432,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), this.getDefaultBreadcrumb());
 	}
 
-	private ExternalFlow getExternalFlow(Integer moduleID, Integer repositoryIndex, Integer sharedflowID) {
+	private ExternalFlow getExternalFlow(String providerID, Integer repositoryIndex, Integer sharedflowID) {
 
 		ExternalFlow externalFlow = null;
 		ExternalFlowProvider externalFlowProvider = null;
 		
 		try {
-			externalFlowProvider = externalFlowProviders.get("fg-" + moduleID);
+			externalFlowProvider = externalFlowProviders.get(providerID);
 			return externalFlowProvider != null ? externalFlowProvider.getFlow(repositoryIndex, sharedflowID) : null;
+			
 		} catch (Exception e) {
 
 			log.error("Error in externalflowprovider " + externalFlowProvider + " while reading file with repositoryIndex " + repositoryIndex + " and flowID " + sharedflowID, e);

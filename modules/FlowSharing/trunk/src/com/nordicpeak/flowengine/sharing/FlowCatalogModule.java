@@ -384,7 +384,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 		Integer flowFamilyID;
 		Integer sourceID;
 
-		if (uriParser.size() >= 6 && (repositoryIndex = uriParser.getInt(2)) != null && (sourceID = uriParser.getInt(3)) != null && (flowFamilyID = uriParser.getInt(4)) != null && (sharedflowID = uriParser.getInt(5)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
+		if (uriParser.size() == 6 && (repositoryIndex = uriParser.getInt(2)) != null && (sourceID = uriParser.getInt(3)) != null && (flowFamilyID = uriParser.getInt(4)) != null && (sharedflowID = uriParser.getInt(5)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
 
 			RepositoryConfiguration repository = repositories.get(repositoryIndex);
 
@@ -438,13 +438,12 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 
 		Integer repositoryIndex;
 		Integer sharedflowID;
-		Integer moduleID;
 
-		if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (moduleID = uriParser.getInt(4)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
+		if (uriParser.size() == 4 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && repositoryIndex >= 0 && repositoryIndex < repositories.size()) {
 
 			log.info("User " + user + " importing flow with sharedflowID " + sharedflowID);
 
-			res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow/" + repositoryIndex + "/" + sharedflowID + "/" + moduleID);
+			res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow/" + repositoryIndex + "/" + sharedflowID + "/" + this.getProviderID());
 			return null;
 
 		}
