@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -865,6 +869,8 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		if(!CollectionUtils.isEmpty(queryModifications)) {
 
+			queryModifications = removeDuplicateQueryModifications(queryModifications);
+
 			String contextPath = req.getContextPath();
 
 			JsonArray modifications = new JsonArray();
@@ -905,6 +911,45 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		}
 
 		return response.toJson();
+	}
+	
+	private List<QueryModification> removeDuplicateQueryModifications(List<QueryModification> queryModifications) {
+
+		Map<QueryInstance, QueryModification> queryInstanceToQueryModificationMap = new LinkedHashMap<>();
+
+		for (ListIterator<QueryModification> it = queryModifications.listIterator(queryModifications.size()); it.hasPrevious();) {
+
+			QueryModification queryModification = it.previous();
+			QueryInstance queryInstance = queryModification.getQueryInstance();
+
+			QueryModification currentQueryModification = queryInstanceToQueryModificationMap.get(queryInstance);
+
+			if (currentQueryModification == null) {
+
+				queryInstanceToQueryModificationMap.put(queryInstance, queryModification);
+				continue;
+			}
+
+			ModificationAction action = queryModification.getAction();
+			ModificationAction currentAction = currentQueryModification.getAction();
+
+			if (action == ModificationAction.SHOW && (currentAction == ModificationAction.RELOAD || currentAction == ModificationAction.MAKE_REQUIRED)) {
+
+				queryInstanceToQueryModificationMap.put(queryInstance, queryModification);
+				continue;
+			}
+
+			if (action == ModificationAction.RELOAD && currentAction == ModificationAction.MAKE_REQUIRED) {
+
+				queryInstanceToQueryModificationMap.put(queryInstance, queryModification);
+			}
+		}
+
+		List<QueryModification> uniqueQueryModifications = new ArrayList<>(queryInstanceToQueryModificationMap.values());
+
+		Collections.reverse(uniqueQueryModifications);
+
+		return uniqueQueryModifications;
 	}
 
 	private void evaluate(QueryInstance queryInstance, Evaluator evaluator, User user, User resolvedPoster, ManagedEvaluationCallback evaluationCallback, EvaluationHandler evaluationHandler, boolean hasValidationErrors, List<QueryModification> queryModifications, SiteProfile siteProfile, RequestMetadata requestMetadata, HttpServletRequest req) throws UnableToResetQueryInstanceException, EvaluationException {
@@ -1487,6 +1532,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		return closed;
 	}
 
+	@Override
 	public String getInstanceManagerID() {
 
 		return instanceManagerID;
@@ -1733,4 +1779,5 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		
 		return sessionAttributeHandler;
 	}
+	
 }
