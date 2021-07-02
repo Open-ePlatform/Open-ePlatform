@@ -924,7 +924,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledUserNotifications");
 		}
 
-		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail || sendInternalMessageAddedManagerEmail || sendFlowInstanceCompletionManagerEmail) {
+		if (sendExternalMessageReceivedManagerEmail || sendFlowInstanceAssignedManagerEmail || sendStatusChangedManagerEmail || sendFlowInstanceSubmittedManagerEmail || sendInternalMessageAddedManagerEmail || sendFlowInstanceCompletionManagerEmail || sendFlowInstanceExpiredManagerEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledManagerNotifications");
 		}
@@ -934,7 +934,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
 		}
 
-		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail || sendFlowInstanceArchivedGlobalEmail) {
+		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail || sendFlowInstanceArchivedGlobalEmail || sendFlowInstanceExpiredGlobalEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGlobalNotifications");
 		}
