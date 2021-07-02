@@ -4398,7 +4398,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				if (validationException != null) {
 
-					log.error("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
+					log.warn("Import of flow by user " + user + " failed due to validation error(s) " + validationException);
 				}
 
 				if (multipartRequest != null) {
