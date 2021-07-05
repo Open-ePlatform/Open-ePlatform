@@ -131,6 +131,7 @@ import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProvide
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluatorNotFoundInEvaluationProviderException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
+import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
@@ -1652,7 +1653,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		}
 	}
 
-	private void redirectToFlowinstanceQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, Integer flowID, Integer flowInstanceID, Integer queryID, FlowInstance flowInstance) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException, URINotFoundException, IOException {
+	private void redirectToFlowinstanceQuery(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, Integer flowID, Integer flowInstanceID, Integer queryID, FlowInstance flowInstance) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException, URINotFoundException, IOException, SavedUnpublishedFlowLockedException {
 		
 		MutableFlowInstanceManager instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, MANAGER_REQUEST_METADATA);
 		

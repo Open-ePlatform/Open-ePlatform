@@ -171,6 +171,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean enabled;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockSubmitForUnpublishedSavedFlow;
 
 	@DAOManaged
 	@WebPopulate
@@ -539,6 +544,17 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setEnabled(boolean disabled) {
 
 		this.enabled = disabled;
+	}
+	
+	@Override
+	public boolean isLockSubmitForUnpublishedSavedFlow() {
+
+		return lockSubmitForUnpublishedSavedFlow;
+	}
+
+	public void setLockSubmitForUnpublishedSavedFlow(boolean lockSubmitForUnpublishedSavedFlow) {
+
+		this.lockSubmitForUnpublishedSavedFlow = lockSubmitForUnpublishedSavedFlow;
 	}
 
 	@Override

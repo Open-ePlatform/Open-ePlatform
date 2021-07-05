@@ -2781,5 +2781,11 @@
 			]]>
 		</Query>
 	</Script>
-	
+	<Script version="150">
+	<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `lockSubmitForUnpublishedSavedFlow` BOOLEAN NOT NULL default FALSE AFTER `enabled` ;
+			]]>
+		</Query>
+	</Script>
 </DBScripts>

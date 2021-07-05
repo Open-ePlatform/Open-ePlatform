@@ -33,6 +33,8 @@
 	<xsl:variable name="i18n.Continue.DisabledMessage">Den version av e-tjänsten du påbörjat ärendet i är avstängd. Vänligen försök igen senare eller skapa ett nytt ärende.</xsl:variable>
 	<xsl:variable name="i18n.Delete">Ta bort</xsl:variable>
 	
+	<xsl:variable name="i18n.SavedFlow.DisabledMessage">Den version av e-tjänsten du påbörjat i ärendet är avpublicerad. Skapa ett nytt ärende.</xsl:variable>
+	
 	<xsl:variable name="i18n.Details">Detaljer</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessages">Meddelanden</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceEvents">Ärendehistorik</xsl:variable>

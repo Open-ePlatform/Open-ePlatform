@@ -14,6 +14,8 @@ public interface ImmutableFlow extends Serializable, Elementable {
 	public String getName();
 	
 	public boolean isEnabled();
+	
+	public boolean isLockSubmitForUnpublishedSavedFlow();
 
 	public boolean isPublished();
 

@@ -104,6 +104,7 @@ import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
+import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
@@ -123,6 +124,7 @@ import com.nordicpeak.flowengine.interfaces.FlowInstanceOverviewExtensionProvide
 import com.nordicpeak.flowengine.interfaces.FlowPaymentProvider;
 import com.nordicpeak.flowengine.interfaces.FlowProcessCallback;
 import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstanceEvent;
 import com.nordicpeak.flowengine.interfaces.ListFlowInstancesExtensionLinkProvider;
@@ -150,7 +152,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowInstance.ATTRIBUTES_RELATION };
 
-	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_FIELD, Flow.HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, Flow.PUBLISH_DATE_FIELD, FlowInstanceEvent.POSTER_FIELD };
+	public static final Field[] LIST_EXCLUDED_FIELDS = { FlowInstance.POSTER_FIELD, FlowInstance.EDITOR_FIELD, Flow.ICON_FILE_NAME_FIELD, Flow.DESCRIPTION_SHORT_FIELD, Flow.DESCRIPTION_LONG_FIELD, Flow.SUBMITTED_MESSAGE_FIELD, Flow.HIDE_EXTERNAL_MESSAGES_FIELD, Flow.HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD, Flow.HIDE_INTERNAL_MESSAGES_FIELD, Flow.HIDE_FROM_OVERVIEW_FIELD, Flow.HIDE_MANAGER_DETAILS_FIELD, Flow.FLOW_FORMS_FIELD, Flow.HIDE_SUBMIT_STEP_TEXT_FIELD, Flow.SHOW_SUBMIT_SURVEY_FIELD, Flow.REQUIRES_SIGNING_FIELD, Flow.REQUIRE_AUTHENTICATION_FIELD, Flow.USE_PREVIEW_FIELD, FlowInstanceEvent.POSTER_FIELD };
 
 	public static final String SESSION_ACCESS_CONTROLLER_TAG = UserFlowInstanceModule.class.getName();
 
@@ -503,7 +505,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 
 				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT) {
-
+					
+					XMLUtils.appendNewElement(doc, flowInstanceElement, "stopSubmitForSavedFlowIfUnpublished", String.valueOf(stopSubmitForUnpublishedSavedFlows(flowInstance)));
 					savedFlowInstancesElement.appendChild(flowInstanceElement);
 
 				} else if (status.getContentType() == ContentType.SUBMITTED || status.getContentType() == ContentType.IN_PROGRESS || status.getContentType() == ContentType.WAITING_FOR_COMPLETION) {
@@ -552,7 +555,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		if (!listViewFragmentExtensionProviders.isEmpty()) {
 
-			viewFragments = new ArrayList<ViewFragment>(listViewFragmentExtensionProviders.size());
+			viewFragments = new ArrayList<>(listViewFragmentExtensionProviders.size());
 
 			for (ListFlowInstancesViewFragmentExtensionProvider listViewFragmentExtensionProvider : listViewFragmentExtensionProviders) {
 
@@ -579,7 +582,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				ViewFragmentUtils.appendLinksAndScripts(moduleResponse, viewFragment);
 			}
 		}
-
+		
 		return moduleResponse;
 	}
 
@@ -803,7 +806,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		try {
 			if (uriParser.size() == 4 && (flowID = NumberUtils.toInt(uriParser.get(2))) != null && (flowInstanceID = NumberUtils.toInt(uriParser.get(3))) != null) {
-
+				
 				if (enableSiteProfileRedirectSupport) {
 
 					if (flowInstanceID != null) {
@@ -821,7 +824,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 						}
 					}
 				}
-
+				
 				//Get saved instance from DB or session
 				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
@@ -846,6 +849,11 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			log.info("User " + user + " requested flow " + e.getFlow() + " which is no longer published.");
 			return list(req, res, user, uriParser, FLOW_NO_LONGER_PUBLISHED_VALIDATION_ERROR);
+
+		} catch (SavedUnpublishedFlowLockedException e) {
+
+			log.info("User " + user + " requested saved flow " + e.getFlow() + " which is no longer published.");
+			return list(req, res, user, uriParser, SAVED_FLOW_VERSION_UNPUBLISHED_VALIDATION_ERROR);
 
 		} catch (FlowDisabledException e) {
 
@@ -892,6 +900,16 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			return processFlowRequestException(instanceManager, req, res, user, user, uriParser, BaseFlowModule.OWNER_REQUEST_METADATA, e);
 		}
+	}
+	
+	@Override
+	protected boolean stopSubmitForUnpublishedSavedFlows(ImmutableFlowInstance flowInstance) {
+
+		ImmutableFlow flow = flowInstance.getFlow();
+		if(flow == null)
+			return false;
+		return flow.isLockSubmitForUnpublishedSavedFlow() 
+				&& flowInstance.getFirstSubmitted() == null && !flow.isPublished();
 	}
 
 	@WebPublic(alias = "delete")

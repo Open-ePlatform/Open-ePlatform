@@ -2349,6 +2349,26 @@
 					</label>
 				</div>
 			</div>
+			
+			<div class="floatleft full bigmarginbottom margintop">
+				
+				<xsl:if test="LacksPublishAccess">
+					<xsl:attribute name="class">floatleft full bigmarginbottom margintop opacity-fifty</xsl:attribute>
+				</xsl:if>
+			
+				<div class="floatleft">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="name" select="'lockSubmitForUnpublishedSavedFlow'" />
+						<xsl:with-param name="id" select="'lockSubmitForUnpublishedSavedFlow'" />
+						<xsl:with-param name="element" select="Flow" />
+						
+					</xsl:call-template>
+					
+					<label for="lockSubmitForUnpublishedSavedFlow">
+						<xsl:value-of select="$i18n.disableUnpublishedSavedFlows" />
+					</label>
+				</div>
+			</div>
 		
 		</fieldset>
 		

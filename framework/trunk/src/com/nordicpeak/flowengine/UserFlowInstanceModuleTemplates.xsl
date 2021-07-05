@@ -337,10 +337,14 @@
 					<xsl:when test="Status/contentType = 'WAITING_FOR_PAYMENT'">
 						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/pay/{flowInstanceID}"><xsl:value-of select="$i18n.WaitingForPayment" /></a>
 					</xsl:when>
+					<xsl:when test="stopSubmitForSavedFlowIfUnpublished='true'">
+						<a class="btn btn-light vertical-align-middle" href="#" onclick="alert('{$i18n.SavedFlow.DisabledMessage}'); return false;"><xsl:value-of select="$i18n.Continue.Disabled" /></a>
+					</xsl:when>
 					<xsl:when test="not(Flow/enabled = 'true')">
 						<a class="btn btn-light vertical-align-middle" href="#" onclick="alert('{$i18n.Continue.DisabledMessage}'); return false;"><xsl:value-of select="$i18n.Continue.Disabled" /></a>
 					</xsl:when>
 					<xsl:otherwise>
+
 						<a class="btn btn-green vertical-align-middle" href="{$baseURL}/flowinstance/{Flow/flowID}/{flowInstanceID}"><xsl:value-of select="$i18n.Continue" /></a>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -1293,6 +1297,13 @@
 		</div>
 		
 	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='SavedFlowUnpublished']">
+		<xsl:call-template name="printValidationError">
+			<xsl:with-param name="message" select="$i18n.SavedFlow.DisabledMessage"></xsl:with-param>
+		</xsl:call-template>
+			
+	</xsl:template>	
 	
 	<xsl:template match="validationError[messageKey='InvalidFileExtension']">
 	

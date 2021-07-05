@@ -118,6 +118,7 @@ import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowLimitExceededException;
+import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
@@ -183,6 +184,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	public static final ValidationError PREVIEW_NOT_ENABLED_VALIDATION_ERROR = new ValidationError("PreviewNotEnabledForCurrentFlow");
 	public static final ValidationError PREVIEW_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR = new ValidationError("PreviewOnlyAvailableWhenFlowFullyPopulated");
 	public static final ValidationError SUBMIT_ONLY_WHEN_FULLY_POPULATED_VALIDATION_ERROR = new ValidationError("SubmitOnlyAvailableWhenFlowFullyPopulated");
+	public static final ValidationError SAVED_FLOW_VERSION_UNPUBLISHED_VALIDATION_ERROR = new ValidationError("SavedFlowUnpublished");
 
 	public static final ValidationError UNABLE_TO_POPULATE_QUERY_INSTANCE_VALIDATION_ERROR = new ValidationError("UnableToPopulateQueryInstance");
 	public static final ValidationError UNABLE_TO_RESET_QUERY_INSTANCE_VALIDATION_ERROR = new ValidationError("UnableToResetQueryInstance");
@@ -283,7 +285,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		ModuleUtils.checkRequiredModuleSettings(moduleDescriptor, this, systemInterface, Level.ERROR);
 	}	
 	
-	protected MutableFlowInstanceManager getSavedMutableFlowInstanceManager(int flowID, int flowInstanceID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean loadFromDBIfNeeded, boolean checkPublishDate, boolean checkEnabled, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException {
+	protected MutableFlowInstanceManager getSavedMutableFlowInstanceManager(int flowID, int flowInstanceID, FlowInstanceAccessController callback, HttpSession session, User user, URIParser uriParser, HttpServletRequest req, boolean loadFromDBIfNeeded, boolean checkPublishDate, boolean checkEnabled, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, FlowInstanceNoLongerAvailableException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, EvaluationException, UnableToResetQueryInstanceException, SavedUnpublishedFlowLockedException {
 
 		if (session == null) {
 
@@ -373,7 +375,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, User poster, SiteProfile profile, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException {
+	protected MutableFlowInstanceManager getUnsavedMutableFlowInstanceManager(int flowID, FlowInstanceAccessController callback, HttpSession session, User user, User poster, SiteProfile profile, URIParser uriParser, HttpServletRequest req, boolean createInstanceIfNeeded, boolean checkPublishDate, boolean checkEnabled, boolean checkFlowTypeAccess, RequestMetadata requestMetadata) throws FlowNoLongerAvailableException, SQLException, AccessDeniedException, FlowNotPublishedException, FlowDisabledException, DuplicateFlowInstanceManagerIDException, QueryProviderNotFoundException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, FlowDisabledException, EvaluationProviderNotFoundException, EvaluationProviderErrorException, EvaluatorNotFoundInEvaluationProviderException, FlowLimitExceededException, FlowNotAvailiableInRequestedFormat, EvaluationException, UnableToResetQueryInstanceException, SavedUnpublishedFlowLockedException {
 		
 		if (session == null) {
 
@@ -462,7 +464,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 	}
 
-	protected void checkFlow(MutableFlowInstanceManager instanceManager, HttpSession session, boolean checkPublishDate, boolean checkEnabled, boolean manager) throws FlowNoLongerAvailableException, SQLException, FlowDisabledException, FlowNotPublishedException {
+	protected void checkFlow(MutableFlowInstanceManager instanceManager, HttpSession session, boolean checkPublishDate, boolean checkEnabled, boolean manager) throws FlowNoLongerAvailableException, SQLException, FlowDisabledException, FlowNotPublishedException, SavedUnpublishedFlowLockedException {
 
 		Flow flow;
 
@@ -487,6 +489,19 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 			throw new FlowNotPublishedException(instanceManager.getFlowInstance().getFlow());
 		}
+		
+		if(stopSubmitForUnpublishedSavedFlows(instanceManager.getFlowInstance()))
+		{
+			this.removeMutableFlowInstanceManagerFromSession(instanceManager, session);
+
+			throw new SavedUnpublishedFlowLockedException(instanceManager.getFlowInstance().getFlow());
+		}
+	}
+
+	//override to implement
+	protected boolean stopSubmitForUnpublishedSavedFlows(ImmutableFlowInstance flowInstance) {
+
+		return false;
 	}
 	
 	public boolean isOperatingStatusDisabled(ImmutableFlowInstance flowInstance, boolean manager) {
@@ -740,7 +755,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					return showPreview(req, user, poster, uriParser, instanceManager, callback, flowAction, getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), accessController), null, requestMetadata);
 
 				} else if (flowAction == FlowAction.SAVE_AND_SUBMIT) {
-
+					
 					// Check if instance is fully populated, save and then
 					// display submitted message
 					if (!instanceManager.isFullyPopulated()) {

@@ -143,6 +143,7 @@
 	<xsl:variable name="i18n.validation.unknownError" select="'Okänt fel på fältet:'"/>
 	<xsl:variable name="i18n.validation.unknownFault" select="'Ett okänt valideringsfel har uppstått.'"/>
 	<xsl:variable name="i18n.enableFlow">Aktivera e-tjänsten</xsl:variable>
+	<xsl:variable name="i18n.disableUnpublishedSavedFlows">Inaktivera sparade e-tjänster som är avpublicerade</xsl:variable>
 	
 	<xsl:variable name="i18n.baseInfo">Grundinformation</xsl:variable>
 	<xsl:variable name="i18n.enabled">Aktiverad</xsl:variable>
