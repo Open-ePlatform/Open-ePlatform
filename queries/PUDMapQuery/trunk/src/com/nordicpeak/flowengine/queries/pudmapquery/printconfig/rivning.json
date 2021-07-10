@@ -40,7 +40,7 @@
          "styles":{
             "Point": {
                 "pointRadius": 30,
-                "externalGraphic": "http://sundsvall.e-tjansteportalen.se/mapclient-riges/images/point_cross.png"
+                "externalGraphic": "http://e-tjanster.sundsvall.se/mapclient-riges/images/point_cross.png"
             }
             $labelStyles
          },

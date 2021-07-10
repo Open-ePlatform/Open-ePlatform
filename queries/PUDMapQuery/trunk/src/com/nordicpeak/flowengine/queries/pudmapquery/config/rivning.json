@@ -17,10 +17,11 @@
     "layers": [
         {
             "name": "Flygfoto",
-            "url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "https://karta.sundsvall.se/geoserver/wms",
             "params": {
                 "layers": "Lantmateriet:Ortofoto50_25cm",
-                "format": "image/jpeg"
+                "format": "image/jpeg",
+                "tiled": true
             },
             "options": {
             	"isBaseLayer": true,
@@ -29,10 +30,11 @@
         },
         {
             "name": "Karta",
-            "url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "https://karta.sundsvall.se/geoserver/wms",
             "params": {
                 "layers": "Lantmateriet:topowebbkartan_nedtonad",
-                "format": "image/png"
+                "format": "image/png",
+                "tiled": true
             },
             "options": {
             	"isBaseLayer": true,
@@ -42,7 +44,8 @@
 		{
             "name": "Fastighetsgränser",
 			"wms": {
-				"url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
+				"url": "https://karta.sundsvall.se/geoserver/wms",
+				"tiled": true,
 				"params": {
 					"layers": "Lantmateriet:fastighet_granser",
 					"format": "image/png",

@@ -17,10 +17,11 @@
     "layers": [
         {
             "name": "Karta",
-            "url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
+            "url": "https://karta.sundsvall.se/geoserver/wms",
             "params": {
                 "layers": "Lantmateriet:topowebbkartan_nedtonad",
-                "format": "image/png"
+                "format": "image/png",
+                "tiled": true
             },
             "options": {
             	"isBaseLayer": true,
@@ -30,11 +31,12 @@
 		{
             "name": "Fastighetsgränser",
 			"wms": {
-				"url": "https://karta.sundsvall.se/geoserver/gwc/service/wms",
+				"url": "https://karta.sundsvall.se/geoserver/wms",
 				"params": {
 					"layers": "Lantmateriet:fastighet_granser",
 					"format": "image/png",
-					"transparent": true
+					"transparent": true,
+                	"tiled": true
 				},
 				"options": {
 					"isBaseLayer": false,
