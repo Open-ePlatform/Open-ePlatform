@@ -338,18 +338,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			userFlowInstanceMenuModule.sortProviders();
 		}
 		
-		if(enableExternalID){
+		if (enableExternalID) {
 			
 			ArrayList<String> attributes = new ArrayList<String>(2);
 			
-			if(enableExternalID){
+			if (enableExternalID) {
 				
 				attributes.add(Constants.FLOW_INSTANCE_EXTERNAL_ID_ATTRIBUTE);
 			}
 			
 			this.selectedAttributes = attributes;
 			
-		}else{
+		} else {
 			
 			this.selectedAttributes = null;
 		}
@@ -420,18 +420,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		doc.getDocumentElement().appendChild(listFlowInstancesElement);
 		
-		if(showMyErrandsInformationBlock) {
+		if (showMyErrandsInformationBlock) {
 			
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowMyErrandsInformationBlock", showMyErrandsInformationBlock);
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "MyErrandsInformation", myErrandsInformation);
 		}
 
-		if(enableDescriptionColumn){
+		if (enableDescriptionColumn) {
 			
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowDescriptionColumn");
 		}
 		
-		if(enableExternalID){
+		if (enableExternalID) {
 			
 			XMLUtils.appendNewElement(doc, listFlowInstancesElement, "ShowExternalID");
 		}
@@ -646,22 +646,22 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "FormattedMaxFileSize", BinarySizeFormater.getFormatedSize(maxFileSize * BinarySizes.MegaByte));
 
-			if(enableDescriptionColumn){
+			if (enableDescriptionColumn) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowDescriptionColumn");
 			}
 			
-			if(enableExternalID){
+			if (enableExternalID) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "ShowExternalID");
 			}
 			
-			if(hideManagerEmailInOverview) {
+			if (hideManagerEmailInOverview) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "HideManagerEmailInOverview");
 			}
 			
-			if(hideEventXMLFromUser) {
+			if (hideEventXMLFromUser) {
 				
 				XMLUtils.appendNewElement(doc, showFlowInstanceOverviewElement, "hideEventXMLFromUser");
 			}
@@ -686,7 +686,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 			
-			if(flowInstance.getEvents() != null && flowInstanceEventSortOrder == Order.DESC){
+			if (flowInstance.getEvents() != null && flowInstanceEventSortOrder == Order.DESC) {
 				
 				Collections.reverse(flowInstance.getEvents());
 			}
@@ -906,10 +906,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	protected boolean stopSubmitForUnpublishedSavedFlows(ImmutableFlowInstance flowInstance) {
 
 		ImmutableFlow flow = flowInstance.getFlow();
-		if(flow == null)
+
+		if (flow == null) {
 			return false;
-		return flow.isLockSubmitForUnpublishedSavedFlow() 
-				&& flowInstance.getFirstSubmitted() == null && !flow.isPublished();
+		}
+
+		return flow.isLockSubmitForUnpublishedSavedFlow() && flowInstance.getFirstSubmitted() == null && !flow.isPublished();
 	}
 
 	@WebPublic(alias = "delete")
@@ -1126,7 +1128,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "xml")
 	public ForegroundModuleResponse getEventXML(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 
-		if(!hideEventXMLFromUser) {
+		if (!hideEventXMLFromUser) {
 			
 			try {
 				sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
@@ -1138,7 +1140,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 			}
 			
-		}else{
+		} else {
 			
 			throw new URINotFoundException(uriParser);
 		}
