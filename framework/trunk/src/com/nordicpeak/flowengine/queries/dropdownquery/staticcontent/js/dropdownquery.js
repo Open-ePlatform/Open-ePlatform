@@ -34,11 +34,11 @@ function initDropDownQuery(queryID) {
 			
 		});
 		
-		$query.find("input[type='text']").change(function() {
+		$query.find("input[type='text']").keyup(delay(function() {
 			
 			runDropDownEvaluators($(this), queryID);
 			
-		});
+		}, 500));
 		
 		$select.trigger("change", [{manual: true}]);
 		
@@ -65,8 +65,12 @@ function runDropDownEvaluators($this, queryID) {
 	parameters[$this.attr("name")] = $this.val();
 	
 	if($this.val() == "freeTextAlternative"){
-		
+	
 		parameters["q" + queryID + "_alternativeValue"] = $("#q" + queryID + "_alternativeValue").val();
+		
+	} else if($this.is("input:text")){
+
+		parameters["q" + queryID + "_alternative"] = "freeTextAlternative";
 	}
 	
 	runQueryEvaluators(queryID, parameters);
@@ -77,4 +81,23 @@ function makeDropDownQueryRequired(queryID) {
 	
 	$("#query_" + queryID).find(".heading-wrapper h2").addClass("required");
 	
+}
+
+function delay(callback, ms) {
+	
+	var timer = 0;
+	
+	return function() {
+		
+		var context = this;
+		args = arguments;
+		
+		clearTimeout(timer);
+		
+		timer = setTimeout(function () {
+		
+			callback.apply(context, args);
+		
+    	}, ms || 0);
+	};
 }
