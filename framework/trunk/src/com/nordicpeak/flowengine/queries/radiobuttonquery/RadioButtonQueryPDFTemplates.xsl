@@ -17,7 +17,7 @@
 			
 			<a name="query{RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/queryID}"/>
 			
-			<xsl:if test="not(CheckboxQueryInstance/CheckboxQuery/hideTitle = 'true')">
+			<xsl:if test="not(RadioButtonQueryInstance/RadioButtonQuery/hideTitle = 'true')">
 				<h2>
 					<xsl:value-of select="RadioButtonQueryInstance/QueryInstanceDescriptor/QueryDescriptor/name"/>
 				</h2>
