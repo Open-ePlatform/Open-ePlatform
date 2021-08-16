@@ -31,7 +31,7 @@
 	<xsl:variable name="i18n.Settings.NotificationTitle">Aktivera notifikationer</xsl:variable>
 	<xsl:variable name="i18n.UpdateSettings.description">Inställningar nedan styr om tillägget "Handlingar" ska visas samt om notifikationer ska skickas.</xsl:variable>
 	<xsl:variable name="i18n.Settings.Active">Visa Handlingar</xsl:variable>
-	<xsl:variable name="i18n.Settings.Active.description">Markera för att aktivera tillägget.</xsl:variable>
+	<xsl:variable name="i18n.Settings.Active.description">Aktivera handlingar</xsl:variable>
 	
 	<xsl:variable name="i18n.Settings.sendEmail">Skicka e-postnotifiering när handlingar läggs till</xsl:variable>
 	<xsl:variable name="i18n.Settings.sendSms">Skicka smsnotifiering när handlingar läggs till</xsl:variable>

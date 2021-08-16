@@ -222,28 +222,24 @@
 	
 			<form method="post" action="{/Document/requestinfo/contextpath}{extensionRequestURL}/updatesettings">
 				
-				<fieldset>
-					<legend> <xsl:value-of select="$i18n.Settings.Active" /></legend>
-					
-					<div class="floatleft full bigmarginbottom">
-	
-						<div class="floatleft full">
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="id" select="'moduleEnabled'" />
-								<xsl:with-param name="name" select="'moduleEnabled'" />
-								<xsl:with-param name="value" select="'true'" />
-								<xsl:with-param name="checked" select="$moduleEnabled" />
-								<xsl:with-param name="element" select="Settings" />
-								<xsl:with-param name="onclick" select="'notificationHandler()'" />
-							</xsl:call-template>
-							
-							<label for="GetModuleEnabled">
-								<xsl:value-of select="$i18n.Settings.Active.description" />
-							</label>
-						</div>
-		
+				<div class="floatleft full bigmarginbottom">
+
+					<div class="floatleft full">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="id" select="'moduleEnabled'" />
+							<xsl:with-param name="name" select="'moduleEnabled'" />
+							<xsl:with-param name="value" select="'true'" />
+							<xsl:with-param name="checked" select="$moduleEnabled" />
+							<xsl:with-param name="element" select="Settings" />
+							<xsl:with-param name="onclick" select="'notificationHandler()'" />
+						</xsl:call-template>
+						
+						<label for="moduleEnabled">
+							<xsl:value-of select="$i18n.Settings.Active.description" />
+						</label>
 					</div>
-				</fieldset>
+	
+				</div>
 				
 				<fieldset id="notificationFieldset">
 					<legend> <xsl:value-of select="$i18n.Settings.NotificationTitle" /></legend>
