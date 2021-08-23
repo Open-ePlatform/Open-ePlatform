@@ -165,7 +165,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	@InstanceManagerDependency(required = true)
 	protected FlowApprovalAdminModule approvalAdminModule;
-	
+
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -518,17 +518,17 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			boolean completed = false;
 
-			if(activityGroup.isUseApproveDeny()) {
+			if (activityGroup.isUseApproveDeny()) {
 
-				if(!StringUtils.isEmpty(req.getParameter("approved"))) {
-					
+				if (!StringUtils.isEmpty(req.getParameter("approved"))) {
+
 					log.info("User " + user + " approved activity progress " + activityProgress);
 
 					activityProgress.setDenied(false);
 					completed = true;
 
-				} else if (!StringUtils.isEmpty(req.getParameter("denied")))	{
-					
+				} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
+
 					log.info("User " + user + " denied activity progress " + activityProgress);
 
 					activityProgress.setDenied(true);
@@ -537,7 +537,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			} else {
 
-				if(!StringUtils.isEmpty(req.getParameter("completed"))) {
+				if (!StringUtils.isEmpty(req.getParameter("completed"))) {
 
 					log.info("User " + user + " completing activity progress " + activityProgress);
 
@@ -914,7 +914,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		return showSignForm(req, res, user, uriParser, activityProgress, flowInstance, validationErrors);
 	}
-	
+
 	@RESTMethod(alias = "downloadpdf/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
 	public void downloadPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "activityProgressID") Integer activityProgressID) throws SQLException, URINotFoundException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException, AccessDeniedException {
 
@@ -925,11 +925,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		FlowApprovalActivity activity = activityProgress.getActivity();
-		
+
 		if (activity == null) {
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		FlowInstance flowInstance;
 		ImmutableFlowInstanceManager instanceManager = null;
 
@@ -953,14 +953,13 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				throw new AccessDeniedException("User does not have access to activity " + activity + " nor is a manager for " + flowInstance);
 			}
 		}
-		
+
 		FlowInstanceEvent event = getLatestPDFEvent(flowInstance);
-		
-		if(event == null)
-		{
+
+		if (event == null) {
 			throw new URINotFoundException(uriParser);
 		}
-		
+
 		File pdfFile = pdfProvider.getPDF(activityProgress.getActivityRound().getFlowInstanceID(), event.getEventID());
 
 		if (pdfFile == null) {
@@ -970,17 +969,16 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		try {
 			log.info("Sending PDF for flow instance " + flowInstance + ", event " + event.getEventID() + " to user " + user);
-			
+
 			String filename = flowInstance.getFlow().getName() + " - " + flowInstance.getFlowInstanceID() + ".pdf";
-			
-			
+
 			HTTPUtils.sendFile(pdfFile, filename, req, res, ContentDisposition.ATTACHMENT);
-			
+
 		} catch (Exception e) {
 			log.info("Error sending PDF for flow instance " + flowInstance + ", event " + event.getEventID() + " to user " + user + ", " + e);
 		}
 	}
-	
+
 	private FlowInstanceEvent getLatestPDFEvent(FlowInstance flowInstance) {
 
 		if (CollectionUtils.isEmpty(flowInstance.getEvents())) {

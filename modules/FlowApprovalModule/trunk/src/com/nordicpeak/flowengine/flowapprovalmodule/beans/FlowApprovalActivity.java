@@ -67,6 +67,11 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean pdfDownloadActivation;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean requireSigning;
 
 	@DAOManaged
@@ -93,12 +98,12 @@ public class FlowApprovalActivity extends GeneratedElementable {
 	@SimplifiedRelation(table = "flowapproval_activity_resp_user_attribute", remoteValueColumnName = "attributeName")
 	@XMLElement(fixCase = true)
 	private List<String> responsibleUserAttributeNames;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean allowManagersToAssignOwner;
-	
+
 	@DAOManaged
 	@OneToMany
 	@SimplifiedRelation(table = "flowapproval_activity_assignable_users", remoteValueColumnName = "userID")
@@ -317,27 +322,43 @@ public class FlowApprovalActivity extends GeneratedElementable {
 		this.showFlowInstance = showFlowInstance;
 	}
 
+	public boolean isPDFDownloadActivation() {
+
+		return pdfDownloadActivation;
+	}
+
+	public void setPDFDownloadActivation(boolean pdfDownloadActivation) {
+
+		this.pdfDownloadActivation = pdfDownloadActivation;
+	}
+
 	public boolean isAllowManagersToAssignOwner() {
+
 		return allowManagersToAssignOwner;
 	}
 
 	public void setAllowManagersToAssignOwner(boolean allowManagersToAssignOwner) {
+
 		this.allowManagersToAssignOwner = allowManagersToAssignOwner;
 	}
 
 	public List<User> getAssignableUsers() {
+
 		return assignableUsers;
 	}
 
 	public void setAssignableUsers(List<User> assignableUsers) {
+
 		this.assignableUsers = assignableUsers;
 	}
 
 	public List<Group> getAssignableGroups() {
+
 		return assignableGroups;
 	}
 
 	public void setAssignableGroups(List<Group> assignableGroups) {
+
 		this.assignableGroups = assignableGroups;
 	}
 

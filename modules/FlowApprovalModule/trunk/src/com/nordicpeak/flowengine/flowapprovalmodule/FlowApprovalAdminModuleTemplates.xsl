@@ -1382,7 +1382,7 @@
 	
 		</div>
 		
-		<div class="floatleft full bigmarginbottom">
+		<div class="floatleft full">
 			
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
@@ -1396,8 +1396,20 @@
 				</label>
 			</div>
 		</div>
-		
-		<div class="floatleft full bigmarginbottom">
+		<div class="floatleft full">
+			<div class="floatleft bigmarginleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'pdfDownloadActivation'" />
+					<xsl:with-param name="id" select="'pdfDownloadActivation'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="pdfDownloadActivation">
+					<xsl:value-of select="$i18n.Activity.showPDFDownloadActivation" />
+				</label>
+			</div>
+		</div>
+		<div class="floatleft full bigmarginbottom bigmargintop">
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">

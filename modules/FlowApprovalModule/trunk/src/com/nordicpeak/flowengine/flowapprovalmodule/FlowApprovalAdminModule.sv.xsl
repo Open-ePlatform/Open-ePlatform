@@ -112,6 +112,7 @@
 	<xsl:variable name="i18n.Activity.shortDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>
+	<xsl:variable name="i18n.Activity.showPDFDownloadActivation">Tillåt aktivitetsägare att ladda ner hela ärendets PDF</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireSigning">Kräv signering vid klarmarkera / godkänn / neka</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireComment">Kräv att kommentar anges</xsl:variable>
 	<xsl:variable name="i18n.Activity.allowManagersToAssignOwner">Tillåt handläggare att byta ansvarig användare</xsl:variable>

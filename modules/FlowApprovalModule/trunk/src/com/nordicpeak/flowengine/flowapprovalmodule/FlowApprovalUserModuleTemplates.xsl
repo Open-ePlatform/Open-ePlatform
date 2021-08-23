@@ -651,8 +651,10 @@
 				<xsl:text>. </xsl:text>
 				<xsl:value-of select="../../FlowInstance/Flow/Steps/Step[stepID = $stepID]/name"/>
 				
-				<xsl:if test="position() = 1">
-					<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/downloadpdf/{../../ActivityProgress/activityProgressID}" title="{$i18n.DownloadPDF.title}" class="btn btn-light btn-inline btn-right"><xsl:value-of select="$i18n.DownloadPDF" /></a>
+				<xsl:if test="../../ActivityProgress/Activity/pdfDownloadActivation='true'">
+					<xsl:if test="position() = 1">
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/downloadpdf/{../../ActivityProgress/activityProgressID}" title="{$i18n.DownloadPDF.title}" class="btn btn-light btn-inline btn-right"><xsl:value-of select="$i18n.DownloadPDF" /></a>
+					</xsl:if>
 				</xsl:if>
 				
 			</h2>

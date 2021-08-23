@@ -474,6 +474,14 @@
 				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `hideFlowinstanceIDInPDF` BOOLEAN NOT NULL AFTER `suppressChangeStatusManagerNotifications`;				
 			]]>
 		</Query>
+	</Script>
+	
+	<Script version="23">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `pdfDownloadActivation` BOOLEAN NOT NULL DEFAULT 0 AFTER `showFlowInstance`;				
+			]]>
+		</Query>
 	</Script>	
 	
 </DBScripts>

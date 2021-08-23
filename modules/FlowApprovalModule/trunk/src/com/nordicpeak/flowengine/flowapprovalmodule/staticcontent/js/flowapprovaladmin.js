@@ -113,6 +113,12 @@ $(document).ready(function() {
 			updateSortOrder($(this));
 		});
 	}
+	
+	$("#showFlowInstance").change(function(e) {
+			var checked = $(this).prop("checked");
+			$("#pdfDownloadActivation").attr("disabled", !checked).parent().parent().toggle(checked);
+			
+		}).trigger("change");
 });
 
 function searchFlows(request, response, searchURL, searchInput) {
