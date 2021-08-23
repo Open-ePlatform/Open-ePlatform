@@ -1397,7 +1397,7 @@
 			</div>
 		</div>
 		<div class="floatleft full">
-			<div class="floatleft bigmarginleft">
+			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'pdfDownloadActivation'" />
 					<xsl:with-param name="id" select="'pdfDownloadActivation'" />
