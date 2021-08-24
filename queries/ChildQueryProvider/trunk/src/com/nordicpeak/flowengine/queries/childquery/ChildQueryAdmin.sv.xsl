@@ -25,6 +25,8 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="java.exportChildPostalAdress">Barnets postort</xsl:variable>
 	<xsl:variable name="java.exportChildZipCode">Barnets postnummer</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianName">Andra vårdnadshavarens namn</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianFirstname">Andra vårdnadshavarens förnamn</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianLastname">Andra vårdnadshavarens efternamn</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianEmail">Andra vårdnadshavarens e-post</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianPhone">Andra vårdnadshavarens telefon</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianCitizenIdentifier">Andra vårdnadshavarens personnummer</xsl:variable>
@@ -80,9 +82,14 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.Query.setAsAttribute">Spara valt barn som attribut</xsl:variable>
+	
 	<xsl:variable name="i18n.Query.attributeName">Attributprefix</xsl:variable>
 	<xsl:variable name="i18n.attributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.childCitizenIdentifier}</xsl:variable>
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
+	
+	<xsl:variable name="i18n.Query.setAsSecondGuardianAttribute">Spara andra vårdnadshavare som attribut</xsl:variable>
+	<xsl:variable name="i18n.secondGuardianAttributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.guardianCitizenIdentifier}.
+	Observera att saknas annan vårdnadshavare kommer dessa fält inte populeras.</xsl:variable>
 	
 </xsl:stylesheet>

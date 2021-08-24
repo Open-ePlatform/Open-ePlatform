@@ -122,6 +122,17 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	private String attributeName;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean setAsSecondGuardianAttribute;
+	
+	@DAOManaged
+	@WebPopulate(maxLength = 255)
+	@RequiredIfSet(paramNames = "setAsSecondGuardianAttribute")
+	@XMLElement
+	private String secondGuardianAttributeName;
+	
+	@DAOManaged
 	@XMLElement
 	private String filterEndpoint;
 	
@@ -486,6 +497,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		maxAge = XMLValidationUtils.validateParameter("maxAge", xmlParser, false, IntegerPopulator.getPopulator(), errors);
 		setMultipartsAsOwners = xmlParser.getPrimitiveBoolean("setMultipartsAsOwners");
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		secondGuardianAttributeName = XMLValidationUtils.validateParameter("secondGuardianAttributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		emptyFilterDescription = XMLValidationUtils.validateParameter("emptyFilterDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		filteredChildrenDescription = XMLValidationUtils.validateParameter("filteredChildrenDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		communicationErrorDescription = XMLValidationUtils.validateParameter("communicationErrorDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
@@ -493,6 +505,11 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		if (attributeName != null) {
 			
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}
+		
+		if (secondGuardianAttributeName != null) {
+			
+			setAsSecondGuardianAttribute = xmlParser.getPrimitiveBoolean("setAsSecondGuardianAttribute");
 		}
 		
 		if (!errors.isEmpty()) {
@@ -577,6 +594,29 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 
 	public String getFilterEndpointName() {
 		return filterEndpoint;
+	}
+	
+	public boolean isSetAsSecondGuardianAttribute() {
+		
+		return setAsSecondGuardianAttribute;
+	}
+
+	
+	public void setSetAsSecondGuardianAttribute(boolean setAsSecondGuardianAttribute) {
+	
+		this.setAsSecondGuardianAttribute = setAsSecondGuardianAttribute;
+	}
+
+	
+	public String getSecondGuardianAttributeName() {
+	
+		return secondGuardianAttributeName;
+	}
+
+	
+	public void setSecondGuardianAttributeName(String secondGuardianAttributeName) {
+	
+		this.secondGuardianAttributeName = secondGuardianAttributeName;
 	}
 
 	public void setFilterEndpointName(String filterEndpointName) {

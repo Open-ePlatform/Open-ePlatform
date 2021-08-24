@@ -258,7 +258,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		queryDAO = daoFactory.getDAO(ChildQuery.class);
 		queryInstanceDAO = daoFactory.getDAO(ChildQueryInstance.class);
 
-		queryCRUD = new ChildQueryCRUD(queryDAO.getWrapper(Integer.class), new AnnotatedRequestPopulator<ChildQuery>(ChildQuery.class), "ChildQuery", "query", null, this);
+		queryCRUD = new ChildQueryCRUD(queryDAO.getWrapper(Integer.class), new AnnotatedRequestPopulator<>(ChildQuery.class), "ChildQuery", "query", null, this);
 
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		queryFilterEndpointNameParamFactory = queryDAO.getParamFactory("filterEndpoint", String.class);
@@ -439,30 +439,28 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		//If this is a new query instance copy the default values
 		if (descriptor.getQueryInstanceID() == null) {
 
-			queryInstance.defaultQueryValues();
-
 			//Only do if query is visible
 			if (poster != null && descriptor.getQueryState() != QueryState.HIDDEN) {
 
 				queryInstance.setChildren(getChildrenWithGuardians(queryInstance, poster, null, null));
 			}
-			
+
 		} else {
-			
+
 			if (queryInstance.getGuardians() != null) {
-				
+
 				for (StoredGuardian guardian : queryInstance.getGuardians()) {
-	
+
 					if (guardian.isPoster()) {
-	
+
 						for (StoredGuardian guardian2 : queryInstance.getGuardians()) {
-	
+
 							if (guardian2 != guardian && guardian2.addressEquals(guardian)) {
-	
+
 								guardian2.setSameAddressAsPoster(true);
 							}
 						}
-	
+
 						break;
 					}
 				}
@@ -503,7 +501,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private ChildQuery getQuery(Integer queryID) throws SQLException {
 
-		HighLevelQuery<ChildQuery> query = new HighLevelQuery<ChildQuery>();
+		HighLevelQuery<ChildQuery> query = new HighLevelQuery<>();
 
 		query.addParameter(queryIDParamFactory.getParameter(queryID));
 
@@ -512,7 +510,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private ChildQuery getQuery(Integer queryID, TransactionHandler transactionHandler) throws SQLException {
 
-		HighLevelQuery<ChildQuery> query = new HighLevelQuery<ChildQuery>();
+		HighLevelQuery<ChildQuery> query = new HighLevelQuery<>();
 
 		query.addParameter(queryIDParamFactory.getParameter(queryID));
 
@@ -521,7 +519,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	private ChildQueryInstance getQueryInstance(Integer queryInstanceID) throws SQLException {
 
-		HighLevelQuery<ChildQueryInstance> query = new HighLevelQuery<ChildQueryInstance>(ChildQueryInstance.QUERY_RELATION);
+		HighLevelQuery<ChildQueryInstance> query = new HighLevelQuery<>(ChildQueryInstance.QUERY_RELATION);
 
 		query.addParameter(queryInstanceIDParamFactory.getParameter(queryInstanceID));
 
@@ -548,11 +546,11 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		Integer queryID = queryInstance.getQuery().getQueryID();
 
-		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+		List<ValidationError> validationErrors = new ArrayList<>();
 
 		if (requestMetadata != null && requestMetadata.isManager() && queryInstance.getCitizenIdentifier() != null) {
 
-			populateGuardians(queryInstance.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
+			populateGuardians(queryInstance.getGuardians(), queryInstance, req, poster, allowPartialPopulation, requestMetadata, validationErrors);
 
 			if (!validationErrors.isEmpty()) {
 				throw new ValidationException(validationErrors);
@@ -594,7 +592,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		if (selectedChild != null) {
 
-			List<StoredGuardian> storedGuardians = populateGuardians(selectedChild.getGuardians(), queryInstance, req, user, poster, allowPartialPopulation, attributeHandler, requestMetadata, validationErrors);
+			List<StoredGuardian> storedGuardians = populateGuardians(selectedChild.getGuardians(), queryInstance, req, poster, allowPartialPopulation, requestMetadata, validationErrors);
 
 			if (!validationErrors.isEmpty()) {
 				throw new ValidationException(validationErrors);
@@ -627,7 +625,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		}
 	}
 
-	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User user, User poster, boolean allowPartialPopulation, MutableAttributeHandler attributeHandler, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
+	private List<StoredGuardian> populateGuardians(List<StoredGuardian> storedGuardians, ChildQueryInstance queryInstance, HttpServletRequest req, User poster, boolean allowPartialPopulation, RequestMetadata requestMetadata, List<ValidationError> validationErrors) {
 
 		ChildQuery query = queryInstance.getQuery();
 		Integer queryID = query.getQueryID();
@@ -779,7 +777,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 				@SuppressWarnings("unchecked")
 				Map<String, StoredChild> storedChildMap = (Map<String, StoredChild>) SessionUtils.getAttribute(SESSION_TEST_CHILDREN, poster.getSession());
-				
+
 				setGuardianPosterAndSameAddress(CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(poster), storedChildMap);
 
 				return storedChildMap;
@@ -812,7 +810,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 						queryInstance.setHasChildrenUnderSecrecy(childrenResponse.hasChildrenUnderSecrecy());
 
-						Map<String, StoredChild> storedChildMap = new LinkedHashMap<String, StoredChild>();
+						Map<String, StoredChild> storedChildMap = new LinkedHashMap<>();
 						Map<String, Child> navetChildMap = childrenResponse.getChildren();
 
 						if (query.getFilterEndpointName() != null) {
@@ -904,7 +902,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 								storedChildMap.put(entry.getKey(), new StoredChild(entry.getValue()));
 							}
 						}
-						
+
 						setGuardianPosterAndSameAddress(citizenIdentifier, storedChildMap);
 
 						return storedChildMap;
@@ -948,7 +946,6 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		}
 	}
 
-
 	@Override
 	public Document createDocument(HttpServletRequest req, User poster) {
 
@@ -972,7 +969,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 	@Override
 	public List<Integer> getQueryInstanceIDs(String citizenIdentifier) throws SQLException {
 
-		ArrayListQuery<Integer> query = new ArrayListQuery<Integer>(queryInstanceDAO.getDataSource(), GET_OTHER_PARTIES_SQL, IntegerPopulator.getPopulator());
+		ArrayListQuery<Integer> query = new ArrayListQuery<>(queryInstanceDAO.getDataSource(), GET_OTHER_PARTIES_SQL, IntegerPopulator.getPopulator());
 
 		query.setString(1, citizenIdentifier);
 
@@ -981,7 +978,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	public List<String> getExportLabels(ChildQuery query) {
 
-		List<String> labels = new ArrayList<String>();
+		List<String> labels = new ArrayList<>();
 
 		labels.add(exportChildCitizenName);
 		labels.add(exportChildCitizenIdentifier);
@@ -1046,7 +1043,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				String userCitizenID = CitizenIdentifierUtils.getUserOrManagerCitizenIdentifier(user);
 				StoredGuardian guardian = new StoredGuardian(user.getFirstname(), user.getLastname(), userCitizenID);
 
-				Map<String, StoredChild> children = new LinkedHashMap<String, StoredChild>();
+				Map<String, StoredChild> children = new LinkedHashMap<>();
 
 				for (int i = 0; i < 18; i++) {
 
@@ -1144,7 +1141,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 	public List<ChildQuery> getQueriesUsingFilterEndpoint(String name) throws SQLException {
 
-		HighLevelQuery<ChildQuery> query = new HighLevelQuery<ChildQuery>();
+		HighLevelQuery<ChildQuery> query = new HighLevelQuery<>();
 		query.addParameter(queryFilterEndpointNameParamFactory.getParameter(name));
 
 		List<ChildQuery> queries = queryDAO.getAll(query);

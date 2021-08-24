@@ -436,7 +436,7 @@
 	
 				<p class="floatleft clearboth"><xsl:value-of select="$i18n.attributeDescription" /></p>
 				
-				<table class="floatleft clearboth border">
+				<table class="floatleft clearboth border bigmarginbottom">
 					<thead>
 						<th><xsl:value-of select="$i18n.attributes.name" /></th>
 						<th><xsl:value-of select="$i18n.attributes.value" /></th>
@@ -457,6 +457,83 @@
 					</tbody>
 				</table>
 				
+			</div>
+			<div id="secondGuardianAttributeContainer">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'setAsSecondGuardianAttribute'" />
+						<xsl:with-param name="name" select="'setAsSecondGuardianAttribute'" />
+						<xsl:with-param name="element" select="ChildQuery" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="setAsAttribute">
+						<xsl:value-of select="$i18n.Query.setAsSecondGuardianAttribute" />
+					</label>
+				</div>
+			
+						
+			<div id="secondGuardianAttributeTableContainer" style="display: none;">
+			
+				<div class="floatleft full bigmarginbottom">
+					<label for="secondGuardianAttributeName" class="floatleft clearboth"><xsl:value-of select="$i18n.Query.attributeName" /></label>
+					
+					<div class="floatleft full">
+						<xsl:call-template name="createTextField">
+							<xsl:with-param name="id" select="'secondGuardianAttributeName'"/>
+							<xsl:with-param name="name" select="'secondGuardianAttributeName'"/>
+							<xsl:with-param name="title" select="$i18n.Query.attributeName"/>
+							<xsl:with-param name="element" select="ChildQuery" />
+							<xsl:with-param name="maxlength" select="'255'"/>
+						</xsl:call-template>
+					</div>
+				</div>
+		
+					<p class="floatleft clearboth"><xsl:value-of select="$i18n.secondGuardianAttributeDescription" /></p>
+					
+					<table class="floatleft clearboth border">
+						<thead>
+							<th><xsl:value-of select="$i18n.attributes.name" /></th>
+							<th><xsl:value-of select="$i18n.attributes.value" /></th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>prefix.guardianFirstname</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianFirstname" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianLastname</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianLastname" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianEmail</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianEmail" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianPhone</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianPhone" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianCitizenIdentifier</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianCitizenIdentifier" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianAddress</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianAdress" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianPostalAdress</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianPostalAdress" /></td>
+							</tr>
+							<tr>
+								<td>prefix.guardianZipcode</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianZipCode" /></td>
+							</tr>
+							
+						</tbody>
+					</table>
+					
+				</div>
 			</div>
 			
 			<div class="floatright margintop clearboth">
