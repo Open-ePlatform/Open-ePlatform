@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.lucene.util.CollectionUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
