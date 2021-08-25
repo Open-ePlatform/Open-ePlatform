@@ -26,9 +26,10 @@
 	<xsl:variable name="links">
 		/css/flowengine.css?v=1
 		/css/messages.css
+		/css/userflowinstancemodule.css
 	</xsl:variable>
 
-	<xsl:template match="Document">	
+	<xsl:template match="Document">
 		
 		<div id="FlowBrowser" class="contentitem userflowinstances">
 			
@@ -54,7 +55,7 @@
 				<xsl:with-param name="flowInstance" select="FlowInstance" />
 				<xsl:with-param name="view" select="'FLOWINSTANCE'" />
 			</xsl:call-template>
-		</xsl:if>	
+		</xsl:if>
 	
 		<xsl:apply-imports/>
 	
@@ -67,7 +68,7 @@
 				<xsl:with-param name="flowInstance" select="FlowInstance" />
 				<xsl:with-param name="view" select="'FLOWINSTANCE'" />
 			</xsl:call-template>
-		</xsl:if>	
+		</xsl:if>
 	
 		<xsl:apply-imports/>
 	
@@ -83,32 +84,32 @@
 		
 			<section class="my-errands">
 				<div class="heading-wrapper">
-  					<h2 class="h1"><xsl:value-of select="$i18n.MyMessages" /></h2>
-  				</div>
+						<h2 class="h1"><xsl:value-of select="$i18n.MyMessages" /></h2>
+					</div>
 				<div class="errands-wrapper messages">
-  					<table class="oep-table errand-table">
-  						<thead>
-  							<tr>
-  								<th class="icon"></th>
-  								<th class="errando">
-  									<span>
-  										<xsl:value-of select="$i18n.FlowInstanceID"/>
-  									</span>
-  								</th>
-  								
-  								<th class="status">
-  									<span>
-  										<xsl:value-of select="$i18n.Message"/>
-  									</span>
-  								</th>
-  								<th class="link"></th>
-  							</tr>
-  						</thead>
-  						<tbody>
-  							<xsl:apply-templates select="$changedFlowInstances" mode="changed" />
-  						</tbody>
-  					</table>
-  				</div>
+						<table class="oep-table errand-table">
+							<thead>
+								<tr>
+									<th class="icon"></th>
+									<th class="errando">
+										<span>
+											<xsl:value-of select="$i18n.FlowInstanceID"/>
+										</span>
+									</th>
+									
+									<th class="status">
+										<span>
+											<xsl:value-of select="$i18n.Message"/>
+										</span>
+									</th>
+									<th class="link"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:apply-templates select="$changedFlowInstances" mode="changed" />
+							</tbody>
+						</table>
+					</div>
 			</section>
 		</xsl:if>
 		
@@ -121,8 +122,8 @@
 			</xsl:if>
 		
 			<xsl:for-each select="ViewFragment">
- 				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
- 			</xsl:for-each>
+				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+			</xsl:for-each>
 			
 			<xsl:if test="SavedFlowInstances/FlowInstance">
 
@@ -167,7 +168,7 @@
 											<xsl:value-of select="$i18n.Description"/>
 										</span>
 									</th>
-								</xsl:if>								
+								</xsl:if>
 								
 								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
 								<th class="date"><span><xsl:value-of select="$i18n.Updated" /></span></th>
@@ -444,13 +445,13 @@
 					
 						<xsl:variable name="profileID" select="profileID"/>
 						
-						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />							
+						<xsl:value-of select="../../SiteProfiles/Profile[profileID = $profileID]/name" />
 					
 					</xsl:otherwise>
 				</xsl:choose>
 			</td>
-					
-		</xsl:if>	
+			
+		</xsl:if>
 	
 	</xsl:template>
 	
@@ -468,11 +469,11 @@
 				
 				<xsl:value-of select="$externalID"/>
 			
-			</xsl:if>					
+			</xsl:if>
 		
 		</xsl:if>
 	
-	</xsl:template>		
+	</xsl:template>
 	
 	<xsl:template name="printDescription">
 	
@@ -480,13 +481,13 @@
 			
 			<td data-title="{$i18n.Description}" class="description">
 				
-				<xsl:value-of select="userDescription"/>			
+				<xsl:value-of select="userDescription"/>
 				
 			</td>
 					
-		</xsl:if>	
+		</xsl:if>
 	
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="FlowInstance" mode="changed">
 		
@@ -538,20 +539,20 @@
 		
 		<section id="UserFlowInstanceModule" class="child">
 			<div class="section-inside step full">
-  				<div class="heading-wrapper">
-  					<div class="inner inner-less-padding">
-	  					<figure>
-		  					<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
-		  				</figure>
-		  				<div class="heading">
-	  						<h1 class="xl">
-	  							<xsl:value-of select="Flow/name" />
-	  							<b>
-	  								<xsl:text>&#160;(</xsl:text>
-	  								<xsl:value-of select="Status/name" />
-	  								<xsl:text>)</xsl:text>
-	  							</b>
-	  						</h1>
+					<div class="heading-wrapper">
+						<div class="inner inner-less-padding">
+							<figure>
+								<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
+							</figure>
+							<div class="heading">
+								<h1 class="xl">
+									<xsl:value-of select="Flow/name" />
+									<b>
+										<xsl:text>&#160;(</xsl:text>
+										<xsl:value-of select="Status/name" />
+										<xsl:text>)</xsl:text>
+									</b>
+								</h1>
 							
 							<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
 							
@@ -608,118 +609,119 @@
 							</xsl:if>
 						</div>
 					</div>
-  				</div>
-  			</div>
-  			<div class="section-inside header-full no-pad-top">
-  				<div class="description">
-  					<xsl:variable name="submittedEvents" select="events/FlowInstanceEvent[eventType='SUBMITTED']" />
-  					
-  					<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
-	  					
-	  					<p class="only-mobile">
-	  						<strong class="overview">
-	  							<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
-	  						</strong>
-	  						
-	  						<xsl:value-of select="flowInstanceID" />
-	  						<xsl:call-template name="printExternalID"/>
-	  					</p>
-	  					
-  					</xsl:if>
-  					
-					<xsl:if test="../ShowDescriptionColumn and userDescription">
+					</div>
+				</div>
+				
+				<div class="section-inside header-full no-pad-top">
+					<div class="description">
+						<xsl:variable name="submittedEvents" select="events/FlowInstanceEvent[eventType='SUBMITTED']" />
 						
-						<p class="only-mobile">	
+						<xsl:if test="not(Flow/hideFlowInstanceIDFromUser = 'true')">
+							
+							<p class="only-mobile">
+								<strong class="overview">
+									<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text>
+								</strong>
+								
+								<xsl:value-of select="flowInstanceID" />
+								<xsl:call-template name="printExternalID"/>
+							</p>
+							
+						</xsl:if>
 						
+						<xsl:if test="../ShowDescriptionColumn and userDescription">
+							
+							<p class="only-mobile">	
+								
+								<strong class="overview">
+									<xsl:value-of select="$i18n.Description" />
+									<xsl:text>:&#160;</xsl:text>
+								</strong>
+								
+								<xsl:value-of select="userDescription"/>	
+							</p>
+							
+						</xsl:if>
+						
+						<xsl:if test="../Profile">
+							
+							<p>
+								<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
+								<xsl:value-of select="../Profile/name" />
+							</p>
+							
+						</xsl:if>
+							
+						<p>
 							<strong class="overview">
-								<xsl:value-of select="$i18n.Description" />
+								<xsl:value-of select="$i18n.FirstSubmitted" />
 								<xsl:text>:&#160;</xsl:text>
 							</strong>
-					
-							<xsl:value-of select="userDescription"/>	
+							<xsl:value-of select="$submittedEvents[position() = 1]/added" />
+								
+							<xsl:if test="$submittedEvents[position() = 1]/poster/user/userID != /Document/user/userID">
+								<xsl:text>&#160;</xsl:text>
+								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+								<xsl:call-template name="PrintPostedBy">
+									<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
+									<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
+								</xsl:call-template>
+							</xsl:if>
 						</p>
-						
-					</xsl:if>
 					
-  					<xsl:if test="../Profile">
-  					
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.SiteProfile" /><xsl:text>:&#160;</xsl:text></strong>
-	  						<xsl:value-of select="../Profile/name" />
-	  					</p>
-  					
-  					</xsl:if>										
-  					
-					<p>
-						<strong class="overview">
-							<xsl:value-of select="$i18n.FirstSubmitted" />
-							<xsl:text>:&#160;</xsl:text>
-						</strong>
-						<xsl:value-of select="$submittedEvents[position() = 1]/added" />
-							
-						<xsl:if test="$submittedEvents[position() = 1]/poster/user/userID != /Document/user/userID">
-							<xsl:text>&#160;</xsl:text>
-							<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-							<xsl:call-template name="PrintPostedBy">
-								<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
-								<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
-							</xsl:call-template>
+						<xsl:if test="count(owners/user) > 1">
+							<p>
+								<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
+								<xsl:apply-templates select="owners/user" mode="owner" />
+							</p>
 						</xsl:if>
-					</p>
-					
-					<xsl:if test="count(owners/user) > 1">
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.Owners" /><xsl:text>:&#160;</xsl:text></strong>
-		  					<xsl:apply-templates select="owners/user" mode="owner" />
-		  				</p>
-  					</xsl:if>
-  					
-  					<xsl:if test="count($submittedEvents) > 1">
-  						<p>
-  							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
-  							
-  							<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
-  							<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
-	  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-	  						<xsl:call-template name="printUser">
-	  							<xsl:with-param name="user" select="$lastSubmit/poster/user" />
-	  						</xsl:call-template>
-  						
-  						</p>
-  					</xsl:if>
-  					
-  					<xsl:if test="updated">
-  						  <p>
-		  						<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
-		  						<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
-		  						
-		  						<xsl:if test="Flow/hideManagerDetails = 'false'">
-			  						<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-			  						<xsl:call-template name="printUser">
-			  							<xsl:with-param name="user" select="editor/user" />
-			  							<xsl:with-param name="hideUsername" select="true()"/>
-			  						</xsl:call-template>
-		  						</xsl:if>
-		  					</p>
-  					</xsl:if>
-  					
-  					<xsl:if test="Flow/hideManagerDetails = 'false'">
-	  					<p>
-	  						<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
-	  						<xsl:choose>
-	  							<xsl:when test="managers/user">
-	  								<xsl:apply-templates select="managers/user" mode="manager" />
-	  							</xsl:when>
-	  							<xsl:otherwise>
-	  								<xsl:value-of select="$i18n.NoManager" />
-	  							</xsl:otherwise>
-	  						</xsl:choose>
-	  					</p>
-  					</xsl:if>
+						
+						<xsl:if test="count($submittedEvents) > 1">
+							<p>
+								<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
+								
+								<strong class="overview"><xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text></strong>
+								<xsl:value-of select="$lastSubmit/added" /><xsl:text>&#160;</xsl:text>
+								<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+								<xsl:call-template name="printUser">
+									<xsl:with-param name="user" select="$lastSubmit/poster/user" />
+								</xsl:call-template>
+							
+							</p>
+						</xsl:if>
+						
+						<xsl:if test="updated">
+							  <p>
+									<strong class="overview"><xsl:value-of select="$i18n.LastChanged" /><xsl:text>:&#160;</xsl:text></strong>
+									<xsl:value-of select="updated" /><xsl:text>&#160;</xsl:text>
+									
+									<xsl:if test="Flow/hideManagerDetails = 'false'">
+										<xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+										<xsl:call-template name="printUser">
+											<xsl:with-param name="user" select="editor/user" />
+											<xsl:with-param name="hideUsername" select="true()"/>
+										</xsl:call-template>
+									</xsl:if>
+								</p>
+						</xsl:if>
+						
+						<xsl:if test="Flow/hideManagerDetails = 'false'">
+							<p>
+								<strong class="overview"><xsl:value-of select="$i18n.Managers" /><xsl:text>:&#160;</xsl:text></strong>
+								<xsl:choose>
+									<xsl:when test="managers/user">
+										<xsl:apply-templates select="managers/user" mode="manager" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$i18n.NoManager" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</p>
+						</xsl:if>
 
-  				</div>
-  			</div>
-  			<!-- 
+					</div>
+				</div>
+				<!-- 
   			<div class="aside-inside header-full">
   				<div class="section noborder">
   					<div class="inner">
@@ -730,13 +732,18 @@
 			 -->
 			<div id="tabs">
 				<ul class="tabs">
+					
+					<li data-tabid="#showflow">
+						<a data-icon-before="S" href="#showflow" title="{$i18n.ShowFlowInstance}"><xsl:value-of select="$i18n.ShowFlowInstance" /></a>
+					</li>
+					
 					<li class="active" data-tabid="#history">
-						<a data-icon-before="o" href="#history"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
+						<a data-icon-before="o" href="#history" title="{$i18n.FlowInstanceEvents}"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
 					</li>
 					
 					<xsl:if test="not(hideExternalMessages)">
 						<li data-tabid="#messages">
-							<a data-icon-before="m" href="#messages">
+							<a data-icon-before="m" href="#messages" title="{$i18n.ExternalMessages}">
 								<xsl:value-of select="$i18n.ExternalMessages" />
 								<xsl:text>&#160;(</xsl:text>
 								<xsl:value-of select="count(externalMessages/ExternalMessage)"/>
@@ -752,164 +759,169 @@
 					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
 				</ul>
 				
+				<div id="showflow" class="tabs-content">
+					
+					<xsl:if test="Status/isUserMutable = 'true'">
+						<div class="editbutton">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}" class="btn btn-light next"><i data-icon-before="W"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
+						</div>
+					</xsl:if>
+					
+					<xsl:apply-templates select="../ImmutableFlowInstanceManagerPreview" />
+					
+					<xsl:if test="PreviewError">
+						<div class="heading-wrapper bigmargin"><h3><xsl:value-of select="$i18n.PreviewErrorMessage"/></h3></div>
+					</xsl:if>
+				
+				</div>
+				
 				<xsl:if test="not(hideExternalMessages)">
-	  				<div id="messages">
-	  					
-	  					<div id="new-message" class="tabs-content">
-	  						
-	  						<div class="heading-wrapper">
-	  							<h2><xsl:value-of select="$i18n.NewMessage" /></h2>
-	  							<a href="#" class="btn btn-light btn-right close_message"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
-	  						</div>
-	  						
-	  						<form action="{/Document/requestinfo/uri}#messages" method="post" enctype="multipart/form-data">
-	  						
-		  						<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
-		  						<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
-		  						<textarea id="message" name="externalmessage" class="full" rows="10">
-		  							<xsl:value-of select="../requestparameters/parameter[name='externalmessage']/value" />
-		  						</textarea>
-		  						
-		  						<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
-		  						
-			  						<div class="heading-wrapper">
-			  							<label><xsl:value-of select="$i18n.AttachFiles" /></label>
-			  						</div>
-			  						
-			  						<script>
-										imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
-										deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
-									</script>				
-									
-									<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest' or messageKey = 'InvalidFileExtension']" />
-									
-									<div class="full">
-										
-										<div class="upload clearboth">
-											<span class="btn btn-upload btn-blue">
-												<xsl:value-of select="$i18n.ChooseFiles" />
-												<input id="external-message" type="file" name="externalmessage-attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
-											</span>
-											<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
-											
-											<xsl:if test="../AllowedExternalMessageFileExtensions">
-												<span>
-													<xsl:value-of select="$i18n.AllowedFilextentions" />
-													<xsl:text>: </xsl:text>
-													<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension"/>
-												</span>
-											</xsl:if>											
-										</div>
-										
-										<ul id="external-message-qloader-filelist" class="files" />
-										
+					<div id="messages">
+						
+						<div id="new-message" class="tabs-content">
+							
+							<div class="heading-wrapper">
+								<h2><xsl:value-of select="$i18n.NewMessage" /></h2>
+								<a href="#" class="btn btn-light btn-right close_message"><xsl:value-of select="$i18n.Close" /><i data-icon-after="x"></i></a>
+							</div>
+							
+							<form action="{/Document/requestinfo/uri}#messages" method="post" enctype="multipart/form-data">
+							
+								<label class="required" for="message"><xsl:value-of select="$i18n.Message" /></label>
+								<xsl:apply-templates select="../validationError[fieldName = 'externalmessage']" />
+								<textarea id="message" name="externalmessage" class="full" rows="10">
+									<xsl:value-of select="../requestparameters/parameter[name='externalmessage']/value" />
+								</textarea>
+								
+								<xsl:if test="not(Flow/hideExternalMessageAttachments = 'true')">
+								
+									<div class="heading-wrapper">
+										<label><xsl:value-of select="$i18n.AttachFiles" /></label>
 									</div>
 									
-								</xsl:if>
+									<script>
+									imagePath = '<xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics';
+									deleteFile = '<xsl:value-of select="$i18n.DeleteFile" />';
+								</script>
 								
-		  						
-		  						<div class="floatright">
-			  						<a href="#" class="btn btn-light btn-inline close_message marginright"><xsl:value-of select="$i18n.Cancel" /></a>
-			  						<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
-		  						</div>
-		  						
-		  						<div class="clearboth"/>
-		  						
-	  						</form>
-	  						
-	  					</div>
-	  					
-	  					<div class="tabs-content">
-		  					
-		  					<div class="heading-wrapper">
-		  						<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
+								<xsl:apply-templates select="../validationError[messageKey = 'FileSizeLimitExceeded' or messageKey = 'UnableToParseRequest' or messageKey = 'InvalidFileExtension']" />
+								
+								<div class="full">
+									
+									<div class="upload clearboth">
+										<span class="btn btn-upload btn-blue">
+											<xsl:value-of select="$i18n.ChooseFiles" />
+											<input id="external-message" type="file" name="externalmessage-attachments" multiple="multiple" size="55" class="qloader externalmessages bigmarginbottom" />
+										</span>
+										<span><xsl:value-of select="$i18n.MaximumFileSize" />: <xsl:value-of select="../FormattedMaxFileSize" /></span>
+										
+										<xsl:if test="../AllowedExternalMessageFileExtensions">
+											<span>
+												<xsl:value-of select="$i18n.AllowedFilextentions" />
+												<xsl:text>: </xsl:text>
+												<xsl:apply-templates select="../AllowedExternalMessageFileExtensions/FileExtension"/>
+											</span>
+										</xsl:if>
+									</div>
+									
+									<ul id="external-message-qloader-filelist" class="files" />
+									
+								</div>
+								
+							</xsl:if>
+							
+								
+								<div class="floatright">
+									<a href="#" class="btn btn-light btn-inline close_message marginright"><xsl:value-of select="$i18n.Cancel" /></a>
+									<input type="submit" value="{$i18n.SubmitMessage}" name="addmessage" class="btn btn-green btn-inline" />
+								</div>
+								
+								<div class="clearboth"/>
+								
+							</form>
+							
+						</div>
+						
+						<div class="tabs-content">
+							
+							<div class="heading-wrapper">
+								<h2><xsl:value-of select="$i18n.ExternalMessages" /></h2>
 
-								<xsl:if test="not(hideSendExternalMessage)">
-			  						<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
-								</xsl:if>
-		  					</div>
-		  					
-		  					<xsl:choose>
-		  						<xsl:when test="externalMessages/ExternalMessage">
-		  						
-									<xsl:call-template name="sortMessagesButton" />
-		  						
-		  							<ul class="messages">
-		  								<xsl:apply-templates select="externalMessages/ExternalMessage" mode="user" />
-		  							</ul>
-		  						</xsl:when>
-		  						<xsl:otherwise>
-		  							<xsl:value-of select="$i18n.NoExternalMessages" />
-		  						</xsl:otherwise>	  					
-		  					</xsl:choose>
-		  					
-		  				</div>
-		  				
+							<xsl:if test="not(hideSendExternalMessage)">
+									<a href="#" class="btn btn-blue btn-right open_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.NewMessage" /></a>
+							</xsl:if>
+							</div>
+							
+							<xsl:choose>
+								<xsl:when test="externalMessages/ExternalMessage">
+								
+								<xsl:call-template name="sortMessagesButton" />
+								
+									<ul class="messages">
+										<xsl:apply-templates select="externalMessages/ExternalMessage" mode="user" />
+									</ul>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$i18n.NoExternalMessages" />
+								</xsl:otherwise>
+							</xsl:choose>
+							
+						</div>
+						
 					</div>
 				</xsl:if>
 				
 				<div id="history" class="tabs-content nopadding" >
 					
 					<div class="errands-wrapper">
-	  					
-	  					<div class="heading-wrapper">
-		  					<h2><xsl:value-of select="$i18n.FlowInstanceEvents" /></h2>
-	  					</div>
-	  					
-	  					<table class="oep-table">
-	  						<thead class="errand">
-	  							<tr>
-	  								<th></th>
-	  								<th class="service active"><span><xsl:value-of select="$i18n.Action" /></span></th>
-	  								
-	  								<xsl:if test="Flow/hideManagerDetails = 'false'">
-		  								<th class="details"><span><xsl:value-of select="$i18n.Details" /></span></th>
-	  								</xsl:if>
-	  								
-	  								<th class="date"><span><xsl:value-of select="$i18n.Date" /></span></th>
-	  								<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
-	  								
-	  								<xsl:if test="Flow/hideManagerDetails = 'false'">
-	  									<th class="person"><span><xsl:value-of select="$i18n.Person" /></span></th>
-	  								</xsl:if>
-	  							</tr>
-	  						</thead>
-	  						<tbody>
-	  							<xsl:choose>
-	  								<xsl:when test="events/FlowInstanceEvent">
-	  									<xsl:apply-templates select="events/FlowInstanceEvent" />
-	  								</xsl:when>
-	  								<xsl:when test="Flow/hideManagerDetails = 'true'">
-	  									<tr><td class="icon" /><td colspan="3"><xsl:value-of select="$i18n.NoEvents" /></td></tr>
-	  								</xsl:when>
-	  								<xsl:otherwise>
-	  									<tr><td class="icon" /><td colspan="5"><xsl:value-of select="$i18n.NoEvents" /></td></tr>
-	  								</xsl:otherwise>
-	  							</xsl:choose>
-	  						</tbody>
-	  					</table>
-	  					
-	  				</div>
-	  				
-	  			</div>
-	  			
-	  			<xsl:for-each select="../TabContents/ViewFragment">
- 					<xsl:value-of select="HTML" disable-output-escaping="yes"/>
- 				</xsl:for-each>
-	  			
-  			</div>
+							
+							<div class="heading-wrapper">
+								<h2><xsl:value-of select="$i18n.FlowInstanceEvents" /></h2>
+							</div>
+							
+							<table class="oep-table">
+								<thead class="errand">
+									<tr>
+										<th></th>
+										<th class="service active"><span><xsl:value-of select="$i18n.Action" /></span></th>
+										
+										<xsl:if test="Flow/hideManagerDetails = 'false'">
+											<th class="details"><span><xsl:value-of select="$i18n.Details" /></span></th>
+										</xsl:if>
+										
+										<th class="date"><span><xsl:value-of select="$i18n.Date" /></span></th>
+										<th class="status"><span><xsl:value-of select="$i18n.Status" /></span></th>
+										
+										<xsl:if test="Flow/hideManagerDetails = 'false'">
+											<th class="person"><span><xsl:value-of select="$i18n.Person" /></span></th>
+										</xsl:if>
+									</tr>
+								</thead>
+								<tbody>
+									<xsl:choose>
+										<xsl:when test="events/FlowInstanceEvent">
+											<xsl:apply-templates select="events/FlowInstanceEvent" />
+										</xsl:when>
+										<xsl:when test="Flow/hideManagerDetails = 'true'">
+											<tr><td class="icon" /><td colspan="3"><xsl:value-of select="$i18n.NoEvents" /></td></tr>
+										</xsl:when>
+										<xsl:otherwise>
+											<tr><td class="icon" /><td colspan="5"><xsl:value-of select="$i18n.NoEvents" /></td></tr>
+										</xsl:otherwise>
+									</xsl:choose>
+								</tbody>
+							</table>
+							
+						</div>
+						
+					</div>
+					
+					<xsl:for-each select="../TabContents/ViewFragment">
+						<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+					</xsl:for-each>
+					
+				</div>
 			
-			<div class="navigator-buttons centered">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/preview/{flowInstanceID}" class="btn btn-green xl next">
-					<i data-icon-before="S" class="xl"></i>
-					<xsl:value-of select="$i18n.ShowFlowInstance" />
-				</a>
-				<xsl:if test="Status/isUserMutable = 'true'">
-	  				<span class="or"><xsl:value-of select="$i18n.Or" /></span>     
-	  				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
- 				</xsl:if>
- 			</div>
- 			
 		</section>
 	
 	</xsl:template>
@@ -922,7 +934,7 @@
 			<xsl:text>, </xsl:text>
 		</xsl:if>
 	
-	</xsl:template>	
+	</xsl:template>
 
 	<xsl:template name="truncateWithEllipsis">
 		<xsl:param name="text" />
@@ -995,7 +1007,7 @@
 						<xsl:when test="details"><xsl:value-of select="details" /></xsl:when>
 						<xsl:otherwise>-</xsl:otherwise>
 					</xsl:choose>
-				</td>			
+				</td>
 			</xsl:if>
 			
 			<td data-title="{$i18n.Date}" class="date"><xsl:value-of select="added" /></td>
@@ -1083,7 +1095,7 @@
 			
 				<a class="btn {$buttonClass}" href="{Attributes/Attribute[Name = 'RemoteFlowInstanceURL']/Value}">
 					<xsl:value-of select="$buttonText" />
-				</a>			
+				</a>
 			
 			</xsl:when>
 
@@ -1122,9 +1134,9 @@
 			<xsl:with-param name="flowInstance" select="FlowInstance" />
 			<xsl:with-param name="view" select="'PREVIEW'" />
 		</xsl:call-template>
-	
-		<section class="service child">
 		
+		<section class="service child">
+			
 			<div class="section-inside step full">
 				<div class="heading-wrapper">
 					<div class="inner inner-less-padding">
@@ -1135,49 +1147,50 @@
 							<h1 class="xl"><xsl:value-of select="FlowInstance/Flow/name" /></h1>
 							<span class="errandno">
 								<xsl:value-of select="$i18n.FlowInstanceID" /><xsl:text>:&#160;</xsl:text><xsl:value-of select="FlowInstance/flowInstanceID" />
-							
+								
 								<xsl:variable name="submittedEvents" select="FlowInstance/events/FlowInstanceEvent[eventType='SUBMITTED']" />
 								
 								<b class="pipe">|</b>
-	 							<xsl:value-of select="$i18n.FirstSubmitted" />
-	 							<xsl:text>:&#160;</xsl:text>
-	 							<xsl:value-of select="FlowInstance/firstSubmitted" />
-	 							
-	 							<xsl:if test="$submittedEvents[position() = 1]/poster/user/userID != /Document/user/userID">
-	 							
-	 								<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-	 								
-	 								<xsl:call-template name="PrintPostedBy">
+								<xsl:value-of select="$i18n.FirstSubmitted" />
+								<xsl:text>:&#160;</xsl:text>
+								<xsl:value-of select="FlowInstance/firstSubmitted" />
+								
+								<xsl:if test="$submittedEvents[position() = 1]/poster/user/userID != /Document/user/userID">
+									
+									<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+									
+									<xsl:call-template name="PrintPostedBy">
 										<xsl:with-param name="poster" select="$submittedEvents[position() = 1]/poster/user"/>
 										<xsl:with-param name="flowInstanceAttributes" select="FlowInstance/Attributes"/>
 									</xsl:call-template>
 									
-	 							</xsl:if>
-		
-		  					<xsl:if test="count($submittedEvents) > 1">
-		  					
-	  							<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
-		  							
-	  							<b class="pipe">|</b>
-	  							<xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text>
-	  							<xsl:value-of select="$lastSubmit/added" />
-	  							
-	  							<xsl:if test="$lastSubmit/poster/user/userID != /Document/user/userID">
-	  							
-			  						<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
-			  						
-			  						<xsl:call-template name="printUser">
-			  							<xsl:with-param name="user" select="$lastSubmit/poster/user" />
-			  						</xsl:call-template>
-			  						
-		  						</xsl:if>
-		  						
-		  					</xsl:if>
-  						</span>
+								</xsl:if>
+								
+								<xsl:if test="count($submittedEvents) > 1">
+									
+									<xsl:variable name="lastSubmit" select="$submittedEvents[position() = last()]" />
+										
+									<b class="pipe">|</b>
+									<xsl:value-of select="$i18n.LastSubmitted" /><xsl:text>:&#160;</xsl:text>
+									<xsl:value-of select="$lastSubmit/added" />
+									
+									<xsl:if test="$lastSubmit/poster/user/userID != /Document/user/userID">
+									
+										<xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.by" /><xsl:text>&#160;</xsl:text>
+										
+										<xsl:call-template name="printUser">
+											<xsl:with-param name="user" select="$lastSubmit/poster/user" />
+										</xsl:call-template>
+									
+									</xsl:if>
+									
+								</xsl:if>
+							</span>
 						</div>
 					</div>
 				</div>
 			</div>
+			
 			<div class="section-inside header-full">
 				<div class="description">
 					<h2><xsl:value-of select="$i18n.Description" /></h2>
@@ -1185,16 +1198,16 @@
 				</div>
 			</div>
 			
-			<div class="divider"></div>
-	  				
-	  		<div class="queries">
+			<div class="divider" />
+				
+			<div class="queries">
 				<xsl:apply-templates select="ManagerResponses/ManagerResponse"/>
 			</div>
-	  		
+				
 			<div class="navigator-buttons centered">
 				<xsl:if test="FlowInstance/Status/isUserMutable = 'true'">
-	  				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{FlowInstance/Flow/flowID}/{FlowInstance/flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
- 				</xsl:if>
+						<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{FlowInstance/Flow/flowID}/{FlowInstance/flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
+				</xsl:if>
 			</div>
 			
 		</section>
@@ -1211,10 +1224,10 @@
 			<a class="open-help" href="#" data-icon-after="?" data-help-box="helpdialog_{$id}"><span><xsl:value-of select="$i18n.Help" /></span></a>
 			<div class="help-box" data-help-box="helpdialog_{$id}">
 				<div>
-		  			<div> 
-		  				<a class="close" href="#" data-icon-after="x"></a>
-		  				<xsl:copy-of select="$text" />
-		  			</div> 
+						<div> 
+							<a class="close" href="#" data-icon-after="x"></a>
+							<xsl:copy-of select="$text" />
+						</div> 
 				</div>
 			</div>
 		</div>
@@ -1226,7 +1239,7 @@
 	<xsl:template match="ExtensionLink" mode="tab-header">
 		
 		<li>
-			<a href="{url}">
+			<a href="{url}" title="{name}">
 
 				<xsl:if test="icon">
 					<xsl:text> </xsl:text>
@@ -1259,7 +1272,7 @@
 		</a>
 		
 	</xsl:template>
-			
+	
 	<xsl:template match="validationError[messageKey='FlowInstancePreviewError']">
 	
 		<xsl:call-template name="printValidationError">
@@ -1303,7 +1316,7 @@
 			<xsl:with-param name="message" select="$i18n.SavedFlow.DisabledMessage"></xsl:with-param>
 		</xsl:call-template>
 			
-	</xsl:template>	
+	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='InvalidFileExtension']">
 	
@@ -1317,6 +1330,6 @@
 			</span>
 		</div>
 			
-	</xsl:template>				
+	</xsl:template>
 	
 </xsl:stylesheet>

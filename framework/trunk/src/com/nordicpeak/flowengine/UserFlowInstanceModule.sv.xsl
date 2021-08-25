@@ -97,10 +97,7 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	<xsl:variable name="i18n.FileSizeLimitExceeded.part4">.</xsl:variable>
 	
 	<xsl:variable name="i18n.validationError.UnableToParseRequest">Ett okänt fel uppstod vid filuppladdningen</xsl:variable>
-	
-	
-	
-	
+		
 	<xsl:variable name="i18n.DownloadFlowInstancePDF">Hämta kvittens i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadFlowInstanceXML">Hämta ärendet i XML-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadFlowInstanceSignPDF">Hämta signerings underlag i PDF-format</xsl:variable>
@@ -116,4 +113,6 @@ Så länge e-tjänsten för dina avslutade ärenden finns tillgängliga kan du alltid 
 	
 	<xsl:variable name="i18n.InvalidFileExtension.part1">Filen </xsl:variable>
 	<xsl:variable name="i18n.InvalidFileExtension.part2"> är av en otillåten filtyp.</xsl:variable>
+	
+	<xsl:variable name="i18n.PreviewErrorMessage">Ett fel inträffade då ärendet skulle visas. Vänligen försök igen senare eller ladda ner som PDF.</xsl:variable>
 </xsl:stylesheet>
