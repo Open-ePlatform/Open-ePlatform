@@ -143,8 +143,6 @@ import com.nordicpeak.flowengine.internalnotifications.interfaces.NotificationSo
 import com.nordicpeak.flowengine.listeners.ExternalMessageExtensionElementableListener;
 import com.nordicpeak.flowengine.listeners.FlowInstanceExternalMessageElementableListener;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
@@ -693,6 +691,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				Collections.reverse(flowInstance.getEvents());
 			}
 
+			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser);
+
 			if (enableSiteProfileSupport && flowInstance.getProfileID() != null && this.profileHandler != null) {
 
 				XMLUtils.append(doc, showFlowInstanceOverviewElement, profileHandler.getProfile(flowInstance.getProfileID()));
@@ -701,8 +701,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			List<ViewFragment> viewFragments = appendOverviewData(doc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser);
 
 			SimpleForegroundModuleResponse moduleResponse = new SimpleForegroundModuleResponse(doc, flowInstance.getFlow().getName(), this.getDefaultBreadcrumb());
-			
-			appendFlowInstanceOverviewElement(doc, showFlowInstanceOverviewElement, flowInstance, req, res, user, uriParser, moduleResponse);
 
 			if (!CollectionUtils.isEmpty(viewFragments)) {
 				for (ViewFragment viewFragment : viewFragments) {
@@ -732,65 +730,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 
-	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, SimpleForegroundModuleResponse moduleResponse) {
+	protected void appendFlowInstanceOverviewElement(Document doc, Element showFlowInstanceOverviewElement, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) {
 
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 		genDoc.addRootElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
 		genDoc.addFieldElementableListener(ExternalMessage.class, new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
 		
-		Element showFlowInstanceElement = XMLUtils.append(genDoc, showFlowInstanceOverviewElement, flowInstance);
+		Element showFlowInstanceElement = flowInstance.toXML(genDoc);
+		showFlowInstanceOverviewElement.appendChild(showFlowInstanceElement);
 
-		ImmutableFlowInstanceManager instanceManager;
-
-		try {
-			//Get saved instance from DB or session
-			instanceManager = getImmutableFlowInstanceManager(flowInstance.getFlowInstanceID(), PREVIEW_ACCESS_CONTROLLER, user, true, req, uriParser, MANAGER_REQUEST_METADATA);
-
-			if (instanceManager == null) {
-
-				log.info("User " + user + " requested non-existing flow instance with ID " + flowInstance.getFlowInstanceID() + ", listing flows");
-
-				XMLUtils.appendNewElement(doc, showFlowInstanceElement, "PreviewError");
-				return;
-			}
-
-			String baseUpdateURL = getBaseUpdateURL(req, uriParser, user, instanceManager.getFlowInstance(), PREVIEW_ACCESS_CONTROLLER);
-
-			List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, baseUpdateURL, getImmutableQueryRequestBaseURL(req, instanceManager), MANAGER_REQUEST_METADATA);
-
-			Element flowInstanceManagerElement = doc.createElement("ImmutableFlowInstanceManagerPreview");
-			showFlowInstanceOverviewElement.appendChild(flowInstanceManagerElement);
-
-			flowInstanceManagerElement.appendChild(instanceManager.getFlowInstance().toXML(doc));
-
-			XMLUtils.append(doc, flowInstanceManagerElement, "ManagerResponses", managerResponses);
-
-			appendLinksAndScripts(moduleResponse, managerResponses);
-
-		} catch (FlowDisabledException e) {
-
-			log.info("User " + user + " requested flow " + e.getFlow() + " which is not enabled.");
-
-			XMLUtils.appendNewElement(doc, showFlowInstanceElement, "PreviewError");
-
-		} catch (FlowEngineException e) {
-
-			log.error("Error generating preview of flowInstanceID " + flowInstance.getFlowInstanceID() + " for user " + user, e);
-
-			XMLUtils.appendNewElement(doc, showFlowInstanceElement, "PreviewError");
-
-		} catch (AccessDeniedException e) {
-
-			log.warn("Access denied. User " + user + " requested flow instance with ID " + flowInstance.getFlowInstanceID());
-
-			XMLUtils.appendNewElement(doc, showFlowInstanceElement, "PreviewError");
-
-		} catch (SQLException e) {
-
-			log.error("Access denied. User " + user + " requested flow instance with ID " + flowInstance.getFlowInstanceID() + ", " + e.getErrorCode() + ", " + e.getMessage());
-
-			XMLUtils.appendNewElement(doc, showFlowInstanceElement, "PreviewError");
-		}
 	}
 
 	protected boolean profileRedirect(SiteProfile profile, FlowInstance flowInstance, HttpServletRequest req, HttpServletResponse res, URIParser uriParser) throws IOException {
@@ -972,7 +920,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if(!HTTPUtils.isPost(req)) {
 			
 			throw new AccessDeniedException("Delete flow instance requests using method " + req.getMethod() + " are not allowed.");
-		}
+		}	
 		
 		Integer flowInstanceID = null;
 
@@ -1123,27 +1071,32 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 	}
 
-	@Deprecated
 	@WebPublic(alias = "preview")
 	public ForegroundModuleResponse showPreview(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, IOException {
 
-		if (uriParser.size() == 3) {
-			
-			Integer flowInstanceID = uriParser.getInt(2);
-			
+		if (enableSiteProfileRedirectSupport) {
+
+			Integer flowInstanceID = NumberUtils.toInt(uriParser.get(2));
+
 			if (flowInstanceID != null) {
-				
-				FlowInstance flowInstance = getFlowInstance(flowInstanceID, null, FlowInstance.FLOW_RELATION);
-				
-				if (flowInstance != null) {
-					redirectToMethod(req, res, "/overview/" + flowInstance.getFlow().getFlowID() + "/" + flowInstanceID);
-					return null;
+
+				FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field) null);
+
+				if (flowInstance != null && profileHandler != null) {
+
+					SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
+
+					if (profileRedirect(profile, flowInstance, req, res, uriParser)) {
+
+						return null;
+					}
 				}
 			}
 		}
-		
-		redirectToMethod(req, res, "/overview");
-		return null;
+
+		req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
+
+		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@Override

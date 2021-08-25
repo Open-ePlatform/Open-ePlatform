@@ -132,6 +132,10 @@
 		  					<xsl:attribute name="data-icon-before">L</xsl:attribute>
 		  					<xsl:value-of select="$i18n.overview"/>
 		  				</xsl:when>
+		  				<xsl:when test="$view = 'PREVIEW'">
+		  					<xsl:attribute name="data-icon-before">ó</xsl:attribute>
+		  					<xsl:value-of select="$i18n.showInstance"/>
+		  				</xsl:when>
 		  				<xsl:when test="$view = 'FLOWINSTANCE'">
 		  					<xsl:attribute name="data-icon-before">w</xsl:attribute>
 		  					<xsl:value-of select="$i18n.updateInstance"/>
@@ -144,6 +148,12 @@
 		  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/overview/{$flowInstance/Flow/flowID}/{$flowInstance/flowInstanceID}" class="btn btn-light">
 						<xsl:if test="$view = 'OVERVIEW'"><xsl:attribute name="class">btn btn-light active</xsl:attribute></xsl:if>
 						<span data-icon-before="L"><xsl:value-of select="$i18n.overview"/></span>
+					</a>
+		  		</li>
+		  		<li>
+		  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/preview/{$flowInstance/flowInstanceID}" class="btn btn-light">
+						<xsl:if test="$view = 'PREVIEW'"><xsl:attribute name="class">btn btn-light active</xsl:attribute></xsl:if>
+						<span data-icon-before="ó"><xsl:value-of select="$i18n.showInstance"/></span>
 					</a>
 		  		</li>
 		  		<xsl:if test="$flowInstance/Status/isUserMutable = 'true'">
