@@ -4,9 +4,9 @@
 
 	<xsl:include href="FeedbackFlowSubmitSurveyTemplates.xsl"/>
 	
-	<xsl:variable name="java.chartDataTitle">Hur nöjd är du med din upplevelse av e-tjänsten?</xsl:variable>
+	<xsl:variable name="java.chartDataTitle">Hur nöjd är du med e-tjänsten?</xsl:variable>
 	
-	<xsl:variable name="i18n.FeedbackSurveyTitle">Hur nöjd är du med din upplevelse av e-tjänsten?</xsl:variable>
+	<xsl:variable name="i18n.FeedbackSurveyTitle">Hur nöjd är du med e-tjänsten?</xsl:variable>
 	<xsl:variable name="i18n.VeryDissatisfied">Mycket missnöjd</xsl:variable>
 	<xsl:variable name="i18n.Dissatisfied">Missnöjd</xsl:variable>
 	<xsl:variable name="i18n.Neither">Varken eller</xsl:variable>
