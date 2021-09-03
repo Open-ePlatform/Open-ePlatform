@@ -406,14 +406,18 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 
 					inputStream = connection.getInputStream();
 				}
+				
 				String filename = null;
+				
 				try {
+				
 					String contentDisposition = connection.getHeaderField("Content-Disposition");
 					filename = URLDecoder.decode(contentDisposition.substring(contentDisposition.indexOf(FILENAME_UTF_8) + FILENAME_UTF_8.length()), StandardCharsets.UTF_8.name());
 					HTTPUtils.sendFile(inputStream, filename, "text/oeflow", null, req, res, ContentDisposition.ATTACHMENT, null);
 					return null;
 
 				} catch (Exception ex) {
+					
 					log.error("Could not download file " + filename, ex);
 
 					return listFlowVersions(req, res, user, uriParser, repositoryIndex, sourceID, flowFamilyID, DOWNLOAD_ERROR_VALIDATION_ERROR);
@@ -926,15 +930,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 
 	private HttpURLConnection getConnection(RepositoryConfiguration repository, String url) throws IOException {
 
-		HttpURLConnection connection = null;
-		if (repository.getUrl().startsWith("https")) {
-
-			connection = HTTPUtils.getHttpsURLConnection(repository.getUrl() + url, null);
-
-		} else {
-
-			connection = HTTPUtils.getHttpURLConnection(repository.getUrl() + url, null);
-		}
+		HttpURLConnection connection = HTTPUtils.getHttpURLConnection(repository.getUrl() + url, null, false);
 
 		if (repository.getUsername() != null && repository.getPassword() != null) {
 
