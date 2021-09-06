@@ -1976,9 +1976,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 					FileItem fileItem = multipartRequest.getFile(0);
 
-					String lowerCasefileName = FilenameUtils.getName(fileItem.getName());
+					String fileName = FilenameUtils.getName(fileItem.getName());
 
-					if (!Flow.ICON_FILE_EXTENSION_POPULATOR.validateFormat(lowerCasefileName)) {
+					if (fileName == null || !Flow.ICON_FILE_EXTENSION_POPULATOR.validateFormat(fileName.toLowerCase())) {
 
 						validationError = new ValidationError("InvalidIconFileFormat");
 
