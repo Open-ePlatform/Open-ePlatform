@@ -38,7 +38,7 @@ function initChildQuery(queryID) {
 		});
 	}
 	
-	$query.find('input.disablepaste').bind('paste', function (e) {
+	$query.find('input.disablepaste').on('paste', function (e) {
 		e.preventDefault();
 	});
 }
