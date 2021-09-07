@@ -19,7 +19,7 @@ function initFileUploader($fileuploader) {
 			removeElementSelector: 'a.progress',
 			filelistPlacement: null,
 			
-		}).bind("fileuploader.beforeDelete", function(event,filerow){
+		}).on("fileuploader.beforeDelete", function(event,filerow){
 			$("#"+$(filerow).attr("rel")).remove();
 		});
 	});

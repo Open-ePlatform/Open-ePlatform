@@ -682,7 +682,7 @@ function initFlowInstanceControlPanel() {
 	
 		var $header = $("body header");
 		
-		$window.bind("scroll resize", function(e) {
+		$window.on("scroll resize", function(e) {
 			
 			var pos = $window.scrollTop();
 			

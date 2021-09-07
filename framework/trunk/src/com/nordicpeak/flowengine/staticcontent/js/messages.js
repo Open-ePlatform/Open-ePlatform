@@ -104,7 +104,7 @@ function initMessageTab(tabID, messagePanelID) {
 		setActiveTab(tabID);
 	}
 	
-	$(window).bind('hashchange', function () {
+	$(window).on('hashchange', function () {
 		
 		setActiveTab(tabID);
 	});

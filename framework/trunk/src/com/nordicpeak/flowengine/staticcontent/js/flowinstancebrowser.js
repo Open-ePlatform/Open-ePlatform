@@ -141,7 +141,7 @@ $(document).ready(function() {
 		
     }).keydown(function() {
     	$(this).parent().addClass("searching");
-    }).bind('focus blur', function() {
+    }).on('focus blur', function() {
     	$(this).parent().toggleClass('focus');
 	});
 	

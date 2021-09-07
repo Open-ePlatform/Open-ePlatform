@@ -190,7 +190,7 @@ $(document).ready(function() {
 	$("table.coloredtable").each(function() {
 		var $this = $(this);
 		
-		$this.bind("change", function() {
+		$this.on("change", function() {
 			$this.find("tr:not(:first):visible:even").removeClass("odd").addClass("even");
 			$this.find("tr:not(:first):visible:odd").removeClass("even").addClass("odd");
 		});
