@@ -45,7 +45,7 @@ function initPBLLinks($content) {
 			function(e) {
 				$this.parent().find(".pbl-help-box").hide();
 			});
-			$this.click(function(e) {
+			$this.on("click", function(e) {
 				e.preventDefault();
 				bindPBLWordEvent($this, word);
 			});

@@ -17,7 +17,7 @@ $(function() {
 	
 	$tabs.tabs();
 	
-	$("ul.summary-buttons li a").click(function(e) {
+	$("ul.summary-buttons li a").on("click", function(e) {
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -77,13 +77,13 @@ $(function() {
 		$(this).parent().removeClass("searching");
 		searchFlowInstance();
 		
-    }).keydown(function() {
+    }).on("keydown", function() {
     	$(this).parent().addClass("searching");
     }).on('focus blur', function() {
     	$(this).parent().toggleClass('focus');
 	});
 	
-	$("div.search-results").find(".info .close").click(function(e) {
+	$("div.search-results").find(".info .close").on("click", function(e) {
 		$(this).parent().parent().slideUp("fast");
 		
 		$('#search').val('');
@@ -110,7 +110,7 @@ $(window).on('load', function(){
 
 function initDeleteManagerButton($manager, $managerList) {
 	
-	$manager.find("a.delete").click(function(e) {
+	$manager.find("a.delete").on("click", function(e) {
 		$("#user_" + $manager.find("input[type='hidden']").val()).removeClass("disabled").show();
 		$manager.remove();
 		updateListRowColors($managerList);

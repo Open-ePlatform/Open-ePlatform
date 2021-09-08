@@ -179,12 +179,12 @@
 			<script type="text/javascript">
 				$(function() {
 					
-					$("#inlinePDFAttachments").change(function() {
+					$("#inlinePDFAttachments").on("change", function() {
 					
 						var checked = $(this).prop("checked");
 						$("#numberInlineAttachments").prop("disabled", !checked).parent().parent().toggle(checked);
 						
-					}).change();
+					}).trigger("change");
 				});
 			</script>
 			
@@ -243,7 +243,7 @@
 					};
 					
 					showHideCustomPrefix();
-					prefixMode.change(showHideCustomPrefix);
+					prefixMode.on("change", showHideCustomPrefix);
 				})();
 			</script>
 			

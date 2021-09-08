@@ -98,7 +98,7 @@ $(function() {
 		updateFlowCounts();
 	};
 	
-	$(".clear-all-filter a, a.clear-all-filter-btn").click(function(e) {
+	$(".clear-all-filter a, a.clear-all-filter-btn").on("click", function(e) {
 		e.preventDefault();
 		
 		$(".filter-list ul li a.selected").removeClass("selected");
@@ -112,7 +112,7 @@ $(function() {
 		return false;
 	});
 	
-	$flowTypeFilter.find("ul li a").click(function(e) {
+	$flowTypeFilter.find("ul li a").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -146,5 +146,5 @@ function exportPersonData(event, button) {
 	
 	form.find("input[name='flowFamilyID']").prop('disabled', true).closest("li").filter(":visible").find("input[name='flowFamilyID']").prop('disabled', false);
 	
-	form.submit();
+	form.trigger("submit");
 }

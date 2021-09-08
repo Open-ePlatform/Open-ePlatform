@@ -103,7 +103,7 @@ function initGeneralMapQuery(queryID, providerURI, searchURI, startExtent, lmUse
 						
 						instance.showDialog($dialog, false);
 					
-						instance.dialog.find("a.btn").click(function(e) {
+						instance.dialog.find("a.btn").on("click", function(e) {
 							instance.dialog.close(e);
 						});
 						
@@ -231,7 +231,7 @@ function initGeneralMapQuery(queryID, providerURI, searchURI, startExtent, lmUse
 						
 						instance.showFeatureDialog(newPoint, generalMap.minZoomLayer, $message, new OpenLayers.Size(360, 105), false);
 						
-						$("#minscalebtn_" + instance.mapID).click(function(e) {
+						$("#minscalebtn_" + instance.mapID).on("click", function(e) {
 							instance.mapDiv.removeClass("mapquery-error");
 							mapPanel.map.setCenter(new OpenLayers.LonLat(posX, posY));
 							mapPanel.map.zoomToScale(generalMapQueryMinScales[instance.mapID], true);

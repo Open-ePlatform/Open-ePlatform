@@ -144,7 +144,7 @@ function initMultiGeometryMapQuery(queryID, providerURI, startExtent, lmSearchUR
 					
 					instance.showDialog($dialog, false);
 				
-					instance.dialog.find("a.btn").click(function(e) {
+					instance.dialog.find("a.btn").on("click", function(e) {
 						instance.dialog.close(e);
 					});
 					
@@ -291,7 +291,7 @@ function initMultiGeometryMapQuery(queryID, providerURI, startExtent, lmSearchUR
 							
 							instance.showFeatureDialog(feature, mapPanel.drawLayer, $message, new OpenLayers.Size(500, $pudDialog.height() + 5), true);
 							
-							$("#" + instance.mapID + "_puddialog").find("a.done-btn").click(function() {
+							$("#" + instance.mapID + "_puddialog").find("a.done-btn").on("click", function() {
 								
 								$("#" + instance.mapID + "_pudinfo span").text(pud).parent().show();
 								$("#" + instance.mapID + "_propertyUnitDesignation").val(pud);
@@ -306,7 +306,7 @@ function initMultiGeometryMapQuery(queryID, providerURI, startExtent, lmSearchUR
 									
 									instance.showDialog($finishedMessage, false);
 									
-									instance.dialog.find("a.btn").click(function(e) {
+									instance.dialog.find("a.btn").on("click", function(e) {
 										instance.dialog.close(e);
 									});
 								
@@ -316,7 +316,7 @@ function initMultiGeometryMapQuery(queryID, providerURI, startExtent, lmSearchUR
 								
 							});
 							
-							$("#" + instance.mapID + "_puddialog").find("a.cancel-btn").click(function() {
+							$("#" + instance.mapID + "_puddialog").find("a.cancel-btn").on("click", function() {
 	
 								mapPanel.drawLayer.removeFeatures(mgMap.pudFeatures);
 								mapPanel.searchLayer.destroyFeatures();
@@ -378,7 +378,7 @@ function initMultiGeometryMapQuery(queryID, providerURI, startExtent, lmSearchUR
 					
 					instance.showFeatureDialog(newPoint, mgMap.minZoomLayer, $message, new OpenLayers.Size(360, 105), false);
 					
-					$("#minscalebtn_" + instance.mapID).click(function(e) {
+					$("#minscalebtn_" + instance.mapID).on("click", function(e) {
 						instance.mapDiv.removeClass("mapquery-error");
 						mapPanel.map.setCenter(new OpenLayers.LonLat(posX, posY));
 						mapPanel.map.zoomToScale(multiGeometryMapQueryMinScales[instance.mapID], true);

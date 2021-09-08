@@ -12,7 +12,7 @@ function initRadioButtonQuery(queryID) {
 		
 		var $inputs = $query.find("input[type='radio']");
 		
-		$inputs.change(function(e, data) {
+		$inputs.on("change", function(e, data) {
 			
 			var $this = $(this);
 			
@@ -33,7 +33,7 @@ function initRadioButtonQuery(queryID) {
 			
 		});
 		
-		$query.find("input[type='text']").change(function() {
+		$query.find("input[type='text']").on("change", function() {
 			
 			runRadioButtonEvaluators($(this), queryID);
 			
@@ -45,7 +45,7 @@ function initRadioButtonQuery(queryID) {
 		
 		if($query.hasClass("enableAjaxPosting")) {
 			
-			$query.find("input[type='radio']").change(function() {
+			$query.find("input[type='radio']").on("change", function() {
 				
 				runRadioButtonEvaluators($(this), queryID);
 				

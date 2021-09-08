@@ -12,7 +12,7 @@ $(function() {
 		$this.trigger("change");
 	});
 	
-	$("#person-data-filter").change(function() {
+	$("#person-data-filter").on("change", function() {
 		
 		var $this = $(this);
 		
@@ -67,5 +67,5 @@ function exportPersonData(event, button) {
 	
 	form.find("input[name='flowFamilyID']").prop('disabled', true).closest("tr").filter(":visible").find("input[name='flowFamilyID']").prop('disabled', false);
 	
-	form.submit();
+	form.trigger("submit");
 }

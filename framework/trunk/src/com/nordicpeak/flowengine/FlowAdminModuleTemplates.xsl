@@ -2459,11 +2459,11 @@
 							$("#showLoginQuestion").parent().parent().toggle(!checked);
 							
 							if (checked) {
-								$("#showLoginQuestion").prop("checked", false).change();
+								$("#showLoginQuestion").prop("checked", false).trigger("change");
 							}
 						};
 						
-						authCheckbox.change(showLoginQuestionCheckbox);
+						authCheckbox.on("change", showLoginQuestionCheckbox);
 						showLoginQuestionCheckbox();
 						
 						
@@ -2476,7 +2476,7 @@
 							$("#loginQuestionText").parent().toggle(checked);
 						};
 						
-						checkbox.change(showLoginQuestionText);
+						checkbox.on("change", showLoginQuestionText);
 						showLoginQuestionText();
 					});
 				</script>
@@ -3218,7 +3218,7 @@
 						$("#loginhelplink-container").toggle(checked).find("input").attr("disabled", !checked);
 					};
 					
-					checkbox.change(showHideLoginHelpLink);
+					checkbox.on("change", showHideLoginHelpLink);
 					showHideLoginHelpLink();
 				});
 			</script>
@@ -5876,7 +5876,7 @@
 						
 						if (newRow != null) {
 							if (prefix == "manager" || prefix == "manager-group") {
-								newRow.find("a.open-manager-modal").click();
+								newRow.find("a.open-manager-modal").trigger("click");
 							}
 						}
 					};

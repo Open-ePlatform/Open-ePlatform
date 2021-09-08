@@ -1,6 +1,6 @@
 $(function() {
 	
-	$("input[name='global']").change(function() {
+	$("input[name='global']").on("change", function() {
 		
 		var $flowFamilies = $("#chooseFlowFamilies");
 		
@@ -18,7 +18,7 @@ $(function() {
 		
 	});
 
-	$("input[name='profileFilter']").change(function() {
+	$("input[name='profileFilter']").on("change", function() {
 		
 		var $profiles = $("#chooseProfiles");
 		
@@ -35,7 +35,7 @@ $(function() {
 		
 	});
 	
-	$("#disableFlows").change(function() {
+	$("#disableFlows").on("change", function() {
 		
 		$("#allowManagingOfInstances, #allowUserHandlingOfSubmittedInstances, #allowFlowForms").parent().parent().toggle($(this).prop("checked"));
 	});	

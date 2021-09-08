@@ -122,7 +122,7 @@ function mapLoaded(object, instance) {
 			
 			instance.showDialog($dialog, false);
 		
-			instance.dialog.find("a.btn").click(function(e) {
+			instance.dialog.find("a.btn").on("click", function(e) {
 				instance.dialog.close(e);
 			});
 			
@@ -189,7 +189,7 @@ function mapFeatureAdded(e, instance) {
 			
 			instance.showFeatureDialog(feature, mapPanel.drawLayer, $message, new OpenLayers.Size(360, 105), false);
 			
-			$("#minscalebtn_" + instance.mapID).click(function(e) {
+			$("#minscalebtn_" + instance.mapID).on("click", function(e) {
 				instance.mapDiv.removeClass("mapquery-error");
 				mapPanel.map.setCenter(new OpenLayers.LonLat(posX, posY));
 				mapPanel.map.zoomToScale(pudMapQueryMinScales[instance.mapID], true);

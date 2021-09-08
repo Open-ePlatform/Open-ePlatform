@@ -30,14 +30,14 @@ $(function() {
 	});
 	
 	
-	$(".modal .close").click(function(e) {
+	$(".modal .close").on("click", function(e) {
 		e.preventDefault();
 		$(this).parent().fadeOut("fast", function() {
 			$(this).remove();
 		});
 	});
 	
-	$(".info-box .close").click(function(e) {
+	$(".info-box .close").on("click", function(e) {
 		e.preventDefault();
 		var $wrapper = $(this).parent().parent();
 		$wrapper.next().fadeOut("fast", function() {
@@ -96,19 +96,19 @@ $(function() {
     
     if ($startPanel.length > 0) {
     	
-	    $(window).scroll(checkStartFlowPanelPosition);
-	    $(window).resize(checkStartFlowPanelPosition);
+	    $(window).on("scroll", checkStartFlowPanelPosition);
+	    $(window).on("resize", checkStartFlowPanelPosition);
 	    
     }
 	
-    $("#show-receipt-btn").click(function(e) {
+    $("#show-receipt-btn").on("click", function(e) {
         e.preventDefault();
         $(this).closest("section.service").find(".queries").show();
         $(this).hide();
         $("#hide-receipt-btn").show(); 
     });
     
-    $("#hide-receipt-btn").click(function(e) {
+    $("#hide-receipt-btn").on("click", function(e) {
         e.preventDefault();
         $(this).closest("section.service").find(".queries").hide();
         $(this).hide();
@@ -172,7 +172,7 @@ function submitStep(mode, e) {
 
 	$("#submitmode").attr("name", mode);
 
-	$("section.service form").submit();
+	$("section.service form").trigger("submit");
 
 	var target = e.target || e.srcElement;
 
@@ -457,7 +457,7 @@ function reloadQuery(queryID, html) {
 
 function reloadCurrentStep() {
 	
-	$("form").submit();
+	$("form").trigger("submit");
 	
 }
 
@@ -716,11 +716,11 @@ function askForLoginOrContinue(aLink, event) {
     
     helpBox.find("a.btn").off();
     
-    helpBox.find("a.btn.login").click(function(){
+    helpBox.find("a.btn.login").on("click", function(){
     	window.location = $(aLink).attr("href") + "?triggerlogin=1";
     });
     
-    helpBox.find("a.btn.continue").click(function(){
+    helpBox.find("a.btn.continue").on("click", function(){
     	window.location = $(aLink).attr("href");
     });
 }

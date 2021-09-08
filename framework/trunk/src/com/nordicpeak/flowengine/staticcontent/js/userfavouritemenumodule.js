@@ -2,7 +2,7 @@ var flowFamilyOverviewURI;
 
 $(function() {
 	
-	$("#UserFavouriteMenuModule ul li.disabled a").click(function(e) {
+	$("#UserFavouriteMenuModule ul li.disabled a").on("click", function(e) {
 		e.preventDefault();
 		return false;
 	});

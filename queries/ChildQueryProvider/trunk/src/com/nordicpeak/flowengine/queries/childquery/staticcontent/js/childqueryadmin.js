@@ -17,9 +17,9 @@ $(function() {
 		
 		$("#skipMultipartSigningIfSameAddressWarning").toggle(checked);
 	});
-	$("#skipMultipartSigningIfSameAddress").change(toggleSkipMultipartSigningIfSameAddressWarning);
+	$("#skipMultipartSigningIfSameAddress").on("change", toggleSkipMultipartSigningIfSameAddressWarning);
 	
-	$useMultipartSigning.change(function() {
+	$useMultipartSigning.on("change", function() {
 		
 		var checked = $useMultipartSigning.prop("checked");
 		
@@ -30,9 +30,9 @@ $(function() {
 		toggleCommonFields();
 		toggleSkipMultipartSigningIfSameAddressWarning();
 		
-	}).change();
+	}).trigger("change");
 	
-	$alwaysShowOtherGuardians.change(function() {
+	$alwaysShowOtherGuardians.on("change", function() {
 		
 		var checked = $alwaysShowOtherGuardians.prop("checked");
 		
@@ -42,11 +42,11 @@ $(function() {
 		
 		toggleCommonFields();
 		
-	}).change();
+	}).trigger("change");
 	
 	var filterEndpointInput = $("#filterEndpoint");
 	
-	filterEndpointInput.change(function() {
+	filterEndpointInput.on("change", function() {
 		
 		var endpointAttributes = $(".filterEndpoint");
 		
@@ -57,7 +57,7 @@ $(function() {
 		if (endpoint != "") {
 			
 			$("#endpoint-attributes, #emptyFilterDescriptionContainer").show();
-			$("#useFilteredChildrenDescription").change().parent().parent().show();
+			$("#useFilteredChildrenDescription").trigger("change").parent().parent().show();
 			
 			endpointAttributes.filter(function(idx, element){
 				return $(element).data("endpoint") == endpoint;
@@ -70,36 +70,36 @@ $(function() {
 			$("#useFilteredChildrenDescription").parent().parent().hide();
 		}
 		
-	}).change();
+	}).trigger("change");
 	
-	$('#useFilteredChildrenDescription').change(function() {
+	$('#useFilteredChildrenDescription').on("change", function() {
 		
 		$('#filteredChildrenDescriptionContainer').toggle(this.checked);
 		$("#filteredChildrenDescription").prop("disabled", !this.checked);
 		
-	}).change();
+	}).trigger("change");
 	
-	$('#setAsAttribute').change(function() {
+	$('#setAsAttribute').on("change", function() {
 		
 		$('#attributeContainer').toggle(this.checked);
 		
-	}).change();
+	}).trigger("change");
 	
-	$('#setAsSecondGuardianAttribute').change(function() {
+	$('#setAsSecondGuardianAttribute').on("change", function() {
 		
 		$('#secondGuardianAttributeTableContainer').toggle(this.checked);
 		
-	}).change();
+	}).trigger("change");
 	
-	$('#useMultipartSigning').change(function() {
+	$('#useMultipartSigning').on("change", function() {
 		
 		showGuardianAttributeContainer();
-	}).change();
+	}).trigger("change");
 	
-	$('#alwaysShowOtherGuardians').change(function() {
+	$('#alwaysShowOtherGuardians').on("change", function() {
 		
 		showGuardianAttributeContainer();
-	}).change();
+	}).trigger("change");
 	
 	showGuardianAttributeContainer();
 });

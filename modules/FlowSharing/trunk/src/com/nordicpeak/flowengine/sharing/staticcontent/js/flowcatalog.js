@@ -4,7 +4,7 @@ $(function() {
 	
 	if(dropdown.length > 0){
 		
-		dropdown.change(function() {
+		dropdown.on("change", function() {
 			showHideRepositoryUploadDescription(dropdown);
 		});
 

@@ -13,7 +13,7 @@ function initCheckBoxQuery(queryID) {
 	
 	if($freeTextAlternative.length > 0) { 
 	
-		$freeTextAlternative.change(function(e, data) {
+		$freeTextAlternative.on("change", function(e, data) {
 			
 			var $this = $(this);
 			
@@ -48,12 +48,12 @@ function initCheckBoxQuery(queryID) {
 		
 		runCheckBoxMaxAlternatives($checkboxes, maxChecked);
 		
-		$checkboxes.change(function() {
+		$checkboxes.on("change", function() {
 			runCheckBoxMaxAlternatives($checkboxes, maxChecked);
 		});
 	}
 
-	$("#query_" + queryID + "checkAllBoxes").click(function(){
+	$("#query_" + queryID + "checkAllBoxes").on("click", function(){
     	
     	var $checkAll = $(this);
     	
@@ -62,12 +62,12 @@ function initCheckBoxQuery(queryID) {
     		$(this).prop('checked', $checkAll.is(':checked'));
     	});
     	
-    	$checkboxes.last().change();
+    	$checkboxes.last().trigger("change");
 	});	
 
 	if($freeTextAlternative.length > 0) {
 	
-		$freeTextAlternative.change();
+		$freeTextAlternative.trigger("change");
 	}
 }
 
@@ -103,7 +103,7 @@ function runCheckBoxMaxAlternatives($checkboxes, maxChecked) {
 
 function bindCheckBoxChangeEvent($checkboxes, queryID) {
 	
-	$checkboxes.change(function() {
+	$checkboxes.on("change", function() {
 	   
 		var $checkAll = $("#query_" + queryID + "checkAllBoxes");
 		var $currentCheckbox = $(this);

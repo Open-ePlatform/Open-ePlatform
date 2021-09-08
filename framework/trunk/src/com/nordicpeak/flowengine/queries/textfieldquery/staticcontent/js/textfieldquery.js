@@ -87,7 +87,7 @@ function initTextFieldQuery(queryID) {
 			]
 		});
 		
-		input.keypress(function(event){
+		input.on("keypress", function(event){
 			if (event.which == 13) { // Enter
 				event.preventDefault();
 			}
@@ -127,7 +127,7 @@ function initTextFieldQueryValidationErrors($query) {
 
 function bindTextFieldChangeEvent($textFields, queryID) {
 	
-	$textFields.change(function() {
+	$textFields.on("change", function() {
 		
 		runTextFieldEvaluators($(this), queryID);
 		

@@ -1,6 +1,6 @@
 $(function() {
 
-	$(".modal .close").click(function(e) {
+	$(".modal .close").on("click", function(e) {
 		e.preventDefault();
 		$(this).parent().fadeOut("fast", function() {
 			$(this).remove();

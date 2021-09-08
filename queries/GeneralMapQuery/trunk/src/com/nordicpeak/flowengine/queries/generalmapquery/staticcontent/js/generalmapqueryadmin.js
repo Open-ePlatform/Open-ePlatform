@@ -1,6 +1,6 @@
 $(function() {
 	
-	$("#mapConfigurationSelector").change(function() {
+	$("#mapConfigurationSelector").on("change", function() {
 		
 		var $this = $(this);
 		
@@ -30,7 +30,7 @@ $(function() {
 	
 	$("#mapConfigurationSelector").trigger("change");
 	
-	$(".tools input[type='checkbox']").change(function() {
+	$(".tools input[type='checkbox']").on("change", function() {
 		
 		var $this = $(this);
 		
@@ -48,7 +48,7 @@ $(function() {
 	
 	$(".tools:visible input[type='checkbox']").trigger("change");
 	
-	$("#minimalDrawingScale").change(function() {
+	$("#minimalDrawingScale").on("change", function() {
 		
 		var $this = $(this);
 		
@@ -65,7 +65,7 @@ $(function() {
 	
 	$("#minimalDrawingScale").trigger("change");
 	
-	$("#allowOnlyOneGeometry").change(function() {
+	$("#allowOnlyOneGeometry").on("change", function() {
 		
 		var $this = $(this);
 		

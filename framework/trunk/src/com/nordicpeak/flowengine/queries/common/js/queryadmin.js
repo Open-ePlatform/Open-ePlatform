@@ -20,7 +20,7 @@ $(function() {
 		});
 	});
 	
-	$("#useFreeTextAlternative").change(function() {
+	$("#useFreeTextAlternative").on("change", function() {
 		var $this = $(this);
 		
 		if ($this.is(":checked")) {
@@ -34,7 +34,7 @@ $(function() {
 	
 	$("#useFreeTextAlternative").trigger("change");
 	
-	$(".alternatives-container .sorting").change(function() {
+	$(".alternatives-container .sorting").on("change", function() {
 		
 		sortAlternativesAfterSortingSelect($(this));
 		

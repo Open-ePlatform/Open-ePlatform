@@ -21,7 +21,7 @@ $(function() {
 			});
 		});
 		
-		$("#useCustomApprovedText").change(function(){
+		$("#useCustomApprovedText").on("change", function(){
 			
 			var checked = $(this).prop("checked");
 			$("#approvedText").attr("disabled", !checked).parent().parent().toggle(checked);
@@ -30,68 +30,68 @@ $(function() {
 			$("#deniedText").attr("disabled", !(checked && useDeny)).parent().parent().toggle(checked && useDeny);
 		})
 		
-		$("#useApproveDeny").change(function(){
+		$("#useApproveDeny").on("change", function(){
 			
 			var checked = $(this).prop("checked");
 			$("#denyStatus").attr("disabled", !checked).parent().parent().toggle(checked);
 			
-			$("#useCustomApprovedText").change();
+			$("#useCustomApprovedText").trigger("change");
 			
-		}).change();
+		}).trigger("change");
 		
-		$("#allowRestarts").change(function(){
+		$("#allowRestarts").on("change", function(){
 			
 			var checked = $(this).prop("checked");
 			$("#onlyRestartIfActivityChanges").attr("disabled", !checked).parent().parent().toggle(checked);
 			
-		}).change();
+		}).trigger("change");
 		
-		$('.notification-text-toggle').click(function(){
+		$('.notification-text-toggle').on("click", function(){
 			
 			$(this).closest('.notification').find('.notification-text').toggle();
 		});
 		
-		$('.notification-value-toggle').change(function(){
+		$('.notification-value-toggle').on("change", function(){
 			
 			$(this).closest('.notification')
 				.find('.notification-value').toggle(this.checked)
 				.find('input').prop('disabled', !this.checked);
 			
-		}).change();
+		}).trigger("change");
 		
-		$("#sendActivityGroupCompletedEmail").change(function() {
+		$("#sendActivityGroupCompletedEmail").on("change", function() {
 			
 			var $inputs = $("#activityGroupCompletedEmailAttachPDF, #activityGroupCompletedEmailAttachFlowInstancePDF");
 			
 			$inputs.parent().parent().toggle(this.checked);
 			$inputs.prop('disabled', !this.checked);
 			
-		}).change();
+		}).trigger("change");
 		
 	}
 	
 	if ($("#activityForm").length > 0) {
 		
-		$('#allowManagersToAssignOwner').change(function(){
+		$('#allowManagersToAssignOwner').on("change", function(){
 			
 			$(".allowManagersToAssignOwner").toggle(this.checked && !this.disabled);
 			
 		});
 		
-		$('#useResponsibleUserAttributeName').change(function(){
+		$('#useResponsibleUserAttributeName').on("change", function(){
 			
 			$(".useResponsibleUserAttributeName").toggle(this.checked);
 			$("#responsibleUserAttributeNames").prop('disabled', !this.checked);
 			
-			$("#allowManagersToAssignOwner").prop('disabled', !this.checked).change().parent().parent().toggle(this.checked);
+			$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
 			
-		}).change();
+		}).trigger("change");
 		
-		$('#useAttributeFilter').change(function(){
+		$('#useAttributeFilter').on("change", function(){
 			
 			$(".useAttributeFilter").toggle(this.checked).find("input,textarea").prop('disabled', !this.checked);
 			
-		}).change();
+		}).trigger("change");
 	}
 	
 	if ($("#activityGroupsSortingForm").length > 0) {
@@ -114,7 +114,7 @@ $(function() {
 		});
 	}
 	
-	$("#showFlowInstance").change(function(e) {
+	$("#showFlowInstance").on("change", function(e) {
 			var checked = $(this).prop("checked");
 			$("#pdfDownloadActivation").attr("disabled", !checked).parent().parent().toggle(checked);
 			

@@ -12,7 +12,7 @@ function initDropDownQuery(queryID) {
 		
 		var $select = $query.find("select");
 		
-		$select.change(function(e, data) {
+		$select.on("change", function(e, data) {
 			
 			var $this = $(this);
 			
@@ -46,7 +46,7 @@ function initDropDownQuery(queryID) {
 		
 		if($query.hasClass("enableAjaxPosting")) {
 			
-			$query.find("select").change(function() {
+			$query.find("select").on("change", function() {
 				
 				runDropDownEvaluators($(this), queryID);
 				

@@ -154,7 +154,7 @@
 			
 				showHideAttributeName();
 				
-				$("#setAsAttribute").change(function(){showHideAttributeName()});
+				$("#setAsAttribute").on("change", function(){showHideAttributeName()});
 			</script>
 		
 		</form>

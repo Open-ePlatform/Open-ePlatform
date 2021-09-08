@@ -12,7 +12,7 @@ $(function() {
 		
 		var $selectBox = $(this);
 		
-		$selectBox.click(function(e) {
+		$selectBox.on("click", function(e) {
 			
 			e.stopPropagation();
 			
@@ -35,7 +35,7 @@ $(function() {
 			
 			var $category = $(this);
 
-			$category.find("a").click(function(e) {
+			$category.find("a").on("click", function(e) {
 				
 				e.preventDefault();
 				
@@ -59,7 +59,7 @@ $(function() {
 		
 	});
 	
-	$(".filters a").click(function(e) {
+	$(".filters a").on("click", function(e) {
         
 		e.preventDefault();
 
@@ -70,7 +70,7 @@ $(function() {
         
     });
 	
-	$(".filter-wrapper > a").click( function(e) {
+	$(".filter-wrapper > a").on("click",  function(e) {
        
 		e.preventDefault();
         var el = $(this);
@@ -115,7 +115,7 @@ $(function() {
 		
 		fixFlowList($flowsList);
 		
-		$this.click(function(e) {
+		$this.on("click", function(e) {
 			
 			e.preventDefault();
 			
@@ -139,17 +139,17 @@ $(function() {
 		$(this).parent().removeClass("searching");
 		searchFlow();
 		
-    }).keydown(function() {
+    }).on("keydown", function() {
     	$(this).parent().addClass("searching");
     }).on('focus blur', function() {
     	$(this).parent().toggleClass('focus');
 	});
 	
-	$("section.search-results").find(".info .close").click(function(e) {
+	$("section.search-results").find(".info .close").on("click", function(e) {
 		$(this).parent().parent().slideUp("fast").removeClass("active");
 	});
 	
-	$(".tags-wrapper .tags a").click(function(e) {
+	$(".tags-wrapper .tags a").on("click", function(e) {
 		e.preventDefault();
 		$("#search").val($(this).html().replace("#", ""));
 		searchFlow();

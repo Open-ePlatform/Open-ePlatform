@@ -2,7 +2,7 @@ $(function() {
 	
 	//LIST
 	
-	$("input[name='textTagID']").change(function() {
+	$("input[name='textTagID']").on("change", function() {
 		
 		var checked = $("input[name='textTagID']:checked").length > 0;
 		
@@ -17,7 +17,7 @@ $(function() {
 		
 	});
 	
-	$("input[name='target']").change(function() {
+	$("input[name='target']").on("change", function() {
 		
 		var checked = $("input[name='target']:checked").length > 0;
 		
@@ -35,7 +35,7 @@ $(function() {
 	
 	// ADD or UPDATE
 	
-	$("#type").change(function(e) {
+	$("#type").on("change", function(e) {
 		
 		var $this = $(this);
 		
@@ -79,7 +79,7 @@ $(function() {
 		$("#type").trigger("change");
 	});
 	
-	$(".modal .close").click(function(e) {
+	$(".modal .close").on("click", function(e) {
 		e.preventDefault();
 		$(this).parent().fadeOut("fast", function() {
 			$(this).remove();

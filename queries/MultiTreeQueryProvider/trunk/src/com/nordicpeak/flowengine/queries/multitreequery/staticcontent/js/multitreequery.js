@@ -175,14 +175,14 @@ function initMultiTreeQuery2(queryID, previouslySelected) {
 			
 			tree.filterNodes(filter, {autoExpand: true});
 			
-		}).keypress(function(event){
+		}).on("keypress", function(event){
 			
 			if(event.keyCode == KEYCODE_ENTER){
 				event.preventDefault();
 			}
 		});
 		
-		$query.closest("form").submit(function(){
+		$query.closest("form").on("submit", function(){
 			tree.clearFilter();
 		});
 	}
@@ -301,7 +301,7 @@ function updatePreviewList(queryID) {
 		
 		$chosenTree.find(".chosen-tree-name").html(nodeHierarchy);
 
-		$chosenTree.find(".remove-chosen-tree").click(function(){
+		$chosenTree.find(".remove-chosen-tree").on("click", function(){
 			
 			var removedTreeKey = $(this).closest(".chosen-tree").data("key");
 			

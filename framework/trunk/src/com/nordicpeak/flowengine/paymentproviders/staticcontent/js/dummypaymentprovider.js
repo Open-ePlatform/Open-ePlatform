@@ -2,7 +2,7 @@ $(function() {
 	
 	var init = true;
 	
-	$("#DummyPaymentProvider").find("input[type='radio']").change(function(e) {
+	$("#DummyPaymentProvider").find("input[type='radio']").on("change", function(e) {
 		
 		var $this = $(this);
 		

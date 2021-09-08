@@ -1,6 +1,6 @@
 $(function(){
 	
-	$("#flowInstanceSubmittedGlobalEmailAttachPDF").change(function(event){
+	$("#flowInstanceSubmittedGlobalEmailAttachPDF").on("change", function(event){
 		
 		showHideAttachmentsSeperately();
 	});

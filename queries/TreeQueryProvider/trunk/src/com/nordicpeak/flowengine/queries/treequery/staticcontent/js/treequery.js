@@ -106,14 +106,14 @@ function initTreeQuery2(queryID, previouslySelected) {
 			
 			tree.filterNodes(filter, {autoExpand: true});
 			
-		}).keypress(function(event){
+		}).on("keypress", function(event){
 			
 			if(event.keyCode == KEYCODE_ENTER){
 				event.preventDefault();
 			}
 		});
 		
-		query.closest("form").submit(function(){
+		query.closest("form").on("submit", function(){
 			tree.clearFilter();
 		});
 	}

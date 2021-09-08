@@ -12,7 +12,7 @@
 	 		<div class="inner">
 	 			<div class="title"></div>
 	 			<div class="buttons">
-	 				<a href="#" data-action="save_errand" class="btn btn-green" onclick="event.preventDefault(); $(this).closest('form').submit()"><xsl:value-of select="$i18n.SaveChanges" /></a>
+	 				<a href="#" data-action="save_errand" class="btn btn-green" onclick="event.preventDefault(); $(this).closest('form').trigger('submit')"><xsl:value-of select="$i18n.SaveChanges" /></a>
 	 			</div>
 	 		</div>
 	 	</div>

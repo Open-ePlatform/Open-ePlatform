@@ -1,6 +1,6 @@
 $(function() {
 	
-	$("#notificationsMenu a.submenu-trigger").click(function(e) {
+	$("#notificationsMenu a.submenu-trigger").on("click", function(e) {
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -32,7 +32,7 @@ $(function() {
 					
 						submenu.html(response);
 						
-						submenu.find("article[data-url]").click(function(e) { // Only used if you click on the edges
+						submenu.find("article[data-url]").on("click", function(e) { // Only used if you click on the edges
 							
 							if (e.target == this) { // Ignore bubbled events
 							

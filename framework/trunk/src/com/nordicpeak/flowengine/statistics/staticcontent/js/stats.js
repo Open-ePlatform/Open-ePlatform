@@ -157,7 +157,7 @@ $(function() {
 
 		});
 		
-		$("#abortVersion").change(function(e){
+		$("#abortVersion").on("change", function(e){
 			
 		    $.getJSON( moduleURL + "/versionabortcount/" + familyID + "/" + $(this).val(), function( json ) {
 		    	
@@ -206,7 +206,7 @@ $(function() {
 
 		});
 		
-		$("#unsubmittedVersion").change(function(e){
+		$("#unsubmittedVersion").on("change", function(e){
 			
 		    $.getJSON( moduleURL + "/versionunsubmitcount/" + familyID + "/" + $(this).val(), function( json ) {
 		    	

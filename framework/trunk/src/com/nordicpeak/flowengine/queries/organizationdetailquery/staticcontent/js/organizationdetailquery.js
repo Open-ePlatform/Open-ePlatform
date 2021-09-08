@@ -36,7 +36,7 @@ function initOrganizationDetailQuery(queryID) {
 	$(shortQueryID + "_mobilephone").trigger("change");
 	$(shortQueryID + "_email").trigger("change");
 	
-	$(shortQueryID + "_newOrganization").click(function(e) {
+	$(shortQueryID + "_newOrganization").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -50,7 +50,7 @@ function initOrganizationDetailQuery(queryID) {
 		
 	});
 	
-	$(shortQueryID + "_organization").change(function(e) {
+	$(shortQueryID + "_organization").on("change", function(e) {
 		
 		var $this = $(this);
 		

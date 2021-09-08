@@ -1,6 +1,6 @@
 $(function() {
 	
-	$('.sortMessages').click(function(){
+	$('.sortMessages').on("click", function(){
 		
 		var $list = $(this).siblings('ul');
 		var $icon = $(this).find('i');
@@ -20,8 +20,8 @@ $(function() {
 		}
 	});
 	
-	if (Cookies.get('reversedMessages.external') === 'true') $('.sortMessages[data-type="external"]').click();
-	if (Cookies.get('reversedMessages.internal') === 'true') $('.sortMessages[data-type="internal"]').click();
+	if (Cookies.get('reversedMessages.external') === 'true') $('.sortMessages[data-type="external"]').trigger("click");
+	if (Cookies.get('reversedMessages.internal') === 'true') $('.sortMessages[data-type="internal"]').trigger("click");
 
 	if ($("#tabs").hasClass('ui-tabs')) { //Is tabs plugin initialized
 		
@@ -49,7 +49,7 @@ function initMessageTab(tabID, messagePanelID) {
 	
 	if (!$(tabID).length || !$messagePanel.length) return;
 	
-	$(tabID + " a.reply_message").click(function(e) {
+	$(tabID + " a.reply_message").on("click", function(e) {
 		e.preventDefault();
 		
 		var quotedMessage = $(this).closest("li").find(".message");
@@ -64,10 +64,10 @@ function initMessageTab(tabID, messagePanelID) {
 		
 		$messagePanel.show();
 		scrollToMessages(messagePanelID);
-		$messagePanel.find("#message").focus();
+		$messagePanel.find("#message").trigger("focus");
 	});
 	
-	$(tabID + " a.stop_quote").click(function(e) {
+	$(tabID + " a.stop_quote").on("click", function(e) {
 		e.preventDefault();
 		
 		var quoteDiv = $("#message-quote");
@@ -75,17 +75,17 @@ function initMessageTab(tabID, messagePanelID) {
 		quoteDiv.find("input").prop("disabled", true);
 	});
 	
-	$(tabID + " a.open_message").click(function(e) {
+	$(tabID + " a.open_message").on("click", function(e) {
 		e.preventDefault();
 		
 		$messagePanel.show();
 		scrollToMessages(messagePanelID);
-		$messagePanel.find("#message").focus();
+		$messagePanel.find("#message").trigger("focus");
 		
 		$(this).hide();
 	});
 
-	$messagePanel.find("a.close_message").click(function(e) {
+	$messagePanel.find("a.close_message").on("click", function(e) {
 		e.preventDefault();
 		$(messagePanelID).hide();
 		

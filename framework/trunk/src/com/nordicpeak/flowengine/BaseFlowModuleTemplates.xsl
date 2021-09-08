@@ -242,7 +242,7 @@
 					<xsl:value-of select="ViewFragment/HTML" disable-output-escaping="yes"/>
 					
 					<div class="navigator-buttons clearboth">
-						<a href="#" class="btn btn-light xl next" onclick="$('#paymentForm').submit()" data-icon-after=">"><span><xsl:value-of select="$i18n.payAndSubmit" /></span></a>
+						<a href="#" class="btn btn-light xl next" onclick="$('#paymentForm').trigger('submit')" data-icon-after=">"><span><xsl:value-of select="$i18n.payAndSubmit" /></span></a>
 					</div>
 					
 				</div>

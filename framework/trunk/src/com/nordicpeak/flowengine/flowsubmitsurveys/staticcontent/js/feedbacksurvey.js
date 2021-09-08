@@ -2,7 +2,7 @@ var chartData = null;
 
 $(function() {
 	
-	$("#FeedbackFlowSubmitSurvey a.comment-btn").click(function(e) {
+	$("#FeedbackFlowSubmitSurvey a.comment-btn").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -11,7 +11,7 @@ $(function() {
 		
 	});
 	
-	$("#FeedbackFlowSubmitSurvey .submit-btn").click(function(e) {
+	$("#FeedbackFlowSubmitSurvey .submit-btn").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -44,7 +44,7 @@ $(function() {
 		
 	});
 	
-	$("#FeedbackFlowSubmitSurvey a.show-comments-trigger").click(function(e) {
+	$("#FeedbackFlowSubmitSurvey a.show-comments-trigger").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -59,7 +59,7 @@ $(function() {
 		
 	});
 	
-	$("#FeedbackFlowSubmitSurvey a.hide-comments-trigger").click(function(e) {
+	$("#FeedbackFlowSubmitSurvey a.hide-comments-trigger").on("click", function(e) {
 		
 		e.preventDefault();
 		

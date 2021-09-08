@@ -37,7 +37,7 @@ $(function() {
 	showHideLockAddress();
 	showHideRequireAtLeastOneContactWay();
 
-	$("#useOfficalAddress").change(function(e) {
+	$("#useOfficalAddress").on("change", function(e) {
 		
 		var $this = $(this);
 		
@@ -49,11 +49,11 @@ $(function() {
 		
 	}).trigger("change");
 	
-	fieldMobilePhone.change(showHideAllowSMS);
-	fieldAddress.change(showHideLockAddress);
-	allowSMS.change(showHideRequireAtLeastOneContactWay);
-	fieldEmail.change(showHideRequireAtLeastOneContactWay);
-	hideNotificationChannelSettings.change(showHideAllowSMS);
-	hideNotificationChannelSettings.change(showHideRequireAtLeastOneContactWay);
+	fieldMobilePhone.on("change", showHideAllowSMS);
+	fieldAddress.on("change", showHideLockAddress);
+	allowSMS.on("change", showHideRequireAtLeastOneContactWay);
+	fieldEmail.on("change", showHideRequireAtLeastOneContactWay);
+	hideNotificationChannelSettings.on("change", showHideAllowSMS);
+	hideNotificationChannelSettings.on("change", showHideRequireAtLeastOneContactWay);
 });
 

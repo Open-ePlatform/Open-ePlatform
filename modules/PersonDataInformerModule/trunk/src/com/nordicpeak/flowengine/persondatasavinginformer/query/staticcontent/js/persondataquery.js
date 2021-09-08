@@ -15,7 +15,7 @@ function initPersonDataInformerQuery(queryID) {
 
 function bindPersonDataInformerChangeEvent($checkboxes, queryID) {
 	
-	$checkboxes.change(function() {
+	$checkboxes.on("change", function() {
 		
 		runQueueEvaluators($(this), queryID);
 	});

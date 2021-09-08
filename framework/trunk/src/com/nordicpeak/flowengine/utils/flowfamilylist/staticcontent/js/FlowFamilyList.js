@@ -1,4 +1,4 @@
-$(window).resize(function () {
+$(window).on("resize", function () {
 	var pageWidth = $(window).width();
 	adjustListSize(pageWidth);
 });
@@ -54,7 +54,7 @@ function initFlowFamilyList(list) {
 		}
 	});
 	
-	searchInput.keypress(function(event){
+	searchInput.on("keypress", function(event){
 		if (event.which == 13) { // Enter
 			event.preventDefault();
 		}
@@ -157,7 +157,7 @@ function initFlowFamilyDeleteButton(entry, list) {
 	
 	var deleteButton = entry.find("a.delete");
 	
-	deleteButton.click(function(e) {
+	deleteButton.on("click", function(e) {
 		e.preventDefault();
 		
 		entry.remove();

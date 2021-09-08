@@ -7,28 +7,28 @@ function initChildQuery(queryID) {
 
 	var $query = $("#query_" + queryID);
 
-	$query.find("input[type='radio']").change(function() {
+	$query.find("input[type='radio']").on("change", function() {
 		showHideGuardians($query);
 	});
 
 	showHideGuardians($query);
 	
-	$(".alternative").click(function(event) {
+	$(".alternative").on("click", function(event) {
 		
 		if(event.target === this){
-			$(this).find("input").click();
+			$(this).find("input").trigger("click");
 		}
 	});
 	
 	if($query.hasClass("enableAjaxPosting")) {
 		
-		$query.find("input[type='radio']").change(function() {
+		$query.find("input[type='radio']").on("change", function() {
 			
 			runChildQueryEvaluators($query, queryID);
 		});
 		
 			
-		$query.find("input[type='text']").blur(function(e) {
+		$query.find("input[type='text']").on("blur", function(e) {
 			
 			if(!$(e.relatedTarget).hasClass("force-submit")){
 				

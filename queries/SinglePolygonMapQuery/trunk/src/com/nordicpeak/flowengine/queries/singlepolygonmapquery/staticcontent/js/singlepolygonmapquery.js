@@ -118,7 +118,7 @@ function initSinglePolygonMapQuery(queryID, providerURI, startExtent, lmSearchUR
 					
 					instance.showDialog($dialog, false);
 				
-					instance.dialog.find("a.btn").click(function(e) {
+					instance.dialog.find("a.btn").on("click", function(e) {
 						instance.dialog.close(e);
 					});
 					
@@ -330,7 +330,7 @@ function initSinglePolygonMapQuery(queryID, providerURI, startExtent, lmSearchUR
 					
 					instance.showFeatureDialog(newPoint, spMap.minZoomLayer, $message, new OpenLayers.Size(360, 105), false);
 					
-					$("#minscalebtn_" + instance.mapID).click(function(e) {
+					$("#minscalebtn_" + instance.mapID).on("click", function(e) {
 						instance.mapDiv.removeClass("mapquery-error");
 						mapPanel.map.setCenter(new OpenLayers.LonLat(posX, posY));
 						mapPanel.map.zoomToScale(singlePolygonMapQueryMinScales[instance.mapID], true);

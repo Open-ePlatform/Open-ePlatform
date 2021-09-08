@@ -11,7 +11,7 @@ function initManualMultiSignQuery(queryID) {
 	
 	if ($query.hasClass("enableAjaxPosting")) {
 		
-		$query.find("input[name$='socialSecurityNumber']").change(function() {
+		$query.find("input[name$='socialSecurityNumber']").on("change", function() {
 		
 			runManualMultiSignEvaluators($(this), queryID);
 		

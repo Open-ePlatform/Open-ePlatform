@@ -1,6 +1,6 @@
 $(function() {
 	
-	$("#disabled").change(function() {
+	$("#disabled").on("change", function() {
 		
 		if($("#disabled").is(":checked")){
 			
@@ -26,7 +26,7 @@ $(function() {
 		$("#contains-price").hide();
 	}
 	
-	$("#formatValidator").change(function() {
+	$("#formatValidator").on("change", function() {
 		
 		var className = $("#formatValidator option:selected").val();
 		
@@ -69,7 +69,7 @@ $(function() {
 		$("#invalidFormatMessage").parent().parent().hide();
 	}
 	
-	$('#endpointID').change(function(){
+	$('#endpointID').on("change", function(){
 		
 		var selectedEndpointID = this.value;
 		
@@ -83,6 +83,6 @@ $(function() {
 			
 		});
 		
-	}).change();
+	}).trigger("change");
 	
 });

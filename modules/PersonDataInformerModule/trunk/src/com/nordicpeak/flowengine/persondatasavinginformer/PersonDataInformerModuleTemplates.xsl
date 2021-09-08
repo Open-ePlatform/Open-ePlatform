@@ -407,7 +407,7 @@
 						
 						settingsDiv.toggle(checkbox[0].checked);
 						
-						checkbox.click(function(){
+						checkbox.on("click", function(){
 							settingsDiv.toggle(this.checked);
 						});
 					});
@@ -459,7 +459,7 @@
 								
 								div.toggle(checkbox[0].checked);
 								
-								checkbox.click(function(){
+								checkbox.on("click", function(){
 									var checked = checkbox[0].checked;
 									div.toggle(checked).find('textarea').prop('disabled', !checked);
 								});
@@ -529,11 +529,11 @@
 										}
 									});
 									
-									$(".storagetype-selector").change();
+									$(".storagetype-selector").trigger("change");
 									
 									var $storageCounter = $("#storageCounter");
 									
-									$("#addStorageSetting").click(function(e) {
+									$("#addStorageSetting").on("click", function(e) {
 										e.preventDefault();
 										
 										var $clone = $("#storage-settings-template").clone();
@@ -663,7 +663,7 @@
 								
 								div.toggle(checkbox[0].checked);
 								
-								checkbox.click(function(){
+								checkbox.on("click", function(){
 									var checked = checkbox[0].checked;
 									div.toggle(checked).find('textarea').prop('disabled', !checked);
 								});
@@ -724,7 +724,7 @@
 								
 								div.toggle(checkbox[0].checked);
 								
-								checkbox.click(function(){
+								checkbox.on("click", function(){
 									var checked = checkbox[0].checked;
 									div.toggle(checked).find('textarea').prop('disabled', !checked);
 								});
@@ -770,7 +770,7 @@
 								
 								div.toggle(checkbox[0].checked);
 								
-								checkbox.click(function(){
+								checkbox.on("click", function(){
 									var checked = checkbox[0].checked;
 									div.toggle(checked).find('textarea').prop('disabled', !checked);
 								});
@@ -816,7 +816,7 @@
 								
 								div.toggle(checkbox[0].checked);
 								
-								checkbox.click(function(){
+								checkbox.on("click", function(){
 									var checked = checkbox[0].checked;
 									div.toggle(checked).find('textarea').prop('disabled', !checked);
 								});

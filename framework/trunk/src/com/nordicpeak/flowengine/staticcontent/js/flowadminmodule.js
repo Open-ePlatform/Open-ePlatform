@@ -177,7 +177,7 @@ $(function() {
 			return filterValue == "all" || filterValue == rowData[flowListDataTable.column("published:name").index()];
 		});
 		
-		$("#flow-status-filter").change(function() {
+		$("#flow-status-filter").on("change", function() {
 			
 			flowListDataTable.draw();
 			
@@ -227,47 +227,47 @@ $(function() {
 		
 		$("#isAdminDeletable").on("change", function() {
 			$("#isRestrictedAdminDeletable").parent().parent().toggle($(this).is(":checked"));
-		}).change();
+		}).trigger("change");
 		
 		$("#useAccessCheck").on("change", function() {
 			$("#allowedManagers").toggle($(this).is(":checked"));
-		}).change();
+		}).trigger("change");
 		
 		var $addExternalMessage = $('#addExternalMessage');
 		var $addInternalMessage = $('#addInternalMessage');
 		var $newExternalMessagesDisallowed = $('#newExternalMessagesDisallowed');
 		var $requireSigning = $('#requireSigning');
 
-		$newExternalMessagesDisallowed.change(function(){
+		$newExternalMessagesDisallowed.on("change", function(){
 			
 			$('#newExternalMessagesAllowedDays').prop('disabled', this.checked);
 
 			toggleAddExternalMessage();
 			
-		}).change();
+		}).trigger("change");
 		
-		$addExternalMessage.change(function(){
+		$addExternalMessage.on("change", function(){
 			
 			$('#defaultExternalMessageTemplate').parent().toggle(this.checked);
 			
 			toggleRequireSigning();
 			
-		}).change();
+		}).trigger("change");
 		
-		$addInternalMessage.change(function(){
+		$addInternalMessage.on("change", function(){
 			
 			$('#defaultInternalMessageTemplate').parent().toggle(this.checked);
 			
 			toggleRequireSigning();
 			
-		}).change();
+		}).trigger("change");
 		
-		$requireSigning.change(function(){
+		$requireSigning.on("change", function(){
 			
 			toggleAddExternalMessage();
 			toggleAddInternalMessage();
 			
-		}).change();
+		}).trigger("change");
 		
 		function toggleAddExternalMessage() {
 			
@@ -302,7 +302,7 @@ $(function() {
 			
 			if (wasChecked != $setting.prop("checked")) {
 				
-				$setting.change();
+				$setting.trigger("change");
 			}
 		}
 	}
@@ -311,7 +311,7 @@ $(function() {
 	
 		//Add flow
 		
-		$("#flowtype").change(function(e) {
+		$("#flowtype").on("change", function(e) {
 			$(".flowTypeCategories").hide();
 			$(".flowTypeCategories select").attr("disabled", "disabled");
 			$("#flowTypeCategories_" + $(this).val() + " select").removeAttr("disabled");
@@ -319,7 +319,7 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$("#typeOfFlow").change(function(e) {
+		$("#typeOfFlow").on("change", function(e) {
 			
 			var $flowForm = $("#flowForm");
 			
@@ -342,7 +342,7 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$("#addstandardstatuses").change(function(e) {
+		$("#addstandardstatuses").on("change", function(e) {
 			var checked = this.checked;
 			$("#statusGroupID").attr("disabled", !checked).parent().parent().toggle(checked);
 			
@@ -350,7 +350,7 @@ $(function() {
 		
 		// Add and Update flow
 		
-		$("#requireAuthentication").change(function(e) {
+		$("#requireAuthentication").on("change", function(e) {
 			
 			var checked = $(this).prop("checked");
 			var allowForeignIDs = $("#allowForeignIDs");
@@ -359,7 +359,7 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$("#skipPosterSigning").change(function(e) {
+		$("#skipPosterSigning").on("change", function(e) {
 			
 			var checkbox = $(this);
 			var checked = checkbox.prop("checked") && checkbox.parent().parent().css('display') !== 'none';
@@ -368,7 +368,7 @@ $(function() {
 			fields.parent().parent().toggle(checked);
 		})
 		
-		$("#requireSigning").change(function(e) {
+		$("#requireSigning").on("change", function(e) {
 			
 			var checked = $(this).prop("checked");
 			var fields = $("#useSequentialSigning, #skipPosterSigning, #appendSigningSignatureToPDF, #showPreviousSignaturesToSigners");
@@ -379,13 +379,13 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$('#hideExternalMessages').change(function() {
+		$('#hideExternalMessages').on("change", function() {
 
 			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
 		
 		}).trigger('change');
 		
-		$("#hideFromUser").change(function(e) {
+		$("#hideFromUser").on("change", function(e) {
 			
 			var checked = $(this).prop("checked");
 			
@@ -399,7 +399,7 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$("#useAccessCheck").change(function(e) {
+		$("#useAccessCheck").on("change", function(e) {
 			
 			var checked = $(useAccessCheck).prop("checked");
 			
@@ -408,7 +408,7 @@ $(function() {
 		}).trigger("change");
 	}
 	
-	$("#checkall").click(function() {
+	$("#checkall").on("click", function() {
 		
 		if($(this).attr("checked")) {
 			$("input[type='checkbox'][name='queryType']").attr("checked", "checked");
@@ -418,7 +418,7 @@ $(function() {
 		
 	});
 	
-	$("input[type='checkbox'][name='queryType']").click(function(){
+	$("input[type='checkbox'][name='queryType']").on("click", function(){
 		
 		checkCheckboxState();
 	});
@@ -438,7 +438,7 @@ $(function() {
 	
 	checkCheckboxState();	
 	
-	$("select[name='queryTypeID']").change(function (e){
+	$("select[name='queryTypeID']").on("change", function (e){
 		
 		var description = $("input[name = 'queryTypeDescription_" + $(this).val() + "']").val();
 		
@@ -450,7 +450,7 @@ $(function() {
 			
 	}).trigger("change");
 	
-	$(".flowtype-icon-preview a").click(function(e) {
+	$(".flowtype-icon-preview a").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -472,12 +472,12 @@ $(function() {
 		
 		$flowMenu.closest("aside").addClass("narrow");
 		
-		$(window).scroll(checkFlowMenuPosition);
-		$(window).resize(checkFlowMenuPosition);
+		$(window).on("scroll", checkFlowMenuPosition);
+		$(window).on("resize", checkFlowMenuPosition);
 		
 	}
 	
-	$("#show-inactive-providers").click(function(e) {
+	$("#show-inactive-providers").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -488,7 +488,7 @@ $(function() {
 		
 	});
 	
-	$("#hide-inactive-providers").click(function(e) {
+	$("#hide-inactive-providers").on("click", function(e) {
 		
 		e.preventDefault();
 		
@@ -784,7 +784,7 @@ function updateManagerShowHideModalFields(content) {
 	var restrictedField = content.find("input[name='restricted']");
 	var allowUpdatingManagersField = content.find("input[name='allowUpdatingManagers']");
 	
-	restrictedField.change(function(){
+	restrictedField.on("change", function(){
 		
 		var restricted = restrictedField.prop("checked")
 		allowUpdatingManagersField.parent().toggle(restricted);
@@ -793,7 +793,7 @@ function updateManagerShowHideModalFields(content) {
 			allowUpdatingManagersField.prop("checked", false);
 		}
 		
-	}).change();
+	}).trigger("change");
 }
 
 function openUpdateManagerModal(button, event) {
@@ -992,7 +992,7 @@ function addAutoManagerAssignmentRule(button, event) {
 	clone.insertBefore($("#auto-manager-rule-template"));
 	clone.show();
 	
-	clone.find("a.open-auto-manager-modal").click();
+	clone.find("a.open-auto-manager-modal").trigger("click");
 }
 
 function removeAutoManagerAssignmentRule(button, event, text) {
@@ -1065,7 +1065,7 @@ function openAutoManagerAssignmentRuleModal(button, event) {
 				});
 				
 				if (row.hasClass("new_row")) {
-					content.find("input[name='attribute']").focus();
+					content.find("input[name='attribute']").trigger("focus");
 					content.find('#updateAutoManagerModalHeader').children().toggle();
 				}
 				
@@ -1199,7 +1199,7 @@ function addAutoManagerAssignmentStatusRule(button, event) {
 	clone.insertBefore($("#auto-manager-status-rule-template"));
 	clone.show();
 	
-	clone.find("a.open-auto-manager-status-modal").click();
+	clone.find("a.open-auto-manager-status-modal").trigger("click");
 }
 
 function removeAutoManagerAssignmentStatusRule(button, event, text) {
@@ -1297,17 +1297,17 @@ function openAutoManagerAssignmentStatusRuleModal(button, event) {
 					$(this).autocomplete('search', ' ');
 				});
 				
-				content.find('#addManagers').change(function(){
+				content.find('#addManagers').on("change", function(){
 					
 					content.find('#updateAutoManagerStatusManagerContainer').toggle(this.checked);
 					
-				}).change();
+				}).trigger("change");
 				
-				content.find('#sendNotification').change(function(){
+				content.find('#sendNotification').on("change", function(){
 					
 					content.find('#updateAutoManagerStatusNotificationContainer').toggle(this.checked);
 					
-				}).change();
+				}).trigger("change");
 			},
 			
 			beforeClose: function() {
