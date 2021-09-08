@@ -1,5 +1,5 @@
 
-$(document).ready(function() {
+$(function() {
 	
 	$(".main.container").before($(".filters-wrapper"));
 	

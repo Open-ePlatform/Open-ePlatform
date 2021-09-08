@@ -170,7 +170,7 @@
 	
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initPersonDataInformerQuery('<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initPersonDataInformerQuery('<xsl:value-of select="PersonDataInformerQueryInstance/PersonDataInformerQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

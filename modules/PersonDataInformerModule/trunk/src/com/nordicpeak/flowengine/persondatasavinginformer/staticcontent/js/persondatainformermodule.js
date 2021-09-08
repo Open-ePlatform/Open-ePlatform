@@ -1,5 +1,5 @@
 
-$(document).ready(function() {
+$(function() {
 	
 	$("table.coloredtable").each(function() {
 		var $this = $(this);

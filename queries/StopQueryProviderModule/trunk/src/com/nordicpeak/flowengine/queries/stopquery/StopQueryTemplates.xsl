@@ -71,7 +71,7 @@
 				
 				<div class="clearboth"/>
 				
-				<script type="text/javascript">$(document).ready(function(){initStopQuery('<xsl:value-of select="StopQueryInstance/StopQuery/queryID" />');});</script>
+				<script type="text/javascript">$(function(){initStopQuery('<xsl:value-of select="StopQueryInstance/StopQuery/queryID" />');});</script>
 				
 			</article>			
 		

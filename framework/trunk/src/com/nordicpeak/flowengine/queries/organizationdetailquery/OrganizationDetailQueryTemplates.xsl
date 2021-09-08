@@ -700,7 +700,7 @@
 			};
 		</script>
 		
-		<script type="text/javascript">$(document).ready(function(){initOrganizationDetailQuery('<xsl:value-of select="OrganizationDetailQueryInstance/OrganizationDetailQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initOrganizationDetailQuery('<xsl:value-of select="OrganizationDetailQueryInstance/OrganizationDetailQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

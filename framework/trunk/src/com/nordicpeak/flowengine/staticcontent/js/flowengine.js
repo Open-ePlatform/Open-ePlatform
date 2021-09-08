@@ -7,7 +7,7 @@ var initQueryFunctions = {};
 var hideQueryFunctions = new Array();
 var flowEngineDOMListeners = new Array();
 
-$(document).ready(function() {
+$(function() {
 	
 	var firstValidationError = $(".validationerrors").first();
 	var queryAnchorName = firstValidationError.attr("id");

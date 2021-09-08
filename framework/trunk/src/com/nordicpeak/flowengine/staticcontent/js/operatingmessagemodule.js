@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	$("input[name='global']").change(function() {
 		

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
 	$(document).on("click", "#MyPagesMenu a:first", function(e) {
         e.stopPropagation();

@@ -232,7 +232,7 @@
 })(jQuery);
 
 
-$(document).ready(function() {
+$(function() {
 	
 	var $elements = $('.show-mentions:contains("$mention{")');
 

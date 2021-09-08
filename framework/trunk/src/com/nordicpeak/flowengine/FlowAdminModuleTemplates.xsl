@@ -2448,7 +2448,7 @@
 		    </div>
 		    
 		    <script type="text/javascript">
-					$(document).ready(function() {
+					$(function() {
 						
 						var authCheckbox = $("#requireAuthentication");
 						
@@ -3207,7 +3207,7 @@
 			</div>
 			
 			<script type="text/javascript">
-				$(document).ready(function() {
+				$(function() {
 					
 					var checkbox = $("#useLoginHelpLink");
 					
@@ -5856,7 +5856,7 @@
 			</div>
 					
 			<script type="text/javascript">
-				$(document).ready(function() {
+				$(function() {
 					
 					$("#manager-list").children("li.manager-list-entry").each(function(){
 						updateManagerShowHideRowExtra($(this));

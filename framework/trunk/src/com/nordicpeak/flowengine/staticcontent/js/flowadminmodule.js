@@ -3,7 +3,7 @@ var validationError = false;
 var flowListDataTable;
 var getExtraFlowListColumns;
 
-$(document).ready(function() {
+$(function() {
 	
 	if (FlowAdmin != undefined) {
 	

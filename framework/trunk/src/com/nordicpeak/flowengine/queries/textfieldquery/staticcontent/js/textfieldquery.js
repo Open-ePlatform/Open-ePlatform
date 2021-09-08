@@ -3,7 +3,7 @@ var TextFieldQueryi18n = {
 	colorCancel: "cancel",
 }
 
-$(document).ready(function() {
+$(function() {
 	
 	setQueryRequiredFunctions["TextFieldQueryInstance"] = makeTextFieldQueryRequired;
 	

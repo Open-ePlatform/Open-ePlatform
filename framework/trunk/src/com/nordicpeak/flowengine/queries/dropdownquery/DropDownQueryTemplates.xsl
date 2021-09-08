@@ -243,7 +243,7 @@
 	
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initDropDownQuery('<xsl:value-of select="DropDownQueryInstance/DropDownQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initDropDownQuery('<xsl:value-of select="DropDownQueryInstance/DropDownQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

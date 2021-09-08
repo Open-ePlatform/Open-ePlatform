@@ -2,7 +2,7 @@ var i18n = {
 		NoChosenTrees: "NoChosenTrees",
 };
 
-$(document).ready(function() {
+$(function() {
 
 	setQueryRequiredFunctions["MultiTreeQueryInstance"] = makeMultiTreeQueryRequired;
 });

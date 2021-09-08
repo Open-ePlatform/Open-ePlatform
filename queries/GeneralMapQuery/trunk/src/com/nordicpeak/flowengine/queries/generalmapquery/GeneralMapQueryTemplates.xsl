@@ -114,7 +114,7 @@
 					
 					generalMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="GeneralMapQueryInstance/GeneralMapQuery/minimalDrawingScale" />';
 						
-					$(document).ready(function(){
+					$(function(){
 						initGeneralMapQuery('<xsl:value-of select="GeneralMapQueryInstance/GeneralMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmUser" />', true);
 					});
 					
@@ -227,7 +227,7 @@
 				
 				generalMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="GeneralMapQueryInstance/GeneralMapQuery/minimalDrawingScale" />';
 				
-				$(document).ready(function(){
+				$(function(){
 					initGeneralMapQuery('<xsl:value-of select="GeneralMapQueryInstance/GeneralMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/searchURL" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmUser" />', false);
 				});
 				

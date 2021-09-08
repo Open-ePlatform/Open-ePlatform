@@ -174,7 +174,7 @@
 				colorCancel: "<xsl:value-of select="$i18n.js.ColorCancel"/>",
 			}
 					
-			$(document).ready(function(){initTextFieldQuery('<xsl:value-of select="TextFieldQueryInstance/TextFieldQuery/queryID" />');});
+			$(function(){initTextFieldQuery('<xsl:value-of select="TextFieldQueryInstance/TextFieldQuery/queryID" />');});
 		</script>
 		
 	</xsl:template>

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	if ($("#activityGroupForm").length > 0) {
 		

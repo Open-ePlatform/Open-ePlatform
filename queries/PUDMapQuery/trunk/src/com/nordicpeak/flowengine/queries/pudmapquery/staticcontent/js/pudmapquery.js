@@ -8,7 +8,7 @@ var pudMapQueryLanguage = {
 		"NO_PUD_FOUND_MESSAGE" : "Can not find any property on the specified position."
 };
 
-$(document).ready(function() {
+$(function() {
 	
 	setQueryRequiredFunctions["PUDMapQueryInstance"] = makePUDMapQueryRequired;
 	

@@ -2,7 +2,7 @@ var Alternativesi18n = {
 	deleteConfirm: "Are you sure you want to remove the alternative"
 };
 
-$(document).ready(function() {
+$(function() {
 	
 	var alternativesContainers = $(".sortable").sortable({ cursor: 'move', update: function(event, ui) {
 		

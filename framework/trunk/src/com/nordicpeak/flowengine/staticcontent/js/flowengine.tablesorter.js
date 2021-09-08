@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	$.tablesorter.addWidget({ 
 	    id: "onSortEvent", 

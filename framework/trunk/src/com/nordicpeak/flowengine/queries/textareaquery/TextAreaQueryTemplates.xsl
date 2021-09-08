@@ -152,7 +152,7 @@
 			</article>
 			
 			<script type="text/javascript">
-				$(document).ready(function(){
+				$(function(){
 					initTextAreaQuery(
 						'<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/queryID" />',
 						<xsl:value-of select="TextAreaQueryInstance/TextAreaQuery/keepalive" />,

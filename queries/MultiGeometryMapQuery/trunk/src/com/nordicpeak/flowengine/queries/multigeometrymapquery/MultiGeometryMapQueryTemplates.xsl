@@ -126,7 +126,7 @@
 					
 					multiGeometryMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="MultiGeometryMapQueryInstance/MultiGeometryMapQuery/minimumScale" />';
 						
-					$(document).ready(function(){
+					$(function(){
 						initMultiGeometryMapQuery('<xsl:value-of select="MultiGeometryMapQueryInstance/MultiGeometryMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', true);
 					});
 					
@@ -256,7 +256,7 @@
 				
 				multiGeometryMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="MultiGeometryMapQueryInstance/MultiGeometryMapQuery/minimumScale" />';
 				
-				$(document).ready(function(){
+				$(function(){
 					initMultiGeometryMapQuery('<xsl:value-of select="MultiGeometryMapQueryInstance/MultiGeometryMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', false);
 				});
 				

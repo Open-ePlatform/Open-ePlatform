@@ -110,7 +110,7 @@
 				</xsl:variable>
 				
 				<script type="text/javascript">
-					$(document).ready(function() {
+					$(function() {
 					
 						var table = $('#catalogtable').DataTable({
 							ajax: { 

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	$( "#attribute-mobilePhone").keyup(function() {
 		

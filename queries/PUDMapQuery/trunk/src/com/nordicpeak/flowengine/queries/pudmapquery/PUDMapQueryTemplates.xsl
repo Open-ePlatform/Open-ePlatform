@@ -117,7 +117,7 @@
 				
 				<script type="text/javascript">
 						
-					$(document).ready(function(){
+					$(function(){
 						initPUDMapQuery('<xsl:value-of select="PUDMapQueryInstance/PUDMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', true);
 					});
 					
@@ -224,7 +224,7 @@
 				pudMapQueryProviderURI = '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />';
 				pudMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="PUDMapQueryInstance/PUDMapQuery/minimumScale" />';
 				
-				$(document).ready(function(){
+				$(function(){
 					initPUDMapQuery('<xsl:value-of select="PUDMapQueryInstance/PUDMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', false);
 				});
 				

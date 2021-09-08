@@ -231,7 +231,7 @@
 		</div>
 		
 		<script type="text/javascript">
-			$(document).ready(function(){
+			$(function(){
 				initFileUploadQuery('<xsl:value-of select="FileUploadQueryInstance/FileUploadQuery/queryID" />');
 			});
 		</script>

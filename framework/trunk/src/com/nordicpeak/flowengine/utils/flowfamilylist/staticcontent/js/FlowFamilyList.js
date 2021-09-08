@@ -5,7 +5,7 @@ $(window).resize(function () {
 
 
 
-$(document).ready(function(){
+$(function(){
 	 
 	 $(".flowfamily-list").each(function(){
 		 initFlowFamilyList($(this));

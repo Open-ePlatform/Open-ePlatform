@@ -787,7 +787,7 @@
 		
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initContactDetailQuery('<xsl:value-of select="ContactDetailQueryInstance/ContactDetailQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initContactDetailQuery('<xsl:value-of select="ContactDetailQueryInstance/ContactDetailQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

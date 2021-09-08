@@ -1,6 +1,6 @@
 var chartData = null;
 
-$(document).ready(function() {
+$(function() {
 	
 	$("#FeedbackFlowSubmitSurvey a.comment-btn").click(function(e) {
 		

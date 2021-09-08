@@ -6,7 +6,7 @@ var generalMapQueryLanguage = {
 	"UNKOWN_ERROR_MESSAGE" : "An unexpected error occured. Contact the administrator."
 };
 
-$(document).ready(function() {
+$(function() {
 	
 	setQueryRequiredFunctions["GeneralMapQueryInstance"] = makeGeneralMapQueryRequired;
 	

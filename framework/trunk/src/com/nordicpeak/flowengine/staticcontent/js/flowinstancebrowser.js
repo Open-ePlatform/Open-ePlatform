@@ -2,7 +2,7 @@ var searchFlowURI;
 var userFavouriteModuleURI;
 var notificationDialogDelay = 5000;
 
-$(document).ready(function() {
+$(function() {
 	
 	$(document).on("click", function(e) {
 		$(".select-wrapper .select-box").removeClass("active");

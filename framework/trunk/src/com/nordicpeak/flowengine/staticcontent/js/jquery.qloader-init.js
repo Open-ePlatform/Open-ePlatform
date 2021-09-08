@@ -1,7 +1,7 @@
 var imagePath;
 var deleteFile = "Delete";
 
-$(document).ready(function() {
+$(function() {
 		
 	$("input[type='file'].qloader.externalmessages, input[type='file'].qloader.internalmessages").each(function(i){
 		

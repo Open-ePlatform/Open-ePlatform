@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	$("#notificationsMenu a.submenu-trigger").click(function(e) {
 		

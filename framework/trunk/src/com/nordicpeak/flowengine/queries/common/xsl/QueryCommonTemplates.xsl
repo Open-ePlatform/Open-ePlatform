@@ -37,7 +37,7 @@
 	<xsl:template name="loadAjaxValidationErrors">
 		
 		<script type="text/javascript">
-			$(document).ready(function() {
+			$(function() {
 			
 				if (!i18nFlowEngineQueries.localized) {
 				

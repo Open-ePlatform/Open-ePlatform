@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 	
 	$("#flowInstanceSubmittedGlobalEmailAttachPDF").change(function(event){
 		

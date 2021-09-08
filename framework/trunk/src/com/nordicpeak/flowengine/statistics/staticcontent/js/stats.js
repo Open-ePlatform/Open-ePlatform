@@ -13,7 +13,7 @@ var familyID = null;
 var moduleURL = null;
 var chartColor = "#1F77B4";
 
-$(document).ready(function() {
+$(function() {
 	
 	if(flowInstanceCountWeeks != null && flowInstanceCountValues != null){
 		

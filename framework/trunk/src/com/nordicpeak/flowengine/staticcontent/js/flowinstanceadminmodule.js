@@ -9,7 +9,7 @@ var i18nFlowInstanceFirstSubmitted = "Added";
 var i18nFlowInstancePoster = "Poster";
 var showSearchDecriptionColumn = true;
 
-$(document).ready(function() {
+$(function() {
 	
 	/* Flowinstance overview scripts */
 	

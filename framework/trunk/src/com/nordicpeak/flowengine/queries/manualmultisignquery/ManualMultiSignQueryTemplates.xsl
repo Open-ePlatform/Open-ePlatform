@@ -288,7 +288,7 @@
 		
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initManualMultiSignQuery('<xsl:value-of select="ManualMultiSignQueryInstance/ManualMultiSignQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initManualMultiSignQuery('<xsl:value-of select="ManualMultiSignQueryInstance/ManualMultiSignQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

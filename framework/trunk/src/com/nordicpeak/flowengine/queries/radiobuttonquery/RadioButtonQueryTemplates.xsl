@@ -221,7 +221,7 @@
 		
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initRadioButtonQuery('<xsl:value-of select="RadioButtonQueryInstance/RadioButtonQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initRadioButtonQuery('<xsl:value-of select="RadioButtonQueryInstance/RadioButtonQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

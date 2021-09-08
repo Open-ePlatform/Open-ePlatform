@@ -119,7 +119,7 @@
 					
 					singlePolygonMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="SinglePolygonMapQueryInstance/SinglePolygonMapQuery/minimumScale" />';
 						
-					$(document).ready(function(){
+					$(function(){
 						initSinglePolygonMapQuery('<xsl:value-of select="SinglePolygonMapQueryInstance/SinglePolygonMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', true);
 					});
 					
@@ -240,7 +240,7 @@
 				
 				singlePolygonMapQueryMinScales['<xsl:value-of select="$shortQueryID" />'] = '<xsl:value-of select="SinglePolygonMapQueryInstance/SinglePolygonMapQuery/minimumScale" />';
 
-				$(document).ready(function(){
+				$(function(){
 					initSinglePolygonMapQuery('<xsl:value-of select="SinglePolygonMapQueryInstance/SinglePolygonMapQuery/queryID" />', '<xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="/Document/fullAlias" />', '<xsl:value-of select="/Document/startExtent" />', '<xsl:value-of select="/Document/lmSearchURL" />', '<xsl:value-of select="/Document/lmUser" />', false);
 				});
 				

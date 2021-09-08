@@ -277,7 +277,7 @@
 	
 		</div>
 		
-		<script type="text/javascript">$(document).ready(function(){initCheckBoxQuery('<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/queryID" />');});</script>
+		<script type="text/javascript">$(function(){initCheckBoxQuery('<xsl:value-of select="CheckboxQueryInstance/CheckboxQuery/queryID" />');});</script>
 		
 	</xsl:template>
 	

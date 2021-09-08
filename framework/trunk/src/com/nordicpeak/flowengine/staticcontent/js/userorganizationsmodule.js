@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
 	$(".modal .close").click(function(e) {
 		e.preventDefault();

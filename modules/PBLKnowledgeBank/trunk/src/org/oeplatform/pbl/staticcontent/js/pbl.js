@@ -4,7 +4,7 @@ var pblLanguage = {
 	"NO_WORD_DESCRIPTION_FOUND": "No word description found for"
 };
 
-$(document).ready(function() {
+$(function() {
 	
 	if(pblProxyModuleURI) {
 	

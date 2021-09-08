@@ -1,6 +1,6 @@
 var flowFamilyOverviewURI;
 
-$(document).ready(function() {
+$(function() {
 	
 	$("#UserFavouriteMenuModule ul li.disabled a").click(function(e) {
 		e.preventDefault();

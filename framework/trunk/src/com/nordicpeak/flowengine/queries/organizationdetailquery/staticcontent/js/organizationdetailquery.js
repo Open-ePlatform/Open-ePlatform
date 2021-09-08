@@ -3,7 +3,7 @@ var organizationDetailQueryi18n = {
 	"UpdateToMyOrganizations": "Update this company's information to my companies"
 }
 
-$(document).ready(function() {
+$(function() {
 	
 	setQueryRequiredFunctions["OrganizationDetailQueryInstance"] = makeOrganizationDetailQueryRequired;
 	

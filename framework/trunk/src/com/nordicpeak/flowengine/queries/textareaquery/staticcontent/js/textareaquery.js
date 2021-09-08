@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	
 	setQueryRequiredFunctions["TextAreaQueryInstance"] = makeTextAreaQueryRequired;
 });
