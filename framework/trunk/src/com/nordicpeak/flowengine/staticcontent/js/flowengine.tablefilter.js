@@ -7,7 +7,7 @@ $(function() {
 		$filterTableRows[id] = $("#" + id).find("tbody tr");
 	});
 	
-	$("input[type='text'].filter-input").keyup(function() {
+	$("input[type='text'].filter-input").on("keyup", function() {
 		
 		var $this = $(this);
 		var val = $.trim($this.val()).replace(/ +/g, ' ').toLowerCase();

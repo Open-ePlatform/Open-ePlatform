@@ -134,7 +134,7 @@ $(function() {
 		
 	});
 	
-	$("#search").keyup(function () {
+	$("#search").on("keyup", function () {
 		
 		$(this).parent().removeClass("searching");
 		searchFlow();

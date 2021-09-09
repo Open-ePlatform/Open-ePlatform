@@ -1,6 +1,6 @@
 $(function() {
 	
-	$( "#attribute-mobilePhone").keyup(function() {
+	$( "#attribute-mobilePhone").on("keyup", function() {
 		
 		if($(this).val() != "") {
 			$("#attribute-contactBySMS").removeAttr("disabled").next("label").removeClass("disabled");

@@ -34,7 +34,7 @@ function initDropDownQuery(queryID) {
 			
 		});
 		
-		$query.find("input[type='text']").keyup(delay(function() {
+		$query.find("input[type='text']").on("keyup", delay(function() {
 			
 			runDropDownEvaluators($(this), queryID);
 			

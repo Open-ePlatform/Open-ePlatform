@@ -42,7 +42,7 @@ $(function() {
 		
 	});
 	
-	$("input[type='text'].flow-filter-input").keyup(function() {
+	$("input[type='text'].flow-filter-input").on("keyup", function() {
 		
 		var $this = $(this);
 		var val = $.trim($this.val()).replace(/ +/g, ' ').toLowerCase();

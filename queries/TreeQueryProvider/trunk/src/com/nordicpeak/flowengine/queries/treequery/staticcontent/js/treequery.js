@@ -91,7 +91,7 @@ function initTreeQuery2(queryID, previouslySelected) {
 		var KEYCODE_ENTER = 13;
 		var KEYCODE_ESC = 27;
 			
-		$("input[name='filterField" + queryID + "']").keyup(function(event){
+		$("input[name='filterField" + queryID + "']").on("keyup", function(event){
 			
 			var $this = $(this);
 			var filter = $this.val();

@@ -86,7 +86,7 @@ $(function() {
 		});
 	});
 	
-	$("#tag-filter-input").keyup(function() {
+	$("#tag-filter-input").on("keyup", function() {
 		
 		$.cookie("oep.textTagSearch", $(this).val());
 	});
@@ -94,7 +94,7 @@ $(function() {
 	var tagSearch = $.cookie("oep.textTagSearch");
 	
 	if (tagSearch) {
-		var $input = $("#tag-filter-input").val(tagSearch).keyup();
+		var $input = $("#tag-filter-input").val(tagSearch).trigger("keyup");
 	}
 	
 });

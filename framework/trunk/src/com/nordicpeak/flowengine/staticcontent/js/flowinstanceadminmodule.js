@@ -72,7 +72,7 @@ $(function() {
 	
 	/* Search flow instance scripts */
 	
-	$("#search").keyup(function () {
+	$("#search").on("keyup", function () {
 		
 		$(this).parent().removeClass("searching");
 		searchFlowInstance();
