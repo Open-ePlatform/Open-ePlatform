@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -65,7 +64,7 @@ public class FlowIndexer {
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final StandardAnalyzer analyzer = new StandardAnalyzer();
+	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -177,7 +176,8 @@ public class FlowIndexer {
 				queryString = StringUtils.parseUTF8(queryString);
 			}			
 			
-			queryString = queryString.trim();
+			//toLowerCase() here is a workaround
+			queryString = queryString.trim().toLowerCase();
 		}
 		
 		log.info("User " + user + " searching for: " + StringUtils.toLogFormat(queryString, 50));
@@ -195,7 +195,6 @@ public class FlowIndexer {
 		Query query;
 
 		try {
-			//toLowerCase() here is a workaround the needs more investigation
 			query = parser.parse(QueryParser.escape(queryString) + "*");
 			SessionUtils.setAttribute("lastsearch", queryString, req);
 

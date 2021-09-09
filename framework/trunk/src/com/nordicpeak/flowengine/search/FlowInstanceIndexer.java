@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntPoint;
@@ -112,7 +111,7 @@ public class FlowInstanceIndexer {
 	
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	private final StandardAnalyzer analyzer = new StandardAnalyzer();
+	private final CaseInsensitiveWhitespaceAnalyzer analyzer = new CaseInsensitiveWhitespaceAnalyzer();
 	private final Directory index = new RAMDirectory();
 	private IndexWriter indexWriter;
 	private IndexReader indexReader;
@@ -205,7 +204,7 @@ public class FlowInstanceIndexer {
 		if(queryString != null) {
 			
 			queryString = URLDecoder.decode(queryString, "UTF-8");
-			queryString = queryString.trim();
+			queryString = queryString.trim().toLowerCase();
 		}
 		
 		log.info("User " + user + " searching for: " + StringUtils.toLogFormat(queryString, 50));

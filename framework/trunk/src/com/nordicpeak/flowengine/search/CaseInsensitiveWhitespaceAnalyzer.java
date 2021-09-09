@@ -8,11 +8,11 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 
 
 public class CaseInsensitiveWhitespaceAnalyzer extends Analyzer {
-    
+    	
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName) {
 
-		Tokenizer tokenizer = new WhitespaceTokenizer();
+		Tokenizer tokenizer = new WhitespaceTokenizer(WhitespaceTokenizer.DEFAULT_MAX_WORD_LEN);
         TokenStream filter = new LowerCaseFilter(tokenizer);
         return new TokenStreamComponents(tokenizer, filter);
 	}	
