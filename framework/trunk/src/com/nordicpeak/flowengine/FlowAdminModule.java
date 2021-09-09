@@ -1414,6 +1414,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		JsonObject json = new JsonObject(2);
 
+		json.putField("flowID", flow.getFlowID());
 		json.putField("flowName", flow.getName());
 		json.putField("hasExternalVersions", external);
 

@@ -28,7 +28,7 @@ $(function() {
 			
 					if (type == "display") {
 						
-						return "<span " + (data.hasExternalVersions ? "data-icon-after='e'" : "") + ">" + $.fn.dataTable.render.text().display(data.flowName) + "</span>";
+						return "<a href='" + FlowAdmin.showFlowURL + data.flowID + "' " + (data.hasExternalVersions ? "data-icon-after='e'" : "") + ">" + $.fn.dataTable.render.text().display(data.flowName) + "</a>";
 					}
 					
 					return data.flowName;
