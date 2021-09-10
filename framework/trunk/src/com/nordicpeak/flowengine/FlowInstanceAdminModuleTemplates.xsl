@@ -31,7 +31,7 @@
 	<xsl:variable name="links">
 		/css/flowengine.css
 		/js/mentionable/mentionable.css
-		/css/UserGroupList.css
+		/css/UserGroupList.css?v=1
 		/css/messages.css
 	</xsl:variable>
 

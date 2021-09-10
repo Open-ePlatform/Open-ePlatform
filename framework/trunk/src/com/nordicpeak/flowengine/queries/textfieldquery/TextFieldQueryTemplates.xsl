@@ -8,7 +8,7 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/jquery/jquery-ui.js
-		/timepicker/js/jquery.timepicker.js
+		/timepicker/js/jquery.timepicker.js?v=1
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">

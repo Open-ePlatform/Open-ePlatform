@@ -14,7 +14,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="globallinks">
-		/featherlight/css/featherlight.min.css
+		/featherlight/css/featherlight.min.css?v=1
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">

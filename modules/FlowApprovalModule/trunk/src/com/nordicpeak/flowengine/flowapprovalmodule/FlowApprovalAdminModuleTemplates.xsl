@@ -21,8 +21,8 @@
 	
 	<xsl:variable name="links">
 		/css/flowengine.css
-		/css/UserGroupList.css
-		/css/flowapprovaladmin.css
+		/css/UserGroupList.css?v=1
+		/css/flowapprovaladmin.css?v=1
 	</xsl:variable>
 	
 	<xsl:template match="Document">

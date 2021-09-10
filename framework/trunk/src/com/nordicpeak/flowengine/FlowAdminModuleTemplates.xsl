@@ -22,7 +22,7 @@
 	
 	<xsl:variable name="globallinks">
 		/css/openhierarchy-jquery-ui.css
-		/featherlight/css/featherlight.min.css
+		/featherlight/css/featherlight.min.css?v=1
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
@@ -44,7 +44,7 @@
 
 	<xsl:variable name="links">
 		/css/flowengine.css?v=8
-		/css/UserGroupList.css
+		/css/UserGroupList.css?v=1
 		/js/colorpicker/jquery.minicolors.css
 		/css/datatables.css
 		/css/flowadmin.css

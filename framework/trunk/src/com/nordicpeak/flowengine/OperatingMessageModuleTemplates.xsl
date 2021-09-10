@@ -10,7 +10,7 @@
 		/jquery/jquery.js
 		/jquery/jquery-migrate.js
 		/jquery/jquery-ui.js
-		/timepicker/js/jquery.timepicker.js
+		/timepicker/js/jquery.timepicker.js?v=1
 		/js/confirmpost.js
 		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
@@ -29,7 +29,7 @@
 	
 	<xsl:variable name="links">
 		/css/flowengine.css
-		/css/UserGroupList.css
+		/css/UserGroupList.css?v=1
 	</xsl:variable>
 
 	<xsl:template match="Document">

@@ -17,7 +17,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="links">
-		/css/UserGroupList.css
+		/css/UserGroupList.css?v=1
 		/css/flowapprovalmanager.css
 	</xsl:variable>
 
