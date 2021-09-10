@@ -5,8 +5,8 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
-		/jquery/jquery-ui.js
+		/jquery/jquery.js?v=1
+		/jquery/jquery-ui.js?v=1
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js

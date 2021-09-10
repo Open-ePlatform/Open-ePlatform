@@ -7,8 +7,8 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/CKEditor.xsl"/>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
-		/jquery/jquery-migrate.js
+		/jquery/jquery.js?v=1
+		/jquery/jquery-migrate.js?v=1
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js

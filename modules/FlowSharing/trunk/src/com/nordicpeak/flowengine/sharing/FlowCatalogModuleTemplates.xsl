@@ -7,7 +7,7 @@
 	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/pics</xsl:variable>
 	
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 		/featherlight/js/featherlight.min.js
 		/js/confirmpost.js
 		/tablesorter/js/jquery.tablesorter.min.js

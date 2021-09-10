@@ -5,7 +5,7 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 		/jquery/plugins/jquery.fileuploader.js
 	</xsl:variable>	
 

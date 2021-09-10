@@ -12,7 +12,7 @@
 	</xsl:variable> -->
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 	</xsl:variable>
 
 	<xsl:variable name="scripts">

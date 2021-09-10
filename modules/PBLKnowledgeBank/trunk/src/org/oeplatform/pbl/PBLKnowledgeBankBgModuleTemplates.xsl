@@ -3,7 +3,7 @@
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 	
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 	</xsl:variable>	
 	
 	<xsl:variable name="scripts">

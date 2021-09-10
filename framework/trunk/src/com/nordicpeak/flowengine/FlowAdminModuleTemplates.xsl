@@ -9,9 +9,9 @@
 	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
-		/jquery/jquery-migrate.js
-		/jquery/jquery-ui.js
+		/jquery/jquery.js?v=1
+		/jquery/jquery-migrate.js?v=1
+		/jquery/jquery-ui.js?v=1
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js

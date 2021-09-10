@@ -6,13 +6,13 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/CKEditor.xsl"/>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 		/js/confirmpost.js
 	</xsl:variable>
 	
 	<!-- Programatical additional globalscripts for UpdateSettings -->
 	<xsl:variable name="updateglobalscripts">
-		/jquery/jquery.js
+		/jquery/jquery.js?v=1
 		/ckeditor/ckeditor.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js

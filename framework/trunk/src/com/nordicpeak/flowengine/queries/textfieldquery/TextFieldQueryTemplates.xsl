@@ -5,9 +5,9 @@
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
 
 	<xsl:variable name="globalscripts">
-		/jquery/jquery.js
-		/jquery/jquery-migrate.js
-		/jquery/jquery-ui.js
+		/jquery/jquery.js?v=1
+		/jquery/jquery-migrate.js?v=1
+		/jquery/jquery-ui.js?v=1
 		/timepicker/js/jquery.timepicker.js?v=1
 	</xsl:variable>
 	
