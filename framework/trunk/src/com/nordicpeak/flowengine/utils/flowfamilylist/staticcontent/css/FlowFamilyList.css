@@ -29,7 +29,7 @@ ul.ui-autocomplete li.ui-menu-item {
 	width: 100%;
 }
 
-ul.ui-autocomplete li.ui-menu-item a {
+ul.ui-autocomplete li.ui-menu-item div {
 	display: block;
 	line-height: 1.5;
 	text-decoration: none;
@@ -38,7 +38,7 @@ ul.ui-autocomplete li.ui-menu-item a {
 	cursor: pointer;
 }
 
-ul.ui-autocomplete li.ui-menu-item a:hover, ul.ui-autocomplete li.ui-menu-item a.ui-state-focus {
+ul.ui-autocomplete li.ui-menu-item div:hover, ul.ui-autocomplete li.ui-menu-item div.ui-state-active {
 	color: #477cce;
 	background: #f6f6f6;
 	border-top: none;
@@ -47,7 +47,7 @@ ul.ui-autocomplete li.ui-menu-item a:hover, ul.ui-autocomplete li.ui-menu-item a
 	border-bottom: 1px solid #E6E6E6;
 }
 
-ul.ui-autocomplete li.ui-menu-item a.ui-corner-all {
+ul.ui-autocomplete li.ui-menu-item div.ui-corner-all {
 	border-radius: 0;
 }
 
