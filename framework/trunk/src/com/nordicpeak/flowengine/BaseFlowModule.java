@@ -118,10 +118,10 @@ import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowLimitExceededException;
-import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotAvailiableInRequestedFormat;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
+import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
@@ -490,8 +490,8 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 			throw new FlowNotPublishedException(instanceManager.getFlowInstance().getFlow());
 		}
 		
-		if(stopSubmitForUnpublishedSavedFlows(instanceManager.getFlowInstance()))
-		{
+		if(stopSubmitForUnpublishedSavedFlows(instanceManager.getFlowInstance())){
+			
 			this.removeMutableFlowInstanceManagerFromSession(instanceManager, session);
 
 			throw new SavedUnpublishedFlowLockedException(instanceManager.getFlowInstance().getFlow());
