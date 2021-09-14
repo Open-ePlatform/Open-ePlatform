@@ -461,14 +461,14 @@
 			<div id="secondGuardianAttributeContainer">
 				<div class="floatleft full">
 					<xsl:call-template name="createCheckbox">
-						<xsl:with-param name="id" select="'setAsSecondGuardianAttribute'" />
-						<xsl:with-param name="name" select="'setAsSecondGuardianAttribute'" />
+						<xsl:with-param name="id" select="'setSecondGuardianAsAttribute'" />
+						<xsl:with-param name="name" select="'setSecondGuardianAsAttribute'" />
 						<xsl:with-param name="element" select="ChildQuery" /> 
 						<xsl:with-param name="class" select="'vertical-align-middle'" />
 					</xsl:call-template>
 						
-					<label for="setAsAttribute">
-						<xsl:value-of select="$i18n.Query.setAsSecondGuardianAttribute" />
+					<label for="setSecondGuardianAsAttribute">
+						<xsl:value-of select="$i18n.Query.setSecondGuardianAsAttribute" />
 					</label>
 				</div>
 			

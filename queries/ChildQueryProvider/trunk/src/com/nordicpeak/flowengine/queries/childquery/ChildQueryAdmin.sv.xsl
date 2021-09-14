@@ -88,8 +88,8 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="i18n.attributes.name">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.attributes.value">Värde</xsl:variable>
 	
-	<xsl:variable name="i18n.Query.setAsSecondGuardianAttribute">Spara andra vårdnadshavare som attribut</xsl:variable>
+	<xsl:variable name="i18n.Query.setSecondGuardianAsAttribute">Spara andra vårdnadshavaren som attribut</xsl:variable>
 	<xsl:variable name="i18n.secondGuardianAttributeDescription">Följande attribut kommer att sparas (om aktiverade ovan) med det ovan valda prefixet. Användningsexempel om du valt prefixet 'test': $attribute{test.guardianCitizenIdentifier}.
-	Observera att saknas annan vårdnadshavare kommer dessa fält inte populeras.</xsl:variable>
+	Observera att saknas annan vårdnadshavare kommer attributen inte sättas.</xsl:variable>
 	
 </xsl:stylesheet>

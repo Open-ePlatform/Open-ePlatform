@@ -85,7 +85,7 @@ $(function() {
 		
 	}).trigger("change");
 	
-	$('#setAsSecondGuardianAttribute').on("change", function() {
+	$('#setSecondGuardianAsAttribute').on("change", function() {
 		
 		$('#secondGuardianAttributeTableContainer').toggle(this.checked);
 		

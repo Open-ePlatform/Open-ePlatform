@@ -81,12 +81,12 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@WebPopulate
 	@XMLElement
 	private boolean skipMultipartSigningIfSameAddress;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean setMultipartsAsOwners;
-	
+
 	@DAOManaged
 	@XMLElement
 	private boolean requireGuardianEmail;
@@ -109,52 +109,52 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer maxAge;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean setAsAttribute;
-	
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean setAsSecondGuardianAttribute;
-	
+	private boolean setSecondGuardianAsAttribute;
+
 	@DAOManaged
 	@WebPopulate(maxLength = 255)
-	@RequiredIfSet(paramNames = "setAsSecondGuardianAttribute")
+	@RequiredIfSet(paramNames = "setSecondGuardianAsAttribute")
 	@XMLElement
 	private String secondGuardianAttributeName;
-	
+
 	@DAOManaged
 	@XMLElement
 	private String filterEndpoint;
-	
+
 	@TextTagReplace
 	@DAOManaged
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String emptyFilterDescription;
-	
+
 	@TextTagReplace
 	@DAOManaged
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String filteredChildrenDescription;
-	
+
 	@TextTagReplace
 	@DAOManaged
 	@Templated
 	@WebPopulate(maxLength = 65535)
 	@XMLElement
 	private String communicationErrorDescription;
-	
+
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@XMLElement(fixCase = true)
@@ -318,10 +318,12 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	}
 
 	public boolean isSkipMultipartSigningIfSameAddress() {
+
 		return skipMultipartSigningIfSameAddress;
 	}
 
 	public void setSkipMultipartSigningIfSameAddress(boolean skipMultipartSigningIfSameAddress) {
+
 		this.skipMultipartSigningIfSameAddress = skipMultipartSigningIfSameAddress;
 	}
 
@@ -393,7 +395,7 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		addressElement.setAttribute("minOccurs", "1");
 		addressElement.setAttribute("maxOccurs", "1");
 		sequenceElement.appendChild(addressElement);
-		
+
 		Element addressUUIDElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		addressUUIDElement.setAttribute("name", "AddressUUID");
 		addressUUIDElement.setAttribute("type", "xs:string");
@@ -501,17 +503,17 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 		emptyFilterDescription = XMLValidationUtils.validateParameter("emptyFilterDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		filteredChildrenDescription = XMLValidationUtils.validateParameter("filteredChildrenDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		communicationErrorDescription = XMLValidationUtils.validateParameter("communicationErrorDescription", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		
+
 		if (attributeName != null) {
-			
+
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
 		}
-		
+
 		if (secondGuardianAttributeName != null) {
-			
-			setAsSecondGuardianAttribute = xmlParser.getPrimitiveBoolean("setAsSecondGuardianAttribute");
+
+			setSecondGuardianAsAttribute = xmlParser.getPrimitiveBoolean("setSecondGuardianAsAttribute");
 		}
-		
+
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
@@ -573,17 +575,17 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	}
 
 	public boolean isSetAsAttribute() {
-	
+
 		return setAsAttribute;
 	}
 
 	public void setSetAsAttribute(boolean setAsAttribute) {
-	
+
 		this.setAsAttribute = setAsAttribute;
 	}
 
 	public String getAttributeName() {
-	
+
 		return attributeName;
 	}
 
@@ -593,65 +595,72 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 	}
 
 	public String getFilterEndpointName() {
+
 		return filterEndpoint;
 	}
-	
-	public boolean isSetAsSecondGuardianAttribute() {
-		
-		return setAsSecondGuardianAttribute;
+
+	public boolean isSetSecondGuardianAsAttribute() {
+
+		return setSecondGuardianAsAttribute;
 	}
 
-	
-	public void setSetAsSecondGuardianAttribute(boolean setAsSecondGuardianAttribute) {
-	
-		this.setAsSecondGuardianAttribute = setAsSecondGuardianAttribute;
+	public void setSetSecondGuardianAsAttribute(boolean setSecondGuardianAsAttribute) {
+
+		this.setSecondGuardianAsAttribute = setSecondGuardianAsAttribute;
 	}
 
-	
 	public String getSecondGuardianAttributeName() {
-	
+
 		return secondGuardianAttributeName;
 	}
 
-	
 	public void setSecondGuardianAttributeName(String secondGuardianAttributeName) {
-	
+
 		this.secondGuardianAttributeName = secondGuardianAttributeName;
 	}
 
 	public void setFilterEndpointName(String filterEndpointName) {
+
 		this.filterEndpoint = filterEndpointName;
 	}
 
 	public List<SelectedChildAttribute> getSelectedChildAttributes() {
+
 		return selectedChildAttributes;
 	}
 
 	public void setSelectedChildAttributes(List<SelectedChildAttribute> selectedChildAttributes) {
+
 		this.selectedChildAttributes = selectedChildAttributes;
 	}
 
 	public String getEmptyFilterDescription() {
+
 		return emptyFilterDescription;
 	}
 
 	public void setEmptyFilterDescription(String emptyFilterDescription) {
+
 		this.emptyFilterDescription = emptyFilterDescription;
 	}
 
 	public String getFilteredChildrenDescription() {
+
 		return filteredChildrenDescription;
 	}
 
 	public void setFilteredChildrenDescription(String filteredChildrenDescription) {
+
 		this.filteredChildrenDescription = filteredChildrenDescription;
 	}
 
 	public String getCommunicationErrorDescription() {
+
 		return communicationErrorDescription;
 	}
 
 	public void setCommunicationErrorDescription(String communicationErrorDescription) {
+
 		this.communicationErrorDescription = communicationErrorDescription;
 	}
 

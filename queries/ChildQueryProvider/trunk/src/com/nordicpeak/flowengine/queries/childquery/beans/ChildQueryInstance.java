@@ -253,7 +253,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			attributeHandler.setAttribute(query.getAttributeName() + ".childCitizenIdentifier", citizenIdentifier);
 		}
 
-		if (query.isSetAsSecondGuardianAttribute() && query.getSecondGuardianAttributeName() != null && storedGuardians != null) {
+		if (query.isSetSecondGuardianAsAttribute() && query.getSecondGuardianAttributeName() != null && storedGuardians != null) {
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
 				if (!storedGuardian.isPoster()) {
@@ -303,7 +303,7 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			}
 		}
 
-		if (query.isSetAsSecondGuardianAttribute() && query.getSecondGuardianAttributeName() != null) {
+		if (query.isSetSecondGuardianAsAttribute() && query.getSecondGuardianAttributeName() != null) {
 
 			attributeHandler.removeAttribute(query.getSecondGuardianAttributeName() + ".guardianFirstname");
 			attributeHandler.removeAttribute(query.getSecondGuardianAttributeName() + ".guardianLastname");

@@ -354,8 +354,8 @@
 		<Query>
 			<![CDATA[
 				ALTER TABLE `child_queries` 
-					ADD COLUMN `setAsSecondGuardianAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `attributeName`,
-				 	ADD COLUMN `secondGuardianAttributeName` VARCHAR(255) NULL AFTER `setAsSecondGuardianAttribute`;
+					ADD COLUMN `setSecondGuardianAsAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `attributeName`,
+				 	ADD COLUMN `secondGuardianAttributeName` VARCHAR(255) NULL AFTER `setSecondGuardianAsAttribute`;
 			]]>
 		</Query>
 	</Script>
