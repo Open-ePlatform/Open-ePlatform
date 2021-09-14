@@ -75,13 +75,6 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.vividsolutions.jts.algorithm.CentroidArea;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTReader;
 import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
@@ -108,6 +101,13 @@ import com.nordicpeak.flowengine.utils.BlobPDFAttachment;
 import com.nordicpeak.flowengine.utils.BlobResourceProvider;
 import com.nordicpeak.flowengine.utils.JTidyUtils;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
+import com.vividsolutions.jts.algorithm.CentroidArea;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<GeneralMapQueryInstance> implements BaseQueryCRUDCallback {
 
@@ -1562,15 +1562,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 			String url = mapPrint.getPrintService().getPrintServiceAddress() + "/pdf/create.json";
 
-			if (url.startsWith("https://")) {
-
-				HTTPUtils.sendHTTPSPostRequest(reader, new URL(url), writer, "UTF-8", mapFishConnectionTimeout, mapFishReadTimeout);
-
-			} else {
-
-				HTTPUtils.sendHTTPPostRequest(reader, new URL(url), writer, "UTF-8", mapFishConnectionTimeout, mapFishReadTimeout);
-
-			}
+			HTTPUtils.sendHTTPPostRequest(reader, new URL(url), writer, "UTF-8", mapFishConnectionTimeout, mapFishReadTimeout);
 
 			String mapImageURL = writer.toString();
 
@@ -1584,15 +1576,7 @@ public class GeneralMapQueryProviderModule extends BaseQueryProviderModule<Gener
 
 					outputStream = new ByteArrayOutputStream();
 
-					if (mapImageURL.startsWith("https://")) {
-
-						HTTPUtils.sendHTTPsGetRequest(mapImageURL, null, outputStream);
-
-					} else {
-
-						HTTPUtils.sendHTTPGetRequest(mapImageURL, null, outputStream);
-
-					}
+					HTTPUtils.sendHTTPGetRequest(mapImageURL, null, outputStream);
 
 					return new SerialBlob(outputStream.toByteArray());
 

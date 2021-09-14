@@ -42,15 +42,7 @@ public class GenerateMapImageTask implements Runnable {
 
 			String url = executor.getPrintServiceAddress() + "/pdf/create.json";
 
-			if (url.startsWith("https://")) {
-
-				HTTPUtils.sendHTTPSPostRequest(reader, new URL(url), writer, "UTF-8", executor.getMapFishConnectionTimeout(), executor.getMapFishReadTimeout());
-
-			} else {
-
-				HTTPUtils.sendHTTPPostRequest(reader, new URL(url), writer, "UTF-8", executor.getMapFishConnectionTimeout(), executor.getMapFishReadTimeout());
-
-			}
+			HTTPUtils.sendHTTPPostRequest(reader, new URL(url), writer, "UTF-8", executor.getMapFishConnectionTimeout(), executor.getMapFishReadTimeout());
 
 			String mapImageURL = writer.toString();
 
@@ -64,15 +56,7 @@ public class GenerateMapImageTask implements Runnable {
 
 					outputStream = new ByteArrayOutputStream();
 
-					if (mapImageURL.startsWith("https://")) {
-
-						HTTPUtils.sendHTTPsGetRequest(mapImageURL, null, outputStream);
-
-					} else {
-
-						HTTPUtils.sendHTTPGetRequest(mapImageURL, null, outputStream);
-
-					}
+					HTTPUtils.sendHTTPGetRequest(mapImageURL, null, outputStream);
 
 					generatedMapImage = new SerialBlob(outputStream.toByteArray());
 
