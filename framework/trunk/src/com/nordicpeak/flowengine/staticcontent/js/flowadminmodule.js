@@ -47,9 +47,9 @@ $(function() {
 			},					
 			{ name:"flowCategory", searchable: false, visible: FlowAdmin.useCategories },
 			{ name:"versions", searchable: false },
-			{ name:"submittedInstances", searchable: false },
-			{ name:"notSubmittedInstances", searchable: false },
-			{ name:"flowFamilyLastReviewed", type: "date" }
+			{ name:"submittedInstances", searchable: false, visible: !FlowAdmin.hideSubmittedInstances },
+			{ name:"notSubmittedInstances", searchable: false, visible: !FlowAdmin.hideNotSubmittedInstances },
+			{ name:"flowFamilyLastReviewed", type: "date", visible: !FlowAdmin.hideFlowFamilyLastReviewed }
 		]
 		
 		if (getExtraFlowListColumns) {
@@ -58,7 +58,7 @@ $(function() {
 		}
 		
 		columns.push(
-			{ name:"delete", orderable: false, searchable: false,
+			{ name:"delete", orderable: false, searchable: false, visible: !FlowAdmin.hideDeleteButton,
 				render: function(data, type, row) {
 			
 					if (type == "display") {

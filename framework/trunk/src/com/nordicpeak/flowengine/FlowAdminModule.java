@@ -1398,7 +1398,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return flowJSONArray;
 	}
 
-	private JsonNode getFlowIconJSON(Flow flow) {
+	public JsonNode getFlowIconJSON(Flow flow) {
 
 		String json = flow.getFlowID().toString();
 
@@ -1410,7 +1410,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return new JsonLeaf(json);
 	}
 
-	private JsonNode getFlowNameJSON(Flow flow, boolean external) {
+	public JsonNode getFlowNameJSON(Flow flow, boolean external) {
 
 		JsonObject json = new JsonObject(2);
 
@@ -1421,7 +1421,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return json;
 	}
 
-	private JsonNode getFlowTypeJSON(Flow flow) {
+	public JsonNode getFlowTypeJSON(Flow flow) {
 
 		FlowType flowType = flow.getFlowType();
 
@@ -1445,7 +1445,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return json;
 	}
 
-	protected void appendExtraFlowListColumns(JsonArray flowJSONArray, Flow flow) {}
+	public void appendExtraFlowListColumns(JsonArray flowJSONArray, Flow flow) {}
 
 	protected void appendAdditionalListInformation(Document doc, Element listFlowsElement) {
 

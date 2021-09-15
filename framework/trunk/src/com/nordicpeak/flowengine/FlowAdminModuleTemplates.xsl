@@ -32,7 +32,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=15
+		/js/flowadminmodule.js?v=16
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
@@ -204,6 +204,10 @@
 				iconURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/icon/",
 				imgPath: "<xsl:value-of select="$imgPath"/>",
 				useCategories: <xsl:choose><xsl:when test="/Document/UseCategories">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
+				hideSubmittedInstances: <xsl:choose><xsl:when test="/Document/HideSubmittedInstances">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
+				hideNotSubmittedInstances: <xsl:choose><xsl:when test="/Document/HideNotSubmittedInstances">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
+				hideFlowFamilyLastReviewed: <xsl:choose><xsl:when test="/Document/HideFlowFamilyLastReviewed">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
+				hideDeleteButton: <xsl:choose><xsl:when test="/Document/HideDeleteButton">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
 				i18n: {
 		 			"decimal":        "<xsl:value-of select="$i18n.DataTable.decimal"/>",
 					"emptyTable":     "<xsl:value-of select="$i18n.DataTable.emptyTable"/>",
@@ -244,56 +248,61 @@
 		</script>
 
 	</xsl:template>
-
+	
 	<xsl:template name="AdditionalListFilters" />
 	
 	<xsl:template name="CreateShortcutMenu">
 	
-		<xsl:variable name="extensionLinks" select="ExtensionLink[slot='top-right']"/>
-	
-		<div id="shortcut-menu" class="flowadmin-menu dd twenty floatright">
-			<a>
-				<span>
-					<xsl:value-of select="$i18n.Shortcuts"/>
-				</span>
-				<div class="menu-arrow"><i>_</i></div>
-			</a>
-			<div class="submenu">
-				<ul>
-				
-					<xsl:if test="AddAccess">
+		<xsl:variable name="extensionLinks" select="ExtensionLink[slot='bottom-right']"/>
+		
+		<xsl:if test="AddAccess or AdminAccess or $extensionLinks">
+		
+			<div id="shortcut-menu" class="flowadmin-menu dd twenty floatright">
+				<a>
+					<span>
+						<xsl:value-of select="$i18n.Shortcuts"/>
+					</span>
+					<div class="menu-arrow"><i>_</i></div>
+				</a>
+				<div class="submenu">
+					<ul>
 					
-						<xsl:call-template name="CreateShortcutMenuLink">
-							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/addflow')" />
-							<xsl:with-param name="name" select="$i18n.addFlow" />
-						</xsl:call-template>
+						<xsl:if test="AddAccess">
 						
-						<xsl:call-template name="CreateShortcutMenuLink">
-							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/importflow')" />
-							<xsl:with-param name="name" select="$i18n.importFlow" />
-						</xsl:call-template>
-						
-					</xsl:if>
-				
-					<xsl:if test="AdminAccess">
+							<xsl:call-template name="CreateShortcutMenuLink">
+								<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/addflow')" />
+								<xsl:with-param name="name" select="$i18n.addFlow" />
+							</xsl:call-template>
+							
+							<xsl:call-template name="CreateShortcutMenuLink">
+								<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/importflow')" />
+								<xsl:with-param name="name" select="$i18n.importFlow" />
+							</xsl:call-template>
+							
+						</xsl:if>
 					
-						<xsl:call-template name="CreateShortcutMenuLink">
-							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/standardstatuses')" />
-							<xsl:with-param name="name" select="$i18n.administrateStandardStatuses" />
-						</xsl:call-template>
+						<xsl:if test="AdminAccess">
 						
-						<xsl:call-template name="CreateShortcutMenuLink">
-							<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/flowtypes')" />
-							<xsl:with-param name="name" select="$i18n.administrateFlowTypes" />
-						</xsl:call-template>
-						
-					</xsl:if>
-				
-					<xsl:apply-templates select="ExtensionLink[slot='bottom-right']"/>
+							<xsl:call-template name="CreateShortcutMenuLink">
+								<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/standardstatuses')" />
+								<xsl:with-param name="name" select="$i18n.administrateStandardStatuses" />
+							</xsl:call-template>
+							
+							<xsl:call-template name="CreateShortcutMenuLink">
+								<xsl:with-param name="url" select="concat(/Document/requestinfo/currentURI, '/', /Document/module/alias, '/flowtypes')" />
+								<xsl:with-param name="name" select="$i18n.administrateFlowTypes" />
+							</xsl:call-template>
+							
+						</xsl:if>
 					
-				</ul>
+						<xsl:apply-templates select="$extensionLinks"/>
+						
+					</ul>
+				</div>
 			</div>
-		</div>
+			
+		</xsl:if>
+	
 	</xsl:template>
 	
 	<xsl:template name="CreateShortcutMenuLink">
