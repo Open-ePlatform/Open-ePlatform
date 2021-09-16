@@ -674,7 +674,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 		ObjectQuery<Timestamp> query = new ObjectQuery<Timestamp>(connection, false, FLOW_CHANGED_DATE_SQL, TimeStampPopulator.getPopulator());
 		query.setInt(1, flow.getFlowFamily().getFlowFamilyID());
-		query.setInt(2, flow.getFlowID());
+		query.setInt(2, flow.getVersion());
 
 		return query.executeQuery();
 	}
