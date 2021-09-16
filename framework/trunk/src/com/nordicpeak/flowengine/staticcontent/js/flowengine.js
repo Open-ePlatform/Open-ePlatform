@@ -503,7 +503,7 @@ var dynamicallyLoadedScripts = []
 
 function scriptIsLoaded(script) {
 	
-	if ($("script[src='" + script.src + "']").length > 0) {
+	if ($("script[src='" + script.src.split("?")[0] + "']").length > 0) {
 		return true;
 	}
 	
