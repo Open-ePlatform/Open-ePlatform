@@ -15,7 +15,7 @@
 	<xsl:variable name="scripts">
 		/js/jquery.blockui.js
 		/js/flowengine.helpdialog.js
-		/js/flowengine.js
+		/js/flowengine.js?v=1
 		/js/flowengine.tablesorter.js
 		/js/userflowinstancemodule.js?v=1
 		/js/jquery.qloader-init.js

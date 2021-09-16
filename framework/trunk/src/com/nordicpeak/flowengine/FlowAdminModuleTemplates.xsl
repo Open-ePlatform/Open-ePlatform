@@ -30,7 +30,7 @@
 		/js/jquery.blockui.js
 		/js/jquery.expander.min.js
 		/js/flowengine.helpdialog.js
-		/js/flowengine.js
+		/js/flowengine.js?v=1
 		/js/flowengine.step-navigator.js
 		/js/flowadminmodule.js?v=16
 		/js/jquery.ui.datepicker-sv.js
