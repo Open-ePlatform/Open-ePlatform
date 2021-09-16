@@ -1,6 +1,6 @@
 var AttachmentsModule;
 
-$(document).ready(function() {
+$(function() {
 	
 	if(window.location.hash == "#new-attachment") {
 		scrollToAttachments("#attachments ul.attachments li");
