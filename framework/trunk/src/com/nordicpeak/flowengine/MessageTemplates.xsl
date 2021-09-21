@@ -108,10 +108,15 @@
 			</xsl:if>
 						
 			<div class="message" data-messageid="{$message/messageID}">
-			
-				<xsl:if test="local-name() = 'ExternalMessage'">
-					<xsl:call-template name="getExternalMessageTypeText"/>
-				</xsl:if>
+				
+				<xsl:choose>
+					<xsl:when test="local-name() = 'ExternalMessage'">
+						<xsl:call-template name="getExternalMessageTypeText"/>
+					</xsl:when>
+					<xsl:when test="local-name() = 'InternalMessage'">
+						<xsl:call-template name="getInternalMessageTypeText"/>
+					</xsl:when>
+				</xsl:choose>
 							
 				<xsl:if test="$repliesEnabled and $message/QuotedMessage">
 							
@@ -336,6 +341,8 @@
 	</xsl:template>	
 	
 	<xsl:template name="getExternalMessageTypeText" />
+
+	<xsl:template name="getInternalMessageTypeText" />
 	
 	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
 	
