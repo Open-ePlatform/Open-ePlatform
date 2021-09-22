@@ -809,18 +809,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				
 				if (enableSiteProfileRedirectSupport) {
 
-					if (flowInstanceID != null) {
+					FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field) null);
 
-						FlowInstance flowInstance = this.getFlowInstance(flowInstanceID, null, (Field) null);
+					if (flowInstance != null && profileHandler != null) {
 
-						if (flowInstance != null && profileHandler != null) {
+						SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
 
-							SiteProfile profile = profileHandler.getCurrentProfile(user, req, uriParser);
+						if (profileRedirect(profile, flowInstance, req, res, uriParser)) {
 
-							if (profileRedirect(profile, flowInstance, req, res, uriParser)) {
-
-								return null;
-							}
+							return null;
 						}
 					}
 				}
