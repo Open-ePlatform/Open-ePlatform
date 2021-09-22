@@ -91,27 +91,75 @@ $(function() {
 		
 	}).trigger("change");
 	
-	$('#useMultipartSigning').on("change", function() {
+	$('#useMultipartSigning').on("change",function(e) {
 		
+		var $this = $(this);
+		
+		if($this.is(":checked")) {
+			$(".guardianContactAttribute").show();
+		} else {
+			$(".guardianContactAttribute").hide();
+		}
+		
+		showGuardianCitizenIdentifierAttribute();
 		showGuardianAttributeContainer();
+		
 	}).trigger("change");
 	
 	$('#alwaysShowOtherGuardians').on("change", function() {
 		
 		showGuardianAttributeContainer();
+		
 	}).trigger("change");
 	
-	showGuardianAttributeContainer();
+	$("#hideSSNForOtherGuardians").on("change", function(e) {
+		
+		showGuardianCitizenIdentifierAttribute();
+		
+	}).trigger("change");
+	
+	$("#showGuardianAddress").on("change",function(e) {
+		
+		var $this = $(this);
+		
+		if($this.is(":checked")) {
+			$(".secondGuardianAddressAttribute").show();
+		} else {
+			$(".secondGuardianAddressAttribute").hide();
+		}
+		
+	}).trigger("change");
+	
+	$("#showAddress").on("change",function(e) {
+		
+		var $this = $(this);
+		
+		if($this.is(":checked")) {
+			$(".childAddressAttribute").show();
+		} else {
+			$(".childAddressAttribute").hide();
+		}
+		
+	}).trigger("change");
+	
 });
 
-function showGuardianAttributeContainer()
-{
-	if($('#useMultipartSigning').is(':checked') || $('#alwaysShowOtherGuardians').is(':checked'))
-		{			
-			$('#secondGuardianAttributeContainer').show();
-		}
-		else
-		{
-			$('#secondGuardianAttributeContainer').hide();
-		}
+function showGuardianAttributeContainer() {
+	
+	if($('#useMultipartSigning').is(':checked') || $('#alwaysShowOtherGuardians').is(':checked')) {			
+		$('#secondGuardianAttributeContainer').show();
+	} else {
+		$('#secondGuardianAttributeContainer').hide();
+	}
+	
+}
+
+function showGuardianCitizenIdentifierAttribute() {
+	
+	if($('#useMultipartSigning').is(':checked') || !$('#hideSSNForOtherGuardians').is(':checked')) {			
+		$('#guardianCitizenIdentifierAttribute').show();
+	} else {
+		$('#guardianCitizenIdentifierAttribute').hide();
+	}
+	
 }

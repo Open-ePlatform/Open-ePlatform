@@ -251,20 +251,38 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 			attributeHandler.setAttribute(query.getAttributeName() + ".childFirstname", firstname);
 			attributeHandler.setAttribute(query.getAttributeName() + ".childLastname", lastname);
 			attributeHandler.setAttribute(query.getAttributeName() + ".childCitizenIdentifier", citizenIdentifier);
+			
+			if(query.isShowAddress()) {
+				attributeHandler.setAttribute(query.getAttributeName() + ".childAddress", address);
+				attributeHandler.setAttribute(query.getAttributeName() + ".childZipcode", zipcode);
+				attributeHandler.setAttribute(query.getAttributeName() + ".childPostalAddress", postalAddress);
+			}
 		}
 
 		if (query.isSetSecondGuardianAsAttribute() && query.getSecondGuardianAttributeName() != null && storedGuardians != null) {
 
 			for (StoredGuardian storedGuardian : storedGuardians) {
 				if (!storedGuardian.isPoster()) {
+					
 					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianFirstname", storedGuardian.getFirstname());
 					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianLastname", storedGuardian.getLastname());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianEmail", storedGuardian.getEmail());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianPhone", storedGuardian.getPhone());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianCitizenIdentifier", storedGuardian.getCitizenIdentifier());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianAddress", storedGuardian.getAddress());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianZipcode", storedGuardian.getZipcode());
-					attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianPostalAddress", storedGuardian.getPostalAddress());
+					
+					if(query.isUseMultipartSigning() || (query.isAlwaysShowOtherGuardians() && !query.isHideSSNForOtherGuardians())) {
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianCitizenIdentifier", storedGuardian.getCitizenIdentifier());
+					}
+					
+					if(query.isShowGuardianAddress()) {
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianAddress", storedGuardian.getAddress());
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianZipcode", storedGuardian.getZipcode());
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianPostalAddress", storedGuardian.getPostalAddress());
+					}
+					
+					if(query.isUseMultipartSigning()) {
+						
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianEmail", storedGuardian.getEmail());
+						attributeHandler.setAttribute(query.getSecondGuardianAttributeName() + ".guardianPhone", storedGuardian.getPhone());
+					}
+					
 				}
 			}
 		}

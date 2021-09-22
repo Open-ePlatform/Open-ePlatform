@@ -12,7 +12,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/childqueryadmin.js?v=2
+		/js/childqueryadmin.js?v=3
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -454,6 +454,18 @@
 							<td>prefix.childCitizenIdentifier</td>
 							<td><xsl:value-of select="$java.exportChildCitizenIdentifier" /></td>
 						</tr>
+						<tr class="childAddressAttribute">
+							<td>prefix.childAddress</td>
+							<td><xsl:value-of select="$java.exportChildAdress" /></td>
+						</tr>
+						<tr class="childAddressAttribute">
+							<td>prefix.childZipcode</td>
+							<td><xsl:value-of select="$java.exportChildZipCode" /></td>
+						</tr>
+						<tr class="childAddressAttribute">
+							<td>prefix.childPostalAddress</td>
+							<td><xsl:value-of select="$java.exportChildPostalAdress" /></td>
+						</tr>
 					</tbody>
 				</table>
 				
@@ -505,29 +517,29 @@
 								<td>prefix.guardianLastname</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianLastname" /></td>
 							</tr>
-							<tr>
+							<tr class="guardianContactAttribute">
 								<td>prefix.guardianEmail</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianEmail" /></td>
 							</tr>
-							<tr>
+							<tr class="guardianContactAttribute">
 								<td>prefix.guardianPhone</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianPhone" /></td>
 							</tr>
-							<tr>
+							<tr id="guardianCitizenIdentifierAttribute">
 								<td>prefix.guardianCitizenIdentifier</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianCitizenIdentifier" /></td>
 							</tr>
-							<tr>
+							<tr class="secondGuardianAddressAttribute">
 								<td>prefix.guardianAddress</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianAdress" /></td>
 							</tr>
-							<tr>
-								<td>prefix.guardianPostalAdress</td>
-								<td><xsl:value-of select="$java.exportOtherGuardianPostalAdress" /></td>
-							</tr>
-							<tr>
+							<tr class="secondGuardianAddressAttribute">
 								<td>prefix.guardianZipcode</td>
 								<td><xsl:value-of select="$java.exportOtherGuardianZipCode" /></td>
+							</tr>
+							<tr class="secondGuardianAddressAttribute">
+								<td>prefix.guardianPostalAddress</td>
+								<td><xsl:value-of select="$java.exportOtherGuardianPostalAdress" /></td>
 							</tr>
 							
 						</tbody>

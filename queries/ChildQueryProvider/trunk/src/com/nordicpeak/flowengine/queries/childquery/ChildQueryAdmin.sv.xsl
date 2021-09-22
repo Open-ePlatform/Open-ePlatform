@@ -21,7 +21,7 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="java.exportChildCitizenFirstName">Barnets förnamn</xsl:variable>
 	<xsl:variable name="java.exportChildCitizenLastName">Barnets efternamn</xsl:variable>
 	<xsl:variable name="java.exportChildCitizenIdentifier">Barnets personnummer</xsl:variable>
-	<xsl:variable name="java.exportChildAdress">Barnets address</xsl:variable>
+	<xsl:variable name="java.exportChildAdress">Barnets adress</xsl:variable>
 	<xsl:variable name="java.exportChildPostalAdress">Barnets postort</xsl:variable>
 	<xsl:variable name="java.exportChildZipCode">Barnets postnummer</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianName">Andra vårdnadshavarens namn</xsl:variable>
@@ -30,7 +30,7 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="java.exportOtherGuardianEmail">Andra vårdnadshavarens e-post</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianPhone">Andra vårdnadshavarens telefon</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianCitizenIdentifier">Andra vårdnadshavarens personnummer</xsl:variable>
-	<xsl:variable name="java.exportOtherGuardianAdress">Andra vårdnadshavarens address</xsl:variable>
+	<xsl:variable name="java.exportOtherGuardianAdress">Andra vårdnadshavarens adress</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianPostalAdress">Andra vårdnadshavarens postort</xsl:variable>
 	<xsl:variable name="java.exportOtherGuardianZipCode">Andra vårdnadshavarens postnummer</xsl:variable>
 	
@@ -44,7 +44,7 @@ Frågetypen kan även hämta in uppgifter om övriga vårdnadshavare för barnet.
 	<xsl:variable name="i18n.Query.skipMultipartSigningIfSameAddress.warning">Systemet hanterar ej folkbokföringsadresser som är inskrivna på olika sätt hos Skatteverket och i dessa fall måste båda vårdnadshavarna signera ansökan.</xsl:variable>
 	<xsl:variable name="i18n.AlwaysShowOtherGuardians">Visa alltid andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.ShowAddress">Visa folkbokföringsadress för barn</xsl:variable>
-	<xsl:variable name="i18n.ShowGuardianAddress">Visa folkbokföringsaddress för vårdnadshavare</xsl:variable>
+	<xsl:variable name="i18n.ShowGuardianAddress">Visa folkbokföringsadress för vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWays">Krävda kontaktvägar för andra vårdnadshavare</xsl:variable>
 	<xsl:variable name="i18n.RequiredContactWayVerification">Kräv verifiering av kontaktvägar</xsl:variable>
 	<xsl:variable name="i18n.MinChildAge">Lägsta ålder på barn (lämna tomt för ingen gräns)</xsl:variable>
