@@ -193,7 +193,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 		}
-		
+
 		if (assignableUserIDs != null) {
 
 			assignableUsers = new ArrayList<>(assignableUserIDs.size());
@@ -221,7 +221,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		List<Group> assignableGroups = null;
 		List<Group> responsibleGroups = null;
-		
+
 		if (responsibleGroupIDs != null) {
 
 			responsibleGroups = new ArrayList<>(responsibleGroupIDs.size());
@@ -240,7 +240,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 		}
-		
+
 		if (assignableGroupIDs != null) {
 
 			assignableGroups = new ArrayList<>(assignableGroupIDs.size());
@@ -259,7 +259,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				}
 			}
 		}
-		
+
 		activity.setAssignableGroups(assignableGroups);
 		activity.setResponsibleGroups(responsibleGroups);
 
@@ -277,22 +277,49 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
 		}
-		
+
 		boolean useResponsibleUserAttributeName = Boolean.parseBoolean(req.getParameter("useResponsibleUserAttributeName"));
-		
-		if(useResponsibleUserAttributeName && CollectionUtils.isEmpty(activity.getResponsibleUserAttributeNames())) {
-			
+
+		if (useResponsibleUserAttributeName && CollectionUtils.isEmpty(activity.getResponsibleUserAttributeNames())) {
+
 			validationErrors.add(new ValidationError("ResposibleAttributeNamesRequired"));
 		}
-		
+
 		if (activity.isAllowManagersToAssignOwner() && assignableUsers == null && assignableGroups == null) {
-			
+
 			validationErrors.add(new ValidationError("AssignableRequired"));
 		}
 
 		if (!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
+	}
+
+	@Override
+	protected FlowApprovalActivity populateFromAddRequest(HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+
+		FlowApprovalActivity activity = super.populateFromAddRequest(req, user, uriParser);
+
+		return populate(activity);
+	}
+
+	@Override
+	protected FlowApprovalActivity populateFromUpdateRequest(FlowApprovalActivity activity, HttpServletRequest req, User user, URIParser uriParser) throws ValidationException, Exception {
+
+		activity = super.populateFromUpdateRequest(activity, req, user, uriParser);
+
+		return populate(activity);
+	}
+
+	protected FlowApprovalActivity populate(FlowApprovalActivity activity) {
+
+		if (activity.getAttributeName() == null) {
+
+			activity.setInverted(false);
+			activity.setAttributeValues(null);
+		}
+
+		return activity;
 	}
 
 	@Override
