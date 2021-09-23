@@ -103,7 +103,7 @@
 	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNamesDescription">Om inga användare hittas med användarnamnen från attributen nedan så kommer nedan valda reservansvariga att få aktiviteten istället.</xsl:variable>
 	<xsl:variable name="i18n.Activity.useAttributeFilter">Använd attributfilter för att aktivera aktiviteten</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn</xsl:variable>
-	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värderna matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
+	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värdena matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddress">Funktionsbrevlåda</xsl:variable>
 	<xsl:variable name="i18n.Activity.globalEmailAddressHelp">Får notifikation om startad aktivitet utöver ansvariga</xsl:variable>
