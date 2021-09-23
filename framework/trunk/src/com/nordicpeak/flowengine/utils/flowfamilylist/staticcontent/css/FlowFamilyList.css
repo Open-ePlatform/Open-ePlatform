@@ -51,7 +51,7 @@ ul.ui-autocomplete li.ui-menu-item div.ui-corner-all {
 	border-radius: 0;
 }
 
-span.ui-helper-hidden-accessible {
+.ui-helper-hidden-accessible {
 	display: none;
 }
 
