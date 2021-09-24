@@ -339,6 +339,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideFlowInstanceIDFromUser;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean alwaysStartFromFirstStep;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 1024)
@@ -1162,6 +1167,16 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setHideFlowInstanceIDFromUser(boolean hideFlowInstanceIDFromUser) {
 
 		this.hideFlowInstanceIDFromUser = hideFlowInstanceIDFromUser;
+	}
+
+	public boolean isAlwaysStartFromFirstStep() {
+
+		return alwaysStartFromFirstStep;
+	}
+
+	public void setAlwaysStartFromFirstStep(boolean alwaysStartFromFirstStep) {
+
+		this.alwaysStartFromFirstStep = alwaysStartFromFirstStep;
 	}
 
 	@Override

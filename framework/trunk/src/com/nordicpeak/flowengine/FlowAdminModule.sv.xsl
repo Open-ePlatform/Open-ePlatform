@@ -608,6 +608,9 @@
 	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFlowInstanceIDFromUser">Dölj ärendenummer från mina sidor och kvittens</xsl:variable>
 	
+	<xsl:variable name="i18n.Flow.otherSettings">Övrigt</xsl:variable>
+	<xsl:variable name="i18n.Flow.alwaysStartFromFirstStep">Starta alltid ärende från första steg</xsl:variable>
+	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.description">Här kan du ändra kategori på e-tjänsten. Tänk på att alla versioner påverkas.</xsl:variable>

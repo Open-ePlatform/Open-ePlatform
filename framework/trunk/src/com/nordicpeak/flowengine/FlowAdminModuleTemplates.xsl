@@ -2862,6 +2862,30 @@
 		</fieldset>
 		
 		<xsl:if test="$isInternal = 'true'">
+		
+			<fieldset>
+				<legend><xsl:value-of select="$i18n.Flow.otherSettings" /></legend>
+				
+				<div class="floatleft full bigmarginbottom">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'alwaysStartFromFirstStep'" />
+							<xsl:with-param name="id" select="'alwaysStartFromFirstStep'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="alwaysStartFromFirstStep">
+							<xsl:value-of select="$i18n.Flow.alwaysStartFromFirstStep" />
+						</label>
+					</div>
+				</div>				
+	
+			</fieldset>
+		
+		</xsl:if>
+				
+		<xsl:if test="$isInternal = 'true'">
 			
 			<!-- Disable if we are NOT in add mode -->
 			<xsl:if test="/Document/AddFlow">

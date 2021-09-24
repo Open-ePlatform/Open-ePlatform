@@ -509,7 +509,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 			managedSteps.add(new ManagedStep(step, managedQueryInstances));
 		}
 
-		if(flowInstance.isFullyPopulated() || flowInstance.getStepID() == null){
+		if(flowInstance.isFullyPopulated() || flowInstance.getStepID() == null || flowInstance.getFlow().isAlwaysStartFromFirstStep()){
 
 			currentStepIndex = 0;
 
@@ -1452,11 +1452,11 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 	public boolean setStep(Integer stepID){
 
-		if(!isFullyPopulated()){
+		if(!isFullyPopulated() || flowInstance.getFlow().isAlwaysStartFromFirstStep()){
 
 			return false;
 		}
-
+		
 		int index = 0;
 
 		while(index < this.managedSteps.size()){

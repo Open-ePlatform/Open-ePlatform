@@ -2781,11 +2781,21 @@
 			]]>
 		</Query>
 	</Script>
+
 	<Script version="150">
-	<Query>
+		<Query>
 			<![CDATA[
 				ALTER TABLE `flowengine_flows` ADD COLUMN `lockSubmitForUnpublishedSavedFlow` BOOLEAN NOT NULL default FALSE AFTER `enabled` ;
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="151">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` ADD COLUMN `alwaysStartFromFirstStep` BOOLEAN NOT NULL AFTER `hideFlowInstanceIDFromUser` ;
+			]]>
+		</Query>
+	</Script>
+
 </DBScripts>
