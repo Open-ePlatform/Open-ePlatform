@@ -410,7 +410,7 @@ $(function() {
 	
 	$("#checkall").on("click", function() {
 		
-		if($(this).attr("checked")) {
+		if($(this).prop("checked")) {
 			$("input[type='checkbox'][name='queryType']").attr("checked", "checked");
 		} else {
 			$("input[type='checkbox'][name='queryType']").removeAttr("checked");
