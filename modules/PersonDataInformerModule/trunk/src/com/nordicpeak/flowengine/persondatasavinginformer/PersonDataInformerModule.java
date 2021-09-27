@@ -123,6 +123,15 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 	@XSLVariable(name = "i18n.YearsSaved")
 	private String columnYearsSaved = "";
+	
+	@XSLVariable(name = "i18n.StandardTextFor")
+	private String standardTextFor = "";
+	
+	@XSLVariable(name = "i18n.Yes")
+	private String yesText = "";
+	
+	@XSLVariable(name = "i18n.No")
+	private String noText = "";
 
 	@XSLVariable(name = "i18n.Reason")
 	private String columnReason = "";
@@ -758,8 +767,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 			titleRow.setCellValue(columnIndex++, columnReasons);
 			titleRow.setCellValue(columnIndex++, columnYearsSaved);
 			titleRow.setCellValue(columnIndex++, columnAccountable);
-			titleRow.setCellValue(columnIndex++, columnReason);
-			titleRow.setCellValue(columnIndex++, columnExtraInformation);
+			titleRow.setCellValue(columnIndex++, standardTextFor + columnReason);
+			titleRow.setCellValue(columnIndex++, standardTextFor + columnExtraInformation);
 
 			csvWriter.writeRow(titleRow);
 
@@ -800,8 +809,10 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 						int storageSettingIndex = 1;
 
 						for (InformerDataSettingStorage storageSetting : setting.getStorageSettings()) {
-							yearsSavedString.append(storageSetting.getDescription());
-							yearsSavedString.append(": ");
+							if (!StringUtils.isEmpty(storageSetting.getDescription())) {
+								yearsSavedString.append(storageSetting.getDescription());
+								yearsSavedString.append(": ");
+							}
 
 							if (storageSetting.getStorageType() == StorageType.INFINITY) {
 								yearsSavedString.append(yearsSavedInfinite);
@@ -829,8 +840,8 @@ public class PersonDataInformerModule extends AnnotatedForegroundModule implemen
 
 						currentRow.setCellValue(columnIndex++, yearsSavedString.toString());
 						currentRow.setCellValue(columnIndex++, flow.getFlowFamily().getOwnerName());
-						currentRow.setCellValue(columnIndex++, setting.getReason());
-						currentRow.setCellValue(columnIndex++, setting.getExtraInformation());
+						currentRow.setCellValue(columnIndex++, setting.getReason() == null ? yesText : noText);
+						currentRow.setCellValue(columnIndex++, setting.getExtraInformation() == null ? yesText : noText);
 
 						csvWriter.writeRow(currentRow);
 

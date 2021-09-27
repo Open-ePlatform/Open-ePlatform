@@ -79,5 +79,9 @@
 	
 	<xsl:variable name="i18n.row">rad</xsl:variable>
 	
+	<xsl:variable name="i18n.StandardTextFor">Standardtext för </xsl:variable>
+	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
+	<xsl:variable name="i18n.No">Nej</xsl:variable>
+	
 	
 </xsl:stylesheet>
