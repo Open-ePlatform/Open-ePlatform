@@ -546,6 +546,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		return new ImmutableFlowInstanceManager(flowInstance, queryHandler, req, new DefaultInstanceMetadata(getSiteProfile(flowInstance)), getAbsoluteFileURL(uriParser, flowInstance.getFlow()));
 	}
 
+	//Use of this method is discuraged as it does not set links and realtive file paths
 	public ImmutableFlowInstanceManager getImmutableFlowInstanceManager(int flowInstanceID) throws SQLException, MissingQueryInstanceDescriptor, QueryProviderNotFoundException, InvalidFlowInstanceStepException, QueryProviderErrorException, QueryInstanceNotFoundInQueryProviderException {
 
 		FlowInstance flowInstance = getFlowInstance(flowInstanceID);
