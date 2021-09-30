@@ -10,7 +10,7 @@
 	<xsl:variable name="i18n.UpdateQueryStateEvaluator.submit">Spara ändringar</xsl:variable>
 
 	<xsl:variable name="i18n.TargetQueryState.title">Frågeläge</xsl:variable>
-	<xsl:variable name="i18n.TargetQueryState.description">Välj vilket frågeläge nedanstående markerade frågor ska få när denna regel aktiveras.</xsl:variable>
+	<xsl:variable name="i18n.TargetQueryState.description">Välj vilket frågeläge frågan ska få när denna regel aktiveras.</xsl:variable>
 	<xsl:variable name="i18n.QueryState.VISIBLE">Valfri</xsl:variable>
 	<xsl:variable name="i18n.QueryState.VISIBLE_REQUIRED">Obligatorisk</xsl:variable>
 	<xsl:variable name="i18n.QueryState.HIDDEN">Dold</xsl:variable>
