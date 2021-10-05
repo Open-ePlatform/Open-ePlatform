@@ -34,11 +34,11 @@ function initDropDownQuery(queryID) {
 			
 		});
 		
-		$query.find("input[type='text']").on("keyup", delay(function() {
+		$query.find("input[type='text']").change(function() {
 			
 			runDropDownEvaluators($(this), queryID);
 			
-		}, 500));
+		});
 		
 		$select.trigger("change", [{manual: true}]);
 		
@@ -81,23 +81,4 @@ function makeDropDownQueryRequired(queryID) {
 	
 	$("#query_" + queryID).find(".heading-wrapper h2").addClass("required");
 	
-}
-
-function delay(callback, ms) {
-	
-	var timer = 0;
-	
-	return function() {
-		
-		var context = this;
-		args = arguments;
-		
-		clearTimeout(timer);
-		
-		timer = setTimeout(function () {
-		
-			callback.apply(context, args);
-		
-    	}, ms || 0);
-	};
 }
