@@ -47,20 +47,31 @@
 
 	<xsl:template match="ExternalMessage" mode="admin">
 	
+		<xsl:variable name="messageTypeText">
+			<xsl:call-template name="getExternalMessageTypeText"/>
+		</xsl:variable>
+	
 		<xsl:call-template name="createAdminMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="attachments" select="attachments/ExternalMessageAttachment" />
 			<xsl:with-param name="prefix" select="'messages'" />
+			<xsl:with-param name="messageTypeText" select="$messageTypeText" />
 		</xsl:call-template>
 		
 	</xsl:template>	
 	
 	<xsl:template match="InternalMessage" mode="admin">
 	
+		<xsl:variable name="messageTypeText">
+			<xsl:call-template name="getInternalMessageTypeText"/>
+		</xsl:variable>
+	
 		<xsl:call-template name="createAdminMessage">
 			<xsl:with-param name="message" select="." />
 			<xsl:with-param name="attachments" select="attachments/InternalMessageAttachment" />
 			<xsl:with-param name="prefix" select="'notes'" />
+			<xsl:with-param name="messageTypeText" select="$messageTypeText" />
+			<xsl:with-param name="postedByManager" select="'true'" />
 		</xsl:call-template>
 		
 	</xsl:template>
@@ -70,6 +81,8 @@
 		<xsl:param name="message" />
 		<xsl:param name="attachments" />
 		<xsl:param name="prefix" />
+		<xsl:param name="messageTypeText" />
+		<xsl:param name="postedByManager" select="$message/postedByManager" />
 		<xsl:param name="repliesEnabled" select="false()" />
 		
 		<li id="{$prefix}-{$message/messageID}" class="official" data-message-id="{$message/messageID}">
@@ -80,21 +93,8 @@
 				<xsl:if test="false()">unread</xsl:if>
 				
 				<xsl:choose>
-					<!-- External message -->
-					<xsl:when test="$message/postedByManager">
-						<xsl:choose>
-							<xsl:when test="$message/postedByManager = 'false'"> official</xsl:when>
-							<xsl:otherwise> me</xsl:otherwise>
-						</xsl:choose>
-					</xsl:when>
-					
-					<!-- Internal message -->
-					<xsl:otherwise>
-						<xsl:choose>
-							<xsl:when test="../../../user/userID = poster/userID">me</xsl:when>
-							<xsl:otherwise> official</xsl:otherwise>
-						</xsl:choose>
-					</xsl:otherwise>
+					<xsl:when test="$postedByManager = 'true' and ../../../user/userID = poster/userID"> me</xsl:when>
+					<xsl:otherwise>	official</xsl:otherwise>
 				</xsl:choose>
 				
 			</xsl:attribute>
@@ -103,20 +103,13 @@
 				<figure><img alt="" src="{/Document/requestinfo/contextpath}/static/f/{/Document/module/sectionID}/{/Document/module/moduleID}/pics/profile-standard.png" /></figure>
 			</div>
 			
-			<xsl:if test="$repliesEnabled and local-name() = 'ExternalMessage' and $message/postedByManager = 'false'">
+			<xsl:if test="$repliesEnabled and $postedByManager = 'false'">
 				<a href="#" class="btn btn-blue btn-right bigmarginright reply_message"><i data-icon-before="+"></i><xsl:value-of select="$i18n.ReplyMessage" /></a>
 			</xsl:if>
 						
 			<div class="message" data-messageid="{$message/messageID}">
 				
-				<xsl:choose>
-					<xsl:when test="local-name() = 'ExternalMessage'">
-						<xsl:call-template name="getExternalMessageTypeText"/>
-					</xsl:when>
-					<xsl:when test="local-name() = 'InternalMessage'">
-						<xsl:call-template name="getInternalMessageTypeText"/>
-					</xsl:when>
-				</xsl:choose>
+				<xsl:value-of select="$messageTypeText" />
 							
 				<xsl:if test="$repliesEnabled and $message/QuotedMessage">
 							
@@ -139,7 +132,7 @@
 			
 				<div>
 				<xsl:choose>
-					<xsl:when test="$message/postedByManager = 'true'">
+					<xsl:when test="$postedByManager = 'true'">
 						<xsl:call-template name="replaceLineBreaksAndLinks">
 							<xsl:with-param name="string" select="$message/message"/>
 							<xsl:with-param name="target" select="'_blank'"/>
