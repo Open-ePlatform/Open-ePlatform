@@ -161,7 +161,17 @@
 							</xsl:attribute>
 						</xsl:if>
 					
-						<label for="{$fieldName}"><xsl:value-of select="$i18n.SocialSecurityNumber" /></label>
+						<label for="{$fieldName}">
+							
+							<xsl:attribute name="class">
+								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							
+							<xsl:value-of select="$i18n.SocialSecurityNumber" />						
+						</label>
+						
 						<xsl:call-template name="createTextField">
 							<xsl:with-param name="id" select="$fieldName" />
 							<xsl:with-param name="name" select="$fieldName" />
@@ -191,7 +201,17 @@
 							</xsl:attribute>
 						</xsl:if>							
 					
-						<label for="{$fieldName}"><xsl:value-of select="$i18n.Firstname" /></label>
+						<label for="{$fieldName}">
+							<xsl:attribute name="class">
+								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+								
+							</xsl:attribute>
+							
+							<xsl:value-of select="$i18n.Firstname" />
+						</label>
+						
 						<xsl:call-template name="createTextField">
 							<xsl:with-param name="id" select="$fieldName" />
 							<xsl:with-param name="name" select="$fieldName" />
@@ -217,7 +237,16 @@
 							</xsl:attribute>
 						</xsl:if>							
 					
-						<label for="{$fieldName}"><xsl:value-of select="$i18n.Lastname" /></label>
+						<label for="{$fieldName}">
+							<xsl:attribute name="class">
+								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
+									<xsl:text>required</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
+							
+							<xsl:value-of select="$i18n.Lastname" />					
+						</label>
+						
 						<xsl:call-template name="createTextField">
 							<xsl:with-param name="id" select="$fieldName" />
 							<xsl:with-param name="name" select="$fieldName" />
