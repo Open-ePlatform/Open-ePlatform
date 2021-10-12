@@ -928,7 +928,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 			for (StoredGuardian guardian : child.getGuardians()) {
 
-				if (posterCitizenIdentifier.equals(guardian.getCitizenIdentifier())) {
+				if (posterCitizenIdentifier != null && posterCitizenIdentifier.equals(guardian.getCitizenIdentifier())) {
 
 					guardian.setPoster(true);
 
