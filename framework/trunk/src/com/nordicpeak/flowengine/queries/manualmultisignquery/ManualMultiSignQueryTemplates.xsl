@@ -161,14 +161,7 @@
 							</xsl:attribute>
 						</xsl:if>
 					
-						<label for="{$fieldName}">
-							
-							<xsl:attribute name="class">
-								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-									<xsl:text>required</xsl:text>
-								</xsl:if>
-							</xsl:attribute>
-							
+						<label for="{$fieldName}" class="required">
 							<xsl:value-of select="$i18n.SocialSecurityNumber" />						
 						</label>
 						
@@ -201,14 +194,7 @@
 							</xsl:attribute>
 						</xsl:if>							
 					
-						<label for="{$fieldName}">
-							<xsl:attribute name="class">
-								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-									<xsl:text>required</xsl:text>
-								</xsl:if>
-								
-							</xsl:attribute>
-							
+						<label for="{$fieldName}" class="required">
 							<xsl:value-of select="$i18n.Firstname" />
 						</label>
 						
@@ -237,13 +223,7 @@
 							</xsl:attribute>
 						</xsl:if>							
 					
-						<label for="{$fieldName}">
-							<xsl:attribute name="class">
-								<xsl:if test="ManualMultiSignQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">
-									<xsl:text>required</xsl:text>
-								</xsl:if>
-							</xsl:attribute>
-							
+						<label for="{$fieldName}" class="required">
 							<xsl:value-of select="$i18n.Lastname" />					
 						</label>
 						
