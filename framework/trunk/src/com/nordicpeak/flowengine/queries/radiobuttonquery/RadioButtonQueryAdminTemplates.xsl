@@ -161,6 +161,23 @@
 
 			</div>
 			
+			<div class="floatleft full bigmarginbottom">
+
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'lockForOwnerUpdate'" />
+						<xsl:with-param name="name" select="'lockForOwnerUpdate'" />
+						<xsl:with-param name="value" select="'true'" />
+						<xsl:with-param name="element" select="RadioButtonQuery" />
+					</xsl:call-template>
+					
+					<label for="lockForOwnerUpdate">
+						<xsl:value-of select="$i18n.Query.lockForOwnerUpdate" />
+					</label>
+				</div>
+
+			</div>
+
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
 			</div>

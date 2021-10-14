@@ -89,6 +89,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 	@XMLElement
 	private boolean lockForManagerUpdate;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean lockForOwnerUpdate;
+	
 	@Override
 	public Integer getQueryID() {
 
@@ -185,6 +190,7 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		lockForManagerUpdate = xmlParser.getPrimitiveBoolean("lockForManagerUpdate");
+		lockForOwnerUpdate = xmlParser.getPrimitiveBoolean("lockForOwnerUpdate");
 
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
@@ -244,6 +250,14 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 	public void setLockForManagerUpdate(boolean lockForManagerUpdate) {
 
 		this.lockForManagerUpdate = lockForManagerUpdate;
+	}
+
+	public boolean isLockForOwnerUpdate() {
+		return lockForOwnerUpdate;
+	}
+
+	public void setLockForOwnerUpdate(boolean lockForOwnerUpdate) {
+		this.lockForOwnerUpdate = lockForOwnerUpdate;
 	}
 
 	@Override

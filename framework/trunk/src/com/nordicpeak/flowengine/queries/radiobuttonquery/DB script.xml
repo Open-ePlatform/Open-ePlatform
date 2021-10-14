@@ -156,5 +156,12 @@
 			]]>
 		</Query>
 	</Script>	
-		
+
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_queries` ADD COLUMN `lockForOwnerUpdate` TINYINT(1) UNSIGNED NOT NULL AFTER `lockForManagerUpdate`;
+			]]>
+		</Query>
+	</Script>
 </DBScripts>

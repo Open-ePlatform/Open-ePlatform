@@ -261,6 +261,9 @@ public class RadioButtonQueryProviderModule extends BaseQueryProviderModule<Radi
 		if (query.isLockForManagerUpdate() && requestMetadata.isManager()) {
 			return;
 		}
+		if (query.isLockForOwnerUpdate() && !requestMetadata.isManager()) {
+			return;
+		}
 		
 		List<RadioButtonAlternative> availableAlternatives = query.getAlternatives();
 
