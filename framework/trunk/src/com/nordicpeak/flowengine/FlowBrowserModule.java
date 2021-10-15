@@ -1862,11 +1862,12 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 	
 	protected boolean foreignIDBlocked(ImmutableFlow flow, User user) throws IOException {
 		
-		if (flow.requiresAuthentication() && flowAdminModule.isBlockForeignIDs() && !flow.isAllowForeignIDs() && flowAdminModule.getForeignIDattributes() != null) {
+		if (user != null && flow.requiresAuthentication() && flowAdminModule.isBlockForeignIDs() && !flow.isAllowForeignIDs() && flowAdminModule.getForeignIDattributes() != null) {
 			
 			for (String attribute : flowAdminModule.getForeignIDattributes()) {
 				
 				if (user.getAttributeHandler().isSet(attribute)) {
+					
 					return true;
 				}
 			}
