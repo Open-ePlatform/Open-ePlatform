@@ -93,7 +93,7 @@
 				<xsl:if test="false()">unread</xsl:if>
 				
 				<xsl:choose>
-					<xsl:when test="$postedByManager = 'true' and ../../../user/userID = poster/userID"> me</xsl:when>
+					<xsl:when test="$postedByManager = 'true' or ../../../user/userID = poster/userID"> me</xsl:when>
 					<xsl:otherwise>	official</xsl:otherwise>
 				</xsl:choose>
 				
