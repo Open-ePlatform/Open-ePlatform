@@ -16,6 +16,8 @@ import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 @XMLElement
 public class InstanceRequestMetadata extends RequestMetadata {
 
+	//TODO: re-write it as an interface instead of extending RequestMetadata
+	
 	private static final long serialVersionUID = 7490019871683501561L;
 
 	private RequestMetadata requestMetadata;
@@ -83,7 +85,10 @@ public class InstanceRequestMetadata extends RequestMetadata {
 	@Override
 	public Element toXML(Document doc) {
 
-		Element element = super.toXML(doc);
+		Element element = doc.createElement("RequestMetadata");
+		
+		// Do not use supers member variable manager
+		XMLUtils.appendNewElement(doc, element, "manager", requestMetadata.isManager());
 
 		XMLUtils.appendNewElement(doc, element, "flowInstanceIsSubmitted", flowInstanceIsSubmitted());
 
