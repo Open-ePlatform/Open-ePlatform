@@ -89,11 +89,7 @@
 	<xsl:template match="ShowQueryForm">
 	
 		<xsl:variable name="queryID" select="concat('query_', RadioButtonQueryInstance/RadioButtonQuery/queryID)" />
-		<xsl:variable name="locked">
-			<xsl:if test="(RadioButtonQueryInstance/RadioButtonQuery/lockForManagerUpdate = 'true' and RequestMetadata/manager = 'true') or (RadioButtonQueryInstance/RadioButtonQuery/lockForOwnerUpdate = 'true' and RequestMetadata/manager = 'false')" >
-				true
-			</xsl:if>
-		</xsl:variable>
+		<xsl:variable name="locked" select="(RadioButtonQueryInstance/RadioButtonQuery/lockForManagerUpdate = 'true' and RequestMetadata/manager = 'true') or (RadioButtonQueryInstance/RadioButtonQuery/lockForOwnerUpdate = 'true' and RequestMetadata/manager = 'false')" />
 		
 		<div class="query radiobuttonquery" id="{$queryID}">
 		
