@@ -17,7 +17,6 @@ public class FlowFamilyInUseValidationError extends ValidationError {
 		super("FlowFamilyInUseValidationError");
 		this.flowFamilyList = flowFamilyList;
 	}
-
 	
 	public FlowFamilyListItem getFlowFamilyList() {
 	
@@ -37,18 +36,23 @@ public class FlowFamilyInUseValidationError extends ValidationError {
 	@Override
 	public boolean equals(Object obj) {
 
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowFamilyInUseValidationError other = (FlowFamilyInUseValidationError) obj;
 		if (flowFamilyList == null) {
-			if (other.flowFamilyList != null)
+			if (other.flowFamilyList != null) {
 				return false;
-		} else if (!flowFamilyList.equals(other.flowFamilyList))
+			}
+		} else if (!flowFamilyList.equals(other.flowFamilyList)) {
 			return false;
+		}
 		return true;
 	}
 

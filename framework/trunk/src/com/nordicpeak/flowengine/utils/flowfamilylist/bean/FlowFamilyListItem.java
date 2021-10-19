@@ -2,26 +2,21 @@ package com.nordicpeak.flowengine.utils.flowfamilylist.bean;
 
 import java.io.Serializable;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import se.unlogic.standardutils.beans.Named;
-import se.unlogic.standardutils.xml.Elementable;
-import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.standardutils.xml.GeneratedElementable;
+import se.unlogic.standardutils.xml.XMLElement;
 
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 
-public class FlowFamilyListItem implements Serializable, Elementable, Named {
+@XMLElement(name = "FlowFamily")
+public class FlowFamilyListItem extends GeneratedElementable implements Serializable, Named {
 
 	private static final long serialVersionUID = 4980976980828189740L;
 
-	public static final String NAME = "FlowFamilyList";
-	public static final String FLOWFAMILY = "FlowFamily";
-
-	public static final String FLOWFAMILYID = "FlowFamilyID";
-	public static final String FLOWFAMILYNAME = "FlowFamilyName";
-
+	@XMLElement(name = "FlowFamilyID")
 	private Integer ID;
+
+	@XMLElement(name = "FlowFamilyName")
 	private String name;
 
 	public FlowFamilyListItem(Integer ID, String name) {
@@ -48,39 +43,6 @@ public class FlowFamilyListItem implements Serializable, Elementable, Named {
 	}
 
 	@Override
-	public Element toXML(Document doc) {
-
-		Element flowFamilyListElement = doc.createElement(FLOWFAMILY);
-
-		if (this.getID() != null) {
-			flowFamilyListElement.appendChild(XMLUtils.createCDATAElement(FLOWFAMILYID, this.getID().toString(), doc));
-		}
-
-		if (this.getName() != null) {
-			flowFamilyListElement.appendChild(XMLUtils.createCDATAElement(FLOWFAMILYNAME, this.toString(), doc));
-		}
-
-		/*
-		flowFamilyListElement.appendChild(XMLUtils.createCDATAElement("enabled", Boolean.toString(this.isEnabled()), doc));
-		
-		List<Element> additionalXML = this.getAdditionalXML(doc);
-		
-		if (!CollectionUtils.isEmpty(additionalXML)) {
-		
-			for (Element element : additionalXML) {
-		
-				flowFamilyListElement.appendChild(element);
-			}
-		}
-		
-		
-		XMLUtils.appendNewElement(doc, flowFamilyListElement, "isMutable", this instanceof MutableGroup);
-		*/
-
-		return flowFamilyListElement;
-	}
-
-	@Override
 	public String toString() {
 
 		return name + " (ID: " + ID + ") ";
@@ -99,23 +61,30 @@ public class FlowFamilyListItem implements Serializable, Elementable, Named {
 	@Override
 	public boolean equals(Object obj) {
 
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FlowFamilyListItem other = (FlowFamilyListItem) obj;
 		if (ID == null) {
-			if (other.ID != null)
+			if (other.ID != null) {
 				return false;
-		} else if (!ID.equals(other.ID))
+			}
+		} else if (!ID.equals(other.ID)) {
 			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
+		}
 		return true;
 	}
 

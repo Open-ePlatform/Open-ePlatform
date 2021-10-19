@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
@@ -65,15 +63,13 @@ public class FlowFamilyListConnector {
 		String query = req.getParameter("q");
 
 		if (StringUtils.isEmpty(query)) {
+			
 			return null;
 		}
 		
 		if (!encoding.equalsIgnoreCase(StandardCharsets.UTF_8.name())) {
+			
 			query = URLDecoder.decode(query, StandardCharsets.UTF_8.name());
-		}
-
-		if (StringUtils.isEmpty(query)) {
-			return null;
 		}
 
 		return query;
@@ -107,6 +103,7 @@ public class FlowFamilyListConnector {
 	protected List<FlowFamilyListItem> getLatestFlowFamilyListItems(String contains) {
 
 		LinkedHashMap<Integer, Flow> flowCacheMap = flowAdminModule.getFlowCache().getFlowCacheMap();
+		
 		return convertToFlowFamilyListItems(flowCacheMap.values().stream().filter(Objects::nonNull).filter(e -> e.getName().toLowerCase().contains(contains.toLowerCase())).filter(Flow::isLatestVersion).collect(Collectors.toList()));
 	}
 
@@ -114,22 +111,43 @@ public class FlowFamilyListConnector {
 
 		List<FlowFamilyListItem> newList = new ArrayList<>(list.size());
 
-		list.stream().forEach(e -> 
-			newList.add(new FlowFamilyListItem(e)));
+		list.stream().forEach(e -> newList.add(new FlowFamilyListItem(e)));
 
 		list.sort(Comparator.comparing(Flow::getName));
 
 		return newList;
 	}
 	
-	protected List<FlowFamilyListItem> getFlows(List<Integer> flowFamilyIDList) {
+	public List<FlowFamilyListItem> getFlowFamilyListItems(List<Integer> flowFamilyIDs) {
 
-		if (flowFamilyIDList == null)
-			return Collections.emptyList();
+		if (flowFamilyIDs == null) {
+			
+			return null;
+		}
 
-		LinkedHashMap<Integer, Flow> flowCacheMap = flowAdminModule.getFlowCache().getFlowCacheMap();
+		List<Flow> flowList = new ArrayList<>(flowFamilyIDs.size());
+		
+		Collection<Flow> cachedFlows = flowAdminModule.getFlowCache().getFlowCacheMap().values();
 
-		return convertToFlowFamilyListItems(flowCacheMap.values().stream().filter(Objects::nonNull).filter(e -> flowFamilyIDList.contains(e.getFlowFamily().getFlowFamilyID())).filter(Flow::isLatestVersion).collect(Collectors.toList()));
+		for(Flow flow : cachedFlows) {
+			
+			if(flow.isLatestVersion() && flowFamilyIDs.contains(flow.getFlowFamily().getFlowFamilyID())) {
+				
+				flowList.add(flow);
+				
+				if(flowList.size() == flowFamilyIDs.size()) {
+					
+					break;
+				}
+			}
+		}
+		
+		if(flowList.isEmpty()) {
+			
+			return null;
+		}
+		
+		return convertToFlowFamilyListItems(flowList);
 
 	}
 
@@ -147,40 +165,11 @@ public class FlowFamilyListConnector {
 
 	protected JsonObject getFlowJson(FlowFamilyListItem flow) {
 
-		JsonObject instance = new JsonObject(5);
-		instance.putField(FlowFamilyListItem.FLOWFAMILYID, flow.getID());
+		JsonObject instance = new JsonObject(3);
+		instance.putField("FlowFamilyID", flow.getID());
 		instance.putField("Name", flow.toString());
 		instance.putField("Enabled", true);
 
 		return instance;
 	}
-
-	public void addFlowFamilyListToDoc(Document doc, List<Integer> flowFamilies) {
-
-		List<FlowFamilyListItem> flows = getFlows(flowFamilies);
-		if (flows == null || flows.isEmpty()) {
-
-			return;
-		}
-
-		Element flowFamilyList = doc.createElement(FlowFamilyListItem.NAME);
-
-		for (FlowFamilyListItem flow : flows) {
-			Element flowFamilyElement = doc.createElement("FlowFamily");
-			Element flowFamilyIDElement = doc.createElement(FlowFamilyListItem.FLOWFAMILYID);
-			flowFamilyIDElement.appendChild(doc.createTextNode(String.valueOf(flow.getID())));
-			Element flowFamilyNameElement = doc.createElement(FlowFamilyListItem.FLOWFAMILYNAME);
-			flowFamilyNameElement.appendChild(doc.createTextNode(flow.toString()));
-
-			flowFamilyElement.appendChild(flowFamilyIDElement);
-			flowFamilyElement.appendChild(flowFamilyNameElement);
-			flowFamilyList.appendChild(flowFamilyElement);
-		}
-
-		Element root = doc.getDocumentElement();
-
-		root.appendChild(flowFamilyList);
-
-	}
-
 }
