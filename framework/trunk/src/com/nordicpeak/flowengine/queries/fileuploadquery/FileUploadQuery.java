@@ -89,10 +89,13 @@ public class FileUploadQuery extends BaseQuery {
 	protected String attachmentNameCustomPrefix;
 	
 	@DAOManaged
+	@WebPopulate
 	@XMLElement
 	private boolean setAsAttribute;
 	
 	@DAOManaged
+	@WebPopulate
+	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
 	

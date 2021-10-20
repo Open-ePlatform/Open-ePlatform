@@ -18,6 +18,7 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.webutils.http.URIParser;
 
@@ -94,7 +95,16 @@ public class FileUploadQueryInstance extends BaseQueryInstance implements String
 		
 		if(!CollectionUtils.isEmpty(files)){
 			
-			attributeHandler.setAttribute(query.getAttributeName(), "true");
+			StringBuilder filenameBuilder = new StringBuilder();
+			
+			for(FileDescriptor file : files) {
+				
+				filenameBuilder.append(file.getName() + ", ");
+			}
+			
+			String filenameString = filenameBuilder.substring(0, filenameBuilder.length()-2);
+			
+			attributeHandler.setAttribute(query.getAttributeName(), filenameString);
 		}
 	}
 	
