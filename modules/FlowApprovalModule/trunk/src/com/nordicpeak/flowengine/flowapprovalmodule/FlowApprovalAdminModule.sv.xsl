@@ -125,6 +125,7 @@
 	<xsl:variable name="i18n.ActivityGroup.deniedText">Namn för nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowSkip">Hoppa över / byt till målstatus även om ingen aktivitet startas (endast om ingen grupp alls startas/är igång)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.restartInfo">Om ärendets status ändras tillbaka till aktiveringsstatus kommer aktiviteter att startas om oavstett hur inställning för omstart är satta här</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.onlyRestartIfActivityChanges">Tillåt omstart endast om det blir skillnad på startade aktiviteter (pga attribut)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>
@@ -158,6 +159,6 @@
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	<xsl:variable name="i18n.row">rad</xsl:variable>
 	
-	<xsl:variable name="i18n.ActivityGroup.hideFlowinstanceIDInPDF">Dölj ärendenummer aktivitetgruppens PDF</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.hideFlowinstanceIDInPDF">Dölj ärendenummer i aktivitetgruppens PDF</xsl:variable>
 	
 </xsl:stylesheet>
