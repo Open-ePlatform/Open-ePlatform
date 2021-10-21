@@ -132,7 +132,7 @@
 	  											<xsl:value-of select="$startButtonText" />
 	  										</a>
 	  										
-	 										</xsl:when>
+	 									</xsl:when>
 	  									<xsl:otherwise>
 	  									
 	  										<a class="btn btn-green xl full" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/{$internalFlowMethodAlias}/{flowID}">
@@ -162,7 +162,10 @@
 	  									
 	  									<xsl:if test="../openExternalFlowsInNewWindow = 'true'">
 			  								<xsl:attribute name="data-icon-after">e</xsl:attribute>
-											<xsl:attribute name="target">_blank</xsl:attribute>
+			  								
+			  								<xsl:if test="not($isDisabled)">
+												<xsl:attribute name="target">_blank</xsl:attribute>
+			  								</xsl:if>
 			  							</xsl:if>
 			  							
 			  							<xsl:if test="$isDisabled">
