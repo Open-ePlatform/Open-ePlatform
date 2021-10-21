@@ -18,7 +18,6 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
-import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.webutils.http.URIParser;
 
