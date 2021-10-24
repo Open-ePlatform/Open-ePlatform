@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,7 +40,6 @@ import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
 import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
 import se.unlogic.standardutils.collections.CollectionUtils;
-import se.unlogic.standardutils.collections.ReverseListIterator;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.MySQLRowLimiter;
@@ -74,12 +72,10 @@ import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
-import com.nordicpeak.flowengine.interfaces.APIAccessController;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsExtensionConsumer;
-import com.nordicpeak.flowengine.utils.APIAccessUtils;
 
 public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule implements StatisticsExtensionConsumer {
 
@@ -104,9 +100,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	@InstanceManagerDependency(required = false)
 	private FlowSubmitSurveyProvider flowSubmitSurveyProvider;
 	
-	@InstanceManagerDependency(required = false)
-	private APIAccessController apiAccessModule;
-
 	private AnnotatedDAO<FlowInstanceMinimizedForStatistics> flowInstanceMinimizedDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
 	private AnnotatedDAO<FeedbackSurvey> flowInstanceFeedbackSurveyDAO;
@@ -485,28 +478,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 				
 				log.info("Responding to user " + user + " with flow instance statistics: normalFlowInstances " + normalFlowInstances + ", abortedFlowInstances " + abortedFlowInstances + ", deletedFlowInstances " + extensionFlowInstances);
 				
-				if (apiAccessModule != null && !flowInstanceStatistics.isEmpty()) {
-					
-					int oldSize = flowInstanceStatistics.size();
-					
-					Iterator<FlowInstanceStatistic> it = new ReverseListIterator<>(flowInstanceStatistics).iterator();
-					while (it.hasNext()) {
-						
-						FlowInstanceStatistic instanceStatistic = it.next();
-						Flow flow = flowAdminModule.getCachedFlow(instanceStatistic.getFlowID());
-						
-						if (flow == null || !apiAccessModule.hasAccess(flow.getFlowFamily(), user)) {
-							it.remove();
-						}
-					}
-					
-					int removed = oldSize - flowInstanceStatistics.size();
-					
-					if (removed > 0) {
-						log.info("Removed " + removed + " results from response due to missing flow API access for flow families");
-					}
-				}
-
 				Collections.sort(flowInstanceStatistics);
 				
 				XMLUtils.appendNewElement(doc, responseElement, "Count", flowInstanceStatistics.size());
@@ -588,12 +559,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 						
 						for (Flow flow : flows) {
 							
-							if (!APIAccessUtils.hasAccess(apiAccessModule, flow.getFlowFamily(), user)) {
-								
-								skippedFlows++;
-								continue;
-							}
-
 							Element flowElement = XMLUtils.appendNewElement(doc, responseElement, "Flow");
 
 							String published = null;
