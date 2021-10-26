@@ -914,18 +914,18 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 								if (denied) {
 
 									log.info("Completed denied activity group " + activityGroup + " for " + flowInstance);
-									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupDenied + " " + activityGroup.getName(), null);
+									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupDenied + " " + activityGroup.getName(), null, null, getFlowInstanceEventAttributes(activityGroup, round, denied));
 
 								} else {
 
 									log.info("Completed approved activity group " + activityGroup + " for " + flowInstance);
-									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupApproved + " " + activityGroup.getName(), null);
+									flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupApproved + " " + activityGroup.getName(), null, null, getFlowInstanceEventAttributes(activityGroup, round, denied));
 								}
 
 							} else {
 
 								log.info("Completed activity group " + activityGroup + " for " + flowInstance);
-								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null);
+								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null, null, getFlowInstanceEventAttributes(activityGroup, round, denied));
 							}
 
 							generateSignaturesPDF(flowInstance, activityGroup, round);
@@ -1069,6 +1069,17 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 	}
 
+	public Map<String, String> getFlowInstanceEventAttributes(FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round, boolean denied){
+		
+		Map<String, String> eventAttributes = new HashMap<String, String>(2);
+		
+		eventAttributes.put("activityGroupID", activityGroup.getActivityGroupID().toString());
+		eventAttributes.put("activityRoundID", round.getActivityRoundID().toString());
+		eventAttributes.put("approved", String.valueOf(!denied));
+		
+		return eventAttributes;
+	}	
+	
 	private boolean isActivityActive(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
 
 		if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
