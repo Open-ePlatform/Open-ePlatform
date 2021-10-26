@@ -315,6 +315,48 @@ public class FlowFamily extends GeneratedElementable implements Serializable, Im
 		this.ownerEmail = ownerEmail;
 	}
 
+	
+	public boolean isUseLoginHelpLink() {
+	
+		return useLoginHelpLink;
+	}
+
+	
+	public void setUseLoginHelpLink(boolean useLoginHelpLink) {
+	
+		this.useLoginHelpLink = useLoginHelpLink;
+	}
+
+	
+	public String getLoginHelpLinkName() {
+	
+		return loginHelpLinkName;
+	}
+
+	
+	public void setLoginHelpLinkName(String loginHelpLinkName) {
+	
+		this.loginHelpLinkName = loginHelpLinkName;
+	}
+
+	
+	public String getLoginHelpLinkURL() {
+	
+		return loginHelpLinkURL;
+	}
+
+	
+	public void setLoginHelpLinkURL(String loginHelpLinkURL) {
+	
+		this.loginHelpLinkURL = loginHelpLinkURL;
+	}
+
+	
+	public void setContactWebAddress(String contactWebAddress) {
+	
+		this.contactWebAddress = contactWebAddress;
+	}
+
 	@Override
 	public List<Flow> getFlows() {
 
