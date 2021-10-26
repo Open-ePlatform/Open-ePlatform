@@ -287,6 +287,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.setAttribute(query.getAttributeName() + ".address", address);
 		attributeHandler.setAttribute(query.getAttributeName() + ".zipCode", zipCode);
 		attributeHandler.setAttribute(query.getAttributeName() + ".postalAddress", postalAddress);
+		attributeHandler.setAttribute(query.getAttributeName() + ".careOf", careOf);
 		attributeHandler.setAttribute(query.getAttributeName() + ".email", email);
 		attributeHandler.setAttribute(query.getAttributeName() + ".phone", phone);
 		attributeHandler.setAttribute(query.getAttributeName() + ".mobilePhone", mobilePhone);
@@ -313,6 +314,7 @@ public class ContactDetailQueryInstance extends BaseQueryInstance implements Str
 		attributeHandler.removeAttribute(query.getAttributeName() + ".address");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".zipCode");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".postalAddress");
+		attributeHandler.removeAttribute(query.getAttributeName() + ".careOf");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".email");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".phone");
 		attributeHandler.removeAttribute(query.getAttributeName() + ".mobilePhone");

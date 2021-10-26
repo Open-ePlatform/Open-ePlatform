@@ -352,6 +352,10 @@
 						<td><xsl:value-of select="$java.exportPostalAddress" /></td>
 					</tr>
 					<tr>
+						<td>prefix.careOf</td>
+						<td><xsl:value-of select="$java.exportCareOf" /></td>
+					</tr>
+					<tr>
 						<td>prefix.email</td>
 						<td><xsl:value-of select="$java.exportEmail" /></td>
 					</tr>
