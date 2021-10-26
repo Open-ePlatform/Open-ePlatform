@@ -26,6 +26,6 @@ Frågetypen Radioknappfråga används när användaren skall kunna välja mellan olika
 	
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
 	<xsl:variable name="i18n.Query.lockForManagerUpdate">Lås fråga vid ändring av handläggare</xsl:variable>
-	<xsl:variable name="i18n.Query.lockForOwnerUpdate">Lås fråga för ärendets ägare</xsl:variable>
+	<xsl:variable name="i18n.Query.lockForOwnerUpdate">Lås fråga för ärendets ägare vid komplettering</xsl:variable>
 	
 </xsl:stylesheet>
