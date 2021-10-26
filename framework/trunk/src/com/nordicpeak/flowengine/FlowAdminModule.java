@@ -1664,15 +1664,28 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			log.info("User " + user + " creating new flow based on flow " + flow);
 
-			FlowFamily flowFamily = new FlowFamily();
-			flowFamily.setVersionCount(1);
-			flowFamily.setStatisticsMode(flow.getFlowFamily().getStatisticsMode());
+			FlowFamily flowFamily = flow.getFlowFamily();
+			
+			FlowFamily flowFamilyCopy = new FlowFamily();
+			flowFamilyCopy.setVersionCount(1);
+			flowFamilyCopy.setStatisticsMode(flowFamily.getStatisticsMode());
+			flowFamilyCopy.setContactName(flowFamily.getContactName());
+			flowFamilyCopy.setContactEmail(flowFamily.getContactEmail());
+			flowFamilyCopy.setContactPhone(flowFamily.getContactPhone());
+			flowFamilyCopy.setContactAddress(flowFamily.getContactWebAddress());
+			flowFamilyCopy.setOwnerName(flowFamily.getOwnerName());
+			flowFamilyCopy.setOwnerEmail(flowFamily.getOwnerEmail());
+			flowFamilyCopy.setPopularityBoost(flowFamily.getPopularityBoost());
+			flowFamilyCopy.setUseLoginHelpLink(flowFamily.isUseLoginHelpLink());
+			flowFamilyCopy.setLoginHelpLinkName(flowFamily.getLoginHelpLinkName());
+			flowFamilyCopy.setLoginHelpLinkURL(flowFamily.getLoginHelpLinkURL());
+			flowFamilyCopy.setStartButtonText(flowFamily.getStartButtonText());
+			
+			if (flowFamily.getMessageTemplates() != null) {
 
-			if (flow.getFlowFamily().getMessageTemplates() != null) {
+				ArrayList<MessageTemplate> messageTemplates = new ArrayList<>(flowFamily.getMessageTemplates().size());
 
-				ArrayList<MessageTemplate> messageTemplates = new ArrayList<>(flow.getFlowFamily().getMessageTemplates().size());
-
-				for (MessageTemplate messageTemplate : flow.getFlowFamily().getMessageTemplates()) {
+				for (MessageTemplate messageTemplate : flowFamily.getMessageTemplates()) {
 
 					MessageTemplate messageTemplateCopy = SerializationUtils.cloneSerializable(messageTemplate);
 					messageTemplateCopy.setTemplateID(null);
@@ -1680,10 +1693,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					messageTemplates.add(messageTemplateCopy);
 				}
 
-				flowFamily.setMessageTemplates(messageTemplates);
+				flowFamilyCopy.setMessageTemplates(messageTemplates);
 			}
 
-			flowCopy.setFlowFamily(flowFamily);
+			flowCopy.setFlowFamily(flowFamilyCopy);
 			flowCopy.setVersion(1);
 			flowCopy.setName(flow.getName() + flowNameCopySuffix);
 
