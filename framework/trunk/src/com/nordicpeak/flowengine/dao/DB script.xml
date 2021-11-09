@@ -2798,4 +2798,39 @@
 		</Query>
 	</Script>
 
+	<Script version="152">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_automanager_status_rules`
+					ADD COLUMN `useStatusAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `sendNotification`,
+					ADD COLUMN `statusAttributeName` VARCHAR(255) NULL DEFAULT '' AFTER `useStatusAttribute`,
+					ADD COLUMN `statusAttributeInvert` TINYINT(1) UNSIGNED NOT NULL AFTER `statusAttributeName`,
+					ADD COLUMN `includeUnsetStatusAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `statusAttributeInvert`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flow_family_automanager_status_rule_attribute_values` (
+					`ruleID` INT(10) UNSIGNED NOT NULL,
+					`statusAttributeValue` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`ruleID`, `statusAttributeValue`),
+					CONSTRAINT `FK_flowengine_flow_family_automanager_status_rule_values_1` FOREIGN KEY (`ruleID`) REFERENCES `flowengine_flow_family_automanager_status_rules` (`ruleID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>	
+
+	<Script version="153">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_automanager_rules`
+					ADD COLUMN `includeUnsetAttribute` TINYINT(1) UNSIGNED NOT NULL AFTER `invert` ;
+			]]>
+		</Query>
+	</Script>
+			
 </DBScripts>

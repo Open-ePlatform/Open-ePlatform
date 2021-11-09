@@ -32,7 +32,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js?v=1
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=17
+		/js/flowadminmodule.js?v=18
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
@@ -6645,6 +6645,7 @@
 								<input type="hidden" disabled="true" name="auto-manager-rule-attribute" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-rule-values" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-rule-invert" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-rule-includeUnsetAttribute" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-rule-users" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-rule-groups" value="" />
 							
@@ -6707,6 +6708,20 @@
 									
 									<label class="marginleft" for="invert">
 										<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Invert" />
+									</label>
+								</div>
+							</div>
+
+							<div id="includeUnsetAttributeContainer" class="floatleft full hidden">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'includeUnsetAttribute'" />
+										<xsl:with-param name="id" select="'includeUnsetAttribute'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="includeUnsetAttribute">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.IncludeUnsetAttribute" />
 									</label>
 								</div>
 							</div>
@@ -6890,6 +6905,7 @@
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Users" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Groups" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers" /></th>
+							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.UseStatusAttributeColumnTitle" /></th>
 							<th><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.SendNotificationColumnTitle" /></th>
 							<th></th>
 						</tr>
@@ -6919,6 +6935,11 @@
 									<xsl:value-of select="$i18n.Yes" />
 								</span>
 							</td>
+							<td class="auto-manager-useStatusAttribute">
+								<span>
+									<xsl:value-of select="$i18n.Yes" />
+								</span>
+							</td>
 							<td class="auto-manager-send-notification">
 								<span>
 									<xsl:value-of select="$i18n.Yes" />
@@ -6934,6 +6955,11 @@
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-removePreviousManagers" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-sendNotification" value="" />
 								<input type="hidden" disabled="true" name="auto-manager-status-rule-emailRecipients" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-useStatusAttribute" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-statusAttributeName" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-statusAttributeInvert" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-includeUnsetStatusAttribute" value="" />
+								<input type="hidden" disabled="true" name="auto-manager-status-rule-statusAttributeValues" value="" />
 							
 								<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
 									<img src="{$imgPath}/pen.png" alt="" />
@@ -6972,7 +6998,7 @@
 						
 							<div class="floatleft full bigmarginbottom">
 							
-								<label for="attribute" class="floatleft full">
+								<label for="statusName" class="floatleft full">
 									<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.StatusName" />
 								</label>
 								
@@ -7081,6 +7107,84 @@
 										<xsl:with-param name="rows" select="5"/>
 										<xsl:with-param name="separateListValues" select="'true'"/>
 									</xsl:call-template>
+								</div>
+							</div>
+							
+							<div class="floatleft full">
+							
+								<div class="floatleft">
+									<xsl:call-template name="createCheckbox">
+										<xsl:with-param name="name" select="'useStatusAttribute'" />
+										<xsl:with-param name="id" select="'useStatusAttribute'" />
+									</xsl:call-template>
+									
+									<label class="marginleft" for="useStatusAttribute">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.UseStatusAttribute" />
+									</label>
+								</div>
+								
+							</div>
+
+							<div id="statusAttributeContainer" class="hidden">
+															
+								<div class="floatleft full bigmarginbottom">
+									<p class="tiny"><xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.UseStatusAttributeInfo" /></p>
+								</div>
+								
+								<div class="floatleft full marginbottom">
+								
+									<label for="statusAttributeName" class="floatleft full">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeName" />
+									</label>
+									
+									<div class="floatleft full">
+										<xsl:call-template name="createTextField">
+											<xsl:with-param name="id" select="'statusAttributeName'"/>
+											<xsl:with-param name="name" select="'statusAttributeName'"/>
+										</xsl:call-template>
+									</div>
+								</div>
+								
+								<div class="floatleft full">
+								
+									<div class="floatleft">
+										<xsl:call-template name="createCheckbox">
+											<xsl:with-param name="name" select="'statusAttributeInvert'" />
+											<xsl:with-param name="id" select="'statusAttributeInvert'" />
+										</xsl:call-template>
+										
+										<label class="marginleft" for="statusAttributeInvert">
+											<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.Invert" />
+										</label>
+									</div>
+								</div>
+
+								<div id="includeUnsetStatusAttributeContainer" class="floatleft full hidden">
+								
+									<div class="floatleft">
+										<xsl:call-template name="createCheckbox">
+											<xsl:with-param name="name" select="'includeUnsetStatusAttribute'" />
+											<xsl:with-param name="id" select="'includeUnsetStatusAttribute'" />
+										</xsl:call-template>
+										
+										<label class="marginleft" for="includeUnsetStatusAttribute">
+											<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.IncludeUnsetStatusAttribute" />
+										</label>
+									</div>
+								</div>
+								
+								<div class="floatleft full bigmarginbottom">
+								
+									<label for="values" class="floatleft">
+										<xsl:value-of select="$i18n.AutoManagerAssignment.Rule.AttributeValues" />
+									</label>
+									
+									<div class="floatleft full">
+										<xsl:call-template name="createTextArea">
+											<xsl:with-param name="id" select="'statusAttributeValues'"/>
+											<xsl:with-param name="name" select="'statusAttributeValues'"/>
+										</xsl:call-template>
+									</div>
 								</div>
 							</div>
 							
@@ -7243,6 +7347,7 @@
 				<input type="hidden" name="auto-manager-rule-attribute-{$ruleID}" value="{$attribute}" />
 				<input type="hidden" name="auto-manager-rule-values-{$ruleID}" value="{$values}" />
 				<input type="hidden" name="auto-manager-rule-invert-{$ruleID}" value="{invert}" />
+				<input type="hidden" name="auto-manager-rule-includeUnsetAttribute-{$ruleID}" value="{includeUnsetAttribute}" />
 				<input type="hidden" name="auto-manager-rule-users-{$ruleID}" value="{$userIDs}" />
 				<input type="hidden" name="auto-manager-rule-groups-{$ruleID}" value="{$groupIDs}" />
 			
@@ -7331,6 +7436,14 @@
 					<xsl:value-of select="$i18n.Yes" />
 				</span>
 			</td>
+			<td class="auto-manager-useStatusAttribute">
+				<span>
+					<xsl:if test="not(useStatusAttribute = 'true')">
+						<xsl:attribute name="style">display: none;</xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="$i18n.Yes" />
+				</span>
+			</td>
 			<td class="auto-manager-send-notification">
 				<span>
 					<xsl:if test="not(sendNotification = 'true')">
@@ -7372,6 +7485,15 @@
 					
 					</xsl:for-each>
 				</xsl:variable>
+
+				<xsl:variable name="statusAttributeValues">
+					<xsl:for-each  select="StatusAttributeValues/value">
+						
+						<xsl:value-of select="."/>
+						<xsl:text>&#13;</xsl:text>
+					
+					</xsl:for-each>
+				</xsl:variable>
 				
 				<input type="hidden" name="auto-manager-status-rule" value="{$ruleID}" />
 				<input type="hidden" name="auto-manager-status-rule-statusName-{$ruleID}" value="{$statusName}" />
@@ -7381,6 +7503,11 @@
 				<input type="hidden" name="auto-manager-status-rule-removePreviousManagers-{$ruleID}" value="{removePreviousManagers}" />
 				<input type="hidden" name="auto-manager-status-rule-sendNotification-{$ruleID}" value="{sendNotification}" />
 				<input type="hidden" name="auto-manager-status-rule-emailRecipients-{$ruleID}" value="{$emailRecipients}" />
+				<input type="hidden" name="auto-manager-status-rule-useStatusAttribute-{$ruleID}" value="{useStatusAttribute}" />
+				<input type="hidden" name="auto-manager-status-rule-statusAttributeName-{$ruleID}" value="{statusAttributeName}" />
+				<input type="hidden" name="auto-manager-status-rule-statusAttributeInvert-{$ruleID}" value="{statusAttributeInvert}" />
+				<input type="hidden" name="auto-manager-status-rule-includeUnsetStatusAttribute-{$ruleID}" value="{includeUnsetStatusAttribute}" />
+				<input type="hidden" name="auto-manager-status-rule-statusAttributeValues-{$ruleID}" value="{$statusAttributeValues}" />
 			
 				<a class="marginright open-auto-manager-status-modal" href="#" onclick="openAutoManagerAssignmentStatusRuleModal(this, event)" title="{$i18n.AutoManagerAssignment.Rule.Update}">
 					<img src="{$imgPath}/pen.png" alt="" />
@@ -8820,6 +8947,30 @@
 						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
 						<xsl:text>:&#160;</xsl:text>
 						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.EmailRecipients" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-status-rule-statusAttributeName-')">
+						<xsl:variable name="id" select="substring(fieldName, 46)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.StatusAttributeName" />
+						
+					</xsl:when>
+					<xsl:when test="starts-with(fieldName, 'auto-manager-status-rule-statusAttributeValues-')">
+						<xsl:variable name="id" select="substring(fieldName, 48)" />
+						
+						<xsl:value-of select="$i18n.AutoManagerAssignment.On.StatusChange" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.Rules.Row" />
+						<xsl:text>&#160;</xsl:text>
+						<xsl:value-of select="1 + count(../../FlowFamily/AutoManagerAssignmentStatusRules/AutoManagerAssignmentStatusRule[generatedRuleID = $id]/preceding-sibling::*)" />
+						<xsl:text>:&#160;</xsl:text>
+						<xsl:value-of select="$i18n.AutoManagerAssignment.StatusRule.AttributeValues" />
 						
 					</xsl:when>
 					

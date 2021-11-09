@@ -171,7 +171,7 @@
 	
 	<xsl:variable name="i18n.DownloadFlowInstancePDF">Hämta kvittens i PDF-format</xsl:variable>
 	<xsl:variable name="i18n.DownloadFlowInstanceXML">Hämta ärendet i XML-format</xsl:variable>
-	<xsl:variable name="i18n.DownloadFlowInstanceSignPDF">Hämta signerings underlag i PDF-format</xsl:variable>	
+	<xsl:variable name="i18n.DownloadFlowInstanceSignPDF">Hämta signeringsunderlag i PDF-format</xsl:variable>	
 	<xsl:variable name="i18n.DownloadSignature">Hämta signatur</xsl:variable>
 	 
 	<xsl:variable name="i18n.SiteProfile">Kommun</xsl:variable>

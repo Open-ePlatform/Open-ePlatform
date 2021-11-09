@@ -2364,6 +2364,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 										String value = attributeHandler.getString(rule.getAttributeName());
 
+										if(rule.isInverted() && value == null && rule.isIncludeUnsetAttribute()) {
+											
+											value = "";
+										}
+										
 										if (value != null) {
 
 											boolean match = rule.getValues().contains(value);
@@ -2487,7 +2492,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			FlowInstance flowInstance;
 			try {
 
-				flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION);
+				flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID(), null, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.AUTO_MANAGER_ASSIGNMENT_STATUS_RULES_RELATION);
 
 			} catch (SQLException e) {
 
@@ -2501,12 +2506,55 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 				AutoManagerAssignmentStatusRule matchingRule = null;
 				
+				AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
+				
 				for (AutoManagerAssignmentStatusRule rule : flowFamily.getAutoManagerAssignmentStatusRules()) {
 
 					if (flowInstance.getStatus().getName().equalsIgnoreCase(rule.getStatusName())) {
-					
-						matchingRule = rule;
-						break;
+
+						if(rule.isUseStatusAttribute()) {
+							
+							if(attributeHandler != null && !StringUtils.isEmpty(rule.getStatusAttributeName()) && !CollectionUtils.isEmpty(rule.getStatusAttributeValues())) {
+
+								String attributeValue = attributeHandler.getString(rule.getStatusAttributeName());
+
+								if(rule.isStatusAttributeInvert() && attributeValue == null && rule.isIncludeUnsetStatusAttribute()) {
+									
+									attributeValue = "";
+								}
+								
+								if (attributeValue != null) {
+
+									boolean match = rule.getStatusAttributeValues().contains(attributeValue);
+
+									if (!match && attributeValue.contains(",")) {
+
+										String[] values = attributeValue.split(", ?");
+
+										for (String splitValue : values) {
+
+											match = rule.getStatusAttributeValues().contains(splitValue);
+
+											if (match) {
+												
+												break;
+											}
+										}
+									}
+									
+									if (match != rule.isStatusAttributeInvert()) {
+										
+										matchingRule = rule;
+										break;
+									}
+								}
+							}
+							
+						} else {
+							
+							matchingRule = rule;
+							break;
+						}
 					}
 				}
 				

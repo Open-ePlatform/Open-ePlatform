@@ -1069,6 +1069,12 @@ function openAutoManagerAssignmentRuleModal(button, event) {
 					content.find('#updateAutoManagerModalHeader').children().toggle();
 				}
 				
+				content.find('#invert').on("change", function(){
+					
+					content.find('#includeUnsetAttributeContainer').toggle(this.checked);
+					
+				}).trigger("change");
+				
 			},
 			
 			beforeClose: function() {
@@ -1308,6 +1314,19 @@ function openAutoManagerAssignmentStatusRuleModal(button, event) {
 					content.find('#updateAutoManagerStatusNotificationContainer').toggle(this.checked);
 					
 				}).trigger("change");
+
+				content.find('#useStatusAttribute').on("change", function(){
+					
+					content.find('#statusAttributeContainer').toggle(this.checked);
+					
+				}).trigger("change");
+
+				content.find('#statusAttributeInvert').on("change", function(){
+					
+					content.find('#includeUnsetStatusAttributeContainer').toggle(this.checked);
+					
+				}).trigger("change");
+
 			},
 			
 			beforeClose: function() {
@@ -1415,6 +1434,7 @@ function refreshAutoManagerAssignmentStatusRule(row, ruleID) {
 	var ruleUsers = row.find(".auto-manager-users .status-template-user-list-entry");
 	var ruleGroups = row.find(".auto-manager-groups .status-template-group-list-entry");
 	var ruleRemovePreviousManagers = row.find("input[name='auto-manager-status-rule-removePreviousManagers-" + ruleID + "']").val();
+	var useStatusAttribute = row.find("input[name='auto-manager-status-rule-useStatusAttribute-" + ruleID + "']").val();
 	var sendNotification = row.find("input[name='auto-manager-status-rule-sendNotification-" + ruleID + "']").val();
 	
 	row.find(".auto-manager-status-name").text(ruleStatusName);
@@ -1422,6 +1442,7 @@ function refreshAutoManagerAssignmentStatusRule(row, ruleID) {
 	row.find(".auto-manager-users > span").text(ruleUsers.length);
 	row.find(".auto-manager-groups > span").text(ruleGroups.length);
 	row.find(".auto-manager-remove-previous-managers > span").toggle(ruleRemovePreviousManagers == "true");
+	row.find(".auto-manager-useStatusAttribute > span").toggle(useStatusAttribute == "true");
 	row.find(".auto-manager-send-notification > span").toggle(sendNotification == "true");
 }
 

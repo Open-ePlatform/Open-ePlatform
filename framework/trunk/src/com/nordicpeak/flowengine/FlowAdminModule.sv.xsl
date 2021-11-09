@@ -662,6 +662,7 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.AttributeValues">Värden (ett per rad)</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Rule.Invert">Invertera (Om inget av värderna på regeln matchar attributets värde så aktiveras regeln)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.IncludeUnsetAttribute">Aktivera regeln även då attributet är tomt i ärendet (då frågan ej är besvarad)</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Users">Användare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Groups">Grupper med begränsad behörighet</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.Always">Handläggare som alltid tilldelas</xsl:variable>
@@ -672,13 +673,19 @@
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.StatusName">Status</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.AddManagers">Lägg till handläggare</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRules.RemovePreviousManagers">Ta bort befintliga</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.UseStatusAttributeColumnTitle">Attributaktivering</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.StatusName">Status</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.AddManagers">Lägg till handläggare vid byte till denna status</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.RemovePreviousManagers">Ta bort befintliga handläggare vid byte till denna status</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotification">E-post notifikation när ärenden tilldelats handläggare</xsl:variable>
-	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotificationColumnTitle">E-post notifikation</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotification">E-postnotifiering när ärenden tilldelats handläggare</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.SendNotificationColumnTitle">E-postnotifiering</xsl:variable>
 	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.EmailRecipients">E-postadresser för notifiering (en adress per rad)</xsl:variable>
-	<xsl:variable name="i18n.ValidationError.DuplicateStatusRule">Du kan bara skapa en regel per status</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.StatusAttributeName">Attributnamn</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.AttributeValues">Värden (ett per rad)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.Rule.IncludeUnsetStatusAttribute">Aktivera regeln även då attributet är tomt i ärendet (då frågan ej är besvarad)</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.UseStatusAttribute">Använd attribut för regelaktivering</xsl:variable>
+	<xsl:variable name="i18n.AutoManagerAssignment.StatusRule.UseStatusAttributeInfo">Regeln aktiveras vid byte till ovan angiven status, om namngivet attribut är satt till något av nedanstående värden (eller inversen)</xsl:variable>
+	<xsl:variable name="i18n.ValidationError.DuplicateStatusRule">Det finns redan en regel för denna status där attributaktivering ej är påslaget. Då kan ingen ytterligare regel för den statusen skapas.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.NoActionsSelected">Du måste välja att antingen lägga till eller ta bort handläggare, eller både och.</xsl:variable>
 	<xsl:variable name="i18n.Yes">Ja</xsl:variable>
 	

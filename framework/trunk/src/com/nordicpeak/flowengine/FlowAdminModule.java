@@ -6306,9 +6306,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						String attributeName = ValidationUtils.validateParameter("auto-manager-rule-attribute-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
 						String attributeValues = ValidationUtils.validateParameter("auto-manager-rule-values-" + ruleID, req, true, StringPopulator.getPopulator(), validationErrors);
 						boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-rule-invert-" + ruleID));
+						boolean includeUnsetAttribute = "true".equalsIgnoreCase(req.getParameter("auto-manager-rule-includeUnsetAttribute-" + ruleID));
 
 						rule.setAttributeName(attributeName);
 						rule.setInverted(invert);
+						rule.setIncludeUnsetAttribute(includeUnsetAttribute);
 
 						if (!StringUtils.isEmpty(attributeValues)) {
 
@@ -6491,7 +6493,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				boolean removePreviousManagers = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-removePreviousManagers-" + ruleID));
 				boolean sendNotification = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-sendNotification-" + ruleID));
 
-				if (containsRuleWithStatusName(rules, statusName)) {
+				boolean useStatusAttribute = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-useStatusAttribute-" + ruleID));
+				boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-statusAttributeInvert-" + ruleID));
+				boolean includeUnsetStatusAttribute = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-includeUnsetStatusAttribute-" + ruleID));
+				
+				if (ruleDuplicatesExist(rules, statusName, useStatusAttribute)) {
 
 					validationErrors.add(new ValidationError("auto-manager-status-rule-statusName-" + ruleID, ValidationErrorType.Other, "DuplicateStatusRule"));
 				}
@@ -6505,7 +6511,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				rule.setAddManagers(addManagers);
 				rule.setRemovePreviousManagers(removePreviousManagers);
 				rule.setSendNotification(sendNotification);
-
+				
+				rule.setUseStatusAttribute(useStatusAttribute);
+				rule.setStatusAttributeInvert(invert);
+				rule.setIncludeUnsetStatusAttribute(includeUnsetStatusAttribute);
+				
 				if (addManagers) {
 
 					String usersIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
@@ -6617,6 +6627,30 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					rule.setEmailRecipients(emailRecipients);
 				}
 
+				if(useStatusAttribute) {
+					
+					String statusAttributeName = ValidationUtils.validateParameter("auto-manager-status-rule-statusAttributeName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);;
+					String attributeValues = ValidationUtils.validateParameter("auto-manager-status-rule-statusAttributeValues-" + ruleID, req, true, StringPopulator.getPopulator(), validationErrors);
+
+					rule.setStatusAttributeName(statusAttributeName);
+					
+					if (!StringUtils.isEmpty(attributeValues)) {
+
+						List<String> splitValues = StringUtils.splitOnLineBreak(attributeValues, true);
+
+						for (String value : splitValues) {
+
+							if (value.length() > 255) {
+
+								validationErrors.add(new ValidationError("auto-manager-status-rule-statusAttributeValues-" + ruleID, ValidationErrorType.TooLong));
+							}
+						}
+
+						rule.setStatusAttributeValues(splitValues);
+					}
+				}
+				
+				
 				rules.add(rule);
 			}
 		}
@@ -6624,13 +6658,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowFamily.setAutoManagerAssignmentStatusRules(rules);
 	}
 
-	private boolean containsRuleWithStatusName(List<AutoManagerAssignmentStatusRule> rules, String statusName) {
+	private boolean ruleDuplicatesExist(List<AutoManagerAssignmentStatusRule> rules, String statusName, boolean useStatusAttribute) {
 
 		if (!CollectionUtils.isEmpty(rules)) {
 
 			for (AutoManagerAssignmentStatusRule rule : rules) {
 
-				if (rule.getStatusName() != null && rule.getStatusName().equalsIgnoreCase(statusName)) {
+				if ((!rule.isUseStatusAttribute() || !useStatusAttribute) && rule.getStatusName() != null && rule.getStatusName().equalsIgnoreCase(statusName)) {
 
 					return true;
 				}

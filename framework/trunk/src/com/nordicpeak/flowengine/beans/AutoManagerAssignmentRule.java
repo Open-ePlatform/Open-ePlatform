@@ -45,6 +45,10 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	@DAOManaged
 	@XMLElement
 	private boolean invert;
+
+	@DAOManaged
+	@XMLElement
+	private boolean includeUnsetAttribute;	
 	
 	@DAOManaged
 	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
@@ -88,6 +92,14 @@ public class AutoManagerAssignmentRule extends GeneratedElementable implements S
 	
 	public void setInverted(boolean inverted) {
 		this.invert = inverted;
+	}
+
+	public boolean isIncludeUnsetAttribute() {
+		return includeUnsetAttribute;
+	}
+
+	public void setIncludeUnsetAttribute(boolean includeUnsetAttribute) {
+		this.includeUnsetAttribute = includeUnsetAttribute;
 	}
 	
 	public FlowFamily getFlowFamily() {

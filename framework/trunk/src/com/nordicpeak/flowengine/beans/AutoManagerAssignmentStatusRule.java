@@ -78,6 +78,28 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 	@XMLElement(fixCase = true)
 	private List<Group> groups;
 
+	@DAOManaged
+	@XMLElement
+	private boolean useStatusAttribute;
+	
+	@DAOManaged
+	@XMLElement
+	private String statusAttributeName;
+	
+	@DAOManaged
+	@XMLElement
+	private boolean statusAttributeInvert;
+
+	@DAOManaged
+	@XMLElement
+	private boolean includeUnsetStatusAttribute;	
+
+	@DAOManaged
+	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowengine_flow_family_automanager_status_rule_attribute_values", remoteValueColumnName = "statusAttributeValue")
+	@XMLElement(fixCase = true)
+	private List<String> statusAttributeValues;
+	
 	public Integer getRuleID() {
 
 		return ruleID;
@@ -142,16 +164,6 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 
 		this.groupIDs = groupIDs;
 		groups = null;
-	}
-
-	public String getAttributeName() {
-
-		return statusName;
-	}
-
-	public void setAttributeName(String attributeName) {
-
-		this.statusName = attributeName;
 	}
 
 	public void setUsers(List<User> users) {
@@ -237,6 +249,46 @@ public class AutoManagerAssignmentStatusRule extends GeneratedElementable implem
 
 	public void setEmailRecipients(List<String> emailRecipients) {
 		this.emailRecipients = emailRecipients;
+	}
+
+	public boolean isUseStatusAttribute() {
+		return useStatusAttribute;
+	}
+
+	public void setUseStatusAttribute(boolean useStatusAttribute) {
+		this.useStatusAttribute = useStatusAttribute;
+	}
+
+	public String getStatusAttributeName() {
+		return statusAttributeName;
+	}
+
+	public void setStatusAttributeName(String statusAttributeName) {
+		this.statusAttributeName = statusAttributeName;
+	}
+
+	public boolean isStatusAttributeInvert() {
+		return statusAttributeInvert;
+	}
+
+	public void setStatusAttributeInvert(boolean statusAttributeInvert) {
+		this.statusAttributeInvert = statusAttributeInvert;
+	}
+
+	public boolean isIncludeUnsetStatusAttribute() {
+		return includeUnsetStatusAttribute;
+	}
+
+	public void setIncludeUnsetStatusAttribute(boolean includeUnsetStatusAttribute) {
+		this.includeUnsetStatusAttribute = includeUnsetStatusAttribute;
+	}
+	
+	public List<String> getStatusAttributeValues() {
+		return statusAttributeValues;
+	}
+
+	public void setStatusAttributeValues(List<String> statusAttributeValues) {
+		this.statusAttributeValues = statusAttributeValues;
 	}
 
 	@Override
