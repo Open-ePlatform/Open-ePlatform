@@ -149,8 +149,6 @@
 	<xsl:variable name="i18n.Tag.ActivityGroup.name">Aktivitetsgruppnamn</xsl:variable>
 	<xsl:variable name="i18n.Tag.Activities">Aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.Tag.MyActivities">Länk till mina aktiviteter</xsl:variable>
-	<xsl:variable name="i18n.Tag.Manager.Firstname">Förnamn</xsl:variable>
-	<xsl:variable name="i18n.Tag.Manager.Lastname">Efternamn</xsl:variable>
 	<xsl:variable name="i18n.Tag.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>
 	

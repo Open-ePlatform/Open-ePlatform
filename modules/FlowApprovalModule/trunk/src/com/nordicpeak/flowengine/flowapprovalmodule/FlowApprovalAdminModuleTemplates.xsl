@@ -1920,22 +1920,6 @@
 						<xsl:value-of select="$i18n.Tag.Flow.name"/>
 					</td>
 				</tr>
-				<tr>
-					<td>
-						<xsl:text>$manager.firstname</xsl:text>
-					</td>
-					<td>
-						<xsl:value-of select="$i18n.Tag.Manager.Firstname"/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<xsl:text>$manager.lastname</xsl:text>
-					</td>
-					<td>
-						<xsl:value-of select="$i18n.Tag.Manager.Lastname"/>
-					</td>
-				</tr>
 			</table>
 		
 		</div>
