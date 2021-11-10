@@ -447,7 +447,7 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 
 			log.info("User " + user + " importing flow with sharedflowID " + sharedflowID);
 
-			res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow/" + repositoryIndex + "/" + sharedflowID + "/" + this.getProviderID());
+			res.sendRedirect(req.getContextPath() + flowAdminModule.getFullAlias() + "/importflow/" + repositoryIndex + "/" + sharedflowID + "/" + this.getProviderID() + "?list=true");
 			return null;
 
 		}
@@ -887,6 +887,8 @@ public class FlowCatalogModule extends AnnotatedForegroundModule implements Exte
 	@Override
 	public ExternalFlow getFlow(Integer repositoryIndex, Integer flowID) {
 
+		log.info("Getting flow " + flowID + " from repository " + repositoryIndex);
+		
 		HttpURLConnection connection = null;
 
 		InputStream inputStream = null;
