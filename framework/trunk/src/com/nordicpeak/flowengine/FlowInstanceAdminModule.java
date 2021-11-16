@@ -123,6 +123,7 @@ import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.events.UpdateByManagerEvent;
 import com.nordicpeak.flowengine.exceptions.FlowEngineException;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderErrorException;
@@ -1983,10 +1984,12 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@Override
 	protected void flowInstanceSavedAndClosed(FlowInstanceManager instanceManager, HttpServletRequest req, HttpServletResponse res, User user, FlowInstanceEvent event) throws IOException {
 
+		eventHandler.sendEvent(FlowInstanceManager.class, new UpdateByManagerEvent(instanceManager, event), EventTarget.ALL);
+		
 		if (this.pdfProvider != null) {
 
 			try {
-				Map<String, String> extraElements = new HashMap<String, String>();
+				Map<String, String> extraElements = new HashMap<>();
 				extraElements.put("EditedByManager", "true");
 
 				pdfProvider.createTemporaryPDF(instanceManager, getSiteProfile(instanceManager), user, extraElements, event);
