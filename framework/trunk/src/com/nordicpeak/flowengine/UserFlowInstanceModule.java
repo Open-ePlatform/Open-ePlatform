@@ -618,7 +618,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		if (uriParser.size() == 4 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
 
-			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
+			getPreviewAccessController().checkFlowInstanceAccess(flowInstance, user);
 
 			SiteProfile instanceProfile = getSiteProfile(flowInstance);
 
@@ -823,7 +823,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 				
 				//Get saved instance from DB or session
-				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, UPDATE_ACCESS_CONTROLLER, req.getSession(true), user, uriParser, req, true, false, true, BaseFlowModule.OWNER_REQUEST_METADATA);
+				instanceManager = getSavedMutableFlowInstanceManager(flowID, flowInstanceID, getUpdateAccessController(), req.getSession(true), user, uriParser, req, true, false, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 				if (instanceManager == null) {
 
@@ -874,10 +874,10 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			if (instanceManager.getFlowInstance().getFirstSubmitted() != null) {
 
-				return processFlowRequest(instanceManager, completeFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
+				return processFlowRequest(instanceManager, completeFlowProcessCallback, getUpdateAccessController(), req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 			}
 
-			return processFlowRequest(instanceManager, defaultFlowProcessCallback, UPDATE_ACCESS_CONTROLLER, req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
+			return processFlowRequest(instanceManager, defaultFlowProcessCallback, getUpdateAccessController(), req, res, user, user, uriParser, true, BaseFlowModule.OWNER_REQUEST_METADATA);
 
 		} catch (FlowInstanceManagerClosedException e) {
 
@@ -921,7 +921,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		
 		Integer flowInstanceID = null;
 
-		if (uriParser.size() == 3 && (flowInstanceID = NumberUtils.toInt(uriParser.get(2))) != null && deleteFlowInstance(flowInstanceID, DELETE_ACCESS_CONTROLLER, user) != null) {
+		if (uriParser.size() == 3 && (flowInstanceID = NumberUtils.toInt(uriParser.get(2))) != null && deleteFlowInstance(flowInstanceID, getDeleteAccessController(), user) != null) {
 
 			this.redirectToDefaultMethod(req, res);
 
@@ -934,19 +934,19 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "externalattachment")
 	public ForegroundModuleResponse getExternalMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException {
 
-		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER);
+		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getPreviewAccessController());
 	}
 
 	@WebPublic(alias = "mquery")
 	public ForegroundModuleResponse processMutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException, UnableToResetQueryInstanceException {
 
-		return processMutableQueryRequest(req, res, user, user, uriParser, UPDATE_ACCESS_CONTROLLER, true, true, false, BaseFlowModule.OWNER_REQUEST_METADATA);
+		return processMutableQueryRequest(req, res, user, user, uriParser, getUpdateAccessController(), true, true, false, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@WebPublic(alias = "iquery")
 	public ForegroundModuleResponse processImmutableQueryRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException, QueryRequestException, QueryProviderException, EvaluationProviderException, InvalidFlowInstanceStepException, MissingQueryInstanceDescriptor, DuplicateFlowInstanceManagerIDException {
 
-		return processImmutableQueryRequest(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, true, OWNER_REQUEST_METADATA);
+		return processImmutableQueryRequest(req, res, user, uriParser, getPreviewAccessController(), true, OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1031,19 +1031,19 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "multisign")
 	public ForegroundModuleResponse showMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 
-		return super.showMultiSignMessage(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false, ShowMode.PREVIEW);
+		return super.showMultiSignMessage(req, res, user, uriParser, getPreviewAccessController(), this.defaultFlowProcessCallback, false, ShowMode.PREVIEW);
 	}
 	
 	@WebPublic(alias = "submittedmultisign")
 	public ForegroundModuleResponse showSubmittedMultiSignMessage(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException {
 		
-		return super.showMultiSignMessage(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, false, ShowMode.SUBMIT);
+		return super.showMultiSignMessage(req, res, user, uriParser, getPreviewAccessController(), this.defaultFlowProcessCallback, false, ShowMode.SUBMIT);
 	}
 
 	@WebPublic(alias = "pay")
 	public ForegroundModuleResponse showPaymentForm(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws FlowInstanceManagerClosedException, UnableToGetQueryInstanceShowHTMLException, AccessDeniedException, ModuleConfigurationException, SQLException, URINotFoundException, IOException {
 
-		return super.showPaymentForm(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, this.defaultFlowProcessCallback, OWNER_REQUEST_METADATA);
+		return super.showPaymentForm(req, res, user, uriParser, getPreviewAccessController(), this.defaultFlowProcessCallback, OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1093,7 +1093,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 
-		return super.showImmutableFlowInstance(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, defaultFlowProcessCallback, ShowMode.PREVIEW, BaseFlowModule.OWNER_REQUEST_METADATA);
+		return super.showImmutableFlowInstance(req, res, user, uriParser, getPreviewAccessController(), defaultFlowProcessCallback, ShowMode.PREVIEW, BaseFlowModule.OWNER_REQUEST_METADATA);
 	}
 
 	@Override
@@ -1112,7 +1112,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public ForegroundModuleResponse getEventPDF(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 
 		try {
-			sendEventPDF(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, pdfProvider, false);
+			sendEventPDF(req, res, user, uriParser, getPreviewAccessController(), pdfProvider, false);
 
 		} catch (FlowDisabledException e) {
 
@@ -1128,7 +1128,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		if (!hideEventXMLFromUser) {
 			
 			try {
-				sendEventXML(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, xmlProvider, false);
+				sendEventXML(req, res, user, uriParser, getPreviewAccessController(), xmlProvider, false);
 	
 				return null;
 				
@@ -1147,7 +1147,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public ForegroundModuleResponse getEventSignature(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws URINotFoundException, SQLException, IOException, AccessDeniedException, ModuleConfigurationException {
 
 		try {
-			sendEventSignature(req, res, user, uriParser, PREVIEW_ACCESS_CONTROLLER, false);
+			sendEventSignature(req, res, user, uriParser, getPreviewAccessController(), false);
 
 		} catch (FlowDisabledException e) {
 
@@ -1415,7 +1415,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		if (uriParser.size() >= 5 && NumberUtils.isInt(uriParser.get(3)) && (flowInstance = getFlowInstance(Integer.valueOf(uriParser.get(3)), CollectionUtils.getList(ExternalMessageAttachment.DATA_FIELD), FLOW_INSTANCE_OVERVIEW_RELATIONS)) != null) {
 
-			PREVIEW_ACCESS_CONTROLLER.checkFlowInstanceAccess(flowInstance, user);
+			getPreviewAccessController().checkFlowInstanceAccess(flowInstance, user);
 
 			if (!flowInstance.getFlow().isEnabled() || isOperatingStatusDisabled(flowInstance, false)) {
 
@@ -1567,6 +1567,18 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		}
 
 		return metadata;
+	}
+	
+	protected FlowInstanceAccessController getUpdateAccessController() {
+		return UPDATE_ACCESS_CONTROLLER;
+	}
+	
+	protected FlowInstanceAccessController getDeleteAccessController() {
+		return DELETE_ACCESS_CONTROLLER;
+	}
+	
+	protected FlowInstanceAccessController getPreviewAccessController() {
+		return PREVIEW_ACCESS_CONTROLLER;
 	}
 
 	@Override
