@@ -4281,7 +4281,12 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@WebPublic(toLowerCase = true, alias = "importflow")
 	public ForegroundModuleResponse importFlowIntoNewFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
 
-		FlowType flowType = this.flowTypeCRUD.getRequestedBean(req, res, user, uriParser, FlowCRUD.SHOW);
+		FlowType flowType = null;
+		
+		if(req.getParameter("list") == null) {
+			
+			flowType = this.flowTypeCRUD.getRequestedBean(req, res, user, uriParser, FlowCRUD.SHOW);
+		}
 
 		if (flowType == null) {
 
@@ -4298,9 +4303,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			String providerID;
 
 			if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (providerID = uriParser.get(4)) != null && repositoryIndex >= 0) {
+				
 				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
+				
 				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
+				
 				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
+				
 				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
 				XMLUtils.appendNewElement(doc, selectImportTargetFamily, "ProviderID", providerID);
 			}
@@ -6511,7 +6520,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				rule.setAddManagers(addManagers);
 				rule.setRemovePreviousManagers(removePreviousManagers);
 				rule.setSendNotification(sendNotification);
-				
+
 				rule.setUseStatusAttribute(useStatusAttribute);
 				rule.setStatusAttributeInvert(invert);
 				rule.setIncludeUnsetStatusAttribute(includeUnsetStatusAttribute);
