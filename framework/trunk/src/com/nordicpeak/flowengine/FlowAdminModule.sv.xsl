@@ -143,7 +143,7 @@
 	<xsl:variable name="i18n.validation.unknownError" select="'Okänt fel på fältet:'"/>
 	<xsl:variable name="i18n.validation.unknownFault" select="'Ett okänt valideringsfel har uppstått.'"/>
 	<xsl:variable name="i18n.enableFlow">Aktivera e-tjänsten</xsl:variable>
-	<xsl:variable name="i18n.disableUnpublishedSavedFlows">Inaktivera sparade e-tjänster som är avpublicerade</xsl:variable>
+	<xsl:variable name="i18n.disableUnpublishedSavedFlows">Tillåt endast att sparade ärenden skickas in via senaste publicerade versionen av e-tjänsten</xsl:variable>
 	
 	<xsl:variable name="i18n.baseInfo">Grundinformation</xsl:variable>
 	<xsl:variable name="i18n.enabled">Aktiverad</xsl:variable>
@@ -609,7 +609,7 @@
 	<xsl:variable name="i18n.Flow.hideFlowInstanceIDFromUser">Dölj ärendenummer från mina sidor och kvittens</xsl:variable>
 	
 	<xsl:variable name="i18n.Flow.otherSettings">Övrigt</xsl:variable>
-	<xsl:variable name="i18n.Flow.alwaysStartFromFirstStep">Starta alltid ärende från första steg</xsl:variable>
+	<xsl:variable name="i18n.Flow.alwaysStartFromFirstStep">Öppna alltid sparade ärenden från första steget</xsl:variable>
 	
 	<xsl:variable name="i18n.ChangeFlowType.linkTitle">Ändra kategori på e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.ChangeFlowType.title">Ändra kategori på e-tjänst</xsl:variable>
