@@ -166,7 +166,7 @@
 								
 							</table>
 							
-							<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true' and count(ChildQueryInstance/Guardians/Guardian[sameAddressAsPoster != 'true']) > 1">
+							<xsl:if test="ChildQueryInstance/ChildQuery/useMultipartSigning = 'true' and skipMultipartSigningIfSameAddress = 'true' and count(ChildQueryInstance/Guardians/Guardian[sameAddressAsPoster != 'true']) > 1">
 								<p class="tiny">
 									<xsl:value-of select="$i18n.OtherGuardiansNotificationInfo"/>
 								</p>
