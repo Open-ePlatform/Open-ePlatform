@@ -188,14 +188,23 @@ function searchFlowInstance() {
 				if(response.hitCount > 0) {
 				
 					$.each(result.hits, function( key, flowInstance) {
+					
+						var collectedFlowInstanceID = flowInstance.id;
+						
+						if(flowInstance.integrationExternalID) {
+							collectedFlowInstanceID += " / "+flowInstance.integrationExternalID;
+						}
 
 						if(showSearchDecriptionColumn == true){
+							
+							
+							
 							
 							var $flowInstanceRow = 
 								'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
 								'<td class"icon" />' +
 								'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
-								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
+								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + collectedFlowInstanceID + '</td>' +
 								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
 								'<td data-title="' + i18nFlowInstanceDescription + '" class="description">' + flowInstance.managerDescription + '</td>' +
 								'<td data-title="' + i18nFlowInstanceFirstSubmitted + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
@@ -211,7 +220,7 @@ function searchFlowInstance() {
 								'<tr onclick="location.href=\'' + flowInstanceAdminURI + "/overview/" + flowInstance.id + '\'">' + 
 								'<td class"icon" />' +
 								'<td data-title="' + i18nFlow +  '" class="service">' + flowInstance.name + '</td>' +
-								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + flowInstance.id + '</td>' +
+								'<td data-title="' + i18nFlowInstanceID + '" class="errandno">' + collectedFlowInstanceID + '</td>' +
 								'<td data-title="' + i18nFlowInstanceStatus + '" class="status">' + flowInstance.status + '</td>' +
 								'<td data-title="' + i18nFlowInstanceFirstSubmitted + '" class="date">' + flowInstance.firstSubmitted + '</td>' +
 								'<td data-title="' + i18nFlowInstancePoster + '" class="poster">' + flowInstance.poster + '</td>' +
