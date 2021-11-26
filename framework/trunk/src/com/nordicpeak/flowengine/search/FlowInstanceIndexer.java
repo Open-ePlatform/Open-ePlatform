@@ -240,7 +240,6 @@ public class FlowInstanceIndexer {
 			builder.add(query, Occur.MUST);
 			
 			appendFilter(builder, user);
-			
 			results = searcher.search(builder.build(), maxHitCount);
 			
 		}else{
@@ -261,11 +260,12 @@ public class FlowInstanceIndexer {
 			
 			Document doc = searcher.doc(scoreDoc.doc);
 
-			JsonObject instance = new JsonObject(4);
+			JsonObject instance = new JsonObject(5);
 			instance.putField(ID_FIELD, doc.get(ID_FIELD));
 			instance.putField(FLOW_NAME_FIELD, doc.get(FLOW_NAME_FIELD));
 			instance.putField(STATUS_NAME_FIELD, doc.get(STATUS_NAME_FIELD));
 			instance.putField(FIRST_SUBMITTED_FIELD, doc.get(FIRST_SUBMITTED_FIELD));
+			instance.putField(EXTERNAL_ID_FIELD, (doc.get(EXTERNAL_ID_FIELD) == null ? "" : doc.get(EXTERNAL_ID_FIELD)));
 			
 			if(includeDescription) {
 			
@@ -515,7 +515,7 @@ public class FlowInstanceIndexer {
 			
 			if (externalID != null) {
 				
-				doc.add(new TextField(EXTERNAL_ID_FIELD, externalID, Field.Store.NO));
+				doc.add(new TextField(EXTERNAL_ID_FIELD, externalID, Field.Store.YES));
 			}
 			
 			String organizationNumber = attributeHandler.getString(ORGANIZATION_NUMBER);
