@@ -26,6 +26,7 @@
 	<xsl:variable name="links">
 		/css/flowengine.css?v=1
 		/css/messages.css
+		/css/userflowinstancemodule.css
 	</xsl:variable>
 
 	<xsl:template match="Document">
@@ -731,6 +732,11 @@
 			 -->
 			<div id="tabs">
 				<ul class="tabs">
+					
+					<li data-tabid="#showflow">
+						<a data-icon-before="S" href="#showflow" title="{$i18n.ShowFlowInstance}"><xsl:value-of select="$i18n.ShowFlowInstance" /></a>
+					</li>
+					
 					<li class="active" data-tabid="#history">
 						<a data-icon-before="o" href="#history" title="{$i18n.FlowInstanceEvents}"><xsl:value-of select="$i18n.FlowInstanceEvents" /></a>
 					</li>
@@ -752,6 +758,22 @@
 					
 					<xsl:apply-templates select="../TabHeaders/ExtensionLink" mode="tab-header"/>
 				</ul>
+				
+				<div id="showflow" class="tabs-content">
+					
+					<xsl:if test="Status/isUserMutable = 'true'">
+						<div class="editbutton">
+							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}" class="btn btn-light next"><i data-icon-before="W"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
+						</div>
+					</xsl:if>
+					
+					<xsl:apply-templates select="../ImmutableFlowInstanceManagerPreview" />
+					
+					<xsl:if test="PreviewError">
+						<div class="heading-wrapper bigmargin"><h3><xsl:value-of select="$i18n.PreviewErrorMessage"/></h3></div>
+					</xsl:if>
+				
+				</div>
 				
 				<xsl:if test="not(hideExternalMessages)">
 					<div id="messages">
@@ -900,17 +922,6 @@
 					
 				</div>
 			
-			<div class="navigator-buttons centered">
-				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/preview/{flowInstanceID}" class="btn btn-green xl next">
-					<i data-icon-before="S" class="xl"></i>
-					<xsl:value-of select="$i18n.ShowFlowInstance" />
-				</a>
-				<xsl:if test="Status/isUserMutable = 'true'">
-	  				<span class="or"><xsl:value-of select="$i18n.Or" /></span>     
-	  				<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}" class="btn btn-light xl prev"><i data-icon-before="W" class="xl"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
- 				</xsl:if>
- 			</div>
- 			
 		</section>
 	
 	</xsl:template>
