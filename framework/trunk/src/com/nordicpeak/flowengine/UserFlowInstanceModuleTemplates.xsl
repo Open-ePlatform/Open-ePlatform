@@ -531,13 +531,8 @@
 	</xsl:template>
 	
 	<xsl:template match="FlowInstance" mode="overview">
-		
-		<xsl:call-template name="showFlowInstanceControlPanel">
-			<xsl:with-param name="flowInstance" select="." />
-			<xsl:with-param name="view" select="'OVERVIEW'" />
-		</xsl:call-template>
-		
-		<section id="UserFlowInstanceModule" class="child">
+			
+		<section id="UserFlowInstanceModule">
 			<div class="section-inside step full">
 					<div class="heading-wrapper">
 						<div class="inner inner-less-padding">
