@@ -265,7 +265,15 @@ public class FlowInstanceIndexer {
 			instance.putField(FLOW_NAME_FIELD, doc.get(FLOW_NAME_FIELD));
 			instance.putField(STATUS_NAME_FIELD, doc.get(STATUS_NAME_FIELD));
 			instance.putField(FIRST_SUBMITTED_FIELD, doc.get(FIRST_SUBMITTED_FIELD));
-			instance.putField(EXTERNAL_ID_FIELD, (doc.get(EXTERNAL_ID_FIELD) == null ? "" : doc.get(EXTERNAL_ID_FIELD)));
+			
+			String externalID = doc.get(EXTERNAL_ID_FIELD);
+			
+			if(externalID == null) {
+				
+				externalID = "";
+			}
+			
+			instance.putField(EXTERNAL_ID_FIELD, externalID);
 			
 			if(includeDescription) {
 			
