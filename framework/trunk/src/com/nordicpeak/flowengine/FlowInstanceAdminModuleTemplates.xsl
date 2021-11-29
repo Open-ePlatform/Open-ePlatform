@@ -21,7 +21,7 @@
 		/js/flowengine.js?v=1
 		/js/flowengine.step-navigator.js
 		/js/flowengine.tablesorter.js
-		/js/flowinstanceadminmodule.js?v=2
+		/js/flowinstanceadminmodule.js?v=3
 		/js/jquery.qloader-init.js
 		/js/UserGroupList.js
 		/js/js.cookie-2.0.4.min.js
