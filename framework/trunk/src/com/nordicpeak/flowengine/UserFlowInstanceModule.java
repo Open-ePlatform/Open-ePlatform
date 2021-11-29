@@ -684,7 +684,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 				}
 			}
 
-			req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
+			//req.setAttribute(UserFlowInstanceMenuModule.REQUEST_DISABLE_MENU, true);
 			
 			if (flowInstance.getEvents() != null && flowInstanceEventSortOrder == Order.DESC) {
 				
