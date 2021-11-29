@@ -29,6 +29,7 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	<xsl:variable name="i18n.setAsAttribute">Spara bifogade filers filnamn som en kommaseparerad lista i ett attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
+	<xsl:variable name="i18n.hideDescriptionInPDF">Dölj beskrivning i PDF</xsl:variable>
 
 	<xsl:variable name="i18n.attachmentNamePrefixMode">filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>
 	<xsl:variable name="i18n.AttachmentNamePrefixMode">Filnamnprefix på bifogade filer i PDF och notifikationer</xsl:variable>

@@ -200,5 +200,12 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `checkbox_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

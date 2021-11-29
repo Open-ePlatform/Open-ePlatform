@@ -23,7 +23,8 @@
 				</h2>
 			</xsl:if>
 			
-			<xsl:if test="Description">
+			
+			<xsl:if test="Description and RadioButtonQueryInstance/RadioButtonQuery/hideDescriptionInPDF = 'false'">
 				
 				<div class="query-description">
 					<xsl:choose>

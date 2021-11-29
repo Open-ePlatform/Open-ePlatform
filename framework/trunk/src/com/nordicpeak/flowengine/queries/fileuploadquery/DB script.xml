@@ -133,5 +133,12 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
 	
 </DBScripts>

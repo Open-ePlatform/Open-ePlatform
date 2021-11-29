@@ -23,7 +23,7 @@
 				</h2>
 			</xsl:if>
 			
-			<xsl:if test="Description">
+			<xsl:if test="Description and FileUploadQueryInstance/FileUploadQuery/hideDescriptionInPDF = 'false'">
 				
 				<div class="query-description">
 					<xsl:choose>

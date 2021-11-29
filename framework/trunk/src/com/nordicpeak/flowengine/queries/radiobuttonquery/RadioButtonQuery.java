@@ -83,6 +83,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 	@WebPopulate
 	@XMLElement
 	private boolean hideTitle;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideDescriptionInPDF;
 
 	@DAOManaged
 	@WebPopulate
@@ -183,12 +188,13 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
 
-		List<ValidationError> errors = new ArrayList<ValidationError>();
+		List<ValidationError> errors = new ArrayList<>();
 
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
+		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
 		lockForManagerUpdate = xmlParser.getPrimitiveBoolean("lockForManagerUpdate");
 		lockForOwnerUpdate = xmlParser.getPrimitiveBoolean("lockForOwnerUpdate");
 
@@ -240,6 +246,16 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 	public void setHideTitle(boolean hideTitle) {
 
 		this.hideTitle = hideTitle;
+	}
+	
+	public boolean isHideDescriptionInPDF() {
+
+		return hideDescriptionInPDF;
+	}
+
+	public void setHideDescriptionInPDF(boolean hideDescriptionInPDF) {
+
+		this.hideDescriptionInPDF = hideDescriptionInPDF;
 	}
 
 	public boolean isLockForManagerUpdate() {

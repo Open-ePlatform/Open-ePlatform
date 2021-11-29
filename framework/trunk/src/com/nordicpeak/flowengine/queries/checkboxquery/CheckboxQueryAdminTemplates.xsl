@@ -198,6 +198,20 @@
 
 			</div>
 			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'hideDescriptionInPDF'" />
+						<xsl:with-param name="name" select="'hideDescriptionInPDF'" />
+						<xsl:with-param name="element" select="CheckboxQuery" /> 
+					</xsl:call-template>
+						
+					<label for="hideDescriptionInPDF">
+						<xsl:value-of select="$i18n.hideDescriptionInPDF" />
+					</label>
+				</div>
+			</div>
+			
 			<div class="floatright margintop clearboth">
 				<input type="submit" value="{$i18n.SaveChanges}" />
 			</div>

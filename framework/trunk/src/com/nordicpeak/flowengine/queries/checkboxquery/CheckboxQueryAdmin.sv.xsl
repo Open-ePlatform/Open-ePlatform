@@ -37,5 +37,6 @@ Frågetypen Kryssrutefråga används när användaren skall kunna välja mellan olika 
 	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>	
 	
 	<xsl:variable name="i18n.HideTitle">Dölj rubrik</xsl:variable>
+	<xsl:variable name="i18n.hideDescriptionInPDF">Dölj beskrivning i PDF</xsl:variable>
 	
 </xsl:stylesheet>

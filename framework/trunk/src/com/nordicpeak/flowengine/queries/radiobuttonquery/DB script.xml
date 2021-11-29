@@ -164,4 +164,11 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `radio_button_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
 </DBScripts>

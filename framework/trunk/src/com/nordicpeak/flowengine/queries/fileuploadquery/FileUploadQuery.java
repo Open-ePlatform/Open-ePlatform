@@ -107,6 +107,11 @@ public class FileUploadQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean hideDescriptionInPDF;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean lockOnOwnershipTransfer;
 
 	@DAOManaged
@@ -285,7 +290,7 @@ public class FileUploadQuery extends BaseQuery {
 	@Override
 	public void populate(XMLParser xmlParser) throws ValidationException {
 		
-		List<ValidationError> errors = new ArrayList<ValidationError>();
+		List<ValidationError> errors = new ArrayList<>();
 		
 		description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
@@ -300,6 +305,7 @@ public class FileUploadQuery extends BaseQuery {
 		numberInlineAttachments = xmlParser.getPrimitiveBoolean("numberInlineAttachments");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
+		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 		
@@ -399,6 +405,16 @@ public class FileUploadQuery extends BaseQuery {
 	public void setHideTitle(boolean hideTitle) {
 		
 		this.hideTitle = hideTitle;
+	}
+	
+	public boolean isHideDescriptionInPDF() {
+
+		return hideDescriptionInPDF;
+	}
+
+	public void setHideDescriptionInPDF(boolean hideDescriptionInPDF) {
+
+		this.hideDescriptionInPDF = hideDescriptionInPDF;
 	}
 
 	public String getSelectFilesButtonText() {

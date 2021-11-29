@@ -88,11 +88,16 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
 	private String attributeName;
-
+	
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean hideTitle;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean hideDescriptionInPDF;
 
 	@DAOManaged
 	@WebPopulate
@@ -209,6 +214,16 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 
 		this.hideTitle = hideTitle;
 	}
+	
+	public boolean isHideDescriptionInPDF() {
+
+		return hideDescriptionInPDF;
+	}
+
+	public void setHideDescriptionInPDF(boolean hideDescriptionInPDF) {
+
+		this.hideDescriptionInPDF = hideDescriptionInPDF;
+	}
 
 	@Override
 	public String toString() {
@@ -256,6 +271,7 @@ public class CheckboxQuery extends FixedAlternativesBaseQuery implements Payment
 		helpText = XMLValidationUtils.validateParameter("helpText", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		freeTextAlternative = XMLValidationUtils.validateParameter("freeTextAlternative", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
+		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		showCheckAllBoxes = xmlParser.getPrimitiveBoolean("showCheckAllBoxes");
 
