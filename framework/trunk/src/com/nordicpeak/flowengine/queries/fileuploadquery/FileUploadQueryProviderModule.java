@@ -1012,38 +1012,27 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 			return;
 		}
+		
+		for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
 
-		//Immutable query
-		if (queryInstance.getInstanceManagerID() == null) {
-
-			for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
-
-				File file = new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor()));
-
-				if (!file.exists()) {
-
-					continue;
-				}
-
-				appendFileXML(doc, targetElement, fileDescriptor, file);
+			File file;
+			
+			if (queryInstance.getQueryInstanceDescriptor().getFlowInstanceID() != null) {
+				
+				file = new File(getFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor()));
+				
+			} else {
+				
+				file = new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID()));
 			}
+			
+			if (!file.exists()) {
 
-			//Mutable query
-		} else {
-
-			for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
-
-				File file = new File(getTemporaryFilePath(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID()));
-
-				if (!file.exists()) {
-
-					continue;
-				}
-
-				appendFileXML(doc, targetElement, fileDescriptor, file);
+				continue;
 			}
+			
+			appendFileXML(doc, targetElement, fileDescriptor, file);
 		}
-
 	}
 
 	private void appendFileXML(Document doc, Element targetElement, FileDescriptor fileDescriptor, File file) throws IOException {
