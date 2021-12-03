@@ -1004,10 +1004,10 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 					log.info("User " + user + " saving and closing flow instance " + instanceManager.getFlowInstance());
 
 					FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSaveActionID(), EventType.UPDATED, null, requestMetadata);
+					
+					flowInstanceSavedAndClosed(instanceManager, req, res, user, event);
 
 					removeMutableFlowInstanceManagerFromSession(instanceManager, req.getSession(false));
-
-					flowInstanceSavedAndClosed(instanceManager, req, res, user, event);
 
 					return null;
 
