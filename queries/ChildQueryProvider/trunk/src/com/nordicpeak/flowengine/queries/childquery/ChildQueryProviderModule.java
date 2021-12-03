@@ -642,7 +642,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 				} else if (storedGuardian.isPoster()) {
 
 					storedGuardian.setEmail(poster.getEmail());
-					storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
+						storedGuardian.setPhone(poster.getAttributeHandler().getString(phoneAttribute));
 
 				} else {
 
@@ -686,9 +686,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		} else if (query.isAlwaysShowOtherGuardians()) {
 
-			for (StoredGuardian storedGuardian : storedGuardians) {
-
-				storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
+			if(posterCitizienIdentifier != null) {
+			
+				for (StoredGuardian storedGuardian : storedGuardians) {
+	
+					storedGuardian.setPoster(posterCitizienIdentifier.equals(storedGuardian.getCitizenIdentifier()));
+				}
 			}
 		}
 
