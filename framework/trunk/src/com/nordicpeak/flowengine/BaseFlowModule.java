@@ -985,7 +985,11 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 						FlowInstanceEvent event = save(instanceManager, user, poster, req, callback.getSubmitActionID(), EventType.SUBMITTED, null, requestMetadata);
 
-						if (enableSaving) {
+						if (event == null) {
+							
+							log.warn("Got no flow instance event from save and submit for flow instance " + instanceManager.getFlowInstance());
+						}
+						else if (enableSaving) {
 
 							sendSubmitEvent(instanceManager, event, callback.getSubmitActionID(), getSiteProfile(instanceManager));
 						}
