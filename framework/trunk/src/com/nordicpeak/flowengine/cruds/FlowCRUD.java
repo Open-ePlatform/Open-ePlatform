@@ -451,7 +451,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		
 		validateFlowOverviewAttributes(bean, req, errors);
 		
-		if (bean.isInternal() && bean.isEnabled() && bean.isPublished()) {
+		if (bean.isInternal() && bean.isEnabled() && bean.getPublishDate() != null) {
 
 			List<FlowAction> requiredFlowActions = callback.getFlowActions(false);
 
