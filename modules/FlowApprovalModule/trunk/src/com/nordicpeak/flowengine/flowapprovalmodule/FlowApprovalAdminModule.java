@@ -180,7 +180,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	private static final AnnotatedBeanTagSourceFactory<Flow> FLOW_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<>(Flow.class, "$flow.");
 
 	private static final ITextPDFCreationListener ITEXT_PDF_CREATION_LISTENER = new ITextPDFCreationListener();
-	
+
 	@XSLVariable(prefix = "java.")
 	private String adminExtensionViewTitle = "Flow approval settings";
 
@@ -243,10 +243,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityGroupSkipped;
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventActivityOwnerChanged;
-	
+
 	@XSLVariable(prefix = "java.")
 	private String eventActivityOwnerDefault = "default";
 
@@ -579,22 +579,25 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				boolean completeStatusFound = false;
 				boolean denyStatusFound = !activityGroup.isUseApproveDeny();
 
-				for (Status status : flow.getStatuses()) {
+				if (flow.getStatuses() != null) {
 
-					if (!startStatusFound && status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
-						startStatusFound = true;
-					}
+					for (Status status : flow.getStatuses()) {
 
-					if (!completeStatusFound && status.getName().equalsIgnoreCase(activityGroup.getCompleteStatus())) {
-						completeStatusFound = true;
-					}
+						if (!startStatusFound && status.getName().equalsIgnoreCase(activityGroup.getStartStatus())) {
+							startStatusFound = true;
+						}
 
-					if (!denyStatusFound && status.getName().equalsIgnoreCase(activityGroup.getDenyStatus())) {
-						denyStatusFound = true;
-					}
+						if (!completeStatusFound && status.getName().equalsIgnoreCase(activityGroup.getCompleteStatus())) {
+							completeStatusFound = true;
+						}
 
-					if (startStatusFound && completeStatusFound && denyStatusFound) {
-						break;
+						if (!denyStatusFound && status.getName().equalsIgnoreCase(activityGroup.getDenyStatus())) {
+							denyStatusFound = true;
+						}
+
+						if (startStatusFound && completeStatusFound && denyStatusFound) {
+							break;
+						}
 					}
 				}
 
@@ -1069,17 +1072,17 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 	}
 
-	public Map<String, String> getFlowInstanceEventAttributes(FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round, boolean denied){
-		
+	public Map<String, String> getFlowInstanceEventAttributes(FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round, boolean denied) {
+
 		Map<String, String> eventAttributes = new HashMap<String, String>(2);
-		
+
 		eventAttributes.put("activityGroupID", activityGroup.getActivityGroupID().toString());
 		eventAttributes.put("activityRoundID", round.getActivityRoundID().toString());
 		eventAttributes.put("approved", String.valueOf(!denied));
-		
+
 		return eventAttributes;
-	}	
-	
+	}
+
 	private boolean isActivityActive(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
 
 		if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
@@ -1340,24 +1343,24 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			FlowApprovalActivity activity = entry.getKey();
 			FlowApprovalActivityProgress activityProgress = entry.getValue();
-			
+
 			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
 
 				boolean useFallbackUsers = true;
-				
+
 				if (activityProgress.getResponsibleAttributedUsers() != null) {
-					
-						useFallbackUsers = false;
-						managers.addAll(activityProgress.getResponsibleAttributedUsers());
-						
+
+					useFallbackUsers = false;
+					managers.addAll(activityProgress.getResponsibleAttributedUsers());
+
 				} else if (activity.getResponsibleUserAttributeNames() != null) {
-					
+
 					List<User> users = getResponsibleUsersFromAttribute(activity, flowInstance);
 
 					if (users != null) {
 
 						log.warn("Users not set on activity progress " + activityProgress + ", using attribute directly!");
-						
+
 						useFallbackUsers = false;
 						managers.addAll(users);
 					}
@@ -1489,13 +1492,13 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 	}
-	
+
 	public void sendActivityAssignedNotifications(List<User> newManagers, FlowApprovalActivityProgress activityProgress, FlowApprovalActivity activity, FlowApprovalActivityGroup activityGroup, ImmutableFlowInstance flowInstance, boolean reminder) throws SQLException {
 
 		if (newManagers == null) {
 			return;
 		}
-		
+
 		String subject = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailSubject(), activityGroupStartedEmailSubject);
 		String message = ObjectUtils.getFirstNotNull(activityGroup.getActivityGroupStartedEmailMessage(), activityGroupStartedEmailMessage);
 
@@ -1504,7 +1507,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			log.warn("no subject or message set, unable to send notifications");
 			return;
 		}
-		
+
 		if (reminder) {
 			subject = reminderEmailPrefix + subject;
 		}
@@ -1629,14 +1632,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					if (EmailUtils.isValidEmailAddress(recipient)) {
 
 						recipients.add(recipient);
-						
+
 					} else {
-						
+
 						log.warn("The string \"" + recipient + "\" is not a valid email address, skipping recipient for email generated for completed activity group " + activityGroup + " for flow instance " + flowInstance);
 					}
 				}
 			}
-			
+
 			for (String emailAdress : recipients) {
 
 				SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
@@ -1721,7 +1724,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		if (event.getAction() == CRUDAction.DELETE) {
 
 			//TODO wrap loop in transaction and use transaction commit listener to delete files
-			
+
 			for (FlowInstance flowInstance : event.getBeans()) {
 
 				if (flowInstance.getFirstSubmitted() != null) {
@@ -1859,16 +1862,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 												if (responsibleUsersChanged) {
 
 													log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
-													
+
 													String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
 													String namesTo = eventActivityOwnerDefault;
-													
+
 													if (responsibleUsers != null) {
 														namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
 													}
-													
+
 													flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
-													
+
 													progress.setResponsibleAttributedUsers(responsibleUsers);
 
 													progress.setActivity(activity);
@@ -1888,9 +1891,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 												sendActivityGroupStartedNotifications(updatedActivities, activityGroup, flowInstance, false);
 											}
-											
+
 											for (String eventMessage : flowInstanceEventMessages) {
-												
+
 												flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventMessage, null);
 											}
 										}
@@ -1949,7 +1952,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		if (users != null) {
 			return new ArrayList<>(users);
 		}
-		
+
 		return null;
 	}
 
@@ -2183,7 +2186,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					activityMap.put(activityProgress.getActivity(), activityProgress);
 
 					activityProgress.setAutomaticReminderSent(true);
-					
+
 					FlowApprovalReminder reminder = new FlowApprovalReminder(activityProgress, TimeUtils.getCurrentTimestamp(), ReminderType.AUTOMATIC, null);
 
 					reminderDAO.add(reminder);
@@ -2286,7 +2289,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return new File(pdfDir + File.separator + round.getFlowInstanceID() + File.separator + "activity-round-" + round.getActivityRoundID() + "-signatures.pdf");
 	}
-	
+
 	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
 
 		if (pdfDir == null || tempDir == null) {
@@ -2401,11 +2404,11 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			outputStream = new BufferedOutputStream(new FileOutputStream(tmpFile2));
 			PdfStamper stamper = new PdfStamper(reader, outputStream);
 			PdfWriter writer = stamper.getWriter();
-			
+
 			PdfArray associatedFilesArray = reader.getCatalog().getAsArray(new PdfName("AF"));
-			
+
 			if (associatedFilesArray == null) {
-				
+
 				associatedFilesArray = new PdfArray();
 				reader.getCatalog().put(new PdfName("AF"), associatedFilesArray);
 			}
@@ -2437,15 +2440,15 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					}
 				}
 			}
-			
+
 			if (associatedFilesArray.isEmpty()) {
 				reader.getCatalog().put(new PdfName("AF"), null);
 			}
 
 			stamper.close();
-			
+
 			writePDFA(tmpFile2, outputFile);
-			
+
 			round.setPdf(true);
 
 		} catch (Exception e) {
@@ -2454,7 +2457,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			FileUtils.deleteFile(outputFile);
 
 		} finally {
-			
+
 			CloseUtils.close(outputStream);
 
 			if (randomAccessFile != null) {
@@ -2468,7 +2471,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			FileUtils.deleteFile(tmpFile2);
 		}
 	}
-	
+
 	private void writePDFA(File inputFile, File outputFile) throws Exception {
 
 		PDDocument document = PDDocument.load(inputFile);
@@ -2509,7 +2512,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			metadataStream.importXMPMetadata(baos.toByteArray());
 
 			if (!hasColorProfile(catalog)) {
-			
+
 				InputStream colorProfile = FlowApprovalAdminModule.class.getResourceAsStream("sRGB Color Space Profile.icm");
 
 				PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
@@ -2520,7 +2523,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				catalog.addOutputIntent(oi);
 
 			}
-			
+
 			document.save(outputFile);
 
 		} finally {
@@ -2528,19 +2531,19 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			document.close();
 		}
 	}
-	
+
 	private boolean hasColorProfile(PDDocumentCatalog catalog) {
 
 		List<PDOutputIntent> list = catalog.getOutputIntents();
 
 		for (PDOutputIntent outputIntent : list) {
-			
-			if(outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
-				
+
+			if (outputIntent.getRegistryName() != null && outputIntent.getRegistryName().equalsIgnoreCase("http://www.color.org")) {
+
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -2553,12 +2556,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return userApprovalModuleAlias;
 	}
-	
+
 	public String getEventActivityOwnerChanged() {
+
 		return eventActivityOwnerChanged;
 	}
 
 	public String getEventActivityOwnerDefault() {
+
 		return eventActivityOwnerDefault;
 	}
 
