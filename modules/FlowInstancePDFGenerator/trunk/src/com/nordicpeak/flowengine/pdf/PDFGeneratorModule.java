@@ -1174,7 +1174,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 				return;
 			}
 
-			if (event.getEvent().getEventType() != EventType.SUBMITTED || event.getActionID() == null || !supportedActionIDs.contains(event.getActionID())) {
+			if (event.getEvent() == null || event.getEvent().getEventType() != EventType.SUBMITTED || event.getActionID() == null || !supportedActionIDs.contains(event.getActionID())) {
 
 				return;
 			}
