@@ -294,29 +294,35 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@Override
 	public Collection<Integer> getAllowedGroupIDs() {
 
-		return UserUtils.getGroupIDs(activity.getResponsibleGroups());
+		return UserUtils.getGroupIDs(FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups()));
 	}
 
 	@Override
 	public Collection<Integer> getAllowedUserIDs() {
 
-		if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && responsibleAttributedUsers == null) {
+		List<FlowApprovalActivityResponsibleUser> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownResponsibleUsers(activity.getResponsibleUsers());
+		
+		List<User> cleanedResponsibleAttributedUsers = FlowApprovalActivity.clearUnknownUsers(responsibleAttributedUsers);
+		
+		if (CollectionUtils.isEmpty(cleanedResponsibleUsers) && cleanedResponsibleAttributedUsers == null) {
 			return null;
 		}
 
-		List<Integer> userIDs = new ArrayList<>(CollectionUtils.getSize(activity.getResponsibleUsers()) + 1);
+		List<Integer> userIDs = new ArrayList<>(CollectionUtils.getSize(cleanedResponsibleUsers) + 1);
 
-		if (activity.getResponsibleUsers() != null) {
-			for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
+		if (cleanedResponsibleUsers != null) {
+			for (FlowApprovalActivityResponsibleUser responsibleUser : cleanedResponsibleUsers) {
 
-				if (!responsibleUser.isFallback() || activity.getResponsibleUserAttributeNames() != null && responsibleAttributedUsers == null) {
+				if (!responsibleUser.isFallback() || activity.getResponsibleUserAttributeNames() != null && cleanedResponsibleAttributedUsers == null) {
 					userIDs.add(responsibleUser.getUser().getUserID());
 				}
 			}
 		}
+		
+		
 
-		if (responsibleAttributedUsers != null) {
-			for (User user : responsibleAttributedUsers) {
+		if (cleanedResponsibleAttributedUsers != null) {
+			for (User user : cleanedResponsibleAttributedUsers) {
 				userIDs.add(user.getUserID());
 			}
 		}

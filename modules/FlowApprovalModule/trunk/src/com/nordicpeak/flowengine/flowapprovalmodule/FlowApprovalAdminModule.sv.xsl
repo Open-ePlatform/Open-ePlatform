@@ -62,6 +62,19 @@
 		
 	</xsl:variable>
 	
+	<xsl:variable name="i18n.Validation.StatusNotFound.1">Status </xsl:variable>
+	<xsl:variable name="i18n.Validation.StatusNotFound.2"> finns ej för aktuell e-tjänst.</xsl:variable>
+	
+	<xsl:variable name="i18n.Validation.ResponsibleUserNotFound">Okänd ansvarig användare</xsl:variable>
+	<xsl:variable name="i18n.Validation.ResponsibleGroupNotFound">Okänd ansvarig grupp</xsl:variable>
+	<xsl:variable name="i18n.Validation.AssignableGroupNotFound">Okänd tilldelad grupp</xsl:variable>
+	<xsl:variable name="i18n.Validation.AssignableUserNotFound">Okänd tilldelad användare</xsl:variable>
+	
+	<xsl:variable name="i18n.Validation.UnableToParseFile">Importfilen kunde inte läsas in.</xsl:variable>
+	<xsl:variable name="i18n.Validation.UnableToParseRequest">Ett okänt fel har inträffat.</xsl:variable>
+	<xsl:variable name="i18n.Validation.FileSizeLimitExceeded">Importfilen är större än tillåten storlek.</xsl:variable>
+	<xsl:variable name="i18n.Validation.InvalidFileExtension">Felaktigt typ av fil för import-fil.</xsl:variable>
+	<xsl:variable name="i18n.Validation.NoAttachedFile">En import-fil måste väljas.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityNotFound">Den begärda aktiviteten hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupNotFound">Den begärda aktivitetsgruppen hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.Validation.AssignableRequired">Du måste välja minst en valbar grupp eller användare om du har markerat Tillåt handläggare att byta ansvarig användare</xsl:variable>
@@ -89,6 +102,7 @@
 	<xsl:variable name="i18n.SortActivityGroups">Sortera aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup">Ta bort aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup.Confirm">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
+	<xsl:variable name="i18n.ExportActivityGroup">Exportera aktivitetsgrupp</xsl:variable>	
 	
 	<xsl:variable name="i18n.ShowActivity">Visa aktivitet</xsl:variable>
 	<xsl:variable name="i18n.AddActivity">Lägg till ny aktivitet</xsl:variable>
@@ -142,6 +156,17 @@
 	<xsl:variable name="i18n.ActivityGroup.denyStatus2">Om någon aktivitet i gruppen inte blir godkänd så får ärendet denna status.</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.reminderAfterXDays">Skicka automatisk påminnelse om aktivitet inte är klarmarkerad inom x dagar</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.suppressChangeStatusManagerNotifications">Förhindra notifikationer till handläggare vid byte av status</xsl:variable>
+	
+	<xsl:variable name="i18n.ActivityGroup.importUsers">Importera inte användare</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.importUsers.description">Markera för att inte importera användare</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.importGroups">Importera inte grupper</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.importGroups.description">Markera för att inte importera grupper</xsl:variable>
+	
+	<xsl:variable name="i18n.ImportActivityGroup.title">Importera aktivitetsgrupp</xsl:variable>
+	<xsl:variable name="i18n.ImportActivityGroup.description">Använd formuläret nedan för att importera en aktivitetsgrupp. Filen du väljer behöver vara av typen oeactgroup.</xsl:variable>
+	<xsl:variable name="i18n.selectActivityGroupFile">Välj fil</xsl:variable>
+	<xsl:variable name="i18n.ImportActivityGroup.submit">Importera</xsl:variable>
+	<xsl:variable name="i18n.ImportActivityGroup">Importera aktivitetsgrupp</xsl:variable>
 	
 	<xsl:variable name="i18n.TagsTable.Description.Email">Följande taggar kan användas i rubrik och meddelande</xsl:variable>
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>

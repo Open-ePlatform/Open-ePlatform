@@ -1,15 +1,20 @@
 package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
+import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.emailutils.populators.LowerCaseEmailPopulator;
 import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.foregroundmodules.groupproviders.SimpleGroup;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
 import se.unlogic.standardutils.annotations.WebPopulate;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -17,14 +22,21 @@ import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLParser;
+import se.unlogic.standardutils.xml.XMLParserPopulateable;
+import se.unlogic.standardutils.xml.XMLPopulationUtils;
+import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 @Table(name = "flowapproval_activities")
 @XMLElement(name = "Activity")
-public class FlowApprovalActivity extends GeneratedElementable {
+public class FlowApprovalActivity extends GeneratedElementable implements XMLParserPopulateable {
 
 	public static final Field ACTIVITY_GROUP_RELATION = ReflectionUtils.getField(FlowApprovalActivity.class, "activityGroup");
 	public static final Field ACTIVITY_PROGRESSES_RELATION = ReflectionUtils.getField(FlowApprovalActivity.class, "activityProgresses");
@@ -362,6 +374,38 @@ public class FlowApprovalActivity extends GeneratedElementable {
 		this.assignableGroups = assignableGroups;
 	}
 
+	public void clearUnknownUsersAndGroups() {
+
+		setAssignableGroups(clearUnknownGroups(getAssignableGroups()));
+		setResponsibleGroups(clearUnknownGroups(getResponsibleGroups()));
+		setAssignableUsers(clearUnknownUsers(getAssignableUsers()));
+		setResponsibleUsers(clearUnknownResponsibleUsers(getResponsibleUsers()));
+	}
+
+	public static List<FlowApprovalActivityResponsibleUser> clearUnknownResponsibleUsers(List<FlowApprovalActivityResponsibleUser> list) {
+
+		if (!CollectionUtils.isEmpty(list)) {
+			list.removeIf(e -> (e.getUser() == null || e.getUser().getUserID() == null));
+		}
+		return list;
+	}
+
+	public static List<Group> clearUnknownGroups(List<Group> list) {
+
+		if (!CollectionUtils.isEmpty(list)) {
+			list.removeIf(e -> (e.getGroupID() == null));
+		}
+		return list;
+	}
+
+	public static List<User> clearUnknownUsers(List<User> list) {
+
+		if (!CollectionUtils.isEmpty(list)) {
+			list.removeIf(e -> (e.getUserID() == null));
+		}
+		return list;
+	}
+
 	@Override
 	public String toString() {
 
@@ -398,6 +442,90 @@ public class FlowApprovalActivity extends GeneratedElementable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void populate(XMLParser xmlParser) throws ValidationException {
+
+		List<ValidationError> errors = new ArrayList<>();
+
+		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		this.shortDescription = XMLValidationUtils.validateParameter("shortDescription", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.description = XMLValidationUtils.validateParameter("description", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
+		this.showFlowInstance = xmlParser.getPrimitiveBoolean("showFlowInstance");
+		this.pdfDownloadActivation = xmlParser.getPrimitiveBoolean("pdfDownloadActivation");
+		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
+		this.requireComment = xmlParser.getPrimitiveBoolean("requireComment");
+		this.allowManagersToAssignOwner = xmlParser.getPrimitiveBoolean("allowManagersToAssignOwner");
+		this.onlyUseGlobalNotifications = xmlParser.getPrimitiveBoolean("onlyUseGlobalNotifications");
+		this.invert = xmlParser.getPrimitiveBoolean("invert");
+
+		this.attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		this.attributeValues = XMLValidationUtils.validateParameters("AttributeValues/value", xmlParser, false, 1, 1024, StringPopulator.getPopulator(), errors);
+
+		this.globalEmailAddress = XMLValidationUtils.validateParameter("globalEmailAddress", xmlParser, false, 1, 255, EmailPopulator.getPopulator(), errors);
+
+		this.responsibleUserAttributeNames = XMLValidationUtils.validateParameters("ResponsibleUserAttributeNames/value", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		this.responsibleUsers = XMLPopulationUtils.populateBeans(xmlParser, "ResponsibleUsers/ResponsibleUser", FlowApprovalActivityResponsibleUser.class, errors);
+
+		List<String> responsibleGroupNames = XMLValidationUtils.validateParameters("ResponsibleGroups/group", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		if (!CollectionUtils.isEmpty(responsibleGroupNames)) {
+			List<Group> responsibleGroupsTemp = new ArrayList<>();
+
+			for (String groupName : responsibleGroupNames) {
+				SimpleGroup group = new SimpleGroup();
+				group.setName(groupName);
+
+				responsibleGroupsTemp.add(group);
+			}
+
+			if (!responsibleGroupsTemp.isEmpty()) {
+				this.responsibleGroups = responsibleGroupsTemp;
+			}
+		}
+
+		List<String> assignableUserNames = XMLValidationUtils.validateParameters("AssignableUsers/user", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		if (!CollectionUtils.isEmpty(assignableUserNames)) {
+			List<User> assignableUserTemp = new ArrayList<>();
+
+			for (String userName : assignableUserNames) {
+				SimpleUser user = new SimpleUser();
+				user.setUsername(userName);
+
+				assignableUserTemp.add(user);
+			}
+
+			if (!assignableUserTemp.isEmpty()) {
+				this.assignableUsers = assignableUserTemp;
+			}
+		}
+
+		List<String> assignableGroupNames = XMLValidationUtils.validateParameters("AssignableGroups/group", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+
+		if (!CollectionUtils.isEmpty(assignableGroupNames)) {
+			List<Group> assignableGroupsTemp = new ArrayList<>();
+
+			for (String groupName : assignableGroupNames) {
+				SimpleGroup group = new SimpleGroup();
+				group.setName(groupName);
+
+				assignableGroupsTemp.add(group);
+			}
+
+			if (!assignableGroupsTemp.isEmpty()) {
+				this.assignableGroups = assignableGroupsTemp;
+			}
+		}
+
+		if (!errors.isEmpty()) {
+
+			throw new ValidationException(errors);
+		}
+
 	}
 
 }

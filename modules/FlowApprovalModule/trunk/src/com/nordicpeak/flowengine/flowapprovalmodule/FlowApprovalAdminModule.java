@@ -15,6 +15,7 @@ import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -30,7 +32,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -51,6 +58,7 @@ import se.unlogic.cron4jutils.CronStringValidator;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.FileAttachment;
 import se.unlogic.emailutils.framework.SimpleEmail;
+import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
@@ -60,6 +68,7 @@ import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
@@ -90,8 +99,14 @@ import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
+import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.InvalidFileExtensionValidationError;
+import se.unlogic.hierarchy.core.validationerrors.RequestSizeLimitExceededValidationError;
+import se.unlogic.hierarchy.core.validationerrors.UnableToParseFileValidationError;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.hierarchy.foregroundmodules.groupproviders.SimpleGroup;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.hierarchy.foregroundmodules.userproviders.SimpleUser;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
 import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -126,8 +141,12 @@ import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.string.TagSource;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.ClassPathURIResolver;
+import se.unlogic.standardutils.xml.XMLGeneratorDocument;
+import se.unlogic.standardutils.xml.XMLParser;
 import se.unlogic.standardutils.xml.XMLTransformer;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.standardutils.xsl.URIXSLTransformer;
@@ -162,6 +181,11 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableGroupNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableUserNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.StatusNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleGroupNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleUserNotFound;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -311,6 +335,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	@TextAreaSettingDescriptor(name = "Included fonts", description = "Path to the fonts that should be included in the PDF (the paths can be either in filesystem or classpath)")
 	private List<String> includedFonts;
 
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Max request size", description = "Maximum allowed request size in megabytes", required = true, formatValidator = PositiveStringIntegerValidator.class)
+	protected Integer maxRequestSize = 1000;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "RAM threshold", description = "Maximum size of files in KB to be buffered in RAM during file uploads. Files exceeding the threshold are written to disk instead.", required = true, formatValidator = PositiveStringIntegerValidator.class)
+	protected Integer ramThreshold = 500;
+
 	private AnnotatedDAO<FlowApprovalActivity> activityDAO;
 	private AnnotatedDAO<FlowApprovalActivityGroup> activityGroupDAO;
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
@@ -348,6 +380,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	protected URIXSLTransformer pdfTransformer;
 
+	private HierarchyAnnotatedDAOFactory daoFactory;
+
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
 
@@ -378,7 +412,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			log.info(upgradeResult.toString());
 		}
 
-		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
+		daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, true, false);
 
 		activityDAO = daoFactory.getDAO(FlowApprovalActivity.class);
 		activityGroupDAO = daoFactory.getDAO(FlowApprovalActivityGroup.class);
@@ -392,7 +426,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activityDAOWrapper.getGetQuery().addRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 
 		activityGroupDAOWrapper = activityGroupDAO.getAdvancedWrapper(Integer.class);
-		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getAddQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityRoundActivityGroupParamFactory = activityRoundDAO.getParamFactory("activityGroup", FlowApprovalActivityGroup.class);
@@ -684,6 +720,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			return getViewFragmentResponse(activityGroupCRUD.add(req, res, user, uriParser));
 
+		} else if ("importactivitygroup".equals(method)) {
+
+			return importActivityGroup(extensionRequestURL, req, res, user, uriParser);
+		} else if ("exportactivitygroup".equals(method)) {
+
+			return exportActivityGroup(req, res, user, uriParser);
 		} else if ("updateactivitygroup".equals(method)) {
 
 			return getViewFragmentResponse(activityGroupCRUD.update(req, res, user, uriParser));
@@ -760,6 +802,170 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		}
 
 		return null;
+	}
+
+	public ViewFragment exportActivityGroup(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
+
+		FlowApprovalActivityGroup activityGroup = activityGroupCRUD.getRequestedBean(req, res, user, uriParser, GenericCRUD.UPDATE);
+
+		if (activityGroup == null) {
+
+			return getViewFragmentResponse(activityGroupCRUD.show(req, res, user, uriParser, Arrays.asList(new ValidationError("ShowFailedActivityGroupNotFound"))));
+
+		}
+
+		checkAccess(user, req, uriParser);
+
+		log.info("User " + user + " exporting activityGroup " + activityGroup);
+
+		List<ValidationError> validationErrors = new ArrayList<>();
+
+		Document doc = getExportActivityGroupDocument(activityGroup, validationErrors);
+
+		if (!validationErrors.isEmpty()) {
+
+			return getViewFragmentResponse(activityGroupCRUD.showBean(activityGroup, req, res, user, uriParser, validationErrors));
+		}
+
+		res.setHeader("Content-Disposition", "attachment; filename=\"" + FileUtils.toValidHttpFilename(activityGroup.getName()) + ".oeactgroup\"");
+		res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+		res.setContentType("text/oeflow");
+
+		try {
+			XMLUtils.writeXML(doc, res.getOutputStream(), true, systemInterface.getEncoding());
+		} catch (TransformerException e) {
+
+			log.info("Error sending exported flow " + activityGroup + " to user " + user + ", " + e);
+		}
+
+		return null;
+	}
+
+	private void checkAccess(User user, HttpServletRequest req, URIParser uriParser) throws URINotFoundException, AccessDeniedException {
+
+		Flow flow = (Flow) req.getAttribute("flow");
+		if (flow == null) {
+
+			throw new URINotFoundException(uriParser);
+		} else if (!hasFlowAccess(user, flow)) {
+
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+	}
+
+	private boolean hasFlowAccess(User user, Flow flow) {
+
+		return AccessUtils.checkAccess(user, flow.getFlowType().getAdminAccessInterface());
+	}
+
+	public Document getExportActivityGroupDocument(FlowApprovalActivityGroup activityGroup, List<ValidationError> validationErrors) throws IOException, SQLException {
+
+		Document doc = XMLUtils.createDomDocument();
+
+		XMLGeneratorDocument xmlGeneratorDocument = new XMLGeneratorDocument(doc);
+
+		xmlGeneratorDocument.addIgnoredField(FlowApprovalActivityGroup.ACTIVITIES_RELATION);
+
+		Element activityGroupNode = activityGroup.toXML(xmlGeneratorDocument);
+
+		Element activities = doc.createElement("Activities");
+
+		//secure user information, store only username and group name
+		if (!CollectionUtils.isEmpty(activityGroup.getActivities())) {
+			XMLGeneratorDocument xmlActivityGeneratorDocument = new XMLGeneratorDocument(doc);
+			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION);
+			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.ASSIGNABLE_USERS_RELATION);
+			for (FlowApprovalActivity activity : activityGroup.getActivities()) {
+
+				Element activityElement = activity.toXML(xmlActivityGeneratorDocument);
+				
+				List<FlowApprovalActivityResponsibleUser> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownResponsibleUsers(activity.getResponsibleUsers());
+
+				if (!CollectionUtils.isEmpty(cleanedResponsibleUsers)) {
+					Element responsibleUsers = doc.createElement("ResponsibleUsers");
+
+					for (FlowApprovalActivityResponsibleUser user : cleanedResponsibleUsers) {
+						Element responsibleUser = doc.createElement("ResponsibleUser");
+						Element userElement = doc.createElement("user");
+						if (user != null) {
+							XMLUtils.appendNewCDATAElement(doc, userElement, "username", user.getUser().getUsername());
+						}
+
+						responsibleUser.appendChild(userElement);
+						XMLUtils.appendNewElement(doc, responsibleUser, "fallback", user.isFallback());
+
+						responsibleUsers.appendChild(responsibleUser);
+						
+					}
+
+					activityElement.appendChild(responsibleUsers);
+				}
+				
+				List<Group> cleanedResponsibleGroups = FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups());
+
+				if (!CollectionUtils.isEmpty(cleanedResponsibleGroups)) {
+					Element responsibleGroups = doc.createElement("ResponsibleGroups");
+
+					for (Group group : cleanedResponsibleGroups) {
+						Element responsibleGroup = doc.createElement("group");
+
+						if (group != null) {
+							XMLUtils.appendNewCDATAElement(doc, responsibleGroup, "name", group.getName());
+						}
+
+						responsibleGroups.appendChild(responsibleGroup);
+					}
+					activityElement.appendChild(responsibleGroups);
+
+				}
+				
+				List<User> cleanedAssignableUsers = FlowApprovalActivity.clearUnknownUsers(activity.getAssignableUsers());
+
+				if (!CollectionUtils.isEmpty(cleanedAssignableUsers)) {
+					Element assignableUsers = doc.createElement("AssignableUsers");
+
+					for (User user : cleanedAssignableUsers) {
+						Element assignableUser = doc.createElement("user");
+
+						if (user != null) {
+							XMLUtils.appendNewCDATAElement(doc, assignableUser, "username", user.getUsername());
+						}
+
+						assignableUsers.appendChild(assignableUser);
+					}
+					activityElement.appendChild(assignableUsers);
+
+				}
+				
+				List<Group> cleanedAssignableGroups = FlowApprovalActivity.clearUnknownGroups(activity.getAssignableGroups());
+
+				if (!CollectionUtils.isEmpty(cleanedAssignableGroups)) {
+					Element assignableGroups = doc.createElement("AssignableGroups");
+
+					for (Group group : cleanedAssignableGroups) {
+						Element assignableGroup = doc.createElement("group");
+
+						if (group != null) {
+							XMLUtils.appendNewCDATAElement(doc, assignableGroup, "name", group.getName());
+						}
+
+						assignableGroups.appendChild(assignableGroup);
+					}
+					activityElement.appendChild(assignableGroups);
+
+				}
+
+				activities.appendChild(activityElement);
+			}
+		}
+
+		activityGroupNode.appendChild(activities);
+
+		doc.appendChild(activityGroupNode);
+
+		return doc;
 	}
 
 	private void searchStatuses(Flow flow, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException {
@@ -868,6 +1074,261 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		XMLUtils.append(doc, sortActivityGroupsElement, "ActivityGroups", activityGroups);
 
 		return viewFragmentTransformer.createViewFragment(doc);
+	}
+
+	private synchronized ViewFragment importActivityGroup(String extensionRequestURL, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerException, ValidationException, URINotFoundException, AccessDeniedException, IOException {
+
+		checkAccess(user, req, uriParser);
+
+		ValidationException validationException = null;
+
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			
+			FlowApprovalActivityGroup flowApprovalActivityGroup = null;
+
+			log.info("User " + user + " importing activitygroup...");
+
+			MultipartRequest multipartRequest = null;
+
+			try {
+				multipartRequest = MultipartRequest.getMultipartRequest(ramThreshold * BinarySizes.KiloByte, (long) maxRequestSize * BinarySizes.MegaByte, tempDir, req);
+				req = multipartRequest;
+
+				if (multipartRequest.getFileCount() == 0 || (multipartRequest.getFileCount() == 1 && multipartRequest.getFile(0).getName().equals(""))) {
+
+					throw new ValidationException(new ValidationError("NoAttachedFile"));
+				}
+
+				FileItem fileItem = multipartRequest.getFile(0);
+
+				if (!fileItem.getName().endsWith(".oeactgroup")) {
+
+					throw new ValidationException(new InvalidFileExtensionValidationError(FilenameUtils.getName(fileItem.getName()), "oeactgroup"));
+				}
+
+				try (InputStream inputStream = fileItem.getInputStream()) {
+
+					flowApprovalActivityGroup = importActivityGroup(inputStream, FilenameUtils.getName(fileItem.getName()), multipartRequest, res, user, (Flow) req.getAttribute("flow"));
+
+				}
+
+			} catch (ValidationException e) {
+
+				validationException = e;
+
+			} catch (SizeLimitExceededException e) {
+
+				validationException = new ValidationException(new RequestSizeLimitExceededValidationError(e.getActualSize(), e.getPermittedSize()));
+
+			} catch (FileSizeLimitExceededException e) {
+
+				validationException = new ValidationException(new FileSizeLimitExceededValidationError(e.getFileName(), e.getActualSize(), e.getPermittedSize()));
+
+			} catch (Exception e) {
+
+				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
+
+			} finally {
+
+				if (multipartRequest != null) {
+
+					multipartRequest.deleteFiles();
+				}
+
+			}
+
+			if (validationException != null) {
+
+				Document doc = createDocument(req, uriParser, user);
+
+				Element importActivityGroupsElement = doc.createElement("ImportActivityGroup");
+				doc.getDocumentElement().appendChild(importActivityGroupsElement);
+
+				XMLUtils.appendNewElement(doc, importActivityGroupsElement, "extensionRequestURL", extensionRequestURL);
+				importActivityGroupsElement.appendChild(validationException.toXML(doc));
+
+				return viewFragmentTransformer.createViewFragment(doc);
+			}
+			
+						
+			res.sendRedirect(req.getContextPath() + req.getAttribute("extensionRequestURL") + "/showactivitygroup/" + flowApprovalActivityGroup.getActivityGroupID());
+			
+
+		}
+
+		Document doc = createDocument(req, uriParser, user);
+
+		Element importActivityGroupsElement = doc.createElement("ImportActivityGroup");
+		doc.getDocumentElement().appendChild(importActivityGroupsElement);
+
+		XMLUtils.appendNewElement(doc, importActivityGroupsElement, "extensionRequestURL", extensionRequestURL);
+
+		return viewFragmentTransformer.createViewFragment(doc);
+	}
+
+	private synchronized FlowApprovalActivityGroup importActivityGroup(InputStream inputStream, String filename, HttpServletRequest req, HttpServletResponse res, User user, Flow flow) throws Exception {
+
+		Document doc = null;
+
+		try {
+			doc = XMLUtils.parseXML(inputStream, false, false);
+
+		} catch (Exception e) {
+
+			log.info("Unable to parse file " + filename, e);
+
+			throw new ValidationException(new UnableToParseFileValidationError(filename));
+		}
+
+		Element docElement = doc.getDocumentElement();
+
+		if (!docElement.getTagName().equals("ActivityGroup")) {
+
+			log.info("Error parsing file " + filename + ", unable to find flow element");
+
+			throw new ValidationException(new UnableToParseFileValidationError(filename));
+		}
+
+		FlowApprovalActivityGroup activityGroup = FlowApprovalActivityGroup.class.newInstance();
+
+		XMLParser xmlParser = new XMLParser(docElement);
+
+		activityGroup.populate(xmlParser);
+
+		activityGroup.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
+
+		validateStatusUsersAndGroups(activityGroup, flow.getStatuses(), req);
+
+		//Clear activity IDs
+		if (!CollectionUtils.isEmpty(activityGroup.getActivities())) {
+
+			for (FlowApprovalActivity flowApprovalActivity : activityGroup.getActivities()) {
+
+				flowApprovalActivity.setActivityID(null);
+			}
+		}
+
+		//Add activitygroup to database
+		try {
+
+			activityGroupDAOWrapper.add(activityGroup);
+
+		} catch (SQLException e) {
+
+			throw e;
+		}
+
+		log.info("User " + user + " succefully imported activityGroup " + activityGroup);
+		return activityGroup;
+
+	}
+
+	private void validateStatusUsersAndGroups(FlowApprovalActivityGroup activityGroup, List<Status> statusList, HttpServletRequest req) throws ValidationException {
+
+		List<ValidationError> errors = new ArrayList<>();
+
+		String completeStatus = activityGroup.getCompleteStatus();
+
+		if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(completeStatus))) {
+			errors.add(new StatusNotFound(completeStatus));
+		}
+
+		String denyStatus = activityGroup.getDenyStatus();
+		if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(denyStatus))) {
+			errors.add(new StatusNotFound(denyStatus));
+		}
+
+		String startStatus = activityGroup.getStartStatus();
+		if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(startStatus))) {
+			errors.add(new StatusNotFound(startStatus));
+		}
+
+		String importUsers = req.getParameter("importUsers");
+		String importGroups = req.getParameter("importGroups");
+
+		if (!CollectionUtils.isEmpty(activityGroup.getActivities())) {
+			List<User> allUsers = getUserHandler().getUsers(false, true);
+			List<Group> allGroups = getGroupHandler().getGroups(false);
+
+			for (FlowApprovalActivity activity : activityGroup.getActivities()) {
+
+				if (importUsers == null) {
+
+					if (!CollectionUtils.isEmpty(activity.getResponsibleUsers())) {
+						//check that user with assigned username exists
+						activity.getResponsibleUsers().forEach(e -> {
+							Optional<User> foundUser = allUsers.stream().filter(e1 -> e.getUser().getUsername().equals(e1.getUsername())).findFirst();
+							if (foundUser.isPresent()) {
+								((SimpleUser) e.getUser()).setUserID(foundUser.get().getUserID());
+
+							} else {
+								errors.add(new ResponsibleUserNotFound(e.getUser().getUsername()));
+							}
+
+						});
+					}
+
+					if (!CollectionUtils.isEmpty(activity.getAssignableUsers())) {
+						//check that user with assigned username exists
+						activity.getAssignableUsers().forEach(e -> {
+							Optional<User> foundUser = allUsers.stream().filter(e1 -> e.getUsername().equals(e1.getUsername())).findFirst();
+							if (foundUser.isPresent()) {
+								((SimpleUser) e).setUserID(foundUser.get().getUserID());
+
+							} else {
+								errors.add(new AssignableUserNotFound(e.getUsername()));
+							}
+
+						});
+
+					}
+				} else {
+					activity.setResponsibleUsers(null);
+					activity.setAssignableUsers(null);
+				}
+
+				if (importGroups == null) {
+					if (!CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
+						//check that groups with assigned name exists
+						activity.getResponsibleGroups().forEach(e -> {
+							Optional<Group> foundGroup = allGroups.stream().filter(e1 -> e.getName().equals(e1.getName())).findFirst();
+							if (foundGroup.isPresent()) {
+								((SimpleGroup) e).setGroupID(foundGroup.get().getGroupID());
+
+							} else {
+								errors.add(new ResponsibleGroupNotFound(e.getName()));
+							}
+
+						});
+					}
+					if (!CollectionUtils.isEmpty(activity.getAssignableGroups())) {
+						//check that groups with assigned name exists
+						activity.getAssignableGroups().forEach(e -> {
+							Optional<Group> foundGroup = allGroups.stream().filter(e1 -> e.getName().equals(e1.getName())).findFirst();
+							if (foundGroup.isPresent()) {
+								((SimpleGroup) e).setGroupID(foundGroup.get().getGroupID());
+
+							} else {
+								errors.add(new AssignableGroupNotFound(e.getName()));
+							}
+
+						});
+					}
+
+				} else {
+					activity.setResponsibleGroups(null);
+					activity.setAssignableGroups(null);
+				}
+
+			}
+
+		}
+
+		if (!errors.isEmpty()) {
+
+			throw new ValidationException(errors);
+		}
+
 	}
 
 	public void checkApprovalCompletion(FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException, ModuleConfigurationException {

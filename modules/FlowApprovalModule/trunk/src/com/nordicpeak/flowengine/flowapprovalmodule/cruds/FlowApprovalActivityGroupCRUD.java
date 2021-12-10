@@ -30,6 +30,7 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.enums.ContentType;
 import com.nordicpeak.flowengine.flowapprovalmodule.FlowApprovalAdminModule;
+import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
@@ -77,6 +78,9 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 	@Override
 	protected void appendBean(FlowApprovalActivityGroup activityGroup, Element targetElement, Document doc, User user) {
+
+		//check for deleted users and groups
+		clearUnknownUsersAndGroups(activityGroup);
 
 		TemplateUtils.setTemplatedFields(activityGroup, callback);
 
@@ -176,15 +180,15 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 		if (activityGroup.getCompleteStatus() != null) {
 
 			boolean statusFound = false;
-			
-			if(flow.getStatuses() != null) {
-				
+
+			if (flow.getStatuses() != null) {
+
 				for (Status status : flow.getStatuses()) {
-	
+
 					if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
 						continue;
 					}
-	
+
 					if (status.getName().equalsIgnoreCase(activityGroup.getCompleteStatus())) {
 						statusFound = true;
 						break;
@@ -201,28 +205,40 @@ public class FlowApprovalActivityGroupCRUD extends ModularCRUD<FlowApprovalActiv
 
 			boolean statusFound = false;
 
-			if(flow.getStatuses() != null) {
+			if (flow.getStatuses() != null) {
 
 				for (Status status : flow.getStatuses()) {
-	
+
 					if (ArrayUtils.contains(INVALID_STATUS_TYPES, status.getContentType())) {
 						continue;
 					}
-	
+
 					if (status.getName().equalsIgnoreCase(activityGroup.getDenyStatus())) {
 						statusFound = true;
 						break;
 					}
 				}
 			}
-			
+
 			if (!statusFound) {
 				validationErrors = CollectionUtils.addAndInstantiateIfNeeded(validationErrors, new ValidationError("InvalidStatus", "", "denyStatus"));
 			}
 		}
 
+		//check for deleted users and groups
+		clearUnknownUsersAndGroups(activityGroup);
+
 		if (validationErrors != null) {
 			throw new ValidationException(validationErrors);
+		}
+	}
+
+	private void clearUnknownUsersAndGroups(FlowApprovalActivityGroup activityGroup) {
+
+		//remove users if they no longer exists
+		List<FlowApprovalActivity> activities = activityGroup.getActivities();
+		if (!CollectionUtils.isEmpty(activities)) {
+			activities.forEach(FlowApprovalActivity::clearUnknownUsersAndGroups);
 		}
 	}
 

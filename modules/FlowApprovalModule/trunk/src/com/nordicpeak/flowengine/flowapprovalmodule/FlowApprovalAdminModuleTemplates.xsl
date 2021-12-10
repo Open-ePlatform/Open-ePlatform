@@ -34,6 +34,7 @@
 		<xsl:apply-templates select="AddActivityGroup" />
 		<xsl:apply-templates select="UpdateActivityGroup" />
 		<xsl:apply-templates select="SortActivityGroups" />
+		<xsl:apply-templates select="ImportActivityGroup"/>
 		
 		<xsl:apply-templates select="ShowActivity" />
 		<xsl:apply-templates select="AddActivity" />
@@ -60,7 +61,7 @@
 							<th><xsl:value-of select="$i18n.ActivityGroup.completeStatus" /></th>
 							<th><xsl:value-of select="$i18n.ActivityGroup.denyStatus" /></th>
 							<th><xsl:value-of select="$i18n.ActivityGroup.activityCount" /></th>
-							<th width="58" />
+							<th width="88" />
 						</tr>
 					</thead>
 					<tbody>
@@ -86,7 +87,13 @@
 				<xsl:value-of select="$i18n.SortActivityGroups"/>
 				<img class="marginleft" src="{$imgPath}/move.png" alt="" />
 			</a>
+			
 		</xsl:if>
+			<a class="floatright clearboth" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/importactivitygroup" title="{$i18n.ImportActivityGroup}">
+				<xsl:value-of select="$i18n.ImportActivityGroup"/>
+				<img class="marginleft" src="{$imgPath}/form_import.png" alt="" />
+			</a>
+		
 		
 	</xsl:template>
 	
@@ -116,7 +123,7 @@
 								<th><xsl:value-of select="$i18n.ActivityGroup.completeStatus" /></th>
 								<th><xsl:value-of select="$i18n.ActivityGroup.denyStatus" /></th>
 								<th><xsl:value-of select="$i18n.ActivityGroup.activityCount" /></th>
-								<th width="58" />
+								<th width="88" />
 							</tr>
 						</thead>
 						<tbody>
@@ -189,6 +196,11 @@
 				
 				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/copyactivitygroup/{activityGroupID}" title="{$i18n.Copy}: {name}">
 					<img src="{$imgPath}/page_copy.png" alt="" />
+				</a>
+				
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/exportactivitygroup/{activityGroupID}" title="{$i18n.ExportActivityGroup}: {name}">
+				
+					<img class="marginleft" src="{$imgPath}/xml.png" alt="" />
 				</a>
 			
 				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/deleteactivitygroup/{activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm}: {name}?');" title="{$i18n.DeleteActivityGroup}: {name}">
@@ -1026,6 +1038,81 @@
 			
 		</div>
 		
+	</xsl:template>
+	
+	
+	<xsl:template match="ImportActivityGroup">
+		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
+		
+			<h1>
+				<xsl:value-of select="$i18n.ImportActivityGroup.title" />				
+			</h1>
+					
+			<p>
+				<xsl:value-of select="$i18n.ImportActivityGroup.description" />
+			</p>			
+				
+			
+			<xsl:apply-templates select="validationException/validationError" />
+	
+			<form method="post" action="{/Document/requestinfo/uri}" enctype="multipart/form-data">
+	
+				<div class="floatleft full bigmarginbottom">
+					
+					<label for="flow" class="floatleft full">
+						<xsl:value-of select="$i18n.selectActivityGroupFile" />
+					</label>
+					
+					<div class="floatleft full">
+						<input type="file" name="activityGroup" id="activityGroup"/>
+					</div>
+				</div>
+				
+				<div class="floatleft full">
+		
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'importUsers'" />
+							<xsl:with-param name="id" select="'importUsers'" />
+							<xsl:with-param name="element" select="ActivityGroup" />
+							
+						</xsl:call-template>
+						
+						<label class="marginleft" for="importUsers">
+							<xsl:value-of select="$i18n.ActivityGroup.importUsers" />
+						</label>
+					</div>
+					
+					<div class="floatleft tiny clearboth"><xsl:value-of select="$i18n.ActivityGroup.importUsers.description" /></div>
+				</div>
+				
+				<div class="floatleft full">
+		
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'importGroups'" />
+							<xsl:with-param name="id" select="'importGroups'" />
+							<xsl:with-param name="element" select="ActivityGroup" />
+							
+						</xsl:call-template>
+						
+						<label class="marginleft" for="importGroups">
+							<xsl:value-of select="$i18n.ActivityGroup.importGroups" />
+						</label>
+					</div>
+					
+					<div class="floatleft tiny clearboth"><xsl:value-of select="$i18n.ActivityGroup.importGroups.description" /></div>
+				</div>
+				
+				
+				
+				<div class="floatright">
+					<input type="submit" value="{$i18n.ImportActivityGroup.submit}" />
+				</div>
+			
+			</form>
+		
+		</div>
 	</xsl:template>
 	
 	<xsl:template match="ActivityGroup" mode="sort">
@@ -1924,6 +2011,118 @@
 		
 		</div>
 	
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='NoAttachedFile']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.NoAttachedFile"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='InvalidFileExtension']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.InvalidFileExtension"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnableToParseFile']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.UnableToParseFile"/>
+		</p>
+		
+	</xsl:template>
+	
+	
+	
+	<xsl:template match="validationError[messageKey='StatusNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.StatusNotFound.1"/>			
+			<xsl:value-of select="status" />
+			<xsl:value-of select="$i18n.Validation.StatusNotFound.2"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='ResponsibleUserNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleUserNotFound"/>
+			<xsl:text>: </xsl:text>
+			<xsl:value-of select="userName" />
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='ResponsibleGroupNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleGroupNotFound"/>
+			<xsl:text>: </xsl:text>
+			<xsl:value-of select="groupName" />
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='AssignableGroupNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.AssignableGroupNotFound"/>
+			<xsl:text>: </xsl:text>
+			<xsl:value-of select="groupName" />
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='AssignableUserNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.AssignableUserNotFound"/>
+			<xsl:text>: </xsl:text>
+			<xsl:value-of select="userName" />
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='RequestSizeLimitExceeded']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.UnableToParseRequest"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnableToParseRequest']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.UnableToParseRequest"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='UnableToParseFile']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.UnableToParseFile"/>
+		</p>
+		
+	</xsl:template>
+	
+	
+	
+	
+	
+	<xsl:template match="validationError[messageKey='FileSizeLimitExceeded']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.FileSizeLimitExceeded"/>
+		</p>
+		
 	</xsl:template>
 	
 	<xsl:template match="validationError[messageKey='ResponsibleRequired']">

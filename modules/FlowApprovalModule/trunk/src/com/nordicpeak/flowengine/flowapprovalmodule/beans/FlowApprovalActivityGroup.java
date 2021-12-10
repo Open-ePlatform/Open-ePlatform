@@ -1,8 +1,10 @@
 package com.nordicpeak.flowengine.flowapprovalmodule.beans;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
+import se.unlogic.emailutils.populators.EmailPopulator;
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
 import se.unlogic.standardutils.annotations.SplitOnLineBreak;
@@ -10,6 +12,7 @@ import se.unlogic.standardutils.annotations.Templated;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.annotations.enums.RequiredState;
 import se.unlogic.standardutils.collections.CaseInsensitiveStringComparator;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
@@ -17,17 +20,24 @@ import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.SimplifiedRelation;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringTag;
 import se.unlogic.standardutils.string.StringUtils;
+import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
+import se.unlogic.standardutils.xml.XMLParser;
+import se.unlogic.standardutils.xml.XMLParserPopulateable;
+import se.unlogic.standardutils.xml.XMLPopulationUtils;
+import se.unlogic.standardutils.xml.XMLValidationUtils;
 
 import com.nordicpeak.flowengine.populators.EmailAttributeTagPopulator;
 
 @Table(name = "flowapproval_activitygroups")
 @XMLElement(name = "ActivityGroup")
-public class FlowApprovalActivityGroup extends GeneratedElementable implements Comparable<FlowApprovalActivityGroup> {
+public class FlowApprovalActivityGroup extends GeneratedElementable implements Comparable<FlowApprovalActivityGroup>,XMLParserPopulateable {
 
 	public static final Field ACTIVITIES_RELATION = ReflectionUtils.getField(FlowApprovalActivityGroup.class, "activities");
 	public static final Field ACTIVIY_ROUNDS_RELATION = ReflectionUtils.getField(FlowApprovalActivityGroup.class, "activityRounds");
@@ -516,6 +526,53 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		}
 
 		return diff;
+	}
+
+	@Override
+	public void populate(XMLParser xmlParser) throws ValidationException {
+
+		List<ValidationError> errors = new ArrayList<>();
+		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);		
+		this.activityCount = xmlParser.getInt("activityCount");
+		this.sortIndex = xmlParser.getInt("sortIndex");
+		this.startStatus = XMLValidationUtils.validateParameter("startStatus", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		this.completeStatus = XMLValidationUtils.validateParameter("completeStatus", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
+		this.denyStatus = XMLValidationUtils.validateParameter("denyStatus", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.allowSkip = xmlParser.getPrimitiveBoolean("allowSkip");
+		this.useApproveDeny = xmlParser.getPrimitiveBoolean("useApproveDeny");
+		this.approvedText = XMLValidationUtils.validateParameter("approvedText", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.deniedText = XMLValidationUtils.validateParameter("deniedText", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.appendCommentsToExternalMessages = xmlParser.getPrimitiveBoolean("appendCommentsToExternalMessages");
+		this.hideFlowinstanceIDInPDF = xmlParser.getPrimitiveBoolean("hideFlowinstanceIDInPDF");
+		this.allowRestarts = xmlParser.getPrimitiveBoolean("allowRestarts");
+		this.onlyRestartIfActivityChanges = xmlParser.getPrimitiveBoolean("onlyRestartIfActivityChanges");
+		this.sendActivityGroupStartedEmail = xmlParser.getPrimitiveBoolean("sendActivityGroupStartedEmail");
+		this.activityGroupStartedEmailMessage = XMLValidationUtils.validateParameter("activityGroupStartedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
+		
+		this.reminderAfterXDays = xmlParser.getInt("reminderAfterXDays");
+		this.sendActivityGroupCompletedEmail = xmlParser.getPrimitiveBoolean("sendActivityGroupCompletedEmail");
+		this.activityGroupCompletedEmailAttachPDF = xmlParser.getPrimitiveBoolean("activityGroupCompletedEmailAttachPDF");
+		this.activityGroupCompletedEmailAttachFlowInstancePDF = xmlParser.getPrimitiveBoolean("activityGroupCompletedEmailAttachFlowInstancePDF");
+		this.activityGroupStartedEmailSubject = XMLValidationUtils.validateParameter("activityGroupStartedEmailSubject", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.activityGroupStartedEmailMessage = XMLValidationUtils.validateParameter("activityGroupStartedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);		
+		this.activityGroupCompletedEmailSubject = XMLValidationUtils.validateParameter("activityGroupCompletedEmailSubject", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
+		this.activityGroupCompletedEmailMessage = XMLValidationUtils.validateParameter("activityGroupCompletedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
+		
+		
+		this.activityGroupCompletedEmailAddresses = XMLValidationUtils.validateParameters("ActivityGroupCompletedEmailAddresses/address", xmlParser, false, 1, 255, EmailPopulator.getPopulator(), errors);
+		this.suppressChangeStatusManagerNotifications = xmlParser.getPrimitiveBoolean("suppressChangeStatusManagerNotifications");
+		this.activities = XMLPopulationUtils.populateBeans(xmlParser, "Activities/Activity", FlowApprovalActivity.class, errors);
+		
+		if(!CollectionUtils.isEmpty(activities)) {
+			for (FlowApprovalActivity activity : activities) {
+				activity.setActivityGroup(this);
+			}
+		}
+		
+		if (!errors.isEmpty()) {
+
+			throw new ValidationException(errors);
+		}
 	}
 
 }
