@@ -817,7 +817,11 @@
 							<div class="floatleft full">
 								<div class="floatleft">
 									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.aboutFlow" /></label>
-									<div><xsl:value-of select="$managementInfo/aboutFlow" /></div>
+									<div>
+										<xsl:call-template name="replaceLineBreak">
+											<xsl:with-param name="string" select="$managementInfo/aboutFlow"/>
+										</xsl:call-template>
+									</div>
 								</div>
 							</div>
 						
