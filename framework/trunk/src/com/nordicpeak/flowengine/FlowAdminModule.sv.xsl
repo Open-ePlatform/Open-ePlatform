@@ -156,7 +156,7 @@
 	
 	<xsl:variable name="i18n.updateFlowBaseInfo.title">Uppdatera e-tjänstens grundinformation</xsl:variable>
 
-	<xsl:variable name="i18n.updateManagementInfo">Uppdatera e-tjänstens förvaltningsinformation</xsl:variable>
+	<xsl:variable name="i18n.updateManagementInfo">Uppdatera förvaltningsinformation för e-tjänsten:</xsl:variable>
 	<xsl:variable name="i18n.noManagementInfo">Det finns ingen förvaltningsinformation för denna e-tjänst</xsl:variable>
 	<xsl:variable name="i18n.managementInfo">Förvaltningsinformation</xsl:variable>
 	<xsl:variable name="i18n.managementInfo.processOwner">Processägare</xsl:variable>
