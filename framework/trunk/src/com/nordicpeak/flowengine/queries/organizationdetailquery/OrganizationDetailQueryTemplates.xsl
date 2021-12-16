@@ -9,7 +9,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="scripts">
-		/js/organizationdetailquery.js
+		/js/organizationdetailquery.js?v=1
 	</xsl:variable>
 
 	<xsl:variable name="links">
