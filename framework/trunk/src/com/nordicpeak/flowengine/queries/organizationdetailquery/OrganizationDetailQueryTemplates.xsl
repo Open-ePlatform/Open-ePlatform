@@ -295,11 +295,11 @@
 				</xsl:if>
 				
 				<div class="form-wrapper">
-				
-					<xsl:if test="$userOrganizations and not(OrganizationDetailQueryInstance/organizationID) and not(ValidationErrors/validationError)">
+
+					<xsl:if test="$userOrganizations and not(OrganizationDetailQueryInstance/organizationNumber) and not(ValidationErrors/validationError)">
 						<xsl:attribute name="class">form-wrapper hidden</xsl:attribute>
 					</xsl:if>
-				
+
 					<fieldset class="clearboth">
 						
 						<div class="split">

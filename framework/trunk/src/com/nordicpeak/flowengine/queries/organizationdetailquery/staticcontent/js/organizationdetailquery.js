@@ -16,21 +16,16 @@ function initOrganizationDetailQuery(queryID) {
 	$(shortQueryID + "_mobilephone").on("keyup blur change", function() {
 		
 		if($(this).val() != "") {
-			$(shortQueryID + "_contactBySMS").removeAttr("disabled").next("label").removeClass("disabled");
+			$(shortQueryID + "_contactBySMS").prop("disabled", false).next("label").removeClass("disabled");
 		} else {
-			$(shortQueryID + "_contactBySMS").removeAttr("checked").attr("disabled", "disabled").next("label").addClass("disabled");
+			$(shortQueryID + "_contactBySMS").prop("checked", false).prop("disabled", false).next("label").addClass("disabled");
 		}
 		
 	});
 	
 	$(shortQueryID + "_email").on("keyup blur change", function() {
 		
-		if($(this).val() != "") {
-			$(shortQueryID + "_contactByEmail").attr("checked", true);
-		} else {
-			$(shortQueryID + "_contactByEmail").removeAttr("checked");
-		}
-		
+		$(shortQueryID + "_contactByEmail").prop( "checked", $(this).val() != "");		
 	});
 	
 	$(shortQueryID + "_mobilephone").trigger("change");
@@ -80,7 +75,7 @@ function initOrganizationDetailQuery(queryID) {
 			$(shortQueryID + "_email").trigger("change");
 			
 			if($(id + "_contactBySMS").val() == "true") {
-				$(shortQueryID + "_contactBySMS").attr("checked", "checked").removeAttr("disabled").next("label").removeClass("disabled");
+				$(shortQueryID + "_contactBySMS").prop("checked", true).prop("disabled", false).next("label").removeClass("disabled");
 			}
 			
 			$(shortQueryID + "_persistOrganization").next("label").text(organizationDetailQueryi18n.UpdateToMyOrganizations);
@@ -125,10 +120,10 @@ function resetOrganizationDetailForm(shortQueryID) {
 		$(shortQueryID + "_lastname").val("");
 	}
 	
-	$(shortQueryID + "_contactBySMS").removeAttr("checked").attr("disabled", "disabled").next("label").addClass("disabled");
-	$(shortQueryID + "_contactByEmail").removeAttr("checked");
+	$(shortQueryID + "_contactBySMS").prop("checked", false).prop("disabled", true).next("label").addClass("disabled");
+	$(shortQueryID + "_contactByEmail").prop("checked", false);
 	
-	$(shortQueryID + "_persistOrganization").removeAttr("checked");
+	$(shortQueryID + "_persistOrganization").prop("checked", false);
 	
 }
 
