@@ -322,7 +322,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 	protected List<String> selectedAttributes;
 	
-	private UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
+	protected UserGroupListFlowManagersConnector userGroupListFlowManagersConnector;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
