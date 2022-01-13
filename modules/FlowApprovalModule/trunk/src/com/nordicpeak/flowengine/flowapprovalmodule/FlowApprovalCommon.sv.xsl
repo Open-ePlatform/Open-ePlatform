@@ -37,6 +37,7 @@
 	<xsl:variable name="i18n.Activity.attributeName">Attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.inverted">Inverterad</xsl:variable>
 	<xsl:variable name="i18n.Activity.attributeValues">Värden</xsl:variable>
+	<xsl:variable name="i18n.Activity.isActive">Aktiverad</xsl:variable>
 	
 	<xsl:variable name="i18n.ActivityProgress">Aktivitet</xsl:variable>
 	<xsl:variable name="i18n.ActivityProgress.added">Påbörjad</xsl:variable>

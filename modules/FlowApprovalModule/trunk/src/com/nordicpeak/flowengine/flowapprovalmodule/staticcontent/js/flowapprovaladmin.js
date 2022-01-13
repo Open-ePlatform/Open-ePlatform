@@ -119,6 +119,17 @@ $(function() {
 			$("#pdfDownloadActivation").attr("disabled", !checked).parent().parent().toggle(checked);
 			
 		}).trigger("change");
+		
+	$("#requireComment").on("change", function(e) {
+			var checked = $(this).prop("checked");
+			if(checked) {
+				$("#whenToComment").show();
+			}
+			else {
+				$("#whenToComment").hide();
+			}
+			
+		}).trigger("change");
 });
 
 function searchFlows(request, response, searchURL, searchInput) {

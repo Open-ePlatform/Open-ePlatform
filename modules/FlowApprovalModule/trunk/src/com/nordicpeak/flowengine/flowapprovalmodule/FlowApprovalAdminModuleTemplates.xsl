@@ -187,7 +187,22 @@
 			<td>
 				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/showactivitygroup/{activityGroupID}" title="{$i18n.ShowActivityGroup}: {name}">
 					<xsl:value-of select="count(Activities/Activity)" />
+					
 				</a>
+				<xsl:if test="count(Activities/Activity[active='false'])>0">
+					<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/showactivitygroup/{activityGroupID}" title="{$i18n.ShowActivityGroup}: {name}" class="red">
+						<xsl:text> </xsl:text>
+						<xsl:choose>
+							<xsl:when test="count(Activities/Activity[active='false'])>1">
+								(<xsl:value-of select="$i18n.ShowActivity.inactive.of"/><xsl:value-of select="count(Activities/Activity[active='false'])" /><xsl:value-of select="$i18n.ShowActivity.inactive.severalinactive"/>)
+							</xsl:when>
+							<xsl:when test="count(Activities/Activity[active='false'])=1">
+								(<xsl:value-of select="$i18n.ShowActivity.inactive.of"/><xsl:value-of select="count(Activities/Activity[active='false'])" /><xsl:value-of select="$i18n.ShowActivity.inactive.inactive"/>)
+							</xsl:when>
+						</xsl:choose>
+						
+					</a>
+				</xsl:if>
 			</td>
 			<td>
 				<a href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/updateactivitygroup/{activityGroupID}" title="{$i18n.UpdateActivityGroup}: {name}">
@@ -794,6 +809,7 @@
 								<th><xsl:value-of select="$i18n.Activity.attributeName" /></th>
 								<th><xsl:value-of select="$i18n.Activity.inverted" /></th>
 								<th><xsl:value-of select="$i18n.Activity.attributeValues" /></th>
+								<th><xsl:value-of select="$i18n.Activity.isActive" /></th>
 								<th width="58" />
 							</tr>
 						</thead>
@@ -831,74 +847,115 @@
 		
 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
+		<xsl:variable name="linkurl"><xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="../../../extensionRequestURL"/>/showactivity/<xsl:value-of select="activityID"/></xsl:variable>
+		<xsl:variable name="linkname">
+			<xsl:choose>
+					<xsl:when test="active='false'"><xsl:value-of select="name"/><xsl:text> </xsl:text><xsl:value-of select="$i18n.ShowActivity.inactive"/></xsl:when>
+					<xsl:otherwise><xsl:value-of select="$i18n.ShowActivity"/><xsl:value-of select="name"/></xsl:otherwise>
+			</xsl:choose>	
+		</xsl:variable>
+		
 		<tr>
-			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
-					<xsl:value-of select="name" />
-				</a>
+			<td class="vertical-align">
+				<xsl:choose>
+					<xsl:when test="active='false'">
+						<a href="{$linkurl}" title="{$linkname}" class="red">
+							<xsl:value-of select="name" />
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<a href="{$linkurl}" title="{$linkname}">
+							<xsl:value-of select="name" />
+						</a>
+					</xsl:otherwise>
+				</xsl:choose>	
 			</td>
-			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
-					<xsl:choose>
-						<xsl:when test="ResponsibleUsers or ResponsibleGroups or responsibleUserAttributeName">
-						
-							<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser" mode="inline-list"/>
-							
-							<xsl:if test="ResponsibleUsers and ResponsibleGroups">
-								<xsl:text>, </xsl:text>
+			<td class="vertical-align">
+				
+						<a href="{$linkurl}" title="{$linkname}">
+							<xsl:choose>
+								<xsl:when test="ResponsibleUsers or ResponsibleGroups or responsibleUserAttributeName">
+								
+									<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser" mode="inline-list"/>
+									
+									<xsl:if test="ResponsibleUsers and ResponsibleGroups">
+										<xsl:text>, </xsl:text>
+									</xsl:if>
+									
+									<xsl:apply-templates select="ResponsibleGroups/group" mode="inline-list"/>
+									
+									<xsl:if test="ResponsibleUserAttributeNames">
+										<xsl:if test="ResponsibleUsers or ResponsibleGroups">
+											<xsl:text>, </xsl:text>
+										</xsl:if>
+										
+										<xsl:for-each select="ResponsibleUserAttributeNames/value">
+											<xsl:if test="position() > 1">, </xsl:if>
+											
+											<xsl:text>$attribute{</xsl:text>
+											<xsl:value-of select="." />
+											<xsl:text>}</xsl:text>
+										</xsl:for-each>
+									</xsl:if>
+								
+								</xsl:when>
+								<xsl:otherwise>
+									
+									<xsl:value-of select="$i18n.Activity.noResponsibles"/>
+									
+								</xsl:otherwise>
+							</xsl:choose>
+						</a>
+					
+					
+			</td>
+			<td class="vertical-align">
+				
+						<a href="{$linkurl}" title="{$linkname}">
+							<xsl:value-of select="attributeName" />
+						</a>
+			
+			</td>
+			<td class="vertical-align">
+				
+						<a href="{$linkurl}" title="{$linkname}">
+							<xsl:if test="invert = 'true'">
+								<xsl:value-of select="$i18n.Activity.inverted" />
 							</xsl:if>
-							
-							<xsl:apply-templates select="ResponsibleGroups/group" mode="inline-list"/>
-							
-							<xsl:if test="ResponsibleUserAttributeNames">
-								<xsl:if test="ResponsibleUsers or ResponsibleGroups">
+						</a>
+				
+			</td>
+			<td class="vertical-align">
+				
+						<a href="{$linkurl}" title="{$linkname}">
+							<xsl:for-each select="AttributeValues/*">
+								<xsl:if test="position() > 1">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
-								<xsl:for-each select="ResponsibleUserAttributeNames/value">
-									<xsl:if test="position() > 1">, </xsl:if>
-									
-									<xsl:text>$attribute{</xsl:text>
-									<xsl:value-of select="." />
-									<xsl:text>}</xsl:text>
-								</xsl:for-each>
-							</xsl:if>
-						
-						</xsl:when>
-						<xsl:otherwise>
-							
-							<xsl:value-of select="$i18n.Activity.noResponsibles"/>
-							
-						</xsl:otherwise>
-					</xsl:choose>
-				</a>
+								<xsl:value-of select="."/>
+							</xsl:for-each>
+						</a>
+				
+				
 			</td>
-			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
-					<xsl:value-of select="attributeName" />
-				</a>
-			</td>
-			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
-					<xsl:if test="invert = 'true'">
-						<xsl:value-of select="$i18n.Activity.inverted" />
-					</xsl:if>
-				</a>
-			</td>
-			<td>
-				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/showactivity/{activityID}" title="{$i18n.ShowActivity}: {name}">
+			<td class="vertical-align">
+				
+				<a href="{$linkurl}" title="{$linkname}">
 					
-					<xsl:for-each select="AttributeValues/*">
-						<xsl:if test="position() > 1">
-							<xsl:text>, </xsl:text>
-						</xsl:if>
-						
-						<xsl:value-of select="."/>
-					</xsl:for-each>
-					
+						<xsl:choose>
+							<xsl:when test="active='true'">
+								<xsl:value-of select="$i18n.Yes"/>
+							</xsl:when>
+							
+							<xsl:otherwise>
+							<xsl:value-of select="$i18n.No"/>
+							</xsl:otherwise>
+						</xsl:choose>
 				</a>
+				
 			</td>
-			<td>
+			<td class="vertical-align">
 			
 				<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/updateactivity/{activityID}" title="{$i18n.UpdateActivity}: {name}">
 					<img src="{$imgPath}/pen.png" alt="" />
@@ -1177,6 +1234,18 @@
 					</xsl:call-template>
 				</p>
 			</div>
+			
+			<xsl:if test="Activity/active = 'true'">
+				
+				<div>
+					<strong>
+						<xsl:value-of select="$i18n.Activity.active" />
+						<xsl:text>:&#160;</xsl:text>
+					</strong>
+					<xsl:value-of select="$i18n.Yes" />
+				</div>
+				
+			</xsl:if>
 			
 			<xsl:if test="Activity/requireSigning = 'true'">
 				
@@ -1475,6 +1544,21 @@
 			
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'active'" />
+					<xsl:with-param name="id" select="'active'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="active">
+					<xsl:value-of select="$i18n.Activity.active" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full">
+			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'showFlowInstance'" />
 					<xsl:with-param name="id" select="'showFlowInstance'" />
 					<xsl:with-param name="element" select="Activity" />
@@ -1526,6 +1610,18 @@
 					<xsl:value-of select="$i18n.Activity.requireComment" />
 				</label>
 			</div>
+		</div>
+		
+		
+		<div class="floatleft full bigmarginbottom bigmarginleft">
+			<xsl:call-template name="createDropdown">
+				<xsl:with-param name="id" select="'whenToComment'"/>
+				<xsl:with-param name="name" select="'whenToComment'"/>
+				<xsl:with-param name="element" select="../whenToCommentChoices/whenToComment"/>
+				<xsl:with-param name="labelElementName" select="'name'"/>
+				<xsl:with-param name="valueElementName" select="'value'"/>
+				<xsl:with-param name="selectedValue" select="Activity/whenToComment"/>
+			</xsl:call-template>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">

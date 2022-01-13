@@ -62,3 +62,12 @@ ul.ui-autocomplete li.ui-menu-item div.ui-corner-all {
 .ui-autocomplete-input {
 	margin-top: 5px;
 }
+
+.red {
+	color:red !important;
+}
+
+.vertical-align {
+	vertical-align: top;
+}
+

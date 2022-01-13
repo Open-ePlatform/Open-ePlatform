@@ -15,6 +15,9 @@
 	<xsl:variable name="java.pdfSignatureAttachment">Signatur</xsl:variable>
 	<xsl:variable name="java.pdfSigningDataAttachment">Signeringsunderlag</xsl:variable>
 	
+	<xsl:variable name="java.whenToCommentAlways">Alltid</xsl:variable>
+	<xsl:variable name="java.whenToCommentDuringDeny">Vid avslag</xsl:variable>
+	
 	<xsl:variable name="java.eventActivityGroupAdded">Skapade aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupUpdated">Ändrade aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="java.eventActivityGroupDeleted">Tog bort aktivitetsgrupp</xsl:variable>
@@ -105,6 +108,10 @@
 	<xsl:variable name="i18n.ExportActivityGroup">Exportera aktivitetsgrupp</xsl:variable>	
 	
 	<xsl:variable name="i18n.ShowActivity">Visa aktivitet</xsl:variable>
+	<xsl:variable name="i18n.ShowActivity.inactive">(inaktiv)</xsl:variable>
+	<xsl:variable name="i18n.ShowActivity.inactive.of">varav </xsl:variable>
+	<xsl:variable name="i18n.ShowActivity.inactive.severalinactive"> inaktiva</xsl:variable>
+	<xsl:variable name="i18n.ShowActivity.inactive.inactive"> inaktiv</xsl:variable>
 	<xsl:variable name="i18n.AddActivity">Lägg till ny aktivitet</xsl:variable>
 	<xsl:variable name="i18n.UpdateActivity">Ändra aktivitet</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivity">Ta bort aktivitet</xsl:variable>
@@ -124,14 +131,18 @@
 	<xsl:variable name="i18n.Activity.onlyUseGlobalNotifications">Skicka notifikationer endast till funktionsbrevlådan</xsl:variable>
 	<xsl:variable name="i18n.Activity.StartedNotificationDisabled">OBS Aktivitetsgruppen är inte inställd på att skicka påbörjatnotifikationer men påminnelser, automatiska och manuella, kan fortfarande användas.</xsl:variable>
 	<xsl:variable name="i18n.Activity.shortDescriptionHelp">Kort beskrivning av aktiviteten i listan med aktiviteter. Via fältet nedan kan en valfri sträng anges med både fast text och $attribute{} taggar.</xsl:variable>
-	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar.</xsl:variable>
+	<xsl:variable name="i18n.Activity.descriptionHelp">Information om vad ansvarig ska utföra för denna aktivitet. Du får använda $attribute{} taggar. Attributet $flowInstance.url är tillgängligt för att infoga en länk till ärendet i handläggargränssnittet.</xsl:variable>
 	<xsl:variable name="i18n.Activity.showFlowInstance">Visa förhandsgranskning av hela ärendet</xsl:variable>
 	<xsl:variable name="i18n.Activity.showPDFDownloadActivation">Tillåt aktivitetsägare att ladda ner hela ärendets PDF</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireSigning">Kräv signering vid klarmarkera / godkänn / neka</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireComment">Kräv att kommentar anges</xsl:variable>
+	
 	<xsl:variable name="i18n.Activity.allowManagersToAssignOwner">Tillåt handläggare att byta ansvarig användare</xsl:variable>
 	<xsl:variable name="i18n.Activity.assignableUsers">Valbara användare vid byte av ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Activity.assignableGroups">Valbara grupper vid byte av ansvarig</xsl:variable>
+	<xsl:variable name="i18n.Activity.active">Aktivera aktivitet</xsl:variable>
+	
+	
 	
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useCustomApprovedText">Använd annat namn för klarmarkerad / godkänd / nekad</xsl:variable>
@@ -139,7 +150,7 @@
 	<xsl:variable name="i18n.ActivityGroup.deniedText">Namn för nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowSkip">Hoppa över / byt till målstatus även om ingen aktivitet startas (endast om ingen grupp alls startas/är igång)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.allowRestarts">Tillåt omstart av aktiviteter</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.restartInfo">Om ärendets status ändras tillbaka till aktiveringsstatus kommer aktiviteter att startas om oavstett hur inställning för omstart är satta här</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.restartInfo">Om ärendets status ändras tillbaka till aktiveringsstatus kommer aktiviteter att startas om oavsett hur inställning för omstart är satta här</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.onlyRestartIfActivityChanges">Tillåt omstart endast om det blir skillnad på startade aktiviteter (pga attribut)</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.sendActivityGroupStartedEmail">Skicka e-postnotifiering vid påbörjad aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupStartedEmailSubject">Rubrik för notifiering till aktivitetsansvariga</xsl:variable>

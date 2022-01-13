@@ -98,6 +98,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
+import com.nordicpeak.flowengine.flowapprovalmodule.enums.Comment;
 import com.nordicpeak.flowengine.interfaces.GenericSigningProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowEngineInterface;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -417,9 +418,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		return getActivities(user, true, relations);
 	}
 
-	private List<FlowApprovalActivityProgress> getActivities(User user, boolean active, Field... relations) throws SQLException {
+	private List<FlowApprovalActivityProgress> getActivities(User user, boolean completed, Field... relations) throws SQLException {
 
-		return getActivities(user, null, active, relations);
+		return getActivities(user, null, completed, relations);
 	}
 
 	protected List<FlowApprovalActivityProgress> getActivities(User user, Integer flowInstanceID, Boolean completed, Field... relations) throws SQLException {
@@ -457,7 +458,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
 		              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))");
 		// @formatter:on
-
+		
 		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(builder.toString());
 
 		if (relations != null) {
@@ -517,6 +518,10 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			validationErrors = new ArrayList<>();
 
 			boolean completed = false;
+			
+			String comment = "";
+			boolean requireComment = activity.isRequireComment();
+			Comment whenToComment = activity.getWhenToComment();
 
 			if (activityGroup.isUseApproveDeny()) {
 
@@ -526,6 +531,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					activityProgress.setDenied(false);
 					completed = true;
+					
+					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
 
 				} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
 
@@ -533,6 +540,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					activityProgress.setDenied(true);
 					completed = true;
+					
+					comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
 				}
 
 			} else {
@@ -542,12 +551,12 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					log.info("User " + user + " completing activity progress " + activityProgress);
 
 					completed = true;
+					
+					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
 				}
 			}
 
-			boolean requireComment = activity.isRequireComment();
-
-			String comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
+			
 
 			if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
 
@@ -570,7 +579,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					}
 
 					//TODO show error if next status was not found
-					approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
+					approvalAdminModule.checkApprovalCompletion(uriParser, activityProgress.getActivity().getActivityGroup(), flowInstance);
 
 					if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
 
@@ -601,7 +610,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		log.info("User " + user + " requested activity progress " + activityProgress);
 
 		if (activity.getDescription() != null) {
-			activity.setDescription(AttributeTagUtils.replaceTags(activity.getDescription(), flowInstance.getAttributeHandler()));
+			
+			approvalAdminModule.replaceTagsDescription(uriParser, activity, flowInstance);
+			
 		}
 
 		Document doc = createDocument(req, uriParser);
@@ -680,7 +691,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		return showSignForm(req, res, user, uriParser, activityProgress, flowInstance, null);
 	}
 
-	private String getDataToSign(FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, User user) {
+	private String getDataToSign(URIParser uriParser, FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, User user) {
 
 		String shortDescription = null;
 		String description = null;
@@ -690,7 +701,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		if (activityProgress.getActivity().getDescription() != null) {
-			description = AttributeTagUtils.replaceTags(activityProgress.getActivity().getDescription(), flowInstance.getAttributeHandler());
+			approvalAdminModule.replaceTagsDescription(uriParser, activityProgress.getActivity(), flowInstance);			
 		}
 
 		StringBuilder builder = new StringBuilder();
@@ -762,7 +773,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		Element signingFormElement = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "Signing");
 
-		String dataToSign = getDataToSign(activityProgress, flowInstance, user);
+		String dataToSign = getDataToSign(uriParser, activityProgress, flowInstance, user);
 		SimpleSigningRequest signingRequest = getSigningRequest(dataToSign, activityProgress, flowInstance, user, uriParser);
 
 		ViewFragment viewFragment = genericSigningProvider.showSignForm(req, res, user, signingRequest, validationErrors);
@@ -825,7 +836,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		List<ValidationError> validationErrors = null;
 
 		try {
-			String dataToSign = getDataToSign(activityProgress, flowInstance, user);
+			String dataToSign = getDataToSign(uriParser, activityProgress, flowInstance, user);
 			SimpleSigningRequest signingRequest = getSigningRequest(dataToSign, activityProgress, flowInstance, user, uriParser);
 
 			SigningResponse signingResponse = genericSigningProvider.processSigning(req, res, user, signingRequest);
@@ -876,7 +887,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 				activityProgressDAO.update(activityProgress);
 
 				//TODO show error if next status was not found
-				approvalAdminModule.checkApprovalCompletion(activityProgress.getActivity().getActivityGroup(), flowInstance);
+				approvalAdminModule.checkApprovalCompletion(uriParser, activityProgress.getActivity().getActivityGroup(), flowInstance);
 
 				if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(activityProgress.getComment()) && flowInstance.getOwners() != null) {
 

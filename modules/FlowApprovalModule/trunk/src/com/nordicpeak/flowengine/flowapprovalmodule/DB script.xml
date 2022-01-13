@@ -482,6 +482,30 @@
 				ALTER TABLE `flowapproval_activities` ADD COLUMN `pdfDownloadActivation` BOOLEAN NOT NULL DEFAULT 0 AFTER `showFlowInstance`;				
 			]]>
 		</Query>
+	</Script>
+	<Script version="24">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `active` BOOLEAN NOT NULL DEFAULT 0 AFTER `showFlowInstance`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` SET `active`=1;				
+			]]>
+		</Query>
+	</Script>
+	<Script version="25">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `whenToComment` VARCHAR(50) AFTER `requireComment`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` SET `whenToComment`='ALWAYS' where `requireComment`='1';				
+			]]>
+		</Query>
 	</Script>	
 	
 </DBScripts>

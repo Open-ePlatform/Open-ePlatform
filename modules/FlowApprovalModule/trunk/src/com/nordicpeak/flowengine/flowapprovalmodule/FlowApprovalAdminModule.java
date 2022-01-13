@@ -162,6 +162,7 @@ import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.FlowInstanceAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAdminExtensionShowView;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -180,12 +181,13 @@ import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalReminder;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityCRUD;
 import com.nordicpeak.flowengine.flowapprovalmodule.cruds.FlowApprovalActivityGroupCRUD;
+import com.nordicpeak.flowengine.flowapprovalmodule.enums.Comment;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableGroupNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableUserNotFound;
-import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.StatusNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleGroupNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleUserNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.StatusNotFound;
 import com.nordicpeak.flowengine.interfaces.FlowAdminFragmentExtensionViewProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
@@ -273,6 +275,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@XSLVariable(prefix = "java.")
 	private String eventActivityOwnerDefault = "default";
+	
+	@XSLVariable(prefix = "java.")
+	private String whenToCommentAlways;
+	
+	@XSLVariable(prefix = "java.")
+	private String whenToCommentDuringDeny;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "PDF dir", description = "The directory where PDF files be stored", required = true)
@@ -361,6 +369,9 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
+	
+	@InstanceManagerDependency(required = true)
+	protected FlowInstanceAdminModule flowInstanceAdminModule;
 
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -581,7 +592,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		XMLUtils.append(doc, showViewElement, "ActivityGroups", activityGroups);
 		XMLUtils.append(doc, showViewElement, "ValidationErrors", validationErrors);
-
+		
 		return new SimpleForegroundModuleResponse(doc, getDefaultBreadcrumb());
 	}
 
@@ -700,7 +711,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			XMLUtils.append(doc, showViewElement, "ValidationErrors", validationErrors);
 		}
-
+		
 		return new FlowAdminExtensionShowView(viewFragmentTransformer.createViewFragment(doc, true), enabled);
 	}
 
@@ -1285,6 +1296,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				} else {
 					activity.setResponsibleUsers(null);
 					activity.setAssignableUsers(null);
+					activity.setActive(false);
 				}
 
 				if (importGroups == null) {
@@ -1318,6 +1330,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				} else {
 					activity.setResponsibleGroups(null);
 					activity.setAssignableGroups(null);
+					activity.setActive(false);
 				}
 
 			}
@@ -1331,7 +1344,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	}
 
-	public void checkApprovalCompletion(FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException, ModuleConfigurationException {
+	public void checkApprovalCompletion(URIParser uriParser, FlowApprovalActivityGroup modifiedActivityGroup, FlowInstance flowInstance) throws SQLException, ModuleConfigurationException {
 
 		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance);
 
@@ -1392,7 +1405,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 								flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.OTHER_EVENT, eventActivityGroupCompleted + " " + activityGroup.getName(), null, null, getFlowInstanceEventAttributes(activityGroup, round, denied));
 							}
 
-							generateSignaturesPDF(flowInstance, activityGroup, round);
+							generateSignaturesPDF(uriParser, flowInstance, activityGroup, round);
 
 						} finally {
 							activityRoundDAO.update(round);
@@ -1545,6 +1558,10 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 	}
 
 	private boolean isActivityActive(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
+		
+		if(!activity.isActive()) {
+			return false;
+		}
 
 		if (activity.getAttributeName() != null && activity.getAttributeValues() != null) {
 
@@ -2510,6 +2527,22 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		XMLUtils.appendNewElement(doc, document, "ModuleURI", req.getContextPath() + getFullAlias());
 		XMLUtils.appendNewElement(doc, document, "StaticContentURL", staticContentModule.getModuleContentURL(moduleDescriptor));
 
+	
+		Element whenToComment = doc.createElement("whenToCommentChoices");
+
+		Element commentAlways = doc.createElement("whenToComment");
+		XMLUtils.appendNewElement(doc, commentAlways, "name", whenToCommentAlways);
+		XMLUtils.appendNewElement(doc, commentAlways, "value", Comment.ALWAYS);
+
+		Element commentDuringAbort = doc.createElement("whenToComment");
+		XMLUtils.appendNewElement(doc, commentDuringAbort, "name", whenToCommentDuringDeny);
+		XMLUtils.appendNewElement(doc, commentDuringAbort, "value", Comment.WHEN_DENIED);
+		
+		whenToComment.appendChild(commentAlways);
+		whenToComment.appendChild(commentDuringAbort);
+
+		document.appendChild(whenToComment);
+		
 		doc.appendChild(document);
 
 		return doc;
@@ -2745,13 +2778,29 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return null;
 	}
+	
+	public void replaceTagsDescription(URIParser parser, FlowApprovalActivity activity, FlowInstance flowInstance) {
+
+		String description = AttributeTagUtils.replaceTags(activity.getDescription(), flowInstance.getAttributeHandler());
+		
+		TagReplacer tagReplacer = new TagReplacer();
+		
+		String link = parser.getFullContextPath()+flowInstanceAdminModule.getFullAlias() + "/overview/" + flowInstance.getFlowInstanceID();
+		
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", "<a href=\"" +link+ "\">"+link+"</a>"));
+		
+		description = AttributeTagUtils.replaceTags(tagReplacer.replace(description), flowInstance.getAttributeHandler());
+		
+		activity.setDescription(description);
+		
+	}
 
 	public File getSignaturesPDF(FlowApprovalActivityRound round) {
 
 		return new File(pdfDir + File.separator + round.getFlowInstanceID() + File.separator + "activity-round-" + round.getActivityRoundID() + "-signatures.pdf");
 	}
 
-	private void generateSignaturesPDF(FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
+	private void generateSignaturesPDF(URIParser uriParser, FlowInstance flowInstance, FlowApprovalActivityGroup activityGroup, FlowApprovalActivityRound round) throws ModuleConfigurationException {
 
 		if (pdfDir == null || tempDir == null) {
 
@@ -2791,7 +2840,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
 
 				if (activityProgress.getActivity().getDescription() != null) {
-					activityProgress.getActivity().setDescription(AttributeTagUtils.replaceTags(activityProgress.getActivity().getDescription(), flowInstance.getAttributeHandler()));
+					 
+					replaceTagsDescription(uriParser, activityProgress.getActivity(), flowInstance);
 				}
 
 				Element activityProgressElement = activityProgress.toXML(doc);
@@ -3017,7 +3067,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return userApprovalModuleAlias;
 	}
-
+	
 	public String getEventActivityOwnerChanged() {
 
 		return eventActivityOwnerChanged;
