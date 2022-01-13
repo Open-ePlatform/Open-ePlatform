@@ -26,7 +26,7 @@ public class FlowFamilyManagerComparator implements Comparator<FlowFamilyManager
 
 			return -1;
 
-		} else if(o1.getUser() != null){
+		} else if (o2.getUser() != null){
 
 			return 1;
 		}
