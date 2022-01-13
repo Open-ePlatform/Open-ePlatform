@@ -183,6 +183,10 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 		if(!bean.isDisabled()) {
 			
 			bean.setContainsPrice(false);
+		
+		}else {
+			
+			bean.setMaskFieldContent(false);
 		}
 	}
 }

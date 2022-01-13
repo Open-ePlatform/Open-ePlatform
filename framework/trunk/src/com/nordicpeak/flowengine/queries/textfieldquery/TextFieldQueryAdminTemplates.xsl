@@ -331,6 +331,21 @@
 				</div>
 			</div>
 			
+			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'maskFieldContent'" />
+						<xsl:with-param name="name" select="'maskFieldContent'" />
+						<xsl:with-param name="element" select="$element" /> 
+						<xsl:with-param name="class" select="'vertical-align-middle'" />
+					</xsl:call-template>
+						
+					<label for="maskFieldContent">
+						<xsl:value-of select="$i18n.MaskFieldContent" />
+					</label>
+				</div>
+			</div>
+			
 			<!-- 
 			<div class="floatleft full bigmarginbottom">
 				<label for="width" class="floatleft clearboth"><xsl:value-of select="$i18n.Width" /></label>

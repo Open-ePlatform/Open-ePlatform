@@ -43,7 +43,7 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 	<xsl:variable name="i18n.PlaceHolderText">Placeholder text</xsl:variable>
 	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 	
-	<xsl:variable name="i18n.DeleteTextField.Confirm">Ta bort textfältet</xsl:variable>
+	
 	<xsl:variable name="i18n.DeleteTextField">Ta bort textfältet</xsl:variable>	
 	
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
@@ -69,4 +69,6 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 
 	<xsl:variable name="i18n.ContainsPrice">Detta fält innehåller en kostnad</xsl:variable>
 
+	<xsl:variable name="i18n.MaskFieldContent">Maskera fältets innehåll</xsl:variable>
+	
 </xsl:stylesheet>

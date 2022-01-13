@@ -213,4 +213,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_fields` ADD COLUMN `maskFieldContent` TINYINT(1) UNSIGNED NOT NULL AFTER `searchable`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>

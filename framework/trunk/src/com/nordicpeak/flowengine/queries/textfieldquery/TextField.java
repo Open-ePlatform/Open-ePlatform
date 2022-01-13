@@ -86,6 +86,16 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	private Integer sortIndex;
 
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean containsPrice;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean maskFieldContent;	
+	
+	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String formatValidator;
@@ -130,11 +140,6 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	@DAOManaged
 	@XMLElement
 	private String endpointField;
-
-	@DAOManaged
-	@WebPopulate
-	@XMLElement
-	private boolean containsPrice;
 
 	public TextField() {}
 
@@ -297,10 +302,16 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 		defaultValue = XMLValidationUtils.validateParameter("defaultValue", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
 		disabled = xmlParser.getPrimitiveBoolean("disabled");
+		
+		searchable = xmlParser.getPrimitiveBoolean("searchable");
 
 		if (disabled) {
 
 			containsPrice = xmlParser.getPrimitiveBoolean("containsPrice");
+			
+		} else {
+			
+			maskFieldContent = xmlParser.getPrimitiveBoolean("maskFieldContent");
 		}
 
 		if (attributeName != null) {
@@ -384,6 +395,16 @@ public class TextField extends GeneratedElementable implements Serializable, XML
 	public void setContainsPrice(boolean containsPrice) {
 
 		this.containsPrice = containsPrice;
+	}
+
+	public boolean isMaskFieldContent() {
+
+		return maskFieldContent;
+	}
+
+	public void setMaskFieldContent(boolean maskFieldContent) {
+
+		this.maskFieldContent = maskFieldContent;
 	}
 
 }

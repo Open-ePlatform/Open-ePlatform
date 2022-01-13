@@ -263,9 +263,12 @@
 				<xsl:with-param name="requestparameters" select="../../../../requestparameters"/>
 				<xsl:with-param name="size" select="$size"/>
 				<xsl:with-param name="class" select="$class"/>
-				<xsl:with-param name="placeholder" select="placeholderText"/>
+				<xsl:with-param name="placeholder"><xsl:if test="maskFieldContent = 'false'"><xsl:value-of select="placeholderText"/></xsl:if></xsl:with-param>
 				<xsl:with-param name="type">
 					<xsl:choose>
+						<xsl:when test="maskFieldContent = 'true'">
+							<xsl:text>password</xsl:text>
+						</xsl:when>					
 						<xsl:when test="formatValidator = 'se.unlogic.standardutils.populators.DatePopulator'">
 							<xsl:text>date</xsl:text>
 						</xsl:when>
@@ -284,6 +287,7 @@
 					<xsl:value-of select="'_error'" />
 				</xsl:with-param>
 				<xsl:with-param name="aria-required"><xsl:if test="required = 'true'">true</xsl:if></xsl:with-param>
+				<xsl:with-param name="autocomplete"><xsl:if test="maskFieldContent = 'true'">new-password</xsl:if></xsl:with-param>
 			</xsl:call-template>
 			
 			<xsl:apply-templates select="../../../../ValidationErrors/validationError[fieldName = $textFieldID]">
@@ -317,7 +321,16 @@
 			
 			<xsl:choose>
 				<xsl:when test="$value">
-					<xsl:value-of select="$value"/>
+				
+					<xsl:choose>
+						<xsl:when test="maskFieldContent = 'true'">
+							<xsl:text>********</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$value"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>-</xsl:text>

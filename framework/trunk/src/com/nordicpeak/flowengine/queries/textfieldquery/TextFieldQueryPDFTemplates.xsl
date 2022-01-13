@@ -68,7 +68,14 @@
 			<br/>
 			<xsl:choose>
 				<xsl:when test="$value">
-					<xsl:value-of select="$value"/>
+					<xsl:choose>
+						<xsl:when test="maskFieldContent = 'true'">
+							<xsl:text>********</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$value"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>-</xsl:text>

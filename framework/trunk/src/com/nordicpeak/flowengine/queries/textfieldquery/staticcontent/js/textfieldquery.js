@@ -19,7 +19,7 @@ function initTextFieldQuery(queryID) {
 	
 	if ($query.hasClass("enableAjaxPosting")) {
 		
-		bindTextFieldChangeEvent($query.find("input[type='text']"), queryID);
+		bindTextFieldChangeEvent($query.find("input[type='text'], input[type='date'], input[type='password']"), queryID);
 		
 	}
 	
@@ -141,7 +141,7 @@ function runTextFieldEvaluators($this, queryID) {
 	
 	var $inputWrapper = $this.parent().parent();
 	
-	$inputWrapper.find("input[type='text']").each(function () {
+	$inputWrapper.find("input[type='text'], input[type='date'], input[type='password']").each(function () {
 		
 		var $textField = $(this);
 		
