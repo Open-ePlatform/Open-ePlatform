@@ -137,7 +137,7 @@
 	<Script version="10">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `file_upload_queries` ADD COLUMN `maxQuerySize` INTEGER UNSIGNED AFTER `maxFileSize`;
+				ALTER TABLE `file_upload_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
 			]]>
 		</Query>
 	</Script>
@@ -145,7 +145,7 @@
 	<Script version="11">
 		<Query>
 			<![CDATA[
-				ALTER TABLE `file_upload_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
+				ALTER TABLE `file_upload_queries` ADD COLUMN `maxQuerySize` INTEGER UNSIGNED AFTER `maxFileSize`;
 			]]>
 		</Query>
 	</Script>
