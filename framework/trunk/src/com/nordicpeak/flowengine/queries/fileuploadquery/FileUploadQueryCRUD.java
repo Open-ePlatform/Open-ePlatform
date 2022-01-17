@@ -60,12 +60,27 @@ public class FileUploadQueryCRUD extends BaseQueryCRUD<FileUploadQuery, FileUplo
 			}
 		}
 		
+		if(query.getMaxQuerySize() != null) {
+			
+			int maxFileSize = query.getMaxFileSize() != null ? query.getMaxFileSize() : callback.getMaxAllowedFileSize();
+			
+			if(maxFileSize > query.getMaxQuerySize()) {
+				
+				validationErrors.add(new ValidationError("MaxFileSizeBiggerThanQuerySize"));
+			}
+			
+		}
+		
 		if(!validationErrors.isEmpty()) {
 			throw new ValidationException(validationErrors);
 		}
 
 		if(query.getMaxFileSize() != null) {
 			query.setMaxFileSize(query.getMaxFileSize() * BinarySizes.MegaByte);
+		}
+		
+		if(query.getMaxQuerySize() != null) {
+			query.setMaxQuerySize(query.getMaxQuerySize() * BinarySizes.MegaByte);
 		}
 		
 		List<String> allowedFileExtentions = query.getAllowedFileExtensions();
@@ -94,6 +109,10 @@ public class FileUploadQueryCRUD extends BaseQueryCRUD<FileUploadQuery, FileUplo
 		
 		if(bean.getMaxFileSize() != null) {
 			XMLUtils.appendNewElement(doc, updateTypeElement, "MaxFileSizeInMB", bean.getMaxFileSize() / BinarySizes.MegaByte);
+		}
+		
+		if(bean.getMaxQuerySize() != null) {
+			XMLUtils.appendNewElement(doc, updateTypeElement, "MaxQuerySizeInMB", bean.getMaxQuerySize() / BinarySizes.MegaByte);
 		}
 
 		if(bean.getMaxFileNameLength() != null) {

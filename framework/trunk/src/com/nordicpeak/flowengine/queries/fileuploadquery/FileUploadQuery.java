@@ -56,6 +56,11 @@ public class FileUploadQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
+	private Integer maxQuerySize;
+	
+	@DAOManaged
+	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
+	@XMLElement
 	protected Integer maxFileNameLength = 255;
 	
 	@DAOManaged
@@ -191,6 +196,18 @@ public class FileUploadQuery extends BaseQuery {
 		this.maxFileSize = maxFileSize;
 	}
 	
+	
+	public Integer getMaxQuerySize() {
+	
+		return maxQuerySize;
+	}
+
+	
+	public void setMaxQuerySize(Integer maxQuerySize) {
+	
+		this.maxQuerySize = maxQuerySize;
+	}
+
 	public Integer getMaxFileNameLength() {
 		
 		return maxFileNameLength;
@@ -214,6 +231,10 @@ public class FileUploadQuery extends BaseQuery {
 		
 		if (maxFileSize != null) {
 			XMLUtils.appendNewElement(doc, queryElement, "FormatedMaxSize", BinarySizeFormater.getFormatedSize(maxFileSize));
+		}
+		
+		if(maxQuerySize != null) {
+			XMLUtils.appendNewElement(doc, queryElement, "FormatedMaxQuerySize", BinarySizeFormater.getFormatedSize(maxQuerySize));
 		}
 		
 		if (maxFileNameLength != null) {
@@ -297,6 +318,7 @@ public class FileUploadQuery extends BaseQuery {
 		
 		maxFileCount = XMLValidationUtils.validateParameter("maxFileCount", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxFileSize = XMLValidationUtils.validateParameter("maxFileSize", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
+		maxQuerySize = XMLValidationUtils.validateParameter("maxQuerySize", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		maxFileNameLength = XMLValidationUtils.validateParameter("maxFileNameLength", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		
 		allowedFileExtensions = xmlParser.getStrings("allowedFileExtensions/value");

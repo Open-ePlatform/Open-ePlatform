@@ -16,6 +16,7 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	<xsl:variable name="i18n.AllowedFileExtensions">Tillåtna filtyper (ange en filtyp per rad)</xsl:variable>
 	<xsl:variable name="i18n.MaxFileCount">Antal filer som får bifogas</xsl:variable>
 	<xsl:variable name="i18n.MaxFileSize">Maximal filstorlek som får bifogas i MB</xsl:variable>
+	<xsl:variable name="i18n.MaxQuerySize">Maximal storlek för samtliga filer som får bifogas i den här frågan i MB</xsl:variable>
 	<xsl:variable name="i18n.MaxAllowedFileSize.Part1">som standard</xsl:variable>
 	<xsl:variable name="i18n.MaxAllowedFileSize.Part2">MB</xsl:variable>
 	<xsl:variable name="i18n.maxFileCount">antal filer som får bifogas</xsl:variable>
@@ -41,4 +42,8 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	<xsl:variable name="i18n.AttachmentNameCustomPrefix">Filnamnsprefix</xsl:variable>
 
 	<xsl:variable name="i18n.SelectFilesButtonText">Anpassad text på uppladdningsknapp (max 30 tecken)</xsl:variable>
+	
+	<xsl:variable name="i18n.MaxFileSizeBiggerThanQuerySize">Maximal filstorlek får inte vara större än maximal storlek på frågan</xsl:variable>
+	
+	
 </xsl:stylesheet>

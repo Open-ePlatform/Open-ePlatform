@@ -99,6 +99,21 @@
 					</xsl:call-template>
 				</div>
 			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="maxFileSize" class="floatleft clearboth">
+					<xsl:value-of select="$i18n.MaxQuerySize" />
+				</label>
+				<div class="floatleft full">
+					<xsl:call-template name="createTextField">
+						<xsl:with-param name="id" select="'maxQuerySize'"/>
+						<xsl:with-param name="name" select="'maxQuerySize'"/>
+						<xsl:with-param name="title" select="$i18n.MaxQuerySize"/>
+						<xsl:with-param name="size" select="'30'"/>
+						<xsl:with-param name="value" select="MaxQuerySizeInMB" />
+					</xsl:call-template>
+				</div>
+			</div>
 
 			<div class="floatleft full bigmarginbottom">
 				<label for="maxFileNameLength" class="floatleft clearboth">
@@ -318,6 +333,14 @@
 			<xsl:value-of select="$i18n.FileUploadQueryNotFound" />
 		</p>
 		
+	</xsl:template>
+
+	<xsl:template match="validationError[messageKey='MaxFileSizeBiggerThanQuerySize']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.MaxFileSizeBiggerThanQuerySize"/>
+		</p>
+			
 	</xsl:template>
 
 	<xsl:template match="fieldName">

@@ -32,5 +32,8 @@
 	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part2"> har ett filnamn med </xsl:variable>
 	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part3"> tecken vilket överskrider det maximalt tillåtna antalet tecken som är </xsl:variable>
 	<xsl:variable name="i18n.FileNameLengthLimitExceeded.part4">.</xsl:variable>
+	<xsl:variable name="i18n.MaximumQuerySize">Total maximal storlek för filer i den här frågan</xsl:variable>
+	<xsl:variable name="i18n.QuerySizeLimitExceeded.part1">Maximal storlek för den här frågan har överskridits. Du får maximalt ladda upp </xsl:variable>
+	<xsl:variable name="i18n.QuerySizeLimitExceeded.part2"> i den här frågan.</xsl:variable>
 
 </xsl:stylesheet>

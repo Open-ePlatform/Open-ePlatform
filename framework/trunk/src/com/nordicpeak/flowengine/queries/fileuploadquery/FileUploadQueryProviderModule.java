@@ -520,6 +520,8 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 
 		MultipartRequest multipartReq = (MultipartRequest) req;
 
+		int querySize = 0;
+		
 		//Check if any existing files should be deleted
 		if (queryInstance.getFiles() != null) {
 
@@ -535,7 +537,12 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					iterator.remove();
 
 					deleteTemporaryFile(fileDescriptor, queryInstance.getQueryInstanceDescriptor(), queryInstance.getInstanceManagerID());
+				
+				} else {
+					
+					querySize += fileDescriptor.getSize();
 				}
+				
 			}
 		}
 
@@ -606,6 +613,19 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					validationErrors.add(new FileNameLengthLimitExceededValidationError(filename, filename.length(), queryInstance.getQuery().getMaxFileNameLength()));
 
 					continue;
+				}
+				
+				if(queryInstance.getQuery().getMaxQuerySize() != null) {
+					
+					querySize += fileItem.getSize();
+					
+					if(querySize > queryInstance.getQuery().getMaxQuerySize()) {
+						
+						validationErrors.add(new ValidationError("QuerySizeLimitExceeded", BinarySizeFormater.getFormatedSize(queryInstance.getQuery().getMaxQuerySize())));
+						
+						break;
+					}
+					
 				}
 				
 				//Create file descriptor
