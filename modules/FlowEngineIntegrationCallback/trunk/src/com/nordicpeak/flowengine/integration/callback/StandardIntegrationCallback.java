@@ -499,7 +499,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				apiAccessCheck(flowInstance, callback.getUser());
 
-				log.info("User " + callback.getUser() + " requested add message for flow instance " + flowInstance + " with delived flag set to " + delivered + " and log message se to " + logMessage);
+				log.info("User " + callback.getUser() + " requested confirm delivery for flow instance " + flowInstance + " with delived flag set to " + delivered + " and log message se to " + logMessage);
 
 				if (delivered) {
 
