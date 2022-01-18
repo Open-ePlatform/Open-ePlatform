@@ -472,7 +472,7 @@
 								
 								<label for="comment">
 								
-									<xsl:if test="ActivityProgress/Activity/requireComment = 'true'">
+									<xsl:if test="ActivityProgress/Activity/requireComment = 'true' and ActivityProgress/Activity/whenToComment = 'ALWAYS'">
 										<xsl:attribute name="class">required</xsl:attribute>
 									</xsl:if>
 									
