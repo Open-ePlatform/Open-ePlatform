@@ -1207,7 +1207,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activityGroup.populate(xmlParser);
 
 		activityGroup.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
-
+		activityGroup.setSortIndex(1 + getApprovalGroupMaxSortIndex(flow.getFlowFamily()));
+		
 		validateStatusUsersAndGroups(activityGroup, flow.getStatuses(), req);
 
 		//Clear activity IDs
@@ -1244,11 +1245,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			errors.add(new StatusNotFound(completeStatus));
 		}
 
-		String denyStatus = activityGroup.getDenyStatus();
-		if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(denyStatus))) {
-			errors.add(new StatusNotFound(denyStatus));
+		if(activityGroup.isUseApproveDeny()) {
+			
+			String denyStatus = activityGroup.getDenyStatus();
+			if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(denyStatus))) {
+				errors.add(new StatusNotFound(denyStatus));
+			}
 		}
-
+		
 		String startStatus = activityGroup.getStartStatus();
 		if (CollectionUtils.isEmpty(statusList) || statusList.stream().noneMatch(e -> e.getName().equals(startStatus))) {
 			errors.add(new StatusNotFound(startStatus));

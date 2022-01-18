@@ -534,7 +534,6 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		List<ValidationError> errors = new ArrayList<>();
 		this.name = XMLValidationUtils.validateParameter("name", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);		
 		this.activityCount = xmlParser.getInt("activityCount");
-		this.sortIndex = xmlParser.getInt("sortIndex");
 		this.startStatus = XMLValidationUtils.validateParameter("startStatus", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		this.completeStatus = XMLValidationUtils.validateParameter("completeStatus", xmlParser, true, 1, 255, StringPopulator.getPopulator(), errors);
 		this.denyStatus = XMLValidationUtils.validateParameter("denyStatus", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -549,7 +548,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		this.sendActivityGroupStartedEmail = xmlParser.getPrimitiveBoolean("sendActivityGroupStartedEmail");
 		this.activityGroupStartedEmailMessage = XMLValidationUtils.validateParameter("activityGroupStartedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
 		
-		this.reminderAfterXDays = xmlParser.getInt("reminderAfterXDays");
+		this.reminderAfterXDays = xmlParser.getInteger("reminderAfterXDays");
 		this.sendActivityGroupCompletedEmail = xmlParser.getPrimitiveBoolean("sendActivityGroupCompletedEmail");
 		this.activityGroupCompletedEmailAttachPDF = xmlParser.getPrimitiveBoolean("activityGroupCompletedEmailAttachPDF");
 		this.activityGroupCompletedEmailAttachFlowInstancePDF = xmlParser.getPrimitiveBoolean("activityGroupCompletedEmailAttachFlowInstancePDF");
@@ -557,8 +556,6 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		this.activityGroupStartedEmailMessage = XMLValidationUtils.validateParameter("activityGroupStartedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);		
 		this.activityGroupCompletedEmailSubject = XMLValidationUtils.validateParameter("activityGroupCompletedEmailSubject", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.activityGroupCompletedEmailMessage = XMLValidationUtils.validateParameter("activityGroupCompletedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		
-		
 		this.activityGroupCompletedEmailAddresses = XMLValidationUtils.validateParameters("ActivityGroupCompletedEmailAddresses/address", xmlParser, false, 1, 255, EmailPopulator.getPopulator(), errors);
 		this.suppressChangeStatusManagerNotifications = xmlParser.getPrimitiveBoolean("suppressChangeStatusManagerNotifications");
 		this.activities = XMLPopulationUtils.populateBeans(xmlParser, "Activities/Activity", FlowApprovalActivity.class, errors);
