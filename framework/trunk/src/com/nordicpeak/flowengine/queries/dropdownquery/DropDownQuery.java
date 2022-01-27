@@ -235,11 +235,5 @@ public class DropDownQuery extends FixedAlternativesBaseQuery implements Payment
 		
 		return Collections.emptyList();
 	}
-
-	@Override
-	public boolean isExportAlternativeID() {
-
-		return false;
-	}
 	
 }

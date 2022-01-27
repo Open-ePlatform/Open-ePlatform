@@ -217,10 +217,4 @@ public class RadioButtonQueryInstance extends BaseQueryInstance implements Fixed
 		return searchValues;
 	}
 
-	@Override
-	public boolean exportAlternativeID() {
-
-		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
-	}
-
 }

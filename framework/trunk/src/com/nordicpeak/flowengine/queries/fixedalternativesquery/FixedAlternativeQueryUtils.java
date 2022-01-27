@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.interfaces.ExportAlternativeID;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.interfaces.MutableAlternative;
 
@@ -71,7 +72,7 @@ public class FixedAlternativeQueryUtils {
 			
 			for (ImmutableAlternative alternative : queryInstance.getAlternatives()) {
 				
-				if(queryInstance.exportAlternativeID()) {
+				if(queryInstance.getQuery() instanceof ExportAlternativeID &&  ((ExportAlternativeID)queryInstance.getQuery()).isExportAlternativeID()) {
 					Element alternativeElement = doc.createElement("Alternative");
 					XMLUtils.appendNewElement(doc, alternativeElement, "ID", alternative.getAlternativeID());
 					if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {

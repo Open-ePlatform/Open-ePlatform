@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 
 import se.unlogic.standardutils.string.StringUtils;
 
+import com.nordicpeak.flowengine.interfaces.ExportAlternativeID;
 import com.nordicpeak.flowengine.interfaces.ImmutableAlternative;
 import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 
@@ -59,7 +60,8 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 
 		if (this.getAlternatives() != null) {
 
-			if (isExportAlternativeID()) {
+			
+			if (this instanceof ExportAlternativeID &&  ((ExportAlternativeID)this).isExportAlternativeID()) {
 				
 				Element complexValueIDTypeElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 				complexValueIDTypeElement.setAttribute("name", "Alternative");
@@ -77,8 +79,8 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 				alternativeIDElement.setAttribute("name", "ID");
 				alternativeIDElement.setAttribute("type", getXSDTypeName() + "AlternativeID");
 
-				alternativeIDElement.setAttribute("minOccurs", Integer.toString(minOccurs));
-				alternativeIDElement.setAttribute("maxOccurs", Integer.toString(maxOccurs));
+				alternativeIDElement.setAttribute("minOccurs", "0");
+				alternativeIDElement.setAttribute("maxOccurs", "1");
 
 				sequenceAlternativeElement.appendChild(alternativeIDElement);
 
@@ -86,8 +88,8 @@ public abstract class FixedAlternativesBaseQuery extends BaseQuery implements Fi
 				alternativeValueElement.setAttribute("name", "Value");
 				alternativeValueElement.setAttribute("type", getXSDTypeName() + "AlternativeValue");
 
-				alternativeValueElement.setAttribute("minOccurs", Integer.toString(minOccurs));
-				alternativeValueElement.setAttribute("maxOccurs", Integer.toString(maxOccurs));
+				alternativeValueElement.setAttribute("minOccurs", "0");
+				alternativeValueElement.setAttribute("maxOccurs", "1");
 
 				sequenceAlternativeElement.appendChild(alternativeValueElement);
 
