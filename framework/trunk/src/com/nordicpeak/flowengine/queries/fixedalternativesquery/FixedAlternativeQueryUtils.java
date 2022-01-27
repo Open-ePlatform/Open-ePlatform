@@ -71,14 +71,29 @@ public class FixedAlternativeQueryUtils {
 			
 			for (ImmutableAlternative alternative : queryInstance.getAlternatives()) {
 				
-				if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {
-					
-					XMLUtils.appendNewElement(doc, element, "Value", alternative.getExportXMLValue());
+				if(queryInstance.exportAlternativeID()) {
+					Element alternativeElement = doc.createElement("Alternative");
+					XMLUtils.appendNewElement(doc, alternativeElement, "ID", alternative.getAlternativeID());
+					if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {
+						XMLUtils.appendNewElement(doc, alternativeElement, "Value", alternative.getExportXMLValue());
+						
+					} else {
+						XMLUtils.appendNewElement(doc, alternativeElement, "Value", alternative.getName());
+					}
+					element.appendChild(alternativeElement);
 					
 				} else {
-					
-					XMLUtils.appendNewElement(doc, element, "Value", alternative.getName());
+					if (!StringUtils.isEmpty(alternative.getExportXMLValue())) {
+						
+						XMLUtils.appendNewElement(doc, element, "Value", alternative.getExportXMLValue());
+						
+					} else {
+						
+						XMLUtils.appendNewElement(doc, element, "Value", alternative.getName());
+					}
 				}
+				
+				
 			}
 		}
 		

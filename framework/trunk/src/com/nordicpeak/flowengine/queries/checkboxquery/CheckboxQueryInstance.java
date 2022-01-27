@@ -357,4 +357,10 @@ public class CheckboxQueryInstance extends BaseQueryInstance implements FixedAlt
 		return searchValues;
 	}
 
+	@Override
+	public boolean exportAlternativeID() {
+
+		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
+	}
+
 }

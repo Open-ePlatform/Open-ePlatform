@@ -202,4 +202,11 @@ public class DropDownQueryInstance extends BaseQueryInstance implements FixedAlt
 		
 		return null;
 	}
+
+
+	@Override
+	public boolean exportAlternativeID() {
+
+		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
+	}
 }

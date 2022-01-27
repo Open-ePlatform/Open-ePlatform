@@ -296,5 +296,11 @@ public class RadioButtonQuery extends FixedAlternativesBaseQuery implements Paym
 
 		return Collections.emptyList();
 	}
+	
+	@Override
+	public boolean isExportAlternativeID() {
+
+		return false;
+	}
 
 }

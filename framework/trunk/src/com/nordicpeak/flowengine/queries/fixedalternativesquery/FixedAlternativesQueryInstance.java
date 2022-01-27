@@ -15,4 +15,6 @@ public interface FixedAlternativesQueryInstance extends QueryInstance{
 
 	public String getFreeTextAlternativeValue();
 	
+	public boolean exportAlternativeID();
+	
 }

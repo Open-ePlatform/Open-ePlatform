@@ -14,4 +14,6 @@ public interface FixedAlternativesQuery extends Query{
 	public String getFreeTextAlternative();
 
 	public Map<Integer,Integer> getAlternativeConversionMap();
+	
+	public boolean isExportAlternativeID();
 }
