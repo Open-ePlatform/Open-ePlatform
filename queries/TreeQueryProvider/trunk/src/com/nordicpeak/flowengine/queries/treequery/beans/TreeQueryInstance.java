@@ -244,4 +244,10 @@ public class TreeQueryInstance extends BaseQueryInstance implements StringValueQ
 		return null;
 	}
 
+	@Override
+	public boolean exportAlternativeID() {
+
+		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
+	}
+
 }

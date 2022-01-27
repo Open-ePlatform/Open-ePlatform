@@ -663,5 +663,11 @@ public class ChildQuery extends BaseQuery implements FixedAlternativesQuery, Mul
 
 		this.communicationErrorDescription = communicationErrorDescription;
 	}
+	
+	@Override
+	public boolean isExportAlternativeID() {
+
+		return false;
+	}
 
 }

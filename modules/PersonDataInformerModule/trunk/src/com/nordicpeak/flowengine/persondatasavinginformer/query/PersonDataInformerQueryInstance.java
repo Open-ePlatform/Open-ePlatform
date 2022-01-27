@@ -130,4 +130,10 @@ public class PersonDataInformerQueryInstance extends BaseQueryInstance implement
 		
 		return element;
 	}
+
+	@Override
+	public boolean exportAlternativeID() {
+
+		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
+	}
 }

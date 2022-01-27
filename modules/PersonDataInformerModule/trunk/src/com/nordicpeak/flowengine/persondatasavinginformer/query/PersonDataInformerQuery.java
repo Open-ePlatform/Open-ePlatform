@@ -140,5 +140,11 @@ public class PersonDataInformerQuery extends FixedAlternativesBaseQuery implemen
 		}
 		
 	}
+	
+	@Override
+	public boolean isExportAlternativeID() {
+
+		return false;
+	}
 
 }

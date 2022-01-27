@@ -258,5 +258,11 @@ public class MultiTreeQuery extends BaseQuery implements FixedAlternativesQuery 
 
 		this.previewMode = previewMode;
 	}
+	
+	@Override
+	public boolean isExportAlternativeID() {
+
+		return false;
+	}
 
 }
