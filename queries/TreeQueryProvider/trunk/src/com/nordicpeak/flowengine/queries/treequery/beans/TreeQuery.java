@@ -232,11 +232,5 @@ public class TreeQuery extends BaseQuery implements FixedAlternativesQuery {
 	
 		this.attributeName = attributeName;
 	}
-	
-	@Override
-	public boolean isExportAlternativeID() {
-
-		return false;
-	}
 
 }

@@ -627,10 +627,4 @@ public class ChildQueryInstance extends BaseQueryInstance implements StringValue
 		this.addressUUID = addressUUID;
 	}
 
-	@Override
-	public boolean exportAlternativeID() {
-
-		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
-	}
-
 }

@@ -316,10 +316,4 @@ public class MultiTreeQueryInstance extends BaseQueryInstance implements StringV
 		return nodeName;
 	}
 
-	@Override
-	public boolean exportAlternativeID() {
-
-		return getQuery() == null ? Boolean.FALSE : getQuery().isExportAlternativeID();
-	}
-
 }
