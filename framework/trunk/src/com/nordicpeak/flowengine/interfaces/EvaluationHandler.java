@@ -17,9 +17,9 @@ public interface EvaluationHandler {
 
 	public List<EvaluatorTypeDescriptor> getAvailableEvaluatorTypes(Class<? extends Query> queryClass);
 
-	public boolean addEvaluationProvider(EvaluationProvider queryProvider);
+	public boolean addEvaluationProvider(EvaluationProvider provider);
 
-	public boolean removeEvaluationProvider(EvaluatorTypeDescriptor queryType);
+	public boolean removeEvaluationProvider(EvaluatorTypeDescriptor descriptor);
 
 	public Evaluator createEvaluator(MutableEvaluatorDescriptor descriptor, TransactionHandler transactionHandler) throws EvaluationProviderNotFoundException, EvaluationProviderErrorException;
 	
