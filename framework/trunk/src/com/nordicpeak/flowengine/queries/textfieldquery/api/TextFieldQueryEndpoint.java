@@ -22,11 +22,12 @@ import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
+import com.nordicpeak.flowengine.interfaces.APISource;
 import com.nordicpeak.flowengine.queries.textfieldquery.TextFieldQuery;
 
 @Table(name = "text_field_query_endpoints")
 @XMLElement(name = "Endpoint")
-public class TextFieldQueryEndpoint extends GeneratedElementable implements Serializable {
+public class TextFieldQueryEndpoint extends GeneratedElementable implements Serializable, APISource {
 
 	private static final long serialVersionUID = -8348666528294482053L;
 

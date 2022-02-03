@@ -21,6 +21,7 @@ import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
@@ -56,6 +57,9 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.interfaces.APISource;
+import com.nordicpeak.flowengine.interfaces.APISourceHandler;
+import com.nordicpeak.flowengine.interfaces.APISourceProvider;
 import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
 import com.nordicpeak.flowengine.interfaces.Query;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
@@ -63,13 +67,16 @@ import com.nordicpeak.flowengine.queries.textfieldquery.TextFieldQuery;
 import com.nordicpeak.flowengine.utils.CurrentUserAttributeTagUtils;
 import com.nordicpeak.flowengine.utils.UserAttributeTagUtils;
 
-public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule implements CRUDCallback<User> {
+public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule implements CRUDCallback<User>, APISourceProvider{
 
 	public static final AnnotatedBeanTagSourceFactory<User> USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$user.");
 	
 	public static final AnnotatedBeanTagSourceFactory<User> CURRENT_USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$currentUser.");
 
 	public static final User EMPTY_USER = new SimpleUser();
+
+	@XSLVariable(prefix = "java.")
+	private String apiSourceTypeDescription;
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection timeout", description = "The maximum time in seconds to wait for a connection")
@@ -90,11 +97,14 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 	private AnnotatedDAO<TextFieldQueryEndpoint> endpointDAO;
 	private AnnotatedDAO<TextFieldQuery> queryDAO;
 	private AnnotatedDAOWrapper<QueryDescriptor, Integer> queryDescriptorDAOWrapper;
+	AdvancedAnnotatedDAOWrapper<TextFieldQueryEndpoint, Integer> endpointDAOWrapper;
 
 	private QueryParameterFactory<TextFieldQuery, Integer> queryIDParamFactory;
 	private QueryParameterFactory<TextFieldQueryEndpoint, Integer> endpointIDParamFactory;
 
 	private TextFieldQueryEndpointCRUD endpointCRUD;
+	
+	private APISourceHandler apiSourceHandler;
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -118,7 +128,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		queryIDParamFactory = queryDAO.getParamFactory("queryID", Integer.class);
 		endpointIDParamFactory = endpointDAO.getParamFactory("endpointID", Integer.class);
 
-		AdvancedAnnotatedDAOWrapper<TextFieldQueryEndpoint, Integer> endpointDAOWrapper = endpointDAO.getAdvancedWrapper(Integer.class);
+		endpointDAOWrapper = endpointDAO.getAdvancedWrapper(Integer.class);
 		endpointDAOWrapper.getGetAllQuery().addRelations(TextFieldQueryEndpoint.QUERIES_RELATION);
 		endpointDAOWrapper.getGetAllQuery().disableAutoRelations(true);
 		endpointDAOWrapper.getGetQuery().addRelations(TextFieldQueryEndpoint.QUERIES_RELATION, TextFieldQueryEndpoint.FIELDS_RELATION);
@@ -141,6 +151,21 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		super.unload();
 	}
 
+	@InstanceManagerDependency
+	public void setAPISourceHandler(APISourceHandler apiSourceHandler) throws SQLException {
+		
+		if (apiSourceHandler != null) {
+			
+			apiSourceHandler.addAPISourceProvider(this);
+			
+		} else if (this.apiSourceHandler != null) {
+			
+			this.apiSourceHandler.removeAPISourceProvider(this);
+		}
+		
+		this.apiSourceHandler = apiSourceHandler;
+	}	
+	
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
@@ -367,6 +392,44 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		query.addParameter(endpointIDParamFactory.getParameter(endpointID));
 
 		return endpointDAO.get(query);
+	}
+
+	@Override
+	public List<? extends APISource> getAPISources() throws Exception {
+
+		return endpointDAOWrapper.getAll();
+	}
+	
+	@Override
+	public String getTypeDescription() {
+
+		return apiSourceTypeDescription;
+	}
+
+	@Override
+	public String getBaseShowURL() {
+
+		return this.getFullAlias() + "/show/";
+	}
+	
+	@Override
+	public String getBaseUpdateURL() {
+
+		return this.getFullAlias() + "/update/";
+	}
+
+	@Override
+	public String getBaseDeleteURL() {
+
+		return this.getFullAlias() + "/delete/";
+	}
+
+	@Override
+	public boolean isInUse(APISource apiSource) throws Exception {
+
+		TextFieldQueryEndpoint endpoint = (TextFieldQueryEndpoint)apiSource;
+		
+		return endpoint.getQueries() != null;
 	}
 	
 }
