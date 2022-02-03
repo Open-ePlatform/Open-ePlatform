@@ -368,37 +368,60 @@
 			</td>
 			<td>
 				<xsl:choose>
-					<xsl:when test="Activity/ResponsibleUsers or Activity/ResponsibleGroups">
+					<xsl:when test="Activity/ResponsibleUsers or Activity/ResponsibleGroups or ResponsibleAttributedGroups or Activity/ResponsibleFallbackUsers">
 						
 						<xsl:choose>
 							<xsl:when test="Activity/ResponsibleUserAttributeNames and not(ResponsibleAttributedUsers)">
 								
-								<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser/user" mode="inline-list"/>
+								<xsl:apply-templates select="Activity/ResponsibleUsers/user" mode="inline-list"/>
 								
-								<xsl:if test="Activity/ResponsibleUsers and Activity/ResponsibleGroups">
+								<xsl:if test="Activity/ResponsibleUsers and (Activity/ResponsibleGroups or ResponsibleAttributedGroups)">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
 							</xsl:when>
 							<xsl:otherwise>
 								
-								<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false']/user" mode="inline-list" />
+								<xsl:apply-templates select="Activity/ResponsibleUsers/user" mode="inline-list" />
 								
-								<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false'] and ResponsibleAttributedUsers">
+								<xsl:if test="Activity/ResponsibleUsers/user and ResponsibleAttributedUsers">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
 								<xsl:apply-templates select="ResponsibleAttributedUsers/user" mode="inline-list" />
 								
-								<xsl:if test="(Activity/ResponsibleUsers/ResponsibleUser[fallback = 'false'] or ResponsibleAttributedUsers) and Activity/ResponsibleGroups">
+								<xsl:if test="(Activity/ResponsibleUsers/user or ResponsibleAttributedUsers) and (Activity/ResponsibleGroups or ResponsibleAttributedGroups)">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
 								
 							</xsl:otherwise>
 						</xsl:choose>
 						
-						<xsl:apply-templates select="Activity/ResponsibleGroups/group" mode="inline-list"/>
-					
+						<xsl:if test="Activity/ResponsibleGroups">
+							<xsl:apply-templates select="Activity/ResponsibleGroups/group" mode="inline-list"/>
+							<xsl:if test="ResponsibleAttributedGroups or Activity/ResponsibleFallbackUsers">
+								<xsl:text>, </xsl:text>
+							</xsl:if>
+							
+						</xsl:if>
+						<xsl:choose>
+							<xsl:when test="ResponsibleAttributedGroups">
+								<xsl:apply-templates select="ResponsibleAttributedGroups/group" mode="inline-list"/>
+								
+							</xsl:when>
+							<xsl:when test="not(ResponsibleAttributedGroups) and not(ResponsibleAttributedUsers) and Activity/ResponsibleFallbackUsers">
+								<xsl:apply-templates select="Activity/ResponsibleFallbackUsers/user" mode="inline-list" />
+								
+								<xsl:if test="ResponsibleAttributedGroups">
+									<xsl:text>, </xsl:text>
+								</xsl:if>
+								
+								<xsl:apply-templates select="ResponsibleAttributedGroups/group" mode="inline-list" />
+								
+							</xsl:when>
+							
+						</xsl:choose>
+						
 					</xsl:when>
 					<xsl:otherwise>
 						

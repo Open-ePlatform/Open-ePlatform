@@ -506,6 +506,89 @@
 				UPDATE `flowapproval_activities` SET `whenToComment`='ALWAYS' where `requireComment`='1';				
 			]]>
 		</Query>
-	</Script>	
+	</Script>
 	
+	<Script version="26">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_groups` ADD COLUMN `fallback` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `groupID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_resp_group_attribute` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`attributeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `attributeName`),
+					CONSTRAINT `FK_flowapproval_activity_resp_group_attribute_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress_resp_attr_groups` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityProgressID`, `groupID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_resp_attr_groups_1` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	<Script version="27">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_groups` DROP COLUMN `fallback`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="28">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_group_fallback_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_group_fallback_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	<Script version="29">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_group_fallback_users` RENAME TO flowapproval_activity_fallback_users;
+			]]>
+		</Query>
+	</Script>
+	<Script version="30">
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_fallback_users` (`activityID`, `userID`) SELECT `activityID`, `userID` FROM `flowapproval_activity_users` WHERE fallback=1;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				DELETE FROM `flowapproval_activity_users` WHERE fallback=1;				
+			]]>
+		</Query>
+	</Script>
+	<Script version="31">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_users` DROP COLUMN fallback;			
+			]]>
+		</Query>
+	</Script>
+		
 </DBScripts>

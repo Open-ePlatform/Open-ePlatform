@@ -874,9 +874,9 @@
 				
 						<a href="{$linkurl}" title="{$linkname}">
 							<xsl:choose>
-								<xsl:when test="ResponsibleUsers or ResponsibleGroups or responsibleUserAttributeName">
+								<xsl:when test="ResponsibleUsers or ResponsibleGroups or responsibleUserAttributeName or responsibleGroupAttributeName or ResponsibleFallbackUsers">
 								
-									<xsl:apply-templates select="ResponsibleUsers/ResponsibleUser" mode="inline-list"/>
+									<xsl:apply-templates select="ResponsibleUsers/user" mode="inline-list"/>
 									
 									<xsl:if test="ResponsibleUsers and ResponsibleGroups">
 										<xsl:text>, </xsl:text>
@@ -897,6 +897,23 @@
 											<xsl:text>}</xsl:text>
 										</xsl:for-each>
 									</xsl:if>
+									
+									
+									<xsl:if test="ResponsibleGroupAttributeNames">
+										<xsl:if test="ResponsibleUsers or ResponsibleGroups or ResponsibleUserAttributeNames">
+											<xsl:text>, </xsl:text>
+										</xsl:if>
+										
+										<xsl:for-each select="ResponsibleGroupAttributeNames/value">
+											<xsl:if test="position() > 1">, </xsl:if>
+											
+											<xsl:text>$attribute{</xsl:text>
+											<xsl:value-of select="." />
+											<xsl:text>}</xsl:text>
+										</xsl:for-each>
+									</xsl:if>
+									
+									<xsl:apply-templates select="ResponsibleFallbackUsers/user" mode="inline-list-backup"/>
 								
 								</xsl:when>
 								<xsl:otherwise>
@@ -974,7 +991,7 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="ResponsibleUser" mode="inline-list">
+	<xsl:template match="user" mode="inline-list">
 		
 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
@@ -983,7 +1000,7 @@
 		</xsl:if>
 		
 		<xsl:choose>
-			<xsl:when test="user/enabled='true'">
+			<xsl:when test="enabled='true'">
 				<img class="marginright" src="{$imgPath}/user.png" alt="" />
 			</xsl:when>
 			<xsl:otherwise>
@@ -991,38 +1008,30 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		
-		<xsl:value-of select="user/firstname"/>
+		<xsl:value-of select="firstname"/>
 		
 		<xsl:text>&#x20;</xsl:text>
 		
-		<xsl:value-of select="user/lastname"/>
+		<xsl:value-of select="lastname"/>
 		
-		<xsl:if test="user/username">
+		<xsl:if test="username">
 			<xsl:text>&#x20;</xsl:text>
 			
 			<xsl:text>(</xsl:text>
-				<xsl:value-of select="user/username"/>
+				<xsl:value-of select="username"/>
 			<xsl:text>)</xsl:text>
-		</xsl:if>
-		
-		<xsl:if test="fallback = 'true'">
-			<xsl:text>&#x20;</xsl:text>
-			
-			<xsl:text>[</xsl:text>
-				<xsl:value-of select="$i18n.ResponsibleUser.fallback"/>
-			<xsl:text>]</xsl:text>
 		</xsl:if>
 		
 	</xsl:template>
 	
-	<xsl:template match="ResponsibleUser" mode="list">
+	<xsl:template match="user" mode="list">
 		
 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
 		
 		<div>
 			
 			<xsl:choose>
-				<xsl:when test="user/enabled='true'">
+				<xsl:when test="enabled='true'">
 					<img class="marginright" src="{$imgPath}/user.png" alt="" />
 				</xsl:when>
 				<xsl:otherwise>
@@ -1030,19 +1039,83 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			
-			<xsl:value-of select="user/firstname"/>
+			<xsl:value-of select="firstname"/>
 			
 			<xsl:text>&#x20;</xsl:text>
 			
-			<xsl:value-of select="user/lastname"/>
+			<xsl:value-of select="lastname"/>
 			
-			<xsl:if test="user/username">
+			<xsl:if test="username">
 				<xsl:text>&#x20;</xsl:text>
 				
 				<xsl:text>(</xsl:text>
-					<xsl:value-of select="user/username"/>
+					<xsl:value-of select="username"/>
 				<xsl:text>)</xsl:text>
 			</xsl:if>
+			
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="user" mode="inline-list-backup">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../../../extensionRequestURL" />/static/pics</xsl:variable>
+		
+		<xsl:if test="position() > 1">
+			<xsl:text>, </xsl:text>
+		</xsl:if>
+		
+		<xsl:choose>
+			<xsl:when test="enabled='true'">
+				<img class="marginright" src="{$imgPath}/user.png" alt="" />
+			</xsl:when>
+			<xsl:otherwise>
+				<img class="marginright" src="{$imgPath}/user_disabled.png" alt="" />
+			</xsl:otherwise>
+		</xsl:choose>
+		
+		<xsl:value-of select="firstname"/>
+		
+		<xsl:text>&#x20;</xsl:text>
+		
+		<xsl:value-of select="lastname"/>
+		
+		<xsl:if test="username">
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:text>(</xsl:text>
+				<xsl:value-of select="username"/>
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+		
+		
+			<xsl:text>&#x20;</xsl:text>
+			
+			<xsl:text>[</xsl:text>
+				<xsl:value-of select="$i18n.ResponsibleUser.fallback"/>
+			<xsl:text>]</xsl:text>
+		
+		
+	</xsl:template>
+	
+	
+	
+	<xsl:template match="group" mode="list">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
+		
+		<div>
+			
+			<xsl:choose>
+				<xsl:when test="enabled='true'">
+					<img class="marginright" src="{$imgPath}/group.png" alt="" />
+				</xsl:when>
+				<xsl:otherwise>
+					<img class="marginright" src="{$imgPath}/group_disabled.png" alt="" />
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			<xsl:value-of select="name"/>
 			
 		</div>
 		
@@ -1066,6 +1139,7 @@
 		</xsl:choose>
 		
 		<xsl:value-of select="name"/>
+		
 		
 	</xsl:template>
 	
@@ -1283,26 +1357,14 @@
 			
 			<div class="marginbottom" />
 			
-			<xsl:if test="Activity/ResponsibleGroups/group">
-			
-				<div class="bigmarginbottom">
-					<strong>
-						<xsl:value-of select="$i18n.Activity.responsibleGroups" />
-					</strong>
-					
-					<xsl:apply-templates select="Activity/ResponsibleGroups/group" mode="list"/>
-				</div>
-				
-			</xsl:if>
-			
-			<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')] or Activity/ResponsibleUserAttributeNames">
+			<xsl:if test="Activity/ResponsibleUsers/user or Activity/ResponsibleUserAttributeNames">
 			
 				<div class="bigmarginbottom">
 					<strong class="bigmargintop">
 						<xsl:value-of select="$i18n.Activity.responsibleUsers" />
 					</strong>
 					
-					<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')]" mode="list"/>
+					<xsl:apply-templates select="Activity/ResponsibleUsers/user" mode="list"/>
 					
 					<xsl:if test="Activity/ResponsibleUserAttributeNames">
 						<xsl:for-each select="Activity/ResponsibleUserAttributeNames/value">
@@ -1317,7 +1379,7 @@
 				</div>
 				
 			</xsl:if>
-			
+			<!-- 
 			<xsl:if test="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'true']">
 			
 				<div class="bigmarginbottom">
@@ -1326,6 +1388,41 @@
 					</strong>
 					
 					<xsl:apply-templates select="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'true']" mode="list"/>
+				</div>
+				
+			</xsl:if> -->
+			
+			<xsl:if test="Activity/ResponsibleGroups/group or Activity/ResponsibleGroupAttributeNames">
+			
+				<div class="bigmarginbottom">
+					<strong class="bigmargintop">
+						<xsl:value-of select="$i18n.Activity.responsibleGroups" />
+					</strong>
+					
+					<xsl:apply-templates select="Activity/ResponsibleGroups/group" mode="list"/>
+					
+					<xsl:if test="Activity/ResponsibleGroupAttributeNames">
+						<xsl:for-each select="Activity/ResponsibleGroupAttributeNames/value">
+							<div>
+								<xsl:text>$attribute{</xsl:text>
+								<xsl:value-of select="." />
+								<xsl:text>}</xsl:text>
+							</div>
+						</xsl:for-each>
+					</xsl:if>
+					
+				</div>
+				
+			</xsl:if>
+			
+			<xsl:if test="Activity/ResponsibleFallbackUsers/user">
+			
+				<div class="bigmarginbottom">
+					<strong class="bigmargintop">
+						<xsl:value-of select="$i18n.Activity.responsibleUsersFallback" />
+					</strong>
+					
+					<xsl:apply-templates select="Activity/ResponsibleFallbackUsers" mode="list"/>
 				</div>
 				
 			</xsl:if>
@@ -1655,7 +1752,7 @@
 					<xsl:text>/users</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'responsible-user'"/>
-				<xsl:with-param name="users" select="Activity/ResponsibleUsers/ResponsibleUser[not(fallback = 'true')]" />
+				<xsl:with-param name="users" select="Activity/ResponsibleUsers" />
 			</xsl:call-template>
 		</div>
 		
@@ -1696,7 +1793,46 @@
 			</div>
 		</div>
 		
-		<div class="floatleft full bigmarginbottom useResponsibleUserAttributeName">
+		
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'useResponsibleGroupAttributeName'" />
+					<xsl:with-param name="name" select="'useResponsibleGroupAttributeName'" />
+					<xsl:with-param name="checked" select="Activity/ResponsibleGroupAttributeNames != ''" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="useResponsibleGroupAttributeName">
+					<xsl:value-of select="$i18n.Activity.useResponsibleGroupAttributeName" />
+				</label>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom useResponsibleGroupAttributeName">
+			
+			<label for="responsibleGroupAttributeName" class="floatleft full">
+				<xsl:value-of select="$i18n.Activity.ResponsibleGroupAttributeNames" />
+			</label>
+			
+			<p>
+				<xsl:value-of select="$i18n.Activity.ResponsibleGroupAttributeNamesDescription" />
+			</p>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'responsibleGroupAttributeNames'"/>
+					<xsl:with-param name="name" select="'responsibleGroupAttributeNames'"/>
+					<xsl:with-param name="element" select="Activity" />
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="element" select="Activity/ResponsibleGroupAttributeNames/value" />
+					<xsl:with-param name="separateListValues" select="'true'"/>
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div id="responsibleUserFallbackDiv" class="floatleft full bigmarginbottom">
 			
 			<label class="floatleft full">
 				<xsl:value-of select="$i18n.Activity.responsibleUsersFallback" />
@@ -1709,7 +1845,7 @@
 					<xsl:text>/users</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="name" select="'responsible-user-fallback'"/>
-				<xsl:with-param name="users" select="Activity/ResponsibleUsers/ResponsibleUser[fallback = 'true']" />
+				<xsl:with-param name="users" select="Activity/ResponsibleFallbackUsers" />
 			</xsl:call-template>
 		</div>
 		
@@ -2233,6 +2369,32 @@
 	
 		<p class="error">
 			<xsl:value-of select="$i18n.Validation.ResponsibleFallbackRequired"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='ResponsibleFallbackUsersRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleFallbackUsersRequired"/>
+		</p>
+		
+	</xsl:template>
+	
+	
+	
+	<xsl:template match="validationError[messageKey='ResponsibleFallbackUserNotFound']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleFallbackUserNotFound"/>
+		</p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='ResponsibleAttributeGroupNamesRequired']">
+	
+		<p class="error">
+			<xsl:value-of select="$i18n.Validation.ResponsibleAttributeGroupNamesRequired"/>
 		</p>
 		
 	</xsl:template>

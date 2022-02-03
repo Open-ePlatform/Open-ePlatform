@@ -83,8 +83,24 @@ $(function() {
 			$(".useResponsibleUserAttributeName").toggle(this.checked);
 			$("#responsibleUserAttributeNames").prop('disabled', !this.checked);
 			
-			$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
+			if(!$('#useResponsibleGroupAttributeName').prop('checked') == 'true') {
+				$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
+				$("#responsibleUserFallbackDiv").toggle(this.checked);
+			}
 			
+			
+		}).trigger("change");
+		
+		$('#useResponsibleGroupAttributeName').on("change", function(){
+			
+			$(".useResponsibleGroupAttributeName").toggle(this.checked);
+			$("#responsibleGroupAttributeNames").prop('disabled', !this.checked);
+			
+			if(!$('#useResponsibleUserAttributeName').prop('checked') == 'true') {
+				$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
+				$("#responsibleUserFallbackDiv").toggle(this.checked);
+			}
+	
 		}).trigger("change");
 		
 		$('#useAttributeFilter').on("change", function(){

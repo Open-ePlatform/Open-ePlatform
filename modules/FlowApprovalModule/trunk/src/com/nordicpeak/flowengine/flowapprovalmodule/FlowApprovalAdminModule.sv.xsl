@@ -70,6 +70,7 @@
 	
 	<xsl:variable name="i18n.Validation.ResponsibleUserNotFound">Okänd ansvarig användare</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleGroupNotFound">Okänd ansvarig grupp</xsl:variable>
+	<xsl:variable name="i18n.Validation.ResponsibleFallbackUserNotFound">Okänd ansvarig reservanvändare</xsl:variable>
 	<xsl:variable name="i18n.Validation.AssignableGroupNotFound">Okänd tilldelad grupp</xsl:variable>
 	<xsl:variable name="i18n.Validation.AssignableUserNotFound">Okänd tilldelad användare</xsl:variable>
 	
@@ -83,6 +84,9 @@
 	<xsl:variable name="i18n.Validation.AssignableRequired">Du måste välja minst en valbar grupp eller användare om du har markerat Tillåt handläggare att byta ansvarig användare</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleRequired">Aktiviteten måste ha någon ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Validation.ResponsibleFallbackRequired">Aktiviteten måste ha någon reserv eller vanlig ansvarig</xsl:variable>
+	<xsl:variable name="i18n.Validation.ResponsibleAttributeGroupNamesRequired">Då ansvarig grupp söks upp via attribut så måste minst ett attributnamn anges</xsl:variable>
+	
+	<xsl:variable name="i18n.Validation.ResponsibleFallbackUsersRequired">Aktiviteten måste ha någon reservanvändare</xsl:variable>
 	<xsl:variable name="i18n.Validation.MultipleCompletionStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika målstatusar!</xsl:variable>
 	<xsl:variable name="i18n.Validation.MultipleDenyStatusesForSameStartStatus">Det finns aktivitetsgrupper som aktiveras vid samma status men har olika nekadstatusar!</xsl:variable>
 	<xsl:variable name="i18n.Validation.ActivityGroupInvalidStatus.1">Aktivitetsgruppen</xsl:variable>
@@ -122,6 +126,11 @@
 	<xsl:variable name="i18n.Activity.useResponsibleUserAttributeName">Sök upp ansvarig användare via attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNames">Attributnamn för användarnamn för ansvarig användare (en per rad)</xsl:variable>
 	<xsl:variable name="i18n.Activity.ResponsibleUserAttributeNamesDescription">Om inga användare hittas med användarnamnen från attributen nedan så kommer nedan valda reservansvariga att få aktiviteten istället.</xsl:variable>
+	
+	<xsl:variable name="i18n.Activity.useResponsibleGroupAttributeName">Sök upp ansvarig grupp via attribut</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleGroupAttributeNames">Attributnamn för gruppnamn/id för ansvarig grupp (en per rad)</xsl:variable>
+	<xsl:variable name="i18n.Activity.ResponsibleGroupAttributeNamesDescription">Om ingen grupp hittas med namnen/id från attributen nedan så kommer nedan valda reservgrupper att få aktiviteten istället.</xsl:variable>
+	
 	<xsl:variable name="i18n.Activity.useAttributeFilter">Använd attributfilter för att aktivera aktiviteten</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeName">Attributnamn</xsl:variable>
 	<xsl:variable name="i18n.Activity.invert">Invertera (Om inget av värdena matchar attributets värde eller om attributet inte är satt så används aktiviteten)</xsl:variable>
@@ -187,6 +196,7 @@
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>
 	
 	<xsl:variable name="i18n.ResponsibleUser.fallback">Reserv</xsl:variable>
+	<xsl:variable name="i18n.ResponsibleGroup.fallback">Reserv</xsl:variable>
 	
 	<xsl:variable name="i18n.ToggleTexts">[Visa/dölj texter]</xsl:variable>
 	<xsl:variable name="i18n.row">rad</xsl:variable>

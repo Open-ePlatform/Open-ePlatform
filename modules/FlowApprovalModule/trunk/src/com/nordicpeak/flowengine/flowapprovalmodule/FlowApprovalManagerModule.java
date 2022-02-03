@@ -132,7 +132,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION,FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		activityRoundIDParamFactory = activityRoundDAO.getParamFactory("activityRoundID", Integer.class);
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
@@ -208,7 +208,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 
 		Element tabElement = XMLUtils.appendNewElement(doc, documentElement, "TabContents");
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivityProgress.ACTIVITY_REMINDER_RELATION);
 
 		XMLUtils.append(doc, tabElement, "ActivityGroups", activityGroups);
 
@@ -219,7 +219,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 		}
 
 		XMLUtils.append(doc, tabElement, validationErrors);
-
+		
 		return viewFragmentTransformer.createViewFragment(doc);
 	}
 
@@ -440,7 +440,7 @@ public class FlowApprovalManagerModule extends AnnotatedForegroundModule impleme
 			
 		} else if (assignOwnerSearchActivityProgressID != null) {
 			
-			HighLevelQuery<FlowApprovalActivityProgress> query = new HighLevelQuery<>(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+			HighLevelQuery<FlowApprovalActivityProgress> query = new HighLevelQuery<>(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
 			query.addParameter(activityProgressDAOWrapper.getParameterFactory().getParameter(assignOwnerSearchActivityProgressID));
 			
 			FlowApprovalActivityProgress activityProgress = activityProgressDAOWrapper.getAnnotatedDAO().get(query);

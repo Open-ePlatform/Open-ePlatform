@@ -96,7 +96,6 @@ import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
-import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
@@ -175,7 +174,6 @@ import com.nordicpeak.flowengine.events.SubmitEvent;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityProgress;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalReminder;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.ReminderType;
@@ -185,6 +183,7 @@ import com.nordicpeak.flowengine.flowapprovalmodule.enums.Comment;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ActivityGroupInvalidStatus;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableGroupNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.AssignableUserNotFound;
+import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleFallbackUserNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleGroupNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.ResponsibleUserNotFound;
 import com.nordicpeak.flowengine.flowapprovalmodule.validationerrors.StatusNotFound;
@@ -432,14 +431,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		reminderDAO = daoFactory.getDAO(FlowApprovalReminder.class);
 
 		activityDAOWrapper = activityDAO.getAdvancedWrapper(Integer.class);
-		activityDAOWrapper.getAddQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
-		activityDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
-		activityDAOWrapper.getGetQuery().addRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityDAOWrapper.getAddQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityDAOWrapper.getGetQuery().addRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 
 		activityGroupDAOWrapper = activityGroupDAO.getAdvancedWrapper(Integer.class);
-		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
-		activityGroupDAOWrapper.getAddQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
-		activityGroupDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getAddQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		activityGroupDAOWrapper.getUpdateQuery().addRelations(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION,FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 
 		activityRoundFlowInstanceIDParamFactory = activityRoundDAO.getParamFactory("flowInstanceID", Integer.class);
 		activityRoundActivityGroupParamFactory = activityRoundDAO.getParamFactory("activityGroup", FlowApprovalActivityGroup.class);
@@ -885,6 +884,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		if (!CollectionUtils.isEmpty(activityGroup.getActivities())) {
 			XMLGeneratorDocument xmlActivityGeneratorDocument = new XMLGeneratorDocument(doc);
 			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
 			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION);
 			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 			xmlActivityGeneratorDocument.addIgnoredField(FlowApprovalActivity.ASSIGNABLE_USERS_RELATION);
@@ -892,26 +892,22 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 				Element activityElement = activity.toXML(xmlActivityGeneratorDocument);
 				
-				List<FlowApprovalActivityResponsibleUser> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownResponsibleUsers(activity.getResponsibleUsers());
+				List<User> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownUsers(activity.getResponsibleUsers());
 
 				if (!CollectionUtils.isEmpty(cleanedResponsibleUsers)) {
 					Element responsibleUsers = doc.createElement("ResponsibleUsers");
 
-					for (FlowApprovalActivityResponsibleUser user : cleanedResponsibleUsers) {
-						Element responsibleUser = doc.createElement("ResponsibleUser");
-						Element userElement = doc.createElement("user");
+					for (User user : cleanedResponsibleUsers) {
+						Element responsibleUser = doc.createElement("user");
+
 						if (user != null) {
-							XMLUtils.appendNewCDATAElement(doc, userElement, "username", user.getUser().getUsername());
+							XMLUtils.appendNewCDATAElement(doc, responsibleUser, "username", user.getUsername());
 						}
 
-						responsibleUser.appendChild(userElement);
-						XMLUtils.appendNewElement(doc, responsibleUser, "fallback", user.isFallback());
-
 						responsibleUsers.appendChild(responsibleUser);
-						
 					}
-
 					activityElement.appendChild(responsibleUsers);
+
 				}
 				
 				List<Group> cleanedResponsibleGroups = FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups());
@@ -965,6 +961,24 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						assignableGroups.appendChild(assignableGroup);
 					}
 					activityElement.appendChild(assignableGroups);
+
+				}
+				
+				List<User> cleanedResponsibleFallbackUsers = FlowApprovalActivity.clearUnknownUsers(activity.getResponsibleFallbackUsers());
+
+				if (!CollectionUtils.isEmpty(cleanedResponsibleFallbackUsers)) {
+					Element responsibleFallbackUsers = doc.createElement("ResponsibleFallbackUsers");
+
+					for (User user : cleanedResponsibleFallbackUsers) {
+						Element responsibleGroupFallbackUser = doc.createElement("user");
+
+						if (user != null) {
+							XMLUtils.appendNewCDATAElement(doc, responsibleGroupFallbackUser, "username", user.getUsername());
+						}
+
+						responsibleFallbackUsers.appendChild(responsibleGroupFallbackUser);
+					}
+					activityElement.appendChild(responsibleFallbackUsers);
 
 				}
 
@@ -1272,12 +1286,12 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					if (!CollectionUtils.isEmpty(activity.getResponsibleUsers())) {
 						//check that user with assigned username exists
 						activity.getResponsibleUsers().forEach(e -> {
-							Optional<User> foundUser = allUsers.stream().filter(e1 -> e.getUser().getUsername().equals(e1.getUsername())).findFirst();
+							Optional<User> foundUser = allUsers.stream().filter(e1 -> e.getUsername().equals(e1.getUsername())).findFirst();
 							if (foundUser.isPresent()) {
-								((SimpleUser) e.getUser()).setUserID(foundUser.get().getUserID());
+								((SimpleUser) e).setUserID(foundUser.get().getUserID());
 
 							} else {
-								errors.add(new ResponsibleUserNotFound(e.getUser().getUsername()));
+								errors.add(new ResponsibleUserNotFound(e.getUsername()));
 							}
 
 						});
@@ -1317,6 +1331,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 						});
 					}
+
 					if (!CollectionUtils.isEmpty(activity.getAssignableGroups())) {
 						//check that groups with assigned name exists
 						activity.getAssignableGroups().forEach(e -> {
@@ -1330,9 +1345,24 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 						});
 					}
+					if (!CollectionUtils.isEmpty(activity.getResponsibleFallbackUsers())) {
+						//check that user with assigned username exists
+						activity.getResponsibleFallbackUsers().forEach(e -> {
+							Optional<User> foundUser = allUsers.stream().filter(e1 -> e.getUsername().equals(e1.getUsername())).findFirst();
+							if (foundUser.isPresent()) {
+								((SimpleUser) e).setUserID(foundUser.get().getUserID());
+
+							} else {
+								errors.add(new ResponsibleFallbackUserNotFound(e.getUsername()));
+							}
+
+						});
+
+					}
 
 				} else {
 					activity.setResponsibleGroups(null);
+					activity.setResponsibleFallbackUsers(null);
 					activity.setAssignableGroups(null);
 					activity.setActive(false);
 				}
@@ -1605,7 +1635,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 	private void startActivityGroups(FlowInstance flowInstance, Status newStatus) throws SQLException {
 
-		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+		List<FlowApprovalActivityGroup> activityGroups = getActivityGroups(flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), newStatus.getName(), FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
 
 		if (activityGroups != null) {
 
@@ -1652,6 +1682,16 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 										if (responsibleUsers != null) {
 
 											progress.setResponsibleAttributedUsers(responsibleUsers);
+										}
+									}
+									
+									if (activity.getResponsibleGroupAttributeNames() != null) {
+
+										List<Group> responsibleGroups = getResponsibleGroupsFromAttribute(activity, flowInstance);
+
+										if (responsibleGroups != null) {
+
+											progress.setResponsibleAttributedGroups(responsibleGroups);
 										}
 									}
 
@@ -1829,6 +1869,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
 
 				boolean useFallbackUsers = true;
+				
+				boolean useFallbackGroups = true;
 
 				if (activityProgress.getResponsibleAttributedUsers() != null) {
 
@@ -1847,31 +1889,52 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						managers.addAll(users);
 					}
 				}
+				
+				if (activityProgress.getResponsibleAttributedGroups() != null) {
 
-				if (activity.getResponsibleUsers() != null) {
+					useFallbackGroups = false;
+					for (Group responsibleAttributedGroup : activityProgress.getResponsibleAttributedGroups()) {
 
-					for (FlowApprovalActivityResponsibleUser responsibleUser : activity.getResponsibleUsers()) {
+						managers.addAll(systemInterface.getUserHandler().getUsersByGroup(responsibleAttributedGroup.getGroupID(), true, true));
+						
+					}
 
-						if (!responsibleUser.isFallback() || useFallbackUsers) {
+				} else if (activity.getResponsibleGroupAttributeNames() != null) {
 
-							managers.add(responsibleUser.getUser());
+					List<Group> groups = getResponsibleGroupsFromAttribute(activity, flowInstance);
+
+					if (groups != null) {
+
+						log.warn("Groups not set on activity progress " + activityProgress + ", using attribute directly!");
+
+						useFallbackGroups = false;
+						for(Group group : groups) {
+							managers.addAll(systemInterface.getUserHandler().getUsersByGroup(group.getGroupID(), true, true));
 						}
 					}
 				}
 
-				if (activity.getResponsibleGroups() != null) {
+				if (activity.getResponsibleUsers() != null) {
 
-					List<User> groupUsers = null;
+					for (User responsibleUser : activity.getResponsibleUsers()) {
 
-					for (int groupID : UserUtils.getGroupIDs(activity.getResponsibleGroups())) {
+						managers.add(responsibleUser);
+						
+					}
+				}
+				
+				if (activity.getResponsibleFallbackUsers() != null && (useFallbackUsers || useFallbackGroups)) {
 
-						groupUsers = CollectionUtils.addAndInstantiateIfNeeded(groupUsers, systemInterface.getUserHandler().getUsersByGroup(groupID, true, true));
+					
+					for (User responsibleFallbackUser : activity.getResponsibleFallbackUsers()) {
+
+						if(!managers.contains(responsibleFallbackUser)) {
+							managers.add(responsibleFallbackUser);
+						}
+						
 					}
 
-					if (groupUsers != null) {
-
-						managers.addAll(groupUsers);
-					}
+					
 				}
 			}
 
@@ -2326,36 +2389,81 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 										for (FlowApprovalActivityProgress progress : round.getActivityProgresses()) {
 
 											FlowApprovalActivity activity = progress.getActivity();
+											
+											if(isActivityActive(activity, flowInstance)) {
+												
+												boolean responsibleUsersChanged = false;
+												boolean responsibleGroupsChanged = false;
 
-											if (activity.getResponsibleUserAttributeNames() != null && isActivityActive(activity, flowInstance)) {
-
-												List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
-
-												boolean responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(progress.getResponsibleAttributedUsers());
-
-												if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
-
-													Set<User> oldUsers = new HashSet<>(progress.getResponsibleAttributedUsers());
-													Set<User> newUsers = new HashSet<>(responsibleUsers);
-
-													responsibleUsersChanged = !oldUsers.equals(newUsers);
-												}
-
-												if (responsibleUsersChanged) {
-
-													log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
-
-													String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
-													String namesTo = eventActivityOwnerDefault;
-
-													if (responsibleUsers != null) {
-														namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
+												if (activity.getResponsibleUserAttributeNames() != null) {
+	
+													List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
+	
+													responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(progress.getResponsibleAttributedUsers());
+	
+													if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
+	
+														Set<User> oldUsers = new HashSet<>(progress.getResponsibleAttributedUsers());
+														Set<User> newUsers = new HashSet<>(responsibleUsers);
+	
+														responsibleUsersChanged = !oldUsers.equals(newUsers);
 													}
-
-													flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
-
-													progress.setResponsibleAttributedUsers(responsibleUsers);
-
+	
+													if (responsibleUsersChanged) {
+	
+														log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
+	
+														String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
+														String namesTo = eventActivityOwnerDefault;
+	
+														if (responsibleUsers != null) {
+															namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
+														}
+	
+														flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
+	
+														progress.setResponsibleAttributedUsers(responsibleUsers);
+	
+														
+													}
+												}
+												
+												if (activity.getResponsibleGroupAttributeNames() != null) {
+													
+													List<Group> responsibleGroups = getResponsibleGroupsFromAttribute(activity, flowInstance);
+	
+													responsibleGroupsChanged = CollectionUtils.getSize(responsibleGroups) != CollectionUtils.getSize(progress.getResponsibleAttributedGroups());
+	
+													if (!responsibleGroupsChanged && responsibleGroups != null) { // Same size but not nulls, compare contents
+	
+														Set<Group> oldGroups = new HashSet<>(progress.getResponsibleAttributedGroups());
+														Set<Group> newGroups = new HashSet<>(responsibleGroups);
+	
+														responsibleGroupsChanged = !oldGroups.equals(newGroups);
+													}
+	
+													if (responsibleGroupsChanged) {
+	
+														log.info("Updating responsible group for " + progress + " from " + (progress.getResponsibleAttributedGroups() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedGroups()) : "null") + " to " + (responsibleGroups != null ? StringUtils.toCommaSeparatedString(responsibleGroups) : "null"));
+	
+														String namesFrom = progress.getResponsibleAttributedGroups() != null ? FlowInstanceUtils.getManagersString(null, progress.getResponsibleAttributedGroups()) : eventActivityOwnerDefault;
+														String namesTo = eventActivityOwnerDefault;
+	
+														if (responsibleGroups != null) {
+															namesTo += " " + FlowInstanceUtils.getManagersString(null,responsibleGroups);
+														}
+	
+														flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
+	
+														progress.setResponsibleAttributedGroups(responsibleGroups);
+	
+														
+													}
+													
+													//TODO hantera groupfallbackusers
+												}
+												
+												if(responsibleUsersChanged || responsibleGroupsChanged) {
 													progress.setActivity(activity);
 													progress.setActivityRound(round);
 													activityProgressDAO.update(progress, transactionHandler, null);
@@ -2437,6 +2545,53 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 		return null;
 	}
+	
+	
+	List<Group> getResponsibleGroupsFromAttribute(FlowApprovalActivity activity, ImmutableFlowInstance flowInstance) {
+
+		List<String> groupIdentifiers = new ArrayList<>();
+		for (String attributeName : activity.getResponsibleGroupAttributeNames()) {
+
+			String groupIdentifier = flowInstance.getAttributeHandler().getString(attributeName);
+			
+			if(groupIdentifier != null) {
+				groupIdentifiers.add(groupIdentifier);
+			}
+			
+		}
+		
+		if(groupIdentifiers.isEmpty()) {
+			log.warn("Unable to find group with groupnames\\id due to missing data specified in attribute " + activity.getResponsibleGroupAttributeNames() + " of flow instance " + flowInstance + " for activity " + activity);
+
+			return null;
+		}
+		
+		List<Group> groups = systemInterface.getGroupHandler().getGroupsByName(groupIdentifiers, true);
+		
+		List<Integer> groupIDs = NumberUtils.toInt(groupIdentifiers);
+		
+		List<Group> groupsByID = null;
+		
+		if(groupIDs != null) {
+			groupsByID = CollectionUtils.addAndInstantiateIfNeeded(groupsByID,systemInterface.getGroupHandler().getGroups(groupIDs, true));
+		}
+		
+		if(groupsByID != null) {
+			groups = CollectionUtils.addAndInstantiateIfNeeded(groups, groupsByID);
+		}
+		
+		
+		if (groups != null) {
+			return groups;
+		} else {
+
+			log.warn("Unable to find group with groupnames\\id " + groupIdentifiers.toString() + " specified in attribute " + activity.getResponsibleGroupAttributeNames() + " of flow instance " + flowInstance + " for activity " + activity);
+		}
+
+		return null;
+	}
+	
+	
 
 	public FlowApprovalActivityGroup getActivityGroup(Integer activityGroupID) throws SQLException {
 
@@ -2751,7 +2906,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		activity.setActivityID(null);
 		activity.setName(StringUtils.substring(activity.getName() + copySuffix, 255));
 
-		RelationQuery query = new RelationQuery(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
+		RelationQuery query = new RelationQuery(FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION);
 		activityDAO.add(activity, query);
 
 		addFlowFamilyEvent(eventActivityCopied + " \"" + activity.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);
@@ -2775,7 +2930,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 			}
 		}
 
-		RelationQuery query = new RelationQuery(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+		RelationQuery query = new RelationQuery(FlowApprovalActivityGroup.ACTIVITIES_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_USERS_RELATION, FlowApprovalActivity.ASSIGNABLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
 		activityGroupDAO.add(activityGroup, query);
 
 		addFlowFamilyEvent(eventActivityGroupCopied + " \"" + activityGroup.getName() + "\"", ((Flow) req.getAttribute("flow")).getFlowFamily(), user);

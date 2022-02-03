@@ -207,7 +207,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
 	}
 
 	@InstanceManagerDependency
@@ -427,6 +427,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 		ArrayList<Integer> userGroupIDs = UserUtils.getUserGroupIDs(user, true);
 
+		String commaSeparatedUserGroupIDString = (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null);
+
 		//TODO split into multiple smaller queries
 
 		// @formatter:off
@@ -436,8 +438,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		              +" INNER JOIN " + activityDAO.getTableName() + " a ON ap.activityID = a.activityID"
 		              +" LEFT OUTER JOIN flowapproval_activity_users u ON u.activityID = a.activityID "
 		              +" LEFT OUTER JOIN flowapproval_activity_groups g ON g.activityID = a.activityID "
+		              +" LEFT OUTER JOIN flowapproval_activity_fallback_users fau ON fau.activityID = a.activityID "
 		              +" LEFT OUTER JOIN flowapproval_activity_resp_user_attribute ra ON ra.activityID = a.activityID"
 		              +" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_users ru ON ap.activityProgressID = ru.activityProgressID"
+		              +" LEFT OUTER JOIN flowapproval_activity_resp_group_attribute rg ON rg.activityID = a.activityID"
+		              +" LEFT OUTER JOIN flowapproval_activity_progress_resp_attr_groups ga ON ap.activityProgressID = ga.activityProgressID"
 		              +" WHERE");
 		// @formatter:on
 
@@ -455,16 +460,17 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		// @formatter:off
-		builder.append(" ((u.fallback = 0 AND u.userID = " + user.getUserID() + ") OR g.groupID IN (" + (userGroupIDs != null ? StringUtils.toCommaSeparatedString(userGroupIDs) : null) + ")"
-		              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND u.fallback = 1 AND u.userID = " + user.getUserID() + "))))");
+		builder.append(" ((u.userID = " + user.getUserID() + ") OR (g.groupID IN (" + commaSeparatedUserGroupIDString + "))"
+	              +" OR (ra.attributeName IS NOT NULL AND (ru.userID = " + user.getUserID() + " OR (ru.userID IS NULL AND fau.userID = " + user.getUserID()+ ")))"
+	              +" OR (rg.attributeName IS NOT NULL AND (ga.groupID IN (" + commaSeparatedUserGroupIDString+ ") OR (ga.groupID IS NULL AND fau.userID = " + user.getUserID()+ "))))");
 		// @formatter:on
-		
+
 		LowLevelQuery<FlowApprovalActivityProgress> query = new LowLevelQuery<>(builder.toString());
 
 		if (relations != null) {
 
 			query.addRelations(relations);
-			query.addCachedRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION);
+			query.addCachedRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION,  FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION);
 		}
 
 		return activityProgressDAO.getAll(query);
@@ -518,7 +524,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 			validationErrors = new ArrayList<>();
 
 			boolean completed = false;
-			
+
 			String comment = "";
 			boolean requireComment = activity.isRequireComment();
 			Comment whenToComment = activity.getWhenToComment();
@@ -531,7 +537,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					activityProgress.setDenied(false);
 					completed = true;
-					
+
 					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
 
 				} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
@@ -540,7 +546,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					activityProgress.setDenied(true);
 					completed = true;
-					
+
 					comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
 				}
 
@@ -551,12 +557,10 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					log.info("User " + user + " completing activity progress " + activityProgress);
 
 					completed = true;
-					
+
 					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
 				}
 			}
-
-			
 
 			if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
 
@@ -610,9 +614,9 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		log.info("User " + user + " requested activity progress " + activityProgress);
 
 		if (activity.getDescription() != null) {
-			
+
 			approvalAdminModule.replaceTagsDescription(uriParser, activity, flowInstance);
-			
+
 		}
 
 		Document doc = createDocument(req, uriParser);
@@ -701,7 +705,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		if (activityProgress.getActivity().getDescription() != null) {
-			approvalAdminModule.replaceTagsDescription(uriParser, activityProgress.getActivity(), flowInstance);			
+			approvalAdminModule.replaceTagsDescription(uriParser, activityProgress.getActivity(), flowInstance);
 		}
 
 		StringBuilder builder = new StringBuilder();

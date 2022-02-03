@@ -9,6 +9,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.hierarchy.core.beans.Group;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.utils.UserUtils;
@@ -73,6 +74,12 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@SimplifiedRelation(table = "flowapproval_activity_progress_resp_attr_users", remoteValueColumnName = "userID")
 	@XMLElement(fixCase = true)
 	private List<User> responsibleAttributedUsers;
+	
+	@DAOManaged
+	@OneToMany(autoGet = true, autoAdd = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowapproval_activity_progress_resp_attr_groups", remoteValueColumnName = "groupID")
+	@XMLElement(fixCase = true)
+	private List<Group> responsibleAttributedGroups;
 
 	@DAOManaged
 	@XMLElement
@@ -179,6 +186,16 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	public void setResponsibleAttributedUsers(List<User> responsibleAttributedUsers) {
 
 		this.responsibleAttributedUsers = responsibleAttributedUsers;
+	}
+	
+	public List<Group> getResponsibleAttributedGroups() {
+
+		return responsibleAttributedGroups;
+	}
+
+	public void setResponsibleAttributedGroups(List<Group> responsibleAttributedGroups) {
+
+		this.responsibleAttributedGroups = responsibleAttributedGroups;
 	}
 
 	public boolean isAutomaticReminderSent() {
@@ -295,34 +312,36 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	public Collection<Integer> getAllowedGroupIDs() {
 
 		return UserUtils.getGroupIDs(FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups()));
+		
 	}
+	
 
 	@Override
 	public Collection<Integer> getAllowedUserIDs() {
 
-		List<FlowApprovalActivityResponsibleUser> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownResponsibleUsers(activity.getResponsibleUsers());
+		List<User> cleanedResponsibleUsers = FlowApprovalActivity.clearUnknownUsers(activity.getResponsibleUsers());
 		
 		List<User> cleanedResponsibleAttributedUsers = FlowApprovalActivity.clearUnknownUsers(responsibleAttributedUsers);
 		
-		if (CollectionUtils.isEmpty(cleanedResponsibleUsers) && cleanedResponsibleAttributedUsers == null) {
+		List<User> cleanedResponsibleFallbackUsers = FlowApprovalActivity.clearUnknownUsers(activity.getResponsibleFallbackUsers());
+
+		
+		if (CollectionUtils.isEmpty(cleanedResponsibleUsers) && cleanedResponsibleAttributedUsers == null &&
+				cleanedResponsibleFallbackUsers == null) {
 			return null;
 		}
 
 		List<Integer> userIDs = new ArrayList<>(CollectionUtils.getSize(cleanedResponsibleUsers) + 1);
 
 		if (cleanedResponsibleUsers != null) {
-			for (FlowApprovalActivityResponsibleUser responsibleUser : cleanedResponsibleUsers) {
+			for (User responsibleUser : cleanedResponsibleUsers) {
 
-				if (!responsibleUser.isFallback() || activity.getResponsibleUserAttributeNames() != null && cleanedResponsibleAttributedUsers == null) {
-					userIDs.add(responsibleUser.getUser().getUserID());
-				}
+				userIDs.add(responsibleUser.getUserID());				
 			}
 		}
 		
-		
-
-		if (cleanedResponsibleAttributedUsers != null) {
-			for (User user : cleanedResponsibleAttributedUsers) {
+		if (cleanedResponsibleFallbackUsers != null) {
+			for (User user : cleanedResponsibleFallbackUsers) {
 				userIDs.add(user.getUserID());
 			}
 		}

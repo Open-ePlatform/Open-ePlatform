@@ -33,7 +33,6 @@ import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.flowapprovalmodule.FlowApprovalAdminModule;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivity;
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityGroup;
-import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityResponsibleUser;
 import com.nordicpeak.flowengine.populators.FlowAdminFragmentExtensionViewCRUDIDParser;
 
 public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, Integer, User, FlowApprovalAdminModule> {
@@ -150,46 +149,26 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		List<Integer> assignableUserIDs = ValidationUtils.validateParameters("assignable-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
-		List<Integer> responsibleFallbackUserIDs = ValidationUtils.validateParameters("responsible-user-fallback", req, false, IntegerPopulator.getPopulator(), validationErrors);
-
+		
+		
 		List<User> assignableUsers = null;
-		List<FlowApprovalActivityResponsibleUser> responsibleUsers = null;
+		List<User> responsibleUsers = null;
+		
+		if (responsibleUserIDs != null) {
 
-		if (responsibleUserIDs != null || responsibleFallbackUserIDs != null) {
+			responsibleUsers = new ArrayList<>(responsibleUserIDs.size());
 
-			responsibleUsers = new ArrayList<>(CollectionUtils.getSize(responsibleUserIDs, responsibleFallbackUserIDs));
+			for (Integer userID : responsibleUserIDs) {
 
-			if (responsibleUserIDs != null) {
+				User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
 
-				for (Integer userID : responsibleUserIDs) {
+				if (responsibleUser != null) {
 
-					User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
+					responsibleUsers.add(responsibleUser);
 
-					if (responsibleUser != null) {
+				} else {
 
-						responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, false));
-
-					} else {
-
-						validationErrors.add(new ValidationError("responsible-user", ValidationErrorType.InvalidFormat));
-					}
-				}
-			}
-
-			if (responsibleFallbackUserIDs != null && activity.getResponsibleUserAttributeNames() != null) {
-
-				for (Integer userID : responsibleFallbackUserIDs) {
-
-					User responsibleUser = callback.getUserHandler().getUser(userID, false, false);
-
-					if (responsibleUser != null) {
-
-						responsibleUsers.add(new FlowApprovalActivityResponsibleUser(responsibleUser, true));
-
-					} else {
-
-						validationErrors.add(new ValidationError("responsible-user-fallback", ValidationErrorType.InvalidFormat));
-					}
+					validationErrors.add(new ValidationError("responsible-user", ValidationErrorType.InvalidFormat));
 				}
 			}
 		}
@@ -217,30 +196,67 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 		activity.setResponsibleUsers(responsibleUsers);
 
 		List<Integer> assignableGroupIDs = ValidationUtils.validateParameters("assignable-group", req, false, IntegerPopulator.getPopulator(), validationErrors);
+		
 		List<Integer> responsibleGroupIDs = ValidationUtils.validateParameters("responsibleGroup", req, false, IntegerPopulator.getPopulator(), validationErrors);
+		
+		List<Integer> responsibleFallbackUserIDs = ValidationUtils.validateParameters("responsible-user-fallback", req, false, IntegerPopulator.getPopulator(), validationErrors);
 
 		List<Group> assignableGroups = null;
 		List<Group> responsibleGroups = null;
-
+		
+		List<User> responsibleFallbackUsers = null;
+		
+				
 		if (responsibleGroupIDs != null) {
 
-			responsibleGroups = new ArrayList<>(responsibleGroupIDs.size());
+			responsibleGroups = new ArrayList<>(CollectionUtils.getSize(responsibleGroupIDs));
 
-			for (Integer groupID : responsibleGroupIDs) {
+			if (responsibleGroupIDs != null) {
 
-				Group group = callback.getGroupHandler().getGroup(groupID, false);
+				for (Integer groupID : responsibleGroupIDs) {
 
-				if (group != null) {
+					Group responsibleGroup = callback.getGroupHandler().getGroup(groupID, false);
 
-					responsibleGroups.add(group);
+					if (responsibleGroup != null) {
+
+						responsibleGroups.add(responsibleGroup);
+
+					} else {
+
+						validationErrors.add(new ValidationError("responsibleGroup", ValidationErrorType.InvalidFormat));
+					}
+				}
+			}
+
+			
+		}
+		
+		if (responsibleFallbackUserIDs != null && (activity.getResponsibleUserAttributeNames() != null || activity.getResponsibleGroupAttributeNames() != null)) {
+			
+			responsibleFallbackUsers = new ArrayList<>(CollectionUtils.getSize(responsibleFallbackUserIDs));
+
+
+			for (Integer userID : responsibleFallbackUserIDs) {
+				
+				User responsibleFallbackUser = callback.getUserHandler().getUser(userID, false, false);
+				
+				boolean responsibleUserMatches = responsibleUsers != null && responsibleUsers.contains(responsibleFallbackUser);
+				boolean assignableUserMatches = responsibleUsers != null && responsibleUsers.contains(responsibleFallbackUser);
+
+				if (responsibleFallbackUser != null) {
+
+					if(!responsibleUserMatches && !assignableUserMatches) {
+						responsibleFallbackUsers.add(responsibleFallbackUser);
+					}
 
 				} else {
 
-					validationErrors.add(new ValidationError("responsibleGroup", ValidationErrorType.InvalidFormat));
+					validationErrors.add(new ValidationError("responsible-user-fallback", ValidationErrorType.InvalidFormat));
 				}
 			}
 		}
-
+		
+		
 		if (assignableGroupIDs != null) {
 
 			assignableGroups = new ArrayList<>(assignableGroupIDs.size());
@@ -262,17 +278,20 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 		activity.setAssignableGroups(assignableGroups);
 		activity.setResponsibleGroups(responsibleGroups);
+		activity.setResponsibleFallbackUsers(responsibleFallbackUsers);
 
-		if (activity.getResponsibleUserAttributeNames() != null) {
+		if (activity.getResponsibleUserAttributeNames() != null || activity.getResponsibleGroupAttributeNames() != null) {
 
-			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
+			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())
+					&& CollectionUtils.isEmpty(activity.getResponsibleFallbackUsers())) {
 
 				validationErrors.add(new ValidationError("ResponsibleFallbackRequired"));
 			}
 
 		} else {
 
-			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups())) {
+			if (CollectionUtils.isEmpty(activity.getResponsibleUsers()) && CollectionUtils.isEmpty(activity.getResponsibleGroups()) &&
+					CollectionUtils.isEmpty(activity.getResponsibleFallbackUsers())) {
 
 				validationErrors.add(new ValidationError("ResponsibleRequired"));
 			}
@@ -284,7 +303,15 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 
 			validationErrors.add(new ValidationError("ResposibleAttributeNamesRequired"));
 		}
+		
+		boolean useResponsibleGroupAttributeName = Boolean.parseBoolean(req.getParameter("useResponsibleGroupAttributeName"));
 
+		if (useResponsibleGroupAttributeName && CollectionUtils.isEmpty(activity.getResponsibleGroupAttributeNames())) {
+
+			validationErrors.add(new ValidationError("ResponsibleAttributeGroupNamesRequired"));
+		}
+		
+			
 		if (activity.isAllowManagersToAssignOwner() && assignableUsers == null && assignableGroups == null) {
 
 			validationErrors.add(new ValidationError("AssignableRequired"));
