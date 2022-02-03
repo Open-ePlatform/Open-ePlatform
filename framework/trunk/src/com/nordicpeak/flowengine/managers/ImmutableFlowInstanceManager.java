@@ -44,14 +44,13 @@ import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
-
 public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceManager {
 
 	private static final long serialVersionUID = -12255806392014427L;
 
 	private final FlowInstance flowInstance;
 	private final List<ImmutableManagedStep> managedSteps;
-	
+
 	private MutableAttributeHandler sessionAttributeHandler;
 
 	/**
@@ -74,36 +73,36 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		managedSteps = new ArrayList<ImmutableManagedStep>(flowInstance.getFlow().getSteps().size());
 
 		TextTagReplacer.replaceTextTags(flowInstance.getFlow(), instanceMetadata.getSiteProfile());
-		
-		if(absoluteFileURL != null){
-			
+
+		if (absoluteFileURL != null) {
+
 			FCKUtils.setAbsoluteFileUrls(flowInstance.getFlow(), absoluteFileURL);
 		}
-		
-		if(req != null){
-			
+
+		if (req != null) {
+
 			URLRewriter.setAbsoluteLinkUrls(flowInstance.getFlow(), req);
 		}
 
-		for(Step step : flowInstance.getFlow().getSteps()){
+		for (Step step : flowInstance.getFlow().getSteps()) {
 
-			if(step.getQueryDescriptors() == null){
+			if (step.getQueryDescriptors() == null) {
 
 				managedSteps.add(new ImmutableManagedStep(step, new ArrayList<ImmutableQueryInstance>(0)));
 				continue;
 			}
-			
+
 			step.setFlow(flowInstance.getFlow());
 
 			List<ImmutableQueryInstance> queryInstances = new ArrayList<ImmutableQueryInstance>(step.getQueryDescriptors().size());
 
-			for(QueryDescriptor queryDescriptor : step.getQueryDescriptors()){
+			for (QueryDescriptor queryDescriptor : step.getQueryDescriptors()) {
 
-				if(CollectionUtils.isEmpty(queryDescriptor.getQueryInstanceDescriptors())){
+				if (CollectionUtils.isEmpty(queryDescriptor.getQueryInstanceDescriptors())) {
 
 					throw new MissingQueryInstanceDescriptor(flowInstance, queryDescriptor);
 				}
-				
+
 				queryDescriptor.setStep(step);
 
 				QueryInstanceDescriptor queryInstanceDescriptor = queryDescriptor.getQueryInstanceDescriptors().get(0);
@@ -120,16 +119,16 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	}
 
 	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
-		
+
 		return getFullShowHTML(req, user, null, flowEngineInterface, onlyPopulatedQueries, baseUpdateURL, baseQueryRequestURL, requestMetadata);
 	}
-	
+
 	@Override
 	public List<ManagerResponse> getFullShowHTML(HttpServletRequest req, User user, User poster, ImmutableFlowEngineInterface flowEngineInterface, boolean onlyPopulatedQueries, String baseUpdateURL, String baseQueryRequestURL, RequestMetadata requestMetadata) throws UnableToGetQueryInstanceShowHTMLException {
 
 		List<ManagerResponse> managerResponses = new ArrayList<ManagerResponse>(this.managedSteps.size());
 
-		for(int stepIndex=0; stepIndex < this.managedSteps.size(); stepIndex++){
+		for (int stepIndex = 0; stepIndex < this.managedSteps.size(); stepIndex++) {
 
 			managerResponses.add(getStepShowHTML(stepIndex, req, user, flowEngineInterface, onlyPopulatedQueries, baseUpdateURL, baseQueryRequestURL, requestMetadata));
 		}
@@ -143,11 +142,11 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		String stepUpdateURL;
 
-		if(baseUpdateURL == null){
+		if (baseUpdateURL == null || flowInstance.getFlow().isAlwaysStartFromFirstStep()) {
 
 			stepUpdateURL = null;
 
-		}else{
+		} else {
 
 			stepUpdateURL = baseUpdateURL + "?step=" + managedStep.getStep().getStepID();
 		}
@@ -155,14 +154,14 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 		ArrayList<QueryResponse> queryResponses = new ArrayList<QueryResponse>(managedStep.getQueryInstances().size());
 
 		AttributeHandler attributeHandler = flowInstance.getAttributeHandler();
-		
-		for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
 
-			if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !queryInstance.getQueryInstanceDescriptor().isPopulated())){
+		for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				try{
+			if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && !(onlyPopulatedQueries && !queryInstance.getQueryInstanceDescriptor().isPopulated())) {
+
+				try {
 					queryResponses.add(queryInstance.getShowHTML(req, user, flowInstance.getPoster(), flowEngineInterface.getQueryHandler(), stepUpdateURL, getQueryRequestURL(queryInstance, baseQueryRequestURL), new InstanceRequestMetadata(requestMetadata, this), attributeHandler));
-				}catch(Throwable e){
+				} catch (Throwable e) {
 					throw new UnableToGetQueryInstanceShowHTMLException(queryInstance.getQueryInstanceDescriptor(), e);
 				}
 			}
@@ -195,7 +194,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	}
 
 	@Override
-	public ImmutableFlowInstance getFlowInstance(){
+	public ImmutableFlowInstance getFlowInstance() {
 
 		return flowInstance;
 	}
@@ -203,11 +202,11 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	@Override
 	public ImmutableQueryInstance getQueryInstance(int queryID) {
 
-		for(ImmutableManagedStep managedStep : this.managedSteps){
+		for (ImmutableManagedStep managedStep : this.managedSteps) {
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID() == queryID){
+				if (queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getQueryID() == queryID) {
 
 					return queryInstance;
 				}
@@ -221,13 +220,13 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	@Override
 	public <T extends ImmutableQueryInstance> T getQuery(Class<T> queryInstanceClass) {
 
-		for(ImmutableManagedStep managedStep : this.managedSteps){
+		for (ImmutableManagedStep managedStep : this.managedSteps) {
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstanceClass.isAssignableFrom(queryInstance.getClass())){
+				if (queryInstanceClass.isAssignableFrom(queryInstance.getClass())) {
 
-					return (T)queryInstance;
+					return (T) queryInstance;
 				}
 			}
 		}
@@ -239,13 +238,13 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	@Override
 	public <T extends ImmutableQueryInstance> T getQuery(Class<T> queryInstanceClass, String name) {
 
-		for(ImmutableManagedStep managedStep : this.managedSteps){
+		for (ImmutableManagedStep managedStep : this.managedSteps) {
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstanceClass.isAssignableFrom(queryInstance.getClass()) && queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName().equals(name)){
+				if (queryInstanceClass.isAssignableFrom(queryInstance.getClass()) && queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().getName().equals(name)) {
 
-					return (T)queryInstance;
+					return (T) queryInstance;
 				}
 			}
 		}
@@ -259,18 +258,18 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		List<T> queryList = new ArrayList<T>();
 
-		for(ImmutableManagedStep managedStep : this.managedSteps){
+		for (ImmutableManagedStep managedStep : this.managedSteps) {
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstanceClass.isAssignableFrom(queryInstance.getClass())){
+				if (queryInstanceClass.isAssignableFrom(queryInstance.getClass())) {
 
 					queryList.add((T) queryInstance);
 				}
 			}
 		}
 
-		if(queryList.isEmpty()){
+		if (queryList.isEmpty()) {
 
 			return null;
 		}
@@ -283,19 +282,19 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		List<PDFManagerResponse> managerResponses = new ArrayList<PDFManagerResponse>(this.managedSteps.size());
 
-		for(int stepIndex=0; stepIndex < this.managedSteps.size(); stepIndex++){
+		for (int stepIndex = 0; stepIndex < this.managedSteps.size(); stepIndex++) {
 
 			ImmutableManagedStep managedStep = managedSteps.get(stepIndex);
 
 			ArrayList<PDFQueryResponse> queryResponses = new ArrayList<PDFQueryResponse>(managedStep.getQueryInstances().size());
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && queryInstance.getQueryInstanceDescriptor().isPopulated()){
+				if (queryInstance.getQueryInstanceDescriptor().getQueryState() != QueryState.HIDDEN && queryInstance.getQueryInstanceDescriptor().isPopulated()) {
 
-					try{
+					try {
 						queryResponses.add(queryInstance.getPDFContent(flowEngineInterface.getQueryHandler(), flowInstance.getAttributeHandler()));
-					}catch(Throwable e){
+					} catch (Throwable e) {
 						throw new UnableToGetQueryInstancePDFContentException(queryInstance.getQueryInstanceDescriptor(), e);
 					}
 				}
@@ -308,7 +307,7 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 
 		return flowInstance.toString();
 	}
@@ -318,15 +317,15 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		List<Element> elements = new ArrayList<Element>(this.managedSteps.size() * 5);
 
-		for(ImmutableManagedStep managedStep : this.managedSteps){
+		for (ImmutableManagedStep managedStep : this.managedSteps) {
 
-			for(ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()){
+			for (ImmutableQueryInstance queryInstance : managedStep.getQueryInstances()) {
 
-				if(queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().isExported() && queryInstance.getQueryInstanceDescriptor().isPopulated()){
+				if (queryInstance.getQueryInstanceDescriptor().getQueryDescriptor().isExported() && queryInstance.getQueryInstanceDescriptor().isPopulated()) {
 
 					Element queryElement = queryInstance.toExportXML(doc, queryHandler);
 
-					if(queryElement != null){
+					if (queryElement != null) {
 
 						elements.add(queryElement);
 					}
@@ -336,21 +335,21 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		return elements;
 	}
-	
+
 	@Override
 	public synchronized MutableAttributeHandler getSessionAttributeHandler() {
-		
+
 		if (sessionAttributeHandler == null) {
 			sessionAttributeHandler = new SimpleMutableAttributeHandler(255, 1024);
 		}
-		
+
 		return sessionAttributeHandler;
 	}
-	
+
 	@Override
 	public String getInstanceManagerID() {
-	
+
 		return null;
 	}
-	
+
 }

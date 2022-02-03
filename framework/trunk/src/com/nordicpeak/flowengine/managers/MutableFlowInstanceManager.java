@@ -1452,7 +1452,7 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 	public boolean setStep(Integer stepID){
 
-		if(!isFullyPopulated() || flowInstance.getFlow().isAlwaysStartFromFirstStep()){
+		if(!isFullyPopulated()){
 
 			return false;
 		}
