@@ -3,6 +3,9 @@
 	
 	<xsl:include href="ChildQueryFilterEndpointAdminModuleTemplates.xsl"/>
 	
+	<!-- Java i18n -->
+	<xsl:variable name="java.apiSourceTypeDescription">Val av barn</xsl:variable>
+	
 	<!-- Validation -->
 	<xsl:variable name="i18n.validation.requiredField">Du måste fylla i fältet:</xsl:variable>
 	<xsl:variable name="i18n.validation.invalidFormat">Felaktigt format på fältet:</xsl:variable>
@@ -50,4 +53,5 @@
 	<xsl:variable name="i18n.UserUserIDTag">Användarens användar-ID</xsl:variable>
 	<xsl:variable name="i18n.UserCitizenIdentifierTag">Användarens personnummer</xsl:variable>
 	<xsl:variable name="i18n.ChildCitizenIdentifiersTag">Barnens personnummer (kommaseparerad lista)</xsl:variable>
+	
 </xsl:stylesheet>

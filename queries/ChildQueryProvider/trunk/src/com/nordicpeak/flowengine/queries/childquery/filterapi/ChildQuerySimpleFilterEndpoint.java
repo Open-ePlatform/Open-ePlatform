@@ -26,13 +26,14 @@ import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.childrelationprovider.Child;
 import com.nordicpeak.childrelationprovider.exceptions.ChildRelationProviderException;
+import com.nordicpeak.flowengine.interfaces.APISource;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterEndpoint;
 import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterProvider;
 
 @Table(name = "child_query_filter_endpoints")
 @XMLElement(name = "ChildQueryFilterEndpoint")
-public class ChildQuerySimpleFilterEndpoint extends GeneratedElementable implements ChildQueryFilterEndpoint {
+public class ChildQuerySimpleFilterEndpoint extends GeneratedElementable implements ChildQueryFilterEndpoint, APISource {
 
 	public static final Field FIELDS_RELATION = ReflectionUtils.getField(ChildQuerySimpleFilterEndpoint.class, "fields");
 
@@ -184,5 +185,4 @@ public class ChildQuerySimpleFilterEndpoint extends GeneratedElementable impleme
 	public ChildQueryFilterProvider getProvider() {
 		return adminModule;
 	}
-
 }

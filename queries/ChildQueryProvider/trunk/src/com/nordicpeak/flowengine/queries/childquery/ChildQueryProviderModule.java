@@ -45,6 +45,7 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.HighLevelQuery;
+import se.unlogic.standardutils.dao.MySQLRowLimiter;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
@@ -1142,6 +1143,14 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 		return filterProviders.remove(provider);
 	}
 
+	public boolean hasQueriesUsingFilterEndpoint(String name) throws SQLException {
+		
+		HighLevelQuery<ChildQuery> query = new HighLevelQuery<>();
+		query.addParameter(queryFilterEndpointNameParamFactory.getParameter(name));
+		query.setRowLimiter(MySQLRowLimiter.SINGLE_ROW);
+		return queryDAO.getBoolean(query);
+	}
+	
 	public List<ChildQuery> getQueriesUsingFilterEndpoint(String name) throws SQLException {
 
 		HighLevelQuery<ChildQuery> query = new HighLevelQuery<>();

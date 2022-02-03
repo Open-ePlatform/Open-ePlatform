@@ -64,7 +64,8 @@ public class ChildQueryFilterEndpointCRUD extends ModularCRUD<ChildQuerySimpleFi
 				Element element = endpoint.toXML(doc);
 
 				try {
-					if (callback.getQueries(endpoint) != null) {
+					if (callback.isInUse(endpoint)) {
+						
 						XMLUtils.appendNewElement(doc, element, "InUse");
 					}
 				} catch (SQLException e) {

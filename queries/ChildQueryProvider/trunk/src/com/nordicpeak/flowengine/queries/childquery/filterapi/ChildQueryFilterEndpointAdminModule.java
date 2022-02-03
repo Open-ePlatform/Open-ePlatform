@@ -21,6 +21,7 @@ import se.unlogic.hierarchy.core.annotations.ModuleSetting;
 import se.unlogic.hierarchy.core.annotations.TextAreaSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
+import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
@@ -49,6 +50,9 @@ import se.unlogic.webutils.http.SimpleRequest;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.childrelationprovider.Child;
+import com.nordicpeak.flowengine.interfaces.APISource;
+import com.nordicpeak.flowengine.interfaces.APISourceHandler;
+import com.nordicpeak.flowengine.interfaces.APISourceProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.queries.childquery.ChildQueryProviderModule;
@@ -56,9 +60,12 @@ import com.nordicpeak.flowengine.queries.childquery.beans.ChildQuery;
 import com.nordicpeak.flowengine.queries.childquery.interfaces.ChildQueryFilterProvider;
 import com.nordicpeak.flowengine.utils.UserAttributeTagUtils;
 
-public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModule implements CRUDCallback<User>, ChildQueryFilterProvider {
+public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModule implements CRUDCallback<User>, ChildQueryFilterProvider, APISourceProvider {
 
 	public static final AnnotatedBeanTagSourceFactory<User> USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$user.");
+
+	@XSLVariable(prefix = "java.")
+	private String apiSourceTypeDescription;
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection timeout", description = "The maximum time in seconds to wait for a connection")
@@ -82,8 +89,10 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 	private QueryParameterFactory<ChildQuerySimpleFilterEndpoint, String> endpointNameParamFactory;
 
 	private ChildQueryFilterEndpointCRUD endpointCRUD;
-	
+
 	private ChildQueryProviderModule childQueryProviderModule;
+
+	private APISourceHandler apiSourceHandler;
 
 	@Override
 	protected void createDAOs(DataSource dataSource) throws Exception {
@@ -94,8 +103,8 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		if (upgradeResult.isUpgrade()) {
 
 			log.info(upgradeResult.toString());
-		}		
-		
+		}
+
 		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
 
 		endpointDAO = daoFactory.getDAO(ChildQuerySimpleFilterEndpoint.class);
@@ -110,65 +119,96 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 
 		endpointCRUD = new ChildQueryFilterEndpointCRUD(endpointDAOWrapper, this);
 	}
-	
-	@InstanceManagerDependency
-	public void setChildQueryProviderModule(ChildQueryProviderModule childQueryProviderModule) throws SQLException {
-		
-		if (childQueryProviderModule != null) {
-			
-			childQueryProviderModule.addChildQueryFilterProvider(this);
-			
-		} else if (this.childQueryProviderModule != null) {
-			
+
+	@Override
+	public void unload() throws Exception {
+
+		if (this.childQueryProviderModule != null) {
+
 			this.childQueryProviderModule.removeChildQueryFilterProvider(this);
 		}
-		
+
+		if (this.apiSourceHandler != null) {
+
+			this.apiSourceHandler.removeAPISourceProvider(this);
+		}
+
+		super.unload();
+	}
+
+	@InstanceManagerDependency
+	public void setChildQueryProviderModule(ChildQueryProviderModule childQueryProviderModule) throws SQLException {
+
+		if (childQueryProviderModule != null) {
+
+			childQueryProviderModule.addChildQueryFilterProvider(this);
+
+		} else if (this.childQueryProviderModule != null) {
+
+			this.childQueryProviderModule.removeChildQueryFilterProvider(this);
+		}
+
 		this.childQueryProviderModule = childQueryProviderModule;
+	}
+
+	@InstanceManagerDependency
+	public void setAPISourceHandler(APISourceHandler apiSourceHandler) throws SQLException {
+
+		if (apiSourceHandler != null) {
+
+			apiSourceHandler.addAPISourceProvider(this);
+
+		} else if (this.apiSourceHandler != null) {
+
+			this.apiSourceHandler.removeAPISourceProvider(this);
+		}
+
+		this.apiSourceHandler = apiSourceHandler;
 	}
 
 	protected Map<String, FilterAPIChild> getChildren(ChildQuerySimpleFilterEndpoint endpoint, Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow, AttributeHandler attributeHandler) {
 
 		log.info("Getting filter children from " + endpoint);
-		
+
 		Map<String, FilterAPIChild> children = new HashMap<String, FilterAPIChild>();
 
 		TagReplacer tagReplacer = new TagReplacer();
-		
+
 		String address = endpoint.getAddress();
-		
+
 		//Build childCitizenIdentifier tag source
 		StringBuilder childCitizenIdentifierListBuilder = new StringBuilder();
-		
-		for(String childCitizenIdentifier : navetChildMap.keySet()) {
-			
-			if(childCitizenIdentifierListBuilder.length() != 0) {
-				
+
+		for (String childCitizenIdentifier : navetChildMap.keySet()) {
+
+			if (childCitizenIdentifierListBuilder.length() != 0) {
+
 				childCitizenIdentifierListBuilder.append(",");
 			}
-			
+
 			childCitizenIdentifierListBuilder.append(childCitizenIdentifier);
 		}
-		
+
 		tagReplacer.addTagSource(new SingleTagSource("$childCitizenIdentifiers", childCitizenIdentifierListBuilder.toString()));
-		
+
 		//Replace user attribute tags
 		if (user != null) {
 
 			address = UserAttributeTagUtils.replaceTags(address, user, true);
 		}
-		
+
 		//Build user tag source
 		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(user));
-		
+
 		//Replace tags
 		address = tagReplacer.replace(address);
-		
+
 		//Replace attribute tags
-		if(attributeHandler != null){
-			
+		if (attributeHandler != null) {
+
 			address = AttributeTagUtils.replaceTags(address, attributeHandler, false, true);
 		}
-		
+
 		SimpleRequest simpleRequest = new SimpleRequest(address);
 
 		simpleRequest.setFollowRedirects(false);
@@ -230,9 +270,9 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 				log.warn("Error parsing children XML for " + endpoint, e);
 				return null;
 			}
-			
+
 		} catch (IOException e) {
-			
+
 			log.warn("Error connecting to " + endpoint, e);
 			return null;
 		}
@@ -294,26 +334,26 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 
 		return allowedEncodings;
 	}
-	
+
 	@Override
 	public List<ChildQuerySimpleFilterEndpoint> getEndpoints() throws SQLException {
 
 		HighLevelQuery<ChildQuerySimpleFilterEndpoint> query = new HighLevelQuery<ChildQuerySimpleFilterEndpoint>();
-		
+
 		return endpointDAO.getAll(query);
 	}
-	
+
 	public ChildQuerySimpleFilterEndpoint getEndpoint(Integer endpointID) throws SQLException {
 
-		HighLevelQuery<ChildQuerySimpleFilterEndpoint> query =  new HighLevelQuery<ChildQuerySimpleFilterEndpoint>();
+		HighLevelQuery<ChildQuerySimpleFilterEndpoint> query = new HighLevelQuery<ChildQuerySimpleFilterEndpoint>();
 		query.addParameter(endpointIDParamFactory.getParameter(endpointID));
-		
+
 		ChildQuerySimpleFilterEndpoint endpoint = endpointDAO.get(query);
-		
+
 		if (endpoint != null) {
 			endpoint.setAdminModule(this);
 		}
-		
+
 		return endpoint;
 	}
 
@@ -333,15 +373,55 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 	}
 
 	public List<ChildQuery> getQueries(ChildQuerySimpleFilterEndpoint endpoint) throws SQLException {
+
 		return childQueryProviderModule.getQueriesUsingFilterEndpoint(endpoint.getName());
 	}
 
 	public ChildQueryProviderModule getChildQueryProviderModule() {
+
 		return childQueryProviderModule;
 	}
 
 	@Override
 	public String getName() {
+
 		return moduleDescriptor.getName();
 	}
+
+	@Override
+	public List<? extends APISource> getAPISources() throws Exception {
+
+		return endpointDAO.getAll();
+	}
+
+	@Override
+	public String getTypeDescription() {
+
+		return apiSourceTypeDescription;
+	}
+	
+	@Override
+	public String getBaseShowURL() {
+
+		return this.getFullAlias() + "/show/";
+	}
+
+	@Override
+	public String getBaseUpdateURL() {
+
+		return this.getFullAlias() + "/update/";
+	}
+
+	@Override
+	public String getBaseDeleteURL() {
+
+		return this.getFullAlias() + "/delete/";
+	}
+
+	@Override
+	public boolean isInUse(APISource apiSource) throws SQLException {
+		
+		return childQueryProviderModule.hasQueriesUsingFilterEndpoint(apiSource.getName());
+	}
+
 }
