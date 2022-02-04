@@ -8,6 +8,7 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 
 @Table(name = "flowengine_flow_instance_query_search_values")
@@ -39,7 +40,7 @@ public class QuerySearchValue implements Serializable {
 		super();
 		this.flowInstance = flowInstance;
 		this.queryID = queryID;
-		this.searchValue = searchValue;
+		this.searchValue = StringUtils.substring(searchValue, 255);
 	}
 
 	public Integer getQuerySearchValueID() {
@@ -79,7 +80,7 @@ public class QuerySearchValue implements Serializable {
 
 	public void setSearchValue(String searchValue) {
 
-		this.searchValue = searchValue;
+		this.searchValue = StringUtils.substring(searchValue, 255);
 	}
 
 	@Override
