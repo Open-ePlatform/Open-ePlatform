@@ -448,6 +448,21 @@
 			</div>
 		</div>
 		
+		<div class="floatleft full bigmarginbottom">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'appendCommentsToInternalMessages'" />
+					<xsl:with-param name="id" select="'appendCommentsToInternalMessages'" />
+					<xsl:with-param name="element" select="ActivityGroup" />
+				</xsl:call-template>
+				
+				<label class="marginleft" for="appendCommentsToInternalMessages">
+					<xsl:value-of select="$i18n.ActivityGroup.appendCommentsToInternalMessages" />
+				</label>
+			</div>
+		</div>
+		
 		<div class="floatleft full">
 		
 			<div class="floatleft">

@@ -590,5 +590,12 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="32">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `appendCommentsToInternalMessages` TINYINT(1) UNSIGNED NOT NULL AFTER `appendCommentsToExternalMessages`;			
+			]]>
+		</Query>
+	</Script>
 		
 </DBScripts>

@@ -78,10 +78,12 @@ import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.SimpleSigningRequest;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.exceptions.evaluation.EvaluationException;
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProviderException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
@@ -604,6 +606,23 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 					}
+					
+					if (activityGroup.isAppendCommentsToInternalMessages() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
+
+						log.info("Copying comment to internal messages for flowinstance " + flowInstance);
+
+						InternalMessage internalMessage = new InternalMessage();
+						internalMessage.setFlowInstance(flowInstance);
+						internalMessage.setPoster(user);
+						internalMessage.setMessage(activity.getName() + ":\r" + comment);
+						internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+						internalMessage.setAttachments(null);
+
+						flowAdminModule.getDAOFactory().getInternalMessageDAO().add(internalMessage);
+
+						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
+					}
 
 					redirectToDefaultMethod(req, res);
 					return null;
@@ -911,6 +930,23 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 					systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+				}
+				
+				if (activityGroup.isAppendCommentsToInternalMessages() && !StringUtils.isEmpty(activityProgress.getComment()) && flowInstance.getOwners() != null) {
+
+					log.info("Copying comment to internal messages for flowinstance " + flowInstance);
+
+					InternalMessage internalMessage = new InternalMessage();
+					internalMessage.setFlowInstance(flowInstance);
+					internalMessage.setPoster(user);
+					internalMessage.setMessage(activity.getName() + ":\r" + activityProgress.getComment());
+					internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+					internalMessage.setAttachments(null);
+					
+					flowAdminModule.getDAOFactory().getInternalMessageDAO().add(internalMessage);
+
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
 				}
 
 				redirectToDefaultMethod(req, res);

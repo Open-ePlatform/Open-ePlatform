@@ -105,6 +105,11 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	@WebPopulate
 	@XMLElement
 	private boolean appendCommentsToExternalMessages;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean appendCommentsToInternalMessages;
 
 	@DAOManaged
 	@WebPopulate
@@ -276,6 +281,16 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 	public void setAppendCommentsToExternalMessages(boolean appendCommentsToExternalMessages) {
 
 		this.appendCommentsToExternalMessages = appendCommentsToExternalMessages;
+	}
+	
+	public boolean isAppendCommentsToInternalMessages() {
+
+		return appendCommentsToInternalMessages;
+	}
+
+	public void setAppendCommentsToInternalMessages(boolean appendCommentsToInternalMessages) {
+
+		this.appendCommentsToInternalMessages = appendCommentsToInternalMessages;
 	}
 
 	public boolean isSendActivityGroupStartedEmail() {
@@ -542,6 +557,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		this.approvedText = XMLValidationUtils.validateParameter("approvedText", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.deniedText = XMLValidationUtils.validateParameter("deniedText", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.appendCommentsToExternalMessages = xmlParser.getPrimitiveBoolean("appendCommentsToExternalMessages");
+		this.appendCommentsToInternalMessages = xmlParser.getPrimitiveBoolean("appendCommentsToInternalMessages");
 		this.hideFlowinstanceIDInPDF = xmlParser.getPrimitiveBoolean("hideFlowinstanceIDInPDF");
 		this.allowRestarts = xmlParser.getPrimitiveBoolean("allowRestarts");
 		this.onlyRestartIfActivityChanges = xmlParser.getPrimitiveBoolean("onlyRestartIfActivityChanges");
