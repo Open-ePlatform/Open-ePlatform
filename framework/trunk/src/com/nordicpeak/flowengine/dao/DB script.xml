@@ -2832,5 +2832,13 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="154">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_family_manager_groups` ADD COLUMN `notifyGroupMembersPersonally` TINYINT(3) UNSIGNED NOT NULL AFTER `allowUpdatingManagers`;
+			]]>
+		</Query>
+	</Script>
 			
 </DBScripts>

@@ -127,6 +127,7 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 					
 					boolean restricted = "true".equals(req.getParameter("manager-restricted" + managerID));
 					boolean allowUpdatingManagers = restricted && "true".equals(req.getParameter("manager-allowUpdatingManagers" + managerID));
+					
 					Date validFromDate = ValidationUtils.validateParameter("manager-validFromDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					Date validToDate = ValidationUtils.validateParameter("manager-validToDate" + managerID, req, false, DatePopulator.getYearLimitedPopulator(), validationErrors);
 					
@@ -173,11 +174,14 @@ public class FlowFamilyCRUD extends AdvancedIntegerBasedCRUD<FlowFamily, FlowAdm
 					
 					boolean restricted = "true".equals(req.getParameter("manager-group-restricted" + groupID));
 					boolean allowUpdatingManagers = restricted && "true".equals(req.getParameter("manager-group-allowUpdatingManagers" + groupID));
+					boolean notifyGroupMembersPersonally = restricted && "true".equals(req.getParameter("manager-group-notifyGroupMembersPersonally" + groupID));
+
 					List<String> notificationEmailAddresses = StringUtils.splitOnLineBreak(req.getParameter("manager-group-notificationEmailAddresses" + groupID), true);
 
 					FlowFamilyManagerGroup managerGroup = new FlowFamilyManagerGroup(group);
 					managerGroup.setRestricted(restricted);
 					managerGroup.setAllowUpdatingManagers(allowUpdatingManagers);
+					managerGroup.setNotifyGroupMembersPersonally(notifyGroupMembersPersonally);
 
 					if (!CollectionUtils.isEmpty(notificationEmailAddresses)) {
 

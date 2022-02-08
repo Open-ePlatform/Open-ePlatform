@@ -777,20 +777,29 @@ function updateManagerGroupShowHideRowExtra(row) {
 	var groupID = row.find("input[name='manager-group']").val();
 	row.find(".restricted").toggle(row.find("input[name='manager-group-restricted" + groupID + "']").val() == "true");
 	row.find(".allowUpdatingManagers").toggle(row.find("input[name='manager-group-allowUpdatingManagers" + groupID + "']").val() == "true");
+	row.find(".notifyGroupMembersPersonally").toggle(row.find("input[name='manager-group-notifyGroupMembersPersonally" + groupID + "']").val() == "true");
+	
 }
 
 function updateManagerShowHideModalFields(content) {
 	
 	var restrictedField = content.find("input[name='restricted']");
 	var allowUpdatingManagersField = content.find("input[name='allowUpdatingManagers']");
+	var notifyGroupMembersPersonallyField = content.find("input[name='notifyGroupMembersPersonally']");
 	
 	restrictedField.on("change", function(){
 		
 		var restricted = restrictedField.prop("checked")
 		allowUpdatingManagersField.parent().toggle(restricted);
+		if(notifyGroupMembersPersonallyField) {
+			$("#notifyGroupMembersPersonallyDiv").toggle(restricted);
+		}
 		
 		if (!restricted) {
 			allowUpdatingManagersField.prop("checked", false);
+			if(notifyGroupMembersPersonallyField) {
+				notifyGroupMembersPersonallyField.prop("checked", false);
+			}
 		}
 		
 	}).trigger("change");

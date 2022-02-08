@@ -41,6 +41,10 @@ public class FlowFamilyManagerGroup extends GeneratedElementable implements Seri
 	private boolean allowUpdatingManagers;
 	
 	@DAOManaged
+	@XMLElement
+	private boolean notifyGroupMembersPersonally;
+	
+	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
 	@SimplifiedRelation(table = "flowengine_flow_family_manager_group_notification_addresses", remoteValueColumnName = "email")
 	@XMLElement(childName = "address")
@@ -102,6 +106,15 @@ public class FlowFamilyManagerGroup extends GeneratedElementable implements Seri
 	public void setAllowUpdatingManagers(boolean allowUpdatingManagers) {
 		this.allowUpdatingManagers = allowUpdatingManagers;
 	}
+	
+	public boolean isNotifyGroupMembersPersonally() {
+		return notifyGroupMembersPersonally;
+	}
+	
+	public void setNotifyGroupMembersPersonally(boolean notifyGroupMembersPersonally) {
+
+		this.notifyGroupMembersPersonally = notifyGroupMembersPersonally;
+	}
 
 	public List<String> getNotificationEmailAddresses() {
 
@@ -118,11 +131,11 @@ public class FlowFamilyManagerGroup extends GeneratedElementable implements Seri
 
 		if (group != null) {
 
-			return group + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
+			return group + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ", notifyGroupMembersPersonally=" + notifyGroupMembersPersonally + ")";
 
 		} else {
 
-			return "groupID " + groupID + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ")";
+			return "groupID " + groupID + " (restricted=" + restricted + ", allowUpdatingManagers=" + allowUpdatingManagers + ", notifyGroupMembersPersonally=" + notifyGroupMembersPersonally + ")";
 		}
 	}
 

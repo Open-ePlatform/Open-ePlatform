@@ -1462,6 +1462,14 @@
 					</span>
 					
 				</xsl:if>
+				
+				<xsl:if test="notifyGroupMembersPersonally = 'true'">
+					
+					<span class="bigmarginleft">
+						<xsl:value-of select="$i18n.Manager.notifyGroupMembersPersonally"/>
+					</span>
+					
+				</xsl:if>
 			
 			</xsl:if>
 			
@@ -1536,6 +1544,14 @@
 					
 					<span class="bigmarginleft">
 						<xsl:value-of select="$i18n.Manager.allowUpdatingManagers"/>
+					</span>
+					
+				</xsl:if>
+				
+				<xsl:if test="notifyGroupMembersPersonally = 'true'">
+					
+					<span class="bigmarginleft">
+						<xsl:value-of select="$i18n.Manager.notifyGroupMembersPersonally"/>
 					</span>
 					
 				</xsl:if>
@@ -6015,7 +6031,18 @@
 							<label class="marginleft" for="allowUpdatingManagers2">
 								<xsl:value-of select="$i18n.UpdateManagers.Modal.allowUpdatingManagers" />
 							</label>
+								<div class="floatleft full bigmarginbottom">
+							<input type="checkbox" id="notifyGroupMembersPersonally" name="notifyGroupMembersPersonally" value="true"/>
+							<label class="marginleft" for="notifyGroupMembersPersonally">
+								<xsl:value-of select="$i18n.UpdateManagers.Modal.notifyGroupMembersPersonally" />
+							</label>
+							<div class="floatleft full bigmarginbottom bigpaddingleft bigmarginleft">
+								<p class="tiny"><xsl:value-of select="$i18n.UpdateManagers.Modal.notifyGroupMembersPersonally.disclamer" /></p>
+							</div>
 						</div>
+						</div>
+						
+					
 								
 						<div class="floatleft full bigmarginbottom">
 						
@@ -6092,6 +6119,10 @@
 				
 				<span class="bigmarginleft allowUpdatingManagers" style="display: none;">
 					<xsl:value-of select="$i18n.Manager.allowUpdatingManagers" />
+				</span>
+				
+				<span class="bigmarginleft notifyGroupMembersPersonally" style="display: none;">
+					<xsl:value-of select="$i18n.Manager.notifyGroupMembersPersonally" />
 				</span>
 			
 				<a class="floatright marginright open-manager-modal" href="#" onclick="openUpdateManagerGroupModal(this, event)" title="{$i18n.UpdateManagers.openModal}">
@@ -6198,6 +6229,12 @@
 				
 				<xsl:call-template name="grouplist-extension-default">
 					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="name" select="'notifyGroupMembersPersonally'" />
+					<xsl:with-param name="value" select="''" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="grouplist-extension-default">
+					<xsl:with-param name="listname" select="$listname" />
 					<xsl:with-param name="name" select="'notificationEmailAddresses'" />
 					<xsl:with-param name="value" select="''" />
 				</xsl:call-template>
@@ -6226,6 +6263,13 @@
 					<xsl:with-param name="requestparameters" select="$requestparameters" />
 					<xsl:with-param name="name" select="'allowUpdatingManagers'" />
 					<xsl:with-param name="value" select="../allowUpdatingManagers" />
+				</xsl:call-template>
+				
+				<xsl:call-template name="grouplist-extension">
+					<xsl:with-param name="listname" select="$listname" />
+					<xsl:with-param name="requestparameters" select="$requestparameters" />
+					<xsl:with-param name="name" select="'notifyGroupMembersPersonally'" />
+					<xsl:with-param name="value" select="../notifyGroupMembersPersonally" />
 				</xsl:call-template>
 				
 				<xsl:variable name="notificationEmailAddressesString">
