@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,6 +87,7 @@ import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.string.TagSource;
 import se.unlogic.standardutils.templates.TemplateUtils;
+import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
@@ -658,6 +660,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance expired email message (global)", description = "The message of emails sent when a flow instance expires", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceExpiredGlobalEmailMessage;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Maximum number of allowed group notification emails (global)", description = "The maximum number of sent group notification sent", required = true, formatValidator = PositiveStringIntegerValidator.class)
+	@XSLVariable(prefix = "java.")
+	private Integer maxNumberOfGroupNotificationEmails = 100;
 
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Flow instance expired email address (global)", description = "Global address to be notified when flow instances expires", formatValidator = EmailPopulator.class)
@@ -1678,7 +1685,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.warn("Not sending external message notifications for " + flowInstance + " as it has no owners");
 			return;
 		}
-
+		
 		if (flowInstance.getFlow().isHideExternalMessages()) {
 
 			log.warn("Not sending external message notifications for " + flowInstance + " as flow has external messages hidden");
@@ -1720,29 +1727,66 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					sendManagerEmails(flowInstance, contact, notificationSettings.getExternalMessageReceivedManagerSubject(), notificationSettings.getExternalMessageReceivedManagerMessage(), null, false);
 				}
-
+				
+				List<String> ignoreEmailAddress = new ArrayList<>();
+				ignoreEmailAddress.add(contact.getEmail());
+				
+				List<Integer> allManagerGroupIDs = getAllManagerGroupIDs(flowInstance);
+				
 				if (notificationSettings.isSendExternalMessageReceivedGroupEmail()) {
 
 					Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
 
 					for (String email : managerGroupEmailRecipientAddresses) {
-
 						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getExternalMessageReceivedGroupEmailSubject(), notificationSettings.getExternalMessageReceivedGroupEmailMessage(), null, false);
+						ignoreEmailAddress.add(email);
 					}
 				}
 
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
 
 					for (String email : notificationSettings.getExternalMessageReceivedGlobalEmailAddresses()) {
-
 						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);
+						ignoreEmailAddress.add(email);
 					}
+					
 				}
+				
+				if(notificationSettings.isSendExternalMessageReceivedGroupEmail() && !CollectionUtils.isEmpty(allManagerGroupIDs)) {
+					sendEmailToManagerGroups(event.getSiteProfile(), flowInstance, contact, ignoreEmailAddress, allManagerGroupIDs, notificationSettings.getExternalMessageReceivedGroupEmailSubject(), notificationSettings.getExternalMessageReceivedGroupEmailMessage());
+				}
+				
+				
+				
 			}
 
 		} else {
 
 			log.warn("External message added event received with unsupported sender type: " + event.getSenderType());
+		}
+	}
+
+	private void sendEmailToManagerGroups(SiteProfile siteProfile, FlowInstance flowInstance, Contact contact, List<String> ignoreAddress, List<Integer> allManagerGroups, String subject, String message) {
+
+		
+		List<FlowFamilyManagerGroup> flowFamilyManagerGroups = flowInstance.getFlow().getFlowFamily().getManagerGroups();
+		
+		if(flowFamilyManagerGroups != null && allManagerGroups != null) {
+			List<Integer> affectedGroupIDs = flowFamilyManagerGroups.stream().filter(FlowFamilyManagerGroup::isNotifyGroupMembersPersonally).map(FlowFamilyManagerGroup::getGroupID).collect(Collectors.toList());
+			
+			affectedGroupIDs.removeIf(e-> !allManagerGroups.contains(e));
+			
+			if(!affectedGroupIDs.isEmpty()) {
+				List<User> allAffectedUsers = systemInterface.getUserHandler().getUsersByGroups(affectedGroupIDs, true);
+				for(int i = 0; i < maxNumberOfGroupNotificationEmails; i++) {
+					User affectedUser = allAffectedUsers.get(i);
+					if(!ignoreAddress.contains(affectedUser.getEmail()) && affectedUser.getEmail() != null)
+					{
+						sendGlobalEmail(siteProfile, flowInstance, contact, affectedUser.getEmail(), subject, message, null, false);
+						ignoreAddress.add(affectedUser.getEmail());
+					}
+				}
+			}
 		}
 	}
 
@@ -1759,6 +1803,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		Contact posterContact = getPosterContact(flowInstance, event.getSiteProfile());
 		
+		List<String> ignoreEmailAddress = new ArrayList<>();
+		ignoreEmailAddress.add(posterContact.getEmail());
+		
+		List<Integer> allManagerGroupIDs = getAllManagerGroupIDs(flowInstance);
+		
 		if (notificationSettings.isSendInternalMessageAddedManagerEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
 
 			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
@@ -1771,10 +1820,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
 
 			for (String email : managerGroupEmailRecipientAddresses) {
-
 				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);
+				ignoreEmailAddress.add(email);
 			}
+		
 		}
+		
+		if (notificationSettings.isSendInternalMessageAddedGroupEmail() && !CollectionUtils.isEmpty(allManagerGroupIDs)) {
+			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
+			sendEmailToManagerGroups(event.getSiteProfile(), flowInstance, contact, ignoreEmailAddress, allManagerGroupIDs, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage());
+		}
+		
+		
 	}
 
 	@EventListener(channel = FlowInstance.class)
@@ -1841,6 +1898,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		if (!event.isSuppressManagerNotifications()) {
 
 			Contact posterContact = getPosterContact(flowInstance);
+			
+			List<String> ignoreEmailAddress = new ArrayList<>();
+			ignoreEmailAddress.add(posterContact.getEmail());
+			
+			List<Integer> allManagerGroupIDs = getAllManagerGroupIDs(flowInstance);
 
 			if (notificationSettings.isSendStatusChangedManagerEmail()) {
 
@@ -1848,17 +1910,23 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 
 			if (notificationSettings.isSendStatusChangedManagerGroupEmail() && !CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
-
+				
 				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
 
 				for (String email : managerGroupEmailRecipientAddresses) {
 
 					if (event.getUser() == null || !email.equals(event.getUser().getEmail())) {
 						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, false);
+						ignoreEmailAddress.add(email);
 					}
 				}
-			}
+				
+				Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
+				sendEmailToManagerGroups(event.getSiteProfile(), flowInstance, contact, ignoreEmailAddress, allManagerGroupIDs, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage());
 
+				
+			}
+			
 			if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
 
 				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
@@ -1929,6 +1997,21 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
+		FlowInstance flowInstance = event.getFlowInstance();
+
+		try { // Read from DB as event flow instance might not have all the fields we need
+			flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
+
+		} catch (Exception e) {
+
+			log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
+		}
+		
+		List<Integer> allManagerGroupIDs = getAllManagerGroupIDs(flowInstance);
+		
+		List<String> ignoreEmailAddress = new ArrayList<>();
+		
+		
 		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGroupEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail() || event.getAdditionalGlobalEmailRecipients() != null) {
 
 			List<User> excludedManagers = new ArrayList<>();
@@ -1949,16 +2032,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				excludedManagers.add(event.getUser());
 			}
 
-			FlowInstance flowInstance = event.getFlowInstance();
-
-			try { // Read from DB as event flow instance might not have all the fields we need
-				flowInstance = getFlowInstance(flowInstance.getFlowInstanceID());
-
-			} catch (Exception e) {
-
-				log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
-			}
-
 			Contact posterContact = getPosterContact(flowInstance);
 
 			if (notificationSettings.isSendFlowInstanceAssignedManagerEmail()) {
@@ -1971,27 +2044,44 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance, excludedManagerGroups);
 
 				for (String email : managerGroupEmailRecipientAddresses) {
-
 					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGroupEmailSubject(), notificationSettings.getFlowInstanceAssignedGroupEmailMessage(), null, false);
+					ignoreEmailAddress.add(email);
 				}
 			}
 
 			if (notificationSettings.isSendFlowInstanceAssignedGlobalEmail() && !CollectionUtils.isEmpty(notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses())) {
 
 				for (String email : notificationSettings.getFlowInstanceAssignedGlobalEmailAddresses()) {
-
 					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
+					ignoreEmailAddress.add(email);
 				}
 			}
 
 			if (event.getAdditionalGlobalEmailRecipients() != null) {
 
 				for (String email : event.getAdditionalGlobalEmailRecipients()) {
-
 					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
+					ignoreEmailAddress.add(email);
 				}
 			}
+			
 		}
+		
+		if(notificationSettings.isSendFlowInstanceAssignedGroupEmail() && !CollectionUtils.isEmpty(allManagerGroupIDs)) {
+			
+			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
+			ignoreEmailAddress.add(contact.getEmail());
+			sendEmailToManagerGroups(event.getSiteProfile(), flowInstance, contact, ignoreEmailAddress, allManagerGroupIDs, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage());
+		}
+	}
+
+	private List<Integer> getAllManagerGroupIDs(FlowInstance flowInstance) {
+
+		List<Integer> allManagerGroupIDs = new ArrayList<>();
+		if(!CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
+			allManagerGroupIDs.addAll(flowInstance.getManagerGroups().stream().map(Group::getGroupID).collect(Collectors.toList()));
+		}
+		return allManagerGroupIDs;
 	}
 
 	private Set<String> getManagerGroupEmailRecipientAddresses(FlowInstance flowInstance) {
@@ -2684,7 +2774,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-
+		
 		try {
 			email.addRecipient(address);
 			email.setMessageContentType(SimpleEmail.HTML);
