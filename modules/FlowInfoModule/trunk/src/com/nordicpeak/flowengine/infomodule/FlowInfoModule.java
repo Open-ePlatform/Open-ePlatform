@@ -327,6 +327,7 @@ public class FlowInfoModule extends AnnotatedRESTModule implements EventListener
 
 				try {
 					query = URLDecoder.decode(query, req.getCharacterEncoding());
+					query = query.toLowerCase();
 				} catch (UnsupportedEncodingException | IllegalArgumentException e) {
 					log.warn("Error URL decoding request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
 				}
