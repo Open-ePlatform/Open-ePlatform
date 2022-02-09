@@ -768,7 +768,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			
 			XMLUtils.appendNewElement(doc, showTypeElement, "SubmitSurveyEnabled");
 			
-			ViewFragment viewFragment = submitSurveyProvider.getShowFlowSurveysFragment(flow.getFlowID());
+			ViewFragment viewFragment = submitSurveyProvider.getShowFlowSurveysFragment(req, flow.getFlowID());
 			
 			if (viewFragment != null) {
 				

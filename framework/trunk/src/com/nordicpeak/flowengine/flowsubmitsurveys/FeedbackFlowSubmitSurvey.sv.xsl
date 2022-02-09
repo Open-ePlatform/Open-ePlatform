@@ -21,7 +21,14 @@
 	<xsl:variable name="i18n.NoAnswer">Du måste välja ett betyg för att kunna skicka in</xsl:variable>
 	<xsl:variable name="i18n.ShowComments">Visa betyg med kommentarer</xsl:variable>
 	<xsl:variable name="i18n.HideComments">Dölj betyg med kommentarer</xsl:variable>
+	<xsl:variable name="i18n.NoCommentFound">Ingen kommentar angiven.</xsl:variable>
+	<xsl:variable name="i18n.CommentDeleted">Kommentar borttagen </xsl:variable>
+	<xsl:variable name="i18n.CommentDeletedBy"> av </xsl:variable>
 	<xsl:variable name="i18n.Answer">Betyg</xsl:variable>
+	<xsl:variable name="i18n.DeleteComment.Confirm">Är du säker att du vill ta bort vald kommentar</xsl:variable>
+	<xsl:variable name="i18n.DeleteComment.Inactive">Finns ingen kommentar att ta bort.</xsl:variable>
+	<xsl:variable name="i18n.DeleteComment">Ta bort vald kommentar</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.NoFlowFeedbackSurveys">Den här versionen av e-tjänsten har ännu inga betyg</xsl:variable>
 

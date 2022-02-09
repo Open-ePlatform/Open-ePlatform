@@ -1,15 +1,16 @@
 package com.nordicpeak.flowengine.flowsubmitsurveys;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
@@ -31,7 +32,10 @@ import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
-import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
+import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
+import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
+import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
+import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
@@ -56,21 +60,24 @@ import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
-public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implements FlowSubmitSurveyProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
+public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements FlowSubmitSurveyProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	private static final String FLOW_FAMILY_FEEDBACK_QUERY = "SELECT feedback_flow_submit_surveys.* FROM feedback_flow_submit_surveys INNER JOIN flowengine_flows ON feedback_flow_submit_surveys.flowID = flowengine_flows.flowID WHERE flowFamilyID = ? AND (added BETWEEN ? AND ?);";
 
-	private static final AnnotatedRequestPopulator<FeedbackSurvey> FEEDBACK_SURVEY_POPULATOR = new AnnotatedRequestPopulator<FeedbackSurvey>(FeedbackSurvey.class, new EnumPopulator<Answer>(Answer.class));
+	private static final AnnotatedRequestPopulator<FeedbackSurvey> FEEDBACK_SURVEY_POPULATOR = new AnnotatedRequestPopulator<>(FeedbackSurvey.class, new EnumPopulator<Answer>(Answer.class));
 
 	@XSLVariable(prefix = "java.")
 	private String chartDataTitle;
 
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name="Show comment field", description="Controls if the comment field is shown or not")
+	@CheckboxSettingDescriptor(name = "Show comment field", description = "Controls if the comment field is shown or not")
 	private boolean showCommentField = true;
-	
+
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
+
+	@InstanceManagerDependency(required = true)
+	private StaticContentModule staticContentModule;
 
 	private AnnotatedDAO<FeedbackSurvey> feedbackSurveyDAO;
 
@@ -108,7 +115,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 			log.warn("Unable to register module " + moduleDescriptor + " in instance handler, another module is already registered for class " + FlowSubmitSurveyProvider.class.getName());
 		}
 
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 	}
 
 	@Override
@@ -116,7 +123,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 		super.update(descriptor, dataSource);
 
-		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<ForegroundModuleDescriptor>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 	}
 
 	@Override
@@ -148,7 +155,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 				doc.appendChild(document);
 
 				TransactionHandler transactionHandler = null;
-				
+
 				try {
 
 					log.info("User " + user + " adding feedback for flowinstance " + flowInstance + " and flow " + flowInstance.getFlow());
@@ -160,11 +167,11 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 					feedbackSurvey.setAdded(TimeUtils.getCurrentTimestamp());
 
 					transactionHandler = feedbackSurveyDAO.createTransaction();
-					
-					if(!feedbackSurveyDAO.beanExists(feedbackSurvey, transactionHandler)){
-						
+
+					if (!feedbackSurveyDAO.beanExists(feedbackSurvey, transactionHandler)) {
+
 						feedbackSurveyDAO.add(feedbackSurvey, transactionHandler, null);
-						
+
 						transactionHandler.commit();
 					}
 
@@ -173,9 +180,9 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 				} catch (ValidationException validationException) {
 
 					XMLUtils.append(doc, document, validationException.getErrors());
-				
-				} finally{
-					
+
+				} finally {
+
 					TransactionHandler.autoClose(transactionHandler);
 				}
 
@@ -191,7 +198,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, ImmutableFlowInstance flowInstance) throws TransformerConfigurationException, TransformerException, SQLException {
+	public ViewFragment getSurveyFormFragment(HttpServletRequest req, User user, ImmutableFlowInstance flowInstance) throws TransformerException, SQLException {
 
 		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstance.getFlowInstanceID());
 
@@ -199,13 +206,14 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 			Document doc = XMLUtils.createDomDocument();
 			Element document = doc.createElement("Document");
+
 			doc.appendChild(document);
 
 			Element formElement = doc.createElement("FeedbackSurveyForm");
 			document.appendChild(formElement);
 
 			XMLUtils.appendNewElement(doc, formElement, "ShowCommentField", this.showCommentField);
-			
+
 			ImmutableFlow flow = flowInstance.getFlow();
 
 			XMLUtils.appendNewElement(doc, formElement, "flowName", flow.getName());
@@ -220,16 +228,19 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public ViewFragment getShowFlowSurveysFragment(Integer flowID) throws TransformerConfigurationException, TransformerException, SQLException {
+	public ViewFragment getShowFlowSurveysFragment(HttpServletRequest req, Integer flowID) throws TransformerException, SQLException {
 
 		Document doc = XMLUtils.createDomDocument();
 		Element document = doc.createElement("Document");
 		doc.appendChild(document);
 
+		XMLUtils.appendNewElement(doc, document, "ModuleURI", req.getContextPath() + getFullAlias());
+		XMLUtils.appendNewElement(doc, document, "StaticContentURL", staticContentModule.getModuleContentURL(moduleDescriptor));
+
 		Element showElement = doc.createElement("ShowFlowFeedbackSurveys");
 		document.appendChild(showElement);
 
-		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
+		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
 
 		query.addParameter(flowIDParameterFactory.getParameter(flowID));
 
@@ -237,7 +248,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 		if (surveys != null) {
 
-			List<FeedbackSurvey> commentSurveys = new ArrayList<FeedbackSurvey>();
+			List<FeedbackSurvey> commentSurveys = new ArrayList<>();
 
 			int veryDissatisfiedCount = 0;
 			int dissatisfiedCount = 0;
@@ -261,10 +272,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 					verySatisfiedCount++;
 				}
 
-				if(survey.getComment() != null) {
-
-					commentSurveys.add(survey);
-				}
+				commentSurveys.add(survey);				
 
 			}
 
@@ -279,15 +287,36 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 			XMLUtils.appendNewElement(doc, showElement, "ChartData", jsonArray.toJson());
 			XMLUtils.append(doc, showElement, "Comments", commentSurveys);
 
-
 		}
 
 		return viewFragmentTransformer.createViewFragment(doc);
 	}
 
+	@RESTMethod(alias = "deletecomment/{flowInstanceID}", method = { "post" }, requireLogin = true)
+	public ForegroundModuleResponse deleteComment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "flowInstanceID") Integer flowInstanceID) throws IOException, SQLException {
+
+		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
+		
+		if(feedbackSurvey == null) {
+			throw new RuntimeException("Unknown feedbackSurvey "+flowInstanceID);
+		}
+		
+		feedbackSurvey.setComment(null);
+		feedbackSurvey.setCommentDeleted(Timestamp.valueOf(LocalDateTime.now()));
+		feedbackSurvey.setCommentDeletedByUser(user.getUsername());
+		feedbackSurveyDAO.update(feedbackSurvey);
+		
+		log.info("User "+user.getUsername()+" deleted comment for flowinstance "+flowInstanceID);
+
+		res.sendRedirect(req.getContextPath() + "/flowadmin/showflow/" + feedbackSurvey.getFlowID());
+
+		return null;
+
+	}
+
 	private FeedbackSurvey getFeedbackSurvey(Integer flowInstanceID) throws SQLException {
 
-		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
+		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
 
 		query.addParameter(flowInstanceIDParameterFactory.getParameter(flowInstanceID));
 
@@ -314,9 +343,9 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 	}
 
 	@Override
-	public Float getWeeklyAverage(Integer flowFamilyID, Timestamp startDate, Timestamp endDate) throws SQLException{
+	public Float getWeeklyAverage(Integer flowFamilyID, Timestamp startDate, Timestamp endDate) throws SQLException {
 
-		LowLevelQuery<FeedbackSurvey> query = new LowLevelQuery<FeedbackSurvey>(FLOW_FAMILY_FEEDBACK_QUERY);
+		LowLevelQuery<FeedbackSurvey> query = new LowLevelQuery<>(FLOW_FAMILY_FEEDBACK_QUERY);
 
 		query.addParameter(flowFamilyID);
 		query.addParameter(startDate);
@@ -324,33 +353,33 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedForegroundModule implemen
 
 		List<FeedbackSurvey> feedbackList = feedbackSurveyDAO.getAll(query);
 
-		if(feedbackList == null){
+		if (feedbackList == null) {
 
 			return null;
 		}
 
 		int sum = 0;
 
-		for(FeedbackSurvey feedback : feedbackList){
+		for (FeedbackSurvey feedback : feedbackList) {
 
 			sum += feedback.getAnswer().ordinal() + 1;
 		}
 
-		return (float)sum/(float)feedbackList.size();
+		return (float) sum / (float) feedbackList.size();
 	}
 
 	@Override
 	public Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
 
-		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<FeedbackSurvey>();
+		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
 		query.addParameter(flowInstanceIDParameterFactory.getParameter(flowInstanceID));
-		
+
 		FeedbackSurvey survey = feedbackSurveyDAO.get(query, connection);
-		
+
 		if (survey == null) {
 			return null;
 		}
-		
+
 		return 1 + survey.getAnswer().ordinal();
 	}
 }

@@ -6,6 +6,7 @@
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js?v=1
+		/js/confirmpost.js
 	</xsl:variable>	
 
 	<xsl:variable name="scripts">
@@ -158,6 +159,7 @@
 								<th width="10" />
 								<th width="200"><xsl:value-of select="$i18n.Answer" /></th>
 								<th><xsl:value-of select="$i18n.Comment" /></th>
+								<th width="37" />
 							</tr>
 						</thead>
 						<tbody>
@@ -177,7 +179,7 @@
 	</xsl:template>
 
 	<xsl:template match="FeedbackSurvey" mode="list">
-		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/StaticContentURL"/>/pics</xsl:variable>
 		<tr>
 			<td />
 			<td>
@@ -191,9 +193,41 @@
 				</xsl:choose>
 			</td>
 			<td>
-				<xsl:call-template name="replaceLineBreak">
-					<xsl:with-param name="string" select="comment"/>
-				</xsl:call-template>
+				<xsl:choose>
+					<xsl:when test="comment">
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string" select="comment"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:when test="not(comment) and commentDeleted">
+						
+						<xsl:call-template name="replaceLineBreak">
+							<xsl:with-param name="string">
+								<xsl:value-of select="$i18n.CommentDeleted" /><xsl:value-of select="commentDeleted"/><xsl:value-of select="$i18n.CommentDeletedBy" /><xsl:value-of select="commentDeletedByUser"/><xsl:text>.</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$i18n.NoCommentFound" />
+					</xsl:otherwise>
+				</xsl:choose>
+				
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="comment">
+						<a class="marginleft" href="{/Document/ModuleURI}/deletecomment/{flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteComment}">
+							<img src="{$imgPath}/delete.png" alt="" />
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<a class="marginleft" href="#" onclick="alert('{$i18n.DeleteComment.Inactive}'); return false;" title="{$i18n.DeleteComment}">
+							<img src="{$imgPath}/delete_gray.png" alt="" />
+						</a>
+					</xsl:otherwise>
+				
+				</xsl:choose>
+				
 			</td>
 		</tr>
 

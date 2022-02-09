@@ -36,6 +36,16 @@ public class FeedbackSurvey extends GeneratedElementable {
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String comment;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private Timestamp commentDeleted;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private String commentDeletedByUser;
 
 	public Integer getFlowID() {
 
@@ -86,5 +96,31 @@ public class FeedbackSurvey extends GeneratedElementable {
 
 		this.comment = comment;
 	}
+
+	
+	public Timestamp getCommentDeleted() {
+	
+		return commentDeleted;
+	}
+
+	
+	public void setCommentDeleted(Timestamp commentDeleted) {
+	
+		this.commentDeleted = commentDeleted;
+	}
+
+	
+	public String getCommentDeletedByUser() {
+	
+		return commentDeletedByUser;
+	}
+
+	
+	public void setCommentDeletedByUser(String commentDeletedByUser) {
+	
+		this.commentDeletedByUser = commentDeletedByUser;
+	}
+	
+	
 
 }
