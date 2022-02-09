@@ -1923,7 +1923,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					}
 				}
 				
-				if (activity.getResponsibleFallbackUsers() != null && (useFallbackUsers || useFallbackGroups)) {
+				if (activity.getResponsibleFallbackUsers() != null && (useFallbackUsers && useFallbackGroups)) {
 
 					
 					for (User responsibleFallbackUser : activity.getResponsibleFallbackUsers()) {

@@ -340,6 +340,13 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 			}
 		}
 		
+		if(cleanedResponsibleAttributedUsers != null) {
+			for (User responsibleAttributedUser : cleanedResponsibleAttributedUsers) {
+
+				userIDs.add(responsibleAttributedUser.getUserID());				
+			}
+		}
+		
 		if (cleanedResponsibleFallbackUsers != null) {
 			for (User user : cleanedResponsibleFallbackUsers) {
 				userIDs.add(user.getUserID());
