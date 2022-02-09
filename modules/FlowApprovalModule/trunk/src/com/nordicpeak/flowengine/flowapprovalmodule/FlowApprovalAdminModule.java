@@ -1868,8 +1868,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
 
+				//TODO these variables are not needed check managers.isEmpty() instead futher down in the code
 				boolean useFallbackUsers = true;
-				
 				boolean useFallbackGroups = true;
 
 				if (activityProgress.getResponsibleAttributedUsers() != null) {
@@ -1923,7 +1923,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					for (User responsibleUser : activity.getResponsibleUsers()) {
 
 						managers.add(responsibleUser);
-						
 					}
 				}
 				
