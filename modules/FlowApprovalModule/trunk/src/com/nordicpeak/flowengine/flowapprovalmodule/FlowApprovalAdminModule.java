@@ -1892,11 +1892,15 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				
 				if (activityProgress.getResponsibleAttributedGroups() != null) {
 
-					useFallbackGroups = false;
 					for (Group responsibleAttributedGroup : activityProgress.getResponsibleAttributedGroups()) {
 
-						managers.addAll(systemInterface.getUserHandler().getUsersByGroup(responsibleAttributedGroup.getGroupID(), true, true));
+						List<User> users = systemInterface.getUserHandler().getUsersByGroup(responsibleAttributedGroup.getGroupID(), true, true);
 						
+						if(users != null) {
+							
+							managers.addAll(users);
+							useFallbackGroups = false;
+						}
 					}
 
 				} else if (activity.getResponsibleGroupAttributeNames() != null) {
@@ -1924,17 +1928,14 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 				}
 				
 				if (activity.getResponsibleFallbackUsers() != null && (useFallbackUsers && useFallbackGroups)) {
-
 					
 					for (User responsibleFallbackUser : activity.getResponsibleFallbackUsers()) {
 
 						if(!managers.contains(responsibleFallbackUser)) {
+						
 							managers.add(responsibleFallbackUser);
 						}
-						
 					}
-
-					
 				}
 			}
 
