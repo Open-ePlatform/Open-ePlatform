@@ -6,8 +6,12 @@ public interface APISourceProvider {
 
 	public List<? extends APISource> getAPISources() throws Exception;
 
-	public String getTypeDescription();
+	public String getShortTypeName();
+	
+	public String getFullTypeName();
 
+	public String getAddURL();
+	
 	public String getBaseShowURL();
 	
 	public String getBaseUpdateURL();
