@@ -1868,13 +1868,8 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 			if (!activity.isOnlyUseGlobalNotifications() || activity.getGlobalEmailAddress() == null) {
 
-				//TODO these variables are not needed check managers.isEmpty() instead futher down in the code
-				boolean useFallbackUsers = true;
-				boolean useFallbackGroups = true;
-
 				if (activityProgress.getResponsibleAttributedUsers() != null) {
 
-					useFallbackUsers = false;
 					managers.addAll(activityProgress.getResponsibleAttributedUsers());
 
 				} else if (activity.getResponsibleUserAttributeNames() != null) {
@@ -1885,7 +1880,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 						log.warn("Users not set on activity progress " + activityProgress + ", using attribute directly!");
 
-						useFallbackUsers = false;
 						managers.addAll(users);
 					}
 				}
@@ -1899,7 +1893,6 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 						if(users != null) {
 							
 							managers.addAll(users);
-							useFallbackGroups = false;
 						}
 					}
 
@@ -1911,9 +1904,19 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 
 						log.warn("Groups not set on activity progress " + activityProgress + ", using attribute directly!");
 
-						useFallbackGroups = false;
 						for(Group group : groups) {
 							managers.addAll(systemInterface.getUserHandler().getUsersByGroup(group.getGroupID(), true, true));
+						}
+					}
+				}
+				
+				if (activity.getResponsibleFallbackUsers() != null && managers.isEmpty()) {
+					
+					for (User responsibleFallbackUser : activity.getResponsibleFallbackUsers()) {
+
+						if(!managers.contains(responsibleFallbackUser)) {
+						
+							managers.add(responsibleFallbackUser);
 						}
 					}
 				}
@@ -1926,16 +1929,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					}
 				}
 				
-				if (activity.getResponsibleFallbackUsers() != null && (useFallbackUsers && useFallbackGroups)) {
-					
-					for (User responsibleFallbackUser : activity.getResponsibleFallbackUsers()) {
-
-						if(!managers.contains(responsibleFallbackUser)) {
-						
-							managers.add(responsibleFallbackUser);
-						}
-					}
-				}
+				
 			}
 
 			if (activity.getGlobalEmailAddress() != null) {
