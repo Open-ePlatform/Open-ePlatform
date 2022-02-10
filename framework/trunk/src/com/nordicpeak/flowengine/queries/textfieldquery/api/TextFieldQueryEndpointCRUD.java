@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.utils.crud.IntegerBeanIDParser;
 import se.unlogic.hierarchy.core.utils.crud.ModularCRUD;
 import se.unlogic.standardutils.collections.CollectionUtils;
@@ -122,6 +123,20 @@ public class TextFieldQueryEndpointCRUD extends ModularCRUD<TextFieldQueryEndpoi
 
 		if (!callback.getAllowedEncodings().contains(bean.getEncoding())) {
 			throw new ValidationException(new ValidationError("encoding", ValidationErrorType.InvalidFormat));
+		}
+	}
+	
+	@Override
+	public ForegroundModuleResponse list(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, List<ValidationError> validationErrors) throws Exception {
+
+		if(callback.getAPISourceHandler() != null) {
+			
+			res.sendRedirect(uriParser.getContextPath() + callback.getAPISourceHandler().getFullAlias());
+			return null;
+			
+		}else {
+			
+			return super.list(req, res, user, uriParser, validationErrors);
 		}
 	}
 }

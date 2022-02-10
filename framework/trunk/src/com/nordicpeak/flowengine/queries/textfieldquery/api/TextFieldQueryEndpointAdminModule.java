@@ -26,6 +26,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
@@ -76,7 +77,10 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 	public static final User EMPTY_USER = new SimpleUser();
 
 	@XSLVariable(prefix = "java.")
-	private String apiSourceTypeDescription;
+	private String apiSourceShortTypeName;
+	
+	@XSLVariable(prefix = "java.")
+	private String apiSourceFullTypeName;
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection timeout", description = "The maximum time in seconds to wait for a connection")
@@ -164,6 +168,12 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		}
 		
 		this.apiSourceHandler = apiSourceHandler;
+		
+		//Check if this module is fully cached, then trigger an update of the menu items
+		if(sectionInterface.getForegroundModuleCache().isCached(moduleDescriptor)) {
+			
+			this.sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+		}
 	}	
 	
 	@Override
@@ -401,9 +411,21 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 	}
 	
 	@Override
-	public String getTypeDescription() {
+	public String getShortTypeName() {
 
-		return apiSourceTypeDescription;
+		return apiSourceShortTypeName;
+	}
+	
+	@Override
+	public String getFullTypeName() {
+
+		return apiSourceFullTypeName;
+	}
+	
+	@Override
+	public String getAddURL() {
+
+		return this.getFullAlias() + "/add";
 	}
 
 	@Override
@@ -431,5 +453,22 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		
 		return endpoint.getQueries() != null;
 	}
+
+	public APISourceHandler getAPISourceHandler() {
+
+		return apiSourceHandler;
+	}
 	
+	@Override
+	public List<? extends MenuItemDescriptor> getVisibleMenuItems() {
+
+		if(this.apiSourceHandler != null) {
+			
+			return null;
+		
+		}else {
+		
+			return super.getVisibleMenuItems();
+		}
+	}
 }

@@ -4,7 +4,8 @@
 	<xsl:include href="TextFieldQueryEndpointAdminModuleTemplates.xsl"/>
 	
 	<!-- Java i18n -->
-	<xsl:variable name="java.apiSourceTypeDescription">Textfältsfrågor</xsl:variable>
+	<xsl:variable name="java.apiSourceShortTypeName">Textfältsfrågor</xsl:variable>
+	<xsl:variable name="java.apiSourceFullTypeName">Textfältsfrågor</xsl:variable>
 	
 	<!-- Validation -->
 	<xsl:variable name="i18n.validation.requiredField">Du måste fylla i fältet:</xsl:variable>

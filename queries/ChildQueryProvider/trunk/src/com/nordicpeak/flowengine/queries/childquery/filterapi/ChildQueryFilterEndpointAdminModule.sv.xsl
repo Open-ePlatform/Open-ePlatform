@@ -4,7 +4,8 @@
 	<xsl:include href="ChildQueryFilterEndpointAdminModuleTemplates.xsl"/>
 	
 	<!-- Java i18n -->
-	<xsl:variable name="java.apiSourceTypeDescription">Val av barn</xsl:variable>
+	<xsl:variable name="java.apiSourceShortTypeName">Val av barn</xsl:variable>
+	<xsl:variable name="java.apiSourceFullTypeName">Val av barn</xsl:variable>
 	
 	<!-- Validation -->
 	<xsl:variable name="i18n.validation.requiredField">Du måste fylla i fältet:</xsl:variable>

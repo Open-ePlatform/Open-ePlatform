@@ -25,6 +25,7 @@ import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.attributes.AttributeHandler;
+import se.unlogic.hierarchy.core.interfaces.menu.MenuItemDescriptor;
 import se.unlogic.hierarchy.core.utils.AttributeTagUtils;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
@@ -65,8 +66,10 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 	public static final AnnotatedBeanTagSourceFactory<User> USER_TAG_SOURCE_FACTORY = new AnnotatedBeanTagSourceFactory<User>(User.class, "$user.");
 
 	@XSLVariable(prefix = "java.")
-	private String apiSourceTypeDescription;
-
+	private String apiSourceShortTypeName;
+	
+	@XSLVariable(prefix = "java.")
+	private String apiSourceFullTypeName;
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Connection timeout", description = "The maximum time in seconds to wait for a connection")
 	private Integer connectionTimeout = 10;
@@ -164,6 +167,12 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		}
 
 		this.apiSourceHandler = apiSourceHandler;
+		
+		//Check if this module is fully cached, then trigger an update of the menu items
+		if(sectionInterface.getForegroundModuleCache().isCached(moduleDescriptor)) {
+			
+			this.sectionInterface.getMenuCache().moduleUpdated(moduleDescriptor, this);
+		}
 	}
 
 	protected Map<String, FilterAPIChild> getChildren(ChildQuerySimpleFilterEndpoint endpoint, Map<String, Child> navetChildMap, User user, String parentCitizenID, ImmutableFlow flow, AttributeHandler attributeHandler) {
@@ -395,9 +404,21 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 	}
 
 	@Override
-	public String getTypeDescription() {
+	public String getShortTypeName() {
 
-		return apiSourceTypeDescription;
+		return apiSourceShortTypeName;
+	}
+	
+	@Override
+	public String getFullTypeName() {
+
+		return apiSourceFullTypeName;
+	}
+	
+	@Override
+	public String getAddURL() {
+
+		return this.getFullAlias() + "/add";
 	}
 	
 	@Override
@@ -424,4 +445,21 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 		return childQueryProviderModule.hasQueriesUsingFilterEndpoint(apiSource.getName());
 	}
 
+	public APISourceHandler getAPISourceHandler() {
+
+		return apiSourceHandler;
+	}
+
+	@Override
+	public List<? extends MenuItemDescriptor> getVisibleMenuItems() {
+
+		if(this.apiSourceHandler != null) {
+			
+			return null;
+		
+		}else {
+		
+			return super.getVisibleMenuItems();
+		}
+	}
 }
