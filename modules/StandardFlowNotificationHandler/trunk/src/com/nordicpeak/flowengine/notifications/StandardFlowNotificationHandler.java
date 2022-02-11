@@ -1739,9 +1739,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
 
 					for (String email : notificationSettings.getExternalMessageReceivedGlobalEmailAddresses()) {
-						if(!managerGroupEmailRecipientAddresses.contains(email)) {
-							sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);
-						}
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);						
 					}
 					
 				}
