@@ -627,6 +627,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "New message received email message (global)", description = "The message of emails sent when a new messages are received", required = true)
 	@XSLVariable(prefix = "java.")
 	private String externalMessageReceivedGlobalEmailMessage;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "New internal message received email subject (global)", description = "The subject of emails sent when a new internal message are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageReceivedGlobalEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "New internal message received email message (global)", description = "The message of emails sent when a new internal messages are received", required = true)
+	@XSLVariable(prefix = "java.")
+	private String internalMessageReceivedGlobalEmailMessage;
 
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "New message received email address (global)", description = "Global address to be notified when new messages are received", formatValidator = EmailPopulator.class)
@@ -1744,7 +1754,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					
 				}
 				
-				
 			}
 
 		} else {
@@ -1756,14 +1765,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(InternalMessageAddedEvent event, EventSource eventSource) throws SQLException {
 
-		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups())) {
-			return;
-		}
-
 		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && 
+				CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups()) &&
+				CollectionUtils.isEmpty(notificationSettings.getInternalMessageReceivedGlobalEmailAddresses())) {
+			return;
+		}
+		
 		Contact posterContact = getPosterContact(flowInstance, event.getSiteProfile());
 		
 		if (notificationSettings.isSendInternalMessageAddedManagerEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
@@ -1781,6 +1792,14 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);				
 			}
 		
+		}
+		
+		if (notificationSettings.isSendInternalMessageReceivedGlobalEmail() && notificationSettings.getInternalMessageReceivedGlobalEmailAddresses() != null) {
+
+			for (String email : notificationSettings.getInternalMessageReceivedGlobalEmailAddresses()) {
+				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, internalMessageReceivedGlobalEmailSubject, internalMessageReceivedGlobalEmailMessage, null, false);						
+			}
+			
 		}
 		
 	}

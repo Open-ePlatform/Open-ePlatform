@@ -456,6 +456,21 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
 	@XMLElement(fixCase = true, childName = "address")
 	private List<String> externalMessageReceivedGlobalEmailAddresses;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean sendInternalMessageReceivedGlobalEmail;
+
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flow_family_notification_setting_intmessageglobal", remoteValueColumnName = "email")
+	@WebPopulate(maxLength = 255, populator = EmailAttributeTagPopulator.class)
+	@RequiredIfSet(paramNames = "sendInternalMessageReceivedGlobalEmail")
+	@SplitOnLineBreak
+	@NoDuplicates(comparator = CaseInsensitiveStringComparator.class)
+	@XMLElement(fixCase = true, childName = "address")
+	private List<String> internalMessageReceivedGlobalEmailAddresses;
 
 	@DAOManaged
 	@WebPopulate
@@ -934,7 +949,7 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGroupNotifications");
 		}
 
-		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail || sendFlowInstanceArchivedGlobalEmail || sendFlowInstanceExpiredGlobalEmail) {
+		if (sendFlowInstanceSubmittedGlobalEmail || sendFlowInstanceAssignedGlobalEmail || sendExternalMessageReceivedGlobalEmail || sendInternalMessageReceivedGlobalEmail || sendManagerExpiredGlobalEmail || sendFlowInstanceArchivedGlobalEmail || sendFlowInstanceExpiredGlobalEmail) {
 
 			XMLUtils.appendNewElement(doc, settingsElement, "HasEnabledGlobalNotifications");
 		}
@@ -1121,6 +1136,16 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		this.externalMessageReceivedGlobalEmailAddresses = externalMessageReceivedGlobalEmailAddresses;
 	}
+	
+	public List<String> getInternalMessageReceivedGlobalEmailAddresses() {
+
+		return internalMessageReceivedGlobalEmailAddresses;
+	}
+
+	public void setInternalMessageReceivedGlobalEmailAddresses(List<String> internalMessageReceivedGlobalEmailAddresses) {
+
+		this.internalMessageReceivedGlobalEmailAddresses = internalMessageReceivedGlobalEmailAddresses;
+	}
 
 	public boolean isSendExternalMessageReceivedGlobalEmail() {
 
@@ -1131,6 +1156,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 
 		this.sendExternalMessageReceivedGlobalEmail = sendExternalMessageReceivedGlobalEmail;
 	}
+	
+	public boolean isSendInternalMessageReceivedGlobalEmail() {
+
+		return sendInternalMessageReceivedGlobalEmail;
+	}
+
+	public void setSendInternalMessageReceivedGlobalEmail(boolean sendInternalMessageReceivedGlobalEmail) {
+
+		this.sendInternalMessageReceivedGlobalEmail = sendInternalMessageReceivedGlobalEmail;
+	}
+	
+	
 
 	public String getStatusChangedUserEmailSubject() {
 

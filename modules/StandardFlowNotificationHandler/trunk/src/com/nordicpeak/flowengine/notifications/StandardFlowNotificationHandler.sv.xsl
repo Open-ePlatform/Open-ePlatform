@@ -429,6 +429,7 @@
 	<xsl:variable name="i18n.SendFlowInstanceArchivedUserSMS">SMS vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserEmail">E-post vid byte av status</xsl:variable>
 	<xsl:variable name="i18n.SendExternalMessageReceivedUserEmail">E-post vid nytt meddelande från handläggare</xsl:variable>
+
 	<xsl:variable name="i18n.SendFlowInstanceSubmittedUserEmail">E-post vid inskickat ärende</xsl:variable>
 	<xsl:variable name="i18n.SendFlowInstanceArchivedUserEmail">E-post vid avslutat ärende</xsl:variable>
 	<xsl:variable name="i18n.ManagerNotifications">Notifikationer till handläggare</xsl:variable>
@@ -552,6 +553,9 @@
 	
 	<xsl:variable name="i18n.SendExternalMessageReceivedGlobalEmail">E-post vid nytt meddelande från sökande</xsl:variable>
 	<xsl:variable name="i18n.ExternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya meddelanden från sökande (en adress per rad)</xsl:variable>
+	
+	<xsl:variable name="i18n.SendInternalMessageReceivedGlobalEmail">E-post vid ny intern notering</xsl:variable>
+	<xsl:variable name="i18n.InternalMessageReceivedGlobalEmailAddresses">E-postadresser för notifiering om nya interna noteringar (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.SendManagerExpiredGlobalEmail">E-post vid upphörd handläggarbehörighet</xsl:variable>
 	<xsl:variable name="i18n.ManagerExpiredGlobalEmailAddresses">E-postadresser för notifiering om upphörd handläggarbehörighet (en adress per rad)</xsl:variable>

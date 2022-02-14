@@ -212,6 +212,12 @@
 					</li>
 				</xsl:if>
 				
+				<xsl:if test="NotificationSettings/sendInternalMessageReceivedGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendInternalMessageReceivedGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
 				<xsl:if test="NotificationSettings/sendManagerExpiredGlobalEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendManagerExpiredGlobalEmail"/>
@@ -2160,6 +2166,38 @@
 		</div>
 		
 		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendInternalMessageReceivedGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendInternalMessageReceivedGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendInternalMessageReceivedGlobalEmail">
+					<xsl:value-of select="$i18n.SendInternalMessageReceivedGlobalEmail" />
+				</label>
+			</div>
+		</div>	
+	
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="internalMessageReceivedGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.InternalMessageReceivedGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'internalMessageReceivedGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'internalMessageReceivedGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/InternalMessageReceivedGlobalEmailAddresses/address" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
 		<!-- ManagerExpiredGlobalEmail -->
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
@@ -2790,6 +2828,9 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'externalMessageReceivedGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ExternalMessageReceivedGlobalEmailAddresses"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'internalMessageReceivedGlobalEmailAddresses'">
+						<xsl:value-of select="$i18n.InternalMessageReceivedGlobalEmailAddresses"/>
 					</xsl:when>
 					<xsl:when test="fieldName = 'managerExpiredGlobalEmailAddresses'">
 						<xsl:value-of select="$i18n.ManagerExpiredGlobalEmailAddresses"/>
