@@ -298,7 +298,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
 		
 		if(feedbackSurvey == null) {
-			throw new RuntimeException("Unknown feedbackSurvey "+flowInstanceID);
+			throw new RuntimeException("Unknown feedbackSurvey with flowinstanceID "+flowInstanceID);
 		}
 		
 		feedbackSurvey.setComment(null);
