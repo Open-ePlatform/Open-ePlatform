@@ -3,8 +3,6 @@
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
-	<xsl:include href="FlowApprovalUtils.xsl"/>
-	
 
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js?v=1
@@ -440,7 +438,7 @@
 									
 									<p style="margin-top: 0;">
 									
-										<xsl:call-template name="replaceLineBreakAndHref">										
+										<xsl:call-template name="replaceLineBreaksAndLinks">										
 											<xsl:with-param name="string" select="ActivityProgress/Activity/description" />
 										</xsl:call-template>
 									</p>

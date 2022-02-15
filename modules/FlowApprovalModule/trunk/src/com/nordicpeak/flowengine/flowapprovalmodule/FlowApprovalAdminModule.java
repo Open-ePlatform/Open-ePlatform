@@ -2940,7 +2940,7 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 		
 		String link = parser.getFullContextPath()+flowInstanceAdminModule.getFullAlias() + "/overview/" + flowInstance.getFlowInstanceID();
 		
-		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", "<a href=\"" +link+ "\">"+link+"</a>"));
+		tagReplacer.addTagSource(new SingleTagSource("$flowInstance.url", link));
 		
 		description = AttributeTagUtils.replaceTags(tagReplacer.replace(description), flowInstance.getAttributeHandler());
 		

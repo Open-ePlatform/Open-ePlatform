@@ -3,7 +3,6 @@
 	<xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" indent="yes" encoding="ISO-8859-1"/>
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
-	<xsl:include href="FlowApprovalUtils.xsl"/>
 
 	<xsl:template match="Document">
 		
@@ -181,7 +180,7 @@
 					</strong>
 					
 					<p style="margin-top: 0;">
-						<xsl:call-template name="replaceLineBreakAndHref">
+						<xsl:call-template name="replaceLineBreaksAndLinks">
 							<xsl:with-param name="string" select="Activity/description"/>
 						</xsl:call-template>
 					</p>
