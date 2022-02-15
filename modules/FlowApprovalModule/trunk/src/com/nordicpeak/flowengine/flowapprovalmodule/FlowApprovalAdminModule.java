@@ -96,6 +96,7 @@ import se.unlogic.hierarchy.core.utils.GenericCRUD;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
+import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.core.utils.usergrouplist.UserGroupListConnector;
 import se.unlogic.hierarchy.core.validationerrors.FileSizeLimitExceededValidationError;
@@ -1926,6 +1927,21 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 					for (User responsibleUser : activity.getResponsibleUsers()) {
 
 						managers.add(responsibleUser);
+					}
+				}
+				
+				if (activity.getResponsibleGroups() != null) {
+
+					List<User> groupUsers = null;
+
+					for (int groupID : UserUtils.getGroupIDs(activity.getResponsibleGroups())) {
+
+						groupUsers = CollectionUtils.addAndInstantiateIfNeeded(groupUsers, systemInterface.getUserHandler().getUsersByGroup(groupID, true, true));
+					}
+
+					if (groupUsers != null) {
+
+						managers.addAll(groupUsers);
 					}
 				}
 				
