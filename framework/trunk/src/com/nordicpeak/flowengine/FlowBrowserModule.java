@@ -439,7 +439,14 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchHints", searchHints);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "popularFlowCount", popularFlowCount);
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "openExternalFlowsInNewWindow", openExternalFlowsInNewWindow);
+			
+			if(req != null && searchDescription != null) {
+				
+				searchDescription = URLRewriter.setAbsoluteLinkUrls(searchDescription, req);
+			}
+			
 			XMLUtils.appendNewElement(doc, showFlowTypesElement, "searchDescription", searchDescription);
+			
 
 			if (useCategoryFilter) {
 				XMLUtils.appendNewElement(doc, showFlowTypesElement, "useCategoryFilter", true);
