@@ -1383,7 +1383,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		JsonArray flowJSONArray = new JsonArray();
 
 		flowJSONArray.addNode(flow.getFlowID());
-		flowJSONArray.addNode(flow.isPublished() ? "published" : "unpublished");
+		flowJSONArray.addNode(published ? "published" : "unpublished");
 		flowJSONArray.addNode(getFlowIconJSON(flow));
 		flowJSONArray.addNode(getFlowNameJSON(flow, external));
 		flowJSONArray.addNode(getFlowTypeJSON(flow));
