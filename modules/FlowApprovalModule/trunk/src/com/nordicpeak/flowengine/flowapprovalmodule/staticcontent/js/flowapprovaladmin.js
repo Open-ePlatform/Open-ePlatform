@@ -78,28 +78,28 @@ $(function() {
 			
 		});
 		
-		$('#useResponsibleUserAttributeName').on("change", function(){
+		var $searchResponsibleUser = $('#useResponsibleUserAttributeName');
+		var $searchResponsibleGroup = $('#useResponsibleGroupAttributeName');
+		
+		$searchResponsibleUser.on("change", function(){
 			
 			$(".useResponsibleUserAttributeName").toggle(this.checked);
 			$("#responsibleUserAttributeNames").prop('disabled', !this.checked);
 			
-			if(!$('#useResponsibleGroupAttributeName').prop('checked') == 'true') {
-				$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
-				$("#responsibleUserFallbackDiv").toggle(this.checked);
-			}
-			
+			var visible = $searchResponsibleUser.is(":checked") || $searchResponsibleGroup.is(":checked");
+			$("#allowManagersToAssignOwner").prop('disabled', !visible).trigger("change").parent().parent().toggle(visible);
+			$("#responsibleUserFallbackDiv").toggle(visible);
 			
 		}).trigger("change");
 		
-		$('#useResponsibleGroupAttributeName').on("change", function(){
+		$searchResponsibleGroup.on("change", function(){
 			
 			$(".useResponsibleGroupAttributeName").toggle(this.checked);
 			$("#responsibleGroupAttributeNames").prop('disabled', !this.checked);
 			
-			if(!$('#useResponsibleUserAttributeName').prop('checked') == 'true') {
-				$("#allowManagersToAssignOwner").prop('disabled', !this.checked).trigger("change").parent().parent().toggle(this.checked);
-				$("#responsibleUserFallbackDiv").toggle(this.checked);
-			}
+			var visible = $searchResponsibleUser.is(":checked") || $searchResponsibleGroup.is(":checked");
+			$("#allowManagersToAssignOwner").prop('disabled', !visible).trigger("change").parent().parent().toggle(visible);
+			$("#responsibleUserFallbackDiv").toggle(visible);
 	
 		}).trigger("change");
 		
