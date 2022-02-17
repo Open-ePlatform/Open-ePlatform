@@ -16,7 +16,7 @@
 	<xsl:variable name="scripts">
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=5
+		/js/flowapprovaladmin.js?v=6
 	</xsl:variable>
 	
 	<xsl:variable name="links">
