@@ -80,7 +80,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	protected static final RelationQuery FLOW_INSTANCE_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstance.ATTRIBUTES_RELATION);
 	protected static final RelationQuery FLOW_INSTANCE_MANAGERS_RELATION_QUERY = new RelationQuery(FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION);
 	protected static final RelationQuery FLOW_INSTANCE_EVENT_ATTRIBUTE_RELATION_QUERY = new RelationQuery(FlowInstanceEvent.ATTRIBUTES_RELATION);
-	
+
 	private static final Field FLOW_ADMIN_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "flowAdminModule");
 	private static final Field FILE_ATTACHMENT_HANDLER_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "fileAttachmentHandler");
 	private static final Field API_ACCESS_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "apiAccessModule");
@@ -88,7 +88,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set user on events", description = "Set the API user on generated events")
 	private boolean setUserOnEvents;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Enable attribute prefix", description = "Enable the callback. prefix on set attributes")
 	private boolean enableAttributePrefix = true;
@@ -102,13 +102,13 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	private QueryParameterFactory<Status, Integer> statusIDParamFactory;
 	private QueryParameterFactory<Status, String> statusNameParamFactory;
 	private QueryParameterFactory<Status, Flow> statusFlowParamFactory;
-	
+
 	private FieldInstanceListener<FlowAdminModule> flowAdminModuleListener = new FieldInstanceListener<>(this, FLOW_ADMIN_MODULE_FIELD, true, null);
 	private FieldInstanceListener<FileAttachmentHandler> fileAttachmentHandlerListener = new FieldInstanceListener<>(this, FILE_ATTACHMENT_HANDLER_FIELD, false, null);
 	private FieldInstanceListener<APIAccessController> apiAccessModuleListener = new FieldInstanceListener<>(this, API_ACCESS_MODULE_FIELD, false, null);
-	
-	private final MutexKeyProvider<FlowInstanceIDMutex> mutexKeyProvider = new MutexKeyProvider<FlowInstanceIDMutex>();
-	
+
+	private final MutexKeyProvider<FlowInstanceIDMutex> mutexKeyProvider = new MutexKeyProvider<>();
+
 	@Override
 	public void init(WSModuleCallback callback) throws Exception {
 
@@ -134,12 +134,12 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(APIAccessController.class, apiAccessModuleListener);
-		
+
 		super.unload();
 	}
 
 	private void apiAccessCheck(FlowInstance flowInstance, User callbackUser) throws AccessDeniedException {
-		
+
 		try {
 			APIAccessUtils.accessCheck(apiAccessModule, flowInstance.getFlow().getFlowFamily(), callbackUser);
 
@@ -152,7 +152,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -187,38 +187,37 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				if (status == null) {
 
 					throw new StatusNotFoundException("Status with ID " + statusID + " not found for flow " + flowInstance.getFlow(), new StatusNotFound());
+				}
 
-				} else if (flowInstance.getStatus().equals(status)) {
+				if (flowInstance.getStatus().equals(status)) {
 
 					log.info("Flow instance " + flowInstance + " already has the requested status of " + status + ", ignoring request from user " + callback.getUser());
 
 					return 0;
-
-				} else {
-
-					log.info("User " + callback.getUser() + " changing status of instance " + flowInstance + " from " + flowInstance.getStatus() + " to " + status + " using principal " + principalUser);
-
-					Status previousStatus = flowInstance.getStatus();
-
-					flowInstance.setStatus(status);
-					flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
-
-					try {
-						this.daoFactory.getFlowInstanceDAO().update(flowInstance);
-
-					} catch (SQLException e) {
-
-						throw new RuntimeException(e);
-					}
-
-					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, principalUser, null, null);
-
-					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-
-					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousStatus, principalUser), EventTarget.ALL);
-
-					return flowInstanceEvent.getEventID();
 				}
+
+				log.info("User " + callback.getUser() + " changing status of instance " + flowInstance + " from " + flowInstance.getStatus() + " to " + status + " using principal " + principalUser);
+
+				Status previousStatus = flowInstance.getStatus();
+
+				flowInstance.setStatus(status);
+				flowInstance.setLastStatusChange(TimeUtils.getCurrentTimestamp());
+
+				try {
+					this.daoFactory.getFlowInstanceDAO().update(flowInstance);
+
+				} catch (SQLException e) {
+
+					throw new RuntimeException(e);
+				}
+
+				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.STATUS_UPDATED, null, principalUser, null, null);
+
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new StatusChangedByManagerEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousStatus, principalUser), EventTarget.ALL);
+
+				return flowInstanceEvent.getEventID();
 
 			} catch (RuntimeException e) {
 
@@ -236,7 +235,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	public int addEvent(Integer flowInstanceID, ExternalID externalID, XMLGregorianCalendar date, String message, Principal principal) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		synchronized (mutexKeyProvider.getKey(new FlowInstanceIDMutex(flowInstanceID, externalID))) {
-			
+
 			try {
 				checkDependencies();
 
@@ -268,7 +267,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	public int addMessage(Integer flowInstanceID, ExternalID externalID, IntegrationMessage message, Principal principal) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		synchronized (mutexKeyProvider.getKey(new FlowInstanceIDMutex(flowInstanceID, externalID))) {
-		
+
 			try {
 				checkDependencies();
 
@@ -287,30 +286,29 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				externalMessage.setPostedByManager(true);
 
 				TransactionHandler transactionHandler = null;
-				
+
 				List<FileAttachment> addedFileAttachments = null;
-				
+
 				try {
 					transactionHandler = new TransactionHandler(callback.getDataSource());
-					
-					daoFactory.getExternalMessageDAO().add(externalMessage, transactionHandler , null);
-					
+
+					daoFactory.getExternalMessageDAO().add(externalMessage, transactionHandler, null);
+
 					addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(fileAttachmentHandler, externalMessage);
-					
+
 					transactionHandler.commit();
 
 				} catch (Throwable e) {
 
 					FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-					
+
 					throw new RuntimeException(e);
-					
+
 				} finally {
-					
+
 					TransactionHandler.autoClose(transactionHandler);
 				}
 
-				
 				FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded(), ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
 
 				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
@@ -325,12 +323,12 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			}
 		}
 	}
-	
+
 	@Override
 	public int addInternalMessage(Integer flowInstanceID, ExternalID externalID, IntegrationMessage message, Principal principal) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		synchronized (mutexKeyProvider.getKey(new FlowInstanceIDMutex(flowInstanceID, externalID))) {
-		
+
 			try {
 				checkDependencies();
 
@@ -343,33 +341,33 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				log.info("User " + callback.getUser() + " requested add internal message for flow instance " + flowInstance + " using principal " + principal);
 
 				//TODO
-				
+
 				InternalMessage internalMessage = getInternalMessage(message);
 
 				internalMessage.setPoster(principalUser);
 				internalMessage.setFlowInstance(flowInstance);
 
 				TransactionHandler transactionHandler = null;
-				
+
 				List<FileAttachment> addedFileAttachments = null;
-				
+
 				try {
 					transactionHandler = new TransactionHandler(callback.getDataSource());
-					
+
 					daoFactory.getInternalMessageDAO().add(internalMessage, transactionHandler, null);
-					
+
 					addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(fileAttachmentHandler, internalMessage);
-					
+
 					transactionHandler.commit();
 
 				} catch (Throwable e) {
 
 					FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-					
+
 					throw new RuntimeException(e);
-					
+
 				} finally {
-					
+
 					TransactionHandler.autoClose(transactionHandler);
 				}
 
@@ -405,7 +403,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				try {
 					externalMessageAttachments.add(FlowEngineFileAttachmentUtils.createAttachment(fileAttachmentHandler, attachment.getFilename(), attachment.getSize(), attachment.getEncodedData(), ExternalMessageAttachment.class));
-					
+
 				} catch (SQLException e) {
 
 					throw new RuntimeException(e);
@@ -437,9 +435,9 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				try {
 					internalMessageAttachments.add(FlowEngineFileAttachmentUtils.createAttachment(fileAttachmentHandler, attachment.getFilename(), attachment.getSize(), attachment.getEncodedData(), InternalMessageAttachment.class));
-					
+
 				} catch (SQLException e) {
-					
+
 					throw new RuntimeException(e);
 				}
 			}
@@ -449,7 +447,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		return internalMessage;
 	}
-	
+
 	protected void validateAttachment(Attachment attachment) {
 
 		if (StringUtils.isEmpty(attachment.getFilename())) {
@@ -469,7 +467,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	}
 
 	protected void validateIntegrationMessage(IntegrationMessage message) {
-		
+
 		if (message == null) {
 
 			throw new NullPointerException("Integration message cannot be null");
@@ -485,7 +483,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			throw new RuntimeException("Message field cannot be null or empty");
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -493,7 +491,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	public void confirmDelivery(int flowInstanceID, ExternalID externalID, boolean delivered, String logMessage) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		synchronized (mutexKeyProvider.getKey(new FlowInstanceIDMutex(flowInstanceID, externalID))) {
-			
+
 			try {
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
 
@@ -566,7 +564,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	public int setManagers(Integer flowInstanceID, ExternalID externalID, List<Principal> managers, List<PrincipalGroup> managerGroups) throws AccessDeniedException, FlowInstanceNotFoundException {
 
 		synchronized (mutexKeyProvider.getKey(new FlowInstanceIDMutex(flowInstanceID, externalID))) {
-			
+
 			try {
 				checkDependencies();
 
@@ -605,42 +603,40 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 					flowInstance.setManagerGroups(null);
 				}
 
-				if (!CollectionUtils.equals(previousManagers, flowInstance.getManagers()) || !CollectionUtils.equals(previousManagerGroups, flowInstance.getManagerGroups())) {
-
-					log.info("User " + callback.getUser() + " setting managers of instance " + flowInstance + " to " + detailString);
-
-					try {
-						daoFactory.getFlowInstanceDAO().update(flowInstance, FLOW_INSTANCE_MANAGERS_RELATION_QUERY);
-
-					} catch (SQLException e) {
-
-						throw new RuntimeException(e);
-					}
-
-					User eventUser;
-
-					if (setUserOnEvents) {
-
-						eventUser = callback.getUser();
-
-					} else {
-
-						eventUser = null;
-					}
-
-					FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null, null);
-
-					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
-					callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, previousManagerGroups, eventUser), EventTarget.ALL);
-
-					return flowInstanceEvent.getEventID();
-
-				} else {
+				if (CollectionUtils.equals(previousManagers, flowInstance.getManagers()) && CollectionUtils.equals(previousManagerGroups, flowInstance.getManagerGroups())) {
 
 					log.info("No change in managers detected in request from user " + callback.getUser() + " for flow instance " + flowInstance + ", ignoring request.");
 
 					return 0;
 				}
+
+				log.info("User " + callback.getUser() + " setting managers of instance " + flowInstance + " to " + detailString);
+
+				try {
+					daoFactory.getFlowInstanceDAO().update(flowInstance, FLOW_INSTANCE_MANAGERS_RELATION_QUERY);
+
+				} catch (SQLException e) {
+
+					throw new RuntimeException(e);
+				}
+
+				User eventUser;
+
+				if (setUserOnEvents) {
+
+					eventUser = callback.getUser();
+
+				} else {
+
+					eventUser = null;
+				}
+
+				FlowInstanceEvent flowInstanceEvent = addFlowInstanceEvent(flowInstance, EventType.MANAGERS_UPDATED, detailString, eventUser, null, null);
+
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new CRUDEvent<>(CRUDAction.UPDATE, flowInstance), EventTarget.ALL);
+				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ManagersChangedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), previousManagers, previousManagerGroups, eventUser), EventTarget.ALL);
+
+				return flowInstanceEvent.getEventID();
 
 			} catch (RuntimeException e) {
 
@@ -650,7 +646,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			}
 		}
 	}
-	
+
 	@Override
 	public GetManagersResponse getManagers(GetManagersRequest parameters) throws AccessDeniedException, FlowInstanceNotFoundException {
 
@@ -659,13 +655,13 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 			Integer flowInstanceID = null;
 			ExternalID externalID = null;
-			
-			if(parameters != null) {
-				
+
+			if (parameters != null) {
+
 				flowInstanceID = parameters.getFlowInstanceID();
 				externalID = parameters.getExternalID();
 			}
-			
+
 			FlowInstance flowInstance = getFlowInstance(flowInstanceID, externalID);
 
 			apiAccessCheck(flowInstance, callback.getUser());
@@ -673,28 +669,28 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			log.info("User " + callback.getUser() + " requested get managers for flow instance " + flowInstance);
 
 			GetManagersResponse response = new GetManagersResponse();
-			
-			if(flowInstance.getManagers() != null) {
-				
-				for(User user : flowInstance.getManagers()) {
-					
+
+			if (flowInstance.getManagers() != null) {
+
+				for (User user : flowInstance.getManagers()) {
+
 					Principal principal = new Principal();
-					
+
 					principal.setUserID(user.getUsername());
 					principal.setName(user.getFirstname() + " " + user.getLastname());
-					
+
 					response.getManagers().add(principal);
 				}
 			}
-			
-			if(flowInstance.getManagerGroups() != null) {
-				
-				for(Group group : flowInstance.getManagerGroups()) {
-					
+
+			if (flowInstance.getManagerGroups() != null) {
+
+				for (Group group : flowInstance.getManagerGroups()) {
+
 					PrincipalGroup principalGroup = new PrincipalGroup();
-					
+
 					principalGroup.setName(group.getName());
-					
+
 					response.getManagerGroups().add(principalGroup);
 				}
 			}
@@ -711,68 +707,64 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 	private List<User> filterSelectedManagerUsers(List<User> allowedManagers, List<Principal> selectedUsers) throws AccessDeniedException {
 
-		if (!CollectionUtils.isEmpty(selectedUsers)) {
-
-			List<User> selectedManagers = new ArrayList<User>();
-
-			for (Principal principal : selectedUsers) {
-
-				if (allowedManagers != null) {
-					for (User manager : allowedManagers) {
-
-						if (manager.getUsername() != null && manager.getUsername().equalsIgnoreCase(principal.getUserID())) {
-
-							selectedManagers.add(manager);
-							break;
-						}
-					}
-				}
-			}
-
-			if (CollectionUtils.getSize(selectedManagers) != selectedUsers.size()) {
-
-				throw new AccessDeniedException("One or more of the specified users are not valid managers for this flow", new AccessDenied());
-			}
-
-			return selectedManagers;
-
-		} else {
+		if (CollectionUtils.isEmpty(selectedUsers)) {
 
 			return null;
 		}
+
+		List<User> selectedManagers = new ArrayList<>();
+
+		for (Principal principal : selectedUsers) {
+
+			if (allowedManagers != null) {
+				for (User manager : allowedManagers) {
+
+					if (manager.getUsername() != null && manager.getUsername().equalsIgnoreCase(principal.getUserID())) {
+
+						selectedManagers.add(manager);
+						break;
+					}
+				}
+			}
+		}
+
+		if (CollectionUtils.getSize(selectedManagers) != selectedUsers.size()) {
+
+			throw new AccessDeniedException("One or more of the specified users are not valid managers for this flow", new AccessDenied());
+		}
+
+		return selectedManagers;
 	}
 
 	private List<Group> filterSelectedManagerGroups(List<Group> allowedManagerGroups, List<PrincipalGroup> selectedGroups) throws AccessDeniedException {
 
-		if (!CollectionUtils.isEmpty(selectedGroups)) {
-
-			List<Group> selectedManagerGroups = new ArrayList<Group>();
-
-			for (PrincipalGroup principalGroup : selectedGroups) {
-
-				if (allowedManagerGroups != null) {
-					for (Group managerGroup : allowedManagerGroups) {
-
-						if (managerGroup.getName() != null && managerGroup.getName().equalsIgnoreCase(principalGroup.getName())) {
-
-							selectedManagerGroups.add(managerGroup);
-							break;
-						}
-					}
-				}
-			}
-
-			if (CollectionUtils.getSize(selectedManagerGroups) != selectedGroups.size()) {
-
-				throw new AccessDeniedException("One or more of the specified groups are not valid managers for this flow", new AccessDenied());
-			}
-
-			return selectedManagerGroups;
-
-		} else {
+		if (CollectionUtils.isEmpty(selectedGroups)) {
 
 			return null;
 		}
+
+		List<Group> selectedManagerGroups = new ArrayList<>();
+
+		for (PrincipalGroup principalGroup : selectedGroups) {
+
+			if (allowedManagerGroups != null) {
+				for (Group managerGroup : allowedManagerGroups) {
+
+					if (managerGroup.getName() != null && managerGroup.getName().equalsIgnoreCase(principalGroup.getName())) {
+
+						selectedManagerGroups.add(managerGroup);
+						break;
+					}
+				}
+			}
+		}
+
+		if (CollectionUtils.getSize(selectedManagerGroups) != selectedGroups.size()) {
+
+			throw new AccessDeniedException("One or more of the specified groups are not valid managers for this flow", new AccessDenied());
+		}
+
+		return selectedManagerGroups;
 	}
 
 	protected void checkDependencies() {
@@ -853,10 +845,10 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		flowInstanceEvent.setStatusDescription(flowInstance.getStatus().getDescription());
 
 		flowInstanceEvent.getAttributeHandler().setAttribute("integration", true);
-		
-		if(attributes != null) {
-			
-			for(Entry<String,String> entry : attributes.entrySet()){
+
+		if (attributes != null) {
+
+			for (Entry<String, String> entry : attributes.entrySet()) {
 
 				flowInstanceEvent.getAttributeHandler().setAttribute(entry.getKey(), entry.getValue());
 			}
@@ -922,8 +914,8 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				throw new RuntimeException("Name cannot be empty");
 			}
 
-			if(enableAttributePrefix) {
-				
+			if (enableAttributePrefix) {
+
 				name = "callback." + name;
 			}
 
@@ -947,7 +939,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 			}
 
 			FlowInstanceUtils.setDescriptions(flowInstance);
-			
+
 			try {
 				daoFactory.getFlowInstanceDAO().update(flowInstance, new RelationQuery(FlowInstance.ATTRIBUTES_RELATION), 10);
 
