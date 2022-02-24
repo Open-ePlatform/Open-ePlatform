@@ -13,8 +13,10 @@ public interface APIAccessController {
 	public boolean hasAccess(Integer familyID, User user) throws SQLException;
 	public boolean hasAccess(FlowFamily family, User user) throws SQLException;
 	public boolean hasAccess(Flow flow, User user) throws SQLException;
+	public boolean hasFlowInstanceAccess(Integer flowInstanceID, User user) throws SQLException;
 		
 	public void accessCheck(Integer flowFamilyID, User user) throws SQLException, AccessDeniedException;
 	public void accessCheck(FlowFamily family, User user) throws SQLException, AccessDeniedException;
 	public void accessCheck(Flow flow, User user) throws SQLException, AccessDeniedException;
+	public void accessCheckFlowInstance(Integer flowInstanceID, User user) throws SQLException, AccessDeniedException;
 }
