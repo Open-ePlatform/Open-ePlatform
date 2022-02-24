@@ -24,10 +24,15 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
 import com.nordicpeak.flowengine.flowapprovalmodule.beans.FlowApprovalActivityRound;
+import com.nordicpeak.flowengine.interfaces.APIAccessController;
+import com.nordicpeak.flowengine.utils.APIAccessUtils;
 
 
 public class FlowApprovalAPIModule extends AnnotatedRESTModule {
 
+	@InstanceManagerDependency(required = false)
+	private APIAccessController apiAccessModule;
+	
 	private AnnotatedDAO<FlowApprovalActivityRound> activityRoundDAO;
 	
 	private QueryParameterFactory<FlowApprovalActivityRound, Integer> activityRoundIDParamFactory;
@@ -69,7 +74,9 @@ public class FlowApprovalAPIModule extends AnnotatedRESTModule {
 			log.warn("Flow approval activity round with ID " + activityRoundID + " not found");
 			throw new URINotFoundException(uriParser);
 		}
-
+		
+		APIAccessUtils.accessCheckFlowInstance(apiAccessModule, round.getFlowInstanceID(), user);
+		
 		File pdfFile = approvalAdminModule.getSignaturesPDF(round);
 
 		if (pdfFile == null || !pdfFile.exists()) {
@@ -89,5 +96,4 @@ public class FlowApprovalAPIModule extends AnnotatedRESTModule {
 			log.info("Error sending PDF for " + round + " to user " + user + ", " + e);
 		}
 	}
-	
 }
