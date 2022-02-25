@@ -64,4 +64,12 @@ public class APIAccessUtils {
 			apiAccessModule.accessCheck(flow, user);
 		}
 	}
+
+	public static void accessCheckFlowInstance(APIAccessController apiAccessModule, Integer flowInstanceID, User user) throws AccessDeniedException, SQLException {
+
+		if (apiAccessModule != null) {
+			
+			apiAccessModule.accessCheckFlowInstance(flowInstanceID, user);
+		}
+	}
 }
