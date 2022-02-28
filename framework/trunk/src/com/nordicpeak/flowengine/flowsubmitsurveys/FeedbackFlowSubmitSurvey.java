@@ -293,24 +293,30 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	}
 
 	@RESTMethod(alias = "deletecomment/{flowInstanceID}", method = { "post" }, requireLogin = true)
-	public ForegroundModuleResponse deleteComment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "flowInstanceID") Integer flowInstanceID) throws IOException, SQLException {
+	public ForegroundModuleResponse deleteComment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "flowInstanceID") Integer flowInstanceID) throws IOException, SQLException, URINotFoundException {
 
-		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
+		FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID);
 		
-		if(feedbackSurvey == null) {
-			throw new RuntimeException("Unknown feedbackSurvey with flowinstanceID "+flowInstanceID);
+		if(flowInstance != null && flowAdminModule.hasFlowAccess(user, flowInstance.getFlow())) {
+		
+			FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
+			
+			if(feedbackSurvey == null) {
+				log.warn("Unknown feedbackSurvey with flowinstanceID "+flowInstanceID);
+				throw new URINotFoundException(req.getRequestURI());
+			}
+			
+			feedbackSurvey.setComment(null);
+			feedbackSurvey.setCommentDeleted(Timestamp.valueOf(LocalDateTime.now()));
+			feedbackSurvey.setCommentDeletedByUser(user.getUsername());
+			feedbackSurveyDAO.update(feedbackSurvey);
+			
+			log.info("User "+user.getUsername()+" deleted comment for flowinstance "+flowInstanceID);
+	
+			res.sendRedirect(req.getContextPath() + "/flowadmin/showflow/" + feedbackSurvey.getFlowID());
+			return null;
 		}
-		
-		feedbackSurvey.setComment(null);
-		feedbackSurvey.setCommentDeleted(Timestamp.valueOf(LocalDateTime.now()));
-		feedbackSurvey.setCommentDeletedByUser(user.getUsername());
-		feedbackSurveyDAO.update(feedbackSurvey);
-		
-		log.info("User "+user.getUsername()+" deleted comment for flowinstance "+flowInstanceID);
-
-		res.sendRedirect(req.getContextPath() + "/flowadmin/showflow/" + feedbackSurvey.getFlowID());
-
-		return null;
+		throw new URINotFoundException(req.getRequestURI());
 
 	}
 
