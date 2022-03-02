@@ -360,4 +360,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="27">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `child_query_guardians` MODIFY COLUMN `email` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
