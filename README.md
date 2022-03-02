@@ -1,8 +1,10 @@
-För Open ePlatform är öppenhet, återanvändbarhet och standarder viktiga ingredienser. Nedan finns en övergripande teknisk beskrivning av plattformen, informationen kommer att utökas och bli mer detaljerad när plattformen publiceras.
+Användarföreningen är en ideell medlemsförening som syftar till att stärka användningen och spridningen av den öppna plattformen Open ePlatform inom offentlig verksamhet.
 
-Java och OpenHierarchy
-Open ePlatform är utvecklad i Java, på ett ramverk som heter OpenHierarchy. 
+Föreningen har som syfte att främja och tillvarata medlemmarnas intressen genom att verka för spridning av kompetens, utbyte av erfarenheter samt återanvändning av funktionalitet.
 
-Open ePlatform körs med Apache Tomcat som applikationsserver, detta innebär att plattformen kan köras på en mängd olika operativsystem.
+Föreningen verkar även för en bred och hållbar digital utveckling inom offentlig sektor där organisationer, främst kommuner, tillsammans driver utvecklingen framåt.
 
-Open ePlatform innehåller en Service Provider med SAML 2.0 stöd så att e-id inloggning kan ske mot vilken e-id leverantör som helst så länge de stöder SAML 2.0 standarden. 
+Som medlem kan du medverka i arbetsgrupper och påverka utvecklingen av plattformen.
+Dra nytta av andra medlemmars specialistkompetens och erfarenhet inom e-tjänsteutveckling och digitalisering.
+Som medlem kan du utveckla din kompetens inom området och plattformen.
+Dra nytta av andra medlemmars modeller och metoder för utveckling av e-tjänster.
