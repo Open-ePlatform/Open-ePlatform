@@ -654,7 +654,7 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 					String emailID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_email";
 					String phoneID = "q" + queryID + "_guardian_" + storedGuardian.getCitizenIdentifier() + "_phone";
 
-					String email = ValidationUtils.validateParameter(emailID, req, query.isRequireGuardianEmail() && !allowPartialPopulation, EmailPopulator.getPopulator(), validationErrors);
+					String email = ValidationUtils.validateParameter(emailID, req, query.isRequireGuardianEmail() && !allowPartialPopulation, 0, 255 , EmailPopulator.getPopulator(), validationErrors);
 					String phone = ValidationUtils.validateParameter(phoneID, req, query.isRequireGuardianPhone() && !allowPartialPopulation, StringSwedishPhoneNumberPopulator.getPopulator(), validationErrors);
 
 					storedGuardian.setEmail(email);
