@@ -3093,6 +3093,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowInstanceAdminModuleAlias;
 	}
+	
+	@Override
+	public String getFlowAdminModuleAlias() {
+
+		return flowAdminModuleAlias;
+	}
 
 	public static Set<String> getContactTags() {
 
