@@ -8,6 +8,7 @@
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js?v=1
 		/js/confirmpost.js
+		/tablesorter/js/jquery.tablesorter.min.js
 	</xsl:variable>
 	
 	<!-- Programatical additional globalscripts for UpdateSettings -->
@@ -19,11 +20,13 @@
 	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/persondatainformermodule.js
+		/js/persondatainformermodule.js?v=2
+		/js/datatables.min.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
 		/css/persondatainformer.css
+		/css/datatables.css
 	</xsl:variable>
 	
 	<xsl:variable name="storageOptionsVar">
@@ -228,7 +231,7 @@
 					<xsl:with-param name="addEmptyOption" select="$i18n.Filter.ShowAll" />
 				</xsl:call-template>
 				
-				<label for="name" class="bigmarginleft marginright margintop"><xsl:value-of select="$i18n.FlowFilter" />:</label>
+				<label for="name" class="bigmarginleft marginright margintop "><xsl:value-of select="$i18n.FlowFilter" />:</label>
 				<input type="text" size="20" name="flow-filter-input" class="flow-filter-input" data-tableid="flowlist" />
 			</div>
 			
@@ -238,21 +241,21 @@
 					<xsl:value-of select="$i18n.Export"/>
 				</a>
 				
-				<table id="flowlist" class="clearboth full coloredtable oep-table" cellspacing="0">
+				<table id="flowlist" class="clearboth full coloredtable oep-table dataTable display" cellspacing="0">
 					<thead class="sortable">	
 						<tr>
-							<th width="25" class="no-sort"></th>
-							<th class="default-sort"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowName" /></span></th>
-							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowType" /></span></th>
+							<th width="25" class="no-sort" data-orderable="false"></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowName" /></span></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowType" /></span></th>
 		
 							<xsl:if test="/Document/UseCategories">
-								<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowCategory" /></span></th>
+								<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.FlowCategory" /></span></th>
 							</xsl:if>
 							
-							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonData" /></span></th>
-							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Reasons" /></span></th>
-							<th><span data-icon-after="_"><xsl:value-of select="$i18n.YearsSaved" /></span></th>
-							<th><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonResponsible" /></span></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonData" /></span></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Reasons" /></span></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.YearsSaved" /></span></th>
+							<th class="sorting"><span data-icon-after="_"><xsl:value-of select="$i18n.Column.PersonResponsible" /></span></th>
 						</tr>
 					</thead>
 					<tbody>

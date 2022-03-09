@@ -12,6 +12,14 @@ $(function() {
 		$this.trigger("change");
 	});
 	
+	 $('#flowlist').DataTable( {
+        columnDefs: [ {
+            targets: [ 1 ]
+        },
+         { "bSortable": false, "aTargets": [ 0] }, ],
+         "order": [[ 1, "asc" ]]
+    } );
+	
 	$("#person-data-filter").on("change", function() {
 		
 		var $this = $(this);
