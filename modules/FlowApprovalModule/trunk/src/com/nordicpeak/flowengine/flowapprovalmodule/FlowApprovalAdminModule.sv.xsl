@@ -145,6 +145,8 @@
 	<xsl:variable name="i18n.Activity.showPDFDownloadActivation">Tillåt aktivitetsägare att ladda ner hela ärendets PDF</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireSigning">Kräv signering vid klarmarkera / godkänn / neka</xsl:variable>
 	<xsl:variable name="i18n.Activity.requireComment">Kräv att kommentar anges</xsl:variable>
+	<xsl:variable name="i18n.Activity.whenToCommentErrorMessage">Felmeddelande då obligatorisk kommentar inte är angiven</xsl:variable>
+	<xsl:variable name="i18n.Activity.whenToCommentErrorMessageInfo">Lämnas tomt för att använda standardfelmeddelande</xsl:variable>
 	
 	<xsl:variable name="i18n.Activity.allowManagersToAssignOwner">Tillåt handläggare att byta ansvarig användare</xsl:variable>
 	<xsl:variable name="i18n.Activity.assignableUsers">Valbara användare vid byte av ansvarig</xsl:variable>

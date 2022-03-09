@@ -16,7 +16,7 @@
 	<xsl:variable name="scripts">
 		/js/flowengine.tablesorter.js
 		/js/UserGroupList.js
-		/js/flowapprovaladmin.js?v=6
+		/js/flowapprovaladmin.js?v=7
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -1725,7 +1725,7 @@
 		</div>
 		
 		
-		<div class="floatleft full bigmarginbottom bigmarginleft">
+		<div id="whenToCommentDiv" class="floatleft full bigmarginbottom bigmarginleft">
 			<xsl:call-template name="createDropdown">
 				<xsl:with-param name="id" select="'whenToComment'"/>
 				<xsl:with-param name="name" select="'whenToComment'"/>
@@ -1734,6 +1734,25 @@
 				<xsl:with-param name="valueElementName" select="'value'"/>
 				<xsl:with-param name="selectedValue" select="Activity/whenToComment"/>
 			</xsl:call-template>
+			
+			<div>
+				<label class="floatleft full" for="whenToCommentErrorMessage">
+					<xsl:value-of select="$i18n.Activity.whenToCommentErrorMessage" />
+				</label>
+				
+				<p>
+				<span class="tiny"><xsl:value-of select="$i18n.Activity.whenToCommentErrorMessageInfo" /></span>
+				</p>
+			
+			</div>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'whenToCommentErrorMessage'" />
+					<xsl:with-param name="name" select="'whenToCommentErrorMessage'" />
+					<xsl:with-param name="element" select="Activity" />
+				</xsl:call-template>
+			</div>
 		</div>
 		
 		<div class="floatleft full bigmarginbottom">

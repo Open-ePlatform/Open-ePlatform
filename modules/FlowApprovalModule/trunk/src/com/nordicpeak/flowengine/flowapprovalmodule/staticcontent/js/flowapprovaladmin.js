@@ -138,14 +138,17 @@ $(function() {
 		
 	$("#requireComment").on("change", function(e) {
 			var checked = $(this).prop("checked");
+			$("#whenToCommentErrorMessage").prop('disabled', !checked);
 			if(checked) {
-				$("#whenToComment").show();
+				$("#whenToCommentDiv").show();
 			}
 			else {
-				$("#whenToComment").hide();
+				$("#whenToCommentDiv").hide();
 			}
 			
 		}).trigger("change");
+		
+	
 });
 
 function searchFlows(request, response, searchURL, searchInput) {

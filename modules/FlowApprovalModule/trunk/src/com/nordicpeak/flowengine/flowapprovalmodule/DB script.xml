@@ -597,5 +597,11 @@
 			]]>
 		</Query>
 	</Script>
-		
+	<Script version="33">
+		<Query>
+			<![CDATA[
+				 ALTER TABLE `flowapproval_activities` ADD COLUMN `whenToCommentErrorMessage` VARCHAR(255) AFTER `whenToComment`;	
+			]]>
+		</Query>
+	</Script>
 </DBScripts>

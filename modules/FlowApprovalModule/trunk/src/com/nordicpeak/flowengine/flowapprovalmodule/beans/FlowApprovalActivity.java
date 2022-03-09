@@ -99,6 +99,11 @@ public class FlowApprovalActivity extends GeneratedElementable implements XMLPar
 	@RequiredIfSet(paramNames = "requireComment")
 	@XMLElement
 	private Comment whenToComment;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private String whenToCommentErrorMessage;
 
 	@DAOManaged
 	@OneToMany
@@ -333,6 +338,16 @@ public class FlowApprovalActivity extends GeneratedElementable implements XMLPar
 	
 		this.whenToComment = whenToComment;
 	}
+	
+	public String getWhenToCommentErrorMessage() {
+		
+		return whenToCommentErrorMessage;
+	}
+	
+	public void setWhenToCommentErrorMessage(String whenToCommentErrorMessage) {
+	
+		this.whenToCommentErrorMessage = whenToCommentErrorMessage;
+	}
 
 	public String getGlobalEmailAddress() {
 
@@ -522,6 +537,7 @@ public class FlowApprovalActivity extends GeneratedElementable implements XMLPar
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
 		this.requireComment = xmlParser.getPrimitiveBoolean("requireComment");
 		this.whenToComment = XMLValidationUtils.validateParameter("whenToComment", xmlParser, false, new EnumPopulator<Comment>(Comment.class), errors);
+		this.whenToCommentErrorMessage = XMLValidationUtils.validateParameter("whenToCommentErrorMessage", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.allowManagersToAssignOwner = xmlParser.getPrimitiveBoolean("allowManagersToAssignOwner");
 		this.onlyUseGlobalNotifications = xmlParser.getPrimitiveBoolean("onlyUseGlobalNotifications");
 		this.invert = xmlParser.getPrimitiveBoolean("invert");

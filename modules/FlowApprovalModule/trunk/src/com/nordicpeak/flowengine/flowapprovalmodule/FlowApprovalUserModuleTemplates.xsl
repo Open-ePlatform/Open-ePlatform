@@ -325,9 +325,23 @@
 						<xsl:if test="ActivityProgress/completed or ActivityProgress/ActivityRound/completed or ActivityProgress/ActivityRound/cancelled">true</xsl:if>
 					</xsl:variable>
 					
-					<div class="full bigmarginbottom">
-						<xsl:apply-templates select="ValidationErrors/validationError" />
-					</div>
+					
+					<xsl:choose>
+						<xsl:when test="ValidationErrors/validationError/fieldName='comment' and ActivityProgress/Activity/whenToCommentErrorMessage">
+							<div class="full bigmarginbottom">
+								<p class="error">
+									<xsl:value-of select="ActivityProgress/Activity/whenToCommentErrorMessage" />
+								</p>
+							</div>
+						</xsl:when>
+						<xsl:otherwise>
+							<div class="full bigmarginbottom">
+								<xsl:apply-templates select="ValidationErrors/validationError" />
+							</div>
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					
 					
 					<form method="POST" action="{/Document/requestinfo/uri}" name="userform">
 					
