@@ -12,7 +12,7 @@
 	<xsl:variable name="scripts">
 		/js/d3.v3.min.js
 		/js/c3.min.js
-		/js/feedbacksurvey.js?v=2
+		/js/feedbacksurvey.js?v=3
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -28,11 +28,13 @@
 			</xsl:when>
 			<xsl:otherwise>
 				
-				<div id="FeedbackFlowSubmitSurvey">
+				
 					<xsl:apply-templates select="FeedbackSurveySuccess"/>
 					<xsl:apply-templates select="FeedbackSurveyForm"/>
 					<xsl:apply-templates select="ShowFlowFeedbackSurveys"/>
-				</div>
+					<xsl:apply-templates select="UpdateSettings"/>
+				
+
 				
 			</xsl:otherwise>
 		</xsl:choose>
@@ -40,13 +42,13 @@
 	</xsl:template>
 	
 	<xsl:template match="FeedbackSurveySuccess">
-		
+		<div id="FeedbackFlowSubmitSurvey">
 		<h1 class="title-border"><xsl:value-of select="$i18n.FeedbackSurveySuccess" />!</h1>
-		
+		</div>
 	</xsl:template>
 		
 	<xsl:template match="FeedbackSurveyForm">
-	
+		<div id="FeedbackFlowSubmitSurvey">
 		<h1 class="title-border"><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></h1>
 		
 		<form id="feedbackForm" name="feedbackForm" method="post" action="{ModuleURI}">
@@ -130,13 +132,25 @@
 			</div>
 			
 		</form>
+		</div>
 		
 	</xsl:template>
 
 	<xsl:template match="ShowFlowFeedbackSurveys">
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/StaticContentURL"/>/pics</xsl:variable>
 		
+		<div id="FeedbackFlowSubmitSurvey">
 		<p class="nomargin"><strong><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></strong></p>
 		
+		<script>
+			i18nFeedbackFlowSubmitSurveyModule.VERYSATISFIED = '<xsl:value-of select="$i18n.VerySatisfied"/>';
+			i18nFeedbackFlowSubmitSurveyModule.SATISFIED = '<xsl:value-of select="$i18n.Satisfied"/>';
+			i18nFeedbackFlowSubmitSurveyModule.DISSATISFIED =  '<xsl:value-of select="$i18n.Dissatisfied"/>';
+			i18nFeedbackFlowSubmitSurveyModule.VERYDISSATISFIED = '<xsl:value-of select="$i18n.VeryDissatisfied"/>';
+			i18nFeedbackFlowSubmitSurveyModule.NEITHER = '<xsl:value-of select="$i18n.Neither"/>';
+		</script>
+		
+				
 		<xsl:choose>
 			<xsl:when test="ChartData">
 				
@@ -174,8 +188,28 @@
 				<p><xsl:value-of select="$i18n.NoFlowFeedbackSurveys" /></p>
 			</xsl:otherwise>
 		</xsl:choose>
+		</div>
+		<div class="showflow-content nomargin nopadding">
+			<xsl:if test="FeedbackSurveySettings/sendEmail='true'">
+				<p class="title-border bold"><xsl:value-of select="$i18n.SettingsTitle" /></p>
+			
+				<p><xsl:value-of select="$i18n.SendsNotifications" /></p>
+			</xsl:if>
+			
+			<a href="{/Document/ModuleURI}/updatesettings/{flowID}" class="floatright">
+				<xsl:value-of select="$i18n.UpdateSettings" />
+				<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
+			</a>
 		
-		
+			<xsl:if test="FeedbackSurveySettings">
+				<br/>
+				<a class="marginleft floatright" href="{/Document/ModuleURI}/deletesettings/{flowID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteSettings}">
+					<xsl:value-of select="$i18n.DeleteSettings" />
+					<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
+				</a>
+				
+			</xsl:if>
+		</div>
 	</xsl:template>
 
 	<xsl:template match="FeedbackSurvey" mode="list">
@@ -232,10 +266,74 @@
 		</tr>
 
 	</xsl:template>
+	
+	<xsl:template match="UpdateSettings">
+		<div id="feedbackflowsurveysettings" class="contentitem errands-wrapper border-box">
+			<h1>
+				<xsl:value-of select="$i18n.UpdateSettingsTitle"/>
+				<xsl:text>:&#x20;</xsl:text>
+				<xsl:value-of select="Flow/name"/>
+			</h1>
+			<xsl:apply-templates select="ValidationErrors/validationError" />
+	
+			<form method="post" action="{/Document/ModuleURI}/updatesettings/{Flow/flowID}">
+				<div class="floatleft full bigmarginbottom margintop internal">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'sendEmail'" />
+							<xsl:with-param name="id" select="'sendEmail'" />
+							<xsl:with-param name="element" select="FeedbackSurveySettings" />
+						</xsl:call-template>
+						
+						<label for="sendNotification">
+							<xsl:value-of select="$i18n.SendNotification" />
+						</label>
+						<p class="tiny"><xsl:value-of select="$i18n.SendNotification.Description" /></p>
+					</div>
+				</div>
+				
+				
+				<div id="notification-email" class="notification-email">
+					<xsl:if test="not(FeedbackSurveySettings/sendEmail='true')">
+						<xsl:attribute name="class">hidden</xsl:attribute>
+					</xsl:if>
+					
+				
+					<div>
+					
+						<label for="notificationEmailAddresses">
+							<xsl:value-of select="$i18n.NotificationEmails" />
+						</label>
+						
+						<xsl:call-template name="createTextArea">
+							<xsl:with-param name="id" select="'notificationEmailAddresses'"/>
+							<xsl:with-param name="name" select="'notificationEmailAddresses'"/>
+							<xsl:with-param name="rows" select="5"/>
+							<xsl:with-param name="separateListValues" select="'true'"/>
+							<xsl:with-param name="element" select="FeedbackSurveySettings/NotificationEmailAddresses/address" />
+						</xsl:call-template>
+					</div>
+				</div>
+				
+				<div class="floatright clearboth bigmargintop">
+					<input type="submit" value="{$i18n.SaveChanges}" />
+				</div>
+			
+			</form>
+		</div>
+		
+	</xsl:template>
 
 	<xsl:template match="validationError[fieldName = 'answer']">
 		
 		<p class="error"><xsl:value-of select="$i18n.NoAnswer" /></p>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[fieldName = 'notificationEmailAddresses']">
+		
+		<p class="error"><xsl:value-of select="$i18n.NotificationEmails" /></p>
 		
 	</xsl:template>
 

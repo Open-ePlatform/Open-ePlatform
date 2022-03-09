@@ -6,7 +6,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +21,14 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import se.unlogic.emailutils.framework.EmailUtils;
+import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
+import se.unlogic.hierarchy.core.annotations.TextFieldSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
 import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
@@ -36,7 +46,9 @@ import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
 import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
 import se.unlogic.hierarchy.foregroundmodules.staticcontent.StaticContentModule;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
+import se.unlogic.standardutils.dao.AnnotatedDAOWrapper;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
@@ -45,41 +57,84 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.html.HTMLUtils;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.EnumPopulator;
+import se.unlogic.standardutils.string.SingleTagSource;
+import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.TimeUtils;
+import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
+import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
+import se.unlogic.webutils.http.HTTPUtils;
+import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 
-public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements FlowSubmitSurveyProvider, ViewFragmentModule<ForegroundModuleDescriptor> {
+import it.sauronsoftware.cron4j.Scheduler;
+
+public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements FlowSubmitSurveyProvider, ViewFragmentModule<ForegroundModuleDescriptor>, Runnable{
 
 	private static final String FLOW_FAMILY_FEEDBACK_QUERY = "SELECT feedback_flow_submit_surveys.* FROM feedback_flow_submit_surveys INNER JOIN flowengine_flows ON feedback_flow_submit_surveys.flowID = flowengine_flows.flowID WHERE flowFamilyID = ? AND (added BETWEEN ? AND ?);";
 
 	private static final AnnotatedRequestPopulator<FeedbackSurvey> FEEDBACK_SURVEY_POPULATOR = new AnnotatedRequestPopulator<>(FeedbackSurvey.class, new EnumPopulator<Answer>(Answer.class));
+	private static final AnnotatedRequestPopulator<FeedbackSurveySettings> POPULATOR = new AnnotatedRequestPopulator<>(FeedbackSurveySettings.class);
 
 	@XSLVariable(prefix = "java.")
 	private String chartDataTitle;
+	
+	@XSLVariable(prefix = "java.")
+	private String extensionViewTitle = "FeedbackFlowSubmitSurvey";
+	
+	@XSLVariable(prefix = "java.")
+	private String flowEventDescription = "FeedbackFlowSubmitSurvey";
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Show comment field", description = "Controls if the comment field is shown or not")
 	private boolean showCommentField = true;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Priority", description = "The priority of this extension provider compared to other providers. A low value means a higher priority. Valid values are 0 - " + Integer.MAX_VALUE + ".", required = true, formatValidator = NonNegativeStringIntegerValidator.class)
+	protected int extensionPriority = 0;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "FeedbackFlowSurvey email subject (global)", description = "The subject of emails sent when feedbackflowsurvey comments are sent", required = true)
+	@XSLVariable(prefix = "java.")
+	private String feedbackFlowSurveyGlobalEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "FeedbackFlowSurvey email message (global)", description = "The message of emails sent when feedbackflowsurvey comments are sent", required = true)
+	@XSLVariable(prefix = "java.")
+	private String feedbackFlowSurveyGlobalEmailMessage;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "FeedbackFlowSurvey check interval", description = "How often to check and send emails about new comments, crontab format", required = true)
+	private String surveyScheduleInterval = "0 23 * * Sun";
 
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
+	
+	@InstanceManagerDependency(required = true)
+	private FlowNotificationHandler flowNotificationHandler;
 
 	@InstanceManagerDependency(required = true)
 	private StaticContentModule staticContentModule;
-
+	
+	private Scheduler scheduler;
+	private String releseOldSurveyScheduleID;
+	
 	private AnnotatedDAO<FeedbackSurvey> feedbackSurveyDAO;
+	protected AnnotatedDAOWrapper<FeedbackSurveySettings, Integer> feedbackSurveySettingsDAOWrapper;
 
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
@@ -100,9 +155,12 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
 
 		feedbackSurveyDAO = daoFactory.getDAO(FeedbackSurvey.class);
+		feedbackSurveySettingsDAOWrapper = daoFactory.getDAO(FeedbackSurveySettings.class).getWrapper(Integer.class);
+
 
 		flowInstanceIDParameterFactory = feedbackSurveyDAO.getParamFactory("flowInstanceID", Integer.class);
 		flowIDParameterFactory = feedbackSurveyDAO.getParamFactory("flowID", Integer.class);
+		
 	}
 
 	@Override
@@ -116,6 +174,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		}
 
 		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+		initScheduler();
 	}
 
 	@Override
@@ -124,10 +183,48 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		super.update(descriptor, dataSource);
 
 		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
+	
+		rescheduleScheduler();
+	}
+	
+	private void rescheduleScheduler() {
+
+		scheduler.reschedule(releseOldSurveyScheduleID, surveyScheduleInterval);		
+	}
+	
+	private synchronized void initScheduler() {
+
+		if (scheduler != null) {
+
+			log.warn("Invalid state, scheduler already running!");
+			stopScheduler();
+		}
+
+		scheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
+		scheduler.setDaemon(true);
+		releseOldSurveyScheduleID = scheduler.schedule(surveyScheduleInterval, this);
+
+		scheduler.start();
+	}
+	
+	private synchronized void stopScheduler() {
+
+		try {
+			if (scheduler != null) {
+
+				scheduler.stop();
+				scheduler = null;
+			}
+
+		} catch (IllegalStateException e) {
+			log.error("Error stopping scheduler", e);
+		}
 	}
 
 	@Override
 	public void unload() throws Exception {
+		
+		stopScheduler();
 
 		systemInterface.getInstanceHandler().removeInstance(FlowSubmitSurveyProvider.class, this);
 
@@ -159,12 +256,20 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 				try {
 
 					log.info("User " + user + " adding feedback for flowinstance " + flowInstance + " and flow " + flowInstance.getFlow());
+					
+					
+					FeedbackSurveySettings settings = feedbackSurveySettingsDAOWrapper.get(flowInstance.getFlow().getFlowFamily().getFlowFamilyID());
 
 					FeedbackSurvey feedbackSurvey = FEEDBACK_SURVEY_POPULATOR.populate(req);
 
 					feedbackSurvey.setFlowID(flowInstance.getFlow().getFlowID());
 					feedbackSurvey.setFlowInstanceID(flowInstance.getFlowInstanceID());
 					feedbackSurvey.setAdded(TimeUtils.getCurrentTimestamp());
+					feedbackSurvey.setCommentSent(true);
+					
+					if(settings != null && settings.isSendEmail()) {
+						feedbackSurvey.setCommentSent(false);
+					}
 
 					transactionHandler = feedbackSurveyDAO.createTransaction();
 
@@ -226,7 +331,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		return null;
 	}
-
+	
 	@Override
 	public ViewFragment getShowFlowSurveysFragment(HttpServletRequest req, Integer flowID) throws TransformerException, SQLException {
 
@@ -239,6 +344,18 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		Element showElement = doc.createElement("ShowFlowFeedbackSurveys");
 		document.appendChild(showElement);
+		
+		
+		
+		Flow flow = flowAdminModule.getCachedFlow(flowID);
+		XMLUtils.appendNewElement(doc, showElement, "flowID", flowID);
+		
+		FeedbackSurveySettings settings = feedbackSurveySettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
+		
+		if(settings != null) {
+		
+			XMLUtils.append(doc, showElement, settings);
+		}
 
 		HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
 
@@ -288,8 +405,120 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			XMLUtils.append(doc, showElement, "Comments", commentSurveys);
 
 		}
-
+		
 		return viewFragmentTransformer.createViewFragment(doc);
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse updateSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+		
+		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
+		
+		if (flow == null) {
+			
+			return flowAdminModule.list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
+			
+		} else if (!flowAdminModule.hasFlowAccess(user, flow)) {
+			
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+		
+		FeedbackSurveySettings settings = feedbackSurveySettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
+		
+		List<ValidationError> validationErrors = null;
+		
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			
+			validationErrors = new ArrayList<>();
+			
+			if (settings == null) {
+				
+				settings = new FeedbackSurveySettings();
+			}
+			
+			try {
+				POPULATOR.populate(settings, req);
+				
+				if (CollectionUtils.isEmpty(validationErrors)) {
+						
+					log.info("User " + user + " updated feedbackflowsubmit settings for flow " + flow);
+					
+					if (settings.getFlowFamilyID() == null) {
+						
+						settings.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
+						feedbackSurveySettingsDAOWrapper.add(settings);
+						
+					} else {
+						
+						feedbackSurveySettingsDAOWrapper.update(settings);
+					}
+					
+					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFunctionConfigured() + " " + flowEventDescription, flow.getFlowFamily(), user);
+					flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsubmitsettings");
+					return null;
+				}
+				
+			} catch (ValidationException e) {
+				
+				validationErrors.addAll(e.getErrors());
+			}
+		}
+		
+		log.info("User " + user + " requesting update deduplication settings form for flow " + flow);
+		
+		Document doc = createDocument(req, uriParser);
+		
+		Element settingsElement = doc.createElement("UpdateSettings");
+		doc.getDocumentElement().appendChild(settingsElement);
+		
+		settingsElement.appendChild(flow.toXML(doc));
+		
+		XMLUtils.append(doc, settingsElement, settings);
+		
+		if (validationErrors != null) {
+			
+			XMLUtils.append(doc, settingsElement, "ValidationErrors", validationErrors);
+			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
+		}
+		
+		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
+	}
+	
+	@WebPublic(toLowerCase = true)
+	public ForegroundModuleResponse deleteSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+		
+		if(!HTTPUtils.isPost(req)) {
+			
+			throw new AccessDeniedException("Delete requests using method " + req.getMethod() + " are not allowed.");
+		}
+		
+		Flow flow = flowAdminModule.getRequestedFlow(req, user, uriParser);
+		
+		if (flow == null) {
+			
+			return flowAdminModule.list(req, res, user, uriParser, new ValidationError("FlowNotFound"));
+			
+		} else if (!flowAdminModule.hasFlowAccess(user, flow)) {
+			
+			throw new AccessDeniedException("User does not have access to flow type " + flow.getFlowType());
+		}
+		
+		FeedbackSurveySettings settings = feedbackSurveySettingsDAOWrapper.get(flow.getFlowFamily().getFlowFamilyID());
+		
+		if (settings != null) {
+			
+			log.info("User " + user + " deleting feedbackflowsurvey settings for flow " + flow);
+			
+			feedbackSurveySettingsDAOWrapper.delete(settings);
+			
+		} else {
+			
+			log.warn("User " + user + " trying to delete feedbackflowsurvey settings for flow " + flow + " which has no settings");
+		}
+		
+		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsurveysettings");
+		
+		return null;
 	}
 
 	@RESTMethod(alias = "deletecomment/{flowInstanceID}", method = { "post" }, requireLogin = true)
@@ -373,6 +602,20 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		return (float) sum / (float) feedbackList.size();
 	}
+	
+	public Document createDocument(HttpServletRequest req, URIParser uriParser) {
+		
+		Document doc = XMLUtils.createDomDocument();
+		Element documentElement = doc.createElement("Document");
+		doc.appendChild(documentElement);
+		documentElement.appendChild(RequestUtils.getRequestInfoAsXML(doc, req, uriParser));
+		documentElement.appendChild(this.moduleDescriptor.toXML(doc));
+		
+		XMLUtils.appendNewElement(doc, documentElement, "ModuleURI", req.getContextPath() + getFullAlias());
+		XMLUtils.appendNewElement(doc, documentElement, "StaticContentURL", staticContentModule.getModuleContentURL(moduleDescriptor));
+		
+		return doc;
+	}
 
 	@Override
 	public Integer getFlowInstanceSurveyResult(int flowInstanceID, Connection connection) throws SQLException {
@@ -387,5 +630,127 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		}
 
 		return 1 + survey.getAnswer().ordinal();
+	}
+
+	@Override
+	public void run() {
+		
+		try {
+			log.info("Checking for feedbackflow comments");
+			
+			LowLevelQuery<FeedbackSurvey> commentQuery = new LowLevelQuery<>();
+			
+			List<FeedbackSurveySettings> settingsList = feedbackSurveySettingsDAOWrapper.getAll();
+			
+			if(CollectionUtils.isEmpty(settingsList) || settingsList.stream().noneMatch(FeedbackSurveySettings::isSendEmail)) {
+				log.info("No feedbackflowsettings active");
+				return;
+			}
+			
+			Map<FeedbackSurveySettings, List<Flow>> settingFlows = getAffectedFlows(settingsList);
+			
+			if(settingFlows.isEmpty()) {
+				log.info("No matching flows from feedbackflowsettings");
+				return;
+			}
+			
+			
+			List<Flow> affectedFlows = new ArrayList<>();
+			
+			for (List<Flow> flows: settingFlows.values()) {
+				affectedFlows.addAll(flows);
+			}
+			
+			String sql = "SELECT * FROM " + feedbackSurveyDAO.getTableName() + " WHERE flowID IN ("+affectedFlows.stream().map(Flow::getFlowID).map(Object::toString).collect(Collectors.joining(","))+") AND commentSent=0 AND NOT COMMENT IS NULL";
+						
+						
+			commentQuery.setSql(sql);
+			
+			List<FeedbackSurvey> feedbackSurveys = feedbackSurveyDAO.getAll(commentQuery);
+
+			if (feedbackSurveys != null) {
+				
+				for (FeedbackSurvey feedbackSurvey : feedbackSurveys) {
+					
+					TransactionHandler transactionHandler = feedbackSurveyDAO.createTransaction();
+
+					try {
+						String updatesql = "UPDATE " + feedbackSurveyDAO.getTableName() + " SET commentSent=1 WHERE FLOWID=?";
+						
+						LowLevelQuery<FeedbackSurvey> updateCommentQuery = new LowLevelQuery<>();
+						
+						updateCommentQuery.setSql(updatesql);
+						updateCommentQuery.addParameter(feedbackSurvey.getFlowID());
+					
+						feedbackSurveyDAO.update(updateCommentQuery, transactionHandler);
+						
+						Optional<Flow> affectedFlow = affectedFlows.stream().filter(e-> e.getFlowID().equals(feedbackSurvey.getFlowID())).findFirst();
+						
+						if(!affectedFlow.isPresent()) {
+							throw new IllegalArgumentException("Missing affected flow from feedbacksurvey");
+						}
+						
+						TagReplacer tagReplacer = new TagReplacer();
+						tagReplacer.addTagSource(new SingleTagSource("$flow.name", affectedFlow.get().getName()));
+						tagReplacer.addTagSource(new SingleTagSource("$flow.url", HTMLUtils.replaceURLsInString(flowNotificationHandler.getFlowAdminModuleAlias() +"/showflow/" + affectedFlow.get().getFlowID()+"#flowsurveys", false)));
+						
+						SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+						
+						email.addRecipients(getNotificationEmailAddresses(feedbackSurvey.getFlowID(), settingFlows));
+							
+						email.setMessageContentType(SimpleEmail.HTML);
+						email.setSenderName(flowNotificationHandler.getEmailSenderName(null));
+						email.setSenderAddress(flowNotificationHandler.getEmailSenderAddress(null));
+						email.setSubject(tagReplacer.replace(feedbackFlowSurveyGlobalEmailSubject));
+						email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(feedbackFlowSurveyGlobalEmailMessage)));
+
+						log.info("Sending feedbackflowsubmit mail of comments for flow "+feedbackSurvey.getFlowID());
+						systemInterface.getEmailHandler().send(email);
+						
+						transactionHandler.commit();
+					
+					}catch(Exception ex) {
+						transactionHandler.abort();
+						log.error("Could not update feedbackflowsurvey when sending mail.",ex);
+					} finally {
+						TransactionHandler.autoClose(transactionHandler);
+					}
+					
+					
+				}
+			}
+
+		} catch (Exception ex) {
+			log.error("Error sending mail for comments", ex);
+		}
+		
+	}
+	
+	private List<String> getNotificationEmailAddresses(Integer flowID, Map<FeedbackSurveySettings, List<Flow>> settingFlows) {
+
+		for(FeedbackSurveySettings settings : settingFlows.keySet()) {
+			if(settingFlows.get(settings).stream().map(Flow::getFlowID).anyMatch(e-> e.equals(flowID))) {
+				return settings.getNotificationEmailAddresses();
+			}
+		}
+		throw new IllegalArgumentException("Missing notificationemailaddresses");
+	}
+
+	private Map<FeedbackSurveySettings,List<Flow>> getAffectedFlows(List<FeedbackSurveySettings> settingsList) {
+
+		Map<FeedbackSurveySettings, List<Flow>> affectedFlows = new HashMap<>();
+		Collection<Flow> flows = flowAdminModule.getFlowCache().getFlowCacheMap().values();
+		
+		if(flows != null) {
+			
+			for (FeedbackSurveySettings setting : settingsList) {
+				if(setting.isSendEmail() && flows.stream().anyMatch(e-> e.getFlowFamily().getFlowFamilyID().equals(setting.getFlowFamilyID()))) {
+					affectedFlows.put(setting, flows.stream().filter(e-> e.getFlowFamily().getFlowFamilyID().equals(setting.getFlowFamilyID())).collect(Collectors.toList()));
+				}
+			}
+		}
+		
+		return affectedFlows;
+		
 	}
 }

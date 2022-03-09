@@ -5,6 +5,19 @@
 	<xsl:include href="FeedbackFlowSubmitSurveyTemplates.xsl"/>
 	
 	<xsl:variable name="java.chartDataTitle">Hur nöjd är du med e-tjänsten?</xsl:variable>
+	<xsl:variable name="java.extensionViewTitle">Användarundersökning</xsl:variable>
+	<xsl:variable name="java.flowEventDescription">Användarundersökning</xsl:variable>
+	
+	<xsl:variable name="java.feedbackFlowSurveyGlobalEmailSubject">Kommentarer från användarundersökningar för e-tjänst $flow.name</xsl:variable>
+	<xsl:variable name="java.feedbackFlowSurveyGlobalEmailMessage">
+	
+		&lt;p&gt;Hej!&lt;/p&gt;
+		
+		&lt;p&gt;Det finns nya kommentarer för e-tjänst $flow.name.&lt;/p&gt;
+		&lt;p&gt;$flow.url&lt;/p&gt;
+		
+	</xsl:variable>
+	
 	
 	<xsl:variable name="i18n.FeedbackSurveyTitle">Hur nöjd är du med e-tjänsten?</xsl:variable>
 	<xsl:variable name="i18n.VeryDissatisfied">Mycket missnöjd</xsl:variable>
@@ -29,6 +42,17 @@
 	<xsl:variable name="i18n.DeleteComment.Inactive">Finns ingen kommentar att ta bort.</xsl:variable>
 	<xsl:variable name="i18n.DeleteComment">Ta bort vald kommentar</xsl:variable>
 	
+	<xsl:variable name="i18n.SettingsTitle">Inställningar</xsl:variable>
+	<xsl:variable name="i18n.UpdateSettingsTitle">Uppdatera inställningar</xsl:variable>
+	<xsl:variable name="i18n.SendNotification">Skicka notifikation vid kommentar</xsl:variable>
+	
+	<xsl:variable name="i18n.SendNotification.Description">Notis skickas normalt en gång i veckan (annan inställning kan förekomma) och innehåller länk till den e-tjänst som kommentar/er skickats in till.</xsl:variable>
+	
+	<xsl:variable name="i18n.NotificationEmails">Ange mottagande e-postadresser. En per rad.</xsl:variable>
+	<xsl:variable name="i18n.UpdateSettings">Ändra inställningar</xsl:variable>
+	<xsl:variable name="i18n.DeleteSettings">Ta bort inställningar</xsl:variable>
+	<xsl:variable name="i18n.SaveChanges">Spara inställningar</xsl:variable>
+	<xsl:variable name="i18n.SendsNotifications">Skicka notifikationer vid kommentar</xsl:variable>
 	
 	<xsl:variable name="i18n.NoFlowFeedbackSurveys">Den här versionen av e-tjänsten har ännu inga betyg</xsl:variable>
 

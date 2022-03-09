@@ -1,5 +1,13 @@
 var chartData = null;
 
+var i18nFeedbackFlowSubmitSurveyModule = {
+	"VERYSATISFIED": "Very satisfied",
+	"SATISFIED": "Satisfied",
+	"DISSATISFIED": "Dissatisfied",
+	"VERYDISSATISFIED": "Very dissatisfied",
+	"NEITHER": "Neither"
+};
+
 $(function() {
 	
 	$("#FeedbackFlowSubmitSurvey a.comment-btn").on("click", function(e) {
@@ -10,6 +18,19 @@ $(function() {
 		$(this).remove();
 		
 	});
+	
+	$("#sendEmail").change(function() {
+      if($(this).is(":checked")) {
+        $("#notification-email").show();
+      }
+      else if($(this).is(":not(:checked)")) {
+        $("#notification-email").hide();
+      }
+    });
+	
+	if($("#sendEmail").is(":checked")) {
+            $("#notification-email").show();
+          }
 	
 	$("#FeedbackFlowSubmitSurvey .submit-btn").on("click", function(e) {
 		
@@ -89,7 +110,7 @@ $(function() {
 		    axis: {
 		        x: {
 		            type: 'category',
-		            categories: ['Mycket missnöjd', 'Missnöjd', 'Varken eller', 'Nöjd', 'Mycket nöjd']
+		            categories: [i18nFeedbackFlowSubmitSurveyModule.VERYDISSATISFIED, i18nFeedbackFlowSubmitSurveyModule.DISSATISFIED, i18nFeedbackFlowSubmitSurveyModule.NEITHER, i18nFeedbackFlowSubmitSurveyModule.SATISFIED, i18nFeedbackFlowSubmitSurveyModule.VERYSATISFIED]
 		        }
 		    },
 		    legend: {

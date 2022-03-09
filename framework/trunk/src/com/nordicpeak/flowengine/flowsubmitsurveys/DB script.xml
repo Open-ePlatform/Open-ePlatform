@@ -49,5 +49,44 @@
 				ALTER TABLE `feedback_flow_submit_surveys` ADD COLUMN `commentDeleted` DATETIME, ADD COLUMN `commentDeletedByUser` VARCHAR(255) NULL;
 			]]>
 		</Query>				
-	</Script>	
+	</Script>
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `feedback_flow_submit_survey_settings` (
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL,
+				  `sendEmail` BOOLEAN NOT NULL,
+				  PRIMARY KEY (`flowFamilyID`))
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `feedback_flow_submit_survey_settings_email` (
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL,
+				  `email` VARCHAR(255) NOT NULL,
+				  PRIMARY KEY (`flowFamilyID`,`email`),
+				  CONSTRAINT `FK_feedback_flow_submit_survey_settings_email_1` FOREIGN KEY (`flowFamilyID`) 
+				  	REFERENCES `feedback_flow_submit_survey_settings` (`flowFamilyID`) 
+				  	ON DELETE CASCADE 
+				  	ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>				
+	</Script>
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `feedback_flow_submit_surveys` ADD COLUMN `commentSent` BOOLEAN NOT NULL DEFAULT TRUE AFTER `comment`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `feedback_flow_submit_surveys` SET `commentSent`=TRUE;
+			]]>
+		</Query>
+	</Script>
+	
+		
 </DBScripts>
