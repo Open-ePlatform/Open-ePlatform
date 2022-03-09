@@ -286,7 +286,7 @@
 							<xsl:with-param name="element" select="FeedbackSurveySettings" />
 						</xsl:call-template>
 						
-						<label for="sendNotification">
+						<label for="sendEmail">
 							<xsl:value-of select="$i18n.SendNotification" />
 						</label>
 						<p class="tiny"><xsl:value-of select="$i18n.SendNotification.Description" /></p>
