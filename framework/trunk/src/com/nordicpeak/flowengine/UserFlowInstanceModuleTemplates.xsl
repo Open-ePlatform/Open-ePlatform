@@ -351,9 +351,9 @@
 				</xsl:choose>
 				
 				<xsl:apply-templates select="ExtensionLink" mode="flow-list"/>
-			
+				
 				<xsl:if test="Status/isUserDeletable = 'true'">
-					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="'{$i18n.DeleteFlowInstanceConfirm}: {Flow/name}"><xsl:value-of select="$i18n.Delete" /></a>
+					<a class="btn btn-red vertical-align-middle" href="{$baseURL}/delete/{flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlowInstanceConfirm}: {Flow/name} (#{flowInstanceID})"><xsl:value-of select="$i18n.Delete" /></a>
 				</xsl:if>
 			</td>
 		</tr>
@@ -536,7 +536,7 @@
 			<div class="section-inside step full">
 					<div class="heading-wrapper">
 						<div class="inner inner-less-padding">
-							<figure>
+						<figure>
 								<img src="{/Document/requestinfo/currentURI}/{/Document/module/alias}/icon/{Flow/flowID}?{Flow/IconLastModified}" alt="" />
 							</figure>
 							<div class="heading">
@@ -756,11 +756,16 @@
 				
 				<div id="showflow" class="tabs-content">
 					
-					<xsl:if test="Status/isUserMutable = 'true'">
-						<div class="editbutton">
+					<div class="editbutton">
+						<xsl:if test="Status/isUserDeletable = 'true'">
+							<a class="btn btn-red next bigmarginright" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlowInstanceConfirm}: {Flow/name} (#{flowInstanceID})" ><i data-icon-before="x"/><xsl:value-of select="$i18n.Delete" /></a>
+							</xsl:if>
+						
+						<xsl:if test="Status/isUserMutable = 'true'">
 							<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowinstance/{Flow/flowID}/{flowInstanceID}" class="btn btn-light next"><i data-icon-before="W"></i><xsl:value-of select="$i18n.UpdateFlowInstance" /></a>
-						</div>
-					</xsl:if>
+						</xsl:if>
+						
+					</div>
 					
 					<xsl:apply-templates select="../ImmutableFlowInstanceManagerPreview" />
 					
