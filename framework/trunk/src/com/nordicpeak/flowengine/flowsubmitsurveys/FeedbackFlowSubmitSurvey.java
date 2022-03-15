@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,7 @@ import org.w3c.dom.Element;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.SimpleEmail;
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
+import se.unlogic.hierarchy.core.annotations.EventListener;
 import se.unlogic.hierarchy.core.annotations.HTMLEditorSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.ModuleSetting;
@@ -31,7 +31,10 @@ import se.unlogic.hierarchy.core.beans.LinkTag;
 import se.unlogic.hierarchy.core.beans.ScriptTag;
 import se.unlogic.hierarchy.core.beans.SimpleForegroundModuleResponse;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.enums.CRUDAction;
+import se.unlogic.hierarchy.core.enums.EventSource;
 import se.unlogic.hierarchy.core.enums.SystemStatus;
+import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
 import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
@@ -74,6 +77,7 @@ import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
 import com.nordicpeak.flowengine.FlowAdminModule;
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
@@ -144,6 +148,9 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 	private QueryParameterFactory<FeedbackSurvey, Integer> flowIDParameterFactory;
 
+	private QueryParameterFactory<FeedbackSurvey, Integer> feedbackSurveyIDParameterFactory;
+
+	private QueryParameterFactory<FeedbackSurveySettings, Integer> feedbackSurveySettingsIDParameterFactory;
 	private QueryParameterFactory<FeedbackSurveySettings, Timestamp> feedbackSurveySettingsDateParameterFactory;
 
 	@Override
@@ -162,7 +169,10 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		feedbackSurveySettingsDAO = daoFactory.getDAO(FeedbackSurveySettings.class);
 		feedbackSurveySettingsDAOWrapper = feedbackSurveySettingsDAO.getWrapper(Integer.class);
 
+		feedbackSurveyIDParameterFactory = daoFactory.getDAO(FeedbackSurvey.class).getParamFactory("flowID", Integer.class);
+
 		feedbackSurveySettingsDateParameterFactory = daoFactory.getDAO(FeedbackSurveySettings.class).getParamFactory("sendEmail", Timestamp.class);
+		feedbackSurveySettingsIDParameterFactory = daoFactory.getDAO(FeedbackSurveySettings.class).getParamFactory("flowFamilyID", Integer.class);
 
 		flowInstanceIDParameterFactory = feedbackSurveyDAO.getParamFactory("flowInstanceID", Integer.class);
 		flowInstanceTimestampParameterFactory = feedbackSurveyDAO.getParamFactory("added", Timestamp.class);
@@ -363,8 +373,6 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		if (surveys != null) {
 
-			List<FeedbackSurvey> commentSurveys = new ArrayList<>();
-
 			int veryDissatisfiedCount = 0;
 			int dissatisfiedCount = 0;
 			int neitherCount = 0;
@@ -387,8 +395,6 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 					verySatisfiedCount++;
 				}
 
-				commentSurveys.add(survey);
-
 			}
 
 			JsonArray jsonArray = new JsonArray(6);
@@ -400,7 +406,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			jsonArray.addNode(verySatisfiedCount + "");
 
 			XMLUtils.appendNewElement(doc, showElement, "ChartData", jsonArray.toJson());
-			XMLUtils.append(doc, showElement, "Comments", commentSurveys);
+			XMLUtils.append(doc, showElement, "Comments", surveys);
 
 		}
 
@@ -438,7 +444,6 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 				POPULATOR.populate(settings, req);
 
 				if (req.getParameter("sendEmail") == null || req.getParameter("sendEmail").equals("false")) {
-					settings.setNotificationEmailAddresses(null);
 					settings.setSendEmail(null);
 				} else {
 					if (settings.isSendEmail() == null) {
@@ -488,7 +493,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			XMLUtils.append(doc, settingsElement, "ValidationErrors", validationErrors);
 			settingsElement.appendChild(RequestUtils.getRequestParameters(req, doc));
 		}
-		
+
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
 
@@ -532,14 +537,12 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	@RESTMethod(alias = "deletecomment/{flowInstanceID}", method = { "post" }, requireLogin = true)
 	public ForegroundModuleResponse deleteComment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, @URIParam(name = "flowInstanceID") Integer flowInstanceID) throws IOException, SQLException, URINotFoundException {
 
-		FlowInstance flowInstance = flowAdminModule.getFlowInstance(flowInstanceID);
+		FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
 
-		if (flowInstance != null && flowAdminModule.hasFlowAccess(user, flowInstance.getFlow())) {
+		if (feedbackSurvey != null) {
 
-			FeedbackSurvey feedbackSurvey = getFeedbackSurvey(flowInstanceID);
-
-			if (feedbackSurvey == null) {
-				log.warn("Unknown feedbackSurvey with flowinstanceID " + flowInstanceID);
+			Flow flow = (Flow) flowAdminModule.getFlow(feedbackSurvey.getFlowID());
+			if (flow == null || !flowAdminModule.hasFlowAccess(user, flow)) {
 				throw new URINotFoundException(req.getRequestURI());
 			}
 
@@ -671,16 +674,16 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 					List<FeedbackSurvey> feedbackSurveys = feedbackSurveyDAO.getAll(surveyListQuery);
 
-					if (CollectionUtils.isEmpty(feedbackSurveys)) {
+					if (feedbackSurveys == null) {
 						continue;
 					}
 
-					Flow latestFlow = flows.stream().max(Comparator.comparingInt(Flow::getFlowID)).orElse(null);
+					Flow latestFlow = flowAdminModule.getLatestFlowVersion(flowAdminModule.getFlowFamily(setting.getFlowFamilyID()));
 					if (latestFlow == null) {
 						log.warn("Could not filter latest flow version");
 						continue;
 					}
-					
+
 					//remove all non-matching flows for version information
 					flows.removeIf(e -> feedbackSurveys.stream().noneMatch(e1 -> e1.getFlowID().equals(e.getFlowID())));
 
@@ -726,5 +729,62 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			log.error("Error sending mail for comments", ex);
 		}
 
+	}
+
+	@EventListener(channel = Flow.class)
+	public void processFlowEvent(CRUDEvent<Flow> event, EventSource eventSource) {
+
+		if (event.getAction() == CRUDAction.DELETE) {
+			try (TransactionHandler transaction = feedbackSurveyDAO.createTransaction()) {
+				for (Flow flow : event.getBeans()) {
+
+					log.info("Deleting feedbackflowsubmitsurvey for flow ID: " + flow.getFlowID());
+
+					try {
+						HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
+
+						query.addParameter(feedbackSurveyIDParameterFactory.getParameter(flow.getFlowID()));
+
+						feedbackSurveyDAO.delete(query, transaction);
+
+					} catch (SQLException e) {
+
+						log.error("Error deleting feedbackflowsubmitsurvey for flow family ID: " + flow.getFlowID(), e);
+					}
+				}
+				transaction.commit();
+			} catch (Exception e) {
+				log.error("Error deleting feedbackflowsubmitsurvey for settingsDAO on event: " + event, e);
+			}
+		}
+	}
+
+	@EventListener(channel = FlowFamily.class)
+	public void processFlowFamilyEvent(CRUDEvent<FlowFamily> event, EventSource eventSource) {
+
+		if (event.getAction() == CRUDAction.DELETE) {
+
+			try (TransactionHandler transaction = feedbackSurveySettingsDAO.createTransaction()) {
+				for (FlowFamily flowFamily : event.getBeans()) {
+
+					log.info("Deleting feedbackflowsubmitsurvey settings for flow family ID: " + flowFamily.getFlowFamilyID());
+
+					try {
+						HighLevelQuery<FeedbackSurveySettings> query = new HighLevelQuery<>();
+
+						query.addParameter(feedbackSurveySettingsIDParameterFactory.getParameter(flowFamily.getFlowFamilyID()));
+
+						feedbackSurveySettingsDAO.delete(query, transaction);
+
+					} catch (SQLException e) {
+
+						log.error("Error deleting feedbackflowsubmitsurvey settings for flow family ID: " + flowFamily.getFlowFamilyID(), e);
+					}
+				}
+				transaction.commit();
+			} catch (Exception e) {
+				log.error("Error deleting feedbackflowsubmitsurvey settings for settingsDAO on event: " + event, e);
+			}
+		}
 	}
 }
