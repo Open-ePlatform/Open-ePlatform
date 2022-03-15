@@ -37,12 +37,12 @@ public class FeedbackSurvey extends GeneratedElementable {
 	@WebPopulate(maxLength = 65536)
 	@XMLElement
 	private String comment;
-	
+
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private Timestamp commentDeleted;
-	
+
 	@DAOManaged(dontUpdateIfNull = true)
 	@XMLElement
 	private User commentDeletedByUser;
@@ -97,35 +97,30 @@ public class FeedbackSurvey extends GeneratedElementable {
 		this.comment = comment;
 	}
 
-	
 	public Timestamp getCommentDeleted() {
-	
+
 		return commentDeleted;
 	}
 
-	
 	public void setCommentDeleted(Timestamp commentDeleted) {
-	
+
 		this.commentDeleted = commentDeleted;
 	}
 
-	
 	public User getCommentDeletedByUser() {
-	
+
 		return commentDeletedByUser;
 	}
-	
+
 	public void setCommentDeletedByUser(User commentDeletedByUser) {
-	
+
 		this.commentDeletedByUser = commentDeletedByUser;
 	}
 
 	@Override
 	public String toString() {
 
-		return "FeedbackSurvey [flowID=" + flowID + ", flowInstanceID=" + flowInstanceID + ", added=" + added + ", answer=" + answer + ", comment=" + comment + ", commentDeleted=" + commentDeleted + ", commentDeletedByUser=" + commentDeletedByUser + "]";
+		return "FeedbackSurvey (flowInstanceID: " + flowInstanceID + ")";
 	}
-	
-	
 
 }

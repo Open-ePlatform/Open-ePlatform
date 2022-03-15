@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,11 +59,11 @@ import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
-import se.unlogic.standardutils.html.HTMLUtils;
 import se.unlogic.standardutils.json.JsonArray;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.string.SingleTagSource;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
@@ -121,7 +122,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "FeedbackFlowSurvey check interval", description = "How often to check and send emails about new comments, crontab format", required = true)
-	private String surveyScheduleInterval = "0 7 * * Mon";
+	private String surveyScheduleInterval = "0 8 * * Mon";
 
 	@InstanceManagerDependency(required = true)
 	private FlowAdminModule flowAdminModule;
@@ -133,7 +134,6 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	private StaticContentModule staticContentModule;
 
 	private Scheduler scheduler;
-	private String releseOldSurveyScheduleID;
 
 	private AnnotatedDAO<FeedbackSurvey> feedbackSurveyDAO;
 	private AnnotatedDAO<FeedbackSurveySettings> feedbackSurveySettingsDAO;
@@ -201,12 +201,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		this.viewFragmentTransformer = new ModuleViewFragmentTransformer<>(sectionInterface.getForegroundModuleXSLTCache(), this, systemInterface.getEncoding());
 
-		rescheduleScheduler();
-	}
-
-	private void rescheduleScheduler() {
-
-		scheduler.reschedule(releseOldSurveyScheduleID, surveyScheduleInterval);
+		stopScheduler();
+		initScheduler();
 	}
 
 	private synchronized void initScheduler() {
@@ -219,7 +215,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		scheduler = new Scheduler(systemInterface.getApplicationName() + " - " + moduleDescriptor.toString());
 		scheduler.setDaemon(true);
-		releseOldSurveyScheduleID = scheduler.schedule(surveyScheduleInterval, this);
+		scheduler.schedule(surveyScheduleInterval, this);
 
 		scheduler.start();
 	}
@@ -251,6 +247,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	@Override
 	public ForegroundModuleResponse defaultMethod(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 
+		//This method could be improved by using a fragment piped through FlowEngine that checks if the user has the given FlowInstance in session after submitting it
+		
 		if (req.getMethod().equalsIgnoreCase("POST")) {
 
 			Integer flowInstanceID = NumberUtils.toInt(req.getParameter("flowInstanceID"));
@@ -434,36 +432,56 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 			validationErrors = new ArrayList<>();
 
-			if (settings == null) {
-
-				settings = new FeedbackSurveySettings();
-			}
-
 			try {
-				POPULATOR.populate(settings, req);
+				settings = POPULATOR.populate(settings, req);
 
-				if (req.getParameter("sendEmail") == null || req.getParameter("sendEmail").equals("false")) {
+				if (req.getParameter("sendEmail") == null) {
+					
 					settings.setSendEmail(null);
+					
 				} else {
+					
 					if (settings.isSendEmail() == null) {
+						
 						settings.setSendEmail(new Timestamp(System.currentTimeMillis()));
 					}
-
 				}
+				
 				if (CollectionUtils.isEmpty(validationErrors)) {
 
-					log.info("User " + user + " updated feedbackflowsubmit settings for flow " + flow);
+					if(settings.getNotificationEmailAddresses() == null) {
+						
+						if(settings.getFlowFamilyID() != null) {
+							
+							log.info("User " + user + " deleting submit survey settings for family " + flow.getFlowFamily());
+							
+							feedbackSurveySettingsDAOWrapper.delete(settings);
+							
+						} else {
+							
+							log.info("User " + user + " submitted empty survey settings for family " + flow.getFlowFamily());
+						}
+					
+					}else{
 
-					if (settings.getFlowFamilyID() == null) {
+						if (settings.getFlowFamilyID() == null) {
 
-						settings.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
+							log.info("User " + user + " adding submit survey settings for family " + flow.getFlowFamily());
+							
+							settings.setFlowFamilyID(flow.getFlowFamily().getFlowFamilyID());
 
-						feedbackSurveySettingsDAOWrapper.add(settings);
+							feedbackSurveySettingsDAOWrapper.add(settings);
 
-					} else {
+						} else {
 
-						feedbackSurveySettingsDAOWrapper.update(settings);
+							log.info("User " + user + " updated submit survey settings for family " + flow.getFlowFamily());
+							
+							feedbackSurveySettingsDAOWrapper.update(settings);
+						}
 					}
+					
+					
+
 
 					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFunctionConfigured() + " " + flowEventDescription, flow.getFlowFamily(), user);
 					flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsubmitsettings");
@@ -476,7 +494,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			}
 		}
 
-		log.info("User " + user + " requesting update deduplication settings form for flow " + flow);
+		log.info("User " + user + " requesting update submit survey settings form for flow family " + flow.getFlowFamily());
 
 		Document doc = createDocument(req, uriParser);
 
@@ -519,13 +537,13 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		if (settings != null) {
 
-			log.info("User " + user + " deleting feedbackflowsurvey settings for flow " + flow);
+			log.info("User " + user + " deleting survey settings for flow family " + flow.getFlowFamily().getFlowFamilyID());
 
 			feedbackSurveySettingsDAOWrapper.delete(settings);
 
 		} else {
 
-			log.warn("User " + user + " trying to delete feedbackflowsurvey settings for flow " + flow + " which has no settings");
+			log.warn("User " + user + " trying to delete feedbackflowsurvey settings for flow family " + flow.getFlowFamily().getFlowFamilyID() + " which has no settings");
 		}
 
 		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsurveysettings");
@@ -590,6 +608,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	@Override
 	public Float getWeeklyAverage(Integer flowFamilyID, Timestamp startDate, Timestamp endDate) throws SQLException {
 
+		//Replace direct join again flow engine tables with query against local tables only and get the flows from FlowAdminModule
 		LowLevelQuery<FeedbackSurvey> query = new LowLevelQuery<>(FLOW_FAMILY_FEEDBACK_QUERY);
 
 		query.addParameter(flowFamilyID);
@@ -646,7 +665,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 	public void run() {
 
 		try {
-			log.info("Checking for feedbackflow comments");
+			log.info("Checking for flow families with active survey comment notifications");
 
 			HighLevelQuery<FeedbackSurveySettings> settingsListQuery = new HighLevelQuery<>();
 
@@ -655,7 +674,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			List<FeedbackSurveySettings> allSurveySettings = feedbackSurveySettingsDAO.getAll(settingsListQuery);
 
 			if (CollectionUtils.isEmpty(allSurveySettings)) {
-				log.info("No feedbackflowsettings active");
+
+				log.info("No flow families with active survey comment notifications found");
 				return;
 			}
 
@@ -663,7 +683,9 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 				if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {
 
-					List<Flow> flows = flowAdminModule.getFlowFromFlowFamily(setting.getFlowFamilyID());
+					FlowFamily flowFamily = flowAdminModule.getFlowFamily(setting.getFlowFamilyID());
+					
+					List<Flow> flows = flowAdminModule.getFlowVersions(flowFamily);
 
 					HighLevelQuery<FeedbackSurvey> surveyListQuery = new HighLevelQuery<>();
 
@@ -677,67 +699,93 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 						continue;
 					}
 
-					Flow latestFlow = flowAdminModule.getLatestFlowVersion(flowAdminModule.getFlowFamily(setting.getFlowFamilyID()));
+					Flow latestFlow = flowAdminModule.getLatestFlowVersion(flowFamily);
+					
 					if (latestFlow == null) {
-						log.warn("Could not filter latest flow version");
+						
+						log.error("Could not find latest flow version for flow family " + flowFamily);
 						continue;
 					}
+					
+					LinkedHashSet<Integer> flowVersions = new LinkedHashSet<Integer>();
+					
+					for(Flow flow : flows) {
 
-					//remove all non-matching flows for version information
-					flows.removeIf(e -> feedbackSurveys.stream().noneMatch(e1 -> e1.getFlowID().equals(e.getFlowID())));
+						Integer flowID = flow.getFlowID();
+						
+						for(FeedbackSurvey survey : feedbackSurveys) {
+							
+							if(survey.getFlowID().equals(flowID)) {
+								
+								flowVersions.add(flow.getFlowID());
+							}
+						}
+					}
+
 
 					TransactionHandler transactionHandler = feedbackSurveySettingsDAO.createTransaction();
 
 					try {
-
-						setting.setSendEmail(new Timestamp(System.currentTimeMillis()));
-						feedbackSurveySettingsDAO.update(setting, transactionHandler, null);
-
 						TagReplacer tagReplacer = new TagReplacer();
 
 						tagReplacer.addTagSource(new SingleTagSource("$flow.name", latestFlow.getName()));
-						tagReplacer.addTagSource(new SingleTagSource("$flow.url", HTMLUtils.replaceURLsInString(flowNotificationHandler.getFlowAdminModuleAlias() + "/showflow/" + latestFlow.getFlowID() + "#flowsurveys", false)));
-						tagReplacer.addTagSource(new SingleTagSource("$flow.version", flows.stream().map(Flow::getVersion).map(Object::toString).collect(Collectors.joining(", "))));
+						tagReplacer.addTagSource(new SingleTagSource("$flow.url", flowNotificationHandler.getInstallationBaseURL(null) + flowAdminModule.getFullAlias() + "/showflow/" + latestFlow.getFlowID() + "#flowsurveys"));
+						tagReplacer.addTagSource(new SingleTagSource("$flow.version", StringUtils.toCommaSeparatedString(flowVersions)));
 
-						SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
+						log.info("Sending new survey comment notifications for flow family " + setting.getFlowFamilyID());
+						
+						for(String recipient : setting.getNotificationEmailAddresses()) {
+							
+							SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
 
-						email.addRecipients(setting.getNotificationEmailAddresses());
+							email.addRecipient(recipient);
 
-						email.setMessageContentType(SimpleEmail.HTML);
-						email.setSenderName(flowNotificationHandler.getEmailSenderName(null));
-						email.setSenderAddress(flowNotificationHandler.getEmailSenderAddress(null));
-						email.setSubject(tagReplacer.replace(feedbackFlowSurveyGlobalEmailSubject));
-						email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(feedbackFlowSurveyGlobalEmailMessage)));
-
-						log.info("Sending feedbackflowsubmit mail of comments for flow " + latestFlow.getFlowID());
-						systemInterface.getEmailHandler().send(email);
+							email.setMessageContentType(SimpleEmail.HTML);
+							email.setSenderName(flowNotificationHandler.getEmailSenderName(null));
+							email.setSenderAddress(flowNotificationHandler.getEmailSenderAddress(null));
+							email.setSubject(tagReplacer.replace(feedbackFlowSurveyGlobalEmailSubject));
+							email.setMessage(EmailUtils.addMessageBody(tagReplacer.replace(feedbackFlowSurveyGlobalEmailMessage)));
+							
+							systemInterface.getEmailHandler().send(email);
+						}
+						
+						setting.setSendEmail(new Timestamp(System.currentTimeMillis()));
+						feedbackSurveySettingsDAO.update(setting, transactionHandler, null);
 
 						transactionHandler.commit();
 
-					} catch (Exception ex) {
-						transactionHandler.abort();
-						log.error("Could not update feedbackflowsurveysetting when sending mail.", ex);
+					} catch (SQLException e) {
+						
+						log.error("Could not update survey notification timestamp for flow family " + setting.getFlowFamilyID() + " after sending notifications.", e);
+						
+					} catch (Exception e) {
+						
+						log.error("Error sending new survey comment notifications for flow family " + setting.getFlowFamilyID(), e);
+					
 					} finally {
+						
 						TransactionHandler.autoClose(transactionHandler);
 					}
 
 				}
 			}
 
-		} catch (Exception ex) {
-			log.error("Error sending mail for comments", ex);
+		} catch (Exception e) {
+			
+			log.error("Error sending new survey comment notifications", e);
 		}
-
 	}
 
 	@EventListener(channel = Flow.class)
 	public void processFlowEvent(CRUDEvent<Flow> event, EventSource eventSource) {
 
 		if (event.getAction() == CRUDAction.DELETE) {
+			
 			try (TransactionHandler transaction = feedbackSurveyDAO.createTransaction()) {
+			
 				for (Flow flow : event.getBeans()) {
 
-					log.info("Deleting feedbackflowsubmitsurvey for flow ID: " + flow.getFlowID());
+					log.info("Deleting submit surveys for flowID: " + flow.getFlowID());
 
 					try {
 						HighLevelQuery<FeedbackSurvey> query = new HighLevelQuery<>();
@@ -748,12 +796,16 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 					} catch (SQLException e) {
 
-						log.error("Error deleting feedbackflowsubmitsurvey for flow family ID: " + flow.getFlowID(), e);
+						log.error("Error deleting submit surveys for flowID: " + flow.getFlowID(), e);
 					}
 				}
+				
 				transaction.commit();
+				
 			} catch (Exception e) {
-				log.error("Error deleting feedbackflowsubmitsurvey for settingsDAO on event: " + event, e);
+				
+				log.error("Error deleting deleting submit surveys for event: " + event, e);
+				
 			}
 		}
 	}
@@ -764,9 +816,10 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 		if (event.getAction() == CRUDAction.DELETE) {
 
 			try (TransactionHandler transaction = feedbackSurveySettingsDAO.createTransaction()) {
+				
 				for (FlowFamily flowFamily : event.getBeans()) {
 
-					log.info("Deleting feedbackflowsubmitsurvey settings for flow family ID: " + flowFamily.getFlowFamilyID());
+					log.info("Deleting submit surveys settings for flow family: " + flowFamily.getFlowFamilyID());
 
 					try {
 						HighLevelQuery<FeedbackSurveySettings> query = new HighLevelQuery<>();
@@ -777,12 +830,14 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 					} catch (SQLException e) {
 
-						log.error("Error deleting feedbackflowsubmitsurvey settings for flow family ID: " + flowFamily.getFlowFamilyID(), e);
+						log.error("Error deleting submit surveys settings for flow family: " + flowFamily.getFlowFamilyID(), e);
 					}
 				}
 				transaction.commit();
+				
 			} catch (Exception e) {
-				log.error("Error deleting feedbackflowsubmitsurvey settings for settingsDAO on event: " + event, e);
+				
+				log.error("Error deleting ubmit surveys settings for event: " + event, e);
 			}
 		}
 	}
