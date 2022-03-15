@@ -71,7 +71,6 @@ import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.flowsubmitsurveys.FeedbackSurvey;
 import com.nordicpeak.flowengine.interfaces.FlowSubmitSurveyProvider;
 import com.nordicpeak.flowengine.statistics.beans.FlowInstanceStatistic;
 import com.nordicpeak.flowengine.statistics.interfaces.StatisticsAPIExtensionProvider;
@@ -102,7 +101,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	
 	private AnnotatedDAO<FlowInstanceMinimizedForStatistics> flowInstanceMinimizedDAO;
 	private AnnotatedDAO<AbortedFlowInstance> abortedFlowInstanceDAO;
-	private AnnotatedDAO<FeedbackSurvey> flowInstanceFeedbackSurveyDAO;
 
 	protected QueryParameterFactory<FlowInstance, Timestamp> flowInstanceAddedParamFactory;
 	protected QueryParameterFactory<FlowInstanceMinimizedForStatistics, Timestamp> flowInstanceMinimizedAddedParamFactory;
@@ -110,7 +108,6 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 	protected QueryParameterFactory<AbortedFlowInstance, Timestamp> abortedFlowInstanceAddedParamFactory;
 	protected QueryParameterFactory<AbortedFlowInstance, Integer> abortedFlowInstanceFlowIDParamFactory;
 	protected QueryParameterFactory<AbortedFlowInstance, Integer> abortedFlowInstanceFlowFamilyIDParamFactory;
-	protected QueryParameterFactory<FeedbackSurvey, Integer> feedbackSurveyFlowInstanceIDParamFactory;
 	
 	protected CopyOnWriteArrayList<StatisticsAPIExtensionProvider> extensions = new CopyOnWriteArrayList<>();
 
@@ -133,14 +130,12 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 
 		flowInstanceMinimizedDAO = daoFactory.getDAO(FlowInstanceMinimizedForStatistics.class);
 		abortedFlowInstanceDAO = flowEngineDAOFactory.getAbortedFlowInstanceDAO();
-		flowInstanceFeedbackSurveyDAO = daoFactory.getDAO(FeedbackSurvey.class);
 
 		flowInstanceMinimizedAddedParamFactory = flowInstanceMinimizedDAO.getParamFactory("added", Timestamp.class);
 		flowInstanceMinimizedFlowIDParamFactory = flowInstanceMinimizedDAO.getParamFactory("flowID", Integer.class);
 		abortedFlowInstanceAddedParamFactory = abortedFlowInstanceDAO.getParamFactory("added", Timestamp.class);
 		abortedFlowInstanceFlowIDParamFactory = abortedFlowInstanceDAO.getParamFactory("flowID", Integer.class);
 		abortedFlowInstanceFlowFamilyIDParamFactory = abortedFlowInstanceDAO.getParamFactory("flowFamilyID", Integer.class);
-		feedbackSurveyFlowInstanceIDParamFactory = flowInstanceFeedbackSurveyDAO.getParamFactory("flowInstanceID", Integer.class);
 	}
 	
 	@Override
