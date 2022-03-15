@@ -250,7 +250,7 @@
 			  		
 			  		<xsl:if test="$flowInstance/Status/isAdminDeletable = 'true' or $deleteAccessOverride">
 				  		<li>
-				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name} (#{$flowInstance/flowInstanceID})" class="btn btn-light">
+				  			<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/delete/{$flowInstance/flowInstanceID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteFlowInstanceConfirm}: {$flowInstance/Flow/name}" class="btn btn-light">
 								<span data-icon-before="x"><xsl:value-of select="$i18n.deleteInstance"/></span>
 							</a>
 				  		</li>
