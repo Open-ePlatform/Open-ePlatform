@@ -484,7 +484,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 
 					flowAdminModule.addFlowFamilyEvent(flowAdminModule.getEventFunctionConfigured() + " " + flowEventDescription, flow.getFlowFamily(), user);
-					flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsubmitsettings");
+					flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#flowsurveys");
 					return null;
 				}
 
@@ -546,7 +546,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			log.warn("User " + user + " trying to delete feedbackflowsurvey settings for flow family " + flow.getFlowFamily().getFlowFamilyID() + " which has no settings");
 		}
 
-		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#feedbackflowsurveysettings");
+		flowAdminModule.redirectToMethod(req, res, "/showflow/" + flow.getFlowID() + "#flowsurveys");
 
 		return null;
 	}

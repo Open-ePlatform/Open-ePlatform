@@ -140,76 +140,77 @@
 		<xsl:variable name="imgPath"><xsl:value-of select="/Document/StaticContentURL"/>/pics</xsl:variable>
 		
 		<div id="FeedbackFlowSubmitSurvey">
-		<p class="nomargin"><strong><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></strong></p>
-		
-		<script>
-			i18nFeedbackFlowSubmitSurveyModule.VERYSATISFIED = '<xsl:value-of select="$i18n.VerySatisfied"/>';
-			i18nFeedbackFlowSubmitSurveyModule.SATISFIED = '<xsl:value-of select="$i18n.Satisfied"/>';
-			i18nFeedbackFlowSubmitSurveyModule.DISSATISFIED =  '<xsl:value-of select="$i18n.Dissatisfied"/>';
-			i18nFeedbackFlowSubmitSurveyModule.VERYDISSATISFIED = '<xsl:value-of select="$i18n.VeryDissatisfied"/>';
-			i18nFeedbackFlowSubmitSurveyModule.NEITHER = '<xsl:value-of select="$i18n.Neither"/>';
-		</script>
-		
-				
-		<xsl:choose>
-			<xsl:when test="ChartData">
-				
-				<script type="text/javascript">
-					chartData = <xsl:value-of select="ChartData" />;
-				</script>
-				
-				<div class="chart">
-					<div id="chart"></div>
-				</div>
-				
-				<xsl:if test="Comments/FeedbackSurvey">
-				
-					<a href="#" class="show-comments-trigger clearboth floatright"><xsl:value-of select="$i18n.ShowComments" /></a>
-					<a href="#" class="hide-comments-trigger clearboth floatright hidden"><xsl:value-of select="$i18n.HideComments" /></a>
+			<p class="nomargin"><strong><xsl:value-of select="$i18n.FeedbackSurveyTitle" /></strong></p>
+			
+			<script>
+				i18nFeedbackFlowSubmitSurveyModule.VERYSATISFIED = '<xsl:value-of select="$i18n.VerySatisfied"/>';
+				i18nFeedbackFlowSubmitSurveyModule.SATISFIED = '<xsl:value-of select="$i18n.Satisfied"/>';
+				i18nFeedbackFlowSubmitSurveyModule.DISSATISFIED =  '<xsl:value-of select="$i18n.Dissatisfied"/>';
+				i18nFeedbackFlowSubmitSurveyModule.VERYDISSATISFIED = '<xsl:value-of select="$i18n.VeryDissatisfied"/>';
+				i18nFeedbackFlowSubmitSurveyModule.NEITHER = '<xsl:value-of select="$i18n.Neither"/>';
+			</script>
+			
 					
-					<table class="full coloredtable sortabletable oep-table hidden">
-						<thead>
-							<tr>
-								<th width="10" />
-								<th width="200"><xsl:value-of select="$i18n.Answer" /></th>
-								<th><xsl:value-of select="$i18n.Comment" /></th>
-								<th width="37" />
-							</tr>
-						</thead>
-						<tbody>
-							<xsl:apply-templates select="Comments/FeedbackSurvey" mode="list" />
-						</tbody>					
-					</table>
+			<xsl:choose>
+				<xsl:when test="ChartData">
 					
+					<script type="text/javascript">
+						chartData = <xsl:value-of select="ChartData" />;
+					</script>
+					
+					<div class="chart">
+						<div id="chart"></div>
+					</div>
+					
+					<xsl:if test="Comments/FeedbackSurvey">
+					
+						<a href="#" class="show-comments-trigger clearboth floatright"><xsl:value-of select="$i18n.ShowComments" /></a>
+						<a href="#" class="hide-comments-trigger clearboth floatright hidden"><xsl:value-of select="$i18n.HideComments" /></a>
+						
+						<table class="full coloredtable sortabletable oep-table hidden">
+							<thead>
+								<tr>
+									<th width="10" />
+									<th width="200"><xsl:value-of select="$i18n.Answer" /></th>
+									<th><xsl:value-of select="$i18n.Comment" /></th>
+									<th width="37" />
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:apply-templates select="Comments/FeedbackSurvey" mode="list" />
+							</tbody>					
+						</table>
+						
+					</xsl:if>
+					
+				</xsl:when>
+				<xsl:otherwise>
+					<p><xsl:value-of select="$i18n.NoFlowFeedbackSurveys" /></p>
+				</xsl:otherwise>
+			</xsl:choose>
+			<div class="showflow-content nomargin nopadding">
+				<xsl:if test="FeedbackSurveySettings/sendEmail">
+					<p class="title-border bold"><xsl:value-of select="$i18n.SettingsTitle" /></p>
+				
+					<p><xsl:value-of select="$i18n.SendsNotifications" /></p>
 				</xsl:if>
 				
-			</xsl:when>
-			<xsl:otherwise>
-				<p><xsl:value-of select="$i18n.NoFlowFeedbackSurveys" /></p>
-			</xsl:otherwise>
-		</xsl:choose>
-		</div>
-		<div class="showflow-content nomargin nopadding">
-			<xsl:if test="FeedbackSurveySettings/sendEmail">
-				<p class="title-border bold"><xsl:value-of select="$i18n.SettingsTitle" /></p>
-			
-				<p><xsl:value-of select="$i18n.SendsNotifications" /></p>
-			</xsl:if>
-			
-			<a href="{/Document/ModuleURI}/updatesettings/{flowID}" class="floatright">
-				<xsl:value-of select="$i18n.UpdateSettings" />
-				<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
-			</a>
-		
-			<xsl:if test="FeedbackSurveySettings">
-				<br/>
-				<a class="marginleft floatright" href="{/Document/ModuleURI}/deletesettings/{flowID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteSettings}">
-					<xsl:value-of select="$i18n.DeleteSettings" />
-					<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
+				<a href="{/Document/ModuleURI}/updatesettings/{flowID}" class="floatright">
+					<xsl:value-of select="$i18n.UpdateSettings" />
+					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>
-				
-			</xsl:if>
+			
+				<xsl:if test="FeedbackSurveySettings">
+					<br/>
+					<a class="marginleft floatright" href="{/Document/ModuleURI}/deletesettings/{flowID}" onclick="return confirmHyperlinkPost(this);" title="{$i18n.DeleteSettings}">
+						<xsl:value-of select="$i18n.DeleteSettings" />
+						<img class="marginleft" src="{$imgPath}/delete.png" alt="" />
+					</a>
+					
+				</xsl:if>
+			</div>
 		</div>
+		
 	</xsl:template>
 
 	<xsl:template match="FeedbackSurvey" mode="list">
@@ -234,12 +235,11 @@
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:when test="not(comment) and commentDeleted">
-						
-						<xsl:call-template name="replaceLineBreak">
-							<xsl:with-param name="string">
-								<xsl:value-of select="$i18n.CommentDeleted" /><xsl:value-of select="commentDeleted"/><xsl:value-of select="$i18n.CommentDeletedBy" /><xsl:value-of select="user/username"/><xsl:text>.</xsl:text>
-							</xsl:with-param>
-						</xsl:call-template>
+						<xsl:value-of select="$i18n.CommentDeleted" /><xsl:value-of select="commentDeleted"/><xsl:value-of select="$i18n.CommentDeletedBy" />
+						<xsl:value-of select="user/firstname" /><xsl:text>&#160;</xsl:text><xsl:value-of select="user/lastname" />
+						<xsl:text>&#160;(</xsl:text>
+						<xsl:value-of select="user/username" />
+						<xsl:text>).</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="$i18n.NoCommentFound" />
