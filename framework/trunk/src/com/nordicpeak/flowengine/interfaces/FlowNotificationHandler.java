@@ -24,8 +24,6 @@ public interface FlowNotificationHandler {
 	String getEmailSenderAddress(ImmutableFlowInstance flowInstance);
 
 	String getSMSSenderName(ImmutableFlowInstance flowInstance);
-	
-	String getFlowAdminModuleAlias();
 
 	boolean isAnyFlowInstanceExpiredNotificationsEnabled(ImmutableFlowFamily flowFamily) throws SQLException;
 
