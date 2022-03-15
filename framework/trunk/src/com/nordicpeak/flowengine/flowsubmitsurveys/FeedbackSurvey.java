@@ -2,6 +2,7 @@ package com.nordicpeak.flowengine.flowsubmitsurveys;
 
 import java.sql.Timestamp;
 
+import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
@@ -42,10 +43,9 @@ public class FeedbackSurvey extends GeneratedElementable {
 	@XMLElement
 	private Timestamp commentDeleted;
 	
-	@DAOManaged
-	@WebPopulate
+	@DAOManaged(dontUpdateIfNull = true)
 	@XMLElement
-	private String commentDeletedByUser;
+	private User commentDeletedByUser;
 
 	public Integer getFlowID() {
 
@@ -110,12 +110,12 @@ public class FeedbackSurvey extends GeneratedElementable {
 	}
 
 	
-	public String getCommentDeletedByUser() {
+	public User getCommentDeletedByUser() {
 	
 		return commentDeletedByUser;
 	}
 	
-	public void setCommentDeletedByUser(String commentDeletedByUser) {
+	public void setCommentDeletedByUser(User commentDeletedByUser) {
 	
 		this.commentDeletedByUser = commentDeletedByUser;
 	}

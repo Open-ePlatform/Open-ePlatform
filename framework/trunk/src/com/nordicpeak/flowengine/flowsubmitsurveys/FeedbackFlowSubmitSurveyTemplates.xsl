@@ -237,7 +237,7 @@
 						
 						<xsl:call-template name="replaceLineBreak">
 							<xsl:with-param name="string">
-								<xsl:value-of select="$i18n.CommentDeleted" /><xsl:value-of select="commentDeleted"/><xsl:value-of select="$i18n.CommentDeletedBy" /><xsl:value-of select="commentDeletedByUser"/><xsl:text>.</xsl:text>
+								<xsl:value-of select="$i18n.CommentDeleted" /><xsl:value-of select="commentDeleted"/><xsl:value-of select="$i18n.CommentDeletedBy" /><xsl:value-of select="user/username"/><xsl:text>.</xsl:text>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:when>

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +40,7 @@ import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.ViewFragment;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
@@ -54,7 +54,6 @@ import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.dao.QueryOperators;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
-import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
@@ -163,7 +162,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			log.info(upgradeResult.toString());
 		}
 
-		SimpleAnnotatedDAOFactory daoFactory = new SimpleAnnotatedDAOFactory(dataSource);
+		HierarchyAnnotatedDAOFactory daoFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, false, false);
 
 		feedbackSurveyDAO = daoFactory.getDAO(FeedbackSurvey.class);
 		feedbackSurveySettingsDAO = daoFactory.getDAO(FeedbackSurveySettings.class);
@@ -547,8 +546,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			}
 
 			feedbackSurvey.setComment(null);
-			feedbackSurvey.setCommentDeleted(Timestamp.valueOf(LocalDateTime.now()));
-			feedbackSurvey.setCommentDeletedByUser(user.getUsername());
+			feedbackSurvey.setCommentDeleted(TimeUtils.getCurrentTimestamp());
+			feedbackSurvey.setCommentDeletedByUser(user);
 			feedbackSurveyDAO.update(feedbackSurvey);
 
 			log.info("User " + user.getUsername() + " deleted comment for flowinstance " + flowInstanceID);
