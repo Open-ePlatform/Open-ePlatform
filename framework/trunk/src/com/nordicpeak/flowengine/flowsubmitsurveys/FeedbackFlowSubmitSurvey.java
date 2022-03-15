@@ -709,6 +709,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 					
 					LinkedHashSet<Integer> flowVersions = new LinkedHashSet<Integer>();
 					
+					outer:
 					for(Flow flow : flows) {
 
 						Integer flowID = flow.getFlowID();
@@ -717,7 +718,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 							
 							if(survey.getFlowID().equals(flowID)) {
 								
-								flowVersions.add(flow.getFlowID());
+								flowVersions.add(flow.getVersion());
+								continue outer;
 							}
 						}
 					}
