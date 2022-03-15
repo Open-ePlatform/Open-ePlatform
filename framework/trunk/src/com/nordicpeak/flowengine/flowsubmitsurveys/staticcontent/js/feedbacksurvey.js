@@ -21,14 +21,17 @@ $(function() {
 	
 	$("#sendEmail").change(function() {
       if($(this).is(":checked")) {
+      	$(this).attr("value","true");
         $("#notification-email").show();
       }
       else if($(this).is(":not(:checked)")) {
+      	$(this).attr("value","false");
         $("#notification-email").hide();
       }
     });
 	
 	if($("#sendEmail").is(":checked")) {
+		$(this).attr("value","true");
             $("#notification-email").show();
           }
 	

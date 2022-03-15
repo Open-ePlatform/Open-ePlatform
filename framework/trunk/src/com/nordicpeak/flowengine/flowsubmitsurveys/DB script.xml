@@ -55,7 +55,7 @@
 			<![CDATA[
 				CREATE TABLE `feedback_flow_submit_survey_settings` (
 				  `flowFamilyID` INTEGER UNSIGNED NOT NULL,
-				  `sendEmail` BOOLEAN NOT NULL,
+				  `sendEmail` DATETIME,
 				  PRIMARY KEY (`flowFamilyID`))
 				COLLATE='latin1_swedish_ci'
 				ENGINE=InnoDB;
@@ -74,18 +74,6 @@
 				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 			]]>
 		</Query>				
-	</Script>
-	<Script version="6">
-		<Query>
-			<![CDATA[
-				ALTER TABLE `feedback_flow_submit_surveys` ADD COLUMN `commentSent` BOOLEAN NOT NULL DEFAULT TRUE AFTER `comment`;
-			]]>
-		</Query>
-		<Query>
-			<![CDATA[
-				UPDATE `feedback_flow_submit_surveys` SET `commentSent`=TRUE;
-			]]>
-		</Query>
 	</Script>
 	
 		

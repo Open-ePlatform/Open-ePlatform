@@ -46,12 +46,6 @@ public class FeedbackSurvey extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private String commentDeletedByUser;
-	
-
-	@DAOManaged
-	@WebPopulate
-	@XMLElement
-	private boolean commentSent;
 
 	public Integer getFlowID() {
 
@@ -121,21 +115,15 @@ public class FeedbackSurvey extends GeneratedElementable {
 		return commentDeletedByUser;
 	}
 	
-	public void setCommentSent(boolean commentSent) {
-		
-		this.commentSent = commentSent;
-	}
-
-	
-	public boolean getCommentSent() {
-	
-		return commentSent;
-	}
-
-	
 	public void setCommentDeletedByUser(String commentDeletedByUser) {
 	
 		this.commentDeletedByUser = commentDeletedByUser;
+	}
+
+	@Override
+	public String toString() {
+
+		return "FeedbackSurvey [flowID=" + flowID + ", flowInstanceID=" + flowInstanceID + ", added=" + added + ", answer=" + answer + ", comment=" + comment + ", commentDeleted=" + commentDeleted + ", commentDeletedByUser=" + commentDeletedByUser + "]";
 	}
 	
 	

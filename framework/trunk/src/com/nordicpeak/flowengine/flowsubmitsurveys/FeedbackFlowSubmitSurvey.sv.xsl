@@ -13,8 +13,9 @@
 	
 		&lt;p&gt;Hej!&lt;/p&gt;
 		
-		&lt;p&gt;Det finns nya kommentarer för e-tjänst $flow.name.&lt;/p&gt;
+		&lt;p&gt;Det finns nya kommentarer för e-tjänst $flow.name och version(er) $flow.version.&amp;&lt;/p&gt;
 		&lt;p&gt;$flow.url&lt;/p&gt;
+		
 		
 	</xsl:variable>
 	

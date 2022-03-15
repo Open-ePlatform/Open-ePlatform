@@ -1,5 +1,6 @@
 package com.nordicpeak.flowengine.flowsubmitsurveys;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import se.unlogic.emailutils.populators.EmailPopulator;
@@ -25,9 +26,7 @@ public class FeedbackSurveySettings extends GeneratedElementable {
 	
 	@DAOManaged
 	@XMLElement
-	@WebPopulate
-	private boolean sendEmail;
-	
+	private Timestamp sendEmail;
 	
 	@DAOManaged
 	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
@@ -54,14 +53,14 @@ public class FeedbackSurveySettings extends GeneratedElementable {
 
 
 	
-	public boolean isSendEmail() {
+	public Timestamp isSendEmail() {
 	
 		return sendEmail;
 	}
 
 
 	
-	public void setSendEmail(boolean sendEmail) {
+	public void setSendEmail(Timestamp sendEmail) {
 	
 		this.sendEmail = sendEmail;
 	}

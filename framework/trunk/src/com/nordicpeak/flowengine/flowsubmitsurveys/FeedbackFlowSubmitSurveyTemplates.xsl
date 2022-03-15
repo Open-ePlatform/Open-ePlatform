@@ -190,7 +190,7 @@
 		</xsl:choose>
 		</div>
 		<div class="showflow-content nomargin nopadding">
-			<xsl:if test="FeedbackSurveySettings/sendEmail='true'">
+			<xsl:if test="FeedbackSurveySettings/sendEmail">
 				<p class="title-border bold"><xsl:value-of select="$i18n.SettingsTitle" /></p>
 			
 				<p><xsl:value-of select="$i18n.SendsNotifications" /></p>
@@ -283,7 +283,10 @@
 						<xsl:call-template name="createCheckbox">
 							<xsl:with-param name="name" select="'sendEmail'" />
 							<xsl:with-param name="id" select="'sendEmail'" />
-							<xsl:with-param name="element" select="FeedbackSurveySettings" />
+							<xsl:with-param name="checked">
+								<xsl:if test="FeedbackSurveySettings/sendEmail">true</xsl:if>
+							</xsl:with-param>
+							
 						</xsl:call-template>
 						
 						<label for="sendEmail">
@@ -295,7 +298,7 @@
 				
 				
 				<div id="notification-email" class="notification-email">
-					<xsl:if test="not(FeedbackSurveySettings/sendEmail='true')">
+					<xsl:if test="not(FeedbackSurveySettings/sendEmail)">
 						<xsl:attribute name="class">hidden</xsl:attribute>
 					</xsl:if>
 					
