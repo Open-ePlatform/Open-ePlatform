@@ -478,18 +478,15 @@
 		<Query>
 			<![CDATA[
 				CREATE TABLE `flow_family_notification_setting_intmessageglobal` (
-				  `flowFamilyID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL,
 				  `email` VARCHAR(255) NOT NULL,
-				  PRIMARY KEY (`flowFamilyID`),
-				  CONSTRAINT `FK_flow_family_notification_setting_extmessageglobal_1` FOREIGN KEY `FK_flow_family_notification_setting_intmessageglobal_1` (`flowFamilyID`)
-				    REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`)
-				    ON DELETE CASCADE
-				    ON UPDATE CASCADE
-				)
-				ENGINE = InnoDB;
+				  PRIMARY KEY (`flowFamilyID`,`email`) USING BTREE,
+				  CONSTRAINT `FK_flow_family_notification_setting_intmessageglobal_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB;
 			]]>
 		</Query>
 	</Script>
+	
 	<Script version="36">
 		<Query>
 			<![CDATA[
