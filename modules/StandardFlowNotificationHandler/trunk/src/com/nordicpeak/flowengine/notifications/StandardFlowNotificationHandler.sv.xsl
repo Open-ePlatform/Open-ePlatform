@@ -365,6 +365,21 @@
 	
 	</xsl:variable>	
 	
+	<xsl:variable name="java.internalMessageReceivedGlobalEmailSubject">Nytt internt meddelande kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.internalMessageReceivedGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Det har lagts till en ny notering på ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.notesUrl"&gt;$flowInstance.notesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
 	<xsl:variable name="java.flowInstanceExpiredGlobalEmailSubject">Förfallet ärende $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
 	<xsl:variable name="java.flowInstanceExpiredGlobalEmailMessage">
 	
