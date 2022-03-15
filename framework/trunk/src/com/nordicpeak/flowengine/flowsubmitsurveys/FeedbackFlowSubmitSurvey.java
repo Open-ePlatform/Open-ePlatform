@@ -570,7 +570,7 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 			log.info("User " + user.getUsername() + " deleted comment for flowinstance " + flowInstanceID);
 
-			res.sendRedirect(req.getContextPath() + "/flowadmin/showflow/" + feedbackSurvey.getFlowID());
+			res.sendRedirect(req.getContextPath() + "/flowadmin/showflow/" + feedbackSurvey.getFlowID() + "#flowsurveys");
 			return null;
 		}
 		throw new URINotFoundException(req.getRequestURI());
