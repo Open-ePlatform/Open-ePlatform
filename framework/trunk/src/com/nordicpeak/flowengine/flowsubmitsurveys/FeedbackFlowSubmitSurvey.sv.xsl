@@ -47,7 +47,7 @@
 	<xsl:variable name="i18n.UpdateSettingsTitle">Uppdatera inställningar</xsl:variable>
 	<xsl:variable name="i18n.SendNotification">Skicka notifikation vid kommentar</xsl:variable>
 	
-	<xsl:variable name="i18n.SendNotification.Description">Notis skickas normalt en gång i veckan (annan inställning kan förekomma) och innehåller länk till den e-tjänst som kommentar/er skickats in till.</xsl:variable>
+	<xsl:variable name="i18n.SendNotification.Description">Notis skickas varje måndag klockan 8 och innehåller namnet på e-tjänsten och vilka versioner av den e-tjänsten som nya kommentarer skickats in till. Notisen innehåller även en länk till den senaste versionen av e-tjänsten.</xsl:variable>
 	
 	<xsl:variable name="i18n.NotificationEmails">Ange mottagande e-postadresser. En per rad.</xsl:variable>
 	<xsl:variable name="i18n.UpdateSettings">Ändra inställningar</xsl:variable>
