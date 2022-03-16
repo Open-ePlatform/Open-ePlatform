@@ -9,6 +9,16 @@ var flowEngineDOMListeners = new Array();
 
 $(function() {
 	
+	$('#paymentForm').on('submit',function(){
+		var submitForm = $('#paymentForm');
+		
+		var submitButton = submitForm.find( "a.next" );
+		
+		submitButton.removeClass('btn-green');
+		submitButton.addClass('disabled');
+		submitButton.attr('onclick','return false;');
+	});	
+	
 	var firstValidationError = $(".validationerrors").first();
 	var queryAnchorName = firstValidationError.attr("id");
 	

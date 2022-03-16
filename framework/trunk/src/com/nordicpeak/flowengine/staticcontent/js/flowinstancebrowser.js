@@ -8,18 +8,6 @@ $(function() {
 		$(".select-wrapper .select-box").removeClass("active");
 	});
 	
-	$('#paymentForm').on('submit',function(){
-		var submitForm = $('#paymentForm');
-		
-		var submitButton = submitForm.find( "a.next" );
-		
-		submitButton.removeClass('btn-green');
-		submitButton.addClass('disabled');
-		submitButton.attr('onclick','return false;');
-		
-		
-	}) 
-	
 	$(".select-wrapper .select-box").each(function(i) {
 		
 		var $selectBox = $(this);
