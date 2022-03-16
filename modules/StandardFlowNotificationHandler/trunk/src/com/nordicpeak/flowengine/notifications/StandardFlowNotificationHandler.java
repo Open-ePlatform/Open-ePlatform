@@ -672,7 +672,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Maximum number of allowed group notification emails (global)", description = "The maximum number of sent group notification sent", required = true, formatValidator = PositiveStringIntegerValidator.class)
-	@XSLVariable(prefix = "java.")
 	private Integer maxNumberOfGroupNotificationEmails = 100;
 
 	@ModuleSetting(allowsNull = true)
