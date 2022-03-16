@@ -27,6 +27,10 @@
   left: 15px !important;
 }
 
+.ui-helper-hidden-accessible{
+	display: none;
+}
+
 #FlowBrowser .freeTextAlternativeValue {
 	margin-top: 5px;
 	margin-left: 3px;
