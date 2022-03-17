@@ -12,13 +12,17 @@ $(function() {
 		$this.trigger("change");
 	});
 	
+	
 	 $('#flowlist').DataTable( {
         columnDefs: [ {
             targets: [ 1 ]
         },
          { "bSortable": false, "aTargets": [ 0] }, ],
-         "order": [[ 1, "asc" ]]
-    } );
+         "order": [[ 1, "asc" ]],
+    	
+    	bPaginate: false,
+        bFilter: false,
+        bInfo: false });
 	
 	$("#person-data-filter").on("change", function() {
 		
@@ -65,6 +69,7 @@ $(function() {
 	});
 	
 	$("#person-data-filter").trigger("change");
+	
 });
 
 function exportPersonData(event, button) {
