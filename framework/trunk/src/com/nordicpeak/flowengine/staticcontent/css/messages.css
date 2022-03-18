@@ -18,3 +18,7 @@
 .flipped {
 	transform: rotate(180deg);	
 }
+
+.featherlight-inner.read-receipts-modal {
+	min-width: 300px;
+}

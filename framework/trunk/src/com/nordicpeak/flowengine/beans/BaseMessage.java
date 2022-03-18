@@ -51,9 +51,6 @@ public abstract class BaseMessage extends GeneratedElementable implements Immuta
 	public abstract List<? extends BaseAttachment> getAttachments();
 
 	@Override
-	public abstract List<? extends BaseMessageReadReceipt> getReadReceipts();
-
-	@Override
 	public Integer getMessageID() {
 
 		return messageID;

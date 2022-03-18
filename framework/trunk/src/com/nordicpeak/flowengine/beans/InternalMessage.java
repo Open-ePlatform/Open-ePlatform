@@ -15,24 +15,19 @@ import se.unlogic.standardutils.xml.XMLElement;
 public class InternalMessage extends BaseMessage {
 
 	private static final long serialVersionUID = -934750439780152020L;
-	
+
 	public static final Field ATTACHMENTS_RELATION = ReflectionUtils.getField(InternalMessage.class, "attachments");
 	public static final Field FLOWINSTANCE_RELATION = ReflectionUtils.getField(InternalMessage.class, "flowInstance");
-	
-	@DAOManaged(columnName="flowInstanceID")
+
+	@DAOManaged(columnName = "flowInstanceID")
 	@ManyToOne
 	@XMLElement
 	private FlowInstance flowInstance;
 
 	@DAOManaged
-	@OneToMany(autoAdd=true)
+	@OneToMany(autoAdd = true)
 	@XMLElement
 	private List<InternalMessageAttachment> attachments;
-
-	@DAOManaged
-	@OneToMany
-	@XMLElement
-	private List<InternalMessageReadReceipt> readReceipts;
 
 	@Override
 	public List<InternalMessageAttachment> getAttachments() {
@@ -43,17 +38,6 @@ public class InternalMessage extends BaseMessage {
 	public void setAttachments(List<InternalMessageAttachment> attachments) {
 
 		this.attachments = attachments;
-	}
-
-	@Override
-	public List<InternalMessageReadReceipt> getReadReceipts() {
-
-		return readReceipts;
-	}
-
-	public void setReadReceipts(List<InternalMessageReadReceipt> readRecipts) {
-
-		this.readReceipts = readRecipts;
 	}
 
 	@Override
@@ -69,7 +53,7 @@ public class InternalMessage extends BaseMessage {
 
 	@Override
 	public String getTypeLogName() {
-		
+
 		return "internal";
 	}
 }

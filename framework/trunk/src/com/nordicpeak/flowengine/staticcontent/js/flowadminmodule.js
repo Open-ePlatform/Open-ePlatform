@@ -382,6 +382,16 @@ $(function() {
 		$('#hideExternalMessages').on("change", function() {
 
 			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
+			$('#readReceiptsEnabled').parent().parent().toggle(!this.checked);
+			$('#readReceiptsEnabledByDefault').parent().parent().toggle(!this.checked);
+		
+		}).trigger('change');
+		
+		$('#hideExternalMessages, #readReceiptsEnabled').on("change", function() {
+			
+			var show = !$('#hideExternalMessages').prop("checked") && $('#readReceiptsEnabled').prop("checked");
+
+			$('#readReceiptsEnabledByDefault').parent().parent().toggle(show);
 		
 		}).trigger('change');
 		

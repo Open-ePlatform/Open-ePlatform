@@ -647,9 +647,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@InstanceManagerDependency(required = true)
 	protected StaticContentModule staticContentModule;
+	
+	protected MessageHandler messageHandler;
 
-	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
+	
+	@InstanceManagerDependency
+	public void setFileAttachmentHandler(FileAttachmentHandler fileAttachmentHandler) {
+
+		this.fileAttachmentHandler = fileAttachmentHandler;
+
+		if (messageHandler != null) {
+			
+			messageHandler.setFileAttachmentHandler(fileAttachmentHandler);
+		}
+	}
 
 	@InstanceManagerDependency
 	private HTMLContentFilter htmlContentFilter;
@@ -741,6 +753,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		if (!systemInterface.getInstanceHandler().addInstance(FlowAdminModule.class, this)) {
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
+		}
+		
+		messageHandler = new MessageHandler(this, daoFactory.getExternalMessageDAO(), daoFactory.getInternalMessageDAO(), fileAttachmentHandler);
+		
+		if (!systemInterface.getInstanceHandler().addInstance(MessageHandler.class, messageHandler)) {
+			
+			throw new RuntimeException("Unable to register module in global instance handler using key " + MessageHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 
 		if (systemInterface.getSystemStatus() == SystemStatus.STARTED) {

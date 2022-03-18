@@ -44,6 +44,7 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.http.enums.ContentDisposition;
 
 import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.MessageHandler;
 import com.nordicpeak.flowengine.beans.BaseAttachment;
 import com.nordicpeak.flowengine.beans.BaseMessage;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -56,9 +57,11 @@ import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 public abstract class BaseMessageCRUD<MessageType extends BaseMessage, AttachmentType extends BaseAttachment> {
 
 	protected final Logger log = Logger.getLogger(BaseMessageCRUD.class);
+	
+	protected MessageHandler messageHandler;
 
 	protected final AnnotatedDAO<MessageType> messageDAO;
-
+	
 	protected final AnnotatedDAO<AttachmentType> attachmentDAO;
 
 	protected final MessageCRUDCallback callback;
@@ -73,9 +76,10 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 	
 	protected final boolean manager;
 
-	public BaseMessageCRUD(AnnotatedDAO<MessageType> messageDAO, AnnotatedDAO<AttachmentType> attachmentDAO, MessageCRUDCallback callback, Class<MessageType> messageClass, Class<AttachmentType> attachmentClass, boolean manager) {
+	protected BaseMessageCRUD(MessageHandler messageHandler, AnnotatedDAO<MessageType> messageDAO, AnnotatedDAO<AttachmentType> attachmentDAO, MessageCRUDCallback callback, Class<MessageType> messageClass, Class<AttachmentType> attachmentClass, boolean manager) {
 
 		this.messageDAO = messageDAO;
+		this.messageHandler = messageHandler;
 		this.attachmentDAO = attachmentDAO;
 		this.callback = callback;
 		this.messageClass = messageClass;
@@ -137,7 +141,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 					continue;
 				}	
 				
-				if (fileItem.getSize() > (callback.getMaxFileSize() * BinarySizes.MegaByte)) {
+				if (fileItem.getSize() > callback.getMaxFileSize() * BinarySizes.MegaByte) {
 
 					errors.add(new FileSizeLimitExceededValidationError(null, FilenameUtils.getName(fileItem.getName()), fieldName, fileItem.getSize(), callback.getMaxFileSize() * BinarySizes.MegaByte));
 
@@ -146,7 +150,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 				}
 			}
 
-			List<AttachmentType> attachments = new ArrayList<AttachmentType>();
+			List<AttachmentType> attachments = new ArrayList<>();
 
 			for (FileItem fileItem : files) {
 
@@ -215,7 +219,12 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 				return callback.list(req, res, user, uriParser, Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
 			}
 			
-			HighLevelQuery<AttachmentType> attachmentQuery = new HighLevelQuery<AttachmentType>();
+			if (!manager && !hasMessageAccess(message, user)) {
+				
+				throw new AccessDeniedException("Access denied, the current user " + user + " has no access to message " + message);
+			}
+			
+			HighLevelQuery<AttachmentType> attachmentQuery = new HighLevelQuery<>();
 
 			attachmentQuery.addParameter(attachmentIDParamFactory.getParameter(NumberUtils.toInt(uriParser.get(3))));
 
@@ -249,11 +258,9 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 						
 					}
 					
-				} catch (RuntimeException e) {
-
-					log.debug("Caught exception " + e + " while sending message attachment " + attachment.getFilename() + " to " + user);
-
-				} catch (IOException e) {
+					requestedMessageAttachmentDownloaded(message, attachment, user);
+					
+				} catch (RuntimeException | IOException e) {
 
 					log.debug("Caught exception " + e + " while sending message attachment " + attachment.getFilename() + " to " + user);
 
@@ -269,17 +276,32 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		
 	}
 	
+	protected void requestedMessageAttachmentDownloaded(MessageType message, AttachmentType attachment, User user) throws SQLException {
+		
+		return;
+	}
+
 	protected MessageType getMessage(Integer messageID) throws SQLException {
 
-		HighLevelQuery<MessageType> query = new HighLevelQuery<MessageType>();
+		HighLevelQuery<MessageType> query = new HighLevelQuery<>();
 
-		query.addRelations(getFlowInstanceRelation(), FlowInstance.OWNERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION);
+		query.addRelations(getRelations());
+		query.addRelations(FlowInstance.OWNERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION);
 		
 		query.addParameter(messageIDParamFactory.getParameter(messageID));
 		
 		return messageDAO.get(query);
 	}
 
-	protected abstract Field getFlowInstanceRelation();
+	protected abstract Field[] getRelations();
+	
+	public void setMessageHandler(MessageHandler messageHandler) {
 
+		this.messageHandler = messageHandler;
+	}
+	
+	protected boolean hasMessageAccess(MessageType message, User user) {
+		
+		return true;
+	}
 }

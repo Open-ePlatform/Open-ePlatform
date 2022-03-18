@@ -9,6 +9,19 @@
 	<xsl:variable name="i18n.Message.Date">Datum</xsl:variable>
 	<xsl:variable name="i18n.PostedByManager">Handläggare</xsl:variable>
 	<xsl:variable name="i18n.ReplyMessage">Svara</xsl:variable>
+	
+	<xsl:variable name="i18n.ReadReceipts">Kvittenser</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Requested">Kvittens begärd</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Disable">Återkalla begäran om kvittens</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Disable.Confirm">Begäran om kvittens kommer att återkallas, vill du fortsätta?</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Read">Meddelande läst</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Downloaded">Nerladdad</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptInfo">Kvittens kommer att lagras, klicka på "Läs meddelande" för att acceptera och ta del av meddelandet.</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptInfo.Accept">Läs meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptInfo.Accept.Confirm">Kvittens kommer att lagras, vill du fortsätta?</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Table.Date">Datum</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Table.User">Person</xsl:variable>
+	<xsl:variable name="i18n.ReadReceipt.Table.Description">Beskrivning</xsl:variable>
 
 	<xsl:variable name="i18n.AttachFiles">Bifoga filer</xsl:variable>
 	<xsl:variable name="i18n.ChooseFiles">Välj filer</xsl:variable>

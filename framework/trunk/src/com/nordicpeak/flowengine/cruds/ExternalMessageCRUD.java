@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,29 +15,49 @@ import org.w3c.dom.Element;
 
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
+import se.unlogic.hierarchy.core.exceptions.URINotFoundException;
+import se.unlogic.standardutils.bool.BooleanUtils;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.fileattachments.FileAttachment;
-import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.MessageHandler;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
 import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
-import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 
 public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, ExternalMessageAttachment> {
 
-	public ExternalMessageCRUD(AnnotatedDAO<ExternalMessage> messageDAO, AnnotatedDAO<ExternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
+	private static final Field[] RELATIONS = { ExternalMessage.FLOWINSTANCE_RELATION, ExternalMessage.READ_RECEIPTS_RELATION, ExternalMessageReadReceipt.ATTACHMENT_DOWNLOADS_RELATION };
 
-		super(messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
+	private AnnotatedDAO<ExternalMessageReadReceipt> readReceiptDAO;
+
+	private AnnotatedDAO<ExternalMessageReadReceiptAttachmentDownload> attachmentDownloadDAO;
+
+	public ExternalMessageCRUD(MessageHandler messageHandler, AnnotatedDAO<ExternalMessage> messageDAO, AnnotatedDAO<ExternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
+
+		super(messageHandler, messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
+	}
+
+	public ExternalMessageCRUD(MessageHandler messageHandler, AnnotatedDAO<ExternalMessage> messageDAO, AnnotatedDAO<ExternalMessageAttachment> attachmentDAO, AnnotatedDAO<ExternalMessageReadReceipt> readReceiptDAO, AnnotatedDAO<ExternalMessageReadReceiptAttachmentDownload> attachmentDownloadDAO, MessageCRUDCallback callback, boolean manager) {
+
+		super(messageHandler, messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
+
+		this.readReceiptDAO = readReceiptDAO;
+		this.attachmentDownloadDAO = attachmentDownloadDAO;
 	}
 
 	public ExternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, boolean postedByManager, List<String> allowedFileExtensions) throws SQLException, IOException {
@@ -44,26 +65,14 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		List<ValidationError> validationErrors = new ArrayList<>();
 
 		req = parseRequest(req, validationErrors);
-		
-		TransactionHandler transactionHandler = null;
-		
-		List<FileAttachment> addedFileAttachments = null;
-		
+
 		try {
 
 			ExternalMessage externalMessage = create(req, res, uriParser, user, flowInstance, postedByManager, validationErrors, allowedFileExtensions);
 
 			if (externalMessage != null) {
-				
-				log.info("User " + user + " adding external message for flowinstance " + flowInstance);
 
-				transactionHandler = messageDAO.createTransaction();
-
-				messageDAO.add(externalMessage, transactionHandler, null);
-				
-				addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(callback.getFileAttachmentHandler(), externalMessage);
-				
-				transactionHandler.commit();
+				messageHandler.add(externalMessage, postedByManager);
 			}
 
 			XMLUtils.append(doc, element, validationErrors);
@@ -71,34 +80,27 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 			return externalMessage;
 
-		}catch(Throwable t){	
-			
-			FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-			
-			throw t;
-			
 		} finally {
-			
-			TransactionHandler.autoClose(transactionHandler);
 
 			if (req instanceof MultipartRequest) {
 
 				((MultipartRequest) req).deleteFiles();
 			}
 		}
-		
+
 	}
 
 	public ExternalMessage create(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors, List<String> allowedFileExtensions) throws SQLException, IOException {
-		
+
 		String message = ValidationUtils.validateParameter("externalmessage", req, true, 1, 65535, StringPopulator.getPopulator(), validationErrors);
-		
+		boolean readReceiptEnabled = BooleanUtils.toBoolean(req.getParameter("externalmessage-readreceiptenabled"));
+
 		List<ExternalMessageAttachment> attachments = getAttachments(req, user, validationErrors, allowedFileExtensions, "externalmessage-attachments");
-		
-		return create(message, attachments, user, flowInstance, postedByManager, validationErrors);
+
+		return create(message, attachments, readReceiptEnabled, user, flowInstance, postedByManager, validationErrors);
 	}
-	
-	public ExternalMessage create(String message, List<ExternalMessageAttachment> attachments, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) {
+
+	public ExternalMessage create(String message, List<ExternalMessageAttachment> attachments, boolean readReceiptEnabled, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) {
 
 		ExternalMessage externalMessage = null;
 
@@ -118,20 +120,127 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 			externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
 			externalMessage.setAttachments(attachments);
 			externalMessage.setPostedByManager(postedByManager);
+			
+			if (flowInstance.getFlow().isReadReceiptsEnabled()) {
+				
+				externalMessage.setReadReceiptEnabled(readReceiptEnabled);
+			}
 		}
 
 		return externalMessage;
 	}
 
 	@Override
-	protected Field getFlowInstanceRelation() {
-		
-		return ExternalMessage.FLOWINSTANCE_RELATION;
+	protected Field[] getRelations() {
+
+		return RELATIONS;
 	}
 
-	public void add(ExternalMessage externalMessage, TransactionHandler transactionHandler) throws SQLException {
+	@Override
+	protected boolean hasMessageAccess(ExternalMessage message, User user) {
 
-		messageDAO.add(externalMessage, transactionHandler, null);
+		return message.hasReadReceiptAccess(user);
+	}
+
+	public ExternalMessage addReadReceipt(User user, URIParser uriParser, FlowInstanceAccessController accessController) throws SQLException, ValidationException, URINotFoundException, AccessDeniedException {
+
+		ExternalMessage externalMessage;
+
+		Integer messageID = uriParser.getInt(2);
+
+		if (uriParser.size() != 3 || messageID == null || (externalMessage = getMessage(messageID)) == null) {
+
+			throw new URINotFoundException(uriParser);
+		}
+
+		accessController.checkFlowInstanceAccess(externalMessage.getFlowInstance(), user);
+
+		if (!externalMessage.getFlowInstance().getFlow().isEnabled() || callback.isOperatingStatusDisabled(externalMessage.getFlowInstance(), manager)) {
+
+			throw new ValidationException(Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+		}
+
+		if (!externalMessage.isReadReceiptEnabled() || !externalMessage.getFlowInstance().getFlow().isReadReceiptsEnabled()) {
+
+			return externalMessage;
+		}
+
+		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(externalMessage.getReadReceipts(), r -> r.getUser().equals(user));
+
+		if (readReceipt != null) {
+
+			return externalMessage;
+		}
+
+		readReceipt = new ExternalMessageReadReceipt(externalMessage, user);
+
+		readReceiptDAO.add(readReceipt);
+
+		return externalMessage;
+	}
+
+	@Override
+	protected void requestedMessageAttachmentDownloaded(ExternalMessage message, ExternalMessageAttachment attachment, User user) throws SQLException {
+
+		addReadReceiptAttachmentDownload(message, attachment, user);
+	}
+
+	private void addReadReceiptAttachmentDownload(ExternalMessage message, ExternalMessageAttachment attachment, User user) throws SQLException {
+
+		if (attachmentDownloadDAO == null) {
+
+			return;
+		}
+
+		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(message.getReadReceipts(), r -> r.getUser().equals(user));
+
+		if (readReceipt == null) {
+
+			return;
+		}
+
+		String fileName = attachment.getFilename();
+
+		ExternalMessageReadReceiptAttachmentDownload attachmentDownload = CollectionUtils.find(readReceipt.getAttachmentDownloads(), d -> d.getAttachmentFilename().equals(fileName));
+
+		if (attachmentDownload != null) {
+
+			return;
+		}
+
+		attachmentDownload = new ExternalMessageReadReceiptAttachmentDownload(readReceipt, fileName);
+
+		attachmentDownloadDAO.add(attachmentDownload);
+	}
+
+	public ExternalMessage disableReadReceipt(User user, URIParser uriParser, FlowInstanceAccessController accessController) throws SQLException, AccessDeniedException, URINotFoundException, ValidationException {
+
+		ExternalMessage message;
+
+		Integer messageID = uriParser.getInt(2);
+
+		if (uriParser.size() != 3 || messageID == null || (message = getMessage(messageID)) == null) {
+
+			throw new URINotFoundException(uriParser);
+		}
+
+		accessController.checkFlowInstanceAccess(message.getFlowInstance(), user);
+
+		if (!message.getFlowInstance().getFlow().isEnabled() || callback.isOperatingStatusDisabled(message.getFlowInstance(), manager)) {
+
+			throw new ValidationException(Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+		}
+
+		if (message.isReadReceiptEnabled() && message.getReadReceipts() == null) {
+
+			log.info("User " + user + " disabling read receipt for " + message);
+
+			message.setReadReceiptEnabled(false);
+
+			messageDAO.update(message);
+		}
+
+		return message;
 	}
 
 }

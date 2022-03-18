@@ -5,13 +5,9 @@ import java.util.List;
 
 import se.unlogic.hierarchy.core.beans.User;
 
-import com.nordicpeak.flowengine.beans.BaseMessageReadReceipt;
-
 public interface ImmutableMessage {
 
 	public List<? extends ImmutableAttachment> getAttachments();
-
-	public List<? extends BaseMessageReadReceipt> getReadReceipts();
 
 	public Integer getMessageID();
 

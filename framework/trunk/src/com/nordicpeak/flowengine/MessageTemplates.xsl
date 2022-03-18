@@ -2,6 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
+	<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" />/static/f/<xsl:value-of select="/Document/module/sectionID" />/<xsl:value-of select="/Document/module/moduleID" />/pics</xsl:variable>
+
 	<xsl:template match="FlowInstance" mode="externalMessage">
 	
 		<xsl:if test="../NoContactWay">
@@ -160,6 +162,36 @@
 				 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/added" /></span>
 				 </div>
 				 
+				 <xsl:if test="$message/readReceiptEnabled = 'true'">
+				 
+				 	<xsl:choose>
+				 		<xsl:when test="$message/readReceipts">
+				 		
+							<xsl:call-template name="showReadReceipts">
+								<xsl:with-param name="readReceipts" select="$message/readReceipts/ExternalMessageReadReceipt" />
+							</xsl:call-template>
+				 		
+				 		</xsl:when>
+				 		<xsl:otherwise>
+				 		
+		 					<div class="read-receipt-requested">
+		 					
+	 							<img class="marginright" src="{$imgPath}/check.png" alt="" />
+	 							
+						 		<xsl:value-of select="$i18n.ReadReceipt.Requested" />
+						 		
+						 		<a class="btn btn-light display-inline-block bigmarginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/disablereadreceipt/{$message/messageID}" onclick="return confirm('{$i18n.ReadReceipt.Disable.Confirm}')">
+						 			<img class="marginright" src="{$imgPath}/delete.png" alt="" />
+						 			<xsl:value-of select="$i18n.ReadReceipt.Disable" />
+						 		</a>
+						 		
+						 	</div>
+						 	
+				 		</xsl:otherwise>
+				 	</xsl:choose>
+				 
+				 </xsl:if>
+				 
 				 <xsl:if test="$attachments">
 					<div class="files">
 						<xsl:apply-templates select="$attachments" />
@@ -214,50 +246,77 @@
 			
 			<div class="message" data-messageid="{$message/messageID}">
 			
-				<div>
-				<xsl:call-template name="getExternalMessageTypeText"/>
-			
-				<xsl:if test="$repliesEnabled and $message/QuotedMessage">
-				
-					<div class="quote bigmarginbottom">
-						<xsl:call-template name="replaceLineBreak">
-							<xsl:with-param name="string" select="$message/QuotedMessage/message" />
-						</xsl:call-template>
-						
-						<span class="author">
-							<xsl:call-template name="printUser">
-								<xsl:with-param name="user" select="$message/QuotedMessage/poster" />
-								<xsl:with-param name="hideUsername" select="$hideUsername"/>
-							</xsl:call-template>
-							
-						 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/QuotedMessage/added" /></span>
-						</span>
-					</div>
-					<br/>
-					
-				</xsl:if>
-			
 				<xsl:choose>
-					<xsl:when test="$message/postedByManager = 'true'">
-						<xsl:call-template name="replaceLineBreaksAndLinks">
-							<xsl:with-param name="string" select="$message/message"/>
-							<xsl:with-param name="target" select="'_blank'"/>
-						</xsl:call-template>
+					<xsl:when test="$message/noReadReceiptAccess">
+					
+						<div class="read-receipt-info">
+						
+							<xsl:value-of select="$i18n.ReadReceiptInfo" />
+							
+							<div class="text-align-center">
+								<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/addreadreceipt/{$message/messageID}" class="btn btn-green" onclick="return confirm('{$i18n.ReadReceiptInfo.Accept.Confirm}')">
+									<xsl:value-of select="$i18n.ReadReceiptInfo.Accept" />
+								</a>
+							</div>
+						
+						</div>
+					
+						<div class="blur-text">
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec sagittis sem, ut tristique urna. Morbi rhoncus lacinia finibus. Aenean in erat maximus, congue enim eu, sollicitudin ipsum. Curabitur auctor pharetra odio in elementum. 
+							<br/><br/>
+							Sed convallis ac est quis rutrum. Duis sit amet condimentum ex. Maecenas vitae augue a metus ultrices interdum vel ac nisi. Aliquam erat volutpat.
+						</div>
+							
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:call-template name="replaceLineBreak">
-							<xsl:with-param name="string" select="$message/message" />
-						</xsl:call-template>					
+					
+						<div>
+							<xsl:call-template name="getExternalMessageTypeText"/>
+						
+							<xsl:if test="$repliesEnabled and $message/QuotedMessage">
+							
+								<div class="quote bigmarginbottom">
+									<xsl:call-template name="replaceLineBreak">
+										<xsl:with-param name="string" select="$message/QuotedMessage/message" />
+									</xsl:call-template>
+									
+									<span class="author">
+										<xsl:call-template name="printUser">
+											<xsl:with-param name="user" select="$message/QuotedMessage/poster" />
+											<xsl:with-param name="hideUsername" select="$hideUsername"/>
+										</xsl:call-template>
+										
+									 	<span class="time"><xsl:text>&#160;·&#160;</xsl:text><xsl:value-of select="$message/QuotedMessage/added" /></span>
+									</span>
+								</div>
+								<br/>
+								
+							</xsl:if>
+						
+							<xsl:choose>
+								<xsl:when test="$message/postedByManager = 'true'">
+									<xsl:call-template name="replaceLineBreaksAndLinks">
+										<xsl:with-param name="string" select="$message/message"/>
+										<xsl:with-param name="target" select="'_blank'"/>
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:call-template name="replaceLineBreak">
+										<xsl:with-param name="string" select="$message/message" />
+									</xsl:call-template>					
+								</xsl:otherwise>
+							</xsl:choose>
+						</div>
+					
+						<xsl:if test="ViewFragmentExtension">
+							<xsl:for-each select="ViewFragmentExtension/ViewFragment">
+								<xsl:value-of select="HTML" disable-output-escaping="yes"/>
+							</xsl:for-each>
+						</xsl:if>
+					
 					</xsl:otherwise>
 				</xsl:choose>
-				</div>
 			
-				<xsl:if test="ViewFragmentExtension">
-					<xsl:for-each select="ViewFragmentExtension/ViewFragment">
-						<xsl:value-of select="HTML" disable-output-escaping="yes"/>
-					</xsl:for-each>
-				</xsl:if>
-				
 				<div class="author">
 				
 					<i data-icon-before="m"/>
@@ -282,9 +341,17 @@
 				 	
 				 </div>
 				 
+		 		<xsl:if test="$message/readReceipts">
+		 		
+					<xsl:call-template name="showReadReceipts">
+						<xsl:with-param name="readReceipts" select="$message/readReceipts/ExternalMessageReadReceipt[user/userID = /Document/user/userID]" />
+					</xsl:call-template>
+		 		
+		 		</xsl:if>
+				 
 				 <xsl:if test="$message/attachments/ExternalMessageAttachment">
 					<div class="files">
-						<xsl:apply-templates select="$message/attachments/ExternalMessageAttachment" />
+						<xsl:apply-templates select="$message/attachments/ExternalMessageAttachment"/>
 					</div>
 				</xsl:if>
 				
@@ -298,13 +365,124 @@
 	
 	<xsl:template match="ExternalMessageAttachment">
 		
-		<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/externalattachment/{../../messageID}/{attachmentID}" class="btn btn-file"><i data-icon-before="d"></i><xsl:value-of select="filename" /><xsl:text>&#160;</xsl:text><span class="size">(<xsl:value-of select="FormatedSize" />)</span></a>
+		<xsl:variable name="url">
+			<xsl:choose>
+				<xsl:when test="../../noReadReceiptAccess">
+					<xsl:text>#</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="/Document/requestinfo/currentURI" />/<xsl:value-of select="/Document/module/alias" />/externalattachment/<xsl:value-of select="../../messageID" />/<xsl:value-of select="attachmentID" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="text">
+			<xsl:choose>
+				<xsl:when test="../../noReadReceiptAccess">
+					<span class="blur-text">loremipsumdolor.sit</span>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="filename" /><xsl:text>&#160;</xsl:text><span class="size">(<xsl:value-of select="FormatedSize" />)</span>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<a href="{$url}" class="btn btn-file">
+			
+			<xsl:if test="../../noReadReceiptAccess">
+				<xsl:attribute name="class">btn btn-file disabled</xsl:attribute>
+			</xsl:if>
+		
+			<i data-icon-before="d"></i>
+			
+			<xsl:copy-of select="$text" />
+		</a>
 		
 	</xsl:template>
 	
 	<xsl:template match="InternalMessageAttachment">
 		
 		<a href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/internalattachment/{../../messageID}/{attachmentID}" class="btn btn-file"><i data-icon-before="d"></i><xsl:value-of select="filename" /><xsl:text>&#160;</xsl:text><span class="size">(<xsl:value-of select="FormatedSize" />)</span></a>
+		
+	</xsl:template>
+	
+	<xsl:template name="showReadReceipts">
+		<xsl:param name="readReceipts" />
+	
+		<div class="read-receipts-wrapper">
+			
+ 			<div class="bigmargintop">
+	 			<button class="read-receipts btn btn-light">
+						<img class="marginright" src="{$imgPath}/check.png" alt="" />
+	 				<xsl:value-of select="$i18n.ReadReceipts"/>
+	 			</button>
+ 			</div>
+ 			
+				<div class="hidden">
+
+				<div class="read-receipts-modal errands-wrapper nopadding nomargin">
+					
+					<h1><xsl:value-of select="$i18n.ReadReceipts" /></h1>
+					
+					<table class="full coloredtable oep-table" cellspacing="0">
+						
+ 						<xsl:apply-templates select="$readReceipts" />
+					
+					</table>									
+					
+				</div>
+				
+			</div>
+			
+		</div>
+			
+	</xsl:template>
+	
+	<xsl:template match="ExternalMessageReadReceipt">
+		
+		<tr>
+			<td class="icon">
+				<img src="{$imgPath}/check.png" alt="" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.User}">
+				<xsl:value-of select="user/firstname" />
+				<xsl:text> </xsl:text> 
+				<xsl:value-of select="user/lastname" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.Date}">
+				<xsl:value-of select="read" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.Description}">
+				<xsl:value-of select="$i18n.ReadReceipt.Read" />
+			</td>
+		</tr>
+		
+		<xsl:apply-templates select="AttachmentDownloads/ExternalMessageReadReceiptAttachmentDownload" />
+		
+		
+	</xsl:template>
+	
+	<xsl:template match="ExternalMessageReadReceiptAttachmentDownload">
+		
+		<tr>
+			<td class="icon">
+				<img src="{$imgPath}/download.png" alt="" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.User}">
+				<xsl:value-of select="../../user/firstname" />
+				<xsl:text> </xsl:text> 
+				<xsl:value-of select="../../user/lastname" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.Date}">
+				<xsl:value-of select="downloaded" />
+			</td>
+			<td data-title="{$i18n.ReadReceipt.Table.Description}">
+				<xsl:value-of select="$i18n.ReadReceipt.Downloaded" />
+				<xsl:text>: </xsl:text>
+				<xsl:value-of select="attachmentFilename" />
+			</td>
+		</tr>
+		
 		
 	</xsl:template>
 	

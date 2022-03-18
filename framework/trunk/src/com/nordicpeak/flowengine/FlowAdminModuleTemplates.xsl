@@ -32,7 +32,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js?v=1
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=18
+		/js/flowadminmodule.js?v=19
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
@@ -2711,6 +2711,36 @@
 						
 						<label for="hideExternalMessageAttachments">
 							<xsl:value-of select="$i18n.hideExternalMessageAttachments" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'readReceiptsEnabled'" />
+							<xsl:with-param name="id" select="'readReceiptsEnabled'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="readReceiptsEnabled">
+							<xsl:value-of select="$i18n.readReceiptsEnabled" />
+						</label>
+					</div>
+				</div>
+				
+				<div class="floatleft full bigmarginbottom margintop">
+					
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'readReceiptsEnabledByDefault'" />
+							<xsl:with-param name="id" select="'readReceiptsEnabledByDefault'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="readReceiptsEnabledByDefault">
+							<xsl:value-of select="$i18n.readReceiptsEnabledByDefault" />
 						</label>
 					</div>
 				</div>

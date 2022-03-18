@@ -118,6 +118,7 @@
 	<xsl:variable name="i18n.Cancel">Avbryt</xsl:variable>
 	<xsl:variable name="i18n.ChooseFiles">Välj filer</xsl:variable>
 	<xsl:variable name="i18n.MaximumFileSize">Maximal filstorlek vid uppladdning</xsl:variable>
+	<xsl:variable name="i18n.readReceiptsEnabled">Begär kvittens för detta meddelande</xsl:variable>
 	<xsl:variable name="i18n.SubmitMessage">Skicka meddelande</xsl:variable>
 	
 	<xsl:variable name="i18n.DeleteFile">Ta bort fil</xsl:variable>

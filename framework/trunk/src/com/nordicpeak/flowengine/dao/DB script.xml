@@ -2840,5 +2840,62 @@
 			]]>
 		</Query>
 	</Script>
+	
+	<Script version="155">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flows` 
+					ADD COLUMN `readReceiptsEnabled` TINYINT(1) UNSIGNED NOT NULL AFTER `hideExternalMessageAttachments`,
+					ADD COLUMN `readReceiptsEnabledByDefault` TINYINT(1) UNSIGNED NOT NULL AFTER `readReceiptsEnabled`;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_external_messages` ADD COLUMN `readReceiptEnabled` TINYINT(3) UNSIGNED NOT NULL AFTER `systemMessage`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				DROP TABLE `flowengine_internal_message_read_receipts`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				DROP TABLE `flowengine_external_message_read_receipts`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_external_message_read_receipts` (
+				  `readReceiptID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `userID` INTEGER UNSIGNED NOT NULL,
+				  `messageID` INTEGER UNSIGNED NOT NULL,
+				  `messageRead` TIMESTAMP NOT NULL,
+				  PRIMARY KEY (`readReceiptID`),
+  				  UNIQUE KEY `Index_2` (`userID`, `messageID`),
+				  CONSTRAINT `FK_flowengine_external_message_read_receipts_1` FOREIGN KEY `FK_flowengine_external_message_read_receipts_1` (`messageID`)
+				    REFERENCES `flowengine_external_messages` (`messageID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_external_message_read_receipt_attachment_downloads` (
+				  `readReceiptID` INTEGER UNSIGNED NOT NULL,
+				  `attachmentFilename` VARCHAR(255) NOT NULL,
+				  `downloaded` TIMESTAMP NOT NULL,
+				  PRIMARY KEY (`readReceiptID`, `attachmentFilename`),
+				  CONSTRAINT `FK_flowengine_external_message_read_receipt_a_d_1` FOREIGN KEY `FK_flowengine_external_message_read_receipt_a_d_1` (`readReceiptID`)
+				    REFERENCES `flowengine_external_message_read_receipts` (`readReceiptID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>		
+		</Query>		
+	</Script>
 			
 </DBScripts>

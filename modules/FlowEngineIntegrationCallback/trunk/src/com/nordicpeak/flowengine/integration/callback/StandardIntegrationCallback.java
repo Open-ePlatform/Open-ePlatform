@@ -29,11 +29,8 @@ import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.dao.RelationQuery;
-import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.fileattachments.FileAttachment;
 import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
-import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
@@ -41,6 +38,7 @@ import se.unlogic.standardutils.time.TimeUtils;
 
 import com.nordicpeak.flowengine.Constants;
 import com.nordicpeak.flowengine.FlowAdminModule;
+import com.nordicpeak.flowengine.MessageHandler;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Flow;
@@ -52,9 +50,6 @@ import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.beans.Status;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
 import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.SenderType;
-import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
-import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
 import com.nordicpeak.flowengine.integration.callback.events.DeliveryConfirmationEvent;
@@ -68,7 +63,6 @@ import com.nordicpeak.flowengine.integration.callback.listeners.FieldInstanceLis
 import com.nordicpeak.flowengine.interfaces.APIAccessController;
 import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
 import com.nordicpeak.flowengine.utils.APIAccessUtils;
-import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -84,6 +78,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	private static final Field FLOW_ADMIN_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "flowAdminModule");
 	private static final Field FILE_ATTACHMENT_HANDLER_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "fileAttachmentHandler");
 	private static final Field API_ACCESS_MODULE_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "apiAccessModule");
+	private static final Field MESSAGE_HANDLER_FIELD = ReflectionUtils.getField(StandardIntegrationCallback.class, "messageHandler");
 
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Set user on events", description = "Set the API user on generated events")
@@ -96,6 +91,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	protected FlowAdminModule flowAdminModule;
 	protected FileAttachmentHandler fileAttachmentHandler;
 	protected APIAccessController apiAccessModule;
+	protected MessageHandler messageHandler;
 
 	private FlowEngineDAOFactory daoFactory;
 	protected QueryParameterFactory<FlowInstance, Integer> flowInstanceIDParamFactory;
@@ -106,6 +102,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 	private FieldInstanceListener<FlowAdminModule> flowAdminModuleListener = new FieldInstanceListener<>(this, FLOW_ADMIN_MODULE_FIELD, true, null);
 	private FieldInstanceListener<FileAttachmentHandler> fileAttachmentHandlerListener = new FieldInstanceListener<>(this, FILE_ATTACHMENT_HANDLER_FIELD, false, null);
 	private FieldInstanceListener<APIAccessController> apiAccessModuleListener = new FieldInstanceListener<>(this, API_ACCESS_MODULE_FIELD, false, null);
+	private FieldInstanceListener<MessageHandler> messageHandlerListener = new FieldInstanceListener<>(this, MESSAGE_HANDLER_FIELD, true, null);
 
 	private final MutexKeyProvider<FlowInstanceIDMutex> mutexKeyProvider = new MutexKeyProvider<>();
 
@@ -126,6 +123,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
 		callback.getSystemInterface().getInstanceHandler().addInstanceListener(APIAccessController.class, apiAccessModuleListener);
+		callback.getSystemInterface().getInstanceHandler().addInstanceListener(MessageHandler.class, messageHandlerListener);
 	}
 
 	@Override
@@ -134,6 +132,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FlowAdminModule.class, flowAdminModuleListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(FileAttachmentHandler.class, fileAttachmentHandlerListener);
 		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(APIAccessController.class, apiAccessModuleListener);
+		callback.getSystemInterface().getInstanceHandler().removeInstanceListener(MessageHandler.class, messageHandlerListener);
 
 		super.unload();
 	}
@@ -285,41 +284,15 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				externalMessage.setFlowInstance(flowInstance);
 				externalMessage.setPostedByManager(true);
 
-				TransactionHandler transactionHandler = null;
-
-				List<FileAttachment> addedFileAttachments = null;
-
-				try {
-					transactionHandler = new TransactionHandler(callback.getDataSource());
-
-					daoFactory.getExternalMessageDAO().add(externalMessage, transactionHandler, null);
-
-					addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(fileAttachmentHandler, externalMessage);
-
-					transactionHandler.commit();
-
-				} catch (Throwable e) {
-
-					FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-
-					throw new RuntimeException(e);
-
-				} finally {
-
-					TransactionHandler.autoClose(transactionHandler);
-				}
-
-				FlowInstanceEvent flowInstanceEvent = this.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, principalUser, externalMessage.getAdded(), ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
-
-				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
+				messageHandler.add(externalMessage);
 
 				return externalMessage.getMessageID();
 
-			} catch (RuntimeException e) {
+			} catch (Throwable e) {
 
 				log.error("Error adding message", e);
 
-				throw e;
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -340,46 +313,20 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				log.info("User " + callback.getUser() + " requested add internal message for flow instance " + flowInstance + " using principal " + principal);
 
-				//TODO
-
 				InternalMessage internalMessage = getInternalMessage(message);
 
 				internalMessage.setPoster(principalUser);
 				internalMessage.setFlowInstance(flowInstance);
 
-				TransactionHandler transactionHandler = null;
-
-				List<FileAttachment> addedFileAttachments = null;
-
-				try {
-					transactionHandler = new TransactionHandler(callback.getDataSource());
-
-					daoFactory.getInternalMessageDAO().add(internalMessage, transactionHandler, null);
-
-					addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(fileAttachmentHandler, internalMessage);
-
-					transactionHandler.commit();
-
-				} catch (Throwable e) {
-
-					FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-
-					throw new RuntimeException(e);
-
-				} finally {
-
-					TransactionHandler.autoClose(transactionHandler);
-				}
-
-				callback.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+				messageHandler.add(internalMessage);
 
 				return internalMessage.getMessageID();
 
-			} catch (RuntimeException e) {
+			} catch (Throwable e) {
 
 				log.error("Error adding message", e);
 
-				throw e;
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -392,6 +339,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		externalMessage.setAdded(TimeUtils.getTimeStamp(message.getAdded()));
 		externalMessage.setMessage(message.getMessage());
+		externalMessage.setReadReceiptEnabled(message.isReadReceiptEnabled());
 
 		if (!CollectionUtils.isEmpty(message.getAttachments())) {
 

@@ -16,9 +16,6 @@ import org.w3c.dom.Element;
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
-import se.unlogic.standardutils.dao.TransactionHandler;
-import se.unlogic.standardutils.fileattachments.FileAttachment;
-import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
@@ -27,17 +24,19 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
 
+import com.nordicpeak.flowengine.MessageHandler;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
-import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
 
 public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, InternalMessageAttachment> {
+	
+	private static Field[] RELATIONS = { InternalMessage.FLOWINSTANCE_RELATION };
 
-	public InternalMessageCRUD(AnnotatedDAO<InternalMessage> messageDAO, AnnotatedDAO<InternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
+	public InternalMessageCRUD(AnnotatedDAO<InternalMessage> messageDAO, MessageHandler messageHandler, AnnotatedDAO<InternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
 
-		super(messageDAO, attachmentDAO, callback, InternalMessage.class, InternalMessageAttachment.class, manager);
+		super(messageHandler, messageDAO, attachmentDAO, callback, InternalMessage.class, InternalMessageAttachment.class, manager);
 	}
 
 	public InternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, List<String> allowedFileExtensions) throws SQLException, IOException {
@@ -46,25 +45,13 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 
 		req = parseRequest(req, validationErrors);
 
-		TransactionHandler transactionHandler = null;
-
-		List<FileAttachment> addedFileAttachments = null;
-
 		try {
 
 			InternalMessage internalMessage = create(req, user, flowInstance, validationErrors, allowedFileExtensions);
 
 			if (internalMessage != null) {
 
-				log.info("User " + user + " adding internal message for flowinstance " + flowInstance);
-
-				transactionHandler = messageDAO.createTransaction();
-
-				messageDAO.add(internalMessage, transactionHandler, null);
-
-				addedFileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(callback.getFileAttachmentHandler(), internalMessage);
-
-				transactionHandler.commit();
+				messageHandler.add(internalMessage);
 			}
 
 			XMLUtils.append(doc, element, validationErrors);
@@ -72,15 +59,7 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 
 			return internalMessage;
 
-		} catch (Throwable t) {
-
-			FileAttachmentUtils.deleteFileAttachments(addedFileAttachments);
-
-			throw t;
-
 		} finally {
-
-			TransactionHandler.autoClose(transactionHandler);
 
 			if (req instanceof MultipartRequest) {
 
@@ -112,8 +91,8 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 	}
 
 	@Override
-	protected Field getFlowInstanceRelation() {
+	protected Field[] getRelations() {
 
-		return InternalMessage.FLOWINSTANCE_RELATION;
+		return RELATIONS;
 	}
 }

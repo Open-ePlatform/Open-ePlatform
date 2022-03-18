@@ -96,6 +96,7 @@ import com.nordicpeak.flowengine.beans.AutoManagerAssignmentRule;
 import com.nordicpeak.flowengine.beans.AutoManagerAssignmentStatusRule;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowInstance;
@@ -118,7 +119,6 @@ import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.enums.ShowMode;
 import com.nordicpeak.flowengine.events.DeletedByManagerEvent;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
-import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
 import com.nordicpeak.flowengine.events.ManagersChangedEvent;
 import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
@@ -132,9 +132,9 @@ import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluationProvide
 import com.nordicpeak.flowengine.exceptions.evaluationprovider.EvaluatorNotFoundInEvaluationProviderException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDefaultStatusNotFound;
 import com.nordicpeak.flowengine.exceptions.flow.FlowDisabledException;
-import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flow.FlowNotPublishedException;
+import com.nordicpeak.flowengine.exceptions.flow.SavedUnpublishedFlowLockedException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.FlowInstanceNoLongerAvailableException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
 import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
@@ -175,7 +175,6 @@ import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
 import com.nordicpeak.flowengine.managers.UserGroupListFlowManagersConnector;
 import com.nordicpeak.flowengine.search.FlowInstanceIndexer;
-import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
 import com.nordicpeak.flowengine.utils.FlowIconUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
@@ -183,7 +182,7 @@ import com.nordicpeak.flowengine.utils.MentionedUserTagUtils;
 
 public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements FlowProcessCallback, ServerStartupListener, EventListener<CRUDEvent<?>>, MessageCRUDCallback, Runnable, NotificationSource {
 
-	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, FlowInstance.FLOW_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
+	protected static final Field[] FLOW_INSTANCE_OVERVIEW_RELATIONS = { FlowInstance.OWNERS_RELATION, FlowInstance.INTERNAL_MESSAGES_RELATION, InternalMessage.ATTACHMENTS_RELATION, FlowInstance.EXTERNAL_MESSAGES_RELATION, ExternalMessage.ATTACHMENTS_RELATION, ExternalMessage.READ_RECEIPTS_RELATION, ExternalMessageReadReceipt.ATTACHMENT_DOWNLOADS_RELATION, FlowInstance.FLOW_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.EVENTS_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
 
 	protected static final Field[] UPDATE_STATUS_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION, FlowInstance.STATUS_RELATION, Flow.STATUSES_RELATION, FlowInstance.OWNERS_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
 	protected static final Field[] UPDATE_MANAGER_RELATIONS = { FlowInstance.ATTRIBUTES_RELATION, FlowInstance.FLOW_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, FlowInstance.STATUS_RELATION, FlowInstance.OWNERS_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION };
@@ -302,6 +301,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@InstanceManagerDependency
 	protected FileAttachmentHandler fileAttachmentHandler;
 	
+	protected MessageHandler messageHandler;
+	
 	protected FlowAdminModule flowAdminModule;
 
 	protected NotificationHandler notificationHandler;
@@ -367,8 +368,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 		super.createDAOs(dataSource);
 
-		externalMessageCRUD = new ExternalMessageCRUD(daoFactory.getExternalMessageDAO(), daoFactory.getExternalMessageAttachmentDAO(), this, true);
-		internalMessageCRUD = new InternalMessageCRUD(daoFactory.getInternalMessageDAO(), daoFactory.getInternalMessageAttachmentDAO(), this, true);
+		externalMessageCRUD = new ExternalMessageCRUD(messageHandler, daoFactory.getExternalMessageDAO(), daoFactory.getExternalMessageAttachmentDAO(), this, true);
+		internalMessageCRUD = new InternalMessageCRUD(daoFactory.getInternalMessageDAO(), messageHandler, daoFactory.getInternalMessageAttachmentDAO(), this, true);
 
 		statusIDParamFactory = daoFactory.getStatusDAO().getParamFactory("statusID", Integer.class);
 		statusFlowParamFactory = daoFactory.getStatusDAO().getParamFactory("flow", Flow.class);
@@ -426,6 +427,22 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			userGroupListFlowManagersConnector = null;
 		}
 		
+	}
+	
+	@InstanceManagerDependency(required = true)
+	public void setMessageHandler(MessageHandler messageHandler) {
+		
+		this.messageHandler = messageHandler;
+		
+		if (externalMessageCRUD != null) {
+			
+			externalMessageCRUD.setMessageHandler(messageHandler);
+		}
+		
+		if (internalMessageCRUD != null) {
+			
+			internalMessageCRUD.setMessageHandler(messageHandler);
+		}
 	}
 	
 	public FlowAdminModule getFlowAdminModule() {
@@ -602,8 +619,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					if (externalMessage != null) {
 
-						sendExternalMessageAddedEvents(user, flowInstance, externalMessage);
-
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
 
 						return null;
@@ -653,8 +668,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 						}
 
 						res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#notes");
-
-						sendInternalMessageAddedEvents(flowInstance, internalMessage);
 
 						return null;
 					}
@@ -729,22 +742,6 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return list(req, res, user, uriParser, FLOW_INSTANCE_NOT_FOUND_VALIDATION_ERROR);
 	}
 
-	public void sendExternalMessageAddedEvents(User user, FlowInstance flowInstance, ExternalMessage externalMessage) throws SQLException {
-
-		FlowInstanceEvent flowInstanceEvent = flowInstanceEventGenerator.addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
-
-		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
-
-		systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<ExternalMessage>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
-	}
-	
-	public void sendInternalMessageAddedEvents(FlowInstance flowInstance, InternalMessage internalMessage) {
-		
-		systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<InternalMessage>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
-		
-		systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
-	}
-	
 	@WebPublic(alias = "messages")
 	public ForegroundModuleResponse showFlowInstanceMessages(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws IOException, URINotFoundException {
 

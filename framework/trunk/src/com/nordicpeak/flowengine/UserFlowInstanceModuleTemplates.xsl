@@ -20,12 +20,12 @@
 		/js/userflowinstancemodule.js?v=1
 		/js/jquery.qloader-init.js
 		/js/js.cookie-2.0.4.min.js
-		/js/messages.js?v=3
+		/js/messages.js?v=4
 	</xsl:variable>
 
 	<xsl:variable name="links">
 		/css/flowengine.css?v=1
-		/css/messages.css
+		/css/messages.css?v=1
 		/css/userflowinstancemodule.css
 	</xsl:variable>
 

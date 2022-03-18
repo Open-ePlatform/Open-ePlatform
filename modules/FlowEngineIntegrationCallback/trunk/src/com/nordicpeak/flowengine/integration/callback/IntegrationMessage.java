@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine.integration.callback;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +26,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="attachments" type="{http://www.oeplatform.org/version/1.0/schemas/integration/callback}Attachment" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="message" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="userID" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="readReceiptEnabled" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,7 +40,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "added",
     "attachments",
     "message",
-    "userID"
+    "userID",
+    "readReceiptEnabled"
 })
 public class IntegrationMessage {
 
@@ -51,6 +54,8 @@ public class IntegrationMessage {
     protected String message;
     @XmlElement(required = true)
     protected String userID;
+    @XmlElement(required = true)
+    protected boolean readReceiptEnabled;
 
     /**
      * Gets the value of the added property.
@@ -152,5 +157,30 @@ public class IntegrationMessage {
     public void setUserID(String value) {
         this.userID = value;
     }
+    
+    /**
+     * Gets the value of the readReceiptEnabled property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link boolean }
+     *     
+     */
+    public boolean isReadReceiptEnabled() {
+    	return readReceiptEnabled;
+    }
+    
+    /**
+     * Sets the value of the readReceiptEnabled property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link boolean }
+     *     
+     */
+	public void setReadReceiptEnabled(boolean readReceiptEnabled) {
+	
+		this.readReceiptEnabled = readReceiptEnabled;
+	}
 
 }

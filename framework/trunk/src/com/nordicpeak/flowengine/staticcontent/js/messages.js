@@ -39,6 +39,8 @@ $(function() {
 		
 		initMessageTab("#messages", "#new-message");
 		initMessageTab("#notes", "#new-note");
+		
+		initReadReceiptModal();
 	}
 	
 });
@@ -173,4 +175,24 @@ function scrollToMessages(selector) {
 			scrollTop : ($element.last().offset().top - 43)
 		}, 'fast');
 	}
+}
+
+function initReadReceiptModal() {
+	
+	$(".read-receipts").click(function() {
+		
+		var $modal = $(this).closest(".read-receipts-wrapper").find(".read-receipts-modal");
+		
+		$.featherlight($modal, {
+
+			afterContent: function() {
+
+				var $modalContent = this.$content;
+				
+//				$modalContent.removeClass("no-sections");
+				$modalContent.closest(".featherlight-content").addClass("contentitem");
+			}
+		});
+		
+	});
 }

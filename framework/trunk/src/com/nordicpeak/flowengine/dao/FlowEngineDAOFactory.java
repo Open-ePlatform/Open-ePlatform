@@ -27,6 +27,8 @@ import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExternalFlowRedirect;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowFamily;
@@ -165,6 +167,16 @@ public class FlowEngineDAOFactory {
 	public AnnotatedDAO<InternalMessageAttachment> getInternalMessageAttachmentDAO() {
 		
 		return daoFactory.getDAO(InternalMessageAttachment.class);
+	}
+	
+	public AnnotatedDAO<ExternalMessageReadReceipt> getExternalMessageReadReceiptDAO() {
+		
+		return daoFactory.getDAO(ExternalMessageReadReceipt.class);
+	}
+	
+	public AnnotatedDAO<ExternalMessageReadReceiptAttachmentDownload> getExternalMessageReadReceiptAttachmentDownloadDAO() {
+		
+		return daoFactory.getDAO(ExternalMessageReadReceiptAttachmentDownload.class);
 	}
 	
 	public AnnotatedDAO<FlowInstanceEvent> getFlowInstanceEventDAO() {
