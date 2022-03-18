@@ -1725,7 +1725,7 @@
 		</div>
 		
 		
-		<div id="whenToCommentDiv" class="floatleft full bigmarginbottom bigmarginleft">
+		<div id="comment-form" class="floatleft full bigmarginbottom bigmarginleft">
 			<xsl:call-template name="createDropdown">
 				<xsl:with-param name="id" select="'whenToComment'"/>
 				<xsl:with-param name="name" select="'whenToComment'"/>

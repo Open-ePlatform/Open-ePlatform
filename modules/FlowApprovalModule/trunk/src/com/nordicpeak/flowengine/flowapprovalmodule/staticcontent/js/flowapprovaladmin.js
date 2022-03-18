@@ -140,10 +140,10 @@ $(function() {
 			var checked = $(this).prop("checked");
 			$("#whenToCommentErrorMessage").prop('disabled', !checked);
 			if(checked) {
-				$("#whenToCommentDiv").show();
+				$("#comment-form").show();
 			}
 			else {
-				$("#whenToCommentDiv").hide();
+				$("#comment-form").hide();
 			}
 			
 		}).trigger("change");

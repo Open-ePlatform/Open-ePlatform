@@ -326,20 +326,10 @@
 					</xsl:variable>
 					
 					
-					<xsl:choose>
-						<xsl:when test="ValidationErrors/validationError/fieldName='comment' and ActivityProgress/Activity/whenToCommentErrorMessage">
-							<div class="full bigmarginbottom">
-								<p class="error">
-									<xsl:value-of select="ActivityProgress/Activity/whenToCommentErrorMessage" />
-								</p>
-							</div>
-						</xsl:when>
-						<xsl:otherwise>
-							<div class="full bigmarginbottom">
-								<xsl:apply-templates select="ValidationErrors/validationError" />
-							</div>
-						</xsl:otherwise>
-					</xsl:choose>
+					<div class="full bigmarginbottom">
+						<xsl:apply-templates select="ValidationErrors/validationError" />
+					</div>
+					
 					
 					
 					
@@ -733,6 +723,14 @@
 			</span>
 			<i class="icon close">x</i>
 		</section>
+		
+	</xsl:template>
+	
+	<xsl:template match="validationError[messageKey='WhenToCommentErrorMessage']">
+					
+		<p class="error">
+				<xsl:value-of select="../../ActivityProgress/Activity/whenToCommentErrorMessage" />
+		</p>
 		
 	</xsl:template>
 	

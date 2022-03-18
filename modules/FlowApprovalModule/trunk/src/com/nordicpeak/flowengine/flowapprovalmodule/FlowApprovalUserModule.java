@@ -62,6 +62,7 @@ import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
+import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
@@ -472,7 +473,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		if (relations != null) {
 
 			query.addRelations(relations);
-			query.addCachedRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION,  FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION);
+			query.addCachedRelations(FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION);
 		}
 
 		return activityProgressDAO.getAll(query);
@@ -527,7 +528,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 			boolean completed = false;
 
-			String comment = "";
+			String comment = req.getParameter("comment");
 			boolean requireComment = activity.isRequireComment();
 			Comment whenToComment = activity.getWhenToComment();
 
@@ -540,133 +541,156 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					activityProgress.setDenied(false);
 					completed = true;
 
-					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
-
-				} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
-
-					log.info("User " + user + " denied activity progress " + activityProgress);
-
-					activityProgress.setDenied(true);
-					completed = true;
-
-					comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
-				}
-
-			} else {
-
-				if (!StringUtils.isEmpty(req.getParameter("completed"))) {
-
-					log.info("User " + user + " completing activity progress " + activityProgress);
-
-					completed = true;
-
-					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
-				}
-			}
-
-			if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
-
-				activityProgress.setComment(comment);
-
-				if (completed && !activity.isRequireSigning()) {
-
-					activityProgress.setCompleted(TimeUtils.getCurrentTimestamp());
-					activityProgress.setCompletingUser(user);
-				}
-
-				activityProgressDAOWrapper.update(activityProgress);
-
-				if (completed) {
-
-					if (activity.isRequireSigning()) {
-
-						redirectToMethod(req, res, "/signactivity/" + activityProgress.getActivityProgressID());
-						return null;
-					}
-
-					//TODO show error if next status was not found
-					approvalAdminModule.checkApprovalCompletion(uriParser, activityProgress.getActivity().getActivityGroup(), flowInstance);
-
-					if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
-
-						log.info("Copying comment to external messages for flowinstance " + flowInstance);
-
-						ExternalMessage externalMessage = new ExternalMessage();
-						externalMessage.setFlowInstance(flowInstance);
-						externalMessage.setPoster(user);
-						externalMessage.setMessage(activity.getName() + ":\r" + comment);
-						externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
-						externalMessage.setAttachments(null);
-						externalMessage.setPostedByManager(true);
-
-						flowAdminModule.getDAOFactory().getExternalMessageDAO().add(externalMessage);
-
-						FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
-
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
-						systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+					if (requireComment && Comment.ALWAYS.equals(whenToComment) && StringUtils.isEmpty(comment) ) {
+						addCommentMissingError(activity, validationErrors);
+					} else {
+						comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
 					}
 					
-					if (activityGroup.isAppendCommentsToInternalMessages() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
+				
 
-						log.info("Copying comment to internal messages for flowinstance " + flowInstance);
+			} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
 
-						InternalMessage internalMessage = new InternalMessage();
-						internalMessage.setFlowInstance(flowInstance);
-						internalMessage.setPoster(user);
-						internalMessage.setMessage(activity.getName() + ":\r" + comment);
-						internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
-						internalMessage.setAttachments(null);
+				log.info("User " + user + " denied activity progress " + activityProgress);
 
-						flowAdminModule.getDAOFactory().getInternalMessageDAO().add(internalMessage);
+				activityProgress.setDenied(true);
+				completed = true;
 
-						systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
-						systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
-					}
+				if (requireComment && StringUtils.isEmpty(comment)) {
+					addCommentMissingError(activity, validationErrors);
+				} else {
+					comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
+				}
+			}
 
-					redirectToDefaultMethod(req, res);
-					return null;
+		} else {
+
+			if (!StringUtils.isEmpty(req.getParameter("completed"))) {
+
+				log.info("User " + user + " completing activity progress " + activityProgress);
+
+				completed = true;
+
+				if (requireComment && Comment.ALWAYS.equals(whenToComment) && StringUtils.isEmpty(comment)) {
+					addCommentMissingError(activity, validationErrors);
+				} else {
+					comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
 				}
 			}
 		}
 
-		log.info("User " + user + " requested activity progress " + activityProgress);
+		if (validationErrors.isEmpty() && (completed || !StringUtils.compare(comment, activityProgress.getComment()))) {
 
-		if (activity.getDescription() != null) {
+			activityProgress.setComment(comment);
 
-			approvalAdminModule.replaceTagsDescription(uriParser, activity, flowInstance);
+			if (completed && !activity.isRequireSigning()) {
 
+				activityProgress.setCompleted(TimeUtils.getCurrentTimestamp());
+				activityProgress.setCompletingUser(user);
+			}
+
+			activityProgressDAOWrapper.update(activityProgress);
+
+			if (completed) {
+
+				if (activity.isRequireSigning()) {
+
+					redirectToMethod(req, res, "/signactivity/" + activityProgress.getActivityProgressID());
+					return null;
+				}
+
+				//TODO show error if next status was not found
+				approvalAdminModule.checkApprovalCompletion(uriParser, activityProgress.getActivity().getActivityGroup(), flowInstance);
+
+				if (activityGroup.isAppendCommentsToExternalMessages() && flowInstance.isExternalMessagesEnabled() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
+
+					log.info("Copying comment to external messages for flowinstance " + flowInstance);
+
+					ExternalMessage externalMessage = new ExternalMessage();
+					externalMessage.setFlowInstance(flowInstance);
+					externalMessage.setPoster(user);
+					externalMessage.setMessage(activity.getName() + ":\r" + comment);
+					externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+					externalMessage.setAttachments(null);
+					externalMessage.setPostedByManager(true);
+
+					flowAdminModule.getDAOFactory().getExternalMessageDAO().add(externalMessage);
+
+					FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.MANAGER_MESSAGE_SENT, null, user, null, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
+
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
+				}
+
+				if (activityGroup.isAppendCommentsToInternalMessages() && !StringUtils.isEmpty(comment) && flowInstance.getOwners() != null) {
+
+					log.info("Copying comment to internal messages for flowinstance " + flowInstance);
+
+					InternalMessage internalMessage = new InternalMessage();
+					internalMessage.setFlowInstance(flowInstance);
+					internalMessage.setPoster(user);
+					internalMessage.setMessage(activity.getName() + ":\r" + comment);
+					internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
+					internalMessage.setAttachments(null);
+
+					flowAdminModule.getDAOFactory().getInternalMessageDAO().add(internalMessage);
+
+					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
+					systemInterface.getEventHandler().sendEvent(InternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, internalMessage), EventTarget.ALL);
+				}
+
+				redirectToDefaultMethod(req, res);
+				return null;
+			}
 		}
+	}
 
-		Document doc = createDocument(req, uriParser);
+	log.info("User "+user+" requested activity progress "+activityProgress);
 
-		Element showActivity = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ShowActivity");
+	if(activity.getDescription() != null) {
 
-		showActivity.appendChild(activityProgress.toXML(doc));
-		showActivity.appendChild(flowInstance.toXML(doc));
+		approvalAdminModule.replaceTagsDescription(uriParser, activity, flowInstance);
 
-		if (activityProgress.getActivity().getShortDescription() != null) {
+	}
+
+	Document doc = createDocument(req, uriParser);
+
+	Element showActivity = XMLUtils.appendNewElement(doc, doc.getDocumentElement(), "ShowActivity");
+
+	showActivity.appendChild(activityProgress.toXML(doc));
+	showActivity.appendChild(flowInstance.toXML(doc));
+
+	if(activityProgress.getActivity().getShortDescription() != null) {
 
 			XMLUtils.appendNewElement(doc, showActivity, "ShortDescription", AttributeTagUtils.replaceTags(activityProgress.getActivity().getShortDescription(), flowInstance.getAttributeHandler()));
 		}
 
-		if (activity.isShowFlowInstance()) {
-			try {
-				List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), BaseFlowModule.OWNER_REQUEST_METADATA);
-				XMLUtils.append(doc, showActivity, "ManagerResponses", managerResponses);
+	if(activity.isShowFlowInstance()) {
+		try {
+			List<ManagerResponse> managerResponses = instanceManager.getFullShowHTML(req, user, this, true, null, getImmutableQueryRequestBaseURL(req, instanceManager), BaseFlowModule.OWNER_REQUEST_METADATA);
+			XMLUtils.append(doc, showActivity, "ManagerResponses", managerResponses);
 
-			} catch (UnableToGetQueryInstanceShowHTMLException e) {
-				log.error("Unable to preview flow instance " + instanceManager, e);
-			}
+		} catch (UnableToGetQueryInstanceShowHTMLException e) {
+			log.error("Unable to preview flow instance " + instanceManager, e);
 		}
+	}
 
-		if (validationErrors != null) {
+	if(validationErrors!=null) {
 
-			showActivity.appendChild(RequestUtils.getRequestParameters(req, doc));
-			XMLUtils.append(doc, showActivity, "ValidationErrors", validationErrors);
+		showActivity.appendChild(RequestUtils.getRequestParameters(req, doc));
+		XMLUtils.append(doc, showActivity, "ValidationErrors", validationErrors);
+	}
+
+	return new SimpleForegroundModuleResponse(doc,moduleDescriptor.getName(),getDefaultBreadcrumb());
+	}
+
+	private void addCommentMissingError(FlowApprovalActivity activity, List<ValidationError> validationErrors) {
+
+		if(StringUtils.isEmpty(activity.getWhenToCommentErrorMessage())) {
+			validationErrors.add(new ValidationError("comment", null, ValidationErrorType.RequiredField));
+		} else {
+			validationErrors.add(new ValidationError("comment", ValidationErrorType.RequiredField, "WhenToCommentErrorMessage"));
 		}
-
-		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
 	}
 
 	@RESTMethod(alias = "signactivity/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
@@ -931,7 +955,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), externalMessage, SenderType.MANAGER), EventTarget.ALL);
 					systemInterface.getEventHandler().sendEvent(ExternalMessage.class, new CRUDEvent<>(CRUDAction.ADD, externalMessage), EventTarget.ALL);
 				}
-				
+
 				if (activityGroup.isAppendCommentsToInternalMessages() && !StringUtils.isEmpty(activityProgress.getComment()) && flowInstance.getOwners() != null) {
 
 					log.info("Copying comment to internal messages for flowinstance " + flowInstance);
@@ -942,7 +966,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					internalMessage.setMessage(activity.getName() + ":\r" + activityProgress.getComment());
 					internalMessage.setAdded(TimeUtils.getCurrentTimestamp());
 					internalMessage.setAttachments(null);
-					
+
 					flowAdminModule.getDAOFactory().getInternalMessageDAO().add(internalMessage);
 
 					systemInterface.getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), internalMessage), EventTarget.ALL);
