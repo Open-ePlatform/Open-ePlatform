@@ -634,8 +634,6 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 			getPreviewAccessController().checkFlowInstanceAccess(flowInstance, user);
 
-			SiteProfile instanceProfile = getSiteProfile(flowInstance);
-
 			if (enableSiteProfileRedirectSupport) {
 
 				SiteProfile currentSiteProfile = getCurrentSiteProfile(req, user, uriParser, flowInstance.getFlow().getFlowFamily());

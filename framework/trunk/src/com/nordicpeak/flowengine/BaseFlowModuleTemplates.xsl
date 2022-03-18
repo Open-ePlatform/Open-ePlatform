@@ -1008,9 +1008,9 @@
 					<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
 				</div>
 				
-				<xsl:if test="../SavedInstanceCullingMessage">
+				<xsl:if test="../SavedFlowInstanceMessages">
 					<div>
-						<span><xsl:value-of select="../SavedInstanceCullingMessage" disable-output-escaping="yes" /></span>
+						<xsl:apply-templates select="../SavedFlowInstanceMessages/SavedFlowInstanceMessage"/>
 					</div>
 				</xsl:if>
 				
@@ -1019,6 +1019,12 @@
 			
 		</xsl:if>
 		
+	</xsl:template>
+	
+	<xsl:template name="SavedFlowInstanceMessage">
+	
+		<span><xsl:value-of select="." disable-output-escaping="yes" /></span>
+	
 	</xsl:template>
 	
 	<xsl:template name="getEventTypeText">

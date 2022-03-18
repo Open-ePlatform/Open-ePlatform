@@ -784,6 +784,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		stopScheduler();
 
+		systemInterface.getInstanceHandler().removeInstance(MessageHandler.class, messageHandler);
 		systemInterface.getInstanceHandler().removeInstance(FlowAdminModule.class, this);
 
 		extensionViewProviders.clear();

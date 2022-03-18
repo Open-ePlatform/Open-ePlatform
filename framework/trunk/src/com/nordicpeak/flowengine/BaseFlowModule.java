@@ -67,7 +67,6 @@ import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
-import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.threads.MutexKey;
 import se.unlogic.standardutils.threads.MutexKeyProvider;
@@ -160,7 +159,6 @@ import com.nordicpeak.flowengine.interfaces.OperatingStatus;
 import com.nordicpeak.flowengine.interfaces.PDFProvider;
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.interfaces.QueryRequestProcessor;
-import com.nordicpeak.flowengine.interfaces.SavedInstanceMessageProvider;
 import com.nordicpeak.flowengine.interfaces.SigningCallback;
 import com.nordicpeak.flowengine.interfaces.SigningProvider;
 import com.nordicpeak.flowengine.interfaces.XMLProvider;
@@ -169,6 +167,7 @@ import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.ManagerResponse;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager;
 import com.nordicpeak.flowengine.managers.MutableFlowInstanceManager.FlowInstanceManagerRegistery;
+import com.nordicpeak.flowengine.savedmessagehandler.SavedFlowInstanceMessageHandler;
 import com.nordicpeak.flowengine.utils.FlowInstanceEventGenerator;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.MultiSignUtils;
@@ -242,7 +241,7 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 	protected OperatingMessageModule operatingMessageModule;
 
 	@InstanceManagerDependency
-	protected SavedInstanceMessageProvider savedInstanceMessageProvider;
+	protected SavedFlowInstanceMessageHandler savedFlowInstanceMessageHandler;
 	
 	protected EventHandler eventHandler;
 
@@ -1431,19 +1430,17 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 		
 		if(lastFlowAction != null && lastFlowAction.equals(FlowAction.SAVE)) {
 			
-			if(savedInstanceMessageProvider != null) {
+			if(savedFlowInstanceMessageHandler != null) {
 
 				Integer flowFamilyID = instanceManager.getFlowInstance().getFlow().getFlowFamily().getFlowFamilyID();
 				
-				if(flowFamilyID != null && instanceManager.getFlowInstance().getStatus() != null) {
+				if(instanceManager.getFlowInstance().getStatus() != null) {
 					
 					String statusName = instanceManager.getFlowInstance().getStatus().getName();
-					String message = savedInstanceMessageProvider.getSavedInstanceMessage(flowFamilyID, statusName);
 					
-					if(!StringUtils.isEmpty(message)) {
-						
-						XMLUtils.appendNewElement(doc, flowInstanceManagerFormElement, "SavedInstanceCullingMessage", message);
-					}
+					List<String> messages = savedFlowInstanceMessageHandler.getMessages(flowFamilyID, statusName);
+					
+					XMLUtils.append(doc, flowInstanceManagerFormElement, "SavedFlowInstanceMessages", "SavedFlowInstanceMessage", messages);
 				}
 			}
 		}
