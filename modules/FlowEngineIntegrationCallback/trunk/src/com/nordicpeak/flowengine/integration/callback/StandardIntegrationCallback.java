@@ -279,6 +279,11 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				log.info("User " + callback.getUser() + " requested add message for flow instance " + flowInstance + " using principal " + principal);
 
 				ExternalMessage externalMessage = getExternalMessage(message);
+				
+				if (!flowInstance.getFlow().isReadReceiptsEnabled() && externalMessage.isReadReceiptEnabled()) {
+					
+					throw new IllegalArgumentException("Read receipts not enabled on flow " + flowInstance.getFlow());
+				}
 
 				externalMessage.setPoster(principalUser);
 				externalMessage.setFlowInstance(flowInstance);
@@ -312,9 +317,14 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 				User principalUser = getPrincipalUser(principal);
 
 				log.info("User " + callback.getUser() + " requested add internal message for flow instance " + flowInstance + " using principal " + principal);
+				
+				if (message.isReadReceiptEnabled()) {
+					
+					throw new IllegalArgumentException("Read receipts not allowed for internal message");
+				}
 
 				InternalMessage internalMessage = getInternalMessage(message);
-
+				
 				internalMessage.setPoster(principalUser);
 				internalMessage.setFlowInstance(flowInstance);
 
