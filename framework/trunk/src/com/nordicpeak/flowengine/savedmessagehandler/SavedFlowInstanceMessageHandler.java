@@ -2,6 +2,8 @@ package com.nordicpeak.flowengine.savedmessagehandler;
 
 import java.util.List;
 
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+
 public interface SavedFlowInstanceMessageHandler {
 
 	public boolean addSavedFlowInstanceMessageProvider(SavedFlowInstanceMessageProvider provider);
@@ -10,5 +12,5 @@ public interface SavedFlowInstanceMessageHandler {
 	
 	public List<SavedFlowInstanceMessageProvider> getProviders();
 	
-	public List<String> getMessages(Integer flowFamilyID, String statusName);
+	public List<String> getMessages(ImmutableFlowInstance flowInstance);
 }

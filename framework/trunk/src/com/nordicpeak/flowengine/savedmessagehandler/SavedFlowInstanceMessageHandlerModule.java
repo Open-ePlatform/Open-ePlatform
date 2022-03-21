@@ -12,6 +12,8 @@ import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModule
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
 import se.unlogic.standardutils.collections.CollectionUtils;
 
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+
 
 public class SavedFlowInstanceMessageHandlerModule extends AnnotatedForegroundModule implements SavedFlowInstanceMessageHandler {
 
@@ -62,7 +64,7 @@ public class SavedFlowInstanceMessageHandlerModule extends AnnotatedForegroundMo
 	}
 	
 	@Override
-	public List<String> getMessages(Integer flowFamilyID, String statusName){
+	public List<String> getMessages(ImmutableFlowInstance flowInstance){
 		
 		List<String> messages = null;
 		
@@ -71,13 +73,13 @@ public class SavedFlowInstanceMessageHandlerModule extends AnnotatedForegroundMo
 			String message;
 			
 			try {
-				message = provider.getSavedInstanceMessage(flowFamilyID, statusName);
+				message = provider.getSavedInstanceMessage(flowInstance);
 			
 				messages = CollectionUtils.addAndInstantiateIfNeeded(messages, message);
 				
 			} catch (Exception e) {
 
-				log.error("Error getting saved flow instance message from provider " + provider + " for flow family " + flowFamilyID, e);
+				log.error("Error getting saved flow instance message from provider " + provider + " for flow family " + flowInstance.getFlow().getFlowFamily().getFlowFamilyID(), e);
 			}
 		}
 		
