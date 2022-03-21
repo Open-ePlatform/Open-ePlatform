@@ -1004,27 +1004,22 @@
 		<xsl:if test=". = 'SAVE' or . = 'SAVE_AND_PREVIEW'">
 
 			<section class="modal success">
+			
 				<div>
 					<span data-icon-before="c"><xsl:value-of select="$i18n.FlowInstanceSaved" /></span>
 				</div>
 				
-				<xsl:if test="../SavedFlowInstanceMessages">
-					<div>
-						<xsl:apply-templates select="../SavedFlowInstanceMessages/SavedFlowInstanceMessage"/>
-					</div>
-				</xsl:if>
 				
+				<xsl:for-each select="../SavedFlowInstanceMessages/SavedFlowInstanceMessage">
+					<div>
+						<xsl:value-of select="." disable-output-escaping="yes"/>
+					</div>
+				</xsl:for-each>
 				<i class="icon close">x</i>
 			</section>
 			
 		</xsl:if>
 		
-	</xsl:template>
-	
-	<xsl:template name="SavedFlowInstanceMessage">
-	
-		<span><xsl:value-of select="." disable-output-escaping="yes" /></span>
-	
 	</xsl:template>
 	
 	<xsl:template name="getEventTypeText">
