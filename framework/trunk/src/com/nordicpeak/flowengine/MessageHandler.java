@@ -14,7 +14,6 @@ import se.unlogic.hierarchy.core.events.CRUDEvent;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.fileattachments.FileAttachment;
-import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 
 import com.nordicpeak.flowengine.beans.BaseMessage;
@@ -33,25 +32,11 @@ public class MessageHandler {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	private BaseFlowModule baseFlowModule;
+	private FlowAdminModule flowAdminModule;
 
-	private AnnotatedDAO<ExternalMessage> externalMessageDAO;
+	public MessageHandler(FlowAdminModule flowAdminModule) {
 
-	private AnnotatedDAO<InternalMessage> internalMessageDAO;
-
-	private FileAttachmentHandler fileAttachmentHandler;
-
-	public MessageHandler(BaseFlowModule baseFlowModule, AnnotatedDAO<ExternalMessage> externalMessageDAO, AnnotatedDAO<InternalMessage> internalMessageDAO, FileAttachmentHandler fileAttachmentHandler) {
-
-		this.baseFlowModule = baseFlowModule;
-		this.externalMessageDAO = externalMessageDAO;
-		this.internalMessageDAO = internalMessageDAO;
-		this.fileAttachmentHandler = fileAttachmentHandler;
-	}
-
-	public void setFileAttachmentHandler(FileAttachmentHandler fileAttachmentHandler) {
-
-		this.fileAttachmentHandler = fileAttachmentHandler;
+		this.flowAdminModule = flowAdminModule;
 	}
 
 	public ExternalMessageHandlerInstance getInstance(ExternalMessage externalMessage) {
@@ -66,7 +51,7 @@ public class MessageHandler {
 			return null;
 		}
 
-		return new ExternalMessageHandlerInstance(externalMessageDAO, externalMessage, manager);
+		return new ExternalMessageHandlerInstance(flowAdminModule.getDAOFactory().getExternalMessageDAO(), externalMessage, manager);
 	}
 
 	public InternalMessageHandlerInstance getInstance(InternalMessage internalMessage) {
@@ -76,7 +61,7 @@ public class MessageHandler {
 			return null;
 		}
 
-		return new InternalMessageHandlerInstance(internalMessageDAO, internalMessage);
+		return new InternalMessageHandlerInstance(flowAdminModule.getDAOFactory().getInternalMessageDAO(), internalMessage);
 	}
 
 	public void add(ExternalMessage externalMessage) throws SQLException, IOException {
@@ -177,12 +162,12 @@ public class MessageHandler {
 
 			messageDAO.add(message, transactionHandler, null);
 
-			fileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(fileAttachmentHandler, message);
+			fileAttachments = FlowEngineFileAttachmentUtils.saveAttachmentData(flowAdminModule.getFileAttachmentHandler(), message);
 		}
 
 		public void commited() throws SQLException {
 
-			baseFlowModule.getSystemInterface().getEventHandler().sendEvent(this.getClass(), new CRUDEvent<>(CRUDAction.ADD, message), EventTarget.ALL);
+			flowAdminModule.getSystemInterface().getEventHandler().sendEvent(this.getClass(), new CRUDEvent<>(CRUDAction.ADD, message), EventTarget.ALL);
 		}
 
 		public void cleanup() {
@@ -209,10 +194,10 @@ public class MessageHandler {
 
 			EventType eventType = manager ? EventType.MANAGER_MESSAGE_SENT : EventType.CUSTOMER_MESSAGE_SENT;
 			SenderType senderType = manager ? SenderType.MANAGER : SenderType.USER;
-																	  
-			FlowInstanceEvent flowInstanceEvent = baseFlowModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, eventType, null, user, added, ExternalMessageUtils.getFlowInstanceEventAttributes(message));
 
-			baseFlowModule.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, baseFlowModule.getSiteProfile(flowInstance), message, senderType), EventTarget.ALL);
+			FlowInstanceEvent flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, eventType, null, user, added, ExternalMessageUtils.getFlowInstanceEventAttributes(message));
+
+			flowAdminModule.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new ExternalMessageAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), message, senderType), EventTarget.ALL);
 		}
 	}
 
@@ -230,7 +215,7 @@ public class MessageHandler {
 
 			FlowInstance flowInstance = message.getFlowInstance();
 
-			baseFlowModule.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, baseFlowModule.getSiteProfile(flowInstance), message), EventTarget.ALL);
+			flowAdminModule.getSystemInterface().getEventHandler().sendEvent(FlowInstance.class, new InternalMessageAddedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), message), EventTarget.ALL);
 		}
 	}
 

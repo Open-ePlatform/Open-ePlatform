@@ -647,21 +647,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@InstanceManagerDependency(required = true)
 	protected StaticContentModule staticContentModule;
-	
+
 	protected MessageHandler messageHandler;
 
-	protected FileAttachmentHandler fileAttachmentHandler;
-	
 	@InstanceManagerDependency
-	public void setFileAttachmentHandler(FileAttachmentHandler fileAttachmentHandler) {
-
-		this.fileAttachmentHandler = fileAttachmentHandler;
-
-		if (messageHandler != null) {
-			
-			messageHandler.setFileAttachmentHandler(fileAttachmentHandler);
-		}
-	}
+	protected FileAttachmentHandler fileAttachmentHandler;
 
 	@InstanceManagerDependency
 	private HTMLContentFilter htmlContentFilter;
@@ -754,11 +744,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			throw new RuntimeException("Unable to register module in global instance handler using key " + FlowAdminModule.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
-		
-		messageHandler = new MessageHandler(this, daoFactory.getExternalMessageDAO(), daoFactory.getInternalMessageDAO(), fileAttachmentHandler);
-		
+
+		messageHandler = new MessageHandler(this);
+
 		if (!systemInterface.getInstanceHandler().addInstance(MessageHandler.class, messageHandler)) {
-			
+
 			throw new RuntimeException("Unable to register module in global instance handler using key " + MessageHandler.class.getSimpleName() + ", another instance is already registered using this key.");
 		}
 
@@ -1685,7 +1675,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			log.info("User " + user + " creating new flow based on flow " + flow);
 
 			FlowFamily flowFamily = flow.getFlowFamily();
-			
+
 			FlowFamily flowFamilyCopy = new FlowFamily();
 			flowFamilyCopy.setVersionCount(1);
 			flowFamilyCopy.setStatisticsMode(flowFamily.getStatisticsMode());
@@ -1700,7 +1690,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			flowFamilyCopy.setLoginHelpLinkName(flowFamily.getLoginHelpLinkName());
 			flowFamilyCopy.setLoginHelpLinkURL(flowFamily.getLoginHelpLinkURL());
 			flowFamilyCopy.setStartButtonText(flowFamily.getStartButtonText());
-			
+
 			if (flowFamily.getMessageTemplates() != null) {
 
 				ArrayList<MessageTemplate> messageTemplates = new ArrayList<>(flowFamily.getMessageTemplates().size());
@@ -4302,9 +4292,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public ForegroundModuleResponse importFlowIntoNewFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws TransformerFactoryConfigurationError, Exception {
 
 		FlowType flowType = null;
-		
-		if(req.getParameter("list") == null) {
-			
+
+		if (req.getParameter("list") == null) {
+
 			flowType = this.flowTypeCRUD.getRequestedBean(req, res, user, uriParser, FlowCRUD.SHOW);
 		}
 
@@ -4323,13 +4313,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			String providerID;
 
 			if (uriParser.size() == 5 && (repositoryIndex = uriParser.getInt(2)) != null && (sharedflowID = uriParser.getInt(3)) != null && (providerID = uriParser.get(4)) != null && repositoryIndex >= 0) {
-				
+
 				Element repositoryElement = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "Repository");
-				
+
 				XMLUtils.appendNewElement(doc, repositoryElement, "RepositoryIndex", repositoryIndex);
-				
+
 				Element sharedFlowID = XMLUtils.appendNewElement(doc, selectImportTargetFamily, "SharedFlow");
-				
+
 				XMLUtils.appendNewElement(doc, sharedFlowID, "SharedFlowID", sharedflowID);
 				XMLUtils.appendNewElement(doc, selectImportTargetFamily, "ProviderID", providerID);
 			}
@@ -4361,11 +4351,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				ExternalFlow externalFlow = getExternalFlow(providerID, repositoryIndex, sharedflowID);
 
 				if (externalFlow != null) {
-					
+
 					importFlow(new ByteArrayInputStream(externalFlow.getData()), externalFlow.getFilename(), flowType, relatedFlow, req, res, user);
-					
+
 				} else {
-					
+
 					validationException = new ValidationException(new UnableToParseFileValidationError(""));
 				}
 
@@ -4479,11 +4469,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		ExternalFlow externalFlow = null;
 		ExternalFlowProvider externalFlowProvider = null;
-		
+
 		try {
 			externalFlowProvider = externalFlowProviders.get(providerID);
 			return externalFlowProvider != null ? externalFlowProvider.getFlow(repositoryIndex, sharedflowID) : null;
-			
+
 		} catch (Exception e) {
 
 			log.error("Error in externalflowprovider " + externalFlowProvider + " while reading file with repositoryIndex " + repositoryIndex + " and flowID " + sharedflowID, e);
@@ -6525,7 +6515,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				boolean useStatusAttribute = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-useStatusAttribute-" + ruleID));
 				boolean invert = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-statusAttributeInvert-" + ruleID));
 				boolean includeUnsetStatusAttribute = "true".equalsIgnoreCase(req.getParameter("auto-manager-status-rule-includeUnsetStatusAttribute-" + ruleID));
-				
+
 				if (ruleDuplicatesExist(rules, statusName, useStatusAttribute)) {
 
 					validationErrors.add(new ValidationError("auto-manager-status-rule-statusName-" + ruleID, ValidationErrorType.Other, "DuplicateStatusRule"));
@@ -6544,7 +6534,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				rule.setUseStatusAttribute(useStatusAttribute);
 				rule.setStatusAttributeInvert(invert);
 				rule.setIncludeUnsetStatusAttribute(includeUnsetStatusAttribute);
-				
+
 				if (addManagers) {
 
 					String usersIDsString = ValidationUtils.validateParameter("auto-manager-status-rule-users-" + ruleID, req, false, 1, 255, StringPopulator.getPopulator(), validationErrors);
@@ -6656,13 +6646,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					rule.setEmailRecipients(emailRecipients);
 				}
 
-				if(useStatusAttribute) {
-					
-					String statusAttributeName = ValidationUtils.validateParameter("auto-manager-status-rule-statusAttributeName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);;
+				if (useStatusAttribute) {
+
+					String statusAttributeName = ValidationUtils.validateParameter("auto-manager-status-rule-statusAttributeName-" + ruleID, req, true, 1, 255, StringPopulator.getPopulator(), validationErrors);
 					String attributeValues = ValidationUtils.validateParameter("auto-manager-status-rule-statusAttributeValues-" + ruleID, req, true, StringPopulator.getPopulator(), validationErrors);
 
 					rule.setStatusAttributeName(statusAttributeName);
-					
+
 					if (!StringUtils.isEmpty(attributeValues)) {
 
 						List<String> splitValues = StringUtils.splitOnLineBreak(attributeValues, true);
@@ -6678,8 +6668,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 						rule.setStatusAttributeValues(splitValues);
 					}
 				}
-				
-				
+
 				rules.add(rule);
 			}
 		}
@@ -7221,6 +7210,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		return new SimpleForegroundModuleResponse(doc);
+	}
+
+	public FileAttachmentHandler getFileAttachmentHandler() {
+
+		return fileAttachmentHandler;
 	}
 
 }
