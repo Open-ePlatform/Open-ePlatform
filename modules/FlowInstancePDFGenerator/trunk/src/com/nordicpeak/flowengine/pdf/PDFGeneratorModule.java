@@ -559,7 +559,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 
 			String xml = writer.toString();
 			
-			xml = XMLUtils.removeIllegalXMLCharachters(xml);
+			//xml = XMLUtils.removeIllegalXMLCharachters(xml);
 
 			Document document;
 
