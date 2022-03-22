@@ -558,6 +558,8 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 			XMLTransformer.transformToWriter(pdfTransformer.getTransformer(), doc, writer, StandardCharsets.UTF_8.name(), "1.1");
 
 			String xml = writer.toString();
+			
+			xml = XMLUtils.removeIllegalXMLCharachters(xml);
 
 			Document document;
 
