@@ -13,7 +13,7 @@
 	
 		&lt;p&gt;Hej!&lt;/p&gt;
 		
-		&lt;p&gt;Det finns nya kommentarer för e-tjänst $flow.name i dessa version(er): $flow.version.&lt;/p&gt;
+		&lt;p&gt;Det finns nya kommentarer för e-tjänst $flow.name i följande version/versioner: $flow.version.&lt;/p&gt;
 		&lt;p&gt;$flow.url&lt;/p&gt;
 		
 		

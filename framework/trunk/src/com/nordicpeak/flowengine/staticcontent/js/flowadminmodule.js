@@ -3,13 +3,39 @@ var validationError = false;
 var flowListDataTable;
 var getExtraFlowListColumns;
 
+var dtInternalState = {};
+var dtLastSavedState = {};
+var defaultColumnOrder = ["flowID",
+                          "published",
+                          "icon",
+                          "flowName", 
+                          "flowType",
+                          "flowCategory",
+                          "versions",
+                          "submittedInstances",
+                          "notSubmittedInstances",
+                          "flowFamilyLastReviewed",
+                          "flowFamilyID",
+                          "organization",
+						  "delete"];
+var columnDefinitions;
+var userControlledColumns = [];
+var userColumnOrder = [];
+var userColumnVisible = {};
+
 $(function() {
 	
 	if (FlowAdmin != undefined) {
+		
+		$("#table-settings-modal").find(".setting").each(function() {
+			var setting = $(this);
+			
+			userControlledColumns.push(setting.find(".columnid").val());
+		});
 	
 		var flowListTable = $(".flow-list-table");
-		
-		var columns = [
+				
+		columnDefinitions = [
 			{ name:"flowID", orderable: false, searchable: false, visible: false },
 			{ name:"published", orderable: false, searchable: false, visible: false },
 			{ name:"icon", orderable: false, searchable: false,
@@ -23,9 +49,9 @@ $(function() {
 					return null;
 				}
 			},
-			{ name:"flowName",
+			{ name:"flowName", visible: (userColumnVisible.flowName != null ? userColumnVisible.flowName=='true' : true),
 				render: function(data, type, row) {
-			
+				
 					if (type == "display") {
 						
 						return "<a href='" + FlowAdmin.showFlowURL + data.flowID + "' " + (data.hasExternalVersions ? "data-icon-after='e'" : "") + ">" + $.fn.dataTable.render.text().display(data.flowName) + "</a>";
@@ -34,7 +60,7 @@ $(function() {
 					return data.flowName;
 				}					
 			},
-			{ name:"flowType", searchable: false,
+			{ name:"flowType", searchable: false, visible: (userColumnVisible.flowType != null ? userColumnVisible.flowType=='true' : true),
 				render: function(data, type, row) {
 			
 					if (type == "display") {
@@ -45,19 +71,16 @@ $(function() {
 					return data.flowTypeName;
 				}
 			},					
-			{ name:"flowCategory", searchable: false, visible: FlowAdmin.useCategories },
-			{ name:"versions", searchable: false },
-			{ name:"submittedInstances", searchable: false, visible: !FlowAdmin.hideSubmittedInstances },
-			{ name:"notSubmittedInstances", searchable: false, visible: !FlowAdmin.hideNotSubmittedInstances },
-			{ name:"flowFamilyLastReviewed", type: "date", visible: !FlowAdmin.hideFlowFamilyLastReviewed }
+			{ name:"flowCategory", searchable: false, visible: (userColumnVisible.flowCategory != null ? userColumnVisible.flowCategory=='true' : false) && FlowAdmin.useCategories },
+			{ name:"versions", searchable: false, visible: (userColumnVisible.versions != null ? userColumnVisible.versions=='true' : true) },
+			{ name:"submittedInstances", searchable: false, visible: (userColumnVisible.submittedInstances != null ? userColumnVisible.submittedInstances=='true' : true) && !FlowAdmin.hideSubmittedInstances },
+			{ name:"notSubmittedInstances", searchable: false, visible: (userColumnVisible.notSubmittedInstances != null ? userColumnVisible.notSubmittedInstances=='true' : true) && !FlowAdmin.hideNotSubmittedInstances },
+			{ name:"flowFamilyLastReviewed", type: "date", visible: (userColumnVisible.flowFamilyLastReviewed != null ? userColumnVisible.flowFamilyLastReviewed=='true' : true) && !FlowAdmin.hideFlowFamilyLastReviewed },
+			{ name:"flowFamilyID", searchable: false, visible: (userColumnVisible.flowFamilyID != null ? userColumnVisible.flowFamilyID=='true' : false)},
+			{ name:"organization", searchable: false, visible: (userColumnVisible.organization != null ? userColumnVisible.organization=='true' : false)}
 		]
 		
-		if (getExtraFlowListColumns) {
-			
-			columns = columns.concat(getExtraFlowListColumns());
-		}
-		
-		columns.push(
+		columnDefinitions.push(
 			{ name:"delete", orderable: false, searchable: false, visible: !FlowAdmin.hideDeleteButton,
 				render: function(data, type, row) {
 			
@@ -87,6 +110,92 @@ $(function() {
 				}
 		});
 		
+		// Make local copy of column definitions
+			var columns = $.extend(true, [], columnDefinitions);
+			
+			// Apply user settings
+			if (!$.isEmptyObject(userColumnVisible)) {
+				
+				$.each(userColumnVisible, function(key, val) {
+					
+					var column = getColumnDefinition(columnDefinitions, key);
+					
+					if (column != null && column.visible != val) {
+						column.visible = val;
+					}
+				});
+			}
+			
+		
+		var columnOrder;
+			
+			if (userColumnOrder.length > 0) {
+				
+				columnOrder = userColumnOrder.slice();
+				
+				// Append hidden columns
+				for (var i=0, len = defaultColumnOrder.length; i < len; i++) {
+					
+					var colName = defaultColumnOrder[i];
+					var indexInUserOrdering = columnOrder.indexOf(colName);
+					
+					if (indexInUserOrdering == -1) { // Is hidden column, append after its default preceeding sibling
+						
+						var defaultPreceedingColumnIndex = defaultColumnOrder.indexOf(colName) - 1;
+						var preceedingColumnName = defaultColumnOrder[defaultPreceedingColumnIndex];
+						var preceedingColumnIndex = columnOrder.indexOf(preceedingColumnName);
+						
+						columnOrder.splice(preceedingColumnIndex + 1, 0, colName);
+					}
+					
+				}
+				
+				
+				columnOrder.splice(columnOrder.indexOf("delete"), 1);
+				
+				columnOrder.splice(columnOrder.length, 0, "delete");
+				
+				
+			} else {
+				
+				columnOrder = defaultColumnOrder.slice();
+			}
+			
+			
+			// Go from column names to indexes. Also remove unused columns
+			for (var i=0, len = columnOrder.length; i < len; i++) {
+				
+				var colName = columnOrder[i];
+				
+				var index = null;
+				
+				for (var j=0, len2 = columns.length; j < len2; j++) {
+		
+					if (columns[j].name == colName) {
+						
+						index = j;
+						break;
+					}
+				}
+				
+				if (index == null) {
+					
+					columnOrder.splice(i, 1);
+					len--;
+					i--;
+					
+				} else {
+					
+					columnOrder[i] = index;
+				}
+				
+			}
+			
+			
+			if (console != undefined && columns.length != columnOrder.length) {
+				console.error("columns length " + columns.length + " not equal to defaultColumnOrder length " + columnOrder.length);
+			}
+		
 		flowListDataTable = flowListTable.DataTable({
 			ajax: {
 				url: flowListTable.data("url"),
@@ -97,7 +206,12 @@ $(function() {
 			},		
 			deferRender: true,
 			columns: columns,
-			order: [[ 3, "asc"]],
+			order: [[ getColumnDefinitionIndex(columns, "flowName"), 'asc' ]],
+			colReorder: {
+					realtime: false,
+					order: columnOrder,
+					fixedColumnsLeft: 99, // Disables drag and drop reordering
+			},
 			dom: '<"toolbar-extension">frtipl',
 			autoWidth: false,
 			lengthMenu: [ 15, 25, 50, 100 ],
@@ -147,6 +261,25 @@ $(function() {
 				filterLabel.remove();
 				
 			},		
+				
+			initComplete: function(settings, json) {
+				
+				dtInternalState[flowListTable.attr("id")] = settings;
+				
+				var api = this.api();
+				
+				
+				// Must load responsive extension after init or else the ajax loading message is not shown
+				new $.fn.dataTable.Responsive(api, {
+					details: {
+						display: $.fn.dataTable.Responsive.display.childRow,
+						type: "column",
+						target: "td.control"
+					}
+				});
+				
+			},
+			
 		});
 		
 		flowListTable.find("tbody").show();
@@ -198,10 +331,9 @@ $(function() {
 		$this.trigger("change");
 	});
 	
-	$(".sortable").sortable({
+	$(".sortable").not("#table-settings-modal-div").sortable({
 		cursor: 'move',
 		update: function(event, ui) {
-			
 			if (validatePosition($(this), ui.item, ui.position)) {
 				updateSortOrder($(this));
 			}
@@ -210,12 +342,10 @@ $(function() {
 		stop: function(e, ui) {
 			
 			resetHighlightning();
-			
 			return validatePosition($(this), ui.item, ui.position);
 			
 		},
 		start: function(e, ui) {
-			
 			highlightAffectedQueries(ui.item);
 	}});
 	
@@ -647,6 +777,71 @@ $(function() {
 	
 });
 
+function applyUserColumnOrder(api) {
+	
+	if (userColumnOrder.length > 0) {
+	
+		var tableElement = $(api.table().node());
+		var tableID = tableElement.attr("id");
+		var dtSettings = dtInternalState[tableID];
+		
+		var currentColumnOrder = [];
+		
+		for (var i=0, len = dtSettings.aoColumns.length; i < len; i++) {
+			
+			currentColumnOrder[i] = dtSettings.aoColumns[i].name;
+		}
+		
+		var columnOrder = userColumnOrder.slice();
+		
+		// Append hidden columns
+		for (var i=0, len = currentColumnOrder.length; i < len; i++) {
+			
+			var colName = currentColumnOrder[i];
+			var indexInUserOrdering = columnOrder.indexOf(colName);
+			
+			if (indexInUserOrdering == -1) { // Is hidden column, append after its default preceeding sibling
+				
+				var defaultPreceedingColumnIndex = defaultColumnOrder.indexOf(colName) - 1;
+				var preceedingColumnName = defaultColumnOrder[defaultPreceedingColumnIndex];
+				var preceedingColumnIndex = columnOrder.indexOf(preceedingColumnName);
+				
+				columnOrder.splice(preceedingColumnIndex + 1, 0, colName);
+			}
+		}
+		
+		columnOrder.splice(columnOrder.indexOf("delete"), 1);
+		columnOrder.splice(columnOrder.length, 0, "delete");
+		
+		if (console != undefined && dtSettings.aoColumns.length != columnOrder.length) {
+			
+			console.error("columnDefinitions length " + dtSettings.aoColumns.length + " not equal to columnOrder length " + columnOrder.length);
+			
+		} else {
+		
+			var orderChanged = false;
+			
+			// Go from column names to indexes
+			for (var i=0, len = columnOrder.length; i < len; i++) {
+				
+				var colName = columnOrder[i];
+				var order = currentColumnOrder.indexOf(colName);
+				columnOrder[i] = order;
+				
+				if (order != i) {
+					orderChanged = true;
+				}
+			}
+			
+			if (orderChanged) {
+				var dataTables = $(".flow-list-table.dataTable");
+				var allAPI = dataTables.DataTable();
+				allAPI.colReorder.order(columnOrder, false);
+			}
+		}
+	}
+}
+
 function checkFlowMenuPosition() {
 	
 	var win = $(this);
@@ -673,6 +868,197 @@ function checkFlowMenuPosition() {
 	}
 	
 }
+
+function openTableSettingsModal(button, event) {
+	event.preventDefault();
+	event.stopPropagation();
+	
+	var modal = $("#table-settings-modal");
+	var modalContainer = modal.parent();
+	var dataTables =  $("#flowlist-form .flow-list-table.dataTable");
+	var dtSettings = dtInternalState[dataTables.attr("id")]
+	
+	if (!dtSettings) {
+		console.log("Table not initialized");
+		//Datatable not initialized yet
+		return;
+	}
+	
+	var api = dataTables.DataTable();
+	
+	
+	// Load current configuration into modal
+	modal.find(".setting").each(function() {
+		
+		var setting = $(this);
+		var settingColumnID = setting.find(".columnid").val();
+		
+		var column = api.column(settingColumnID + ":name");
+		
+		setting.find(".enable").prop("checked", column.visible());
+
+		// Get current column order as index of user controllable columns
+		var order = 0;
+		for (var i=0, len = dtSettings.aoColumns.length; i < len; i++) {
+			
+			var colName = dtSettings.aoColumns[i].name;
+			
+			if (settingColumnID == colName) {
+				break;
+				
+			} else if (userControlledColumns.indexOf(colName) != -1) {
+				order++;
+			}
+		}
+		
+		setting.find(".sortorder").val(order);
+	});
+	
+	modal.find(".sortable").each(function(){
+		
+		sortAlternativesAfterSortOrder($(this));
+	});
+	
+	var config = {
+		otherClose: '.close',
+		
+		afterContent: function() {
+			var feather = this;
+			var content = feather.$content; 
+			modal.detach();
+			
+			content.removeClass("no-sections");
+			
+			content.find(".sortable").sortable({ cursor: 'move', update: function(event, ui) {
+				updateSortOrder($(this));
+			}});
+			
+			content.find(".save").on("click", function() {
+				
+				userColumnOrder = [];
+				userColumnVisible = {};
+				
+				var formData = {
+				  panelID: $("#flow-status-filter").val(),
+				  columns: "flowName,flowType,flowCategory,versions,submittedInstances,notSubmittedInstances,flowFamilyLastReviewed,flowFamilyID,organization",
+				  flowNameOrder: $("#sortorder_flowName").val(),
+				  flowNameVisibility: $("#enabled_flowName").prop("checked"),
+                  flowTypeOrder: $("#sortorder_flowType").val(),
+				  flowTypeVisibility: $("#enabled_flowType").prop("checked"),
+                  flowCategoryOrder: $("#sortorder_flowCategory").val(),
+				  flowCategoryVisibility: $("#enabled_flowCategory").prop("checked"),
+                  versionsOrder: $("#sortorder_versions").val(),
+				  versionsVisibility: $("#enabled_versions").prop("checked"),
+                  submittedInstancesOrder: $("#sortorder_submittedInstances").val(),
+				  submittedInstancesVisibility: $("#enabled_submittedInstances").prop("checked"),
+                  notSubmittedInstancesOrder: $("#sortorder_notSubmittedInstances").val(),
+				  notSubmittedInstancesVisibility: $("#enabled_notSubmittedInstances").prop("checked"),
+                  flowFamilyLastReviewedOrder: $("#sortorder_flowFamilyLastReviewed").val(),
+				  flowFamilyLastReviewedVisibility: $("#enabled_flowFamilyLastReviewed").prop("checked"),
+				  flowFamilyIDOrder: $("#sortorder_flowFamilyID").val(),
+				  flowFamilyIDVisibility: $("#enabled_flowFamilyID").prop("checked"),
+				  organizationOrder: $("#sortorder_organization").val(),
+				  organizationVisibility: $("#enabled_organization").prop("checked"),	
+				};
+				
+				content.find(".setting").each(function() {
+					var setting = $(this);
+					
+					var columnID = setting.find(".columnid").val();
+					var enabled = setting.find(".enable").prop("checked");
+					var sortOrder = setting.find(".sortorder").val();
+					
+					userColumnOrder[sortOrder] = columnID;
+					userColumnVisible[columnID] = enabled;
+				});
+				
+				$.each(userColumnVisible, function(key, val) {
+					
+					var column = api.column(key + ":name");
+					
+					if (column.visible() != val) {
+					
+						api.columns(key + ":name").visible(val, false);
+					}
+				});
+				
+				applyUserColumnOrder(api);
+				
+				$.ajax({
+					url: FlowAdmin.saveSettingsURL,
+					type: "POST",
+					data: formData,
+				});
+				
+				api.ajax.reload();
+				
+				feather.close();
+			});
+			
+			content.find(".reset").on("click", function() {
+				
+				content.find(".setting").each(function() {
+					var setting = $(this);
+					
+					var columnID = setting.find(".columnid").val();
+					
+					var defaultSortOrder = 0;
+					$.each(defaultColumnOrder, function(index, value) {
+						
+						if (columnID == value) {
+							return false;
+						}
+						
+						if (userControlledColumns.indexOf(value) != -1) {
+							defaultSortOrder++
+						}
+						
+						
+					});
+					
+					
+					setting.find(".sortorder").val(defaultSortOrder);
+					
+					var columnDef = getColumnDefinition(columnDefinitions, columnID);
+					
+					if(columnDef.name == 'flowCategory' || columnDef.name == 'flowFamilyID') {
+						setting.find(".enable").prop("checked", false);
+					} else if (columnDef.visible != undefined) {
+						
+						setting.find(".enable").prop("checked", columnDef.visible);
+						
+					} else {
+						
+						setting.find(".enable").prop("checked", true);
+					}
+				});
+				
+				content.find(".sortable").each(function() {
+					
+					sortAlternativesAfterSortOrder($(this));
+				});
+				
+			});
+		},
+		
+		beforeClose: function() {
+			var feather = this;
+			
+			modalContainer.append(modal);
+		},
+	};
+	
+	$.featherlight(modal, config);
+}
+
+function sortAlternativesAfterSortOrder(alternativesContainer) {
+	
+	alternativesContainer.children().sort(function(a, b) {
+		return parseInt($(a).find('input[type="hidden"].sortorder').val()) - parseInt($(b).find('input[type="hidden"].sortorder').val());
+		
+	}).appendTo(alternativesContainer);
+}
+
 
 function updateSortOrder(obj) {
 	obj.children().each(function(i) {
@@ -713,6 +1099,11 @@ function resetHighlightning() {
 }
 
 function validatePosition($sortable, $item, newItemPosition) {
+	
+	if($sortable.attr("id") == "table-settings-modal-div") {
+		
+		return true;
+	}
 	
 	if ($($sortable.children(":first")).hasClass("query")) {
 		return false;
@@ -840,8 +1231,6 @@ function openUpdateManagerModal(button, event) {
 					
 					if (savedInput.length > 0) {
 						
-//						console.info("load " + input.prop("name") + " " + savedInput.val()); 
-						
 						if (input.attr("type") == "checkbox") {
 							input.prop("checked", savedInput.val() == "true");
 							
@@ -890,7 +1279,6 @@ function openUpdateManagerModal(button, event) {
 					
 					row.find("input[name='manager-" + input.prop("name") + userID + "']").val(val);
 					
-//					console.info("store " + input.prop("name") + " " + val);
 				});
 				
 				updateManagerShowHideRowExtra(row);
@@ -925,8 +1313,6 @@ function openUpdateManagerGroupModal(button, event) {
 					var savedInput = row.find("input[name='manager-group-" + input.prop("name") + groupID + "']");
 					
 					if (savedInput.length > 0) {
-						
-//						console.info("load " + input.prop("name") + " " + savedInput.val()); 
 						
 						if (input.attr("type") == "checkbox") {
 							input.prop("checked", savedInput.val() == "true");
@@ -1567,3 +1953,35 @@ function getStatuses(response, searchURL, searchInput) {
 		}
 	});
 }
+
+
+function getColumnDefinition(columnDefinitions, colName) {
+	
+	for (var i=0, len = columnDefinitions.length; i < len; i++) {
+
+		var column = columnDefinitions[i];
+		
+		if (column.name == colName) {
+			
+			return column;
+		}
+	}
+	
+	return null;
+}
+
+function getColumnDefinitionIndex(columnDefinitions, colName) {
+	
+	for (var i=0, len = columnDefinitions.length; i < len; i++) {
+
+		var column = columnDefinitions[i];
+		
+		if (column.name == colName) {
+			
+			return i;
+		}
+	}
+	
+	return null;
+}
+

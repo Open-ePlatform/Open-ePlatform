@@ -153,20 +153,32 @@
 
 	<xsl:template match="ListFlows">
 	
-		<div class="floatleft marginbottom">
+		<div class="floatleft marginbottom eighty">
 		
 			<h1><xsl:value-of select="$i18n.Flowslist.title" /></h1>
 			
 			<xsl:apply-templates select="validationError"/>
 			
-			<p>
-				<xsl:value-of select="$i18n.Flowlist.description" />
-			</p>
+			
 		
 		</div>
 		
 		<xsl:call-template name="CreateShortcutMenu"/>
 		
+		<div class="floatleft marginbottom">
+		
+			<p>
+				<xsl:value-of select="$i18n.Flowlist.description" />
+			</p>
+		
+		</div>
+		<div id="reordering" class=" dd twenty floatright">
+		<a class="floatright btn btn-light" href="#" onclick="openTableSettingsModal(this, event)" title="{$i18n.EditTableSettings}" >
+	 						<span data-icon-before="W">
+	 							<xsl:value-of select="$i18n.TableSettings"/>
+	 						</span>
+	 					</a>
+		</div>
 		<div class="hidden flow-list-filters floatleft marginbottom">
 			<select id="flow-status-filter" class="bigmarginright" style="width: 180px">
 				<option value="all"><xsl:value-of select="$i18n.All" /></option>
@@ -176,6 +188,7 @@
 			<xsl:call-template name="AdditionalListFilters" />
 		</div>
 		
+		<div id="flowlist-form">
 		<table id="flowlist" class="flow-list-table clearboth full stripe display" data-url="{/Document/requestinfo/currentURI}/{/Document/module/alias}/flowdata">
 			<thead>	
 				<tr>
@@ -184,21 +197,110 @@
 					<th width="10"></th>
 					<th><xsl:value-of select="$i18n.flowName" /></th>
 					<th width="150"><xsl:value-of select="$i18n.flowType" /></th>
-					<th><xsl:value-of select="$i18n.flowCategory" /></th>
+					<th width="50"><xsl:value-of select="$i18n.flowCategory" /></th>
 					<th width="50"><xsl:value-of select="$i18n.versions" /></th>
 					<th width="50"><xsl:value-of select="$i18n.SubmittedInstances" /></th>
 					<th width="50"><xsl:value-of select="$i18n.NotSubmittedInstances" /></th>
 					<th width="50"><xsl:value-of select="$i18n.flowFamilyLastReviewed" /></th>
+					<th width="50"><xsl:value-of select="$i18n.flowFamilyID" /></th>
+					<th width="50"><xsl:value-of select="$i18n.organization" /></th>
 					<xsl:call-template name="ExtraFlowListColumnsHeader" />
 					<th width="1" />
 				</tr>
 			</thead>
 		</table>
+		</div>
+		
+		<div style="display: none;">
+			
+					<div id="table-settings-modal" class="table-settings-modal contentitem">
+						<div class="modal-content">
+						
+							<div class="modal-header bigmarginbottom">
+								<h1>
+									<xsl:value-of select="$i18n.TableSettings.Title"/>
+								</h1>
+							</div>
+							
+							<div class="modal-body">
+							
+								<p class="tiny full">
+							  	<xsl:value-of select="$i18n.TableSettings.Description" />
+							  </p>
+								  
+								<div id="table-settings-modal-div" class="full bigmarginbottom sortable">
+								
+									<xsl:call-template name="createTableSettingRow">
+										<xsl:with-param name="columnID">flowName</xsl:with-param>
+										<xsl:with-param name="name" select="$i18n.flowName" />
+									</xsl:call-template>
+									
+									<xsl:call-template name="createTableSettingRow">
+										<xsl:with-param name="columnID">flowType</xsl:with-param>
+										<xsl:with-param name="name" select="$i18n.flowType" />
+									</xsl:call-template>
+								
+									<xsl:if test="/Document/UseCategories">
+										<xsl:call-template name="createTableSettingRow">
+											<xsl:with-param name="columnID">flowCategory</xsl:with-param>
+											<xsl:with-param name="name" select="$i18n.flowCategory" />
+										</xsl:call-template>
+									</xsl:if>
+									
+									<xsl:call-template name="createTableSettingRow">
+										<xsl:with-param name="columnID">versions</xsl:with-param>
+										<xsl:with-param name="name" select="$i18n.versions" />
+									</xsl:call-template>
+									
+									<xsl:if test="not(/Document/HideSubmittedInstances)">
+										<xsl:call-template name="createTableSettingRow">
+											<xsl:with-param name="columnID">submittedInstances</xsl:with-param>
+											<xsl:with-param name="name" select="$i18n.SubmittedInstances" />
+										</xsl:call-template>
+									</xsl:if>
+									
+									<xsl:if test="not(/Document/hideNotSubmittedInstances)">
+										<xsl:call-template name="createTableSettingRow">
+											<xsl:with-param name="columnID">notSubmittedInstances</xsl:with-param>
+											<xsl:with-param name="name" select="$i18n.NotSubmittedInstances" />
+										</xsl:call-template>
+									</xsl:if>
+									
+									<xsl:if test="not(/Document/HideFlowFamilyLastReviewed)">
+										<xsl:call-template name="createTableSettingRow">
+											<xsl:with-param name="columnID">flowFamilyLastReviewed</xsl:with-param>
+											<xsl:with-param name="name" select="$i18n.flowFamilyLastReviewed" />
+										</xsl:call-template>
+									</xsl:if>
+									
+									<xsl:call-template name="createTableSettingRow">
+										<xsl:with-param name="columnID">flowFamilyID</xsl:with-param>
+										<xsl:with-param name="name" select="$i18n.flowFamilyID" />
+									</xsl:call-template>
+									
+									<xsl:call-template name="createTableSettingRow">
+										<xsl:with-param name="columnID">organization</xsl:with-param>
+										<xsl:with-param name="name" select="$i18n.organization" />
+									</xsl:call-template>
+									
+									
+								</div>
+													
+								<input class="save bigmargintop floatright btn btn-blue" type="button" value="{$i18n.TableSettings.Save}" />
+								<input class="reset bigmargintop bigmarginright floatright btn btn-blue" type="button" value="{$i18n.TableSettings.Reset}" />
+								
+							</div>
+							
+						</div>
+					</div>
+				
+				</div>
 
 		<script type="text/javascript">
 		
 			FlowAdmin = {
-				showFlowURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/showflow/",
+				saveSettingsURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/saveusersettings",
+	 			showFlowURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/showflow/",
 				showFlowTypeURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/flowtype/",
 				deleteFlowFamilyURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/deleteflowfamily/",
 				iconURL: "<xsl:value-of select="/Document/requestinfo/currentURI"/>/<xsl:value-of select="/Document/module/alias"/>/icon/",
@@ -242,11 +344,61 @@
 					deleteFlowFamilyDisabledHasInstances: "<xsl:value-of select="$i18n.deleteFlowFamilyDisabledHasInstances"/>",
 					deleteFlowFamilyDisabledIsPublished: "<xsl:value-of select="$i18n.deleteFlowFamilyDisabledIsPublished"/>",
 					deleteFlowFamilyTitle: "<xsl:value-of select="$i18n.deleteFlowFamily.title"/>"
-				}
+				},
 			};
+			
+			<xsl:if test="FlowAdminUserSettings and FlowAdminUserSettings/columnOrder">
+						try {
+							userColumnOrder = [<xsl:for-each select="FlowAdminUserSettings">"<xsl:value-of select="columnName"/>"<xsl:if test="position() != last()" >, </xsl:if></xsl:for-each>];
+							userColumnVisible = {<xsl:for-each select="FlowAdminUserSettings"> <xsl:value-of select="columnName"/>&#58;"<xsl:value-of select="visible"/>"<xsl:if test="position() != last()" >, </xsl:if></xsl:for-each>};	
+						} catch(error){
+						
+							if (console != undefined) {
+								console.warn("Invalid user settings, using default instead. " + error);
+							}
+						}
+			</xsl:if>
 			
 		</script>
 
+	</xsl:template>
+	
+	<xsl:template name="createTableSettingRow">
+		
+		<xsl:param name="columnID" />
+		<xsl:param name="name" />
+		
+		<div class="setting full padding margintop marginbottom lightbackground">
+			<img class="bigmarginright cursor-move" src="{$imgPath}/move.png" title="{$i18n.TableSettings.MoveColumnOrder}" style="vertical-align: sub" />
+			
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('columnID_', $columnID)"/>
+				<xsl:with-param name="name" select="'columnID'"/>
+				<xsl:with-param name="value" select="$columnID"/>
+				<xsl:with-param name="class" select="'columnid'" />
+			</xsl:call-template>
+			<xsl:call-template name="createHiddenField">
+				<xsl:with-param name="id" select="concat('sortorder_', $columnID)" />
+				<xsl:with-param name="name" select="concat('sortorder_', $columnID)" />
+				<xsl:with-param name="value" select="''" />
+				<xsl:with-param name="class" select="'sortorder'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+			</xsl:call-template>
+			
+			<xsl:call-template name="createCheckbox">
+				<xsl:with-param name="id" select="concat('enabled_', $columnID)"/>
+				<xsl:with-param name="name" select="concat('enabled_', $columnID)"/>
+				<xsl:with-param name="checked" select="'false'"/>
+				<xsl:with-param name="class" select="'enable bigmarginright'" />
+				<xsl:with-param name="requestparameters" select="//requestparameters" />
+			</xsl:call-template>
+			
+			<label class="nomargin" for="{concat('enabled_', $columnID)}">
+				<xsl:value-of select="$name"/>
+			</label>
+			
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template name="AdditionalListFilters" />

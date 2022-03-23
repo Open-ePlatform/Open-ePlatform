@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -192,6 +193,7 @@ import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.ExternalFlow;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowAdminUserSettings;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
 import com.nordicpeak.flowengine.beans.FlowForm;
@@ -657,6 +659,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private HTMLContentFilter htmlContentFilter;
 
 	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
+	private AnnotatedDAO<FlowAdminUserSettings> flowAdminUserSettingsDAO;
 
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
@@ -681,6 +684,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected QueryParameterFactory<FlowInstance, Flow> flowInstanceFlowParamFactory;
 	protected QueryParameterFactory<FlowInstance, Status> flowInstanceStatusParamFactory;
 	protected QueryParameterFactory<FlowInstance, Timestamp> flowInstanceFirstSubmittedParamFactory;
+	
+	protected QueryParameterFactory<FlowAdminUserSettings, User> userSettingUserParamFactory;
 
 	protected QueryParameterFactory<FlowAction, Boolean> flowActionRequiredParamFactory;
 	protected QueryParameterFactory<FlowAction, String> flowActionIDParamFactory;
@@ -722,6 +727,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	private ModuleViewFragmentTransformer<ForegroundModuleDescriptor> viewFragmentTransformer;
 
 	private UserGroupAdminExtensionHandler userGroupAdminExtensionHandler;
+	
+	private final Object lockSettingsObj = new Object();
+
 
 	@Override
 	public void init(ForegroundModuleDescriptor moduleDescriptor, SectionInterface sectionInterface, DataSource dataSource) throws Exception {
@@ -899,6 +907,10 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		messageTemplateDAOWrapper.addRelations(MessageTemplate.FLOW_FAMILY_RELATION);
 
 		messageTemplateCRUD = new MessageTemplateCRUD(messageTemplateDAOWrapper, this);
+		
+		flowAdminUserSettingsDAO = normalDAOFactory.getDAO(FlowAdminUserSettings.class);
+		userSettingUserParamFactory = flowAdminUserSettingsDAO.getParamFactory("user", User.class);
+		
 	}
 
 	@Override
@@ -1301,7 +1313,14 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		ExtensionLinkUtils.appendExtensionLinks(this.flowListExtensionLinkProviders, user, req, doc, listFlowsElement);
-
+		
+		
+		List<FlowAdminUserSettings> settings =  getUserSettings(user);
+		
+		if(settings != null) {
+			XMLUtils.append(doc, listFlowsElement, settings);
+		}
+		
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
 
@@ -1348,7 +1367,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 					}
 				}
 			}
-
+			
 			HTTPUtils.sendReponse(responseJSON.toJson(), JsonUtils.getContentType(), res);
 
 		} catch (IOException e) {
@@ -1356,6 +1375,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			log.warn("Error sending flow data to " + user, e);
 
 		}
+		
+		
+		
 
 		return null;
 	}
@@ -1402,6 +1424,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowJSONArray.addNode(submittedInstanceCount);
 		flowJSONArray.addNode(instanceCount - submittedInstanceCount);
 		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getLastReviewed() : null);
+		flowJSONArray.addNode(flowFamily.getFlowFamilyID());
+		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getOrganization() : null);
 		appendExtraFlowListColumns(flowJSONArray, flow);
 		flowJSONArray.addNode(getFlowDeleteJSON(flow, instanceCount, published));
 
@@ -1524,6 +1548,71 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		return false;
 	}
+	
+	
+	@WebPublic(requireLogin = true, toLowerCase = true)
+	public ForegroundModuleResponse saveUserSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+
+		log.info("User " + user + " saving flow admin settings");
+
+		res.setCharacterEncoding(systemInterface.getEncoding());
+		res.setContentType(JsonUtils.getContentType());
+
+		PrintWriter writer = res.getWriter();
+		JsonObject jsonResponse = new JsonObject();
+		
+
+		synchronized (lockSettingsObj) {
+
+			
+			List<FlowAdminUserSettings> userSettings = populateUserSettings(user, req);
+
+			if (userSettings != null) {
+
+				try {
+					saveUserSettings(user, userSettings);	
+					jsonResponse.putField("saved", "true");
+				}catch (Exception e) {
+					log.error(e.getMessage());
+					jsonResponse.putField("error", "Unknown parameters");
+				}				
+
+			} else {
+
+				jsonResponse.putField("error", "Unknown parameters");
+			}
+		}
+
+		writer.print(jsonResponse.toJson());
+		writer.flush();
+		return null;
+	}
+
+	private List<FlowAdminUserSettings> populateUserSettings(User user, HttpServletRequest req) {
+
+		if(req.getParameter("columns") != null) {
+			List<FlowAdminUserSettings> allUserSettings = new ArrayList<>();
+			String[] columns = req.getParameter("columns").split(",");
+			
+			for (String column : columns) {
+				
+				if(req.getParameter(column+"Order") != null) {
+					FlowAdminUserSettings userSettings = new FlowAdminUserSettings();
+					userSettings.setColumnName(column);
+					userSettings.setColumnOrder(Integer.parseInt(req.getParameter(column+"Order")));
+					userSettings.setVisible(Boolean.parseBoolean(req.getParameter(column+"Visibility")));
+					userSettings.setUser(user);
+					allUserSettings.add(userSettings);
+				}
+			}
+		
+		
+			return allUserSettings;
+		}
+                
+		return null;
+	}
+
 
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
@@ -3773,6 +3862,21 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		for (Flow flow : flowCache.getFlowCacheMap().values()) {
 
 			if (flow.getFlowType().getFlowTypeID() == flowTypeID) {
+
+				flows.add(flow);
+			}
+		}
+
+		return flows;
+	}
+	
+	public List<Flow> getFlowFromFlowFamily(int flowFamilyID) {
+
+		List<Flow> flows = new ArrayList<>();
+
+		for (Flow flow : flowCache.getFlowCacheMap().values()) {
+
+			if (flow.getFlowFamily().getFlowFamilyID() == flowFamilyID) {
 
 				flows.add(flow);
 			}
@@ -7210,6 +7314,37 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		}
 
 		return new SimpleForegroundModuleResponse(doc);
+	}
+	
+	private List<FlowAdminUserSettings> getUserSettings(User user) throws SQLException {
+
+		HighLevelQuery<FlowAdminUserSettings> userSettingsQuery = new HighLevelQuery<>();
+		userSettingsQuery.addParameter(userSettingUserParamFactory.getParameter(user));
+		return flowAdminUserSettingsDAO.getAll(userSettingsQuery);
+	}
+	
+	private void saveUserSettings(User user, List<FlowAdminUserSettings> settings) throws Exception {
+
+		TransactionHandler transactionHandler = null;
+
+		try {
+			transactionHandler = daoFactory.getTransactionHandler();
+			HighLevelQuery<FlowAdminUserSettings> userSettingsQuery = new HighLevelQuery<>();
+			userSettingsQuery.addParameter(userSettingUserParamFactory.getParameter(user));
+			flowAdminUserSettingsDAO.delete(userSettingsQuery);
+			
+			flowAdminUserSettingsDAO.addAll(settings, transactionHandler, null);
+			transactionHandler.commit();
+		}catch (Exception e) {
+			log.error(e.getMessage());
+			if(transactionHandler != null) {
+				transactionHandler.abort();
+			}
+		}finally {
+			if(transactionHandler != null) {
+				transactionHandler.close();
+			}
+		}
 	}
 
 	public FileAttachmentHandler getFileAttachmentHandler() {
