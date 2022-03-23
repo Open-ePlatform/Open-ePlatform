@@ -726,10 +726,18 @@
 		
 	</xsl:template>
 	
-	<xsl:template match="validationError[messageKey='WhenToCommentErrorMessage']">
-					
+	<xsl:template match="validationError[validationErrorType='RequiredField' and fieldName='comment']">
 		<p class="error">
+		<xsl:choose>
+			<xsl:when test="../../ActivityProgress/Activity/whenToCommentErrorMessage">
 				<xsl:value-of select="../../ActivityProgress/Activity/whenToCommentErrorMessage" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$i18n.Validation.RequiredField" />
+				<xsl:text>&#x20;</xsl:text>
+				<xsl:value-of select="$i18n.ActivityProgress.comment"/>
+			</xsl:otherwise>
+		</xsl:choose>	
 		</p>
 		
 	</xsl:template>

@@ -59,7 +59,6 @@ import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.validation.ValidationError;
-import se.unlogic.standardutils.validation.ValidationErrorType;
 import se.unlogic.standardutils.validation.ValidationException;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
@@ -537,11 +536,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					activityProgress.setDenied(false);
 					completed = true;
 
-					if (requireComment && Comment.ALWAYS.equals(whenToComment) && StringUtils.isEmpty(comment)) {
-						addCommentMissingError(activity, validationErrors);
-					} else {
-						comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
-					}
+					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
+
 
 				} else if (!StringUtils.isEmpty(req.getParameter("denied"))) {
 
@@ -550,11 +546,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 					activityProgress.setDenied(true);
 					completed = true;
 
-					if (requireComment && StringUtils.isEmpty(comment)) {
-						addCommentMissingError(activity, validationErrors);
-					} else {
-						comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
-					}
+					comment = ValidationUtils.validateParameter("comment", req, requireComment, 0, 65535, StringPopulator.getPopulator(), validationErrors);
+					
 				}
 
 			} else {
@@ -565,11 +558,8 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 					completed = true;
 
-					if (requireComment && Comment.ALWAYS.equals(whenToComment) && StringUtils.isEmpty(comment)) {
-						addCommentMissingError(activity, validationErrors);
-					} else {
-						comment = ValidationUtils.validateParameter("comment", req, false, 0, 65535, StringPopulator.getPopulator(), validationErrors);
-					}
+					comment = ValidationUtils.validateParameter("comment", req, requireComment && Comment.ALWAYS.equals(whenToComment), 0, 65535, StringPopulator.getPopulator(), validationErrors);
+					
 				}
 			}
 
@@ -668,15 +658,6 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		}
 
 		return new SimpleForegroundModuleResponse(doc, moduleDescriptor.getName(), getDefaultBreadcrumb());
-	}
-
-	private void addCommentMissingError(FlowApprovalActivity activity, List<ValidationError> validationErrors) {
-
-		if (StringUtils.isEmpty(activity.getWhenToCommentErrorMessage())) {
-			validationErrors.add(new ValidationError("comment", null, ValidationErrorType.RequiredField));
-		} else {
-			validationErrors.add(new ValidationError("comment", ValidationErrorType.RequiredField, "WhenToCommentErrorMessage"));
-		}
 	}
 
 	@RESTMethod(alias = "signactivity/{activityProgressID}", method = { "get", "post" }, requireLogin = true)
