@@ -74,8 +74,6 @@
 	<xsl:variable name="i18n.OpenExternalFlow">Öppna e-tjänsten</xsl:variable>
 	<xsl:variable name="i18n.flowType">Kategori</xsl:variable>
 	<xsl:variable name="i18n.flowCategory">Underkategori</xsl:variable>
-	<xsl:variable name="i18n.flowFamilyID">FamiljeID</xsl:variable>
-	<xsl:variable name="i18n.organization">Organisation</xsl:variable>
 	<xsl:variable name="i18n.steps">Steg</xsl:variable>
 	<xsl:variable name="i18n.queries">Frågor</xsl:variable>
 	<xsl:variable name="i18n.SubmittedInstances">Insk. ärenden</xsl:variable>
@@ -98,15 +96,6 @@
 	
 	<xsl:variable name="i18n.UpdateFlow.title">Uppdatera e-tjänsten: </xsl:variable>
 	<xsl:variable name="i18n.UpdateFlow.submit">Spara ändringar</xsl:variable>
-	
-	<xsl:variable name="i18n.TableSettings">Inställningar</xsl:variable>
-	<xsl:variable name="i18n.EditTableSettings">Ändra inställningar</xsl:variable>
-	<xsl:variable name="i18n.TableSettings.Title">Inställningar</xsl:variable>
-	<xsl:variable name="i18n.TableSettings.Description">Markera de kolumner du vill ha aktiva i e-tjänstöversikten och spara. Dra i raderna för att ändra ordning.</xsl:variable>
-	
-	<xsl:variable name="i18n.TableSettings.Save">Spara</xsl:variable>
-	<xsl:variable name="i18n.TableSettings.Reset">Återställ standard</xsl:variable>
-	<xsl:variable name="i18n.TableSettings.MoveColumnOrder">Ändra ordning</xsl:variable>
 
 	<xsl:variable name="i18n.name">Namn</xsl:variable>
 	<xsl:variable name="i18n.description">Beskrivning</xsl:variable>

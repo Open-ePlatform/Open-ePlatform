@@ -2840,6 +2840,7 @@
 			]]>
 		</Query>
 	</Script>
+	
 	<Script version="155">
 		<Query>
 			<![CDATA[
@@ -2895,22 +2896,6 @@
 				ENGINE = InnoDB;
 			]]>		
 		</Query>		
-	</Script>
-	<Script version="156">
-		<Query>
-			<![CDATA[
-				CREATE TABLE `flowengine_flows_user_settings` (
-				  `userID` INT(10) UNSIGNED NOT NULL,
-				  `columnOrder` TINYINT(1) UNSIGNED NOT NULL,
-				  `columnName` VARCHAR(255) NOT NULL,
-				  `visible` BOOLEAN NOT NULL DEFAULT TRUE,
-				  PRIMARY KEY (`userID`,`columnOrder`)
-				)
-				ENGINE = InnoDB;
-			]]>
-		</Query>
-		
-		
 	</Script>
 			
 </DBScripts>
