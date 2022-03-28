@@ -67,6 +67,7 @@ import se.unlogic.standardutils.validation.NonNegativeStringIntegerValidator;
 import se.unlogic.standardutils.validation.PositiveStringIntegerValidator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
+import se.unlogic.standardutils.xml.MultiElementableListener;
 import se.unlogic.standardutils.xml.XMLGeneratorDocument;
 import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.HTTPUtils;
@@ -743,8 +744,12 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 
 		genDoc.addRootElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
-		genDoc.addFieldElementableListener(ExternalMessage.class, new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
-		genDoc.addFieldElementableListener(ExternalMessage.class, new ExternalMessageReadReceiptElementableListener(user));
+		
+		MultiElementableListener<ExternalMessage> externalMessageMultiElementableListener = new MultiElementableListener<>(2);
+		externalMessageMultiElementableListener.addElementableListener(new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
+		externalMessageMultiElementableListener.addElementableListener(new ExternalMessageReadReceiptElementableListener(user));
+
+		genDoc.addFieldElementableListener(ExternalMessage.class, externalMessageMultiElementableListener);
 
 		appendFlowInstancePreviewElement(genDoc, showFlowInstanceOverviewElement, flowInstance, req, user, uriParser, moduleResponse, getPreviewAccessController());
 	}
