@@ -754,7 +754,7 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 		if (flowInstance == null) {
 
-			throw new FlowInstanceNotFoundException("The requested flow instance was not found", new FlowInstanceNotFound());
+			throw new FlowInstanceNotFoundException("The requested flow instance with ID " + flowInstanceID + " was not found", new FlowInstanceNotFound());
 		}
 
 		return flowInstance;
