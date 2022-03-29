@@ -250,6 +250,12 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				return flowInstanceEvent.getEventID();
 
+			}catch (AccessDeniedException | FlowInstanceNotFoundException e) {
+				
+				log.warn("Error adding event", e);
+				
+				throw e;
+				
 			} catch (RuntimeException e) {
 
 				log.error("Error adding event", e);
@@ -293,6 +299,12 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				return externalMessage.getMessageID();
 
+			}catch (AccessDeniedException | FlowInstanceNotFoundException e) {
+				
+				log.warn("Error adding message", e);
+				
+				throw e;
+				
 			} catch (Throwable e) {
 
 				log.error("Error adding message", e);
@@ -332,6 +344,12 @@ public class StandardIntegrationCallback extends BaseWSModuleService implements 
 
 				return internalMessage.getMessageID();
 
+			}catch (AccessDeniedException | FlowInstanceNotFoundException e) {
+				
+				log.warn("Error adding message", e);
+				
+				throw e;
+				
 			} catch (Throwable e) {
 
 				log.error("Error adding message", e);
