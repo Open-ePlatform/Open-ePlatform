@@ -442,7 +442,7 @@
 	<xsl:variable name="i18n.Flow.allowForeignIDs">Tillåt användare inloggade med eIDAS</xsl:variable>
 	<xsl:variable name="i18n.Flow.useSequentialSigning">Sekventiell signering</xsl:variable>
 	<xsl:variable name="i18n.Flow.skipPosterSigning">Hoppa över signering för första parten</xsl:variable>
-	<xsl:variable name="i18n.Flow.skipPosterSigning.description">(bör endast användas vid flerpartsignering)</xsl:variable>
+	<xsl:variable name="i18n.Flow.skipPosterSigning.description">(bör endast användas vid flerpartssignering)</xsl:variable>
 	<xsl:variable name="i18n.Flow.allowPosterMultipartSigning">Tillåt första parten att flerpartsignera ärendet</xsl:variable>
 	<xsl:variable name="i18n.Flow.appendSigningSignatureToPDF">Bifoga signeringsunderlag i PDF</xsl:variable>
 	<xsl:variable name="i18n.Flow.showPreviousSignaturesToSigners">Vid signering visa tidigare parter som signerat</xsl:variable>
