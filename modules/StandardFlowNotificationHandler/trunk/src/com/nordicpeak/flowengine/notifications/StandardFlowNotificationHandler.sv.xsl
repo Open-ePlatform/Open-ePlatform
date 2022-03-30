@@ -522,7 +522,7 @@
 	<xsl:variable name="i18n.Tags.SigningParty.lastname">Signerarens efternamn</xsl:variable>
 	<xsl:variable name="i18n.Tags.SigningURL">Signeringslänk</xsl:variable>
 	
-	<xsl:variable name="i18n.MultisigningNotifications">Notifikationer vid flerpartsignering</xsl:variable>
+	<xsl:variable name="i18n.MultisigningNotifications">Notifikationer vid flerpartssignering</xsl:variable>
 	
 	<xsl:variable name="i18n.sendFlowInstanceMultiSignInitiatedUserSMS">SMS till signeringspart när de ombeds signera ett ärende med flerpartssignering</xsl:variable>
 	<xsl:variable name="i18n.flowInstanceMultiSignInitiatedUserSMS">Innehåll i SMS till signeringspart när de ombeds signera ett ärende med flerpartssignering</xsl:variable>
