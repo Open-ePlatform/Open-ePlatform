@@ -2598,6 +2598,9 @@
 					<xsl:when test="fieldName = 'appendCommentsToExternalMessages'">
 						<xsl:value-of select="$i18n.ActivityGroup.appendCommentsToExternalMessages"/>
 					</xsl:when>
+					<xsl:when test="fieldName = 'whenToCommentErrorMessage'">
+						<xsl:value-of select="$i18n.Activity.whenToCommentErrorMessage"/>
+					</xsl:when>
 					<xsl:when test="fieldName = 'globalEmailAddress'">
 						<xsl:value-of select="$i18n.Activity.globalEmailAddress"/>
 					</xsl:when>

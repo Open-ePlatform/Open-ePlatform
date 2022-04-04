@@ -101,7 +101,7 @@ public class FlowApprovalActivity extends GeneratedElementable implements XMLPar
 	private Comment whenToComment;
 	
 	@DAOManaged
-	@WebPopulate
+	@WebPopulate(maxLength = 255)
 	@XMLElement
 	private String whenToCommentErrorMessage;
 
