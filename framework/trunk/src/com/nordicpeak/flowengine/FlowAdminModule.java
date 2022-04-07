@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -102,7 +103,6 @@ import se.unlogic.hierarchy.core.utils.AccessUtils;
 import se.unlogic.hierarchy.core.utils.AdvancedCRUDCallback;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.hierarchy.core.utils.GenericCRUD;
-import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
 import se.unlogic.hierarchy.core.utils.ModuleViewFragmentTransformer;
 import se.unlogic.hierarchy.core.utils.UserUtils;
 import se.unlogic.hierarchy.core.utils.ViewFragmentModule;
@@ -192,6 +192,7 @@ import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.ExternalFlow;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowAdminUserColumnSetting;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
 import com.nordicpeak.flowengine.beans.FlowForm;
@@ -224,6 +225,7 @@ import com.nordicpeak.flowengine.cruds.StandardStatusGroupCRUD;
 import com.nordicpeak.flowengine.cruds.StatusCRUD;
 import com.nordicpeak.flowengine.cruds.StepCRUD;
 import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.FlowAdminColumn;
 import com.nordicpeak.flowengine.enums.ManagerAccess;
 import com.nordicpeak.flowengine.enums.QueryState;
 import com.nordicpeak.flowengine.enums.ShowMode;
@@ -656,8 +658,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@InstanceManagerDependency
 	private HTMLContentFilter htmlContentFilter;
 
-	protected AnnotatedDAO<MessageTemplate> messageTemplateDAO;
-
 	private FlowFamilyCRUD flowFamilyCRUD;
 	private FlowCRUD flowCRUD;
 	private StepCRUD stepCRUD;
@@ -681,6 +681,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected QueryParameterFactory<FlowInstance, Flow> flowInstanceFlowParamFactory;
 	protected QueryParameterFactory<FlowInstance, Status> flowInstanceStatusParamFactory;
 	protected QueryParameterFactory<FlowInstance, Timestamp> flowInstanceFirstSubmittedParamFactory;
+
+	protected QueryParameterFactory<FlowAdminUserColumnSetting, Integer> userColumnSettingParamFactory;
 
 	protected QueryParameterFactory<FlowAction, Boolean> flowActionRequiredParamFactory;
 	protected QueryParameterFactory<FlowAction, String> flowActionIDParamFactory;
@@ -891,14 +893,13 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		flowFamilyEventFlowFamilyParamFactory = daoFactory.getFlowFamilyEventDAO().getParamFactory("flowFamily", FlowFamily.class);
 
-		HierarchyAnnotatedDAOFactory normalDAOFactory = new HierarchyAnnotatedDAOFactory(dataSource, systemInterface.getUserHandler(), systemInterface.getGroupHandler(), false, false, false);
-
-		messageTemplateDAO = normalDAOFactory.getDAO(MessageTemplate.class);
-		AnnotatedDAOWrapper<MessageTemplate, Integer> messageTemplateDAOWrapper = messageTemplateDAO.getWrapper(Integer.class);
+		AnnotatedDAOWrapper<MessageTemplate, Integer> messageTemplateDAOWrapper = daoFactory.getMessageTemplateDAO().getWrapper(Integer.class);
 		messageTemplateDAOWrapper.setUseRelationsOnGet(true);
 		messageTemplateDAOWrapper.addRelations(MessageTemplate.FLOW_FAMILY_RELATION);
 
 		messageTemplateCRUD = new MessageTemplateCRUD(messageTemplateDAOWrapper, this);
+		
+		userColumnSettingParamFactory = daoFactory.getFlowAdminUserColumnSettingDAO().getParamFactory("userID", Integer.class);
 	}
 
 	@Override
@@ -1302,6 +1303,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		ExtensionLinkUtils.appendExtensionLinks(this.flowListExtensionLinkProviders, user, req, doc, listFlowsElement);
 
+		
+		XMLUtils.append(doc, listFlowsElement, getUserSettings(user));
+		
 		return new SimpleForegroundModuleResponse(doc, this.getDefaultBreadcrumb());
 	}
 
@@ -1402,6 +1406,8 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flowJSONArray.addNode(submittedInstanceCount);
 		flowJSONArray.addNode(instanceCount - submittedInstanceCount);
 		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getLastReviewed() : null);
+		flowJSONArray.addNode(flowFamily.getFlowFamilyID());
+		flowJSONArray.addNode(flowFamily.getManagementInfo() != null ? flowFamily.getManagementInfo().getOrganization() : null);
 		appendExtraFlowListColumns(flowJSONArray, flow);
 		flowJSONArray.addNode(getFlowDeleteJSON(flow, instanceCount, published));
 
@@ -1525,6 +1531,96 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return false;
 	}
 
+	
+	@WebPublic(requireLogin = true, toLowerCase = true)
+	public ForegroundModuleResponse saveUserSettings(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
+
+		log.info("User " + user + " saving flow admin column settings");
+
+		res.setCharacterEncoding(systemInterface.getEncoding());
+		res.setContentType(JsonUtils.getContentType());
+
+		PrintWriter writer = res.getWriter();
+		JsonObject jsonResponse = new JsonObject();
+		
+		List<FlowAdminUserColumnSetting> userSettings = populateUserSettings(user, req);
+
+		if (!CollectionUtils.isEmpty(userSettings)) {
+
+			saveUserSettings(user, userSettings);	
+			jsonResponse.putField("saved", "true");			
+
+		}
+
+		writer.print(jsonResponse.toJson());
+		writer.flush();
+		return null;
+	}
+
+	private List<FlowAdminUserColumnSetting> populateUserSettings(User user, HttpServletRequest req) {
+		
+		List<FlowAdminUserColumnSetting> userColumnSettings = new ArrayList<>(FlowAdminColumn.values().length);
+
+		for (FlowAdminColumn column : FlowAdminColumn.values()) {
+			
+			
+			if(!useCategories && column == FlowAdminColumn.CATEGORY) {
+				continue;
+			}
+			
+			FlowAdminUserColumnSetting userColumnSetting = new FlowAdminUserColumnSetting();
+			
+			userColumnSetting.setColumn(column);
+			
+			userColumnSetting.setColumnIndex(NumberUtils.toInt(req.getParameter(column.getName() + "-order")));
+						
+			if(userColumnSetting.getColumnIndex() == null || userColumnSetting.getColumnIndex() < 0) {
+				return null;
+			}
+			
+			userColumnSetting.setVisible(Boolean.parseBoolean(req.getParameter(column.getName()+ "-visibility")));
+			userColumnSetting.setUserID(user.getUserID());
+			
+			
+			userColumnSettings.add(userColumnSetting);
+		}
+	
+		return userColumnSettings;
+	}
+	
+	private List<FlowAdminUserColumnSetting> getUserSettings(User user) throws SQLException {
+
+		HighLevelQuery<FlowAdminUserColumnSetting> userSettingsQuery = new HighLevelQuery<>();
+		
+		userSettingsQuery.addParameter(userColumnSettingParamFactory.getParameter(user.getUserID()));
+		userSettingsQuery.addOrderByCriteria(daoFactory.getFlowAdminUserColumnSettingDAO().getOrderByCriteria("columnIndex", Order.ASC));
+		
+		return daoFactory.getFlowAdminUserColumnSettingDAO().getAll(userSettingsQuery);
+	}
+	
+	private void saveUserSettings(User user, List<FlowAdminUserColumnSetting> settings) throws Exception {
+
+		TransactionHandler transactionHandler = null;
+
+		try {
+			transactionHandler = daoFactory.getTransactionHandler();
+			
+			AnnotatedDAO<FlowAdminUserColumnSetting> columnSettingDAO = daoFactory.getFlowAdminUserColumnSettingDAO();
+			
+			HighLevelQuery<FlowAdminUserColumnSetting> deleteQuery = new HighLevelQuery<>();
+			deleteQuery.addParameter(userColumnSettingParamFactory.getParameter(user.getUserID()));
+			
+			columnSettingDAO.delete(deleteQuery, transactionHandler);
+			columnSettingDAO.addAll(settings, transactionHandler, null);
+
+			transactionHandler.commit();
+			
+		}finally {
+
+			TransactionHandler.autoClose(transactionHandler);
+		}
+	}	
+	
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse showFlow(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
 

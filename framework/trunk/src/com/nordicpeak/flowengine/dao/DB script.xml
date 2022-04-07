@@ -2897,5 +2897,22 @@
 			]]>		
 		</Query>		
 	</Script>
+	
+	<Script version="156">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowengine_flowadmin_user_column_settings` (
+				  `userID` INT(10) UNSIGNED NOT NULL,
+				  `columnIndex` TINYINT(1) UNSIGNED NOT NULL,
+				  `columnName` VARCHAR(255) NOT NULL,
+				  `visible` BOOLEAN NOT NULL DEFAULT TRUE,
+				  PRIMARY KEY (`userID`,`columnName`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		
+		
+	</Script>
 			
 </DBScripts>

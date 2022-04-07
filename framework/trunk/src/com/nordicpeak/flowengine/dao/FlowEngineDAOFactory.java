@@ -31,6 +31,7 @@ import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
 import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
+import com.nordicpeak.flowengine.beans.FlowAdminUserColumnSetting;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyEvent;
 import com.nordicpeak.flowengine.beans.FlowForm;
@@ -40,6 +41,7 @@ import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.FlowType;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.MessageTemplate;
 import com.nordicpeak.flowengine.beans.OperatingMessage;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
@@ -224,4 +226,13 @@ public class FlowEngineDAOFactory {
 		return daoFactory.getDAO(FlowInstanceAttribute.class);
 	}
 	
+	public AnnotatedDAO<MessageTemplate> getMessageTemplateDAO() {
+		
+		return daoFactory.getDAO(MessageTemplate.class);
+	}
+
+	public AnnotatedDAO<FlowAdminUserColumnSetting> getFlowAdminUserColumnSettingDAO() {
+	
+		return daoFactory.getDAO(FlowAdminUserColumnSetting.class);
+	}
 }
