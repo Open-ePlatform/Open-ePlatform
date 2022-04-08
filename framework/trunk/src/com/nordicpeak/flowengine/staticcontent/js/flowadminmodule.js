@@ -60,7 +60,7 @@ $(function() {
 					return data.flowName;
 				}					
 			},
-			{ name:"flowType", searchable: false, visible: (userColumnVisible.flowType != null ? userColumnVisible.flowType=='true' : true),
+			{ name:"flowType", searchable: true, visible: (userColumnVisible.flowType != null ? userColumnVisible.flowType=='true' : true),
 				render: function(data, type, row) {
 			
 					if (type == "display") {
@@ -71,13 +71,13 @@ $(function() {
 					return data.flowTypeName;
 				}
 			},					
-			{ name:"flowCategory", searchable: false, visible: (userColumnVisible.flowCategory != null ? userColumnVisible.flowCategory=='true' : false) && FlowAdmin.useCategories },
+			{ name:"flowCategory", searchable: true, visible: (userColumnVisible.flowCategory != null ? userColumnVisible.flowCategory=='true' : false) && FlowAdmin.useCategories },
 			{ name:"versions", searchable: false, visible: (userColumnVisible.versions != null ? userColumnVisible.versions=='true' : true) },
 			{ name:"submittedInstances", searchable: false, visible: (userColumnVisible.submittedInstances != null ? userColumnVisible.submittedInstances=='true' : true) && !FlowAdmin.hideSubmittedInstances },
 			{ name:"notSubmittedInstances", searchable: false, visible: (userColumnVisible.notSubmittedInstances != null ? userColumnVisible.notSubmittedInstances=='true' : true) && !FlowAdmin.hideNotSubmittedInstances },
-			{ name:"flowFamilyLastReviewed", type: "date", visible: (userColumnVisible.flowFamilyLastReviewed != null ? userColumnVisible.flowFamilyLastReviewed=='true' : true) && !FlowAdmin.hideFlowFamilyLastReviewed },
+			{ name:"flowFamilyLastReviewed", searchable: true, type: "date", visible: (userColumnVisible.flowFamilyLastReviewed != null ? userColumnVisible.flowFamilyLastReviewed=='true' : true) && !FlowAdmin.hideFlowFamilyLastReviewed },
 			{ name:"flowFamilyID", searchable: true, visible: (userColumnVisible.flowFamilyID != null ? userColumnVisible.flowFamilyID=='true' : false)},
-			{ name:"organization", searchable: false, visible: (userColumnVisible.organization != null ? userColumnVisible.organization=='true' : false) && !FlowAdmin.hideOrganization }
+			{ name:"organization", searchable: true, visible: (userColumnVisible.organization != null ? userColumnVisible.organization=='true' : false) && !FlowAdmin.hideOrganization }
 		]
 		
 		columnDefinitions.push(
