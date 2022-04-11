@@ -124,6 +124,34 @@ $(function() {
         $(this).hide();
         $("#show-receipt-btn").show();
     });
+    
+    $(document).on("click keypress", ".simplebox .simplebox-title", function(e) {
+		
+    	if(e.type == "keypress") {
+    		if (e.which != 13) {
+    			return false;
+    		}
+    	}
+    	
+    	var $title = $(this);
+    	
+		var $simplebox = $title.parent();
+		
+		$simplebox.find(".simplebox-content:first").slideToggle("fast", function() {
+			
+			if($(this).is(":visible")) {
+				$simplebox.addClass("expanded");
+				$title.attr("aria-expanded", "true");
+				
+			} else {
+				$simplebox.removeClass("expanded");
+				$title.attr("aria-expanded", "false");
+			}
+			
+		});
+		
+	});
+    
 });
 
 function checkStartFlowPanelPosition(event) {
@@ -135,7 +163,7 @@ function checkStartFlowPanelPosition(event) {
 	var bottomSteps = $(".service-navigator-wrap");
 	
 	if (bottomSteps.length === 0) {
-		bottomSteps = $(".about-flow");
+		bottomSteps = $(".about-flow, .about-flow-extension");
 	}
 	
 	if (!$("#flowforms-list-button").hasClass("open") && $(window).width() > 1004 && $(this).scrollTop() >= headerHeight) {

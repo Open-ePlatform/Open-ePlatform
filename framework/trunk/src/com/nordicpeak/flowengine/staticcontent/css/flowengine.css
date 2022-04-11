@@ -822,3 +822,70 @@ aside.narrow + .content.omega {
 		margin-bottom: 5px;
 	}
 }
+
+.simplebox {
+	background: #FFFFFF none repeat scroll 0 0;
+    position: relative;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border: 1px solid #ECECEC;
+    border-radius: 5px;
+}
+
+.simplebox.expanded > .simplebox-content {
+	display: block;
+}
+
+.simplebox-title {
+	background: #F1F1F1 none repeat scroll 0 0;
+    font-size: 20px !important;
+    margin: 0 !important;
+    padding: 16px 27px !important;
+    cursor: pointer;
+}
+
+.simplebox-title:hover {
+	background-color: #F7F7F7;
+}
+
+.simplebox-title:focus {
+	outline: 2px dotted;
+	outline-color: #616161;
+}
+
+.simplebox-title p {
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+}
+
+.simplebox-title::after {
+    font-size: 11px;
+    display: inline-block;
+	font-family: 'riges-icons';
+	content: '+';
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	vertical-align: top;
+	float: right;
+	margin-top: 8px;
+}
+
+.simplebox.expanded .simplebox-title::after {
+	content: '-';
+	margin-top: 12px;
+}
+
+.simplebox.expanded > .simplebox-title::after {
+	content: "-";
+	line-height: 0.9;
+}
+
+.simplebox-content {
+	background: #fff;
+	padding: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+	display: none;
+}

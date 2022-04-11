@@ -31,7 +31,7 @@ CKEDITOR.editorConfig = function( config )
 
 	config.PluginsPath = config.BasePath + 'plugins/' ;
 
-	config.extraPlugins = 'MediaEmbed';
+	config.extraPlugins = 'MediaEmbed,simplebox';
 	
 	// config.Plugins.Add( 'autogrow' ) ;
 	// config.Plugins.Add( 'dragresizetable' );
@@ -92,7 +92,8 @@ CKEDITOR.editorConfig = function( config )
 	    ['Bold','Italic','Underline','Strike','Subscript','Superscript'],
 	    ['NumberedList','BulletedList','Blockquote'],
 	    ['JustifyLeft','JustifyCenter','JustifyRight'],
-	    ['Format'],['RemoveFormat','Styles','SpecialChar']  // No comma for the last row.*/
+	    ['Format'],['RemoveFormat','Styles','SpecialChar'],
+	    ['Simplebox'] // No comma for the last row.*/
 	   
 	];
 
