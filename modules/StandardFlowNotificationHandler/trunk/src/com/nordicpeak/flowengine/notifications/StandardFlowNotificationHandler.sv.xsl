@@ -436,6 +436,96 @@
 		&lt;/p&gt;
 	
 	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAddedManagerEmailSubject">Läst meddelande $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAddedManagerEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett meddelande har lästs kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAddedGroupEmailSubject">Läst meddelande $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAddedGroupEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett meddelande har lästs kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAddedGlobalEmailSubject">Läst meddelande $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAddedGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett meddelande har lästs kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAttachmentDownloadedManagerEmailSubject">Fil nedladdad $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAttachmentDownloadedManagerEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAttachmentDownloadedGroupEmailSubject">Fil nedladdad $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAttachmentDownloadedGroupEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
+	
+	<xsl:variable name="java.readReceiptAttachmentDownloadedGlobalEmailSubject">Fil nedladdad $flow.name (ärende nr. $flowInstance.flowInstanceID)</xsl:variable>
+	<xsl:variable name="java.readReceiptAttachmentDownloadedGlobalEmailMessage">
+	
+		&lt;p&gt;Hej,&lt;/p&gt;
+		
+		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		
+		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
+		
+		&lt;p&gt;
+			&lt;a href="$flowInstance.messagesUrl"&gt;$flowInstance.messagesUrl&lt;/a&gt;
+		&lt;/p&gt;
+	
+	</xsl:variable>
 		
 	<xsl:variable name="i18n.UserNotifications">Notifikationer till sökande</xsl:variable>
 	<xsl:variable name="i18n.SendStatusChangedUserSMS">SMS vid byte av status</xsl:variable>
@@ -601,5 +691,31 @@
 	<xsl:variable name="i18n.SendFlowInstanceCompletionManagerEmail">E-post till tilldelade handläggare vid inskickad komplettering</xsl:variable>
 	<xsl:variable name="i18n.ManagerCompletionSubmittedEmailSubject">Rubrik på e-postmeddelande vid inskickad komplettering</xsl:variable>
 	<xsl:variable name="i18n.ManagerCompletionSubmittedEmailMessage">Innehåll i e-postmeddelande vid inskickad komplettering</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAddedManagerEmail">E-post till tilldelade handläggare vid kvittens för läsning av meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedManagerEmailSubject">Rubrik på e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedManagerEmailMessage">Innehåll i e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAddedGroupEmail">E-post till tilldelade handläggargrupper vid kvittens för läsning av meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGroupEmailSubject">Rubrik på e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGroupEmailMessage">Innehåll i e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAddedGlobalEmail">E-post med kvitto när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailSubject">Rubrik på e-postmeddelande med kvitto när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailMessage">Innehåll i e-postmeddelande med kvitto när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailAddresses">E-postadresser för notifiering när invånare läser meddelande (en adress per rad)</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedManagerEmail">E-post till tilldelade handläggare vid kvittens för nedladdning av fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedManagerEmailSubject">Rubrik på e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedManagerEmailMessage">Innehåll i e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedGroupEmail">E-post till tilldelade handläggargrupper vid kvittens för nedladdning av fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGroupEmailSubject">Rubrik på e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGroupEmailMessage">Innehåll i e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
+	
+	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedGlobalEmail">E-post med kvitto när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailSubject">Rubrik på e-postmeddelande med kvitto när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailMessage">Innehåll i e-postmeddelande med kvitto när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailAddresses">E-postadresser för notifiering när invånare laddar ner fil (en adress per rad)</xsl:variable>
 	
 </xsl:stylesheet>

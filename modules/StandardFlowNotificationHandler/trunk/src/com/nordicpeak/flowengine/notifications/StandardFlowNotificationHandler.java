@@ -99,6 +99,7 @@ import com.nordicpeak.flowengine.UserFlowInstanceModule;
 import com.nordicpeak.flowengine.beans.Contact;
 import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
 import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.ExternalMessage;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowFamily;
 import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
@@ -116,6 +117,8 @@ import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExpiredFlowInstanceNotificationEvent;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAttachmentDownloadedEvent;
 import com.nordicpeak.flowengine.events.FlowPublishedEvent;
 import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
@@ -691,6 +694,98 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin group", description = "Groups that have access to the administrative functions in this module.")
 	protected List<Integer> adminGroupIDs;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managers when a new receipt is added", description = "Controls if email messages are sent to managers when a new receipt is added.")
+	private boolean sendReadReceiptAddedAddedManagerEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt added email subject (manager)", description = "The subject of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedManagerEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (manager)", description = "The message of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedManagerEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to groups when a new receipt is added", description = "Controls if email messages are sent to groups when a new receipt is added.")
+	private boolean sendReadReceiptAddedGroupEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt added email subject (group)", description = "The subject of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedGroupEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (group)", description = "The message of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedGroupEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when a new receipt is added", description = "Controls if email messages are sent to specified address when a new receipt is added.")
+	private boolean sendReadReceiptAddedGlobalEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt added email subject (global)", description = "The subject of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedGlobalEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (global)", description = "The message of emails sent when a new receipt is added", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAddedGlobalEmailMessage;
+	
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Read receipt added email address (global)", description = "Global address to be notified when a new receipt is added", formatValidator = EmailPopulator.class)
+	private List<String> readReceiptAddedGlobalEmailAddresses;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to managers when a new receipt attachment is downloaded", description = "Controls if email messages are sent to managers when a new receipt attachment is downloaded.")
+	private boolean sendReadReceiptAttachmentDownloadedAddedManagerEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt attachment downloaded email subject (manager)", description = "The subject of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedManagerEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt attachment downloaded email message (manager)", description = "The message of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedManagerEmailMessage;
+	
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to groups when a new receipt attachment is downloaded", description = "Controls if email messages are sent to groups when a new receipt attachment is downloaded.")
+	private boolean sendReadReceiptAttachmentDownloadedGroupEmail;
+	
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt attachment downloaded email subject (group)", description = "The subject of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedGroupEmailSubject;
+	
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt attachment downloaded email message (group)", description = "The message of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedGroupEmailMessage;
+
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Send email to the specified address when a new receipt attachment is downloaded", description = "Controls if email messages are sent to specified address when a new receipt attachment is downloaded.")
+	private boolean sendReadReceiptAttachmentDownloadedGlobalEmail;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Read receipt attachment downloaded email subject (global)", description = "The subject of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedGlobalEmailSubject;
+
+	@ModuleSetting
+	@HTMLEditorSettingDescriptor(name = "Read receipt attachment downloaded email message (global)", description = "The message of emails sent when a new receipt attachment is downloaded", required = true)
+	@XSLVariable(prefix = "java.")
+	private String readReceiptAttachmentDownloadedGlobalEmailMessage;
+
+	@ModuleSetting(allowsNull = true)
+	@TextAreaSettingDescriptor(name = "Read receipt attachment downloaded email address (global)", description = "Global address to be notified when a new receipt attachment is downloaded", formatValidator = EmailPopulator.class)
+	private List<String> readReceiptAttachmentDownloadedGlobalEmailAddresses;
 
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
@@ -1758,6 +1853,102 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		} else {
 
 			log.warn("External message added event received with unsupported sender type: " + event.getSenderType());
+		}
+	}
+	
+	@EventListener(channel = ExternalMessage.class)
+	public void processEvent(ExternalMessageReadReceiptAddedEvent event, EventSource eventSource) throws SQLException {
+		
+		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+		
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
+			
+			log.warn("Not sending read receipt notifications for " + flowInstance + " as it has no owners");
+			return;
+		}
+		
+		if (flowInstance.getFlow().isHideExternalMessages()) {
+			
+			log.warn("Not sending read receipt notifications for " + flowInstance + " as flow has external messages hidden");
+			return;
+		}
+		
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+		
+		if (notificationSettings.isSendReadReceiptAddedManagerEmail() || notificationSettings.isSendReadReceiptAddedGroupEmail() || notificationSettings.isSendReadReceiptAddedGlobalEmail()) {
+			
+			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
+			
+			if (notificationSettings.isSendReadReceiptAddedManagerEmail()) {
+				
+				sendManagerEmails(flowInstance, contact, notificationSettings.getReadReceiptAddedManagerEmailSubject(), notificationSettings.getReadReceiptAddedManagerEmailMessage(), null, false);
+			}
+			
+			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
+			
+			if (notificationSettings.isSendReadReceiptAddedGroupEmail()) {
+				
+				for (String email : managerGroupEmailRecipientAddresses) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGroupEmailSubject(), notificationSettings.getReadReceiptAddedGroupEmailMessage(), null, false);						
+				}
+			}
+			
+			if (notificationSettings.isSendReadReceiptAddedGlobalEmail() && notificationSettings.getReadReceiptAddedGlobalEmailAddresses() != null) {
+				
+				for (String email : notificationSettings.getReadReceiptAddedGlobalEmailAddresses()) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGlobalEmailSubject(), notificationSettings.getReadReceiptAddedGlobalEmailMessage(), null, false);						
+				}
+			}
+		}
+	}
+	
+	@EventListener(channel = ExternalMessage.class)
+	public void processEvent(ExternalMessageReadReceiptAttachmentDownloadedEvent event, EventSource eventSource) throws SQLException {
+		
+		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
+		
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
+			
+			log.warn("Not sending read receipt attachment downloaded notifications for " + flowInstance + " as it has no owners");
+			return;
+		}
+		
+		if (flowInstance.getFlow().isHideExternalMessages()) {
+			
+			log.warn("Not sending read receipt attachment downloaded notifications for " + flowInstance + " as flow has external messages hidden");
+			return;
+		}
+		
+		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+		
+		if (notificationSettings.isSendReadReceiptAttachmentDownloadedManagerEmail() || notificationSettings.isSendReadReceiptAttachmentDownloadedGroupEmail() || notificationSettings.isSendReadReceiptAttachmentDownloadedGlobalEmail()) {
+			
+			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
+			
+			if (notificationSettings.isSendReadReceiptAttachmentDownloadedManagerEmail()) {
+				
+				sendManagerEmails(flowInstance, contact, notificationSettings.getReadReceiptAttachmentDownloadedManagerEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedManagerEmailMessage(), null, false);
+			}
+			
+			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
+			
+			if (notificationSettings.isSendReadReceiptAttachmentDownloadedGroupEmail()) {
+				
+				for (String email : managerGroupEmailRecipientAddresses) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailMessage(), null, false);						
+				}
+			}
+			
+			if (notificationSettings.isSendReadReceiptAttachmentDownloadedGlobalEmail() && notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailAddresses() != null) {
+				
+				for (String email : notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailAddresses()) {
+					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailMessage(), null, false);						
+				}
+			}
 		}
 	}
 

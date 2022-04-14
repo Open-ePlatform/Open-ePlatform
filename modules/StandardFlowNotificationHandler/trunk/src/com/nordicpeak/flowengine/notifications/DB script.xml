@@ -494,5 +494,59 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="37">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `sendReadReceiptAddedManagerEmail` TINYINT(1) NOT NULL,
+					ADD COLUMN `readReceiptAddedManagerEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAddedManagerEmail`,
+					ADD COLUMN `readReceiptAddedManagerEmailMessage` TEXT NULL AFTER `readReceiptAddedManagerEmailSubject`,
+					ADD COLUMN `sendReadReceiptAddedGroupEmail` TINYINT(1) NOT NULL AFTER `readReceiptAddedManagerEmailMessage`,
+					ADD COLUMN `readReceiptAddedGroupEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAddedGroupEmail`,
+					ADD COLUMN `readReceiptAddedGroupEmailMessage` TEXT NULL AFTER `readReceiptAddedGroupEmailSubject`,
+					ADD COLUMN `sendReadReceiptAddedGlobalEmail` TINYINT(1) NOT NULL AFTER `readReceiptAddedGroupEmailMessage`,
+					ADD COLUMN `readReceiptAddedGlobalEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAddedGlobalEmail`,
+					ADD COLUMN `readReceiptAddedGlobalEmailMessage` TEXT NULL AFTER `readReceiptAddedGlobalEmailSubject`,
+					ADD COLUMN `sendReadReceiptAttachmentDownloadedManagerEmail` TINYINT(1) NOT NULL AFTER `readReceiptAddedGlobalEmailMessage`,
+					ADD COLUMN `readReceiptAttachmentDownloadedManagerEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAttachmentDownloadedManagerEmail`,
+					ADD COLUMN `readReceiptAttachmentDownloadedManagerEmailMessage` TEXT NULL AFTER `readReceiptAttachmentDownloadedManagerEmailSubject`,
+					ADD COLUMN `sendReadReceiptAttachmentDownloadedGroupEmail` TINYINT(1) NOT NULL AFTER `readReceiptAttachmentDownloadedManagerEmailMessage`,
+					ADD COLUMN `readReceiptAttachmentDownloadedGroupEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAttachmentDownloadedGroupEmail`,
+					ADD COLUMN `readReceiptAttachmentDownloadedGroupEmailMessage` TEXT NULL AFTER `readReceiptAttachmentDownloadedGroupEmailSubject`,
+					ADD COLUMN `sendReadReceiptAttachmentDownloadedGlobalEmail` TINYINT(1) NOT NULL AFTER `readReceiptAttachmentDownloadedGroupEmailMessage`,
+					ADD COLUMN `readReceiptAttachmentDownloadedGlobalEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendReadReceiptAttachmentDownloadedGlobalEmail`,
+					ADD COLUMN `readReceiptAttachmentDownloadedGlobalEmailMessage` TEXT NULL AFTER `readReceiptAttachmentDownloadedGlobalEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_readreceipt_addedglobal` (
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `email` VARCHAR(255) NOT NULL,
+				  PRIMARY KEY (`flowFamilyID`,`email`),
+				  CONSTRAINT `FK_flow_familiy_notification_setting_readreceipt_addedglobal_1` FOREIGN KEY `FK_flow_familiy_notification_setting_readreceipt_addedglobal_1` (`flowFamilyID`)
+				    REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flow_familiy_notification_setting_readreceipt_atch_dlglobal` (
+				  `flowFamilyID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `email` VARCHAR(255) NOT NULL,
+				  PRIMARY KEY (`flowFamilyID`,`email`),
+				  CONSTRAINT `FK_flow_familiy_notification_setting_readreceipt_atch_dlglobal_1` FOREIGN KEY `FK_flow_familiy_notification_setting_readreceipt_atch_dlglobal_1` (`flowFamilyID`)
+				    REFERENCES `flow_familiy_notification_settings` (`flowFamilyID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>		
+	</Script>
 	
 </DBScripts>

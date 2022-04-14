@@ -31,7 +31,7 @@ import com.nordicpeak.flowengine.beans.InternalMessageAttachment;
 import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 
 public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, InternalMessageAttachment> {
-	
+
 	private static Field[] RELATIONS = { InternalMessage.FLOWINSTANCE_RELATION };
 
 	public InternalMessageCRUD(AnnotatedDAO<InternalMessage> messageDAO, MessageHandler messageHandler, AnnotatedDAO<InternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
@@ -94,5 +94,11 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 	protected Field[] getRelations() {
 
 		return RELATIONS;
+	}
+
+	@Override
+	protected void requestedMessageAttachmentDownloaded(InternalMessage message, InternalMessageAttachment attachment, User user) throws SQLException {
+
+		return;
 	}
 }

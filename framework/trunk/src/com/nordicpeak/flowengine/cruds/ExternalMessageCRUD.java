@@ -43,21 +43,9 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 	private static final Field[] RELATIONS = { ExternalMessage.FLOWINSTANCE_RELATION, ExternalMessage.READ_RECEIPTS_RELATION, ExternalMessageReadReceipt.ATTACHMENT_DOWNLOADS_RELATION };
 
-	private AnnotatedDAO<ExternalMessageReadReceipt> readReceiptDAO;
-
-	private AnnotatedDAO<ExternalMessageReadReceiptAttachmentDownload> attachmentDownloadDAO;
-
 	public ExternalMessageCRUD(MessageHandler messageHandler, AnnotatedDAO<ExternalMessage> messageDAO, AnnotatedDAO<ExternalMessageAttachment> attachmentDAO, MessageCRUDCallback callback, boolean manager) {
 
 		super(messageHandler, messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
-	}
-
-	public ExternalMessageCRUD(MessageHandler messageHandler, AnnotatedDAO<ExternalMessage> messageDAO, AnnotatedDAO<ExternalMessageAttachment> attachmentDAO, AnnotatedDAO<ExternalMessageReadReceipt> readReceiptDAO, AnnotatedDAO<ExternalMessageReadReceiptAttachmentDownload> attachmentDownloadDAO, MessageCRUDCallback callback, boolean manager) {
-
-		super(messageHandler, messageDAO, attachmentDAO, callback, ExternalMessage.class, ExternalMessageAttachment.class, manager);
-
-		this.readReceiptDAO = readReceiptDAO;
-		this.attachmentDownloadDAO = attachmentDownloadDAO;
 	}
 
 	public ExternalMessage add(HttpServletRequest req, HttpServletResponse res, URIParser uriParser, User user, Document doc, Element element, FlowInstance flowInstance, boolean postedByManager, List<String> allowedFileExtensions) throws SQLException, IOException {
@@ -120,9 +108,9 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 			externalMessage.setAdded(TimeUtils.getCurrentTimestamp());
 			externalMessage.setAttachments(attachments);
 			externalMessage.setPostedByManager(postedByManager);
-			
+
 			if (flowInstance.getFlow().isReadReceiptsEnabled()) {
-				
+
 				externalMessage.setReadReceiptEnabled(readReceiptEnabled);
 			}
 		}
@@ -142,7 +130,7 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 		return message.hasReadReceiptAccess(user);
 	}
 
-	public ExternalMessage addReadReceipt(User user, URIParser uriParser, FlowInstanceAccessController accessController) throws SQLException, ValidationException, URINotFoundException, AccessDeniedException {
+	public ExternalMessageReadReceipt addReadReceipt(User user, URIParser uriParser, FlowInstanceAccessController accessController) throws SQLException, ValidationException, URINotFoundException, AccessDeniedException {
 
 		ExternalMessage externalMessage;
 
@@ -162,37 +150,27 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 		if (!externalMessage.isReadReceiptEnabled() || !externalMessage.getFlowInstance().getFlow().isReadReceiptsEnabled()) {
 
-			return externalMessage;
+			return null;
 		}
 
 		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(externalMessage.getReadReceipts(), r -> r.getUser().equals(user));
 
 		if (readReceipt != null) {
 
-			return externalMessage;
+			return readReceipt;
 		}
 
 		readReceipt = new ExternalMessageReadReceipt(externalMessage, user);
 
-		readReceiptDAO.add(readReceipt);
+		messageHandler.addReadReceipt(readReceipt, externalMessage);
 
-		return externalMessage;
+		return readReceipt;
 	}
 
 	@Override
-	protected void requestedMessageAttachmentDownloaded(ExternalMessage message, ExternalMessageAttachment attachment, User user) throws SQLException {
+	protected void requestedMessageAttachmentDownloaded(ExternalMessage externalMessage, ExternalMessageAttachment attachment, User user) throws SQLException {
 
-		addReadReceiptAttachmentDownload(message, attachment, user);
-	}
-
-	private void addReadReceiptAttachmentDownload(ExternalMessage message, ExternalMessageAttachment attachment, User user) throws SQLException {
-
-		if (attachmentDownloadDAO == null) {
-
-			return;
-		}
-
-		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(message.getReadReceipts(), r -> r.getUser().equals(user));
+		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(externalMessage.getReadReceipts(), r -> r.getUser().equals(user));
 
 		if (readReceipt == null) {
 
@@ -210,7 +188,45 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 		attachmentDownload = new ExternalMessageReadReceiptAttachmentDownload(readReceipt, fileName);
 
-		attachmentDownloadDAO.add(attachmentDownload);
+		messageHandler.addAttachmentDownload(attachmentDownload, externalMessage);
+	}
+
+	public List<ExternalMessageReadReceipt> getReadReceipts(User user, URIParser uriParser, FlowInstanceAccessController accessController, boolean manager) throws SQLException, AccessDeniedException, URINotFoundException, ValidationException {
+
+		ExternalMessage message;
+
+		Integer messageID = uriParser.getInt(2);
+
+		if (uriParser.size() != 3 || messageID == null || (message = getMessage(messageID)) == null) {
+
+			throw new URINotFoundException(uriParser);
+		}
+
+		accessController.checkFlowInstanceAccess(message.getFlowInstance(), user);
+
+		if (!message.getFlowInstance().getFlow().isEnabled() || callback.isOperatingStatusDisabled(message.getFlowInstance(), manager)) {
+
+			throw new ValidationException(Collections.singletonList(BaseFlowModule.FLOW_DISABLED_VALIDATION_ERROR));
+		}
+
+		if (!message.isReadReceiptEnabled()) {
+
+			log.warn("User " + user + " is trying to get read receipts for " + message + " where read receipts are disabled");
+			return null;
+		}
+
+		if (manager) {
+
+			log.info("User " + user + " getting all read receipts for " + message);
+
+			return message.getReadReceipts();
+		}
+
+		List<ExternalMessageReadReceipt> readReceipts = CollectionUtils.filter(message.getReadReceipts(), r -> r.getUser().equals(user));
+
+		log.info("User " + user + " getting read receipts for " + message);
+
+		return readReceipts;
 	}
 
 	public ExternalMessage disableReadReceipt(User user, URIParser uriParser, FlowInstanceAccessController accessController) throws SQLException, AccessDeniedException, URINotFoundException, ValidationException {

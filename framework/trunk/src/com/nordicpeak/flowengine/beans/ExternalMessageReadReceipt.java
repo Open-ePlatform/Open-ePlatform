@@ -1,16 +1,22 @@
 package com.nordicpeak.flowengine.beans;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.List;
 
 import se.unlogic.hierarchy.core.beans.User;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OrderBy;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.json.JsonArray;
+import se.unlogic.standardutils.json.JsonNode;
+import se.unlogic.standardutils.json.JsonObject;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.time.TimeUtils;
 import se.unlogic.standardutils.xml.GeneratedElementable;
@@ -20,7 +26,9 @@ import com.nordicpeak.flowengine.interfaces.ImmutableReadReceipt;
 
 @Table(name = "flowengine_external_message_read_receipts")
 @XMLElement
-public class ExternalMessageReadReceipt extends GeneratedElementable implements ImmutableReadReceipt {
+public class ExternalMessageReadReceipt extends GeneratedElementable implements ImmutableReadReceipt, Serializable {
+
+	private static final long serialVersionUID = -9033642396491223280L;
 
 	public static final Field ATTACHMENT_DOWNLOADS_RELATION = ReflectionUtils.getField(ExternalMessageReadReceipt.class, "attachmentDownloads");
 
@@ -61,6 +69,32 @@ public class ExternalMessageReadReceipt extends GeneratedElementable implements 
 	public String toString() {
 
 		return "(readReceiptID=" + readReceiptID + ", message=" + message + ", user=" + user + ")";
+	}
+
+	public JsonNode toJson() {
+
+		JsonObject jsonObject = new JsonObject(5);
+
+		jsonObject.putField("readReceiptID", readReceiptID);
+		jsonObject.putField("user", user.getFirstname() + " " + user.getLastname());
+		jsonObject.putField("read", DateUtils.DATE_TIME_FORMATTER.format(read));
+		jsonObject.putField("attachmentDownloads", ExternalMessageReadReceiptAttachmentDownload.toJson(attachmentDownloads));
+
+		return jsonObject;
+	}
+
+	public static JsonNode toJson(List<ExternalMessageReadReceipt> readReceipts) {
+
+		if (CollectionUtils.isEmpty(readReceipts)) {
+
+			return new JsonArray(0);
+		}
+
+		JsonArray jsonArray = new JsonArray(readReceipts.size());
+
+		readReceipts.forEach(r -> jsonArray.addNode(r.toJson()));
+
+		return jsonArray;
 	}
 
 	public Integer getReadReceiptID() {

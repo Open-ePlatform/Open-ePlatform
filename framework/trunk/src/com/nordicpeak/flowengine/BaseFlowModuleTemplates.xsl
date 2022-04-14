@@ -1058,6 +1058,9 @@
 			<xsl:when test="eventType = 'MANAGER_MESSAGE_SENT'">
 				<xsl:value-of select="$i18n.ManagerMessageSentEvent" />
 			</xsl:when>
+			<xsl:when test="eventType = 'CUSTOMERS_READ_MESSAGE'">
+				<xsl:value-of select="$i18n.CustomersReadMessageEvent" />
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$i18n.OtherEvent" />
 			</xsl:otherwise>

@@ -135,6 +135,18 @@
 						<xsl:value-of select="$i18n.SendFlowInstanceExpiredManagerEmail"/>
 					</li>
 				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAddedManagerEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAddedManagerEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAttachmentDownloadedManagerEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedManagerEmail"/>
+					</li>
+				</xsl:if>
 			
 			</ul>
 		
@@ -171,6 +183,18 @@
 				<xsl:if test="NotificationSettings/sendStatusChangedManagerGroupEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendStatusChangedManagerGroupEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAddedGroupEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAddedGroupEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAttachmentDownloadedGroupEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedGroupEmail"/>
 					</li>
 				</xsl:if>
 
@@ -227,6 +251,18 @@
 				<xsl:if test="NotificationSettings/sendFlowInstanceExpiredGlobalEmail = 'true'">
 					<li>
 						<xsl:value-of select="$i18n.SendFlowInstanceExpiredGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAddedGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAddedGlobalEmail"/>
+					</li>
+				</xsl:if>
+				
+				<xsl:if test="NotificationSettings/sendReadReceiptAttachmentDownloadedGlobalEmail = 'true'">
+					<li>
+						<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedGlobalEmail"/>
 					</li>
 				</xsl:if>
 				
@@ -355,6 +391,36 @@
 			function toggleGlobalExpired(){
 				
 				$("#global-expired-subject, #global-expired-message").toggleClass("hidden");
+			}
+			
+			function toggleManagerReadReceiptAdded(){
+				
+				$("#manager-read-receipt-added-subject, #manager-read-receipt-added-message").toggleClass("hidden");
+			}
+			
+			function toggleManagerReadReceiptAttachmentDownloaded(){
+				
+				$("#manager-read-receipt-attachment-downloaded-subject, #manager-read-receipt-attachment-downloaded-message").toggleClass("hidden");
+			}
+			
+			function toggleManagerGroupReadReceiptAdded(){
+				
+				$("#group-read-receipt-added-subject, #group-read-receipt-added-message").toggleClass("hidden");
+			}
+			
+			function toggleManagerGroupReadReceiptAttachmentDownloaded(){
+				
+				$("#group-read-receipt-attachment-downloaded-subject, #group-read-receipt-attachment-downloaded-message").toggleClass("hidden");
+			}
+			
+			function toggleGlobalReadReceiptAdded(){
+				
+				$("#global-read-receipt-added-subject, #global-read-receipt-added-message").toggleClass("hidden");
+			}
+			
+			function toggleGlobalReadReceiptAttachmentDownloaded(){
+				
+				$("#global-read-receipt-attachment-downloaded-subject, #global-read-receipt-attachment-downloaded-message").toggleClass("hidden");
 			}
 			
 			function toggleText(element) {
@@ -1192,6 +1258,126 @@
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAddedManagerEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAddedManagerEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAddedManagerEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAddedManagerEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerReadReceiptAdded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-read-receipt-added-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedManagerEmailSubject') and not($errFieldNames = 'readReceiptAddedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAddedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAddedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-read-receipt-added-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedManagerEmailSubject') and not($errFieldNames = 'readReceiptAddedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAddedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAddedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAttachmentDownloadedManagerEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAttachmentDownloadedManagerEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAttachmentDownloadedManagerEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedManagerEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerReadReceiptAttachmentDownloaded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-read-receipt-attachment-downloaded-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedManagerEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAttachmentDownloadedManagerEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedManagerEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedManagerEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedManagerEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="manager-read-receipt-attachment-downloaded-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedManagerEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedManagerEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAttachmentDownloadedManagerEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedManagerEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedManagerEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedManagerEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="name" select="'sendFlowInstanceSubmittedManagerEmail'" />
 					<xsl:with-param name="id" select="'sendFlowInstanceSubmittedManagerEmail'" />
 					<xsl:with-param name="element" select="NotificationSettings" />
@@ -1246,7 +1432,7 @@
 			</div>
 			
 			<xsl:call-template name="addManagerTagsTable"/>
-		</div>
+		</div>		
 	
 		<div class="clearboth marginbottom">
 			<br/>
@@ -1485,6 +1671,126 @@
 				<xsl:call-template name="createTextArea">
 					<xsl:with-param name="id" select="'statusChangedManagerGroupEmailMessage'"/>
 					<xsl:with-param name="name" select="'statusChangedManagerGroupEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAddedGroupEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAddedGroupEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAddedGroupEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAddedGroupEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerGroupReadReceiptAdded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-read-receipt-added-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedGroupEmailSubject') and not($errFieldNames = 'readReceiptAddedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAddedGroupEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedGroupEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAddedGroupEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedGroupEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-read-receipt-added-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedGroupEmailSubject') and not($errFieldNames = 'readReceiptAddedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAddedGroupEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedGroupEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAddedGroupEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedGroupEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addManagerTagsTable"/>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAttachmentDownloadedGroupEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAttachmentDownloadedGroupEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAttachmentDownloadedGroupEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedGroupEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleManagerGroupReadReceiptAttachmentDownloaded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-read-receipt-attachment-downloaded-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedGroupEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAttachmentDownloadedGroupEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedGroupEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedGroupEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedGroupEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="group-read-receipt-attachment-downloaded-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedGroupEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedGroupEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAttachmentDownloadedGroupEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedGroupEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedGroupEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedGroupEmailMessage'"/>
 					<xsl:with-param name="class" select="'flow-ckeditor'"/>
 					<xsl:with-param name="element" select="NotificationSettings" />
 				</xsl:call-template>
@@ -2309,6 +2615,162 @@
 				</xsl:call-template>
 			</div>
 		</div>
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAddedGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAddedGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAddedGlobalEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAddedGlobalEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGlobalReadReceiptAdded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-read-receipt-added-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedGlobalEmailSubject') and not($errFieldNames = 'readReceiptAddedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAddedGlobalEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedGlobalEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAddedGlobalEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedGlobalEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-read-receipt-added-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAddedGlobalEmailSubject') and not($errFieldNames = 'readReceiptAddedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAddedGlobalEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedGlobalEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAddedGlobalEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedGlobalEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>		
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="readReceiptAddedGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAddedGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAddedGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'readReceiptAddedGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/ReadReceiptAddedGlobalEmailAddresses/address" />
+				</xsl:call-template>
+			</div>
+		</div>		
+		
+		<div class="floatleft full bigmarginbottom margintop internal">
+		
+			<div class="floatleft">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'sendReadReceiptAttachmentDownloadedGlobalEmail'" />
+					<xsl:with-param name="id" select="'sendReadReceiptAttachmentDownloadedGlobalEmail'" />
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+				<label for="sendReadReceiptAttachmentDownloadedGlobalEmail">
+					<xsl:value-of select="$i18n.SendReadReceiptAttachmentDownloadedGlobalEmail" />
+				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleGlobalReadReceiptAttachmentDownloaded();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>
+				
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-read-receipt-attachment-downloaded-subject">
+		
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedGlobalEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+		
+			<label for="readReceiptAttachmentDownloadedGlobalEmailSubject" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedGlobalEmailSubject" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedGlobalEmailSubject'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedGlobalEmailSubject'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="global-read-receipt-attachment-downloaded-message">
+			
+			<xsl:if test="not($errFieldNames = 'readReceiptAttachmentDownloadedGlobalEmailSubject') and not($errFieldNames = 'readReceiptAttachmentDownloadedGlobalEmailMessage')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="readReceiptAttachmentDownloadedGlobalEmailMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedGlobalEmailMessage" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedGlobalEmailMessage'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedGlobalEmailMessage'"/>
+					<xsl:with-param name="class" select="'flow-ckeditor'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable"/>
+		</div>		
+		
+		<div class="floatleft full bigmarginbottom">
+		
+			<label for="readReceiptAttachmentDownloadedGlobalEmailAddresses" class="floatleft full">
+				<xsl:value-of select="$i18n.ReadReceiptAttachmentDownloadedGlobalEmailAddresses" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'readReceiptAttachmentDownloadedGlobalEmailAddresses'"/>
+					<xsl:with-param name="name" select="'readReceiptAttachmentDownloadedGlobalEmailAddresses'"/>
+					<xsl:with-param name="rows" select="5"/>
+					<xsl:with-param name="separateListValues" select="'true'"/>
+					<xsl:with-param name="element" select="NotificationSettings/ReadReceiptAddedGlobalEmailAddresses/address" />
+				</xsl:call-template>
+			</div>
+		</div>		
 	
 		<xsl:call-template name="initializeFCKEditor">
 			<xsl:with-param name="basePath"><xsl:value-of select="/Document/requestinfo/contextpath"/>/static/f/<xsl:value-of select="/Document/module/sectionID"/>/<xsl:value-of select="/Document/module/moduleID"/>/ckeditor/</xsl:with-param>

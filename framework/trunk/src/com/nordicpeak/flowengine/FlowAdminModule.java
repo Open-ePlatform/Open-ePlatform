@@ -190,6 +190,8 @@ import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
 import com.nordicpeak.flowengine.beans.EvaluatorDescriptor;
 import com.nordicpeak.flowengine.beans.ExtensionView;
 import com.nordicpeak.flowengine.beans.ExternalFlow;
+import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
 import com.nordicpeak.flowengine.beans.Flow;
 import com.nordicpeak.flowengine.beans.FlowAction;
 import com.nordicpeak.flowengine.beans.FlowAdminUserColumnSetting;
@@ -495,7 +497,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	@XSLVariable(prefix = "java.")
 	private String eventMessageTemplatesDeletedMessage = "message templates deleted";
-
+	
 	@XSLVariable(prefix = "java.")
 	private String bundleListFlows = "List flows";
 
@@ -690,6 +692,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	protected QueryParameterFactory<QueryDescriptor, String> queryDescriptorQueryTypeIDParamFactory;
 	protected QueryParameterFactory<EvaluatorDescriptor, String> evaluatorDescriptorEvaluatorTypeIDParamFactory;
 
+	protected QueryParameterFactory<ExternalMessageReadReceipt, ExternalMessage> readReceiptMessageParamFactory;
+	protected QueryParameterFactory<ExternalMessageReadReceipt, User> readReceiptUserParamFactory;
+
 	protected AdvancedAnnotatedDAOWrapper<StandardStatusGroup, Integer> standardStatusGroupDAOWrapper;
 
 	protected OrderByCriteria<Flow> flowVersionOrderByCriteria;
@@ -819,6 +824,9 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		queryDescriptorQueryTypeIDParamFactory = daoFactory.getQueryDescriptorDAO().getParamFactory("queryTypeID", String.class);
 		evaluatorDescriptorEvaluatorTypeIDParamFactory = daoFactory.getEvaluatorDescriptorDAO().getParamFactory("evaluatorTypeID", String.class);
+
+		readReceiptMessageParamFactory = daoFactory.getExternalMessageReadReceiptDAO().getParamFactory("message", ExternalMessage.class);
+		readReceiptUserParamFactory = daoFactory.getExternalMessageReadReceiptDAO().getParamFactory("user", User.class);
 
 		AnnotatedDAOWrapper<FlowFamily, Integer> flowFamilyDAOWrapper = daoFactory.getFlowFamilyDAO().getWrapper("flowFamilyID", Integer.class);
 		flowFamilyDAOWrapper.addRelations(FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION);
@@ -7311,6 +7319,15 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	public FileAttachmentHandler getFileAttachmentHandler() {
 
 		return fileAttachmentHandler;
+	}
+	
+	public List<ExternalMessageReadReceipt> getReadReceipts(ExternalMessage externalMessage) throws SQLException {
+		
+		HighLevelQuery<ExternalMessageReadReceipt> query = new HighLevelQuery<>();
+		
+		query.addParameter(readReceiptMessageParamFactory.getParameter(externalMessage));
+		
+		return daoFactory.getExternalMessageReadReceiptDAO().getAll(query);
 	}
 
 }

@@ -181,18 +181,54 @@ function initReadReceiptModal() {
 	
 	$(".read-receipts").click(function() {
 		
-		var $modal = $(this).closest(".read-receipts-wrapper").find(".read-receipts-modal");
+		var $wrapper = $(this).closest(".read-receipts-wrapper");
 		
-		$.featherlight($modal, {
+		var $modal = $wrapper.find(".read-receipts-modal");
 
-			afterContent: function() {
-
-				var $modalContent = this.$content;
+		$.ajax({
+			url : $modal.data("url"),
+			dataType : "json",
+			contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+			success : function(data) {
 				
-//				$modalContent.removeClass("no-sections");
-				$modalContent.closest(".featherlight-content").addClass("contentitem");
+				$.featherlight($modal, {
+		
+					afterContent: function() {
+		
+						var $modalContent = this.$content;
+						
+						$modalContent.closest(".featherlight-content").addClass("contentitem");
+						
+						var $table = $modalContent.find("table");
+						
+						data.forEach(function(readReceipt) {
+							
+							var $readReceipt = $wrapper.find(".read-receipt-template").clone();
+							
+							$readReceipt.find(".user").text(readReceipt.user);
+							$readReceipt.find(".read").text(readReceipt.read);
+							
+							$table.append($readReceipt);
+							
+							readReceipt.attachmentDownloads.forEach(function(attachmentDownload) {
+								
+								var $attachmentDownload = $wrapper.find(".attachment-download-template").clone();
+								
+								$attachmentDownload.find(".user").text(readReceipt.user);
+								$attachmentDownload.find(".downloaded").text(attachmentDownload.downloaded);
+								$attachmentDownload.find(".attachment-filename").text(attachmentDownload.attachmentFilename);
+								
+								$table.append($attachmentDownload);
+							});
+						});
+					}
+				});
+				
+			},
+			error : function(res) {
+				
+				console.log(res);
 			}
 		});
-		
 	});
 }

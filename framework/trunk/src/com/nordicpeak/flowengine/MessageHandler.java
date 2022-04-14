@@ -3,6 +3,7 @@ package com.nordicpeak.flowengine;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,7 @@ import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
 import se.unlogic.hierarchy.core.events.CRUDEvent;
+import se.unlogic.standardutils.collections.CollectionUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.fileattachments.FileAttachment;
@@ -18,12 +20,16 @@ import se.unlogic.standardutils.fileattachments.FileAttachmentUtils;
 
 import com.nordicpeak.flowengine.beans.BaseMessage;
 import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
 import com.nordicpeak.flowengine.beans.FlowInstance;
 import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
 import com.nordicpeak.flowengine.beans.InternalMessage;
 import com.nordicpeak.flowengine.enums.EventType;
 import com.nordicpeak.flowengine.enums.SenderType;
 import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAttachmentDownloadedEvent;
 import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
 import com.nordicpeak.flowengine.utils.ExternalMessageUtils;
 import com.nordicpeak.flowengine.utils.FlowEngineFileAttachmentUtils;
@@ -219,4 +225,58 @@ public class MessageHandler {
 		}
 	}
 
+	public void addReadReceipt(ExternalMessageReadReceipt readReceipt, ExternalMessage externalMessage) throws SQLException {
+
+		FlowInstance flowInstance = externalMessage.getFlowInstance();
+		User user = externalMessage.getPoster();
+		Timestamp added = readReceipt.getRead();
+
+		log.info("User " + user + " adding read receipt " + readReceipt + " for message " + externalMessage + " on flowinstance " + flowInstance);
+
+		flowAdminModule.getDAOFactory().getExternalMessageReadReceiptDAO().add(readReceipt);
+
+		FlowInstanceEvent flowInstanceEvent = null;
+
+		List<ExternalMessageReadReceipt> allReadReceipts = new ArrayList<>();
+
+		CollectionUtils.add(allReadReceipts, externalMessage.getReadReceipts());
+		allReadReceipts.add(readReceipt);
+
+		if (allOwnersHaveReadMessage(flowInstance.getOwners(), allReadReceipts)) {
+
+			flowInstanceEvent = flowAdminModule.getFlowInstanceEventGenerator().addFlowInstanceEvent(flowInstance, EventType.CUSTOMERS_READ_MESSAGE, null, user, added, ExternalMessageUtils.getFlowInstanceEventAttributes(externalMessage));
+		}
+
+		flowAdminModule.getSystemInterface().getEventHandler().sendEvent(ExternalMessage.class, new ExternalMessageReadReceiptAddedEvent(flowInstance, flowInstanceEvent, flowAdminModule.getSiteProfile(flowInstance), readReceipt), EventTarget.ALL);
+	}
+
+	public void addAttachmentDownload(ExternalMessageReadReceiptAttachmentDownload attachmentDownload, ExternalMessage externalMessage) throws SQLException {
+
+		FlowInstance flowInstance = externalMessage.getFlowInstance();
+		User user = externalMessage.getPoster();
+
+		log.info("User " + user + " first download of attachment " + attachmentDownload + " for message " + externalMessage + " on flowinstance " + flowInstance);
+
+		flowAdminModule.getDAOFactory().getExternalMessageReadReceiptAttachmentDownloadDAO().add(attachmentDownload);
+
+		flowAdminModule.getSystemInterface().getEventHandler().sendEvent(ExternalMessage.class, new ExternalMessageReadReceiptAttachmentDownloadedEvent(flowInstance, flowAdminModule.getSiteProfile(flowInstance), attachmentDownload), EventTarget.ALL);
+	}
+
+	private boolean allOwnersHaveReadMessage(List<User> owners, List<ExternalMessageReadReceipt> readReceipts) {
+
+		if (owners == null) {
+
+			return true;
+		}
+
+		for (User owner : owners) {
+
+			if (CollectionUtils.find(readReceipts, readReceipt -> owner.equals(readReceipt.getUser())) == null) {
+
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

@@ -60,6 +60,9 @@ import se.unlogic.standardutils.enums.Order;
 import se.unlogic.standardutils.fileattachments.FileAttachmentHandler;
 import se.unlogic.standardutils.io.BinarySizeFormater;
 import se.unlogic.standardutils.io.BinarySizes;
+import se.unlogic.standardutils.json.JsonNode;
+import se.unlogic.standardutils.json.JsonObject;
+import se.unlogic.standardutils.json.JsonUtils;
 import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.time.TimeUtils;
@@ -307,7 +310,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		defaultFlowProcessCallback = new UserFlowInstanceBrowserProcessCallback(FlowBrowserModule.SAVE_ACTION_ID, FlowBrowserModule.SUBMIT_ACTION_ID, FlowBrowserModule.MULTI_SIGNING_ACTION_ID, FlowBrowserModule.PAYMENT_ACTION_ID, this);
 		completeFlowProcessCallback = new UserFlowInstanceBrowserProcessCallback(null, SUBMIT_COMPLETION_ACTION_ID, FlowBrowserModule.MULTI_SIGNING_ACTION_ID, null, this);
 
-		externalMessageCRUD = new ExternalMessageCRUD(messageHandler, daoFactory.getExternalMessageDAO(), daoFactory.getExternalMessageAttachmentDAO(), daoFactory.getExternalMessageReadReceiptDAO(), daoFactory.getExternalMessageReadReceiptAttachmentDownloadDAO(), this, false);
+		externalMessageCRUD = new ExternalMessageCRUD(messageHandler, daoFactory.getExternalMessageDAO(), daoFactory.getExternalMessageAttachmentDAO(), this, false);
 	}
 
 	@Override
@@ -680,15 +683,15 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 			}
 
 			XMLUtils.append(doc, showFlowInstanceOverviewElement, "AllowedExternalMessageFileExtensions", "FileExtension", defaultAllowedExternalMessageFileExtensions);
-			
+
 			if (req.getMethod().equalsIgnoreCase("POST") && flowInstance.isNewExternalMessagesAllowed()) {
-					
+
 				ExternalMessage externalMessage = externalMessageCRUD.add(req, res, uriParser, user, doc, showFlowInstanceOverviewElement, flowInstance, false, defaultAllowedExternalMessageFileExtensions);
-				
+
 				if (externalMessage != null) {
-					
+
 					res.sendRedirect(req.getContextPath() + uriParser.getFormattedURI() + "#messages");
-					
+
 					return null;
 				}
 			}
@@ -744,7 +747,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
 
 		genDoc.addRootElementableListener(FlowInstance.class, new FlowInstanceExternalMessageElementableListener());
-		
+
 		MultiElementableListener<ExternalMessage> externalMessageMultiElementableListener = new MultiElementableListener<>(2);
 		externalMessageMultiElementableListener.addElementableListener(new ExternalMessageExtensionElementableListener(externalMessageExtensionProviders, flowInstance, req, user, uriParser, false));
 		externalMessageMultiElementableListener.addElementableListener(new ExternalMessageReadReceiptElementableListener(user));
@@ -949,14 +952,34 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 
 		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getPreviewAccessController());
 	}
+
+	@WebPublic(alias = "getreadreceipts")
+	public ForegroundModuleResponse getReadReceipts(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws SQLException, AccessDeniedException, IOException, URINotFoundException, ValidationException {
+
+		List<ExternalMessageReadReceipt> readReceipts = externalMessageCRUD.getReadReceipts(user, uriParser, getPreviewAccessController(), false);
+
+		JsonNode json = ExternalMessageReadReceipt.toJson(readReceipts);
+		
+		if (json != null) {
+			
+			HTTPUtils.sendReponse(json.toJson(), JsonUtils.getContentType(), res);
+			
+		} else {
+			
+			HTTPUtils.sendReponse(new JsonObject().toJson(), JsonUtils.getContentType(), res);
+		}
+		
+		return null;
+	}
 	
 	@WebPublic(alias = "addreadreceipt")
 	public ForegroundModuleResponse addReadReceipt(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, URINotFoundException {
 		
 		try {
 			
-			ExternalMessage externalMessage = externalMessageCRUD.addReadReceipt(user, uriParser, getPreviewAccessController());
+			ExternalMessageReadReceipt readReceipt = externalMessageCRUD.addReadReceipt(user, uriParser, getPreviewAccessController());
 			
+			ExternalMessage externalMessage = readReceipt.getMessage();
 			FlowInstance flowInstance = externalMessage.getFlowInstance();
 			Flow flow = flowInstance.getFlow();
 			

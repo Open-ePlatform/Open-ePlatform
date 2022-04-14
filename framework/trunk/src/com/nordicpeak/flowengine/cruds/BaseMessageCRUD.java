@@ -276,10 +276,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		
 	}
 	
-	protected void requestedMessageAttachmentDownloaded(MessageType message, AttachmentType attachment, User user) throws SQLException {
-		
-		return;
-	}
+	protected abstract void requestedMessageAttachmentDownloaded(MessageType message, AttachmentType attachment, User user) throws SQLException;
 
 	protected MessageType getMessage(Integer messageID) throws SQLException {
 

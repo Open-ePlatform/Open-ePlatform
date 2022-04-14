@@ -168,7 +168,7 @@
 				 		<xsl:when test="$message/readReceipts">
 				 		
 							<xsl:call-template name="showReadReceipts">
-								<xsl:with-param name="readReceipts" select="$message/readReceipts/ExternalMessageReadReceipt" />
+								<xsl:with-param name="messageID" select="$message/messageID" />
 							</xsl:call-template>
 				 		
 				 		</xsl:when>
@@ -344,7 +344,7 @@
 		 		<xsl:if test="$message/readReceipts">
 		 		
 					<xsl:call-template name="showReadReceipts">
-						<xsl:with-param name="readReceipts" select="$message/readReceipts/ExternalMessageReadReceipt[user/userID = /Document/user/userID]" />
+						<xsl:with-param name="messageID" select="$message/messageID" />
 					</xsl:call-template>
 		 		
 		 		</xsl:if>
@@ -407,7 +407,7 @@
 	</xsl:template>
 	
 	<xsl:template name="showReadReceipts">
-		<xsl:param name="readReceipts" />
+		<xsl:param name="messageID" />
 	
 		<div class="read-receipts-wrapper">
 			
@@ -420,18 +420,46 @@
  			
 				<div class="hidden">
 
-				<div class="read-receipts-modal errands-wrapper nopadding nomargin">
+				<div class="read-receipts-modal errands-wrapper nopadding nomargin" data-url="{/Document/requestinfo/currentURI}/{/Document/module/alias}/getreadreceipts/{$messageID}">
 					
 					<h1><xsl:value-of select="$i18n.ReadReceipts" /></h1>
 					
-					<table class="full coloredtable oep-table" cellspacing="0">
-						
- 						<xsl:apply-templates select="$readReceipts" />
-					
-					</table>									
+					<table class="full coloredtable oep-table" cellspacing="0"></table>									
 					
 				</div>
 				
+			</div>
+			
+			<div class="hidden">
+				<table>
+					<tr class="read-receipt-template">
+						<td class="icon">
+							<img src="{$imgPath}/check.png" alt="" />
+						</td>
+						<td class="user" data-title="{$i18n.ReadReceipt.Table.User}"></td>
+						<td class="read" data-title="{$i18n.ReadReceipt.Table.Date}"></td>
+						<td data-title="{$i18n.ReadReceipt.Table.Description}">
+							<xsl:value-of select="$i18n.ReadReceipt.Read" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			
+			<div class="hidden">
+				<table>
+					<tr class="attachment-download-template">
+						<td class="icon">
+							<img src="{$imgPath}/download.png" alt="" />
+						</td>
+						<td class="user" data-title="{$i18n.ReadReceipt.Table.User}"></td>
+						<td class="downloaded" data-title="{$i18n.ReadReceipt.Table.Date}"></td>
+						<td data-title="{$i18n.ReadReceipt.Table.Description}">
+							<xsl:value-of select="$i18n.ReadReceipt.Downloaded" />
+							<xsl:text>: </xsl:text>
+							<span class="attachment-filename"></span>
+						</td>
+					</tr>
+				</table>
 			</div>
 			
 		</div>
