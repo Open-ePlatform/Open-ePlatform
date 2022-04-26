@@ -80,6 +80,11 @@ $(function() {
 			{ name:"organization", searchable: true, visible: (userColumnVisible.organization != null ? userColumnVisible.organization=='true' : false) && !FlowAdmin.hideOrganization }
 		]
 		
+		if (getExtraFlowListColumns) {
+			
+			columnDefinitions = columnDefinitions.concat(getExtraFlowListColumns());
+		}
+		
 		columnDefinitions.push(
 			{ name:"delete", orderable: false, searchable: false, visible: !FlowAdmin.hideDeleteButton,
 				render: function(data, type, row) {
