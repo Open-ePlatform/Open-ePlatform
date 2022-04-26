@@ -527,6 +527,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Publisher groups", description = "Groups allowed to change enabled and publish settings for flows")
 	protected List<Integer> publisherGroupIDs;
+	
+	@ModuleSetting
+	@SplitOnLineBreak
+	@TextAreaSettingDescriptor(name = "Excluded publishing flow types", description = "These flow types will not be restricted by the publishing groups restriction")
+	protected List<Integer> excludedPublishingFlowTypes;
 
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Manager groups", description = "Groups with users that are allowed to be set as managers")
@@ -5540,13 +5545,19 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) != null || systemInterface.getRootSection().getSectionCache().getEntry(alias) != null;
 	}
 
-	public boolean hasPublishAccess(User user) {
+	public boolean hasPublishAccess(User user, FlowType flowType) {
 
 		if (CollectionUtils.isEmpty(publisherGroupIDs)) {
 
 			return true;
 		}
 
+		
+		if(excludedPublishingFlowTypes != null && flowType != null && excludedPublishingFlowTypes.contains(flowType.getFlowTypeID())) {
+			
+			return true;
+		}
+		
 		if (!CollectionUtils.isEmpty(user.getGroups())) {
 
 			for (Group group : user.getGroups()) {
@@ -6255,11 +6266,6 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 	@WebPublic(toLowerCase = true)
 	public ForegroundModuleResponse unPublishFlowFamily(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 
-		if (!hasPublishAccess(user)) {
-
-			throw new AccessDeniedException("User does not have publishing access");
-		}
-
 		if (!HTTPUtils.isPost(req)) {
 
 			throw new AccessDeniedException("Unpublish flow requests using method " + req.getMethod() + " are not allowed.");
@@ -6274,6 +6280,11 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		List<Flow> flows = getFlowVersions(flowFamily);
 
+		if (!hasPublishAccess(user, flows.get(0).getFlowType())) {
+
+			throw new AccessDeniedException("User does not have publishing access");
+		}
+		
 		if (!hasFlowAccess(user, flows.get(0))) {
 
 			throw new AccessDeniedException("User does not have access to flow type " + flows.get(0).getFlowType());

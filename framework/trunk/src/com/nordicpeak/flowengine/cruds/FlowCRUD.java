@@ -148,7 +148,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void appendAddFormData(Document doc, Element addTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
-		appendAddUpdateFormData(doc, addTypeElement, user);
+		appendAddUpdateFormData(doc, addTypeElement, user, null);
 
 		callback.appendUserFlowTypes(doc, addTypeElement, user);
 		
@@ -167,12 +167,12 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 	@Override
 	protected void appendUpdateFormData(Flow flow, Document doc, Element updateTypeElement, User user, HttpServletRequest req, URIParser uriParser) throws Exception {
 
-		appendAddUpdateFormData(doc, updateTypeElement, user);
+		appendAddUpdateFormData(doc, updateTypeElement, user, flow.getFlowType());
 		
 		XMLUtils.append(doc, updateTypeElement, "OverviewAttributes", flow.getOverviewAttributes());
 	}
 
-	private void appendAddUpdateFormData(Document doc, Element typeElement, User user) {
+	private void appendAddUpdateFormData(Document doc, Element typeElement, User user, FlowType flowType) {
 
 		if (callback.submitSurveyEnabled()) {
 			XMLUtils.appendNewElement(doc, typeElement, "SubmitSurveyEnabled");
@@ -186,7 +186,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			XMLUtils.appendNewElement(doc, typeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 
-		if (!callback.hasPublishAccess(user)) {
+		if (!callback.hasPublishAccess(user, flowType)) {
 
 			XMLUtils.appendNewElement(doc, typeElement, "LacksPublishAccess", "true");
 		}
@@ -325,7 +325,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			bean.setEnabled(false);
 		}
 
-		if (!callback.hasPublishAccess(user)) {
+		if (!callback.hasPublishAccess(user, bean.getFlowType())) {
 
 			bean.setPublishDate(null);
 			bean.setUnPublishDate(null);
@@ -420,7 +420,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 		bean = super.populateFromUpdateRequest(bean, req, user, uriParser);
 
 		// Revert user publish changes if they are not allowed to publish
-		if (!callback.hasPublishAccess(user)) {
+		if (!callback.hasPublishAccess(user, bean.getFlowType())) {
 
 			bean.setEnabled(enabled);
 			bean.setPublishDate(publish);
@@ -954,7 +954,7 @@ public class FlowCRUD extends AdvancedIntegerBasedCRUD<Flow, FlowAdminModule> {
 			XMLUtils.appendNewElement(doc, showTypeElement, "AllowSkipOverviewForFlowForms", "true");
 		}
 		
-		if (callback.hasPublishAccess(user)) {
+		if (callback.hasPublishAccess(user, flow.getFlowType())) {
 			
 			XMLUtils.appendNewElement(doc, showTypeElement, "PublishAccess", "true");
 		}
