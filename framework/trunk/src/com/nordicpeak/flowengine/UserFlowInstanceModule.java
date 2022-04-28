@@ -950,7 +950,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@WebPublic(alias = "externalattachment")
 	public ForegroundModuleResponse getExternalMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, URINotFoundException {
 
-		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getPreviewAccessController());
+		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getPreviewAccessController(), false);
 	}
 
 	@WebPublic(alias = "getreadreceipts")

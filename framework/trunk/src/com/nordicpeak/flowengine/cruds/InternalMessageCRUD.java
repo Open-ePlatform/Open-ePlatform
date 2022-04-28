@@ -97,7 +97,7 @@ public class InternalMessageCRUD extends BaseMessageCRUD<InternalMessage, Intern
 	}
 
 	@Override
-	protected void requestedMessageAttachmentDownloaded(InternalMessage message, InternalMessageAttachment attachment, User user) throws SQLException {
+	protected void requestedMessageAttachmentDownloaded(InternalMessage message, InternalMessageAttachment attachment, User user, boolean manager) throws SQLException {
 
 		return;
 	}

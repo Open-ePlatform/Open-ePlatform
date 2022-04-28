@@ -168,8 +168,13 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 	}
 
 	@Override
-	protected void requestedMessageAttachmentDownloaded(ExternalMessage externalMessage, ExternalMessageAttachment attachment, User user) throws SQLException {
+	protected void requestedMessageAttachmentDownloaded(ExternalMessage externalMessage, ExternalMessageAttachment attachment, User user, boolean manager) throws SQLException {
 
+		if (manager) {
+			
+			return;
+		}
+		
 		ExternalMessageReadReceipt readReceipt = CollectionUtils.find(externalMessage.getReadReceipts(), r -> r.getUser().equals(user));
 
 		if (readReceipt == null) {

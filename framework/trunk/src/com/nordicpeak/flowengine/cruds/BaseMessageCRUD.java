@@ -203,7 +203,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		return req;
 	}
 
-	public ForegroundModuleResponse getRequestedMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController previewAccessController) throws SQLException, AccessDeniedException, URINotFoundException, ModuleConfigurationException {
+	public ForegroundModuleResponse getRequestedMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser, FlowInstanceAccessController previewAccessController, boolean manager) throws SQLException, AccessDeniedException, URINotFoundException, ModuleConfigurationException {
 
 		MessageType message;
 		
@@ -258,7 +258,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 						
 					}
 					
-					requestedMessageAttachmentDownloaded(message, attachment, user);
+					requestedMessageAttachmentDownloaded(message, attachment, user, manager);
 					
 				} catch (RuntimeException | IOException e) {
 
@@ -276,7 +276,7 @@ public abstract class BaseMessageCRUD<MessageType extends BaseMessage, Attachmen
 		
 	}
 	
-	protected abstract void requestedMessageAttachmentDownloaded(MessageType message, AttachmentType attachment, User user) throws SQLException;
+	protected abstract void requestedMessageAttachmentDownloaded(MessageType message, AttachmentType attachment, User user, boolean manager) throws SQLException;
 
 	protected MessageType getMessage(Integer messageID) throws SQLException {
 

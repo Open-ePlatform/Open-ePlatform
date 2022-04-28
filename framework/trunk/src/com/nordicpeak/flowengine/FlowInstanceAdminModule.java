@@ -1691,13 +1691,13 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 	@WebPublic(alias = "externalattachment")
 	public ForegroundModuleResponse getExternalMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException {
 
-		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getGeneralAccessController());
+		return externalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getGeneralAccessController(), true);
 	}
 
 	@WebPublic(alias = "internalattachment")
 	public ForegroundModuleResponse getInternalMessageAttachment(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException, FlowDefaultStatusNotFound, EvaluationException, URINotFoundException {
 
-		return internalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getGeneralAccessController());
+		return internalMessageCRUD.getRequestedMessageAttachment(req, res, user, uriParser, getGeneralAccessController(), true);
 	}
 
 	public List<Integer> getUserFlowIDs(User user, SiteProfile profile) throws SQLException {
