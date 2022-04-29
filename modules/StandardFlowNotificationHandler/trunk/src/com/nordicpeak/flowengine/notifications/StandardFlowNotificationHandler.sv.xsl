@@ -700,9 +700,9 @@
 	<xsl:variable name="i18n.ReadReceiptAddedGroupEmailSubject">Rubrik på e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
 	<xsl:variable name="i18n.ReadReceiptAddedGroupEmailMessage">Innehåll i e-postmeddelande vid kvittens för läsning av meddelande</xsl:variable>
 	
-	<xsl:variable name="i18n.SendReadReceiptAddedGlobalEmail">E-post med kvitto när invånare läser meddelande</xsl:variable>
-	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailSubject">Rubrik på e-postmeddelande med kvitto när invånare läser meddelande</xsl:variable>
-	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailMessage">Innehåll i e-postmeddelande med kvitto när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.SendReadReceiptAddedGlobalEmail">E-post med kvittens när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailSubject">Rubrik på e-postmeddelande med kvittens när invånare läser meddelande</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailMessage">Innehåll i e-postmeddelande med kvittens när invånare läser meddelande</xsl:variable>
 	<xsl:variable name="i18n.ReadReceiptAddedGlobalEmailAddresses">E-postadresser för notifiering när invånare läser meddelande (en adress per rad)</xsl:variable>
 	
 	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedManagerEmail">E-post till tilldelade handläggare vid kvittens för nedladdning av fil</xsl:variable>
@@ -713,9 +713,9 @@
 	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGroupEmailSubject">Rubrik på e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
 	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGroupEmailMessage">Innehåll i e-postmeddelande vid kvittens för nedladdning av fil</xsl:variable>
 	
-	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedGlobalEmail">E-post med kvitto när invånare laddar ner fil</xsl:variable>
-	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailSubject">Rubrik på e-postmeddelande med kvitto när invånare laddar ner fil</xsl:variable>
-	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailMessage">Innehåll i e-postmeddelande med kvitto när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.SendReadReceiptAttachmentDownloadedGlobalEmail">E-post med kvittens när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailSubject">Rubrik på e-postmeddelande med kvittens när invånare laddar ner fil</xsl:variable>
+	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailMessage">Innehåll i e-postmeddelande med kvittens när invånare laddar ner fil</xsl:variable>
 	<xsl:variable name="i18n.ReadReceiptAttachmentDownloadedGlobalEmailAddresses">E-postadresser för notifiering när invånare laddar ner fil (en adress per rad)</xsl:variable>
 	
 </xsl:stylesheet>
