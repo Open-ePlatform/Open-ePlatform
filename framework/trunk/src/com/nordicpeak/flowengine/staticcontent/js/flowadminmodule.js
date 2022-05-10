@@ -947,10 +947,10 @@ function openTableSettingsModal(button, event) {
 				
 				$("[name='columnID']").each(function() {
 					var columnName = $(this).val();
-					var sortOrderVal =$(`#sortorder_${columnName}`).val();
-					var visibilityVal =$(`#enabled_${columnName}`).prop("checked");
-					formData[`${columnName}-order`] = `${sortOrderVal}`;
-					formData[`${columnName}-visibility`] = `${visibilityVal}`;
+					var sortOrderVal =$('#sortorder_${columnName}').val();
+					var visibilityVal =$('#enabled_${columnName}').prop("checked");
+					formData['${columnName}-order'] = '${sortOrderVal';
+					formData['${columnName}-visibility'] = '${visibilityVal}';
 					
 				});
 				
