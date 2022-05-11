@@ -311,8 +311,25 @@ public class FlowApprovalActivityProgress extends GeneratedElementable implement
 	@Override
 	public Collection<Integer> getAllowedGroupIDs() {
 
-		return UserUtils.getGroupIDs(FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups()));
+		List<Integer> responsibleGroupIDs = UserUtils.getGroupIDs(FlowApprovalActivity.clearUnknownGroups(activity.getResponsibleGroups()));
 		
+		List<Integer> responsibleAttributedGroupIDs = UserUtils.getGroupIDs(FlowApprovalActivity.clearUnknownGroups(responsibleAttributedGroups));
+		
+		if(responsibleGroupIDs == null && responsibleAttributedGroupIDs == null) {
+			return null;
+		}
+		
+		List<Integer> groupIDs = new ArrayList<>(CollectionUtils.getSize(responsibleGroupIDs) + 1);
+		
+		if(responsibleGroupIDs != null) {
+			groupIDs.addAll(responsibleGroupIDs);
+		}
+		
+		if(responsibleAttributedGroupIDs != null) {
+			groupIDs.addAll(responsibleAttributedGroupIDs);
+		}
+		
+		return groupIDs;
 	}
 	
 
