@@ -2911,35 +2911,6 @@
 				ENGINE = InnoDB;
 			]]>
 		</Query>
-		
-		
-	</Script>
-
-	<Script version="157">
-		<Query precondition="SELECT readReceiptAttachmentDownloadedManagerEmailMessage FROM flow_familiy_notification_settings WHERE readReceiptAttachmentDownloadedManagerEmailMessage LIKE '%Ett fil har laddats ner kopplat till%';">
-			<![CDATA[
-				UPDATE flow_familiy_notification_settings SET readReceiptAttachmentDownloadedManagerEmailMessage = 
-					REPLACE(readReceiptAttachmentDownloadedManagerEmailMessage,
-					'Ett fil har laddats ner kopplat till &auml;rendet $flow.name',
-					'En fil har laddats ner kopplat till &auml;rendet $flow.name');
-			]]>
-		</Query>
-		<Query precondition="SELECT readReceiptAttachmentDownloadedGroupEmailMessage FROM flow_familiy_notification_settings WHERE readReceiptAttachmentDownloadedGroupEmailMessage LIKE '%Ett fil har laddats ner kopplat till%';">
-			<![CDATA[
-				UPDATE flow_familiy_notification_settings SET readReceiptAttachmentDownloadedGroupEmailMessage = 
-					REPLACE(readReceiptAttachmentDownloadedGroupEmailMessage,
-					'Ett fil har laddats ner kopplat till &auml;rendet $flow.name',
-					'En fil har laddats ner kopplat till &auml;rendet $flow.name');
-			]]>
-		</Query>
-		<Query precondition="SELECT readReceiptAttachmentDownloadedGlobalEmailMessage FROM flow_familiy_notification_settings WHERE readReceiptAttachmentDownloadedGlobalEmailMessage LIKE '%Ett fil har laddats ner kopplat till%';">
-			<![CDATA[
-				UPDATE flow_familiy_notification_settings SET readReceiptAttachmentDownloadedGlobalEmailMessage = 
-					REPLACE(readReceiptAttachmentDownloadedGlobalEmailMessage,
-					'Ett fil har laddats ner kopplat till &auml;rendet $flow.name',
-					'En fil har laddats ner kopplat till &auml;rendet $flow.name');
-			]]>
-		</Query>
 	</Script>
 			
 </DBScripts>
