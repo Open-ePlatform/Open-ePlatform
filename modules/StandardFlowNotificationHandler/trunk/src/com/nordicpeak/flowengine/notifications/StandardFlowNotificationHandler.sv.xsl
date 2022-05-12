@@ -487,7 +487,7 @@
 	
 		&lt;p&gt;Hej,&lt;/p&gt;
 		
-		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		&lt;p&gt;En fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
 		
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
@@ -502,7 +502,7 @@
 	
 		&lt;p&gt;Hej,&lt;/p&gt;
 		
-		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		&lt;p&gt;En fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
 		
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
@@ -517,7 +517,7 @@
 	
 		&lt;p&gt;Hej,&lt;/p&gt;
 		
-		&lt;p&gt;Ett fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
+		&lt;p&gt;En fil har laddats ner kopplat till ärendet $flow.name (ärende nr. $flowInstance.flowInstanceID).&lt;/p&gt;
 		
 		&lt;p&gt;Klicka på länken nedan för att visa ärendet:&lt;/p&gt;
 		
