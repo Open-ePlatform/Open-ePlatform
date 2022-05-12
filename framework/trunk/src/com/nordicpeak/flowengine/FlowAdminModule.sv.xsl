@@ -416,7 +416,8 @@
 	<xsl:variable name="i18n.UpdateManagers.Modal.notifyGroupMembersPersonally.disclamer">OBS, max 100 gruppmedlemmar kommer få notifieringen.</xsl:variable>
 	
 	
-	<xsl:variable name="i18n.UpdateManagers.Modal.notificationEmailAddresses">E-postadresser för notifiering</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.notificationEmailAddresses">E-postadresser för notifiering till funktionsbrevlåda (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.UpdateManagers.Modal.notificationEmailAddresses.info">För att notifieringar ska skickas till nedanstående adresser måste notifieringen 'E-post vid tilldelning av ärende' under 'Notifikationer till handläggargrupper' vara aktiverad.</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Title">Inställningar för</xsl:variable>
 	<xsl:variable name="i18n.UpdateManagers.Modal.Close">Stäng</xsl:variable>
 	<xsl:variable name="i18n.Manager.validFromDate">Giltig från och med</xsl:variable>

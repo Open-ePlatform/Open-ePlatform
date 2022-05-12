@@ -6235,8 +6235,10 @@
 							<label for="notificationEmailAddresses" class="floatleft full">
 								<xsl:value-of select="$i18n.UpdateManagers.Modal.notificationEmailAddresses" />
 							</label>
+						
+							<div class="tiny"><xsl:value-of select="$i18n.UpdateManagers.Modal.notificationEmailAddresses.info" /></div>
 							
-							<div class="floatleft full">
+							<div class="floatleft margintop full">
 								<xsl:call-template name="createTextArea">
 									<xsl:with-param name="id" select="'notificationEmailAddresses'"/>
 									<xsl:with-param name="name" select="'notificationEmailAddresses'"/>
