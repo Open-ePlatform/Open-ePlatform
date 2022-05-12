@@ -7224,6 +7224,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		flow.setShortDescription(htmlContentFilter.filterHTML(flow.getShortDescription()));
 		flow.setLongDescription(htmlContentFilter.filterHTML(flow.getLongDescription()));
 		flow.setSubmittedMessage(htmlContentFilter.filterHTML(flow.getSubmittedMessage()));
+		flow.setLoginQuestionText(htmlContentFilter.filterHTML(flow.getLoginQuestionText()));
 	}
 
 	@Override

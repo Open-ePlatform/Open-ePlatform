@@ -253,9 +253,9 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@FCKContent
 	@URLRewrite
 	@DAOManaged
+	@TextTagReplace
 	@WebPopulate(maxLength = 65535)
 	@RequiredIfSet(paramNames = "showLoginQuestion", paramValues = "true")
-	@XMLElement(cdata = true)
 	protected String loginQuestionText;
 
 	@DAOManaged
@@ -688,6 +688,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		XMLUtils.appendNewElement(doc, flowElement, "shortDescription", shortDescription);
 		XMLUtils.appendNewElement(doc, flowElement, "longDescription", longDescription);
 		XMLUtils.appendNewElement(doc, flowElement, "submittedMessage", submittedMessage);
+		XMLUtils.appendNewElement(doc, flowElement, "loginQuestionText", loginQuestionText);
 		XMLUtils.appendNewElement(doc, flowElement, "published", isPublished());
 
 		if (iconLastModified != null) {
@@ -713,6 +714,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 		String shortDescription = this.shortDescription;
 		String longDescription = this.longDescription;
 		String submittedMessage = this.submittedMessage;
+		String loginQuestionText = this.loginQuestionText;
 
 		if (siteProfile != null && hasTextTags) {
 
@@ -729,6 +731,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 			if (submittedMessage != null) {
 
 				submittedMessage = TextTagReplacer.replaceTextTags(submittedMessage, siteProfile.getSettingHandler());
+			}
+			
+			if (loginQuestionText != null) {
+
+				loginQuestionText = TextTagReplacer.replaceTextTags(loginQuestionText, siteProfile.getSettingHandler());
 			}
 
 		}
@@ -749,6 +756,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 				submittedMessage = FCKUtils.setAbsoluteFileUrls(submittedMessage, absoluteFileURL);
 			}
+			
+			if (loginQuestionText != null) {
+
+				loginQuestionText = FCKUtils.setAbsoluteFileUrls(loginQuestionText, absoluteFileURL);
+			}
 		}
 
 		if (req != null && hasRelativeURLs) {
@@ -767,11 +779,17 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 
 				submittedMessage = URLRewriter.setAbsoluteLinkUrls(submittedMessage, req);
 			}
+			
+			if (loginQuestionText != null) {
+
+				loginQuestionText = URLRewriter.setAbsoluteLinkUrls(loginQuestionText, req);
+			}
 		}
 
 		XMLUtils.appendNewElement(doc, flowElement, "shortDescription", shortDescription);
 		XMLUtils.appendNewElement(doc, flowElement, "longDescription", longDescription);
 		XMLUtils.appendNewElement(doc, flowElement, "submittedMessage", submittedMessage);
+		XMLUtils.appendNewElement(doc, flowElement, "loginQuestionText", loginQuestionText);
 		XMLUtils.appendNewElement(doc, flowElement, "published", isPublished());
 
 		return flowElement;
