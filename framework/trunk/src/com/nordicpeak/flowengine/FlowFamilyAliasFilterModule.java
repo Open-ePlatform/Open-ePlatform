@@ -90,7 +90,7 @@ public class FlowFamilyAliasFilterModule extends AnnotatedFilterModule implement
 
 		String alias = uriParser.get(0);
 
-		if (systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) == null && systemInterface.getRootSection().getSectionCache().getEntry(alias) == null) {
+		if (alias != null && systemInterface.getRootSection().getForegroundModuleCache().getEntry(alias) == null && systemInterface.getRootSection().getSectionCache().getEntry(alias) == null) {
 
 			return aliasMap.get(alias);
 		}
