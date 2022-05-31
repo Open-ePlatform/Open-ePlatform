@@ -45,5 +45,6 @@ Frågetypen Filuppladdningsfråga används när användaren skall ladda upp en eller 
 	
 	<xsl:variable name="i18n.MaxFileSizeBiggerThanQuerySize">Maximal filstorlek får inte vara större än maximal storlek på frågan</xsl:variable>
 	
+	<xsl:variable name="i18n.excludeFileContentFromXML">Exkludera filernas innehåll vid export till XML</xsl:variable>
 	
 </xsl:stylesheet>

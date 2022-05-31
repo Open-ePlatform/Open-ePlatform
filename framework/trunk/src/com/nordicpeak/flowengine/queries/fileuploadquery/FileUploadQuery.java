@@ -118,6 +118,11 @@ public class FileUploadQuery extends BaseQuery {
 	@WebPopulate
 	@XMLElement
 	private boolean lockOnOwnershipTransfer;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean excludeFileContentFromXML;
 
 	@DAOManaged
 	@WebPopulate(maxLength = 30)
@@ -292,7 +297,11 @@ public class FileUploadQuery extends BaseQuery {
 		addElementType(doc, sequenceElement, "ID", "xs:string");
 		addElementType(doc, sequenceElement, "Name", "xs:string");
 		addElementType(doc, sequenceElement, "Size", "xs:long");
-		addElementType(doc, sequenceElement, "EncodedData", "xs:string");
+		
+		if(!excludeFileContentFromXML) {
+			
+			addElementType(doc, sequenceElement, "EncodedData", "xs:string");
+		}
 		
 		doc.getDocumentElement().appendChild(complexTypeElement);
 	}
@@ -328,6 +337,8 @@ public class FileUploadQuery extends BaseQuery {
 		lockOnOwnershipTransfer = xmlParser.getPrimitiveBoolean("lockOnOwnershipTransfer");
 		hideTitle = xmlParser.getPrimitiveBoolean("hideTitle");
 		hideDescriptionInPDF = xmlParser.getPrimitiveBoolean("hideDescriptionInPDF");
+		excludeFileContentFromXML = xmlParser.getPrimitiveBoolean("excludeFileContentFromXML");
+		
 		
 		attachmentNamePrefixMode = XMLValidationUtils.validateParameter("attachmentNamePrefixMode", xmlParser, false, AttachmentNamePrefixType.getPopulator(), errors);
 		
@@ -447,6 +458,18 @@ public class FileUploadQuery extends BaseQuery {
 	public void setSelectFilesButtonText(String selectFilesButtonText) {
 
 		this.selectFilesButtonText = selectFilesButtonText;
+	}
+
+	
+	public boolean isExcludeFileContentFromXML() {
+	
+		return excludeFileContentFromXML;
+	}
+
+	
+	public void setExcludeFileContentFromXML(boolean excludeFileContent) {
+	
+		this.excludeFileContentFromXML = excludeFileContent;
 	}
 
 }

@@ -119,7 +119,7 @@ public class FileUploadQueryInstance extends BaseQueryInstance implements String
 	@Override
 	public String toString() {
 
-		return "FileUploadQueryInstance (queryInstanceID=" + queryInstanceID + ")";
+		return "FileUploadQueryInstance (queryInstanceID: " + queryInstanceID + ")";
 	}
 
 	public List<FileDescriptor> getFiles() {

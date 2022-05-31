@@ -38,7 +38,7 @@ public class FileUploadQueryRequestProcessor implements QueryRequestProcessor {
 	@Override
 	public void processRequest(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
-		//TODO logging
+		log.info("User " + user + " downloading file " + file);
 		
 		HTTPUtils.setContentLength(file.length(), res);
 		res.setHeader("Content-Disposition", "attachment;filename=\"" + FileUtils.toValidHttpFilename(originalName) + "\"");
@@ -62,7 +62,7 @@ public class FileUploadQueryRequestProcessor implements QueryRequestProcessor {
 
 		} catch (IOException e) {
 
-			log.info("Error sending file " + file + " to user " + user);
+			log.info("Error sending file " + file + " to user " + user + ", " +  e);
 
 		} finally {
 			CloseUtils.close(inputStream);

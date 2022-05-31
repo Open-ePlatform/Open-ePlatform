@@ -51,6 +51,20 @@
 			</xsl:call-template>
 			
 			<div class="floatleft full bigmarginbottom">
+				<div class="floatleft full">
+					<xsl:call-template name="createCheckbox">
+						<xsl:with-param name="id" select="'excludeFileContentFromXML'" />
+						<xsl:with-param name="name" select="'excludeFileContentFromXML'" />
+						<xsl:with-param name="element" select="FileUploadQuery" /> 
+					</xsl:call-template>
+						
+					<label for="excludeFileContentFromXML">
+						<xsl:value-of select="$i18n.excludeFileContentFromXML" />
+					</label>
+				</div>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
 				<label for="allowedFileExtensions" class="floatleft clearboth"><xsl:value-of select="$i18n.AllowedFileExtensions" /></label>
 				<div class="floatleft full">
 					<xsl:call-template name="createTextArea">

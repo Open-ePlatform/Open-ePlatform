@@ -389,7 +389,7 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 		return queryInstance;
 	}
 
-	private String getFilePath(FileDescriptor fileDescriptor, MutableQueryInstanceDescriptor descriptor) {
+	public String getFilePath(FileDescriptor fileDescriptor, MutableQueryInstanceDescriptor descriptor) {
 
 		return getQueryInstanceDirectory(descriptor) + File.separator + fileDescriptor.getFileID() + "." + FileUtils.getFileExtension(fileDescriptor.getName());
 	}
@@ -1045,10 +1045,10 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					continue;
 				}
 
-				appendFileXML(doc, targetElement, fileDescriptor, file);
+				appendFileXML(doc, targetElement, fileDescriptor, file, queryInstance.getQuery().isExcludeFileContentFromXML());
 			}
 
-			//Mutable query
+		//Mutable query
 		} else {
 
 			for (FileDescriptor fileDescriptor : queryInstance.getFiles()) {
@@ -1060,20 +1060,24 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 					continue;
 				}
 
-				appendFileXML(doc, targetElement, fileDescriptor, file);
+				appendFileXML(doc, targetElement, fileDescriptor, file, queryInstance.getQuery().isExcludeFileContentFromXML());
 			}
 		}
 
 	}
 
-	private void appendFileXML(Document doc, Element targetElement, FileDescriptor fileDescriptor, File file) throws IOException {
+	private void appendFileXML(Document doc, Element targetElement, FileDescriptor fileDescriptor, File file, boolean excludeFileContentFromXML) throws IOException {
 
 		Element fileElement = doc.createElement("File");
 
 		XMLUtils.appendNewElement(doc, fileElement, "ID", fileDescriptor.getFileID());
 		XMLUtils.appendNewCDATAElement(doc, fileElement, "Name", fileDescriptor.getName());
 		XMLUtils.appendNewElement(doc, fileElement, "Size", fileDescriptor.getSize());
-		XMLUtils.appendNewElement(doc, fileElement, "EncodedData", Base64.encodeFromFile(file));
+		
+		if(!excludeFileContentFromXML) {
+			
+			XMLUtils.appendNewElement(doc, fileElement, "EncodedData", Base64.encodeFromFile(file));
+		}
 
 		targetElement.appendChild(fileElement);
 	}

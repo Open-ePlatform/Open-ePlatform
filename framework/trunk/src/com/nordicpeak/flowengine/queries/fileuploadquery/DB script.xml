@@ -150,4 +150,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `excludeFileContentFromXML` BOOLEAN NOT NULL AFTER `selectFilesButtonText`;
+			]]>
+		</Query>
+	</Script>	
+	
 </DBScripts>
