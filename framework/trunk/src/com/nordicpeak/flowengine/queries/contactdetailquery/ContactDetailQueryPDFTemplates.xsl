@@ -84,8 +84,11 @@
 						</xsl:call-template>
 					</div>
 					
+					
 					<xsl:if test="ContactDetailQueryInstance/ContactDetailQuery/useOfficalAddress = 'true' and ContactDetailQueryInstance/officalAddress = 'false'">
-						<p><xsl:value-of select="$i18n.OfficialAddressMissing" /></p>
+					
+						<p class="floatleft full" ><xsl:value-of select="$i18n.OfficialAddressMissing" /></p>
+					
 					</xsl:if>
 					
 				</xsl:if>
