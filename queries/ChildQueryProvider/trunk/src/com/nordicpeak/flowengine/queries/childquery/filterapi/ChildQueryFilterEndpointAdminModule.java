@@ -159,6 +159,11 @@ public class ChildQueryFilterEndpointAdminModule extends AnnotatedForegroundModu
 
 		if (apiSourceHandler != null) {
 
+			if(!apiSourceHandler.getSectionID().equals(moduleDescriptor.getSectionID())) {
+				
+				return;
+			}
+			
 			apiSourceHandler.addAPISourceProvider(this);
 
 		} else if (this.apiSourceHandler != null) {
