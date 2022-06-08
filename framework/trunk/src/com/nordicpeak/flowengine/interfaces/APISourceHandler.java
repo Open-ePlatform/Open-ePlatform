@@ -7,4 +7,6 @@ public interface APISourceHandler {
 	public boolean removeAPISourceProvider(APISourceProvider provider);
 
 	public String getFullAlias();
+	
+	public Integer getSectionID();
 }
