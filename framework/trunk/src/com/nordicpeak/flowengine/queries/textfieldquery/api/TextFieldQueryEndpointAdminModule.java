@@ -160,6 +160,11 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		
 		if (apiSourceHandler != null) {
 			
+			if(!apiSourceHandler.getSectionID().equals(moduleDescriptor.getSectionID())) {
+				
+				return;
+			}
+			
 			apiSourceHandler.addAPISourceProvider(this);
 			
 		} else if (this.apiSourceHandler != null) {
