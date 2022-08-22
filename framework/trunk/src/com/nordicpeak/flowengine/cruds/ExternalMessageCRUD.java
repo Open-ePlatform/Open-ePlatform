@@ -157,6 +157,9 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 
 		if (readReceipt != null) {
 
+			externalMessage.setReadReceipts(null);
+			readReceipt.setMessage(externalMessage);
+			
 			return readReceipt;
 		}
 
