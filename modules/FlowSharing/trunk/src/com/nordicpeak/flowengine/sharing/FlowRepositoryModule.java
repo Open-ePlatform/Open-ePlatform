@@ -30,8 +30,10 @@ import se.unlogic.hierarchy.core.interfaces.AccessInterface;
 import se.unlogic.hierarchy.core.interfaces.ForegroundModuleResponse;
 import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
+import se.unlogic.hierarchy.core.interfaces.settings.MutableSettingHandler;
 import se.unlogic.hierarchy.core.utils.CRUDCallback;
 import se.unlogic.hierarchy.core.utils.HierarchyAnnotatedDAOFactory;
+import se.unlogic.hierarchy.foregroundmodules.login.RetryLimiter;
 import se.unlogic.hierarchy.foregroundmodules.rest.AnnotatedRESTModule;
 import se.unlogic.hierarchy.foregroundmodules.rest.RESTMethod;
 import se.unlogic.hierarchy.foregroundmodules.rest.URIParam;
@@ -96,6 +98,20 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	@ModuleSetting
 	@DropDownSettingDescriptor(name = "Password algorithm", description = "The algorithm used for password hashing", required = true, values = { "MD5", "SHA-256", "SHA-384", "SHA-512" }, valueDescriptions = { "MD5", "SHA-256", "SHA-384", "SHA-512" })
 	protected String passwordAlgorithm = HashAlgorithms.SHA256;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Login lockout time", description = "Time in seconds that the user will be locked out after failed attempts")
+	protected int loginLockoutTime = 1800;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Login retries", description = "Number of retries allowed in interval")
+	protected int loginRetries = 5;
+
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "Login retry interval", description = "Interval in seconds for failed attempts before lockout")
+	protected int loginRetryInterval = 600;
+	
+	protected RetryLimiter retryLimiter;
 	
 	private AnnotatedDAO<Source> sourceDAO;
 	private AnnotatedDAO<Repository> repositoryDAO;
@@ -139,7 +155,6 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 		
 		sourceCRUD = new SourceCRUD(sourceDAO.getWrapper(Integer.class), sourceRepositoryParamFactory, this);
 		
-//		sharedFlowIDParamFactory = sharedFlowDAO.getParamFactory("sharedFlowID", Integer.class);
 		sharedFlowFlowIDParamFactory = sharedFlowDAO.getParamFactory("flowID", Integer.class);
 		sharedFlowSourceParamFactory = sharedFlowDAO.getParamFactory("source", Source.class);
 		sharedFlowFamilyIDParamFactory = sharedFlowDAO.getParamFactory("flowFamilyID", Integer.class);
@@ -154,6 +169,14 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 			log.info("Creating repository " + repository);
 			repositoryDAO.add(repository);
 		}
+	}
+	
+	@Override
+	protected void parseSettings(MutableSettingHandler mutableSettingHandler) throws Exception {
+
+		super.parseSettings(mutableSettingHandler);
+		
+		retryLimiter = new RetryLimiter(loginLockoutTime, loginRetries, loginRetryInterval);
 	}
 	
 	public String getRepositoryName() {
@@ -664,16 +687,29 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 						String username = decodedCredentials.substring(0, index).trim();
 						String password = decodedCredentials.substring(index + 1).trim();
 						
+						if (retryLimiter.isLocked(username)) {
+							
+							log.warn("Login refused for user " + username + " (account locked) accessing from address " + req.getRemoteHost());
+
+							unauthorized(res, "Login refused, account locked");
+
+							return null;
+						}						
+						
 						Source source = getSource(username, password);
 						
 						if (source == null) {
 							
 							log.warn("Failed login attempt using username " + username + " from address " + req.getRemoteHost());
 							
+							retryLimiter.registerAuthFailure(username);
+							
 							unauthorized(res, "Bad credentials");
 							return null;
 							
 						} else {
+							
+							retryLimiter.registerAuthSuccess(username);
 							
 							SourceUser requestedUser = new SourceUser(source);
 							
