@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.xml.schema.impl.XSAnyImpl;
-import org.opensaml.xml.schema.impl.XSStringImpl;
+import org.opensaml.core.xml.schema.impl.XSAnyImpl;
+import org.opensaml.core.xml.schema.impl.XSStringImpl;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
 
 import se.unlogic.hierarchy.core.annotations.CheckboxSettingDescriptor;
 import se.unlogic.hierarchy.core.annotations.GroupMultiListSettingDescriptor;
