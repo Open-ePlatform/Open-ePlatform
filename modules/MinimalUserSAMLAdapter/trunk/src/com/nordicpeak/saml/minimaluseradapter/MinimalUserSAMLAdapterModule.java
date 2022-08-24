@@ -141,6 +141,8 @@ public class MinimalUserSAMLAdapterModule extends AnnotatedForegroundModule impl
 			return null;
 		}
 
+		//TODO Add validation!
+		
 		User user = null;
 
 		if (userIdentifierAttribute.equals("email")) {
