@@ -13,7 +13,7 @@
 	<xsl:variable name="java.fileMissing">Filen saknas</xsl:variable>
 	
 	<xsl:variable name="java.eventCopyFlowMessage">Kopierade version</xsl:variable>
-	<xsl:variable name="java.eventUpdateIconMessage">Updaterade ikon till</xsl:variable>
+	<xsl:variable name="java.eventUpdateIconMessage">Uppdaterade ikon till</xsl:variable>
 	<xsl:variable name="java.eventUpdateNotificationsMessage">Uppdaterade notifikationsinställningar</xsl:variable>
 	<xsl:variable name="java.eventUpdateManagementInfoMessage">Uppdaterade förvaltningsinformationen</xsl:variable>
 	<xsl:variable name="java.eventSortFlowMessage">Sorterade frågor och steg</xsl:variable>
