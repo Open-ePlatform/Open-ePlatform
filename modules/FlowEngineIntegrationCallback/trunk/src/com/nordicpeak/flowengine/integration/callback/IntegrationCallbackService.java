@@ -1,13 +1,12 @@
 
 package com.nordicpeak.flowengine.integration.callback;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 
 
@@ -17,33 +16,20 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "IntegrationCallbackService", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", wsdlLocation = "file:/C:/Users/Unlogic/Workspace/FlowEngineIntegrationCallback/src/com/nordicpeak/flowengine/integration/callback/IntegrationCallbackService.wsdl")
+@WebServiceClient(name = "IntegrationCallbackService", targetNamespace = "http://www.oeplatform.org/version/1.0/schemas/integration/callback", wsdlLocation = "IntegrationCallbackService.wsdl")
 public class IntegrationCallbackService
     extends Service
 {
 
-    private final static URL INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION;
-    private final static WebServiceException INTEGRATIONCALLBACKSERVICE_EXCEPTION;
+    private final static URL INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION = IntegrationCallbackService.class.getResource("IntegrationCallbackService.wsdl");
     private final static QName INTEGRATIONCALLBACKSERVICE_QNAME = new QName("http://www.oeplatform.org/version/1.0/schemas/integration/callback", "IntegrationCallbackService");
 
-    static {
-        URL url = null;
-        WebServiceException e = null;
-        try {
-            url = new URL("file:/C:/Users/Unlogic/Workspace/FlowEngineIntegrationCallback/src/com/nordicpeak/flowengine/integration/callback/IntegrationCallbackService.wsdl");
-        } catch (MalformedURLException ex) {
-            e = new WebServiceException(ex);
-        }
-        INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION = url;
-        INTEGRATIONCALLBACKSERVICE_EXCEPTION = e;
-    }
-
     public IntegrationCallbackService() {
-        super(__getWsdlLocation(), INTEGRATIONCALLBACKSERVICE_QNAME);
+        super(INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION, INTEGRATIONCALLBACKSERVICE_QNAME);
     }
 
     public IntegrationCallbackService(WebServiceFeature... features) {
-        super(__getWsdlLocation(), INTEGRATIONCALLBACKSERVICE_QNAME, features);
+        super(INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION, INTEGRATIONCALLBACKSERVICE_QNAME, features);
     }
 
     public IntegrationCallbackService(URL wsdlLocation) {
@@ -83,12 +69,4 @@ public class IntegrationCallbackService
     public IntegrationCallback getIntegrationCallback(WebServiceFeature... features) {
         return super.getPort(new QName("http://www.oeplatform.org/version/1.0/schemas/integration/callback", "IntegrationCallback"), IntegrationCallback.class, features);
     }
-
-    private static URL __getWsdlLocation() {
-        if (INTEGRATIONCALLBACKSERVICE_EXCEPTION!= null) {
-            throw INTEGRATIONCALLBACKSERVICE_EXCEPTION;
-        }
-        return INTEGRATIONCALLBACKSERVICE_WSDL_LOCATION;
-    }
-
 }
