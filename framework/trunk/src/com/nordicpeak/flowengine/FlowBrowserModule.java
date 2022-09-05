@@ -1,7 +1,6 @@
 package com.nordicpeak.flowengine;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -370,7 +369,7 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 						try {
 							lastSearch = URLDecoder.decode(lastSearch, req.getCharacterEncoding());
 							
-						} catch (UnsupportedEncodingException e) {
+						} catch (Exception e) {
 							
 							log.warn("Unsupported character set on request from address " + req.getRemoteHost() + ", skipping decoding of query parameter");
 						}
