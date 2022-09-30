@@ -368,6 +368,8 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 
 		List<FeedbackSurvey> surveys = feedbackSurveyDAO.getAll(query);
 
+		List<FeedbackSurvey> commentedSurveys = new ArrayList<>();
+		
 		if (surveys != null) {
 
 			int veryDissatisfiedCount = 0;
@@ -391,7 +393,11 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 				} else if (answer == Answer.VERY_SATISFIED) {
 					verySatisfiedCount++;
 				}
-
+				
+				if(!StringUtils.isEmpty(survey.getComment()) || survey.getCommentDeleted() != null ) {
+					
+					commentedSurveys.add(survey);
+				}
 			}
 
 			JsonArray jsonArray = new JsonArray(6);
@@ -403,8 +409,11 @@ public class FeedbackFlowSubmitSurvey extends AnnotatedRESTModule implements Flo
 			jsonArray.addNode(verySatisfiedCount + "");
 
 			XMLUtils.appendNewElement(doc, showElement, "ChartData", jsonArray.toJson());
-			XMLUtils.append(doc, showElement, "Comments", surveys);
+			
+			if (commentedSurveys != null) {
 
+				XMLUtils.append(doc, showElement, "Comments", commentedSurveys);
+			}
 		}
 
 		return viewFragmentTransformer.createViewFragment(doc);
