@@ -96,6 +96,18 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@Templated
 	@WebPopulate(maxLength = 1024)
 	@XMLElement
+	private String statusChangedUserSMS;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
+	private String externalMessageReceivedUserSMS;
+
+	@DAOManaged
+	@Templated
+	@WebPopulate(maxLength = 1024)
+	@XMLElement
 	private String flowInstanceSubmittedUserSMS;
 
 	@DAOManaged
@@ -1428,6 +1440,26 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	public void setFlowInstanceSubmittedNotLoggedInUserSMS(String flowInstanceSubmittedNotLoggedInUserSMS) {
 
 		this.flowInstanceSubmittedNotLoggedInUserSMS = flowInstanceSubmittedNotLoggedInUserSMS;
+	}
+
+	public String getStatusChangedUserSMS() {
+		
+		return statusChangedUserSMS;
+	}
+
+	public void setStatusChangedUserSMS(String statusChangedUserSMS) {
+		
+		this.statusChangedUserSMS = statusChangedUserSMS;
+	}	
+
+	public String getExternalMessageReceivedUserSMS() {
+		
+		return externalMessageReceivedUserSMS;
+	}
+
+	public void setExternalMessageReceivedUserSMS(String externalMessageReceivedUserSMS) {
+		
+		this.externalMessageReceivedUserSMS = externalMessageReceivedUserSMS;
 	}
 
 	public String getFlowInstanceArchivedUserSMS() {

@@ -575,5 +575,16 @@
 			]]>
 		</Query>
 	</Script>
+
+	<Script version="39">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `statusChangedUserSMS` VARCHAR(1024) NULL DEFAULT NULL AFTER `flowInstanceSubmittedNotLoggedInUserSMS`,
+					ADD COLUMN `externalMessageReceivedUserSMS` VARCHAR(1024) NULL DEFAULT NULL AFTER `statusChangedUserSMS`;
+			]]>
+		</Query>
+	</Script>
+
 				
 </DBScripts>

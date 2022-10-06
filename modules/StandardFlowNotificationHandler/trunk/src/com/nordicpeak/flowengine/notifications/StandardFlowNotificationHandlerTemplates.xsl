@@ -302,6 +302,16 @@
 				var $tagRow = $("#submit-email-message").find("table tr.attached-pdf-tag");
 				$tagRow.toggle($("#flowInstanceSubmittedUserEmailAttachPDF").is(":checked"));
 			}
+
+			function toggleStatusChangedUserSMS(){
+				
+				$("#status-changed-user-sms").toggleClass("hidden");
+			}
+
+			function toggleExternalMessageReceivedUserSMS(){
+				
+				$("#external-message-received-user-sms").toggleClass("hidden");
+			}
 			
 			function toggleSubmitSMS(){
 				
@@ -459,7 +469,36 @@
 				<label for="sendStatusChangedUserSMS">
 					<xsl:value-of select="$i18n.SendStatusChangedUserSMS" />
 				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleStatusChangedUserSMS();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>				
 			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom" id="status-changed-user-sms">
+			
+			<xsl:if test="not($errFieldNames = 'statusChangedUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="statusChangedUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.StatusChangedUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'statusChangedUserSMS'"/>
+					<xsl:with-param name="name" select="'statusChangedUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
 		</div>
 		
 		<div class="floatleft full bigmarginbottom margintop internal">
@@ -474,9 +513,38 @@
 				<label for="sendExternalMessageReceivedUserSMS">
 					<xsl:value-of select="$i18n.SendExternalMessageReceivedUserSMS" />
 				</label>
+				<xsl:text>&#160;</xsl:text>
+				<span class="tiny"><a onclick="toggleExternalMessageReceivedUserSMS();"><xsl:value-of select="$i18n.ToggleTexts" /></a></span>				
 			</div>
 		</div>
-		
+
+		<div class="floatleft full bigmarginbottom" id="external-message-received-user-sms">
+			
+			<xsl:if test="not($errFieldNames = 'externalMessageReceivedUserSMS')">
+				<xsl:attribute name="class">floatleft full bigmarginbottom hidden</xsl:attribute>
+			</xsl:if>
+			
+			<label for="externalMessageReceivedUserSMS" class="floatleft full">
+				<xsl:value-of select="$i18n.ExternalMessageReceivedUserSMS" />
+			</label>
+			
+			<div class="floatleft full">
+
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'externalMessageReceivedUserSMS'"/>
+					<xsl:with-param name="name" select="'externalMessageReceivedUserSMS'"/>
+					<xsl:with-param name="element" select="NotificationSettings" />
+					<xsl:with-param name="rows" select="'4'" />
+				</xsl:call-template>
+				
+			</div>
+			
+			<xsl:call-template name="addUserTagsTable">
+				<xsl:with-param name="sms">true</xsl:with-param>
+			</xsl:call-template>
+			
+		</div>
+
 		<div class="floatleft full bigmarginbottom margintop internal">
 		
 			<div class="floatleft">

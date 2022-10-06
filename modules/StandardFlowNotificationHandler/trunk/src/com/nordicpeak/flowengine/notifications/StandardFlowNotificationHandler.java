@@ -1814,7 +1814,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						if (notificationSettings.isSendExternalMessageReceivedUserSMS()) {
 
-							sendContactSMS(flowInstance, contact, externalMessageReceivedUserSMS);
+							sendContactSMS(flowInstance, contact, notificationSettings.getExternalMessageReceivedUserSMS());
 						}
 					}
 				}
@@ -2048,7 +2048,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						if (notificationSettings.isSendStatusChangedUserSMS()) {
 
-							sendContactSMS(flowInstance, contact, statusChangedUserSMS);
+							sendContactSMS(flowInstance, contact, notificationSettings.getStatusChangedUserSMS());
 						}
 					}
 				}

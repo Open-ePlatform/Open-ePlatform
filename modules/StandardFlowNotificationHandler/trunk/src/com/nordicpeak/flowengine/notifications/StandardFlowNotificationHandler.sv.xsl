@@ -557,6 +557,10 @@
 	<xsl:variable name="i18n.FlowInstanceExpiredManagerEmailSubject">Rubrik på e-postmeddelande till tilldelade handläggare när  ärenden förfaller</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceExpiredManagerEmailMessage">Innehåll i e-postmeddelande till tilldelade handläggare när ärenden förfaller</xsl:variable>
 	
+	<xsl:variable name="i18n.StatusChangedUserSMS">Innehåll i SMS vid byte av status</xsl:variable>
+	
+	<xsl:variable name="i18n.ExternalMessageReceivedUserSMS">Innehåll i SMS vid nytt meddelande</xsl:variable>
+	
 	<xsl:variable name="i18n.FlowInstanceSubmittedUserSMS">Innehåll i SMS vid inskickat ärende (inloggad användare)</xsl:variable>
 	<xsl:variable name="i18n.FlowInstanceSubmittedNotLoggedInUserSMS">Innehåll i SMS vid inskickat ärende (ej inloggad användare)</xsl:variable>
 	
