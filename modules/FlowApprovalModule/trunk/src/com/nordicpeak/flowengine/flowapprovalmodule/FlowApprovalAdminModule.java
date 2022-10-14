@@ -2396,91 +2396,95 @@ public class FlowApprovalAdminModule extends AnnotatedForegroundModule implement
 										Map<FlowApprovalActivity, FlowApprovalActivityProgress> updatedActivities = new HashMap<>(activityGroup.getActivities().size());
 										List<String> flowInstanceEventMessages = new ArrayList<>();
 
-										for (FlowApprovalActivityProgress progress : round.getActivityProgresses()) {
-
-											FlowApprovalActivity activity = progress.getActivity();
-											
-											if(isActivityActive(activity, flowInstance)) {
+										if(round.getActivityProgresses() != null) {
+										
+											for (FlowApprovalActivityProgress progress : round.getActivityProgresses()) {
+	
+												FlowApprovalActivity activity = progress.getActivity();
 												
-												boolean responsibleUsersChanged = false;
-												boolean responsibleGroupsChanged = false;
-
-												if (activity.getResponsibleUserAttributeNames() != null) {
-	
-													List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
-	
-													responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(progress.getResponsibleAttributedUsers());
-	
-													if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
-	
-														Set<User> oldUsers = new HashSet<>(progress.getResponsibleAttributedUsers());
-														Set<User> newUsers = new HashSet<>(responsibleUsers);
-	
-														responsibleUsersChanged = !oldUsers.equals(newUsers);
-													}
-	
-													if (responsibleUsersChanged) {
-	
-														log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
-	
-														String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
-														String namesTo = eventActivityOwnerDefault;
-	
-														if (responsibleUsers != null) {
-															namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
-														}
-	
-														flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
-	
-														progress.setResponsibleAttributedUsers(responsibleUsers);
-	
-														
-													}
-												}
-												
-												if (activity.getResponsibleGroupAttributeNames() != null) {
+												if(isActivityActive(activity, flowInstance)) {
 													
-													List<Group> responsibleGroups = getResponsibleGroupsFromAttribute(activity, flowInstance);
+													boolean responsibleUsersChanged = false;
+													boolean responsibleGroupsChanged = false;
 	
-													responsibleGroupsChanged = CollectionUtils.getSize(responsibleGroups) != CollectionUtils.getSize(progress.getResponsibleAttributedGroups());
-	
-													if (!responsibleGroupsChanged && responsibleGroups != null) { // Same size but not nulls, compare contents
-	
-														Set<Group> oldGroups = new HashSet<>(progress.getResponsibleAttributedGroups());
-														Set<Group> newGroups = new HashSet<>(responsibleGroups);
-	
-														responsibleGroupsChanged = !oldGroups.equals(newGroups);
-													}
-	
-													if (responsibleGroupsChanged) {
-	
-														log.info("Updating responsible group for " + progress + " from " + (progress.getResponsibleAttributedGroups() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedGroups()) : "null") + " to " + (responsibleGroups != null ? StringUtils.toCommaSeparatedString(responsibleGroups) : "null"));
-	
-														String namesFrom = progress.getResponsibleAttributedGroups() != null ? FlowInstanceUtils.getManagersString(null, progress.getResponsibleAttributedGroups()) : eventActivityOwnerDefault;
-														String namesTo = eventActivityOwnerDefault;
-	
-														if (responsibleGroups != null) {
-															namesTo += " " + FlowInstanceUtils.getManagersString(null,responsibleGroups);
+													if (activity.getResponsibleUserAttributeNames() != null) {
+		
+														List<User> responsibleUsers = getResponsibleUsersFromAttribute(activity, flowInstance);
+		
+														responsibleUsersChanged = CollectionUtils.getSize(responsibleUsers) != CollectionUtils.getSize(progress.getResponsibleAttributedUsers());
+		
+														if (!responsibleUsersChanged && responsibleUsers != null) { // Same size but not nulls, compare contents
+		
+															Set<User> oldUsers = new HashSet<>(progress.getResponsibleAttributedUsers());
+															Set<User> newUsers = new HashSet<>(responsibleUsers);
+		
+															responsibleUsersChanged = !oldUsers.equals(newUsers);
 														}
-	
-														flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
-	
-														progress.setResponsibleAttributedGroups(responsibleGroups);
-	
-														
+		
+														if (responsibleUsersChanged) {
+		
+															log.info("Updating responsible user for " + progress + " from " + (progress.getResponsibleAttributedUsers() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedUsers()) : "null") + " to " + (responsibleUsers != null ? StringUtils.toCommaSeparatedString(responsibleUsers) : "null"));
+		
+															String namesFrom = progress.getResponsibleAttributedUsers() != null ? FlowInstanceUtils.getManagersString(progress.getResponsibleAttributedUsers(), null) : eventActivityOwnerDefault;
+															String namesTo = eventActivityOwnerDefault;
+		
+															if (responsibleUsers != null) {
+																namesTo += " " + FlowInstanceUtils.getManagersString(responsibleUsers, null);
+															}
+		
+															flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
+		
+															progress.setResponsibleAttributedUsers(responsibleUsers);
+		
+															
+														}
 													}
 													
-													//TODO hantera groupfallbackusers
-												}
-												
-												if(responsibleUsersChanged || responsibleGroupsChanged) {
-													progress.setActivity(activity);
-													progress.setActivityRound(round);
-													activityProgressDAO.update(progress, transactionHandler, null);
-
-													updatedActivities.put(activity, progress);
+													if (activity.getResponsibleGroupAttributeNames() != null) {
+														
+														List<Group> responsibleGroups = getResponsibleGroupsFromAttribute(activity, flowInstance);
+		
+														responsibleGroupsChanged = CollectionUtils.getSize(responsibleGroups) != CollectionUtils.getSize(progress.getResponsibleAttributedGroups());
+		
+														if (!responsibleGroupsChanged && responsibleGroups != null) { // Same size but not nulls, compare contents
+		
+															Set<Group> oldGroups = new HashSet<>(progress.getResponsibleAttributedGroups());
+															Set<Group> newGroups = new HashSet<>(responsibleGroups);
+		
+															responsibleGroupsChanged = !oldGroups.equals(newGroups);
+														}
+		
+														if (responsibleGroupsChanged) {
+		
+															log.info("Updating responsible group for " + progress + " from " + (progress.getResponsibleAttributedGroups() != null ? StringUtils.toCommaSeparatedString(progress.getResponsibleAttributedGroups()) : "null") + " to " + (responsibleGroups != null ? StringUtils.toCommaSeparatedString(responsibleGroups) : "null"));
+		
+															String namesFrom = progress.getResponsibleAttributedGroups() != null ? FlowInstanceUtils.getManagersString(null, progress.getResponsibleAttributedGroups()) : eventActivityOwnerDefault;
+															String namesTo = eventActivityOwnerDefault;
+		
+															if (responsibleGroups != null) {
+																namesTo += " " + FlowInstanceUtils.getManagersString(null,responsibleGroups);
+															}
+		
+															flowInstanceEventMessages.add(eventActivityOwnerChanged.replace("$activity", activity.getName()).replace("$from", namesFrom).replace("$to", namesTo));
+		
+															progress.setResponsibleAttributedGroups(responsibleGroups);
+		
+															
+														}
+														
+														//TODO hantera groupfallbackusers
+													}
+													
+													if(responsibleUsersChanged || responsibleGroupsChanged) {
+														progress.setActivity(activity);
+														progress.setActivityRound(round);
+														activityProgressDAO.update(progress, transactionHandler, null);
+	
+														updatedActivities.put(activity, progress);
+													}
 												}
 											}
+										
 										}
 
 										if (!updatedActivities.isEmpty()) {
