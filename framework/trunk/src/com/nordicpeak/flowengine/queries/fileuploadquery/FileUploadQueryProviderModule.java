@@ -756,7 +756,14 @@ public class FileUploadQueryProviderModule extends BaseQueryProviderModule<FileU
 			throw new URINotFoundException(uriParser);
 		}
 
-		FileIconHandler.streamIconByFilename(uriParser.get(2), res);
+		try {
+		
+			FileIconHandler.streamIconByFilename(uriParser.get(2), res);
+		
+		} catch (IOException e) {
+			
+			log.warn("Caught exception while sending file icon " + uriParser.get(2) + " to " + user, e);
+		}
 
 		return null;
 	}
