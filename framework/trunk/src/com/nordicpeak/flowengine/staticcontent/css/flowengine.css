@@ -824,7 +824,11 @@ aside.narrow + .content.omega {
 }
 
 .simplebox {
-	background: #FFFFFF none repeat scroll 0 0;
+	background-color: #FFFFFF;
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	background-position: 0 0;
     position: relative;
     margin-top: 25px;
     margin-bottom: 25px;
@@ -837,7 +841,11 @@ aside.narrow + .content.omega {
 }
 
 .simplebox-title {
-	background: #F1F1F1 none repeat scroll 0 0;
+	background-color: #F1F1F1;
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	background-position: 0 0;
     font-size: 20px !important;
     margin: 0 !important;
     padding: 16px 27px !important;
