@@ -7,7 +7,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/cron4j">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -38,6 +37,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ServletAPI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenPDF"/>
 	<classpathentry kind="output" path="bin"/>
-<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ServletAPI"/>
 </classpath>
