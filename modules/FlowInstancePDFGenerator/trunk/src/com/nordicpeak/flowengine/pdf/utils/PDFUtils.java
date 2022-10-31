@@ -99,39 +99,65 @@ public class PDFUtils {
 		return attachments;
 	}
 
-	// http://developers.itextpdf.com/question/how-delete-attachments-pdf-using-itext
-	public static byte[] removeAttachments(File pdfFile) throws IOException, DocumentException {
-
+	public static byte[] removeAttachments(File pdfFile) throws DocumentException, IOException {
+		
 		RandomAccessFileOrArray inputFileRandomAccess = null;
 		PdfReader reader = null;
-		
+
 		try {
+			
 			inputFileRandomAccess = new RandomAccessFileOrArray(pdfFile.getAbsolutePath(), false, false);
 
 			reader = new PdfReader(inputFileRandomAccess, null);
-			PdfDictionary root = reader.getCatalog();
-			PdfDictionary names = root.getAsDict(PdfName.NAMES);
+			PdfDictionary catalog = reader.getCatalog();
 
-			if (names != null && names.contains(PdfName.EMBEDDEDFILES)) {
+			PdfDictionary documentNames = (PdfDictionary) PdfReader.getPdfObject(catalog.get(PdfName.NAMES));
 
-				names.remove(PdfName.EMBEDDEDFILES);
-				reader.removeUnusedObjects();
+			if (documentNames != null) {
 
-				ByteArrayOutputStream buffer = new ByteArrayOutputStream(32 * BinarySizes.KiloByte);
+				PdfDictionary embeddedFiles = (PdfDictionary) PdfReader.getPdfObject(documentNames.get(PdfName.EMBEDDEDFILES));
 
-				PdfStamper stamper = new PdfStamper(reader, buffer);
-				stamper.close();
+				if (embeddedFiles != null) {
 
-				return buffer.toByteArray();
+					PdfArray namesArray = embeddedFiles.getAsArray(PdfName.NAMES);
+
+					for (int i = 0; i < namesArray.size(); i += 2) {
+
+						PdfDictionary names = namesArray.getAsDict(i + 1);
+						PdfDictionary references = names.getAsDict(PdfName.EF);
+
+						if (references != null && (references.contains(PdfName.UF) || references.contains(PdfName.F))) {
+							references.remove(PdfName.UF);
+							references.remove(PdfName.F);
+						}
+						
+						if (names != null && (names.contains(PdfName.UF) || names.contains(PdfName.F))) {
+							names.remove(PdfName.UF);
+							names.remove(PdfName.F);
+						}						
+						
+					}
+					
+					reader.removeUnusedObjects();
+					
+					ByteArrayOutputStream buffer = new ByteArrayOutputStream(32 * BinarySizes.KiloByte);
+
+					PdfStamper stamper = new PdfStamper(reader, buffer);
+					stamper.close();
+
+					return buffer.toByteArray();
+					
+				}
 			}
 			
 			return FileUtils.getRawBytes(pdfFile);
 			
 		} finally {
-
+			
 			CloseUtils.close(inputFileRandomAccess);
 			CloseUtils.close(reader);
 		}
+		
 	}
 
 }
