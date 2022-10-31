@@ -108,7 +108,9 @@
 	<xsl:variable name="i18n.UpdateActivityGroup.Notifications">Notifikationer</xsl:variable>
 	<xsl:variable name="i18n.SortActivityGroups">Sortera aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup">Ta bort aktivitetsgrupp</xsl:variable>
-	<xsl:variable name="i18n.DeleteActivityGroup.Confirm">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivityGroup.Confirm.1">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivityGroup.Confirm.2">Om aktivitetsgruppen tas bort kommer all information rörande denna aktivitetsgrupp och dess aktiviteter under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktivitetsgruppen finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktivitetsgruppens aktiviteter inaktiveras istället för att ta bort aktivitetsgruppen."</xsl:variable>
+
 	<xsl:variable name="i18n.ExportActivityGroup">Exportera aktivitetsgrupp</xsl:variable>	
 	
 	<xsl:variable name="i18n.ShowActivity">Visa aktivitet</xsl:variable>
@@ -119,7 +121,8 @@
 	<xsl:variable name="i18n.AddActivity">Lägg till ny aktivitet</xsl:variable>
 	<xsl:variable name="i18n.UpdateActivity">Ändra aktivitet</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivity">Ta bort aktivitet</xsl:variable>
-	<xsl:variable name="i18n.DeleteActivity.Confirm">Är du säker på att du vill ta bort aktviteten</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivity.Confirm.1">Är du säker på att du vill ta bort aktviteten</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivity.Confirm.2">Om aktiviteten tas bort kommer all information rörande denna aktivitet under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktiviteten finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktiviteten inaktiveras istället för att ta bort den."</xsl:variable>
 	
 	<xsl:variable name="i18n.Activity.AttributeFilter">Aktivering vid attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeFilterDescription">Här kan du ställa in om aktiviteten bara ska användas när ärendet har ett attribut med ett visst värde.</xsl:variable>
@@ -153,6 +156,7 @@
 	<xsl:variable name="i18n.Activity.assignableGroups">Valbara grupper vid byte av ansvarig</xsl:variable>
 	<xsl:variable name="i18n.Activity.active">Aktivera aktiviteten</xsl:variable>
 	
+	<xsl:variable name="i18n.ActivityGroup.activities">Aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useApproveDeny">Använd godkänn / neka istället för klarmarkera</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.useCustomApprovedText">Använd annat namn för klarmarkerad / godkänd / nekad</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.approvedText">Namn för klarmarkerad/godkänd</xsl:variable>
@@ -178,6 +182,20 @@
 	<xsl:variable name="i18n.ActivityGroup.reminderAfterXDays">Skicka automatisk påminnelse om aktivitet inte är klarmarkerad inom x dagar</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.suppressChangeStatusManagerNotifications">Förhindra notifikationer till handläggare vid byte av status</xsl:variable>
 	
+	<xsl:variable name="i18n.AddMessageTemplate">Lägg till kommentarsmall</xsl:variable>
+	<xsl:variable name="i18n.UpdateMessageTemplate">Uppdatera kommentarsmall</xsl:variable>
+	<xsl:variable name="i18n.DeleteMessageTemplate">Ta bort kommentarsmall</xsl:variable>
+	<xsl:variable name="i18n.DeleteMessageTemplate.Confirm">Vill du ta bort kommentarsmall</xsl:variable>
+	<xsl:variable name="i18n.NoMessageTemplates">Inga kommentarsmallar finns.</xsl:variable>
+	
+	<xsl:variable name="i18n.ActivityGroup.messageTemplates">Kommentarsmallar</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.MessageTemplate.name">Namn</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.MessageTemplate.message">Meddelande</xsl:variable>
+	
+	<xsl:variable name="i18n.ActivityGroup.MessageTemplates.add">Lägg till kommentarsmall</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.MessageTemplates.update">Uppdatera</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.MessageTemplates.submit">Spara</xsl:variable>
+	
 	<xsl:variable name="i18n.ActivityGroup.importUsers">Importera inte användare</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.importUsers.description">Markera för att inte importera användare</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.importGroups">Importera inte grupper</xsl:variable>
@@ -193,7 +211,9 @@
 	<xsl:variable name="i18n.Tag">Tagg</xsl:variable>
 	<xsl:variable name="i18n.TagDescription">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.Tag.ActivityGroup.name">Aktivitetsgruppnamn</xsl:variable>
-	<xsl:variable name="i18n.Tag.Activities">Aktiviteter</xsl:variable>
+	<xsl:variable name="i18n.Tag.Activities">Aktiviteter (namn)</xsl:variable>
+	<xsl:variable name="i18n.Tag.ActivitiesLinks">Aktiviteter (länkar, ej klickbara)</xsl:variable>
+	<xsl:variable name="i18n.Tag.ActivitiesNamesAndLinks">Aktiviteter (namn och klickbara länkar)</xsl:variable>
 	<xsl:variable name="i18n.Tag.MyActivities">Länk till mina aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.Tag.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>

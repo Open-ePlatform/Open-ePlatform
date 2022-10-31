@@ -8,6 +8,7 @@
 	<xsl:variable name="globalscripts">
 		/jquery/jquery.js?v=1
 		/ckeditor/ckeditor.js
+		/js/confirmpost.js
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
 		/tablesorter/js/jquery.tablesorter.min.js
@@ -39,6 +40,9 @@
 		<xsl:apply-templates select="ShowActivity" />
 		<xsl:apply-templates select="AddActivity" />
 		<xsl:apply-templates select="UpdateActivity" />
+		
+		<xsl:apply-templates select="AddFlowApprovalActivityGroupMessageTemplate"/>
+		<xsl:apply-templates select="UpdateFlowApprovalActivityGroupMessageTemplate"/>
 			
 	</xsl:template>
 	
@@ -218,7 +222,7 @@
 					<img class="marginleft" src="{$imgPath}/xml.png" alt="" />
 				</a>
 			
-				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/deleteactivitygroup/{activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm}: {name}?');" title="{$i18n.DeleteActivityGroup}: {name}">
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../extensionRequestURL}/deleteactivitygroup/{activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm.1}: {name}? {$i18n.DeleteActivityGroup.Confirm.2}');" title="{$i18n.DeleteActivityGroup}: {name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 			</td>
@@ -523,6 +527,7 @@
 				<xsl:with-param name="messageField" select="'activityGroupStartedEmailMessage'"/>
 				<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupStartedEmailMessage"/>
 				<xsl:with-param name="tagsTable" select="'manager'"/>
+				<xsl:with-param name="activityLinks" select="'true'"/>
 			</xsl:call-template>
 			
 			<div class="floatleft full bigmarginbottom">
@@ -549,6 +554,7 @@
 				<xsl:with-param name="messageField" select="'activityGroupCompletedEmailMessage'"/>
 				<xsl:with-param name="messageLabel" select="$i18n.ActivityGroup.activityGroupCompletedEmailMessage"/>
 				<xsl:with-param name="tagsTable" select="'manager'"/>
+				<xsl:with-param name="activityLinks" select="'false'"/>
 			</xsl:call-template>
 			
 			<div class="floatleft full marginbottom">
@@ -673,7 +679,7 @@
 					<img class="marginleft" src="{$imgPath}/pen.png" alt="" />
 				</a>
 			
-				<a class="marginleft" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteactivitygroup/{ActivityGroup/activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm}: {ActivityGroup/name}?');" title="{$i18n.DeleteActivityGroup}: {ActivityGroup/name}">
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteactivitygroup/{ActivityGroup/activityGroupID}" onclick="return confirm('{$i18n.DeleteActivityGroup.Confirm.1}: {ActivityGroup/name}? {$i18n.DeleteActivityGroup.Confirm.2}');" title="{$i18n.DeleteActivityGroup}: {ActivityGroup/name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 				
@@ -812,41 +818,78 @@
 				</xsl:if>
 				
 			</div>
-			
-			<xsl:choose>
-				<xsl:when test="ActivityGroup/Activities">
-				
-					<table class="full coloredtable sortabletable oep-table" cellspacing="0">
-						<thead>
-							<tr>
-								<th><xsl:value-of select="$i18n.Activity" /></th>
-								<th><xsl:value-of select="$i18n.Activity.responsible" /></th>
-								<th><xsl:value-of select="$i18n.Activity.attributeName" /></th>
-								<th><xsl:value-of select="$i18n.Activity.inverted" /></th>
-								<th><xsl:value-of select="$i18n.Activity.attributeValues" /></th>
-								<th><xsl:value-of select="$i18n.Activity.isActive" /></th>
-								<th width="58" />
-							</tr>
-						</thead>
-						<tbody>
-							<xsl:apply-templates select="ActivityGroup/Activities/Activity" mode="list" />
-						</tbody>
-					</table>
-	
-				</xsl:when>
-				<xsl:otherwise>
-				
-					<p><xsl:value-of select="$i18n.NoActivities"/></p>
+			<fieldset>
+				<legend><xsl:value-of select="$i18n.ActivityGroup.activities"/></legend>
+				<xsl:choose>
+					<xsl:when test="ActivityGroup/Activities">
 					
-				</xsl:otherwise>
-			</xsl:choose>
+						<table class="full coloredtable sortabletable oep-table" cellspacing="0">
+							<thead>
+								<tr>
+									<th><xsl:value-of select="$i18n.Activity" /></th>
+									<th><xsl:value-of select="$i18n.Activity.responsible" /></th>
+									<th><xsl:value-of select="$i18n.Activity.attributeName" /></th>
+									<th><xsl:value-of select="$i18n.Activity.inverted" /></th>
+									<th><xsl:value-of select="$i18n.Activity.attributeValues" /></th>
+									<th><xsl:value-of select="$i18n.Activity.isActive" /></th>
+									<th width="58" />
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:apply-templates select="ActivityGroup/Activities/Activity" mode="list" />
+							</tbody>
+						</table>
+					
+		
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<p><xsl:value-of select="$i18n.NoActivities"/></p>
+						
+					</xsl:otherwise>
+				</xsl:choose>
 			
-			<div class="floatright marginright">
-				<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivity/{ActivityGroup/activityGroupID}" title="{$i18n.AddActivity}">
-					<xsl:value-of select="$i18n.AddActivity"/>
-					<img class="marginleft" src="{$imgPath}/add.png" alt="" />
-				</a>
-			</div>
+				<div class="floatright marginright">
+					<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addactivity/{ActivityGroup/activityGroupID}" title="{$i18n.AddActivity}">
+						<xsl:value-of select="$i18n.AddActivity"/>
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+					</a>
+				</div>
+			</fieldset>
+			
+			<fieldset>
+				<legend><xsl:value-of select="$i18n.ActivityGroup.messageTemplates"/></legend>
+				<xsl:choose>
+					<xsl:when test="ActivityGroup/FlowApprovalActivityGroupMessageTemplates">
+					
+						<table class="full coloredtable sortabletable oep-table" cellspacing="0">
+							<thead>
+								<tr>
+									<th><xsl:value-of select="$i18n.ActivityGroup.MessageTemplate.name" /></th>
+									<th width="58" />
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:apply-templates select="ActivityGroup/FlowApprovalActivityGroupMessageTemplates/FlowApprovalActivityGroupMessageTemplate" mode="list" />
+							</tbody>
+						</table>
+					
+		
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<p><xsl:value-of select="$i18n.NoMessageTemplates"/></p>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+			
+				<div class="floatright marginright">
+					<a href="{/Document/requestinfo/contextpath}{extensionRequestURL}/addmessagetemplate/{ActivityGroup/activityGroupID}" title="{$i18n.AddMessageTemplate}">
+						<xsl:value-of select="$i18n.AddMessageTemplate"/>
+						<img class="marginleft" src="{$imgPath}/add.png" alt="" />
+					</a>
+				</div>
+			</fieldset>
 			
 			<div class="floatleft">
 				<a class="btn btn-light btn-inline margintop" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/toflow" title="{$i18n.BackToFlow}">
@@ -854,6 +897,109 @@
 				</a>
 			</div>
 			
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="FlowApprovalActivityGroupMessageTemplate" mode="list">
+		
+		<xsl:variable name="imgPath"><xsl:value-of select="/Document/requestinfo/contextpath" /><xsl:value-of select="../../../extensionRequestURL" />/static/pics</xsl:variable>
+		<xsl:variable name="linkurl"><xsl:value-of select="/Document/requestinfo/contextpath"/><xsl:value-of select="../../../extensionRequestURL"/>/updatemessagetemplate/<xsl:value-of select="templateID"/></xsl:variable>
+		<xsl:variable name="linkname"><xsl:value-of select="name"/></xsl:variable>
+			<tr>
+				<td class="vertical-align">
+					<a href="{$linkurl}" title="{$linkname}">
+						<xsl:value-of select="name" />
+					</a>
+					
+				</td>
+				<td class="vertical-align">
+				
+					<a href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/updatemessagetemplate/{templateID}" title="{$i18n.UpdateMessageTemplate}: {name}">
+						<img src="{$imgPath}/pen.png" alt="" />
+					</a>
+				
+					<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/deletemessagetemplate/{templateID}" onclick="return confirmPost(this.href, '{$i18n.DeleteMessageTemplate.Confirm}: {name}?');" title="{$i18n.DeleteMessageTemplate}: {name}">
+						<img src="{$imgPath}/delete.png" alt="" />
+					</a>
+					
+				</td>
+			</tr>
+	</xsl:template>
+	
+	<xsl:template match="AddFlowApprovalActivityGroupMessageTemplate">
+		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
+			<h1>
+				<xsl:value-of select="$i18n.ActivityGroup.MessageTemplates.add"/>
+			</h1>
+			
+			<xsl:apply-templates select="validationException/validationError" />
+			
+			<form method="post" action="{/Document/requestinfo/uri}">
+				
+				<xsl:call-template name="messageTemplateForm"/>
+				
+				<div class="floatright">
+					<input type="submit" value="{$i18n.ActivityGroup.MessageTemplates.submit}" />
+				</div>
+				
+			</form>
+		</div>
+		
+	</xsl:template>
+	
+	<xsl:template match="UpdateFlowApprovalActivityGroupMessageTemplate">
+		<div id="FlowApprovalAdminModule" class="contentitem errands-wrapper border-box">
+			<h1>
+				<xsl:value-of select="$i18n.ActivityGroup.MessageTemplates.update"/>
+				<xsl:text>&#x20;</xsl:text>
+				<xsl:value-of select="FlowApprovalActivityGroupMessageTemplate/name"/>
+			</h1>
+			
+			<xsl:apply-templates select="validationException/validationError" />
+			
+			<form method="post" action="{/Document/requestinfo/uri}">
+				
+				<xsl:call-template name="messageTemplateForm"/>
+				
+				<div class="floatright">
+					<input type="submit" value="{$i18n.ActivityGroup.MessageTemplates.submit}" />
+				</div>
+				
+		</form>
+		</div>
+	</xsl:template>
+	
+	<xsl:template name="messageTemplateForm">
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="messageTemplateName" class="floatleft nomargin">
+				<xsl:value-of select="$i18n.ActivityGroup.MessageTemplate.name" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextField">
+					<xsl:with-param name="id" select="'messageTemplateName'"/>
+					<xsl:with-param name="name" select="'messageTemplateName'"/>
+					<xsl:with-param name="value" select="FlowApprovalActivityGroupMessageTemplate/name"/>
+				</xsl:call-template>
+			</div>
+		</div>
+		
+		<div class="floatleft full bigmarginbottom">
+			
+			<label for="messageTemplateMessage" class="floatleft full">
+				<xsl:value-of select="$i18n.ActivityGroup.MessageTemplate.message" />
+			</label>
+			
+			<div class="floatleft full">
+				<xsl:call-template name="createTextArea">
+					<xsl:with-param name="id" select="'messageTemplateMessage'"/>
+					<xsl:with-param name="name" select="'messageTemplateMessage'"/>
+					<xsl:with-param name="value" select="FlowApprovalActivityGroupMessageTemplate/message"/>
+				</xsl:call-template>
+			</div>
 		</div>
 		
 	</xsl:template>
@@ -997,7 +1143,7 @@
 					<img src="{$imgPath}/page_copy.png" alt="" />
 				</a>
 			
-				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/deleteactivity/{activityID}" onclick="return confirm('{$i18n.DeleteActivity.Confirm}: {name}?');" title="{$i18n.DeleteActivity}: {name}">
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{../../../extensionRequestURL}/deleteactivity/{activityID}" onclick="return confirm('{$i18n.DeleteActivity.Confirm.1}: {name}? {$i18n.DeleteActivity.Confirm.2}');" title="{$i18n.DeleteActivity}: {name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 				
@@ -1291,7 +1437,7 @@
 					<img src="{$imgPath}/pen.png" alt="" />
 				</a>
 			
-				<a class="marginleft" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteactivity/{Activity/activityID}" onclick="return confirm('{$i18n.DeleteActivity.Confirm}: {Activity/name}?');" title="{$i18n.DeleteActivity}: {Activity/name}">
+				<a class="marginleft" href="{/Document/requestinfo/contextpath}{extensionRequestURL}/deleteactivity/{Activity/activityID}" onclick="return confirm('{$i18n.DeleteActivity.Confirm.1}: {Activity/name}? {$i18n.DeleteActivity.Confirm.2}');" title="{$i18n.DeleteActivity}: {Activity/name}">
 					<img src="{$imgPath}/delete.png" alt="" />
 				</a>
 				
@@ -2059,6 +2205,7 @@
 		<xsl:param name="addressesLabel" select="null" />
 		<xsl:param name="addressesElement" select="null" />
 		<xsl:param name="tagsTable" select="'user'" />
+		<xsl:param name="activityLinks" />
 		
 		<div class="notification">
 		
@@ -2151,7 +2298,9 @@
 					
 						<xsl:choose>
 							<xsl:when test="$tagsTable = 'manager'">
-								<xsl:call-template name="addManagerTagsTable"/>
+								<xsl:call-template name="addManagerTagsTable">
+									<xsl:with-param name="activityLinks" select="$activityLinks" />
+								</xsl:call-template>
 							</xsl:when>
 							<xsl:otherwise>
 							</xsl:otherwise>
@@ -2180,7 +2329,9 @@
 						
 						<xsl:choose>
 							<xsl:when test="$tagsTable = 'manager'">
-								<xsl:call-template name="addManagerTagsTable"/>
+								<xsl:call-template name="addManagerTagsTable">
+									<xsl:with-param name="activityLinks" select="$activityLinks" />
+								</xsl:call-template>
 							</xsl:when>
 							<xsl:otherwise>
 							</xsl:otherwise>
@@ -2219,6 +2370,7 @@
 	</xsl:template>
 	
 	<xsl:template name="addManagerTagsTable">
+		<xsl:param name="activityLinks" />
 	
 		<div class="floatleft margintop full">
 
@@ -2249,6 +2401,26 @@
 						<xsl:value-of select="$i18n.Tag.Activities"/>
 					</td>
 				</tr>
+				
+				<xsl:if test="$activityLinks = 'true'">
+					<tr>
+						<td>
+							<xsl:text>$urlActivities</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.Tag.ActivitiesLinks"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<xsl:text>$nameAndURLActivities</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.Tag.ActivitiesNamesAndLinks"/>
+						</td>
+					</tr>
+				</xsl:if>
+				
 				<tr>
 					<td>
 						<xsl:text>$myActivitiesURL</xsl:text>
@@ -2615,6 +2787,12 @@
 					</xsl:when>
 					<xsl:when test="fieldName = 'deniedText'">
 						<xsl:value-of select="$i18n.ActivityGroup.deniedText"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'messageTemplateName'">
+						<xsl:value-of select="$i18n.ActivityGroup.MessageTemplate.name"/>
+					</xsl:when>
+					<xsl:when test="fieldName = 'messageTemplateMessage'">
+						<xsl:value-of select="$i18n.ActivityGroup.MessageTemplate.message"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="fieldName"/>

@@ -604,4 +604,21 @@
 			]]>
 		</Query>
 	</Script>
+	<Script version="34">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups_message_templates` (
+					`templateID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(11) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`message` TEXT NOT NULL,
+					PRIMARY KEY (`templateID`),
+					INDEX `FK_flowapproval_activitygroups_message_templates_1` (`activityGroupID`),
+					CONSTRAINT `FK_flowapproval_activitygroups_message_templates_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
 </DBScripts>

@@ -36,4 +36,6 @@
 	<xsl:variable name="i18n.SignActivity">Signera aktivitet</xsl:variable>
 	<xsl:variable name="i18n.SignActivity.Back">Avbryt signering</xsl:variable>
 	
+	<xsl:variable name="i18n.MessageTemplates.choose">Välj kommentarsmall</xsl:variable>
+	
 </xsl:stylesheet>

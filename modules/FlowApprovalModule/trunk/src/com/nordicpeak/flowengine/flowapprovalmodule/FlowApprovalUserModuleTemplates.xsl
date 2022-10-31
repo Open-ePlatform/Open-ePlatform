@@ -12,6 +12,7 @@
 
 	<xsl:variable name="scripts">
 		/js/flowengine.helpdialog.js
+		/js/flowapprovaluser.js
 	</xsl:variable>
 	
 	<xsl:variable name="links">
@@ -471,6 +472,34 @@
 							</xsl:if>
 							
 							<div class="bigmarginbottom">
+								
+								<xsl:if test="ActivityProgress/Activity/ActivityGroup/FlowApprovalActivityGroupMessageTemplates/FlowApprovalActivityGroupMessageTemplate">
+			
+									<select class="messageTemplates floatright bigmarginright bigmarginbottom">
+										
+										<xsl:if test="$disabled != ''">
+											<xsl:attribute name="disabled">
+												<xsl:value-of select="'true'" />
+											</xsl:attribute>
+										</xsl:if>
+										
+										<option value="">
+											<xsl:value-of select="$i18n.MessageTemplates.choose" />
+										</option>
+							
+										<xsl:for-each select="ActivityProgress/Activity/ActivityGroup/FlowApprovalActivityGroupMessageTemplates/FlowApprovalActivityGroupMessageTemplate">
+											
+												<option value="{message}" data-template-id="{templateID}">
+								
+													<xsl:value-of select="name" />
+								
+												</option>
+												
+										</xsl:for-each>
+										
+									</select>
+									
+								</xsl:if>
 								
 								<label for="comment">
 								

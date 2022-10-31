@@ -205,7 +205,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 		activityProgressDAO = daoFactory.getDAO(FlowApprovalActivityProgress.class);
 
 		activityProgressDAOWrapper = activityProgressDAO.getAdvancedWrapper(Integer.class);
-		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
+		activityProgressDAOWrapper.getGetQuery().addRelations(FlowApprovalActivityProgress.ACTIVITY_ROUND_RELATION, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.ACTIVITY_GROUP_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION, FlowApprovalActivityGroup.MESSAGE_TEMPLATES_RELATION);
 	}
 
 	@InstanceManagerDependency
