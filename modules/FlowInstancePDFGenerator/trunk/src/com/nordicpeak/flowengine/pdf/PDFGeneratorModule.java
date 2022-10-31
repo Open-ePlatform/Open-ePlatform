@@ -116,11 +116,11 @@ import com.nordicpeak.flowengine.interfaces.QueryHandler;
 import com.nordicpeak.flowengine.managers.FlowInstanceManager;
 import com.nordicpeak.flowengine.managers.PDFManagerResponse;
 import com.nordicpeak.flowengine.pdf.schedule.PDFTemporaryFileDeleter;
-import com.nordicpeak.flowengine.pdf.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
 import com.nordicpeak.flowengine.utils.PDFByteAttachment;
 import com.nordicpeak.flowengine.utils.PDFFileAttachment;
 import com.nordicpeak.flowengine.utils.PDFInputStreamAttachment;
+import com.nordicpeak.flowengine.utils.PDFUtils;
 import com.nordicpeak.flowengine.utils.PDFXMLUtils;
 
 import it.sauronsoftware.cron4j.Scheduler;
