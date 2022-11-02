@@ -593,6 +593,8 @@
 					<xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAddresses" />
 				</label>
 				
+				<div class="tiny"><xsl:value-of select="$i18n.ActivityGroup.activityGroupCompletedEmailAddressesInfo" /></div>
+				
 				<div class="floatleft full">
 					<xsl:call-template name="createTextArea">
 						<xsl:with-param name="id" select="'activityGroupCompletedEmailAddresses'"/>

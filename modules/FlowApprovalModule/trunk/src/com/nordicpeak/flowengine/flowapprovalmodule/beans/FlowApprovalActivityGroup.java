@@ -588,7 +588,7 @@ public class FlowApprovalActivityGroup extends GeneratedElementable implements C
 		this.activityGroupStartedEmailMessage = XMLValidationUtils.validateParameter("activityGroupStartedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);		
 		this.activityGroupCompletedEmailSubject = XMLValidationUtils.validateParameter("activityGroupCompletedEmailSubject", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.activityGroupCompletedEmailMessage = XMLValidationUtils.validateParameter("activityGroupCompletedEmailMessage", xmlParser, false, 1, 65535, StringPopulator.getPopulator(), errors);
-		this.activityGroupCompletedEmailAddresses = XMLValidationUtils.validateParameters("ActivityGroupCompletedEmailAddresses/address", xmlParser, false, 1, 255, EmailPopulator.getPopulator(), errors);
+		this.activityGroupCompletedEmailAddresses = XMLValidationUtils.validateParameters("ActivityGroupCompletedEmailAddresses/address", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		this.suppressChangeStatusManagerNotifications = xmlParser.getPrimitiveBoolean("suppressChangeStatusManagerNotifications");
 		this.activities = XMLPopulationUtils.populateBeans(xmlParser, "Activities/Activity", FlowApprovalActivity.class, errors);
 		

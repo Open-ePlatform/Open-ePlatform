@@ -109,7 +109,7 @@
 	<xsl:variable name="i18n.SortActivityGroups">Sortera aktivitetsgrupper</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup">Ta bort aktivitetsgrupp</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivityGroup.Confirm.1">Är du säker på att du vill ta bort aktivitetsgruppen</xsl:variable>
-	<xsl:variable name="i18n.DeleteActivityGroup.Confirm.2">Om aktivitetsgruppen tas bort kommer all information rörande denna aktivitetsgrupp och dess aktiviteter under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktivitetsgruppen finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktivitetsgruppens aktiviteter inaktiveras istället för att ta bort aktivitetsgruppen."</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivityGroup.Confirm.2">Om aktivitetsgruppen tas bort kommer all information rörande denna aktivitetsgrupp och dess aktiviteter under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktivitetsgruppen finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktivitetsgruppens aktiviteter inaktiveras istället för att ta bort aktivitetsgruppen.</xsl:variable>
 
 	<xsl:variable name="i18n.ExportActivityGroup">Exportera aktivitetsgrupp</xsl:variable>	
 	
@@ -122,7 +122,7 @@
 	<xsl:variable name="i18n.UpdateActivity">Ändra aktivitet</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivity">Ta bort aktivitet</xsl:variable>
 	<xsl:variable name="i18n.DeleteActivity.Confirm.1">Är du säker på att du vill ta bort aktviteten</xsl:variable>
-	<xsl:variable name="i18n.DeleteActivity.Confirm.2">Om aktiviteten tas bort kommer all information rörande denna aktivitet under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktiviteten finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktiviteten inaktiveras istället för att ta bort den."</xsl:variable>
+	<xsl:variable name="i18n.DeleteActivity.Confirm.2">Om aktiviteten tas bort kommer all information rörande denna aktivitet under fliken "Aktiviteter" att tas bort på befintliga ärenden. Händelser rörande aktiviteten finns dock kvar under "Ärendehistorik". För att behålla informationen under fliken "Aktiviteter" så kan aktiviteten inaktiveras istället för att ta bort den.</xsl:variable>
 	
 	<xsl:variable name="i18n.Activity.AttributeFilter">Aktivering vid attribut</xsl:variable>
 	<xsl:variable name="i18n.Activity.AttributeFilterDescription">Här kan du ställa in om aktiviteten bara ska användas när ärendet har ett attribut med ett visst värde.</xsl:variable>
@@ -174,6 +174,7 @@
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailSubject">Rubrik för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailMessage">Meddelandetext för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddresses">E-postadresser för notifiering om avklarad aktivitetsgrupp (en adress per rad)</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddressesInfo">E-postadress kan finnas i ett attribut och anges då i formatet $attribute{mittAttribut}</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToExternalMessages">Kopiera aktivitetskommentarer till meddelanden på ärendet</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToInternalMessages">Kopiera aktivitetskommentarer till interna noteringar på ärendet</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.startStatus2">Aktivitetsgruppen påbörjas när ärendet hamnar i denna status.</xsl:variable>
