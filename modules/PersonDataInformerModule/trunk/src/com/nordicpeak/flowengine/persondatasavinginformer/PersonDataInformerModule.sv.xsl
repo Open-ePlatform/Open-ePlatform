@@ -21,7 +21,7 @@
 	<xsl:variable name="i18n.Accountable">Personuppgiftsansvarig</xsl:variable>
 	<xsl:variable name="i18n.SavedPersonData">Personuppgifter som behandlas</xsl:variable>
 	<xsl:variable name="i18n.Reason">Ändamålet med behandlingen</xsl:variable>
-	<xsl:variable name="i18n.Reasons">Laglig grund för behandlingen</xsl:variable>
+	<xsl:variable name="i18n.Reasons">Rättslig grund för behandlingen</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved">Lagringstid</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Infinite">För evigt</xsl:variable>
 	<xsl:variable name="i18n.YearsSaved.Custom">Egen beskrivning</xsl:variable>
