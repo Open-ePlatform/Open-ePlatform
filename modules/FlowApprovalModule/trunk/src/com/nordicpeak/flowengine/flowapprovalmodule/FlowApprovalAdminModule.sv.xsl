@@ -174,7 +174,7 @@
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailSubject">Rubrik för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailMessage">Meddelandetext för notifiering</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddresses">E-postadresser för notifiering om avklarad aktivitetsgrupp (en adress per rad)</xsl:variable>
-	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddressesInfo">E-postadress kan finnas i ett attribut och anges då i formatet $attribute{mittAttribut}</xsl:variable>
+	<xsl:variable name="i18n.ActivityGroup.activityGroupCompletedEmailAddressesInfo">E-postadress kan finnas i ett attribut och anges då i formatet $attribute{mittAttribut}. Attributnamnen sparas alltid med bara små bokstäver här även om det skrivs med stora bokstäver (attribut är inte skiftlägeskänsliga).</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToExternalMessages">Kopiera aktivitetskommentarer till meddelanden på ärendet</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.appendCommentsToInternalMessages">Kopiera aktivitetskommentarer till interna noteringar på ärendet</xsl:variable>
 	<xsl:variable name="i18n.ActivityGroup.startStatus2">Aktivitetsgruppen påbörjas när ärendet hamnar i denna status.</xsl:variable>
