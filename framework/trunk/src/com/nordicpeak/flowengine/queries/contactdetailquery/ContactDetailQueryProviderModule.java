@@ -603,7 +603,10 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					setAttributeValue("phone", phone, userAttributeHandler);
 				}
 				
-				setAttributeValue("contactBySMS", contactBySMS, userAttributeHandler);
+				if(query.isAllowSMSNotification()) {
+					
+					setAttributeValue("contactBySMS", contactBySMS, userAttributeHandler);
+				}
 			}
 			
 			if (!validationErrors.isEmpty()) {
