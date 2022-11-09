@@ -34,6 +34,8 @@ Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina 
 	
 	<xsl:variable name="i18n.RequireAddress">Kräv postadress</xsl:variable>
 	
+	<xsl:variable name="i18n.ValidateZipCode">Validera formatet på postnummer (XXX XX eller XXXXX)</xsl:variable>
+
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.setAsAttribute">Spara värden som attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributprefix</xsl:variable>

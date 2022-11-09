@@ -35,6 +35,7 @@ import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.populators.StringSwedishPhoneNumberPopulator;
+import se.unlogic.standardutils.populators.SwedishPostalCodePopulator;
 import se.unlogic.standardutils.populators.SwedishSocialSecurityOrOrganizationNumberPopulator;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.validation.TooLongContentValidationError;
@@ -73,6 +74,7 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 
 	private static final EmailPopulator EMAIL_POPULATOR = new EmailPopulator();
 	private static final SwedishSocialSecurityOrOrganizationNumberPopulator ORGANIZATION_NUMBER_POPULATOR = new SwedishSocialSecurityOrOrganizationNumberPopulator();
+	private static final SwedishPostalCodePopulator POSTALCODE_POPULATOR = new SwedishPostalCodePopulator();
 	
 	@XSLVariable(prefix = "java.")
 	private String exportOrganizationName;
@@ -304,7 +306,18 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		String organizationNumber = ValidationUtils.validateParameter("q" + queryID + "_organizationNumber", req, !allowPartialPopulation, ORGANIZATION_NUMBER_POPULATOR, errors);
 
 		String address = ValidationUtils.validateParameter("q" + queryID + "_address", req, requireAddressFields, stringPopulator, errors);
-		String zipCode = ValidationUtils.validateParameter("q" + queryID + "_zipcode", req, requireAddressFields, stringPopulator, errors);
+		
+		String zipCode = null;
+		
+		if(query.isValidateZipCode()) {
+
+			zipCode = ValidationUtils.validateParameter("q" + queryID + "_zipcode", req, requireAddressFields, POSTALCODE_POPULATOR, errors);
+			
+		} else {
+			
+			zipCode = ValidationUtils.validateParameter("q" + queryID + "_zipcode", req, requireAddressFields, stringPopulator, errors);
+		}
+		
 		String postalAddress = ValidationUtils.validateParameter("q" + queryID + "_postaladdress", req, requireAddressFields, stringPopulator, errors);
 		String mobilePhone = ValidationUtils.validateParameter("q" + queryID + "_mobilephone", req, contactBySMS, phonePopulator, errors);
 		String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, !query.isAllowSMS() && !allowPartialPopulation, EMAIL_POPULATOR, errors);

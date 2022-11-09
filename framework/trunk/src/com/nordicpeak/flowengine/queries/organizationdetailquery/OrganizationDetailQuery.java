@@ -50,6 +50,11 @@ public class OrganizationDetailQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
+	private boolean validateZipCode;
+
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
 	private boolean setAsAttribute;
 
 	@DAOManaged
@@ -194,6 +199,7 @@ public class OrganizationDetailQuery extends BaseQuery {
 		hideNotificationChannelSettings = xmlParser.getPrimitiveBoolean("hideNotificationChannelSettings");
 		allowSMS = xmlParser.getPrimitiveBoolean("allowSMS");
 		requireAddress = xmlParser.getPrimitiveBoolean("requireAddress");
+		validateZipCode = xmlParser.getPrimitiveBoolean("validateZipCode");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 
@@ -217,6 +223,14 @@ public class OrganizationDetailQuery extends BaseQuery {
 	public void setRequireAddress(boolean requireAddress) {
 
 		this.requireAddress = requireAddress;
+	}
+
+	public boolean isValidateZipCode() {
+		return validateZipCode;
+	}
+
+	public void setValidateZipCode(boolean validateZipCode) {
+		this.validateZipCode = validateZipCode;
 	}
 	
 	public boolean isSetAsAttribute() {

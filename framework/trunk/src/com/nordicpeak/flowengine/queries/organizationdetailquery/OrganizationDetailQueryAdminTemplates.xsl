@@ -76,6 +76,15 @@
 				</xsl:call-template>
 				<label for="requireAddress"><xsl:value-of select="$i18n.RequireAddress" /></label>
 			</div>
+			<div class="floatleft full marginbottom">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="id" select="'validateZipCode'" />
+					<xsl:with-param name="name" select="'validateZipCode'" />
+					<xsl:with-param name="value" select="'true'" />
+					<xsl:with-param name="element" select="OrganizationDetailQuery" />
+				</xsl:call-template>
+				<label for="validateZipCode"><xsl:value-of select="$i18n.ValidateZipCode" /></label>
+			</div>
 			
 			<div class="floatleft full bigmargintop bigmarginbottom">
 				<h2><xsl:value-of select="$i18n.AdvancedSettings" /></h2>

@@ -125,5 +125,14 @@
 			]]>
 		</Query>
 	</Script>
-	
+
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries`
+					ADD COLUMN `validateZipCode` TINYINT(1) UNSIGNED NOT NULL AFTER `requireAddress`;
+			]]>
+		</Query>
+	</Script>
+
 </DBScripts>
