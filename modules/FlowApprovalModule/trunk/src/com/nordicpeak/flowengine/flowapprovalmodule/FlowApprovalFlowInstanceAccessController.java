@@ -35,7 +35,7 @@ public class FlowApprovalFlowInstanceAccessController implements FlowInstanceAcc
 	public void checkFlowInstanceAccess(ImmutableFlowInstance flowInstance, User user) throws AccessDeniedException {
 
 		try {
-			List<FlowApprovalActivityProgress> activityProgresses = flowApprovalUserModule.getActivities(user, flowInstance.getFlowInstanceID(), null, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION);
+			List<FlowApprovalActivityProgress> activityProgresses = flowApprovalUserModule.getActivities(user, flowInstance.getFlowInstanceID(), null, FlowApprovalActivityProgress.ACTIVITY_RELATION, FlowApprovalActivity.RESPONSIBLE_USERS_RELATION, FlowApprovalActivity.RESPONSIBLE_GROUPS_RELATION, FlowApprovalActivity.RESPONSIBLE_FALLBACK_RELATION);
 
 			if (activityProgresses != null) {
 				for (FlowApprovalActivityProgress activityProgress : activityProgresses) {
