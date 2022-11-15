@@ -498,6 +498,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			return showFlowOverview(flow, profile, req, res, user, uriParser);
 		}
 
+		res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
 	}
 
@@ -520,6 +522,8 @@ public class FlowBrowserModule extends BaseFlowBrowserModule implements FlowProc
 			return showFlowOverview(flow, profile, req, res, user, uriParser);
 		}
 
+		res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		
 		return list(req, res, user, uriParser, FLOW_NOT_FOUND_VALIDATION_ERROR);
 	}
 
