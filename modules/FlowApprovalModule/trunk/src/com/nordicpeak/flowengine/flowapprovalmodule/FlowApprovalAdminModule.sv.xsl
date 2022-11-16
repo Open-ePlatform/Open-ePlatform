@@ -213,8 +213,8 @@
 	<xsl:variable name="i18n.TagDescription">Beskrivning</xsl:variable>
 	<xsl:variable name="i18n.Tag.ActivityGroup.name">Aktivitetsgruppnamn</xsl:variable>
 	<xsl:variable name="i18n.Tag.Activities">Aktiviteter (namn)</xsl:variable>
-	<xsl:variable name="i18n.Tag.ActivitiesLinks">Aktiviteter (länkar, ej klickbara)</xsl:variable>
-	<xsl:variable name="i18n.Tag.ActivitiesNamesAndLinks">Aktiviteter (namn och klickbara länkar)</xsl:variable>
+	<xsl:variable name="i18n.Tag.ActivitiesLinks">Aktiviteter (länkar)</xsl:variable>
+	<xsl:variable name="i18n.Tag.ActivitiesNamesAndLinks">Aktiviteter (namn och länkar)</xsl:variable>
 	<xsl:variable name="i18n.Tag.MyActivities">Länk till mina aktiviteter</xsl:variable>
 	<xsl:variable name="i18n.Tag.FlowInstance.flowInstanceID">Ärendenummer</xsl:variable>
 	<xsl:variable name="i18n.Tag.Flow.name">E-tjänstnamn</xsl:variable>
