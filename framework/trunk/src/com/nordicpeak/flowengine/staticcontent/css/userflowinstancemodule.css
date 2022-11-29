@@ -23,6 +23,16 @@
 	padding-bottom: 0;
 }
 
+.userflowinstances .errands-wrapper.header-title {
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+.userflowinstances .errands-wrapper > h1 {
+	padding: 10px 0 0px 0;
+	font-size: 22px;
+}
+
 /* ========== MOBILE ========== */
 @media screen and (max-width: 767px) {
   .tabs {
