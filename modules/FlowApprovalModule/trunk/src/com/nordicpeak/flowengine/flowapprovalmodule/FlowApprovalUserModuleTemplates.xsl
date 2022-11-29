@@ -36,9 +36,11 @@
 		
 		<div id="flow-approval" class="contentitem">
 			<section>
+				
 				<div class="errands-wrapper">
 				
 					<div class="heading-wrapper">
+						<h1><xsl:value-of select="/Document/module/name" /></h1>
 						<h2><xsl:value-of select="$i18n.PendingActivities" /></h2>
 						<xsl:call-template name="createHelpDialog">
 							<xsl:with-param name="id" select="'bookings-list'" />

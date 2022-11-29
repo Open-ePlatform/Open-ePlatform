@@ -109,9 +109,6 @@ import com.nordicpeak.flowengine.utils.CitizenIdentifierUtils;
 public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserMenuProvider, ImmutableFlowEngineInterface {
 
 	@XSLVariable(prefix = "java.")
-	private String userMenuTabTitle = "My organizations";
-
-	@XSLVariable(prefix = "java.")
 	protected String signingMessage = "Set $activity.name (ID $activityProgress.ID) to $state for flow instance $flowInstance.ID. The activity has the following unique key: $hash";
 
 	@XSLVariable(prefix = "i18n.", name = "FlowInstance.flowInstanceID")
@@ -147,6 +144,11 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 	@XSLVariable(prefix = "i18n.", name = "ActivityProgress.denied")
 	private String i18nActivityProgressDenied = "Denied";
 
+	@XSLVariable(prefix = "java.")
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "User menu title", description = "User menu title")
+	protected String userMenuTabTitle = "My activities";
+	
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu item slot", description = "User menu item slot")
 	protected String userMenuExtensionLinkSlot = "30";
