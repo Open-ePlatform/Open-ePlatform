@@ -84,8 +84,8 @@
 		
 			<section class="my-errands">
 				<div class="heading-wrapper">
-						<h2 class="h1"><xsl:value-of select="$i18n.MyMessages" /></h2>
-					</div>
+					<h2 class="h1"><xsl:value-of select="$i18n.MyMessages" /></h2>
+				</div>
 				<div class="errands-wrapper messages">
 						<table class="oep-table errand-table">
 							<thead>
@@ -114,13 +114,18 @@
 		</xsl:if>
 		
 		<section class="my-errands">
-
-			<xsl:if test="ShowMyErrandsInformationBlock">
-				<div class="errands-wrapper">
-					<xsl:value-of select="MyErrandsInformation" disable-output-escaping="yes" />
-				</div>
-			</xsl:if>
-		
+			
+			<div class="errands-wrapper header-title">
+				<xsl:choose>
+					<xsl:when test="ShowMyErrandsInformationBlock">
+						<xsl:value-of select="MyErrandsInformation" disable-output-escaping="yes" />
+					</xsl:when>
+					<xsl:otherwise>
+						<h1><xsl:value-of select="$java.userMenuTabTitle" /></h1>
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
+			
 			<xsl:for-each select="ViewFragment">
 				<xsl:value-of select="HTML" disable-output-escaping="yes"/>
 			</xsl:for-each>

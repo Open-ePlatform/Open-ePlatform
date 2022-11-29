@@ -179,6 +179,8 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	private String eventStatusUpdated = "Status updated";
 
 	@XSLVariable(prefix = "java.")
+	@ModuleSetting
+	@TextFieldSettingDescriptor(name = "User menu title", description = "User menu title")
 	private String userMenuTabTitle = "My errands";
 
 	@ModuleSetting(allowsNull = true)

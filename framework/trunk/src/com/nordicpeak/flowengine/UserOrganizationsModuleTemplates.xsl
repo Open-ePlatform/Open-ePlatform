@@ -33,22 +33,15 @@
 		
 		<section class="settings">
 			
-			<div class="heading-wrapper">
-				<h1>
-					<xsl:value-of select="/Document/module/name" />
-				</h1>
-			</div>
-			
 			<div class="errands-wrapper draft">
-				<xsl:if test="Organizations/Organization">
-					
-					<div class="heading-wrapper">
+				<div class="heading-wrapper">
+					<h1><xsl:value-of select="/Document/module/name" /></h1>
+					<xsl:if test="Organizations/Organization">
 						<h3>
 							<xsl:value-of select="$i18n.ListOrganizationDescription.Part1" /><xsl:text>&#160;</xsl:text><strong><xsl:value-of select="count(Organizations/Organization)" /></strong><xsl:text>&#160;</xsl:text><xsl:value-of select="$i18n.ListOrganizationDescription.Part2" />
 						</h3>
-					</div>
-				
-				</xsl:if>
+					</xsl:if>
+				</div>
 				
 					<table class="oep-table">
 						<thead class="sortable">
