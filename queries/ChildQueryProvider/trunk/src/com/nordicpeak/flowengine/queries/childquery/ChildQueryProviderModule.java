@@ -930,6 +930,13 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 
 		for (StoredChild child : storedChildMap.values()) {
 
+			if(child.getGuardians() == null) {
+				
+				log.warn("No guardians found for child " + child);
+				
+				continue;
+			}
+			
 			for (StoredGuardian guardian : child.getGuardians()) {
 
 				if (posterCitizenIdentifier != null && posterCitizenIdentifier.equals(guardian.getCitizenIdentifier())) {
