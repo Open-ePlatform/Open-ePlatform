@@ -38,7 +38,7 @@ public class TextAreaQuery extends BaseQuery {
 	@XMLElement
 	private Integer maxLength;
 	
-	@DAOManaged
+	@DAOManaged(columnName = "textAreaRows")
 	@WebPopulate(populator = PositiveStringIntegerPopulator.class)
 	@XMLElement
 	private Integer rows;

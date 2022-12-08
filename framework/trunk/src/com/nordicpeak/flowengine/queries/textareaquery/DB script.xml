@@ -85,4 +85,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` CHANGE COLUMN `rows` `textAreaRows` INT(10) UNSIGNED DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>
