@@ -54,6 +54,7 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.CombinedPopulator;
 import se.unlogic.standardutils.populators.DatePopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
+import se.unlogic.standardutils.populators.SwedishSocialSecurity12DigitsPopulator;
 import se.unlogic.standardutils.populators.SwedishSocialSecurityPopulator;
 import se.unlogic.standardutils.populators.TimeStampPopulator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -308,37 +309,42 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 										citizenIdentifier = SwedishSocialSecurityPopulator.addCentury(citizenIdentifier);
 									}
 									
-									int year = Integer.valueOf(citizenIdentifier.substring(0, 4));
-									int month = Integer.valueOf(citizenIdentifier.substring(4, 6));
-									int day = Integer.valueOf(citizenIdentifier.substring(6, 8));
-									
-									LocalDate birthDate = LocalDate.of(year, month, day);
-									LocalDate submitOrAddedDate;
-									
-									if (flowInstance.getFirstSubmitted() != null) {
+									if (SwedishSocialSecurity12DigitsPopulator.getPopulator().validateFormat(citizenIdentifier)) {
+										int year = Integer.valueOf(citizenIdentifier.substring(0, 4));
+										int month = Integer.valueOf(citizenIdentifier.substring(4, 6));
+										int day = Integer.valueOf(citizenIdentifier.substring(6, 8));
 										
-										submitOrAddedDate = flowInstance.getFirstSubmitted().toLocalDateTime().toLocalDate();
+										LocalDate birthDate = LocalDate.of(year, month, day);
+										LocalDate submitOrAddedDate;
 										
-									} else {
-										
-										submitOrAddedDate = flowInstance.getAdded().toLocalDateTime().toLocalDate();
-									}
-									
-									Period period = Period.between(birthDate, submitOrAddedDate);
-
-									statistic.setAge((int) period.get(ChronoUnit.YEARS));
-
-									String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
-									Integer genderPartInt = NumberUtils.toInt(genderPart);
-
-									if (genderPartInt != null) {
-
-										if (genderPartInt % 2 == 0) {
-											statistic.setSex(sexFemale);
-
+										if (flowInstance.getFirstSubmitted() != null) {
+											
+											submitOrAddedDate = flowInstance.getFirstSubmitted().toLocalDateTime().toLocalDate();
+											
 										} else {
-											statistic.setSex(sexMale);
+											
+											submitOrAddedDate = flowInstance.getAdded().toLocalDateTime().toLocalDate();
 										}
+										
+										Period period = Period.between(birthDate, submitOrAddedDate);
+										
+										statistic.setAge((int) period.get(ChronoUnit.YEARS));
+										
+										String genderPart = citizenIdentifier.substring(citizenIdentifier.length() - 2, citizenIdentifier.length() - 1);
+										Integer genderPartInt = NumberUtils.toInt(genderPart);
+										
+										if (genderPartInt != null) {
+											
+											if (genderPartInt % 2 == 0) {
+												statistic.setSex(sexFemale);
+												
+											} else {
+												statistic.setSex(sexMale);
+											}
+										}
+									}
+									else {
+										log.warn("Skipping age and gender statistic for user " + poster + " due to not having a valid citizen identifier " + citizenIdentifier);
 									}
 								}
 								
