@@ -206,17 +206,22 @@
 							</fieldset>					
 							
 						</div>
-						<div>
+						
+						<xsl:if test="AttrbuteDescriptors/AttributeDescriptor[Name = 'contactBySMS']">
 							
-							<xsl:call-template name="createCheckbox">
-								<xsl:with-param name="name" select="'attribute-contactBySMS'" />
-								<xsl:with-param name="id" select="'attribute-contactBySMS'" />
-								<xsl:with-param name="checked" select="user/Attributes/Attribute[Name = 'contactBySMS']/Value" />
-							</xsl:call-template>
+							<div>
+								
+								<xsl:call-template name="createCheckbox">
+									<xsl:with-param name="name" select="'attribute-contactBySMS'" />
+									<xsl:with-param name="id" select="'attribute-contactBySMS'" />
+									<xsl:with-param name="checked" select="user/Attributes/Attribute[Name = 'contactBySMS']/Value" />
+								</xsl:call-template>
+								
+								<label class="checkbox" for="attribute-contactBySMS"><xsl:value-of select="$i18n.SMS" /></label>
+								
+							</div>
 							
-							<label class="checkbox" for="attribute-contactBySMS"><xsl:value-of select="$i18n.SMS" /></label>
-							
-						</div>
+						</xsl:if>
 						<div class="divider"></div>
 						
 						<div class="buttons">
