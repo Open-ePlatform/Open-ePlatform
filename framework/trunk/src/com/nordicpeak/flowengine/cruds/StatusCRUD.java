@@ -283,6 +283,8 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 		
 		typeElement.appendChild(flow.toXML(doc));
 		
+		XMLUtils.append(doc, typeElement, "Statuses", callback.getFlow(flow.getFlowID()).getStatuses());
+		
 		appendExtensionFormData(status, flow, doc, typeElement, user, req, uriParser);
 	}
 	
@@ -359,7 +361,7 @@ public class StatusCRUD extends IntegerBasedCRUD<Status, FlowAdminModule> {
 
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
-		if (bean.isUseAccessCheck()) {
+		if (bean.isUseAccessCheckByUser()) {
 
 			List<Integer> selectedUserIDs = bean.getManagerUserIDs();
 			List<Integer> selectedGroupIDs = bean.getManagerGroupIDs();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.unlogic.hierarchy.core.interfaces.AccessInterface;
+import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.WebPopulate;
 import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
@@ -37,7 +38,8 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 	public static final Field FLOW_INSTANCES_RELATION = ReflectionUtils.getField(Status.class, "flowInstances");
 	public static final Field MANAGER_GROUPS_RELATION = ReflectionUtils.getField(Status.class, "managerGroupIDs");
 	public static final Field MANAGER_USERS_RELATION = ReflectionUtils.getField(Status.class, "managerUserIDs");
-	public static final List<Field> INTERNAL_FIELDS = ReflectionUtils.getFields(Status.class, "isUserMutable", "isUserDeletable", "isAdminMutable", "isAdminDeletable", "sortIndex", "requireSigning", "useAccessCheck");
+	public static final Field ACCEPTED_STATUSES_RELATION = ReflectionUtils.getField(Status.class, "acceptedStatusIDs");
+	public static final List<Field> INTERNAL_FIELDS = ReflectionUtils.getFields(Status.class, "isUserMutable", "isUserDeletable", "isAdminMutable", "isAdminDeletable", "sortIndex", "requireSigning", "useAccessCheckByUser", "useAccessCheckByStatus");
 
 	@DAOManaged
 	@WebPopulate(paramName = "defaultExternalMessageTemplate")
@@ -75,6 +77,14 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 	@WebPopulate(paramName = "user")
 	@XMLElement(childName = "userID")
 	private List<Integer> managerUserIDs;
+
+	@DAOManaged
+	@OneToMany(autoAdd = true, autoGet = true, autoUpdate = true)
+	@SimplifiedRelation(table = "flowengine_flow_statuses_accepted_statuses", remoteValueColumnName = "acceptedStatusID")
+	@WebPopulate(maxLength = 255, paramName = "acceptedStatusID")
+	@NoDuplicates
+	@XMLElement(fixCase = true, childName = "acceptedStatusID")
+	List<Integer> acceptedStatusIDs;
 
 	@XMLElement
 	private Integer flowInstanceCount;
@@ -190,12 +200,15 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 		this.contentType = XMLValidationUtils.validateParameter("contentType", xmlParser, true, new EnumPopulator<>(ContentType.class), errors);
 
 		this.requireSigning = xmlParser.getPrimitiveBoolean("requireSigning");
-
+		
+		this.useAccessCheckByStatus = xmlParser.getPrimitiveBoolean("useAccessCheckByStatus");
+		
+		this.acceptedStatusIDs = xmlParser.getIntegers("AcceptedStatusIDs/acceptedStatusID");
+		
 		if (!errors.isEmpty()) {
 
 			throw new ValidationException(errors);
 		}
-
 	}
 
 	public List<Integer> getManagerGroupIDs() {
@@ -246,5 +259,15 @@ public class Status extends BaseStatus implements ImmutableStatus, XMLParserPopu
 	public List<Integer> getAllowedUserIDs() {
 
 		return managerUserIDs;
+	}
+	
+	public List<Integer> getAcceptedStatusIDs() {
+		
+		return acceptedStatusIDs;
+	}
+
+	public void setAcceptedStatusIDs(List<Integer> acceptedStatusIDs) {
+		
+		this.acceptedStatusIDs = acceptedStatusIDs;
 	}
 }

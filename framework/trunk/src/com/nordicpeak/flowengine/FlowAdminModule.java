@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -370,6 +371,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 	protected static final RelationQuery ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MESSAGE_TEMPLATES_RELATION);
 	protected static final RelationQuery ADD_NEW_FLOW_VERSION_RELATION_QUERY = new RelationQuery(Flow.FLOW_FORMS_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.CHECKS_RELATION, Flow.TAGS_RELATION, Flow.OVERVIEW_ATTRIBUTES_RELATION, Status.MANAGER_USERS_RELATION, Status.MANAGER_GROUPS_RELATION);
+	protected static final RelationQuery UPDATE_FLOW_VERSIONS_STATUSES_RELATION_QUERY = new RelationQuery(Flow.STATUSES_RELATION);
 	protected static final RelationQuery MANAGEMENT_INFO_RELATION_QUERY = new RelationQuery(FlowFamily.MANAGEMENT_INFO_RELATION);
 
 	public static final List<Field> LIST_FLOWS_IGNORED_FIELDS = Arrays.asList(FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_QUERIES_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, FlowType.FLOW_PUBLISHED_NOTIFICATION_USERS_RELATION, FlowType.CATEGORIES_RELATION, Flow.STATUSES_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, Flow.STEPS_RELATION);
@@ -1925,6 +1927,39 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 				familyUpdated = true;
 			}
 
+			// Update the new statuse's accepted statuses with new statusIDs
+			if(statusConversionMap != null) {
+				
+				boolean updateStatuses = false;
+				
+				for(Status status : flowCopy.getStatuses()) {
+					
+					if(status.getAcceptedStatusIDs() != null) {
+						
+						List<Integer> newAcceptedStatusIDs = new ArrayList<Integer>();
+						
+						for(Integer oldAcceptedStatusID : status.getAcceptedStatusIDs()) {
+							
+							ImmutableStatus newStatus = statusConversionMap.get(oldAcceptedStatusID);
+							
+							newAcceptedStatusIDs.add(newStatus.getStatusID());
+						}
+						
+						if(!CollectionUtils.isEmpty(newAcceptedStatusIDs)) {
+							
+							status.setAcceptedStatusIDs(newAcceptedStatusIDs);
+							
+							updateStatuses = true;
+						}
+					}
+				}
+				
+				if(updateStatuses) {
+					
+					daoFactory.getFlowDAO().update(flowCopy, transactionHandler, UPDATE_FLOW_VERSIONS_STATUSES_RELATION_QUERY);
+				}
+			}
+			
 			if (flow.getSteps() != null) {
 
 				int stepIndex = 0;
@@ -4836,6 +4871,39 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 				familyUpdated = true;
 			}
+			
+			// Update the statuse's accepted statuses with correct statusIDs
+			if(statusConversionMap != null) {
+				
+				boolean updateStatuses = false;
+				
+				for(Status status : flow.getStatuses()) {
+					
+					if(status.getAcceptedStatusIDs() != null) {
+						
+						List<Integer> newAcceptedStatusIDs = new ArrayList<Integer>();
+						
+						for(Integer oldAcceptedStatusID : status.getAcceptedStatusIDs()) {
+							
+							ImmutableStatus newStatus = statusConversionMap.get(oldAcceptedStatusID);
+							
+							newAcceptedStatusIDs.add(newStatus.getStatusID());
+						}
+						
+						if(!CollectionUtils.isEmpty(newAcceptedStatusIDs)) {
+							
+							status.setAcceptedStatusIDs(newAcceptedStatusIDs);
+							
+							updateStatuses = true;
+						}
+					}
+				}
+				
+				if(updateStatuses) {
+					
+					daoFactory.getFlowDAO().update(flow, transactionHandler, UPDATE_FLOW_VERSIONS_STATUSES_RELATION_QUERY);
+				}
+			}
 
 			//Set target query ID's on evaluator descriptors
 			for (Entry<EvaluatorDescriptor, List<QueryDescriptor>> entry : evaluatorTargetQueriesMap.entrySet()) {
@@ -5453,6 +5521,66 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 		return null;
 	}
 
+	@WebPublic(alias = "searchstatuses")
+	public ForegroundModuleResponse searchStatuses(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Throwable {
+		
+		if (user == null) {
+			
+			sendEmptyJSONResponse(res);
+			return null;
+		}
+		
+		String search = req.getParameter("q");
+		
+		Integer flowID;
+		Flow flow;
+
+		if (uriParser.size() >= 3 && (flowID = uriParser.getInt(2)) != null && (flow = flowCRUD.getBean(flowID, FlowCRUD.SHOW)) != null) {
+
+			flowCRUD.checkAccess(user, flow);
+
+			if (CollectionUtils.isEmpty(flow.getStatuses())) {
+
+				sendEmptyJSONResponse(res);
+				return null;
+			}
+
+			if (!StringUtils.isEmpty(search) && !systemInterface.getEncoding().equalsIgnoreCase("UTF-8")) {
+				search = URLDecoder.decode(search, "UTF-8");
+			}
+
+			JsonArray jsonArray = new JsonArray();
+			
+			for (Status status : flow.getStatuses()) {
+
+				// On empty search string, return all statuses
+				if (StringUtils.isEmpty(search) || status.getName().toLowerCase().contains(search)) {
+					
+					JsonObject statusJson = new JsonObject(2);
+					statusJson.putField("statusID", status.getStatusID());
+					statusJson.putField("statusName", status.getName());
+					
+					jsonArray.addNode(statusJson);
+				}
+			}
+
+			if(StringUtils.isEmpty(search)) {
+				
+				log.info("User " + user + " searching for statuses using empty query " + search + " in flow " + flow + ", showing all " + jsonArray.size() + " statuses");
+				
+			} else {
+				
+				log.info("User " + user + " searching for statuses using query " + search + " in flow " + flow + ", found " + jsonArray.size() + " statuses");
+			}
+			
+			sendJSONResponse(jsonArray, res);
+			return null;
+		}
+
+		sendEmptyJSONResponse(res);
+		return null;
+	}
+	
 	protected static void sendEmptyJSONResponse(HttpServletResponse res) throws IOException {
 
 		JsonObject jsonObject = new JsonObject(1);

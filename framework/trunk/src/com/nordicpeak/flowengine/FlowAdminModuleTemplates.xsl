@@ -32,7 +32,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js?v=1
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=21
+		/js/flowadminmodule.js?v=22
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
@@ -4360,13 +4360,13 @@
 		
 			<div class="floatleft">
 				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="name" select="'useAccessCheck'" />
-					<xsl:with-param name="id" select="'useAccessCheck'" />
+					<xsl:with-param name="name" select="'useAccessCheckByUser'" />
+					<xsl:with-param name="id" select="'useAccessCheckByUser'" />
 					<xsl:with-param name="element" select="$element" />
 				</xsl:call-template>
 				
-				<label for="useAccessCheck">
-					<xsl:value-of select="$i18n.Status.useAccessCheck" />
+				<label for="useAccessCheckByUser">
+					<xsl:value-of select="$i18n.Status.useAccessCheckByUser" />
 				</label>
 			</div>
 		</div>
@@ -4415,8 +4415,89 @@
 			</div>
 			
 		</xsl:if>
+
+		<div class="floatleft full margintop">
+		
+			<div class="floatleft full">
+				<xsl:call-template name="createCheckbox">
+					<xsl:with-param name="name" select="'useAccessCheckByStatus'" />
+					<xsl:with-param name="id" select="'useAccessCheckByStatus'" />
+					<xsl:with-param name="element" select="$element" />
+				</xsl:call-template>
+				
+				<label for="useAccessCheckByStatus">
+					<xsl:value-of select="$i18n.Status.useAccessCheckByStatus" />
+				</label>
+			</div>
+			
+			<div class="floatleft full tiny"><xsl:value-of select="$i18n.Status.useAccessCheckByStatusInfo" /></div>
+			
+		</div>
+		
+		<xsl:if test="not($hideFlowSpecificSettings)">
+		
+			<div id="acceptedStatuses" class="floatleft full hidden">
+				
+				<div class="floatleft full bigmarginbottom">
+					
+					<div id="accepted-statuses-list" class="floatleft full margintop marginbottom">
+				
+						<xsl:choose>
+							<xsl:when test="requestparameters">
+							
+								<xsl:apply-templates select="requestparameters/parameter[name='acceptedStatusID']/value" mode="acceptedStatusList" />
+								
+							</xsl:when>
+							<xsl:otherwise>
+								
+								<xsl:apply-templates select="Status/AcceptedStatusIDs/acceptedStatusID" />
+									
+							</xsl:otherwise>
+						</xsl:choose>
+							
+						<div id="accepted-statuses-template" style="display: none;">
+							<div class="floatleft hover border full marginbottom border-radius lightbackground">
+								
+								<div class="marginleft margintop floatleft">
+									<div class="marginleft">
+										<h3>
+											<xsl:value-of select="acceptedStatusName" />
+										</h3>
+									</div>
+								</div>
+								
+								<input name="acceptedStatusName" hidden="true" />
+								<input name="acceptedStatusID" hidden="true"/>
+								
+								<div class="padding floatright">
+									<div class="floatright marginright">
+										<a href="#" onclick="if(confirm('{$i18n.DeleteAcceptedStatus.Confirm}: {acceptedStatusName}?'))$(this).closest('div.border-radius').remove(); return false;" title="{$i18n.DeleteAcceptedStatus}: {acceptedStatusName}">
+											<img src="{$imgPath}/delete.png"/>
+										</a>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+							
+							<input name="connectorURL" disabled="true" hidden="true" value="{/Document/requestinfo/currentURI}/{/Document/module/alias}/searchstatuses/{Flow/flowID}"/>
+							
+						</div>
+						
+						<div class="floatleft full ui-widget">
+							<xsl:call-template name="createTextField">
+								<xsl:with-param name="id" select="'accepted-statuses-search'" />
+								<xsl:with-param name="placeholder" select="$i18n.AcceptedStatuses.SearchPlaceholder" />
+							</xsl:call-template>
+						</div>
+					
+				</div>
+				
+			</div>
+				
+		</xsl:if>
 	
-		<h2 class="clearboth"><xsl:value-of select="$i18n.statusContentType.title"/></h2>
+		<div class="floatleft full bigmargintop"><h2 class="clearboth"><xsl:value-of select="$i18n.statusContentType.title"/></h2></div>
 		
 		<p><xsl:value-of select="$i18n.statusContentType.description"/></p>
 		
@@ -4574,6 +4655,69 @@
 			</div>
 		</div>
 	
+	</xsl:template>
+
+	<xsl:template match="acceptedStatusID">
+		
+		<xsl:variable name="acceptedStatusID" select="." />
+		<xsl:variable name="acceptedStatusName" select="../../../Statuses/Status[statusID = $acceptedStatusID]/name" />
+		
+		<div class="floatleft hover border full marginbottom border-radius lightbackground">
+			
+			<div class="marginleft margintop floatleft">
+				<div class="marginleft">
+					<h3>
+						<xsl:value-of select="$acceptedStatusName" />
+					</h3>
+				</div>
+			</div>
+			
+			<input name="acceptedStatusName-{$acceptedStatusID}" hidden="true" value="{$acceptedStatusName}"/>
+			<input name="acceptedStatusID" hidden="true" value="{$acceptedStatusID}"/>
+			
+			<div class="padding floatright">
+				<div class="floatright marginright">
+					<a href="#" onclick="if(confirm('{$i18n.DeleteAcceptedStatus.Confirm}: {$acceptedStatusName}?'))$(this).closest('div.border-radius').remove(); return false;" title="{$i18n.DeleteAcceptedStatus}: {$acceptedStatusName}">
+						<img src="{$imgPath}/delete.png"/>
+					</a>
+				</div>
+			</div>
+			
+		</div>
+		
+	</xsl:template>
+
+	<xsl:template match="value" mode="acceptedStatusList">
+
+		<xsl:variable name="acceptedStatusID" select="."/>
+		<xsl:variable name="acceptedStatusName" select="../../../Statuses/Status[statusID = $acceptedStatusID]/name" />
+
+		
+		<xsl:variable name="nameParam" select="concat('name-', $acceptedStatusID)"/>
+		
+		<div class="floatleft hover border full marginbottom border-radius lightbackground">
+			
+			<div class="marginleft margintop floatleft">
+				<div class="marginleft">
+					<h3>
+						<xsl:value-of select="$acceptedStatusName" />
+					</h3>
+				</div>
+			</div>
+			
+			<input name="acceptedStatusName-{$acceptedStatusID}" hidden="true" value="{$acceptedStatusName}"/>
+			<input name="acceptedStatusID" hidden="true" value="{$acceptedStatusID}"/>
+			
+			<div class="padding floatright">
+				<div class="floatright marginright">
+					<a href="#" onclick="if(confirm('{$i18n.DeleteAcceptedStatus.Confirm}: {$acceptedStatusName}?'))$(this).closest('div.border-radius').remove(); return false;" title="{$i18n.DeleteAcceptedStatus}: {$acceptedStatusName}">
+						<img src="{$imgPath}/delete.png"/>
+					</a>
+				</div>
+			</div>
+			
+		</div>
+		
 	</xsl:template>
 	
 	<xsl:template match="UpdateFlowIcon">

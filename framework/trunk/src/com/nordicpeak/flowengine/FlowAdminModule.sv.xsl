@@ -231,7 +231,12 @@
 	<xsl:variable name="i18n.defaultInternalMessageTemplate">Förvald meddelandemall (intern notering)</xsl:variable>
 	<xsl:variable name="i18n.defaultMessageTemplate.None">Ingen förvald meddelandemall</xsl:variable>
 	<xsl:variable name="i18n.Status.requireSigning">Kräv signering från handläggare vid byte till denna status</xsl:variable>
-	<xsl:variable name="i18n.Status.useAccessCheck">Begränsa åtkomst till denna status</xsl:variable>
+	<xsl:variable name="i18n.Status.useAccessCheckByUser">Begränsa åtkomst till denna status baserat på användare och grupper</xsl:variable>
+	<xsl:variable name="i18n.Status.useAccessCheckByStatus">Begränsa åtkomst till denna status baserat på ärendets status</xsl:variable>
+	<xsl:variable name="i18n.Status.useAccessCheckByStatusInfo">Ange vilken eller vilka statusar som ärendet måste ha för att denna status ska kunna sättas på ärendet av handläggaren.</xsl:variable>
+	<xsl:variable name="i18n.DeleteAcceptedStatus">Ta bort statusen som godkänd status</xsl:variable>
+	<xsl:variable name="i18n.DeleteAcceptedStatus.Confirm">Vill du ta bort denna status</xsl:variable>
+	<xsl:variable name="i18n.AcceptedStatuses.SearchPlaceholder">Sök på statusnamn</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerUsersNotFoundError">En eller flera av de valda användarna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.OneOrMoreSelectedManagerGroupsNotFoundError">En eller flera av de valda grupperna hittades inte.</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.UnauthorizedUserNotManager.1">Användaren</xsl:variable>
@@ -727,7 +732,7 @@
 	<xsl:variable name="i18n.ValidationError.MessageTemplateNotFound">Den begärda meddelandemallen hittades inte!</xsl:variable>
 	
 	<xsl:variable name="i18n.DescriptionColumnSettings.Title">Inställningar för ärendebeskrivningar</xsl:variable>
-	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från description attributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten. Ändringar slår inte igenom på befintliga ärenden.</xsl:variable>
+	<xsl:variable name="i18n.DescriptionColumnSettings.Description">För att göra det lättare att skilja på ärenden så finns möjligheten att ge dem en beskrivning under mina sidor och i handläggargränssnittet. Som standard hämtas beskrivningen från descriptionattributet om inget annat anges. Via fälten nedan kan en valfri sträng anges med både fast text och $attribute{} taggar för beskrivningen i de respektive gränssnitten. Ändringar slår inte igenom på befintliga ärenden.</xsl:variable>
 	<xsl:variable name="i18n.userDescriptionTemplate">Beskrivning på mina sidor</xsl:variable>
 	<xsl:variable name="i18n.managerDescriptionTemplate">Beskrivning i handläggargränssnittet</xsl:variable>
 	

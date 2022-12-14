@@ -839,6 +839,8 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 			doc.getDocumentElement().appendChild(updateInstanceStatusElement);
 
+			Status previousStatus = flowInstance.getStatus();
+			
 			if (req.getMethod().equalsIgnoreCase("POST")) {
 
 				Integer statusID = NumberUtils.toInt(req.getParameter("statusID"));
@@ -849,13 +851,11 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 
 					updateInstanceStatusElement.appendChild(STATUS_NOT_FOUND_VALIDATION_ERROR.toXML(doc));
 
-				} else if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || (status.isUseAccessCheck() && !AccessUtils.checkAccess(user, status))) {
+				} else if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || !isNewStatusAccessible(user, previousStatus, status)) {
 
 					updateInstanceStatusElement.appendChild(INVALID_STATUS_VALIDATION_ERROR.toXML(doc));
 
 				} else {
-
-					Status previousStatus = flowInstance.getStatus();
 
 					if (!previousStatus.equals(status)) {
 
@@ -893,7 +893,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 			}
 
 			XMLGeneratorDocument genDoc = new XMLGeneratorDocument(doc);
-			genDoc.addFieldElementableListener(Status.class, new FlowStatusManagerAccessElementableListener(user));
+			genDoc.addFieldElementableListener(Status.class, new FlowStatusManagerAccessElementableListener(user, previousStatus));
 
 			updateInstanceStatusElement.appendChild(flowInstance.toXML(genDoc));
 
@@ -927,7 +927,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 				}
 
-				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || (status.isUseAccessCheck() && !AccessUtils.checkAccess(user, status))) {
+				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || !isNewStatusAccessible(user, previousStatus, status)) {
 
 					redirectToMethod(req, res, "/status/" + flowInstance.getFlowInstanceID());
 					return null;
@@ -1039,7 +1039,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 					return list(req, res, user, uriParser, FLOW_DISABLED_VALIDATION_ERROR);
 				}
 
-				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || (status.isUseAccessCheck() && !AccessUtils.checkAccess(user, status))) {
+				if (status.getContentType() == ContentType.NEW || status.getContentType() == ContentType.WAITING_FOR_MULTISIGN || status.getContentType() == ContentType.WAITING_FOR_PAYMENT || !isNewStatusAccessible(user, previousStatus, status)) {
 
 					redirectToMethod(req, res, "/status/" + flowInstance.getFlowInstanceID());
 					return null;
@@ -1222,6 +1222,37 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		return daoFactory.getStatusDAO().get(query);
 	}
 
+	protected boolean isNewStatusAccessible(User user, Status previousStatus, Status newStatus) {
+		
+		if(newStatus.isUseAccessCheckByUser() && !AccessUtils.checkAccess(user, newStatus)) {
+			
+			return false;
+		}
+		
+		if(newStatus.isUseAccessCheckByStatus() && !newStatus.getAcceptedStatusIDs().contains(previousStatus.getStatusID())) {
+
+			return false;
+		}
+		
+		return true;
+	}
+
+	protected boolean isNewStatusAccessible(Status newStatus, List<FlowInstance> flowInstances) {
+		
+		if(newStatus.isUseAccessCheckByStatus()) {
+		
+			for(FlowInstance instance : flowInstances) {
+				
+				if(!newStatus.getAcceptedStatusIDs().contains(instance.getStatus().getStatusID())) {
+					
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	@WebPublic(alias = "managers")
 	public ForegroundModuleResponse updateManagers(HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws ModuleConfigurationException, SQLException, AccessDeniedException, IOException {
 

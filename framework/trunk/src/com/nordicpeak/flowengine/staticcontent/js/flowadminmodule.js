@@ -364,8 +364,12 @@ $(function() {
 			$("#isRestrictedAdminDeletable").parent().parent().toggle($(this).is(":checked"));
 		}).trigger("change");
 		
-		$("#useAccessCheck").on("change", function() {
+		$("#useAccessCheckByUser").on("change", function() {
 			$("#allowedManagers").toggle($(this).is(":checked"));
+		}).trigger("change");
+
+		$("#useAccessCheckByStatus").on("change", function() {
+			$("#acceptedStatuses").toggle($(this).is(":checked"));
 		}).trigger("change");
 		
 		var $addExternalMessage = $('#addExternalMessage');
@@ -544,9 +548,9 @@ $(function() {
 			
 		}).trigger("change");
 		
-		$("#useAccessCheck").on("change", function(e) {
+		$("#useAccessCheckByUser").on("change", function(e) {
 			
-			var checked = $(useAccessCheck).prop("checked");
+			var checked = $(useAccessCheckByUser).prop("checked");
 			
 			$("#allowedManagers").toggle(checked).find("input").not(".usergroup-list input").prop("disabled", !checked);
 			
@@ -780,7 +784,97 @@ $(function() {
 		});
 	}
 	
+	 $("#accepted-statuses-list").each(function(j){
+		 var list = $(this);
+		 var url = list.find("input[name='connectorURL']").val();
+		 
+		 var searchInput = $("#accepted-statuses-search");
+		 
+		 searchInput.autocomplete({
+		 	source: function(request, response) {
+		 		return searchStatus(request, response, url, searchInput);
+			},
+			select: function( event, ui ) {
+				
+				addAcceptedStatusEntry(ui.item, list);
+				
+				searchInput.val("");
+				
+				return false;
+			},
+			focus: function(event, ui) {
+		        event.preventDefault();
+		    }
+		 });
+		 
+		 var template = $("#accepted-statuses-template");
+		 template.find("input").prop("disabled", true);
+	 });
+	 
 });
+
+function searchStatus(request, response, searchURL, searchInput) {
+
+	searchInput.addClass("ui-autocomplete-loading");
+	
+	$.ajax({
+		url : searchURL,
+		dataType : "json",
+		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+		data : {
+			q : encodeURIComponent(request.term)
+		},
+		success : function(data) {
+			
+			if (data.hits != undefined && data.hits.length > 0) {
+				
+				response($.map(data.hits, function(item) {
+					
+					return {
+						label : item.statusName,
+						value : item.statusID,
+					}
+				}));
+			} else {
+				response(null);
+			}
+			
+			searchInput.removeClass("ui-autocomplete-loading");
+			
+		},
+		error : function() {
+			
+			searchInput.removeClass("ui-autocomplete-loading");
+		}
+	});
+}
+
+function addAcceptedStatusEntry(item, list) {
+	
+	var exists = false;
+	
+	$("input[name='acceptedStatusID']").each(function(){
+		if($(this).val() == item.value){
+			exists = true;
+			return false;
+		}
+	});
+	
+	if(exists){
+		return;
+	}
+	
+	var clone = $("#accepted-statuses-template").clone();
+	
+	clone.find("h3").text(item.label);
+	clone.find("input").prop("disabled", false);
+	clone.find("input[name='acceptedStatusName']").val(item.lable);
+	clone.find("input[name='acceptedStatusID']").val(item.value);
+
+	clone.removeAttr("id");
+	list.append(clone);
+	clone.show();
+}
 
 function applyUserColumnOrder(api) {
 	

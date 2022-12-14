@@ -2912,5 +2912,38 @@
 			]]>
 		</Query>
 	</Script>
-			
+
+	<Script version="157">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_flow_statuses`
+				 CHANGE COLUMN `useAccessCheck` `useAccessCheckByUser` TINYINT(1) NOT NULL,
+				 ADD COLUMN `useAccessCheckByStatus` TINYINT(1) NOT NULL AFTER `useAccessCheckByUser`;
+			]]>
+		</Query>
+
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowengine_standard_statuses`
+				 CHANGE COLUMN `useAccessCheck` `useAccessCheckByUser` TINYINT(1) NOT NULL,
+				 ADD COLUMN `useAccessCheckByStatus` TINYINT(1) NOT NULL AFTER `useAccessCheckByUser`;
+			]]>
+		</Query>
+
+		<Query>
+			<![CDATA[
+				CREATE TABLE flowengine_flow_statuses_accepted_statuses (
+					statusID INT UNSIGNED NOT NULL,
+					acceptedStatusID INT UNSIGNED NOT NULL,
+					PRIMARY KEY (statusID, acceptedStatusID),
+					CONSTRAINT FK__flowengine_flow_statuses FOREIGN KEY (statusID) REFERENCES flowengine_flow_statuses (statusID) ON UPDATE CASCADE ON DELETE CASCADE,
+					CONSTRAINT FK__flowengine_flow_statuses_2 FOREIGN KEY (acceptedStatusID) REFERENCES flowengine_flow_statuses (statusID) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				;
+			]]>
+		</Query>
+	</Script>
+
+
 </DBScripts>

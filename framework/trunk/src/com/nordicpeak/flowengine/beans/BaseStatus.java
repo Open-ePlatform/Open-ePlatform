@@ -95,8 +95,13 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	protected boolean useAccessCheck;
+	protected boolean useAccessCheckByUser;
 
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	protected boolean useAccessCheckByStatus;
+	
 	@DAOManaged
 	@WebPopulate(required = true)
 	@XMLElement
@@ -124,7 +129,8 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 		this.isAdminDeletable = baseStatus.isAdminDeletable();
 		this.isRestrictedAdminDeletable = baseStatus.isRestrictedAdminDeletable();
 		this.requireSigning = baseStatus.isRequireSigning();
-		this.useAccessCheck = baseStatus.isUseAccessCheck();
+		this.useAccessCheckByUser = baseStatus.isUseAccessCheckByUser();
+		this.useAccessCheckByStatus = baseStatus.isUseAccessCheckByStatus();
 		this.contentType = baseStatus.getContentType();
 		this.sortIndex = baseStatus.getSortIndex();
 	}
@@ -275,16 +281,26 @@ public abstract class BaseStatus extends GeneratedElementable implements Seriali
 		this.requireSigning = requireSigning;
 	}
 
-	public boolean isUseAccessCheck() {
-
-		return useAccessCheck;
+	public boolean isUseAccessCheckByUser() {
+		
+		return useAccessCheckByUser;
 	}
 
-	public void setUseAccessCheck(boolean useAccessCheck) {
-
-		this.useAccessCheck = useAccessCheck;
+	public void setUseAccessCheckByUser(boolean useAccessCheckByUser) {
+		
+		this.useAccessCheckByUser = useAccessCheckByUser;
 	}
 
+	public boolean isUseAccessCheckByStatus() {
+		
+		return useAccessCheckByStatus;
+	}
+
+	public void setUseAccessCheckByStatus(boolean useAccessCheckByStatus) {
+
+		this.useAccessCheckByStatus = useAccessCheckByStatus;
+	}
+	
 	public ContentType getContentType() {
 
 		return contentType;
