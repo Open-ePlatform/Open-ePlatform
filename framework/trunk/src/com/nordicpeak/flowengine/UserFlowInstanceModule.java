@@ -167,7 +167,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	public static final UserFlowInstanceAccessController DELETE_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, true);
 	public static final UserFlowInstanceAccessController PREVIEW_ACCESS_CONTROLLER = new UserFlowInstanceAccessController(false, false);
 
-	private static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();
+	protected static final FlowInstanceAddedComparator FLOW_INSTANCE_ADDED_COMPARATOR = new FlowInstanceAddedComparator();
 
 	@XSLVariable(prefix = "java.")
 	private String notificationExternalMessage = "Message";
@@ -181,7 +181,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 	@XSLVariable(prefix = "java.")
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "User menu title", description = "User menu title")
-	private String userMenuTabTitle = "My errands";
+	protected String userMenuTabTitle = "My errands";
 
 	@ModuleSetting(allowsNull = true)
 	@TextFieldSettingDescriptor(name = "CKEditor connector module alias", description = "The full alias of the CKEditor connector module (relative from the contextpath). Leave empty if you do not want to activate file manager for CKEditor")
@@ -606,7 +606,7 @@ public class UserFlowInstanceModule extends BaseFlowBrowserModule implements Mes
 		return moduleResponse;
 	}
 
-	private boolean evaluateFlowInstanceFilters(FlowInstance flowInstance) {
+	protected boolean evaluateFlowInstanceFilters(FlowInstance flowInstance) {
 
 		if (CollectionUtils.isEmpty(flowInstanceFilters)) {
 
