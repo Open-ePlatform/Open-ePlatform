@@ -54,7 +54,7 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 import se.unlogic.standardutils.populators.CombinedPopulator;
 import se.unlogic.standardutils.populators.DatePopulator;
 import se.unlogic.standardutils.populators.PositiveStringIntegerPopulator;
-import se.unlogic.standardutils.populators.SwedishSocialSecurity12DigitsPopulator;
+import se.unlogic.standardutils.populators.SwedishSocialSecurity12DigitsWithoutMinusPopulator;
 import se.unlogic.standardutils.populators.SwedishSocialSecurityPopulator;
 import se.unlogic.standardutils.populators.TimeStampPopulator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -309,7 +309,7 @@ public class FlowInstanceStatisticsAPIModule extends AnnotatedRESTModule impleme
 										citizenIdentifier = SwedishSocialSecurityPopulator.addCentury(citizenIdentifier);
 									}
 
-									if (SwedishSocialSecurity12DigitsPopulator.getPopulator().validateFormat(citizenIdentifier)) {
+									if (SwedishSocialSecurity12DigitsWithoutMinusPopulator.getPopulator().validateFormat(citizenIdentifier)) {
 
 										int year = Integer.valueOf(citizenIdentifier.substring(0, 4));
 										int month = Integer.valueOf(citizenIdentifier.substring(4, 6));
