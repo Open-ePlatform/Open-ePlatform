@@ -44,6 +44,7 @@ import se.unlogic.standardutils.dao.querys.ArrayListQuery;
 import se.unlogic.standardutils.datatypes.SimpleEntry;
 import se.unlogic.standardutils.populators.IntegerPopulator;
 import se.unlogic.standardutils.string.AnnotatedBeanTagSourceFactory;
+import se.unlogic.standardutils.string.SingleTagSource;
 import se.unlogic.standardutils.string.TagReplacer;
 import se.unlogic.standardutils.string.URLEncodingTagReplacer;
 import se.unlogic.standardutils.xml.XMLParser;
@@ -55,6 +56,7 @@ import se.unlogic.webutils.http.SimpleRequest;
 import se.unlogic.webutils.http.URIParser;
 
 import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
 import com.nordicpeak.flowengine.beans.QueryDescriptor;
 import com.nordicpeak.flowengine.beans.Step;
 import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
@@ -283,7 +285,7 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		return doc;
 	}
 
-	public String getEndpointURL(TextFieldQueryEndpoint endpoint, User poster, User currentUser, AttributeHandler attributeHandler) {
+	public String getEndpointURL(TextFieldQueryEndpoint endpoint, User poster, User currentUser, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) {
 		
 		if (endpoint == null || CollectionUtils.isEmpty(endpoint.getFields())) {
 			return null;
@@ -307,6 +309,8 @@ public class TextFieldQueryEndpointAdminModule extends AnnotatedForegroundModule
 		
 		tagReplacer.addTagSource(USER_TAG_SOURCE_FACTORY.getTagSource(poster));
 		tagReplacer.addTagSource(CURRENT_USER_TAG_SOURCE_FACTORY.getTagSource(currentUser));
+		
+		tagReplacer.addTagSource(new SingleTagSource("$flowFamilyID", requestMetadata.getFlowFamilyID()));
 		
 		address = tagReplacer.replace(address);
 

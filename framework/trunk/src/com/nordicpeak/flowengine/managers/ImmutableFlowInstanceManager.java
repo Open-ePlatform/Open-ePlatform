@@ -186,6 +186,12 @@ public class ImmutableFlowInstanceManager implements Serializable, FlowInstanceM
 
 		return flowInstance.getFlow().getFlowID();
 	}
+	
+	@Override
+	public Integer getFlowFamilyID() {
+
+		return flowInstance.getFlow().getFlowFamily().getFlowFamilyID();
+	}
 
 	@Override
 	public Status getFlowState() {

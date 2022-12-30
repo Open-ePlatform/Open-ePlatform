@@ -31,6 +31,8 @@ public interface FlowInstanceManager {
 	public String getInstanceManagerID();
 
 	public Integer getFlowID();
+	
+	public Integer getFlowFamilyID();
 
 	public Status getFlowState();
 

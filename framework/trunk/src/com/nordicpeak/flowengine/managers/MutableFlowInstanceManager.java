@@ -1499,6 +1499,12 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 
 		return flowInstance.getFlow().getFlowID();
 	}
+	
+	@Override
+	public Integer getFlowFamilyID() {
+
+		return flowInstance.getFlow().getFlowFamily().getFlowFamilyID();
+	}
 
 	@Override
 	public Status getFlowState() {
@@ -1779,5 +1785,5 @@ public class MutableFlowInstanceManager implements Serializable, HttpSessionBind
 		
 		return sessionAttributeHandler;
 	}
-	
+
 }

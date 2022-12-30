@@ -380,6 +380,15 @@
 							<xsl:value-of select="$i18n.Tags.Attribute"/>
 						</td>
 					</tr>
+					
+					<tr>
+						<td>
+							<xsl:text>$flowFamilyID</xsl:text>
+						</td>
+						<td>
+							<xsl:value-of select="$i18n.FlowFamilyID"/>
+						</td>
+					</tr>
 				</table>
 			</div>
 			

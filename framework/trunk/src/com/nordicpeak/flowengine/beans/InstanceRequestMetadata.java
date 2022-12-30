@@ -59,6 +59,11 @@ public class InstanceRequestMetadata extends RequestMetadata {
 		return flowInstanceManager.getFlowInstanceID();
 	}
 
+	public Integer getFlowFamilyID() {
+		
+		return flowInstanceManager.getFlowFamilyID();
+	}
+	
 	public String getFlowInstanceManagerID() {
 
 		return flowInstanceManager.getInstanceManagerID();

@@ -355,7 +355,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 		if (query.getEndpoint() != null) {
 			
-			List<ValidationError> apiErrors = getFromAPI(queryInstance, poster, user, attributeHandler);
+			List<ValidationError> apiErrors = getFromAPI(queryInstance, poster, user, requestMetadata, attributeHandler);
 
 			if ((apiErrors != null || validationErrors != null) && validationErrors instanceof AbstractList) { // Fix for unmodifiable list
 				validationErrors = new ArrayList<>(validationErrors);
@@ -389,7 +389,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 		return super.getFormHTML(queryInstance, req, user, poster, validationErrors, enableAjaxPosting, queryRequestURL, requestMetadata, attributeHandler);
 	}
 	
-	private List<ValidationError> getFromAPI(TextFieldQueryInstance queryInstance, User poster, User currentUser, AttributeHandler attributeHandler) {
+	private List<ValidationError> getFromAPI(TextFieldQueryInstance queryInstance, User poster, User currentUser, InstanceRequestMetadata requestMetadata, AttributeHandler attributeHandler) {
 
 		List<ValidationError> validationErrors = null;
 		TextFieldQuery query = queryInstance.getQuery();
@@ -402,7 +402,7 @@ public class TextFieldQueryProviderModule extends BaseQueryProviderModule<TextFi
 
 			} else {
 
-				String endpointURL = apiModule.getEndpointURL(query.getEndpoint(), poster, currentUser, attributeHandler);
+				String endpointURL = apiModule.getEndpointURL(query.getEndpoint(), poster, currentUser, requestMetadata, attributeHandler);
 				
 				if (queryInstance.getLastUsedEndpointURL() == null || !queryInstance.getLastUsedEndpointURL().equals(endpointURL)) {
 
