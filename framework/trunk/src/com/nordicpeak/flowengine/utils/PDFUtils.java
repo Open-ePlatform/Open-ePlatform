@@ -137,6 +137,8 @@ public class PDFUtils {
 						
 					}
 					
+					documentNames.remove(PdfName.EMBEDDEDFILES);
+					
 					reader.removeUnusedObjects();
 					
 					ByteArrayOutputStream buffer = new ByteArrayOutputStream(32 * BinarySizes.KiloByte);
