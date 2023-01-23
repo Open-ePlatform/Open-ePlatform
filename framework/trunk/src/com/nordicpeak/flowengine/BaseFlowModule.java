@@ -2038,11 +2038,21 @@ public abstract class BaseFlowModule extends AnnotatedForegroundModule implement
 
 				} catch (RuntimeException e) {
 
-					log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+					if (icon != null) {
+						log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+					}
+					else {
+						log.debug("Caught exception " + e + " while sending default image to " + user);
+					}
 
 				} catch (IOException e) {
-
-					log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+					
+					if (icon != null) {
+						log.debug("Caught exception " + e + " while sending default image " + icon.getIconFilename() + " to " + user);
+					}
+					else {
+						log.debug("Caught exception " + e + " while sending default image to " + user);
+					}
 				}
 			}
 		

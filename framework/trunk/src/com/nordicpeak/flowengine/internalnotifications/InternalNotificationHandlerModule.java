@@ -406,7 +406,14 @@ public class InternalNotificationHandlerModule extends AnnotatedForegroundModule
 				} else {
 					
 					try {
-						notification.setNotificationExtra(notificationSource.getNotificationMetadata(notification, flowInstanceMap.get(notification.getFlowInstanceID()), fullContextPath));
+						FlowInstance flowInstance = flowInstanceMap.get(notification.getFlowInstanceID());
+						
+						if (flowInstance != null) {
+							notification.setNotificationExtra(notificationSource.getNotificationMetadata(notification, flowInstance, fullContextPath));
+						}
+						else {
+							log.warn("Unable to set notification extra information for " + notification + " when flow instance is missing");
+						}
 						
 					} catch (Exception e) {
 						
