@@ -2249,15 +2249,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					if(managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID()) && flowFamilyManagerGroup.isNotifyGroupMembersPersonally()) {
 						List<User> allAffectedUsers = systemInterface.getUserHandler().getUsersByGroup(managerGroup.getGroupID(), true, true);
 						
-						for (User affectedUser : allAffectedUsers) {
-							if(numberOfNotificationEmails >= maxNumberOfGroupNotificationEmails) {
-								break;
-							}
+						if (allAffectedUsers != null) {
+							for (User affectedUser : allAffectedUsers) {
+								if(numberOfNotificationEmails >= maxNumberOfGroupNotificationEmails) {
+									break;
+								}
 								
-							if(!addresses.contains(affectedUser.getEmail())) {
-								addresses.add(affectedUser.getEmail());
-								numberOfNotificationEmails++;
-							}							
+								if(!addresses.contains(affectedUser.getEmail())) {
+									addresses.add(affectedUser.getEmail());
+									numberOfNotificationEmails++;
+								}							
+							}
 						}
 					}
 				}
