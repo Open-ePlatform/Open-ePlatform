@@ -348,4 +348,36 @@
 		</Query>
 	</Script>
 	
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_query_instances`
+					ADD COLUMN `reason` TEXT NULL DEFAULT NULL AFTER `accepted`,
+					ADD COLUMN `extraInformation` TEXT NULL DEFAULT NULL AFTER `reason`,
+					ADD COLUMN `complaintDescription` TEXT NULL DEFAULT NULL AFTER `extraInformation`,
+					ADD COLUMN `extraInformationStorage` TEXT NULL DEFAULT NULL AFTER `complaintDescription`,
+					ADD COLUMN `confirmationText` TEXT(1024) NULL DEFAULT NULL AFTER `extraInformationStorage`,
+					ADD COLUMN `dataRecipient` TEXT NULL DEFAULT NULL AFTER `confirmationText`,
+					ADD COLUMN `ownerName` TEXT NULL DEFAULT NULL AFTER `dataRecipient`,
+					ADD COLUMN `ownerEmail` TEXT NULL DEFAULT NULL AFTER `ownerName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instance_settings_storage` (
+					`settingStorageID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`period` INT(10) UNSIGNED NULL DEFAULT NULL,
+					`type` VARCHAR(10) NOT NULL COLLATE 'latin1_swedish_ci',
+					`description` VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+					PRIMARY KEY (`settingStorageID`) USING BTREE,
+					INDEX `queryInstanceID` (`queryInstanceID`) USING BTREE,
+					CONSTRAINT `FK_person_data_informer_query_instances_settings_instances` FOREIGN KEY (`queryInstanceID`) REFERENCES `person_data_informer_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

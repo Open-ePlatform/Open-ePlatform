@@ -52,13 +52,13 @@
 				
 				<xsl:apply-templates select="PersonDataInformerQueryInstance/PersonDataInformerQuery/FlowFamilyInformerSetting"/>
 				
-				<xsl:if test="PersonDataInformerQueryInstance/FlowFamily/ownerName">
+				<xsl:if test="PersonDataInformerQueryInstance/ownerName">
 					<p>
 						<strong>
 							<xsl:value-of select="$i18n.Accountable"/>
 						</strong>
 						<br/>
-						<xsl:value-of select="PersonDataInformerQueryInstance/FlowFamily/ownerName" />
+						<xsl:value-of select="PersonDataInformerQueryInstance/ownerName" />
 					</p>
 				</xsl:if>
 				
@@ -216,7 +216,19 @@
 			</strong>
 			
 			<ul class="description-text">
-				<xsl:apply-templates select="StorageSettings" mode="list"/>
+				<xsl:choose>
+					<xsl:when test="../../SettingStorages">
+						<xsl:call-template name="ShowStorageSettings">
+							<xsl:with-param name="storageSettings" select="../../SettingStorages" />
+						</xsl:call-template>
+					</xsl:when>
+					
+					<xsl:otherwise>
+						<xsl:call-template name="ShowStorageSettings">
+							<xsl:with-param name="storageSettings" select="StorageSettings" />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
 			</ul>
 		</p>
 		
@@ -262,39 +274,43 @@
 	
 	</xsl:template>
 	
-	<xsl:template match="StorageSetting" mode="list">
+	<xsl:template name="ShowStorageSettings">
+		<xsl:param name="storageSettings" />
 	
-		<li>
-			<xsl:choose>
-				<xsl:when test="storageType = 'INFINITY'">
-					<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
-				</xsl:when>
-				<xsl:when test="storageType = 'CUSTOM'">
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="period"/>
+		<xsl:for-each select="$storageSettings/StorageSetting">
+			<li>
+				<xsl:choose>
+					<xsl:when test="storageType = 'INFINITY'">
+						<xsl:value-of select="$i18n.YearsSaved.Infinite"/>
+					</xsl:when>
+					<xsl:when test="storageType = 'CUSTOM'">
+					</xsl:when>
 					
-					<xsl:text> </xsl:text>
-					
-					<xsl:choose>
-						<xsl:when test="storageType = 'YEAR'">
-							<xsl:value-of select="$i18n.YearsSaved.Years"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$i18n.YearsSaved.Months"/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:otherwise>
-			</xsl:choose>
-			
-			<xsl:if test="description">
-				<xsl:if test="storageType != 'CUSTOM'">
-					<xsl:text> - </xsl:text>
-				</xsl:if>
+					<xsl:otherwise>
+						<xsl:value-of select="period"/>
+						
+						<xsl:text> </xsl:text>
+						
+						<xsl:choose>
+							<xsl:when test="storageType = 'YEAR'">
+								<xsl:value-of select="$i18n.YearsSaved.Years"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$i18n.YearsSaved.Months"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:otherwise>
+				</xsl:choose>
 				
-				<xsl:value-of select="description"/>
-			</xsl:if>
-		</li>
+				<xsl:if test="description">
+					<xsl:if test="storageType != 'CUSTOM'">
+						<xsl:text> - </xsl:text>
+					</xsl:if>
+					
+					<xsl:value-of select="description"/>
+				</xsl:if>
+			</li>
+		</xsl:for-each>
 		
 	</xsl:template>
 	

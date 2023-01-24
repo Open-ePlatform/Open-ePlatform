@@ -13,6 +13,28 @@ import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
+import com.nordicpeak.flowengine.enums.QueryState;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
+import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
+import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
+import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.interfaces.Query;
+import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
+import com.nordicpeak.flowengine.interfaces.QueryInstance;
+import com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.InformerDataSettingStorage;
+import com.nordicpeak.flowengine.persondatasavinginformer.beans.PersonDataInformerQueryInstanceSettingStorage;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
+import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
+import com.nordicpeak.flowengine.utils.JTidyUtils;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
 import se.unlogic.hierarchy.core.annotations.InstanceManagerDependency;
 import se.unlogic.hierarchy.core.annotations.WebPublic;
 import se.unlogic.hierarchy.core.annotations.XSLVariable;
@@ -25,11 +47,13 @@ import se.unlogic.hierarchy.core.utils.ModuleUtils;
 import se.unlogic.standardutils.dao.AnnotatedDAO;
 import se.unlogic.standardutils.dao.HighLevelQuery;
 import se.unlogic.standardutils.dao.QueryParameterFactory;
+import se.unlogic.standardutils.dao.RelationQuery;
 import se.unlogic.standardutils.dao.SimpleAnnotatedDAOFactory;
 import se.unlogic.standardutils.dao.TransactionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
+import se.unlogic.standardutils.object.ObjectUtils;
 import se.unlogic.standardutils.populators.BooleanPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -41,24 +65,6 @@ import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.beans.InstanceRequestMetadata;
-import com.nordicpeak.flowengine.enums.QueryState;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.ImmutableStatus;
-import com.nordicpeak.flowengine.interfaces.InstanceMetadata;
-import com.nordicpeak.flowengine.interfaces.MutableQueryDescriptor;
-import com.nordicpeak.flowengine.interfaces.MutableQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.interfaces.Query;
-import com.nordicpeak.flowengine.interfaces.QueryContentFilter;
-import com.nordicpeak.flowengine.interfaces.QueryInstance;
-import com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule;
-import com.nordicpeak.flowengine.persondatasavinginformer.beans.FlowFamilyInformerSetting;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryCRUDCallback;
-import com.nordicpeak.flowengine.queries.basequery.BaseQueryProviderModule;
-import com.nordicpeak.flowengine.utils.JTidyUtils;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
 
 public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModule<PersonDataInformerQueryInstance> implements BaseQueryCRUDCallback {
 
@@ -134,7 +140,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		query.setQueryID(descriptor.getQueryID());
 
 		query.populate(descriptor.getImportParser().getNode(XMLGenerator.getElementName(query.getClass())));
-		
+
 		contentFilter.filterHTML(query);
 
 		this.queryDAO.add(query, transactionHandler, null);
@@ -205,48 +211,105 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 
 		queryInstance.getQuery().setAlternative(alternative);
 
-		FlowFamilyInformerSetting informerSetting = personDataInformerModule.getInformerSetting(descriptor.getQueryDescriptor().getStep().getFlow().getFlowFamily());
+		//@formatter:off
+		boolean hasQueryInstanceValues = !ObjectUtils.isNull(
+					queryInstance.getReason(), 
+					queryInstance.getExtraInformation(), 
+					queryInstance.getComplaintDescription(), 
+					queryInstance.getExtraInformationStorage(), 
+					queryInstance.getConfirmationText(), 
+					queryInstance.getDataRecipient()
+				);
+		//@formatter:on
 
-		if (informerSetting != null) {
-			
+		ImmutableFlowFamily flowFamily = descriptor.getQueryDescriptor().getStep().getFlow().getFlowFamily();
+		FlowFamilyInformerSetting informerSetting = personDataInformerModule.getInformerSetting(flowFamily);
+
+		// Query instance exists
+		if (hasQueryInstanceValues) {
+
+			if (queryInstance.getReason() != null) {
+				informerSetting.setReason(JTidyUtils.getXHTML(queryInstance.getReason(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setReason(null);
+			}
+
+			if (queryInstance.getExtraInformation() != null) {
+				informerSetting.setExtraInformation(JTidyUtils.getXHTML(queryInstance.getExtraInformation(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setExtraInformation(null);
+			}
+
+			if (queryInstance.getComplaintDescription() != null) {
+				informerSetting.setComplaintDescription(JTidyUtils.getXHTML(queryInstance.getComplaintDescription(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setComplaintDescription(null);
+			}
+
+			if (queryInstance.getExtraInformationStorage() != null) {
+				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(queryInstance.getExtraInformationStorage(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setExtraInformationStorage(null);
+			}
+
+			if (queryInstance.getConfirmationText() != null) {
+				informerSetting.setConfirmationText(JTidyUtils.getXHTML(queryInstance.getConfirmationText(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setConfirmationText(null);
+			}
+
+			if (queryInstance.getDataRecipient() != null) {
+				informerSetting.setDataRecipient(JTidyUtils.getXHTML(queryInstance.getDataRecipient(), systemInterface.getEncoding()));
+			} else {
+				informerSetting.setDataRecipient(null);
+			}
+
+			TextTagReplacer.replaceTextTags(informerSetting, instanceMetadata.getSiteProfile());
+
+			queryInstance.getQuery().setFamilyInformerSettings(informerSetting);
+		}
+
+		// Query instance doesn't exist
+		if (informerSetting != null && !hasQueryInstanceValues) {
+
 			if (informerSetting.getReason() == null && personDataInformerModule.getDefaultReason() != null) {
-			
+
 				informerSetting.setReason(JTidyUtils.getXHTML(personDataInformerModule.getDefaultReason(), systemInterface.getEncoding()));
-				
+
 			} else if (informerSetting.getReason() != null) {
-				
+
 				informerSetting.setReason(JTidyUtils.getXHTML(informerSetting.getReason(), systemInterface.getEncoding()));
 			}
 
 			if (informerSetting.getExtraInformation() == null && personDataInformerModule.getDefaultExtraInformation() != null) {
-				
+
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformation(), systemInterface.getEncoding()));
-				
+
 			} else if (informerSetting.getExtraInformation() != null) {
-				
+
 				informerSetting.setExtraInformation(JTidyUtils.getXHTML(informerSetting.getExtraInformation(), systemInterface.getEncoding()));
 			}
 
 			if (informerSetting.getExtraInformationStorage() == null && personDataInformerModule.getDefaultExtraInformationStorage() != null) {
-				
+
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(personDataInformerModule.getDefaultExtraInformationStorage(), systemInterface.getEncoding()));
-				
+
 			} else if (informerSetting.getExtraInformationStorage() != null) {
-				
+
 				informerSetting.setExtraInformationStorage(JTidyUtils.getXHTML(informerSetting.getExtraInformationStorage(), systemInterface.getEncoding()));
 			}
 
 			if (informerSetting.getConfirmationText() == null && personDataInformerModule.getDefaultConfirmationText() != null) {
-				
+
 				informerSetting.setConfirmationText(JTidyUtils.getXHTML(personDataInformerModule.getDefaultConfirmationText(), systemInterface.getEncoding()));
-				
+
 			} else if (informerSetting.getConfirmationText() != null) {
-				
+
 				informerSetting.setConfirmationText(JTidyUtils.getXHTML(informerSetting.getConfirmationText(), systemInterface.getEncoding()));
 			}
 
 			if (informerSetting.getDataRecipient() != null) {
-				
+
 				informerSetting.setDataRecipient(JTidyUtils.getXHTML(informerSetting.getDataRecipient(), systemInterface.getEncoding()));
 			}
 
@@ -263,7 +326,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		}
 
 		queryInstance.getQuery().scanAttributeTags();
-		
+
 		TextTagReplacer.replaceTextTags(queryInstance.getQuery(), instanceMetadata.getSiteProfile());
 
 		queryInstance.set(descriptor);
@@ -297,7 +360,7 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 
 	private PersonDataInformerQueryInstance getQueryInstance(Integer queryInstanceID) throws SQLException {
 
-		HighLevelQuery<PersonDataInformerQueryInstance> query = new HighLevelQuery<PersonDataInformerQueryInstance>();
+		HighLevelQuery<PersonDataInformerQueryInstance> query = new HighLevelQuery<PersonDataInformerQueryInstance>(PersonDataInformerQueryInstance.SETTING_STORAGES_RELATION);
 
 		query.addParameter(queryInstanceIDParamFactory.getParameter(queryInstanceID));
 
@@ -311,12 +374,12 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		if (queryInstance.getQueryInstanceID() == null || !queryInstance.getQueryInstanceID().equals(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID())) {
 
 			queryInstance.setQueryInstanceID(queryInstance.getQueryInstanceDescriptor().getQueryInstanceID());
-
-			this.queryInstanceDAO.add(queryInstance, transactionHandler, null);
+			
+			this.queryInstanceDAO.add(queryInstance, transactionHandler, new RelationQuery(PersonDataInformerQueryInstance.SETTING_STORAGES_RELATION));
 
 		} else {
 
-			this.queryInstanceDAO.update(queryInstance, transactionHandler, null);
+			this.queryInstanceDAO.update(queryInstance, transactionHandler, new RelationQuery(PersonDataInformerQueryInstance.SETTING_STORAGES_RELATION));
 		}
 	}
 
@@ -350,8 +413,96 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 			throw new ValidationException(validationErrors);
 		}
 
+		try {
+			FlowFamilyInformerSetting informerSetting = getInformerSetting(requestMetadata);
+			FlowFamily flowFamily = flowAdminModule.getFlowFamily(requestMetadata.getFlowFamilyID());
+			
+			if (informerSetting != null && flowFamily != null) {
+
+				if (informerSetting.getReason() != null) {
+					queryInstance.setReason(informerSetting.getReason());
+				} else {
+					queryInstance.setReason(personDataInformerModule.getDefaultReason());
+				}
+
+				if (informerSetting.getExtraInformation() != null) {
+					queryInstance.setExtraInformation(informerSetting.getExtraInformation());
+				} else {
+					queryInstance.setExtraInformation(personDataInformerModule.getDefaultExtraInformation());
+				}
+
+				if (informerSetting.getComplaintDescription() != null) {
+					queryInstance.setComplaintDescription(informerSetting.getComplaintDescription());
+				} else {
+					queryInstance.setComplaintDescription(personDataInformerModule.getDefaultComplaintDescription());
+				}
+
+				if (informerSetting.getExtraInformation() != null) {
+					queryInstance.setExtraInformation(informerSetting.getExtraInformation());
+				} else {
+					queryInstance.setExtraInformation(personDataInformerModule.getDefaultExtraInformation());
+				}
+
+				if (informerSetting.getExtraInformationStorage() != null) {
+					queryInstance.setExtraInformationStorage(informerSetting.getExtraInformationStorage());
+				} else {
+					queryInstance.setExtraInformationStorage(personDataInformerModule.getDefaultExtraInformationStorage());
+				}
+
+				if (informerSetting.getConfirmationText() != null) {
+					queryInstance.setConfirmationText(informerSetting.getConfirmationText());
+				} else {
+					queryInstance.setConfirmationText(personDataInformerModule.getDefaultConfirmationText());
+				}
+
+				if (informerSetting.getDataRecipient() != null) {
+					queryInstance.setDataRecipient(informerSetting.getDataRecipient());
+				} else {
+					queryInstance.setDataRecipient(null);
+				}
+				
+				
+				if (flowFamily.getOwnerName() != null) {
+					queryInstance.setOwnerName(flowFamily.getOwnerName());
+				} else {
+					queryInstance.setOwnerName(null);
+				}
+				
+				if (flowFamily.getOwnerEmail() != null) {
+					queryInstance.setOwnerEmail(flowFamily.getOwnerEmail());
+				} else {
+					queryInstance.setOwnerEmail(null);
+				}
+				
+				
+				if (informerSetting.getStorageSettings() != null) {
+					List<PersonDataInformerQueryInstanceSettingStorage> settingStorages = new ArrayList<>();
+					
+					for (InformerDataSettingStorage settingStorage : informerSetting.getStorageSettings()) {
+						PersonDataInformerQueryInstanceSettingStorage instanceSettingStorage = new PersonDataInformerQueryInstanceSettingStorage();
+						
+						instanceSettingStorage.setPeriod(settingStorage.getPeriod());
+						instanceSettingStorage.setStorageType(settingStorage.getStorageType());
+						instanceSettingStorage.setDescription(settingStorage.getDescription());
+						
+						settingStorages.add(instanceSettingStorage);
+					}
+					
+					queryInstance.setSettingStorages(settingStorages);
+				}
+			}
+
+		} catch (SQLException e) {
+			validationErrors.add(new ValidationError("Error saving query, could not get FlowFamilyInformerSetting"));
+		}
+
 		queryInstance.setAccepted(accepted);
 		queryInstance.getQueryInstanceDescriptor().setPopulated(accepted);
+	}
+
+	private FlowFamilyInformerSetting getInformerSetting(InstanceRequestMetadata requestMetadata) throws SQLException {
+
+		return personDataInformerModule.getInformerSetting(flowAdminModule.getFlowFamily(requestMetadata.getFlowFamilyID()));
 	}
 
 	@WebPublic(alias = "config")
@@ -417,8 +568,15 @@ public class PersonDataInformerQueryProviderModule extends BaseQueryProviderModu
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.EXTRA_INFORMATION_STORAGE_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.CONFIRMATION_TEXT_FIELD);
 		generatorDocument.addIgnoredField(FlowFamilyInformerSetting.DATA_RECIPIENT_FIELD);
-
+		
 		generatorDocument.addAssignableFieldElementableListener(FlowFamilyInformerSetting.class, new FlowFamilyInformerSettingTextsListener(systemInterface.getEncoding()));
+		
+		// Fixes strange recursion related stack overflow error
+		if (queryInstance.getSettingStorages() != null) {
+			for (PersonDataInformerQueryInstanceSettingStorage storageSetting : queryInstance.getSettingStorages()) {
+				storageSetting.setQueryInstance(null);
+			}
+		}
 
 		super.appendPDFData(generatorDocument, showQueryValuesElement, queryInstance, attributeHandler);
 
