@@ -135,4 +135,32 @@
 		</Query>
 	</Script>
 
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries`
+					ADD COLUMN `fieldAddress` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `helpText`,
+					ADD COLUMN `fieldEmail` CHAR(8) NOT NULL DEFAULT 'REQUIRED' AFTER `fieldAddress`,
+					ADD COLUMN `fieldMobilePhone` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldEmail`,
+					ADD COLUMN `fieldPhone` CHAR(8) NOT NULL DEFAULT 'VISIBLE' AFTER `fieldMobilePhone`,
+					ADD COLUMN `requireEmailOrMobile` TINYINT(1) UNSIGNED NOT NULL AFTER `fieldMobilePhone`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE organization_detail_queries SET fieldAddress = 'REQUIRED' WHERE requireAddress = 1;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+				UPDATE organization_detail_queries SET requireEmailOrMobile = 1, fieldEmail = 'VISIBLE' WHERE allowSMS = 1;
+			]]>
+		</Query>		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `organization_detail_queries` DROP COLUMN requireAddress;
+			]]>
+		</Query>		
+	</Script>
+
 </DBScripts>

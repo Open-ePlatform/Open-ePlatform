@@ -299,7 +299,13 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		boolean contactBySMS = req.getParameter("q" + queryID + "_contactBySMS") != null;
 		boolean persistOrganization = req.getParameter("q" + queryID + "_persistOrganization") != null;
 
-		boolean requireAddressFields = !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && query.requiresAddress();
+		boolean queryRequired = queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED;
+		boolean fieldsRequired = queryRequired && !allowPartialPopulation;
+		
+		boolean requireAddressFields = fieldsRequired && query.getFieldAddress() == OrganizationDetailQueryField.REQUIRED;
+		boolean requireEmail =  fieldsRequired && query.getFieldEmail() == OrganizationDetailQueryField.REQUIRED;
+		boolean requireMobilePhone =  fieldsRequired && query.getFieldMobilePhone() == OrganizationDetailQueryField.REQUIRED || contactBySMS;
+		boolean requirePhone = fieldsRequired && query.getFieldPhone() == OrganizationDetailQueryField.REQUIRED;
 
 		String name = ValidationUtils.validateParameter("q" + queryID + "_name", req, !allowPartialPopulation, stringPopulator, errors);
 		
@@ -319,11 +325,22 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		}
 		
 		String postalAddress = ValidationUtils.validateParameter("q" + queryID + "_postaladdress", req, requireAddressFields, stringPopulator, errors);
-		String mobilePhone = ValidationUtils.validateParameter("q" + queryID + "_mobilephone", req, contactBySMS, phonePopulator, errors);
-		String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, !query.isAllowSMS() && !allowPartialPopulation, EMAIL_POPULATOR, errors);
-		String phone = ValidationUtils.validateParameter("q" + queryID + "_phone", req, false, phonePopulator, errors);
+
+		String mobilePhone = ValidationUtils.validateParameter("q" + queryID + "_mobilephone", req, requireMobilePhone, phonePopulator, errors);
+		String email = ValidationUtils.validateParameter("q" + queryID + "_email", req, requireEmail, EMAIL_POPULATOR, errors);
+		String phone = ValidationUtils.validateParameter("q" + queryID + "_phone", req, requirePhone, phonePopulator, errors);
 		Integer organizationID = ValidationUtils.validateParameter("q" + queryID + "_organization", req, false, IntegerPopulator.getPopulator(), errors);
 
+		if(query.isRequireEmailOrMobile() && StringUtils.isEmpty(email) && StringUtils.isEmpty(mobilePhone)) {
+			
+			errors.add(new ValidationError("NoContactChannelChoosen"));
+		}
+		
+		if(query.isRequireEmailOrMobile() && StringUtils.isEmpty(email) && !StringUtils.isEmpty(mobilePhone) && !contactBySMS) {
+			
+			errors.add(new ValidationError("SMSNotificationNotChosen"));
+		}
+				
 		String firstname;
 		String lastname;
 
@@ -356,15 +373,15 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		
 		if(!requireAddressFields && !allowPartialPopulation){
 
-			if (StringUtils.isEmpty(address) && (query.requiresAddress() || (!StringUtils.isEmpty(zipCode) || !StringUtils.isEmpty(postalAddress)))) {
+			if (StringUtils.isEmpty(address) && (query.getFieldAddress() == OrganizationDetailQueryField.REQUIRED || (!StringUtils.isEmpty(zipCode) || !StringUtils.isEmpty(postalAddress)))) {
 				errors.add(new ValidationError("q" + queryID + "_address", ValidationErrorType.RequiredField));
 			}
 
-			if (StringUtils.isEmpty(zipCode) && (query.requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(postalAddress)))) {
+			if (StringUtils.isEmpty(zipCode) && (query.getFieldAddress() == OrganizationDetailQueryField.REQUIRED || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(postalAddress)))) {
 				errors.add(new ValidationError("q" + queryID + "_zipcode", ValidationErrorType.RequiredField));
 			}
 
-			if (StringUtils.isEmpty(postalAddress) && (query.requiresAddress() || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(zipCode)))) {
+			if (StringUtils.isEmpty(postalAddress) && (query.getFieldAddress() == OrganizationDetailQueryField.REQUIRED || (!StringUtils.isEmpty(address) || !StringUtils.isEmpty(zipCode)))) {
 				errors.add(new ValidationError("q" + queryID + "_postaladdress", ValidationErrorType.RequiredField));
 			}
 		}
@@ -379,10 +396,6 @@ public class OrganizationDetailQueryProviderModule extends BaseQueryProviderModu
 		this.validateFieldLength("q" + queryID + "_mobilephone", mobilePhone, 255, errors);
 		this.validateFieldLength("q" + queryID + "_email", email, 255, errors);
 		this.validateFieldLength("q" + queryID + "_phone", phone, 255, errors);
-
-		if (query.isAllowSMS() && !allowPartialPopulation && queryInstance.getQueryInstanceDescriptor().getQueryState() == QueryState.VISIBLE_REQUIRED && !contactBySMS && StringUtils.isEmpty(rawEmail)) {
-			errors.add(new ValidationError("NoContactChannelChoosen"));
-		}
 
 		if (!errors.isEmpty()) {
 

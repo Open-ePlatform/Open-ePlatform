@@ -26,8 +26,6 @@
 	<xsl:variable name="i18n.ContactBySMS">SMS</xsl:variable>
 	<xsl:variable name="i18n.ContactByEmail">E-post</xsl:variable>
 	
-	
-	
 	<xsl:variable name="i18n.ChooseOrganization">Välj organisation</xsl:variable>
 	<xsl:variable name="i18n.OrganizationDescription">Välj en av dina befintliga organisationer eller registrera en ny</xsl:variable>
 	<xsl:variable name="i18n.NewOrganization">Ny organisation</xsl:variable>
@@ -48,6 +46,7 @@
 	<xsl:variable name="i18n.UnknownValidationError">Ett okänt valideringsfel har uppstått!</xsl:variable>
 	
 	<xsl:variable name="i18n.NoContactChannelChoosen">Du måste välja minst en form av notifiering!</xsl:variable>
-	
+	<xsl:variable name="i18n.SMSNotificationNotChosen">Notifiering är ej vald (mobiltelefonnummer angivet)</xsl:variable>
+
 	<xsl:variable name="i18n.ZipCodeAndPostalAddress">Postnummer och ort</xsl:variable>
 </xsl:stylesheet>

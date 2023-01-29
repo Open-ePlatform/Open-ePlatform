@@ -12,6 +12,7 @@ import se.unlogic.standardutils.dao.annotations.DAOManaged;
 import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.Table;
+import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.validation.ValidationError;
 import se.unlogic.standardutils.validation.ValidationException;
@@ -26,6 +27,8 @@ import com.nordicpeak.flowengine.queries.basequery.BaseQuery;
 public class OrganizationDetailQuery extends BaseQuery {
 
 	private static final long serialVersionUID = 2716884146368159522L;
+	
+	private static final EnumPopulator<OrganizationDetailQueryField> ORGANIZATION_FIELD_POPULATOR = new EnumPopulator<OrganizationDetailQueryField>(OrganizationDetailQueryField.class);
 
 	@DAOManaged
 	@Key
@@ -45,12 +48,32 @@ public class OrganizationDetailQuery extends BaseQuery {
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
-	private boolean requireAddress;
+	private boolean requireEmailOrMobile;
 	
 	@DAOManaged
 	@WebPopulate
 	@XMLElement
 	private boolean validateZipCode;
+
+	@DAOManaged
+	@WebPopulate(required = true)
+	@XMLElement
+	private OrganizationDetailQueryField fieldAddress = OrganizationDetailQueryField.VISIBLE;
+	
+	@DAOManaged
+	@WebPopulate(required = true)
+	@XMLElement
+	private OrganizationDetailQueryField fieldEmail = OrganizationDetailQueryField.REQUIRED;
+
+	@DAOManaged
+	@WebPopulate(required = true)
+	@XMLElement
+	private OrganizationDetailQueryField fieldMobilePhone = OrganizationDetailQueryField.VISIBLE;
+
+	@DAOManaged
+	@WebPopulate(required = true)
+	@XMLElement
+	private OrganizationDetailQueryField fieldPhone = OrganizationDetailQueryField.VISIBLE;
 
 	@DAOManaged
 	@WebPopulate
@@ -158,14 +181,32 @@ public class OrganizationDetailQuery extends BaseQuery {
 		appendFieldDefenition("OrganizationName", true, doc, sequenceElement);
 		appendFieldDefenition("OrganizationNumber", true, doc, sequenceElement);
 		appendFieldDefenition("CitizenIdentifier", false, doc, sequenceElement);
-		appendFieldDefenition("Address", false, doc, sequenceElement);
-		appendFieldDefenition("ZipCode", false, doc, sequenceElement);
-		appendFieldDefenition("PostalAddress", false, doc, sequenceElement);
+
+		if (fieldAddress != OrganizationDetailQueryField.HIDDEN) {
+			
+			appendFieldDefenition("Address", fieldAddress == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("ZipCode", fieldAddress == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+			appendFieldDefenition("PostalAddress", fieldAddress == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+		}
+
 		appendFieldDefenition("Firstname", true, doc, sequenceElement);
 		appendFieldDefenition("Lastname", true, doc, sequenceElement);
-		appendFieldDefenition("Phone", false, doc, sequenceElement);
-		appendFieldDefenition("Email", false, doc, sequenceElement);
-		appendFieldDefenition("MobilePhone", false, doc, sequenceElement);
+		
+
+		if (fieldPhone != OrganizationDetailQueryField.HIDDEN) {
+			
+			appendFieldDefenition("Phone", fieldPhone == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+		}
+
+		if (fieldEmail != OrganizationDetailQueryField.HIDDEN) {
+			
+			appendFieldDefenition("Email", fieldEmail == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+		}
+
+		if (fieldMobilePhone != OrganizationDetailQueryField.HIDDEN) {
+			
+			appendFieldDefenition("MobilePhone", fieldMobilePhone == OrganizationDetailQueryField.REQUIRED, doc, sequenceElement);
+		}
 
 		Element smsElement = doc.createElementNS("http://www.w3.org/2001/XMLSchema", "xs:element");
 		smsElement.setAttribute("name", "ContactBySMS");
@@ -198,7 +239,7 @@ public class OrganizationDetailQuery extends BaseQuery {
 
 		hideNotificationChannelSettings = xmlParser.getPrimitiveBoolean("hideNotificationChannelSettings");
 		allowSMS = xmlParser.getPrimitiveBoolean("allowSMS");
-		requireAddress = xmlParser.getPrimitiveBoolean("requireAddress");
+		requireEmailOrMobile = xmlParser.getPrimitiveBoolean("requireEmailOrMobile");
 		validateZipCode = xmlParser.getPrimitiveBoolean("validateZipCode");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
@@ -206,6 +247,55 @@ public class OrganizationDetailQuery extends BaseQuery {
 		if (attributeName != null) {
 
 			setAsAttribute = xmlParser.getPrimitiveBoolean("setAsAttribute");
+		}		
+		
+		fieldAddress = XMLValidationUtils.validateParameter("fieldAddress", xmlParser, false, 1, 8, ORGANIZATION_FIELD_POPULATOR, errors);
+		
+		fieldEmail = XMLValidationUtils.validateParameter("fieldEmail", xmlParser, false, 1, 8, ORGANIZATION_FIELD_POPULATOR, errors);
+		
+		fieldMobilePhone = XMLValidationUtils.validateParameter("fieldMobilePhone", xmlParser, false, 1, 8, ORGANIZATION_FIELD_POPULATOR, errors);
+		
+		fieldPhone = XMLValidationUtils.validateParameter("fieldPhone", xmlParser, false, 1, 8, ORGANIZATION_FIELD_POPULATOR, errors);
+		
+		//Fallback if importing older version
+		if(fieldAddress == null) {
+			
+			// Old setting
+			if(xmlParser.getPrimitiveBoolean("requireAddress")) {
+				
+				fieldAddress = OrganizationDetailQueryField.REQUIRED;
+						
+			} else {
+				
+				fieldAddress = OrganizationDetailQueryField.VISIBLE;
+			}
+		}
+		
+		//Fallback if importing older version
+		if(fieldEmail == null) {
+			
+			if(allowSMS) {
+				
+				fieldEmail = OrganizationDetailQueryField.VISIBLE;
+				requireEmailOrMobile = true;
+						
+			} else {
+				
+				fieldEmail = OrganizationDetailQueryField.REQUIRED;
+				requireEmailOrMobile = false;
+			}
+		}
+
+		//Fallback if importing older version
+		if(fieldMobilePhone == null) {
+			
+			fieldMobilePhone = OrganizationDetailQueryField.VISIBLE;
+		}
+
+		//Fallback if importing older version
+		if(fieldPhone == null) {
+			
+			fieldPhone = OrganizationDetailQueryField.VISIBLE;
 		}
 
 		if (!errors.isEmpty()) {
@@ -215,21 +305,62 @@ public class OrganizationDetailQuery extends BaseQuery {
 
 	}
 
-	public boolean requiresAddress() {
-
-		return requireAddress;
-	}
-
-	public void setRequireAddress(boolean requireAddress) {
-
-		this.requireAddress = requireAddress;
-	}
-
 	public boolean isValidateZipCode() {
+		
 		return validateZipCode;
 	}
 
+	public boolean isRequireEmailOrMobile() {
+		return requireEmailOrMobile;
+	}
+
+	public void setRequireEmailOrMobile(boolean requireEmailOrMobile) {
+		
+		this.requireEmailOrMobile = requireEmailOrMobile;
+	}
+
+	public OrganizationDetailQueryField getFieldAddress() {
+		
+		return fieldAddress;
+	}
+
+	public void setFieldAddress(OrganizationDetailQueryField fieldAddress) {
+		
+		this.fieldAddress = fieldAddress;
+	}
+
+	public OrganizationDetailQueryField getFieldEmail() {
+		
+		return fieldEmail;
+	}
+
+	public void setFieldEmail(OrganizationDetailQueryField fieldEmail) {
+		
+		this.fieldEmail = fieldEmail;
+	}
+
+	public OrganizationDetailQueryField getFieldMobilePhone() {
+		
+		return fieldMobilePhone;
+	}
+
+	public void setFieldMobilePhone(OrganizationDetailQueryField fieldMobilePhone) {
+		
+		this.fieldMobilePhone = fieldMobilePhone;
+	}
+
+	public OrganizationDetailQueryField getFieldPhone() {
+		
+		return fieldPhone;
+	}
+
+	public void setFieldPhone(OrganizationDetailQueryField fieldPhone) {
+		
+		this.fieldPhone = fieldPhone;
+	}
+
 	public void setValidateZipCode(boolean validateZipCode) {
+		
 		this.validateZipCode = validateZipCode;
 	}
 	

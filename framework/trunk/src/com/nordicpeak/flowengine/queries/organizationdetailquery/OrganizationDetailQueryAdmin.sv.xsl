@@ -22,6 +22,15 @@
 Frågetypen Kontaktuppgiftsfråga (organisation) är en skräddarsydd frågetyp när användaren skall ange sina kontaktuppgifter manuellt samt ange uppgifter om en organisation. 
 Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina organisationer på Mina sidor.
 	</xsl:variable>
+
+	<xsl:variable name="i18n.Field.Hidden">Dolt</xsl:variable>
+	<xsl:variable name="i18n.Field.Visible">Valfritt</xsl:variable>
+	<xsl:variable name="i18n.Field.Required">Obligatoriskt</xsl:variable>
+	<xsl:variable name="i18n.Fields">Fält</xsl:variable>
+	<xsl:variable name="i18n.Address">Postadress</xsl:variable>
+	<xsl:variable name="i18n.MobilePhone">Mobiltelefon</xsl:variable>
+	<xsl:variable name="i18n.Phone">Telefon</xsl:variable>
+	<xsl:variable name="i18n.Email">E-postadress</xsl:variable>
 	
 	<xsl:variable name="i18n.maxLength">tillåten längd på textinnehåll</xsl:variable>
 	
@@ -32,7 +41,7 @@ Användaren har även möjlighet att välja att spara inmatade uppgifter under Mina 
 	
 	<xsl:variable name="i18n.ContactChannelSettings">Inställningar</xsl:variable>
 	
-	<xsl:variable name="i18n.RequireAddress">Kräv postadress</xsl:variable>
+	<xsl:variable name="i18n.RequireEmailOrMobile">Kräv antingen e-post eller mobiltelefon</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidateZipCode">Validera formatet på postnummer (XXX XX eller XXXXX)</xsl:variable>
 

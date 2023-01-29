@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:exsl="http://exslt.org/common" exclude-result-prefixes="exsl">
 	<xsl:output method="html" version="4.0" encoding="ISO-8859-1"/>
 
 	<xsl:include href="classpath://se/unlogic/hierarchy/core/utils/xsl/Common.xsl"/>
@@ -11,9 +11,13 @@
 		/ckeditor/adapters/jquery.js
 		/ckeditor/init.js
 	</xsl:variable>
+
+	<xsl:variable name="links">
+		/css/organiationdetailqueryadmin.css?v=1
+	</xsl:variable>
 	
 	<xsl:variable name="scripts">
-		/js/organizationdetailqueryadmin.js
+		/js/organizationdetailqueryadmin.js?v=1
 	</xsl:variable>
 		
 
@@ -46,6 +50,101 @@
 							
 			</div>			
 
+			<xsl:variable name="fieldOptions">
+				<option>
+					<name><xsl:value-of select="$i18n.Field.Hidden"/></name>
+					<value>HIDDEN</value>
+				</option>
+				<option>
+					<name><xsl:value-of select="$i18n.Field.Visible"/></name>
+					<value>VISIBLE</value>
+				</option>
+				<option>
+					<name><xsl:value-of select="$i18n.Field.Required"/></name>
+					<value>REQUIRED</value>
+				</option>
+			</xsl:variable>
+
+			<div class="floatleft clearboth">
+				<label class="floatleft clearboth"><xsl:value-of select="$i18n.Fields" /></label>
+			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<label for="fieldAddress" class="floatleft clearboth">
+					<span class="organization-field-label">
+						<xsl:value-of select="$i18n.Address" />
+					</span>
+					
+					<div class="bigmarginleft display-inline">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'fieldAddress'"/>
+							<xsl:with-param name="name" select="'fieldAddress'"/>
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'value'" />
+							<xsl:with-param name="element" select="exsl:node-set($fieldOptions)/option" />
+							<xsl:with-param name="selectedValue" select="OrganizationDetailQuery/fieldAddress" />
+						</xsl:call-template>
+			    </div>
+				</label>
+			</div>
+
+			<div class="floatleft full bigmarginbottom">
+				<label for="fieldEmail" class="floatleft clearboth">
+					<span class="organization-field-label">
+						<xsl:value-of select="$i18n.Email" />
+					</span>
+					
+					<div class="bigmarginleft display-inline">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'fieldEmail'"/>
+							<xsl:with-param name="name" select="'fieldEmail'"/>
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'value'" />
+							<xsl:with-param name="element" select="exsl:node-set($fieldOptions)/option" />
+							<xsl:with-param name="selectedValue" select="OrganizationDetailQuery/fieldEmail" />
+						</xsl:call-template>
+			    </div>
+				</label>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="fieldMobilePhone" class="floatleft clearboth">
+					<span class="organization-field-label">
+						<xsl:value-of select="$i18n.MobilePhone" />
+					</span>
+					
+					<div class="bigmarginleft display-inline">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'fieldMobilePhone'"/>
+							<xsl:with-param name="name" select="'fieldMobilePhone'"/>
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'value'" />
+							<xsl:with-param name="element" select="exsl:node-set($fieldOptions)/option" />
+							<xsl:with-param name="selectedValue" select="OrganizationDetailQuery/fieldMobilePhone" />
+						</xsl:call-template>
+			    </div>
+				</label>
+			</div>
+			
+			<div class="floatleft full bigmarginbottom">
+				<label for="fieldPhone" class="floatleft clearboth">
+					<span class="organization-field-label">
+						<xsl:value-of select="$i18n.Phone" />
+					</span>
+					
+					<div class="bigmarginleft display-inline">
+						<xsl:call-template name="createDropdown">
+							<xsl:with-param name="id" select="'fieldPhone'"/>
+							<xsl:with-param name="name" select="'fieldPhone'"/>
+							<xsl:with-param name="labelElementName" select="'name'" />
+							<xsl:with-param name="valueElementName" select="'value'" />
+							<xsl:with-param name="element" select="exsl:node-set($fieldOptions)/option" />
+							<xsl:with-param name="selectedValue" select="OrganizationDetailQuery/fieldPhone" />
+						</xsl:call-template>
+			    </div>
+				</label>
+			</div>
+
 			<div class="floatleft full marginbottom">
 				<xsl:call-template name="createCheckbox">
 					<xsl:with-param name="id" select="'hideNotificationChannelSettings'" />
@@ -69,12 +168,12 @@
 			</div>
 			<div class="floatleft full marginbottom">
 				<xsl:call-template name="createCheckbox">
-					<xsl:with-param name="id" select="'requireAddress'" />
-					<xsl:with-param name="name" select="'requireAddress'" />
+					<xsl:with-param name="id" select="'requireEmailOrMobile'" />
+					<xsl:with-param name="name" select="'requireEmailOrMobile'" />
 					<xsl:with-param name="value" select="'true'" />
 					<xsl:with-param name="element" select="OrganizationDetailQuery" />
 				</xsl:call-template>
-				<label for="requireAddress"><xsl:value-of select="$i18n.RequireAddress" /></label>
+				<label for="requireEmailOrMobile"><xsl:value-of select="$i18n.RequireEmailOrMobile" /></label>
 			</div>
 			<div class="floatleft full marginbottom">
 				<xsl:call-template name="createCheckbox">
