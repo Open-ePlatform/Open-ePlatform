@@ -93,4 +93,12 @@
 		</Query>
 	</Script>
 	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `text_area_queries` ADD COLUMN `searchable` TINYINT(1) UNSIGNED NOT NULL AFTER `keepalive`;
+			]]>
+		</Query>
+	</Script>
+	
 </DBScripts>

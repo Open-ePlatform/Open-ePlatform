@@ -1,6 +1,8 @@
 package com.nordicpeak.flowengine.queries.textareaquery;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -11,16 +13,18 @@ import se.unlogic.standardutils.dao.annotations.Key;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
+import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
 
 import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.SearchableQueryInstance;
 import com.nordicpeak.flowengine.interfaces.StringValueQueryInstance;
 import com.nordicpeak.flowengine.queries.basequery.BaseQueryInstance;
 
 @Table(name = "text_area_query_instances")
 @XMLElement
-public class TextAreaQueryInstance extends BaseQueryInstance implements StringValueQueryInstance{
+public class TextAreaQueryInstance extends BaseQueryInstance implements StringValueQueryInstance, SearchableQueryInstance {
 
 	private static final long serialVersionUID = -7761759005604863873L;
 
@@ -118,5 +122,15 @@ public class TextAreaQueryInstance extends BaseQueryInstance implements StringVa
 	public String getStringValue() {
 
 		return value;
+	}
+	
+	@Override
+	public List<String> getSearchableValues() {
+		
+		if(!StringUtils.isEmpty(value) && query.isSearchable()) {
+			return Arrays.asList(value);
+		}
+		
+		return null;
 	}
 }

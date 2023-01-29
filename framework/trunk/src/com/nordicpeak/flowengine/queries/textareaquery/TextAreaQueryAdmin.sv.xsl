@@ -24,6 +24,8 @@ Frågetypen Textareafråga används när användaren skall ange information i ett tex
 	<xsl:variable name="i18n.setAsAttribute">Spara fältets värde som attribut</xsl:variable>
 	<xsl:variable name="i18n.attributeName">Attributnamn</xsl:variable>
 	
+	<xsl:variable name="i18n.Searchable">Gör fältet sökbart</xsl:variable>
+	
 	<xsl:variable name="i18n.hideDescriptionInPDF">Dölj beskrivning i PDF</xsl:variable>
 	<xsl:variable name="i18n.lockOnOwnershipTransfer">Lås fråga vid överlåtelse</xsl:variable>
 	<xsl:variable name="i18n.showLetterCount">Visa räknare för antal tecken som använts av maximalt antal tecken</xsl:variable>

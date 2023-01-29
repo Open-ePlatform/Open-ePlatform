@@ -49,6 +49,11 @@ public class TextAreaQuery extends BaseQuery {
 	private boolean setAsAttribute;
 	
 	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean searchable;
+	
+	@DAOManaged
 	@WebPopulate(maxLength = 255)
 	@RequiredIfSet(paramNames = "setAsAttribute")
 	@XMLElement
@@ -147,6 +152,16 @@ public class TextAreaQuery extends BaseQuery {
 		return "TextAreaQuery" + queryID;
 	}
 	
+	public boolean isSearchable() {
+
+		return searchable;
+	}
+
+	public void setSearchable(boolean searchable) {
+
+		this.searchable = searchable;
+	}
+	
 	@Override
 	public void toXSD(Document doc) {
 		
@@ -211,6 +226,8 @@ public class TextAreaQuery extends BaseQuery {
 		maxLength = XMLValidationUtils.validateParameter("maxLength", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
 		
 		rows = XMLValidationUtils.validateParameter("rows", xmlParser, false, PositiveStringIntegerPopulator.getPopulator(), errors);
+		
+		searchable = xmlParser.getPrimitiveBoolean("searchable");
 		
 		attributeName = XMLValidationUtils.validateParameter("attributeName", xmlParser, false, 1, 255, StringPopulator.getPopulator(), errors);
 		
