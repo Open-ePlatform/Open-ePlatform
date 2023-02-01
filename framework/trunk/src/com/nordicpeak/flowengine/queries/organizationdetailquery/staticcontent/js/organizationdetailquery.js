@@ -18,7 +18,7 @@ function initOrganizationDetailQuery(queryID) {
 		if($(this).val() != "") {
 			$(shortQueryID + "_contactBySMS").prop("disabled", false).next("label").removeClass("disabled");
 		} else {
-			$(shortQueryID + "_contactBySMS").prop("checked", false).prop("disabled", false).next("label").addClass("disabled");
+			$(shortQueryID + "_contactBySMS").prop("checked", false).prop("disabled", true).next("label").addClass("disabled");
 		}
 		
 	});
