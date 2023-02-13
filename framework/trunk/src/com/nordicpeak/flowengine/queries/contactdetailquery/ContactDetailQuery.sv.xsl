@@ -26,7 +26,7 @@
 	<xsl:variable name="i18n.ContactByEmail">E-post</xsl:variable>
 	
 	<xsl:variable name="i18n.UpdateMyUserProfile">Uppdatera kontaktuppgifterna under mina uppgifter</xsl:variable>
-	<xsl:variable name="i18n.UpdatingMyUserProfile">Dina kontaktuppgifter kommer att sparas under mina uppgifter.</xsl:variable>
+	<xsl:variable name="i18n.UpdatingMyUserProfile">Dina kontaktuppgifter kommer att sparas under "mina uppgifter."</xsl:variable>
 	
 	<xsl:variable name="i18n.ValidationError.RequiredField">Det här fältet är obligatoriskt!</xsl:variable>
 	<xsl:variable name="i18n.ValidationError.TooLongFieldContent.part1">Innehållet i det här fältet är </xsl:variable>
