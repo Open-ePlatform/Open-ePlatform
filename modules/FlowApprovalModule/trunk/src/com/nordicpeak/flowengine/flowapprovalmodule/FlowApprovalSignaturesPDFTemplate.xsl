@@ -222,6 +222,9 @@
 				<xsl:value-of select="CompletingUser/firstname" />
 				<xsl:text> </xsl:text>
 				<xsl:value-of select="CompletingUser/lastname" />
+				<xsl:text> (</xsl:text>
+				<xsl:value-of select="CompletingUser/username" />
+				<xsl:text>)</xsl:text>
 				
 				<xsl:if test="signedDate">
 					<xsl:text> (</xsl:text>
