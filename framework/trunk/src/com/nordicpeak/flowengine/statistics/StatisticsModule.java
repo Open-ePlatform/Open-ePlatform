@@ -656,7 +656,7 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 			Timestamp itermediateStartDate = DateUtils.setTimeToMidnight(new Timestamp(calendar.getTimeInMillis()));
 			
-			String week = calendar.get(Calendar.YEAR) + " v." + calendar.get(Calendar.WEEK_OF_YEAR) + "";
+			String week = calendar.get(Calendar.YEAR) + " v." + calendar.get(Calendar.WEEK_OF_YEAR);
 			
 			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 			Timestamp itermediateEndDate = DateUtils.setTimeToMaximum(new Timestamp(calendar.getTimeInMillis()));
