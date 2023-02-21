@@ -246,11 +246,7 @@
 				<xsl:variable name="isRequired"><xsl:if test="OrganizationDetailQueryInstance/QueryInstanceDescriptor/queryState = 'VISIBLE_REQUIRED'">true</xsl:if></xsl:variable>
 				<xsl:variable name="requiresAddress"><xsl:if test="$isRequired = 'true' and OrganizationDetailQueryInstance/OrganizationDetailQuery/fieldAddress = 'REQUIRED'">true</xsl:if></xsl:variable>
 				<xsl:variable name="requiresEmail"><xsl:if test="$isRequired = 'true' and OrganizationDetailQueryInstance/OrganizationDetailQuery/fieldEmail= 'REQUIRED'">true</xsl:if></xsl:variable>
-				<xsl:variable name="requiresMobilePhone">
-					<xsl:if test="$isRequired = 'true' and (OrganizationDetailQueryInstance/OrganizationDetailQuery/fieldMobilePhone = 'REQUIRED'
-						or OrganizationDetailQueryInstance/OrganizationDetailQuery/hideNotificationChannelSettings = 'true')">true
-					</xsl:if>
-				</xsl:variable>
+				<xsl:variable name="requiresMobilePhone"><xsl:if test="$isRequired = 'true' and (OrganizationDetailQueryInstance/OrganizationDetailQuery/fieldMobilePhone = 'REQUIRED' or OrganizationDetailQueryInstance/OrganizationDetailQuery/hideNotificationChannelSettings = 'true')">true</xsl:if></xsl:variable>
 				<xsl:variable name="requiresPhone"><xsl:if test="$isRequired = 'true' and OrganizationDetailQueryInstance/OrganizationDetailQuery/fieldPhone = 'REQUIRED'">true</xsl:if></xsl:variable>
 			
 				<div class="heading-wrapper">
