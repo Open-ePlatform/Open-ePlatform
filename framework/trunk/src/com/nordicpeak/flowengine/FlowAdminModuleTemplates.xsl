@@ -897,103 +897,99 @@
 			
 		</div>
 		
-		<xsl:if test="$isInternal = 'true'">
+		<div class="showflow-wrapper">
 		
-			<div class="showflow-wrapper">
-			
-				<a name="managementinfo"/>
-			
-				<h2 class="title">
-					<xsl:value-of select="$i18n.managementInfo"/>
-									
-					<div class="floatright adminicons">
-							
-						<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagementinfo/{Flow/flowID}" title="{$i18n.updateManagementInfo}">
-							<img src="{$imgPath}/pen.png" alt="" />
-						</a>
-						
-					</div>
-				</h2>
-				
-				<xsl:variable name="managementInfo" select="Flow/FlowFamily/ManagementInfo" />
-				
-				<div class="showflow-content">
-				
-					<xsl:choose>
-						<xsl:when test="$managementInfo">
-						
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.processOwner" /></label>
-									<div><xsl:value-of select="$managementInfo/processOwner" /></div>
-								</div>
-							</div>
-							
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.flowResponsible" /></label>
-									<div><xsl:value-of select="$managementInfo/flowResponsible" /></div>
-								</div>
-							</div>
-							
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.informationResponsible" /></label>
-									<div><xsl:value-of select="$managementInfo/informationResponsible" /></div>
-								</div>
-							</div>
-							
-							<div class="full clearboth"/>
-							
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.status" /></label>
-									<div><xsl:value-of select="$managementInfo/status" /></div>
-								</div>
-							</div>
-							
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.organization" /></label>
-									<div><xsl:value-of select="$managementInfo/organization" /></div>
-								</div>
-							</div>
-							
-							<div class="floatleft min-width-thirtytree">
-								<div class="floatleft fifty">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.lastReviewed" /></label>
-									<div><xsl:value-of select="$managementInfo/lastReviewed" /></div>
-								</div>
-							</div>
+			<a name="managementinfo"/>
 		
-							<div class="full clearboth"/>
-							
-							<div class="floatleft full">
-								<div class="floatleft">
-									<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.aboutFlow" /></label>
-									<div>
-										<xsl:call-template name="replaceLineBreak">
-											<xsl:with-param name="string" select="$managementInfo/aboutFlow"/>
-										</xsl:call-template>
-									</div>
-								</div>
-							</div>
+			<h2 class="title">
+				<xsl:value-of select="$i18n.managementInfo"/>
+								
+				<div class="floatright adminicons">
 						
-						</xsl:when>
-						<xsl:otherwise>
-						
-							<p><xsl:value-of select="$i18n.noManagementInfo"/></p>
-						
-						</xsl:otherwise>
-					</xsl:choose>
-				
+					<a class="marginleft" href="{/Document/requestinfo/currentURI}/{/Document/module/alias}/updatemanagementinfo/{Flow/flowID}" title="{$i18n.updateManagementInfo}">
+						<img src="{$imgPath}/pen.png" alt="" />
+					</a>
 					
 				</div>
+			</h2>
+			
+			<xsl:variable name="managementInfo" select="Flow/FlowFamily/ManagementInfo" />
+			
+			<div class="showflow-content">
+			
+				<xsl:choose>
+					<xsl:when test="$managementInfo">
+					
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.processOwner" /></label>
+								<div><xsl:value-of select="$managementInfo/processOwner" /></div>
+							</div>
+						</div>
+						
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.flowResponsible" /></label>
+								<div><xsl:value-of select="$managementInfo/flowResponsible" /></div>
+							</div>
+						</div>
+						
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.informationResponsible" /></label>
+								<div><xsl:value-of select="$managementInfo/informationResponsible" /></div>
+							</div>
+						</div>
+						
+						<div class="full clearboth"/>
+						
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.status" /></label>
+								<div><xsl:value-of select="$managementInfo/status" /></div>
+							</div>
+						</div>
+						
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.organization" /></label>
+								<div><xsl:value-of select="$managementInfo/organization" /></div>
+							</div>
+						</div>
+						
+						<div class="floatleft min-width-thirtytree">
+							<div class="floatleft fifty">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.lastReviewed" /></label>
+								<div><xsl:value-of select="$managementInfo/lastReviewed" /></div>
+							</div>
+						</div>
+	
+						<div class="full clearboth"/>
+						
+						<div class="floatleft full">
+							<div class="floatleft">
+								<label class="nowrap"><xsl:value-of select="$i18n.managementInfo.aboutFlow" /></label>
+								<div>
+									<xsl:call-template name="replaceLineBreak">
+										<xsl:with-param name="string" select="$managementInfo/aboutFlow"/>
+									</xsl:call-template>
+								</div>
+							</div>
+						</div>
+					
+					</xsl:when>
+					<xsl:otherwise>
+					
+						<p><xsl:value-of select="$i18n.noManagementInfo"/></p>
+					
+					</xsl:otherwise>
+				</xsl:choose>
+			
 				
 			</div>
 			
-		</xsl:if>
-
+		</div>
+			
 		<xsl:if test="$isInternal = 'true'">
 		
 			<div class="showflow-wrapper">
