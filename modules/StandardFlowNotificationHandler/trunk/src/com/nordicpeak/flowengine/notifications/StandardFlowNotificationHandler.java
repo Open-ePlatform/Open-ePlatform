@@ -22,6 +22,63 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.Constants;
+import com.nordicpeak.flowengine.FlowBrowserModule;
+import com.nordicpeak.flowengine.UserFlowInstanceModule;
+import com.nordicpeak.flowengine.beans.Contact;
+import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
+import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
+import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowFamily;
+import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
+import com.nordicpeak.flowengine.beans.FlowType;
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
+import com.nordicpeak.flowengine.beans.SigningParty;
+import com.nordicpeak.flowengine.beans.Status;
+import com.nordicpeak.flowengine.beans.Step;
+import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
+import com.nordicpeak.flowengine.enums.ContentType;
+import com.nordicpeak.flowengine.enums.EventType;
+import com.nordicpeak.flowengine.enums.SenderType;
+import com.nordicpeak.flowengine.events.ExpiredFlowInstanceNotificationEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAddedEvent;
+import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAttachmentDownloadedEvent;
+import com.nordicpeak.flowengine.events.FlowPublishedEvent;
+import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
+import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
+import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
+import com.nordicpeak.flowengine.events.ManagersChangedEvent;
+import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
+import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
+import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
+import com.nordicpeak.flowengine.events.SubmitEvent;
+import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
+import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
+import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
+import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
+import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
+import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
+import com.nordicpeak.flowengine.interfaces.PDFProvider;
+import com.nordicpeak.flowengine.interfaces.QueryHandler;
+import com.nordicpeak.flowengine.interfaces.XMLProvider;
+import com.nordicpeak.flowengine.managers.FlowInstanceManager;
+import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
+import com.nordicpeak.flowengine.notifications.enums.NotificationRecipient;
+import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
+import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
+import com.nordicpeak.flowengine.utils.MultiSignUtils;
+import com.nordicpeak.flowengine.utils.PDFByteAttachment;
+
 import se.unlogic.emailutils.framework.ByteArrayAttachment;
 import se.unlogic.emailutils.framework.EmailUtils;
 import se.unlogic.emailutils.framework.FileAttachment;
@@ -93,63 +150,6 @@ import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator;
 
-import com.nordicpeak.flowengine.Constants;
-import com.nordicpeak.flowengine.FlowBrowserModule;
-import com.nordicpeak.flowengine.UserFlowInstanceModule;
-import com.nordicpeak.flowengine.beans.Contact;
-import com.nordicpeak.flowengine.beans.DefaultInstanceMetadata;
-import com.nordicpeak.flowengine.beans.DefaultStatusMapping;
-import com.nordicpeak.flowengine.beans.ExternalMessage;
-import com.nordicpeak.flowengine.beans.Flow;
-import com.nordicpeak.flowengine.beans.FlowFamily;
-import com.nordicpeak.flowengine.beans.FlowFamilyManagerGroup;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.beans.FlowInstanceEvent;
-import com.nordicpeak.flowengine.beans.FlowType;
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-import com.nordicpeak.flowengine.beans.QueryInstanceDescriptor;
-import com.nordicpeak.flowengine.beans.SigningParty;
-import com.nordicpeak.flowengine.beans.Status;
-import com.nordicpeak.flowengine.beans.Step;
-import com.nordicpeak.flowengine.dao.FlowEngineDAOFactory;
-import com.nordicpeak.flowengine.enums.ContentType;
-import com.nordicpeak.flowengine.enums.EventType;
-import com.nordicpeak.flowengine.enums.SenderType;
-import com.nordicpeak.flowengine.events.ExpiredFlowInstanceNotificationEvent;
-import com.nordicpeak.flowengine.events.ExternalMessageAddedEvent;
-import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAddedEvent;
-import com.nordicpeak.flowengine.events.ExternalMessageReadReceiptAttachmentDownloadedEvent;
-import com.nordicpeak.flowengine.events.FlowPublishedEvent;
-import com.nordicpeak.flowengine.events.InternalMessageAddedEvent;
-import com.nordicpeak.flowengine.events.ManagerExpiredEvent;
-import com.nordicpeak.flowengine.events.ManagerMentionedEvent;
-import com.nordicpeak.flowengine.events.ManagersChangedEvent;
-import com.nordicpeak.flowengine.events.MultiSigningCanceledEvent;
-import com.nordicpeak.flowengine.events.MultiSigningInitiatedEvent;
-import com.nordicpeak.flowengine.events.StatusChangedByManagerEvent;
-import com.nordicpeak.flowengine.events.SubmitEvent;
-import com.nordicpeak.flowengine.exceptions.flowinstance.InvalidFlowInstanceStepException;
-import com.nordicpeak.flowengine.exceptions.flowinstance.MissingQueryInstanceDescriptor;
-import com.nordicpeak.flowengine.exceptions.flowinstancemanager.DuplicateFlowInstanceManagerIDException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryInstanceNotFoundInQueryProviderException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderErrorException;
-import com.nordicpeak.flowengine.exceptions.queryprovider.QueryProviderNotFoundException;
-import com.nordicpeak.flowengine.interfaces.FlowNotificationHandler;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowFamily;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlowInstance;
-import com.nordicpeak.flowengine.interfaces.MultiSigningHandler;
-import com.nordicpeak.flowengine.interfaces.PDFProvider;
-import com.nordicpeak.flowengine.interfaces.QueryHandler;
-import com.nordicpeak.flowengine.interfaces.XMLProvider;
-import com.nordicpeak.flowengine.managers.FlowInstanceManager;
-import com.nordicpeak.flowengine.managers.ImmutableFlowInstanceManager;
-import com.nordicpeak.flowengine.notifications.enums.NotificationRecipient;
-import com.nordicpeak.flowengine.utils.FlowFamilyUtils;
-import com.nordicpeak.flowengine.utils.FlowInstanceUtils;
-import com.nordicpeak.flowengine.utils.MultiSignUtils;
-import com.nordicpeak.flowengine.utils.PDFByteAttachment;
-
 public class StandardFlowNotificationHandler extends AnnotatedForegroundModule implements FlowNotificationHandler, ViewFragmentModule<ForegroundModuleDescriptor> {
 
 	public static final Field[] FLOW_INSTANCE_RELATIONS = { FlowInstance.EVENTS_RELATION, FlowInstanceEvent.ATTRIBUTES_RELATION, FlowInstance.ATTRIBUTES_RELATION, FlowInstance.MANAGERS_RELATION, FlowInstance.MANAGER_GROUPS_RELATION, FlowInstance.FLOW_RELATION, FlowInstance.STATUS_RELATION, Flow.FLOW_TYPE_RELATION, Flow.FLOW_FAMILY_RELATION, FlowType.ALLOWED_ADMIN_GROUPS_RELATION, FlowType.ALLOWED_ADMIN_USERS_RELATION, Flow.STEPS_RELATION, Flow.FLOW_FAMILY_RELATION, FlowFamily.MANAGER_GROUPS_RELATION, FlowFamily.MANAGER_USERS_RELATION, Step.QUERY_DESCRIPTORS_RELATION, QueryDescriptor.EVALUATOR_DESCRIPTORS_RELATION, Flow.DEFAULT_FLOW_STATE_MAPPINGS_RELATION, DefaultStatusMapping.FLOW_STATE_RELATION, QueryDescriptor.QUERY_INSTANCE_DESCRIPTORS_RELATION, FlowInstance.OWNERS_RELATION };
@@ -170,7 +170,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Installation base URL", description = "The installations base URL ", required = true)
-	protected String installationBaseURL  = "Not set";
+	protected String installationBaseURL = "Not set";
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "SMS sender name", description = "The name of the sender used for SMS messages", required = true)
@@ -433,7 +433,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers on submitted completion", description = "Controls if email messages are sent to the managers when a completion of flow instances they are assigned to are submitted.")
 	private boolean sendFlowInstanceCompletionManagerEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Completion submitted email subject (managers)", description = "The subject of emails sent to the managers when completion of their flow instance is submitted", required = true)
 	@XSLVariable(prefix = "java.")
@@ -443,7 +443,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Completion submitted email message (managers)", description = "The message of emails sent to the managers when completion of their flow instance is submitteed", required = true)
 	@XSLVariable(prefix = "java.")
 	private String managerCompletionSubmittedEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managergroups on status change", description = "Controls if email messages are the sent to the managergroups when the status of flow instances they are assigned to changes.")
 	private boolean sendStatusChangedManagerGroupEmail;
@@ -471,16 +471,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance submitted email message (managers)", description = "The message of emails sent to the managers when a new flow instance is submitted", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceSubmittedManagerEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when flow instances expires", description = "Controls if email messages are the sent to managers when flow instances expires.")
 	private boolean sendFlowInstanceExpiredManagerEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow instance expired email subject (managers)", description = "The subject of emails sent to the managers when a flow instance expires", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceExpiredManagerEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Flow instance expired email message (managers)", description = "The message of emails sent to the managers when a flow instance expires", required = true)
 	@XSLVariable(prefix = "java.")
@@ -630,7 +630,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "New message received email message (global)", description = "The message of emails sent when a new messages are received", required = true)
 	@XSLVariable(prefix = "java.")
 	private String externalMessageReceivedGlobalEmailMessage;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "New internal message received email subject (global)", description = "The subject of emails sent when a new internal message are received", required = true)
 	@XSLVariable(prefix = "java.")
@@ -672,7 +672,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@HTMLEditorSettingDescriptor(name = "Flow instance expired email message (global)", description = "The message of emails sent when a flow instance expires", required = true)
 	@XSLVariable(prefix = "java.")
 	private String flowInstanceExpiredGlobalEmailMessage;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Maximum number of allowed group notification emails (global)", description = "The maximum number of sent group notification sent", required = true, formatValidator = PositiveStringIntegerValidator.class)
 	private Integer maxNumberOfGroupNotificationEmails = 100;
@@ -680,7 +680,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Flow instance expired email address (global)", description = "Global address to be notified when flow instances expires", formatValidator = EmailPopulator.class)
 	private List<String> flowInstanceExpiredGlobalEmailAddresses;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Flow published user subject (user)", description = "The subject of emails sent when a flow is published", required = true)
 	@XSLVariable(prefix = "java.")
@@ -694,76 +694,76 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@ModuleSetting(allowsNull = true)
 	@GroupMultiListSettingDescriptor(name = "Admin group", description = "Groups that have access to the administrative functions in this module.")
 	protected List<Integer> adminGroupIDs;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when a new receipt is added", description = "Controls if email messages are sent to managers when a new receipt is added.")
 	private boolean sendReadReceiptAddedAddedManagerEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read receipt added email subject (manager)", description = "The subject of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedManagerEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (manager)", description = "The message of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedManagerEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to groups when a new receipt is added", description = "Controls if email messages are sent to groups when a new receipt is added.")
 	private boolean sendReadReceiptAddedGroupEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read receipt added email subject (group)", description = "The subject of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedGroupEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (group)", description = "The message of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedGroupEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to the specified address when a new receipt is added", description = "Controls if email messages are sent to specified address when a new receipt is added.")
 	private boolean sendReadReceiptAddedGlobalEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read receipt added email subject (global)", description = "The subject of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedGlobalEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Read receipt added email message (global)", description = "The message of emails sent when a new receipt is added", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAddedGlobalEmailMessage;
-	
+
 	@ModuleSetting(allowsNull = true)
 	@TextAreaSettingDescriptor(name = "Read receipt added email address (global)", description = "Global address to be notified when a new receipt is added", formatValidator = EmailPopulator.class)
 	private List<String> readReceiptAddedGlobalEmailAddresses;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to managers when a new receipt attachment is downloaded", description = "Controls if email messages are sent to managers when a new receipt attachment is downloaded.")
 	private boolean sendReadReceiptAttachmentDownloadedAddedManagerEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read receipt attachment downloaded email subject (manager)", description = "The subject of emails sent when a new receipt attachment is downloaded", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAttachmentDownloadedManagerEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Read receipt attachment downloaded email message (manager)", description = "The message of emails sent when a new receipt attachment is downloaded", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAttachmentDownloadedManagerEmailMessage;
-	
+
 	@ModuleSetting
 	@CheckboxSettingDescriptor(name = "Send email to groups when a new receipt attachment is downloaded", description = "Controls if email messages are sent to groups when a new receipt attachment is downloaded.")
 	private boolean sendReadReceiptAttachmentDownloadedGroupEmail;
-	
+
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Read receipt attachment downloaded email subject (group)", description = "The subject of emails sent when a new receipt attachment is downloaded", required = true)
 	@XSLVariable(prefix = "java.")
 	private String readReceiptAttachmentDownloadedGroupEmailSubject;
-	
+
 	@ModuleSetting
 	@HTMLEditorSettingDescriptor(name = "Read receipt attachment downloaded email message (group)", description = "The message of emails sent when a new receipt attachment is downloaded", required = true)
 	@XSLVariable(prefix = "java.")
@@ -1226,7 +1226,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setExternalMessageReceivedManagerMessage(externalMessageReceivedManagerEmailMessage);
 
 		notificationSettings.setSendFlowInstanceAssignedManagerEmail(sendFlowInstanceAssignedManagerEmail);
-		
+
 		notificationSettings.setSendFlowInstanceCompletionManagerEmail(sendFlowInstanceCompletionManagerEmail);
 
 		notificationSettings.setSendStatusChangedManagerEmail(sendStatusChangedManagerEmail);
@@ -1252,7 +1252,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		notificationSettings.setManagerExpiredGlobalEmailAddresses(managerExpiredGlobalEmailAddresses);
 
 		notificationSettings.setSendFlowInstanceExpiredGlobalEmail(sendFlowInstanceExpiredGlobalEmail);
-		
+
 		return notificationSettings;
 	}
 
@@ -1647,7 +1647,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			ImmutableFlowInstance flowInstance = event.getFlowInstanceManager().getFlowInstance();
 
 			FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-			
+
 			File pdfFile = null;
 			File xmlFile = null;
 
@@ -1700,7 +1700,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 						}
 
 						for (Contact contact : contacts) {
-							
+
 							sendContactEmail(flowInstance, contact, notificationSettings.getFlowInstanceSubmittedUserEmailSubject(), message, attachPDF ? pdfFile : null);
 						}
 					}
@@ -1716,11 +1716,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceSubmittedManagerEmailSubject(), notificationSettings.getFlowInstanceSubmittedManagerEmailMessage(), null, true);
 				}
 
-				if(event.getActionID().equals(UserFlowInstanceModule.SUBMIT_COMPLETION_ACTION_ID) && notificationSettings.isSendFlowInstanceCompletionManagerEmail()) {
-					
+				if (event.getActionID().equals(UserFlowInstanceModule.SUBMIT_COMPLETION_ACTION_ID) && notificationSettings.isSendFlowInstanceCompletionManagerEmail()) {
+
 					sendManagerEmails(flowInstance, posterContact, notificationSettings.getManagerCompletionSubmittedEmailSubject(), notificationSettings.getManagerCompletionSubmittedEmailMessage(), null, false);
 				}
-				
+
 				if (notificationSettings.isSendFlowInstanceSubmittedGlobalEmail() && notificationSettings.getFlowInstanceSubmittedGlobalEmailAddresses() != null) {
 
 					boolean attachPDF = false;
@@ -1775,6 +1775,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return sizeLimit == null || sizeLimit * BinarySizes.MegaByte >= pdfFile.length();
 
 	}
+	
+	private boolean areValidAttachmentSizes(Integer sizeLimit, File pdfFile, File xmlFile) {
+		
+		return sizeLimit == null || sizeLimit * BinarySizes.MegaByte >= (pdfFile.length() + xmlFile.length());
+	}
 
 	@EventListener(channel = FlowInstance.class)
 	public void processEvent(ExternalMessageAddedEvent event, EventSource eventSource) throws SQLException {
@@ -1788,7 +1793,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.warn("Not sending external message notifications for " + flowInstance + " as it has no owners");
 			return;
 		}
-		
+
 		if (flowInstance.getFlow().isHideExternalMessages()) {
 
 			log.warn("Not sending external message notifications for " + flowInstance + " as flow has external messages hidden");
@@ -1830,24 +1835,24 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 					sendManagerEmails(flowInstance, contact, notificationSettings.getExternalMessageReceivedManagerSubject(), notificationSettings.getExternalMessageReceivedManagerMessage(), null, false);
 				}
-				
+
 				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
-				
+
 				if (notificationSettings.isSendExternalMessageReceivedGroupEmail()) {
-					
+
 					for (String email : managerGroupEmailRecipientAddresses) {
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getExternalMessageReceivedGroupEmailSubject(), notificationSettings.getExternalMessageReceivedGroupEmailMessage(), null, false);						
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getExternalMessageReceivedGroupEmailSubject(), notificationSettings.getExternalMessageReceivedGroupEmailMessage(), null, false);
 					}
 				}
 
 				if (notificationSettings.isSendExternalMessageReceivedGlobalEmail() && notificationSettings.getExternalMessageReceivedGlobalEmailAddresses() != null) {
 
 					for (String email : notificationSettings.getExternalMessageReceivedGlobalEmailAddresses()) {
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);						
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, externalMessageReceivedGlobalEmailSubject, externalMessageReceivedGlobalEmailMessage, null, false);
 					}
-					
+
 				}
-				
+
 			}
 
 		} else {
@@ -1855,98 +1860,98 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.warn("External message added event received with unsupported sender type: " + event.getSenderType());
 		}
 	}
-	
+
 	@EventListener(channel = ExternalMessage.class)
 	public void processEvent(ExternalMessageReadReceiptAddedEvent event, EventSource eventSource) throws SQLException {
-		
+
 		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
-		
+
 		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
-			
+
 			log.warn("Not sending read receipt notifications for " + flowInstance + " as it has no owners");
 			return;
 		}
-		
+
 		if (flowInstance.getFlow().isHideExternalMessages()) {
-			
+
 			log.warn("Not sending read receipt notifications for " + flowInstance + " as flow has external messages hidden");
 			return;
 		}
-		
+
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-		
+
 		if (notificationSettings.isSendReadReceiptAddedManagerEmail() || notificationSettings.isSendReadReceiptAddedGroupEmail() || notificationSettings.isSendReadReceiptAddedGlobalEmail()) {
-			
+
 			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
-			
+
 			if (notificationSettings.isSendReadReceiptAddedManagerEmail()) {
-				
+
 				sendManagerEmails(flowInstance, contact, notificationSettings.getReadReceiptAddedManagerEmailSubject(), notificationSettings.getReadReceiptAddedManagerEmailMessage(), null, false);
 			}
-			
+
 			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
-			
+
 			if (notificationSettings.isSendReadReceiptAddedGroupEmail()) {
-				
+
 				for (String email : managerGroupEmailRecipientAddresses) {
-					
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGroupEmailSubject(), notificationSettings.getReadReceiptAddedGroupEmailMessage(), null, false);						
+
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGroupEmailSubject(), notificationSettings.getReadReceiptAddedGroupEmailMessage(), null, false);
 				}
 			}
-			
+
 			if (notificationSettings.isSendReadReceiptAddedGlobalEmail() && notificationSettings.getReadReceiptAddedGlobalEmailAddresses() != null) {
-				
+
 				for (String email : notificationSettings.getReadReceiptAddedGlobalEmailAddresses()) {
-					
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGlobalEmailSubject(), notificationSettings.getReadReceiptAddedGlobalEmailMessage(), null, false);						
+
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAddedGlobalEmailSubject(), notificationSettings.getReadReceiptAddedGlobalEmailMessage(), null, false);
 				}
 			}
 		}
 	}
-	
+
 	@EventListener(channel = ExternalMessage.class)
 	public void processEvent(ExternalMessageReadReceiptAttachmentDownloadedEvent event, EventSource eventSource) throws SQLException {
-		
+
 		FlowInstance flowInstance = getFlowInstance(event.getFlowInstance().getFlowInstanceID());
-		
+
 		if (CollectionUtils.isEmpty(event.getFlowInstance().getOwners())) {
-			
+
 			log.warn("Not sending read receipt attachment downloaded notifications for " + flowInstance + " as it has no owners");
 			return;
 		}
-		
+
 		if (flowInstance.getFlow().isHideExternalMessages()) {
-			
+
 			log.warn("Not sending read receipt attachment downloaded notifications for " + flowInstance + " as flow has external messages hidden");
 			return;
 		}
-		
+
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-		
+
 		if (notificationSettings.isSendReadReceiptAttachmentDownloadedManagerEmail() || notificationSettings.isSendReadReceiptAttachmentDownloadedGroupEmail() || notificationSettings.isSendReadReceiptAttachmentDownloadedGlobalEmail()) {
-			
+
 			Contact contact = getPosterContact(flowInstance, event.getSiteProfile());
-			
+
 			if (notificationSettings.isSendReadReceiptAttachmentDownloadedManagerEmail()) {
-				
+
 				sendManagerEmails(flowInstance, contact, notificationSettings.getReadReceiptAttachmentDownloadedManagerEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedManagerEmailMessage(), null, false);
 			}
-			
+
 			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
-			
+
 			if (notificationSettings.isSendReadReceiptAttachmentDownloadedGroupEmail()) {
-				
+
 				for (String email : managerGroupEmailRecipientAddresses) {
-					
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailMessage(), null, false);						
+
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGroupEmailMessage(), null, false);
 				}
 			}
-			
+
 			if (notificationSettings.isSendReadReceiptAttachmentDownloadedGlobalEmail() && notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailAddresses() != null) {
-				
+
 				for (String email : notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailAddresses()) {
-					
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailMessage(), null, false);						
+
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, contact, email, notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailSubject(), notificationSettings.getReadReceiptAttachmentDownloadedGlobalEmailMessage(), null, false);
 				}
 			}
 		}
@@ -1959,14 +1964,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
 
-		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && 
-				CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups()) &&
-				CollectionUtils.isEmpty(notificationSettings.getInternalMessageReceivedGlobalEmailAddresses())) {
+		if (CollectionUtils.isEmpty(event.getFlowInstance().getManagers()) && CollectionUtils.isEmpty(event.getFlowInstance().getManagerGroups()) && CollectionUtils.isEmpty(notificationSettings.getInternalMessageReceivedGlobalEmailAddresses())) {
 			return;
 		}
-		
+
 		Contact posterContact = getPosterContact(flowInstance, event.getSiteProfile());
-		
+
 		if (notificationSettings.isSendInternalMessageAddedManagerEmail() && !CollectionUtils.isEmpty(event.getFlowInstance().getManagers())) {
 
 			List<User> excludedManagers = Collections.singletonList(event.getInternalMessage().getPoster());
@@ -1979,19 +1982,19 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
 
 			for (String email : managerGroupEmailRecipientAddresses) {
-				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);				
+				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getInternalMessageAddedGroupEmailSubject(), notificationSettings.getInternalMessageAddedGroupEmailMessage(), null, false);
 			}
-		
+
 		}
-		
+
 		if (notificationSettings.isSendInternalMessageReceivedGlobalEmail() && notificationSettings.getInternalMessageReceivedGlobalEmailAddresses() != null) {
 
 			for (String email : notificationSettings.getInternalMessageReceivedGlobalEmailAddresses()) {
-				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, internalMessageReceivedGlobalEmailSubject, internalMessageReceivedGlobalEmailMessage, null, false);						
+				sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, internalMessageReceivedGlobalEmailSubject, internalMessageReceivedGlobalEmailMessage, null, false);
 			}
-			
+
 		}
-		
+
 	}
 
 	@EventListener(channel = FlowInstance.class)
@@ -2058,25 +2061,25 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		if (!event.isSuppressManagerNotifications()) {
 
 			Contact posterContact = getPosterContact(flowInstance);
-			
+
 			if (notificationSettings.isSendStatusChangedManagerEmail()) {
 
 				sendManagerEmails(flowInstance, posterContact, notificationSettings.getStatusChangedManagerEmailSubject(), notificationSettings.getStatusChangedManagerEmailMessage(), CollectionUtils.getList(event.getUser()), false);
 			}
 
 			if (notificationSettings.isSendStatusChangedManagerGroupEmail() && !CollectionUtils.isEmpty(flowInstance.getManagerGroups())) {
-				
+
 				Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance);
 
 				for (String email : managerGroupEmailRecipientAddresses) {
 
 					if (event.getUser() == null || !email.equals(event.getUser().getEmail())) {
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, false);						
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, false);
 					}
 				}
-				
+
 			}
-			
+
 			if (notificationSettings.isSendFlowInstanceArchivedGlobalEmail() && notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses() != null) {
 
 				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
@@ -2156,7 +2159,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			log.error("Error getting flow instance " + flowInstance + " with full relations, using instance from event instead", e);
 		}
-		
+
 		if (notificationSettings.isSendFlowInstanceAssignedManagerEmail() || notificationSettings.isSendFlowInstanceAssignedGroupEmail() || notificationSettings.isSendFlowInstanceAssignedGlobalEmail() || event.getAdditionalGlobalEmailRecipients() != null) {
 
 			List<User> excludedManagers = new ArrayList<>();
@@ -2183,13 +2186,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 				sendManagerEmails(flowInstance, posterContact, notificationSettings.getFlowInstanceAssignedManagerEmailSubject(), notificationSettings.getFlowInstanceAssignedManagerEmailMessage(), excludedManagers, false);
 			}
-			
+
 			Set<String> managerGroupEmailRecipientAddresses = getManagerGroupEmailRecipientAddresses(flowInstance, excludedManagerGroups);
 
 			if (notificationSettings.isSendFlowInstanceAssignedGroupEmail()) {
 
 				for (String email : managerGroupEmailRecipientAddresses) {
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGroupEmailSubject(), notificationSettings.getFlowInstanceAssignedGroupEmailMessage(), null, false);					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGroupEmailSubject(), notificationSettings.getFlowInstanceAssignedGroupEmailMessage(), null, false);
 				}
 			}
 
@@ -2203,11 +2206,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (event.getAdditionalGlobalEmailRecipients() != null) {
 
 				for (String email : event.getAdditionalGlobalEmailRecipients()) {
-					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);					
+					sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceAssignedGlobalEmailSubject(), notificationSettings.getFlowInstanceAssignedGlobalEmailMessage(), null, false);
 				}
 			}
-			
-		}		
+
+		}
 	}
 
 	private Set<String> getManagerGroupEmailRecipientAddresses(FlowInstance flowInstance) {
@@ -2230,7 +2233,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 
 			for (Group managerGroup : managerGroups) {
-				
+
 				for (FlowFamilyManagerGroup flowFamilyManagerGroup : flowFamilyManagerGroups) {
 
 					if (managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID()) && flowFamilyManagerGroup.getNotificationEmailAddresses() != null) {
@@ -2238,27 +2241,26 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 						addresses.addAll(flowFamilyManagerGroup.getNotificationEmailAddresses());
 					}
 				}
-				
-				
+
 			}
-			
+
 			for (Group managerGroup : managerGroups) {
-				
+
 				int numberOfNotificationEmails = 0;
 				for (FlowFamilyManagerGroup flowFamilyManagerGroup : flowFamilyManagerGroups) {
-					if(managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID()) && flowFamilyManagerGroup.isNotifyGroupMembersPersonally()) {
+					if (managerGroup.getGroupID().equals(flowFamilyManagerGroup.getGroupID()) && flowFamilyManagerGroup.isNotifyGroupMembersPersonally()) {
 						List<User> allAffectedUsers = systemInterface.getUserHandler().getUsersByGroup(managerGroup.getGroupID(), true, true);
-						
+
 						if (allAffectedUsers != null) {
 							for (User affectedUser : allAffectedUsers) {
-								if(numberOfNotificationEmails >= maxNumberOfGroupNotificationEmails) {
+								if (numberOfNotificationEmails >= maxNumberOfGroupNotificationEmails) {
 									break;
 								}
-								
-								if(!addresses.contains(affectedUser.getEmail())) {
+
+								if (!addresses.contains(affectedUser.getEmail())) {
 									addresses.add(affectedUser.getEmail());
 									numberOfNotificationEmails++;
-								}							
+								}
 							}
 						}
 					}
@@ -2267,8 +2269,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			return addresses;
 		}
-		
-		
 
 		return Collections.emptySet();
 	}
@@ -2507,27 +2507,27 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			}
 		}
 	}
-	
+
 	@EventListener(channel = Flow.class)
 	public void processEvent(ExpiredFlowInstanceNotificationEvent event, EventSource eventSource) throws SQLException {
-		
+
 		List<Integer> flowInstanceIDs = event.getFlowInstanceIDs();
-		
+
 		if (!CollectionUtils.isEmpty(flowInstanceIDs)) {
-			
+
 			for (Integer flowInstanceID : flowInstanceIDs) {
-				
+
 				FlowInstance flowInstance = getFlowInstance(flowInstanceID);
-				
+
 				if (flowInstance == null) {
-					
+
 					continue;
 				}
-				
+
 				FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-				
+
 				SiteProfile siteProfile = event.getSiteProfile(flowInstance);
-				
+
 				if (notificationSettings.isSendFlowInstanceExpiredManagerEmail() || notificationSettings.isSendFlowInstanceExpiredGlobalEmail()) {
 
 					Contact contact = getPosterContact(flowInstance, siteProfile);
@@ -2536,7 +2536,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						sendManagerEmails(flowInstance, contact, notificationSettings.getFlowInstanceExpiredManagerEmailSubject(), notificationSettings.getFlowInstanceExpiredManagerEmailMessage(), null, false);
 					}
-					
+
 					if (notificationSettings.isSendFlowInstanceExpiredGlobalEmail() && notificationSettings.getFlowInstanceExpiredGlobalEmailAddresses() != null) {
 
 						for (String email : notificationSettings.getFlowInstanceExpiredGlobalEmailAddresses()) {
@@ -2905,13 +2905,13 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			if (!EmailUtils.isValidEmailAddress(address)) {
 
 				log.warn("The string \"" + address + "\" is not a valid email address, skipping recipient for global notification email generated for flow instance " + flowInstance);
-				
+
 				return;
-				
+
 			}
 
 		}
-		
+
 		TagReplacer tagReplacer = new TagReplacer();
 
 		tagReplacer.addTagSource(FLOWINSTANCE_TAG_SOURCE_FACTORY.getTagSource((FlowInstance) flowInstance));
@@ -2927,7 +2927,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		}
 
 		SimpleEmail email = new SimpleEmail(systemInterface.getEncoding());
-		
+
 		try {
 			email.addRecipient(address);
 			email.setMessageContentType(SimpleEmail.HTML);
@@ -2949,39 +2949,43 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			String generatedPDFFilename = null;
 			String generatedXMLFilename = null;
 
-			if (pdfFile != null && pdfFilename != null) {
+			File xmlFile = options != null ? options.getXMLFile() : null;
+			
+			if (pdfFile != null && xmlFile != null && !areValidAttachmentSizes(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile, xmlFile)) {
 				
+				log.warn("Attachments for flow instance " + flowInstance + " exceed the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+				
+				// Prevents running of file attachment code blocks.
+				pdfFile = null;
+				xmlFile = null;
+			}
+			
+			if (pdfFile != null && pdfFilename != null) {
+
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 
 					generatedPDFFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".pdf");
-					
-					if (!sendPDFAttachmentsSeparately) {
-	
-						email.add(new FileAttachment(pdfFile, generatedPDFFilename));
-	
+
+					if (flowInstance.getStatus().getContentType() == ContentType.ARCHIVED) {
+						FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
+
+						if (notificationSettings.isArchivedGlobalEmailPDFAttachmentSeparated()) {
+
+							sendEmailWithPDFAttachments(email, pdfFile, generatedPDFFilename);
+						} else {
+
+							email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+						}
+
 					} else {
-	
-						email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
-	
-						List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
-	
-						if (!CollectionUtils.isEmpty(attachments)) {
-	
-							for (PDFByteAttachment attachment : attachments) {
-	
-								String attachmentName;
-	
-								if (attachment.getAttachmentName().equals(attachment.getFilename())) {
-	
-									attachmentName = attachment.getFilename();
-	
-								} else {
-	
-									attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
-								}
-	
-								email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
-							}
+
+						if (!sendPDFAttachmentsSeparately) {
+
+							email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+
+						} else {
+
+							sendEmailWithPDFAttachments(email, pdfFile, generatedPDFFilename);
 						}
 					}
 
@@ -2990,19 +2994,16 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
 
-
 			}
-
-			File xmlFile = options != null ? options.getXMLFile() : null;
 
 			if (xmlFile != null && xmlFilename != null) {
 
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
-					
+
 					generatedXMLFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(xmlFilename) + ".xml");
-					email.add(new FileAttachment(xmlFile, generatedXMLFilename));					
-					
-				}else {
+					email.add(new FileAttachment(xmlFile, generatedXMLFilename));
+
+				} else {
 
 					log.warn("XML file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
@@ -3028,6 +3029,32 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.error("Error generating/sending email " + email, e);
 		}
 
+	}
+
+	private void sendEmailWithPDFAttachments(SimpleEmail email, File pdfFile, String generatedPDFFilename) throws Exception {
+
+		email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
+
+		List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
+
+		if (!CollectionUtils.isEmpty(attachments)) {
+
+			for (PDFByteAttachment attachment : attachments) {
+
+				String attachmentName;
+
+				if (attachment.getAttachmentName().equals(attachment.getFilename())) {
+
+					attachmentName = attachment.getFilename();
+
+				} else {
+
+					attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
+				}
+
+				email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
+			}
+		}
 	}
 
 	public boolean sendGlobalSMS(ImmutableFlowInstance flowInstance, Contact contact, String recipient, String message) {
@@ -3229,20 +3256,20 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	@Override
 	public String getInstallationBaseURL(Integer profileID) {
-		
+
 		//Failsafe if setting is not set
-		if("Not set".equals(installationBaseURL)) {
-			
+		if ("Not set".equals(installationBaseURL)) {
+
 			String baseURL = getUserFlowInstanceModuleAlias(null);
-			
+
 			log.error("Missing setting: installationBaseURL. Using fail-safe.");
 
 			return StringUtils.substringBeforeLast(baseURL, StringUtils.substringAfterLast(baseURL, "/"));
 		}
-		
+
 		return installationBaseURL;
 	}
-	
+
 	@Override
 	public String getEmailSenderName(ImmutableFlowInstance flowInstance) {
 
@@ -3285,7 +3312,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return flowInstanceAdminModuleAlias;
 	}
-	
+
 	public static Set<String> getContactTags() {
 
 		Set<String> tags = new LinkedHashSet<>();
@@ -3369,5 +3396,5 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		return notificationSettings.isSendFlowInstanceExpiredManagerEmail() || notificationSettings.isSendFlowInstanceExpiredGlobalEmail();
 	}
-	
+
 }

@@ -586,5 +586,13 @@
 		</Query>
 	</Script>
 
+	<Script version="40">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flow_familiy_notification_settings`
+					ADD COLUMN `flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately` TINYINT(1) UNSIGNED NOT NULL AFTER `flowInstanceArchivedGlobalEmailAttachPDF`;
+			]]>
+		</Query>
+	</Script>
 				
 </DBScripts>

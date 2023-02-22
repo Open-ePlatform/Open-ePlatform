@@ -5,6 +5,8 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.populators.EmailAttributeTagPopulator;
+
 import se.unlogic.standardutils.annotations.NoDuplicates;
 import se.unlogic.standardutils.annotations.PopulateOnlyIfSet;
 import se.unlogic.standardutils.annotations.RequiredIfSet;
@@ -20,8 +22,6 @@ import se.unlogic.standardutils.dao.annotations.Table;
 import se.unlogic.standardutils.xml.GeneratedElementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLUtils;
-
-import com.nordicpeak.flowengine.populators.EmailAttributeTagPopulator;
 
 @Table(name = "flow_familiy_notification_settings")
 @XMLElement(name = "NotificationSettings")
@@ -448,6 +448,12 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	@WebPopulate
 	@XMLElement
 	private boolean flowInstanceArchivedGlobalEmailAttachPDF;
+
+	@DAOManaged
+	@WebPopulate
+	@PopulateOnlyIfSet(paramNames = "flowInstanceArchivedGlobalEmailAttachPDF")
+	@XMLElement
+	private boolean flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately;
 
 	@DAOManaged
 	@WebPopulate
@@ -1247,6 +1253,16 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		return flowInstanceArchivedGlobalEmailAttachPDF;
 	}
 
+	public boolean isArchivedGlobalEmailPDFAttachmentSeparated() {
+
+		return flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately;
+	}
+
+	public void setFlowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately(boolean flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately) {
+
+		this.flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately = flowInstanceArchivedGlobalEmailAttachPDFAttachmentsSeparately;
+	}
+
 	public void setFlowInstanceArchivedGlobalEmailAttachPDF(boolean flowInstanceArchivedGlobalEmailAttachPDF) {
 
 		this.flowInstanceArchivedGlobalEmailAttachPDF = flowInstanceArchivedGlobalEmailAttachPDF;
@@ -1443,22 +1459,22 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 	}
 
 	public String getStatusChangedUserSMS() {
-		
+
 		return statusChangedUserSMS;
 	}
 
 	public void setStatusChangedUserSMS(String statusChangedUserSMS) {
-		
+
 		this.statusChangedUserSMS = statusChangedUserSMS;
-	}	
+	}
 
 	public String getExternalMessageReceivedUserSMS() {
-		
+
 		return externalMessageReceivedUserSMS;
 	}
 
 	public void setExternalMessageReceivedUserSMS(String externalMessageReceivedUserSMS) {
-		
+
 		this.externalMessageReceivedUserSMS = externalMessageReceivedUserSMS;
 	}
 
@@ -1682,243 +1698,203 @@ public class FlowFamililyNotificationSettings extends GeneratedElementable {
 		this.statusChangedManagerGroupEmailMessage = statusChangedManagerGroupEmailMessage;
 	}
 
-	
 	public boolean isSendReadReceiptAddedManagerEmail() {
-	
+
 		return sendReadReceiptAddedManagerEmail;
 	}
 
-	
 	public void setSendReadReceiptAddedManagerEmail(boolean sendReadReceiptAddedManagerEmail) {
-	
+
 		this.sendReadReceiptAddedManagerEmail = sendReadReceiptAddedManagerEmail;
 	}
 
-	
 	public String getReadReceiptAddedManagerEmailSubject() {
-	
+
 		return readReceiptAddedManagerEmailSubject;
 	}
 
-	
 	public void setReadReceiptAddedManagerEmailSubject(String readReceiptAddedManagerEmailSubject) {
-	
+
 		this.readReceiptAddedManagerEmailSubject = readReceiptAddedManagerEmailSubject;
 	}
 
-	
 	public String getReadReceiptAddedManagerEmailMessage() {
-	
+
 		return readReceiptAddedManagerEmailMessage;
 	}
 
-	
 	public void setReadReceiptAddedManagerEmailMessage(String readReceiptAddedManagerEmailMessage) {
-	
+
 		this.readReceiptAddedManagerEmailMessage = readReceiptAddedManagerEmailMessage;
 	}
 
-	
 	public boolean isSendReadReceiptAddedGroupEmail() {
-	
+
 		return sendReadReceiptAddedGroupEmail;
 	}
 
-	
 	public void setSendReadReceiptAddedGroupEmail(boolean sendReadReceiptAddedGroupEmail) {
-	
+
 		this.sendReadReceiptAddedGroupEmail = sendReadReceiptAddedGroupEmail;
 	}
 
-	
 	public String getReadReceiptAddedGroupEmailSubject() {
-	
+
 		return readReceiptAddedGroupEmailSubject;
 	}
 
-	
 	public void setReadReceiptAddedGroupEmailSubject(String readReceiptAddedGroupEmailSubject) {
-	
+
 		this.readReceiptAddedGroupEmailSubject = readReceiptAddedGroupEmailSubject;
 	}
 
-	
 	public String getReadReceiptAddedGroupEmailMessage() {
-	
+
 		return readReceiptAddedGroupEmailMessage;
 	}
 
-	
 	public void setReadReceiptAddedGroupEmailMessage(String readReceiptAddedGroupEmailMessage) {
-	
+
 		this.readReceiptAddedGroupEmailMessage = readReceiptAddedGroupEmailMessage;
 	}
 
-	
 	public boolean isSendReadReceiptAddedGlobalEmail() {
-	
+
 		return sendReadReceiptAddedGlobalEmail;
 	}
 
-	
 	public void setSendReadReceiptAddedGlobalEmail(boolean sendReadReceiptAddedGlobalEmail) {
-	
+
 		this.sendReadReceiptAddedGlobalEmail = sendReadReceiptAddedGlobalEmail;
 	}
 
-	
 	public String getReadReceiptAddedGlobalEmailSubject() {
-	
+
 		return readReceiptAddedGlobalEmailSubject;
 	}
 
-	
 	public void setReadReceiptAddedGlobalEmailSubject(String readReceiptAddedGlobalEmailSubject) {
-	
+
 		this.readReceiptAddedGlobalEmailSubject = readReceiptAddedGlobalEmailSubject;
 	}
 
-	
 	public String getReadReceiptAddedGlobalEmailMessage() {
-	
+
 		return readReceiptAddedGlobalEmailMessage;
 	}
 
-	
 	public void setReadReceiptAddedGlobalEmailMessage(String readReceiptAddedGlobalEmailMessage) {
-	
+
 		this.readReceiptAddedGlobalEmailMessage = readReceiptAddedGlobalEmailMessage;
 	}
 
-	
 	public List<String> getReadReceiptAddedGlobalEmailAddresses() {
-	
+
 		return readReceiptAddedGlobalEmailAddresses;
 	}
 
-	
 	public void setReadReceiptAddedGlobalEmailAddresses(List<String> readReceiptAddedGlobalEmailAddresses) {
-	
+
 		this.readReceiptAddedGlobalEmailAddresses = readReceiptAddedGlobalEmailAddresses;
 	}
 
-	
 	public boolean isSendReadReceiptAttachmentDownloadedManagerEmail() {
-	
+
 		return sendReadReceiptAttachmentDownloadedManagerEmail;
 	}
 
-	
 	public void setSendReadReceiptAttachmentDownloadedManagerEmail(boolean sendReadReceiptAttachmentDownloadedManagerEmail) {
-	
+
 		this.sendReadReceiptAttachmentDownloadedManagerEmail = sendReadReceiptAttachmentDownloadedManagerEmail;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedManagerEmailSubject() {
-	
+
 		return readReceiptAttachmentDownloadedManagerEmailSubject;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedManagerEmailSubject(String readReceiptAttachmentDownloadedManagerEmailSubject) {
-	
+
 		this.readReceiptAttachmentDownloadedManagerEmailSubject = readReceiptAttachmentDownloadedManagerEmailSubject;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedManagerEmailMessage() {
-	
+
 		return readReceiptAttachmentDownloadedManagerEmailMessage;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedManagerEmailMessage(String readReceiptAttachmentDownloadedManagerEmailMessage) {
-	
+
 		this.readReceiptAttachmentDownloadedManagerEmailMessage = readReceiptAttachmentDownloadedManagerEmailMessage;
 	}
 
-	
 	public boolean isSendReadReceiptAttachmentDownloadedGroupEmail() {
-	
+
 		return sendReadReceiptAttachmentDownloadedGroupEmail;
 	}
 
-	
 	public void setSendReadReceiptAttachmentDownloadedGroupEmail(boolean sendReadReceiptAttachmentDownloadedGroupEmail) {
-	
+
 		this.sendReadReceiptAttachmentDownloadedGroupEmail = sendReadReceiptAttachmentDownloadedGroupEmail;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedGroupEmailSubject() {
-	
+
 		return readReceiptAttachmentDownloadedGroupEmailSubject;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedGroupEmailSubject(String readReceiptAttachmentDownloadedGroupEmailSubject) {
-	
+
 		this.readReceiptAttachmentDownloadedGroupEmailSubject = readReceiptAttachmentDownloadedGroupEmailSubject;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedGroupEmailMessage() {
-	
+
 		return readReceiptAttachmentDownloadedGroupEmailMessage;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedGroupEmailMessage(String readReceiptAttachmentDownloadedGroupEmailMessage) {
-	
+
 		this.readReceiptAttachmentDownloadedGroupEmailMessage = readReceiptAttachmentDownloadedGroupEmailMessage;
 	}
 
-	
 	public boolean isSendReadReceiptAttachmentDownloadedGlobalEmail() {
-	
+
 		return sendReadReceiptAttachmentDownloadedGlobalEmail;
 	}
 
-	
 	public void setSendReadReceiptAttachmentDownloadedGlobalEmail(boolean sendReadReceiptAttachmentDownloadedGlobalEmail) {
-	
+
 		this.sendReadReceiptAttachmentDownloadedGlobalEmail = sendReadReceiptAttachmentDownloadedGlobalEmail;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedGlobalEmailSubject() {
-	
+
 		return readReceiptAttachmentDownloadedGlobalEmailSubject;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedGlobalEmailSubject(String readReceiptAttachmentDownloadedGlobalEmailSubject) {
-	
+
 		this.readReceiptAttachmentDownloadedGlobalEmailSubject = readReceiptAttachmentDownloadedGlobalEmailSubject;
 	}
 
-	
 	public String getReadReceiptAttachmentDownloadedGlobalEmailMessage() {
-	
+
 		return readReceiptAttachmentDownloadedGlobalEmailMessage;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedGlobalEmailMessage(String readReceiptAttachmentDownloadedGlobalEmailMessage) {
-	
+
 		this.readReceiptAttachmentDownloadedGlobalEmailMessage = readReceiptAttachmentDownloadedGlobalEmailMessage;
 	}
 
-	
 	public List<String> getReadReceiptAttachmentDownloadedGlobalEmailAddresses() {
-	
+
 		return readReceiptAttachmentDownloadedGlobalEmailAddresses;
 	}
 
-	
 	public void setReadReceiptAttachmentDownloadedGlobalEmailAddresses(List<String> readReceiptAttachmentDownloadedGlobalEmailAddresses) {
-	
+
 		this.readReceiptAttachmentDownloadedGlobalEmailAddresses = readReceiptAttachmentDownloadedGlobalEmailAddresses;
 	}
 
