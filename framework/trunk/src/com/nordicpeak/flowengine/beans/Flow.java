@@ -15,6 +15,11 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.annotations.TextTagReplace;
+import com.nordicpeak.flowengine.interfaces.Icon;
+import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
+import com.nordicpeak.flowengine.utils.TextTagReplacer;
+
 import se.unlogic.hierarchy.core.annotations.FCKContent;
 import se.unlogic.hierarchy.core.utils.FCKUtils;
 import se.unlogic.openhierarchy.foregroundmodules.siteprofile.interfaces.SiteProfile;
@@ -58,11 +63,6 @@ import se.unlogic.webutils.annotations.URLRewrite;
 import se.unlogic.webutils.populators.StringHTTPURLPopulator;
 import se.unlogic.webutils.url.URLRewriter;
 
-import com.nordicpeak.flowengine.annotations.TextTagReplace;
-import com.nordicpeak.flowengine.interfaces.Icon;
-import com.nordicpeak.flowengine.interfaces.ImmutableFlow;
-import com.nordicpeak.flowengine.utils.TextTagReplacer;
-
 @Table(name = "flowengine_flows")
 @XMLElement
 public class Flow extends GeneratedElementable implements ImmutableFlow, XMLParserPopulateable, Named, Icon {
@@ -100,6 +100,7 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public static final Field HIDE_INTERNAL_MESSAGES_FIELD = ReflectionUtils.getField(Flow.class, "hideInternalMessages");
 	public static final Field HIDE_EXTERNAL_MESSAGES_FIELD = ReflectionUtils.getField(Flow.class, "hideExternalMessages");
 	public static final Field HIDE_EXTERNAL_MESSAGE_ATTACHMENTS_FIELD = ReflectionUtils.getField(Flow.class, "hideExternalMessageAttachments");
+	public static final Field SHOW_EXTERNAL_MESSAGE_ATTACHMENTS_FOR_MANAGER_FIELD = ReflectionUtils.getField(Flow.class, "showExternalMessageAttachmentsForManager");
 	public static final Field READ_RECEIPTS_ENABLED_FIELD = ReflectionUtils.getField(Flow.class, "readReceiptsEnabled");
 	public static final Field READ_RECEIPTS_ENABLED_BY_DEFAULT_FIELD = ReflectionUtils.getField(Flow.class, "readReceiptsEnabledByDefault");
 	public static final Field EXTERNAL_LINK_FIELD = ReflectionUtils.getField(Flow.class, "externalLink");
@@ -322,6 +323,11 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	@WebPopulate
 	@XMLElement
 	private boolean hideExternalMessageAttachments;
+	
+	@DAOManaged
+	@WebPopulate
+	@XMLElement
+	private boolean showExternalMessageAttachmentsForManager;
 
 	@DAOManaged
 	@WebPopulate
@@ -1172,6 +1178,16 @@ public class Flow extends GeneratedElementable implements ImmutableFlow, XMLPars
 	public void setHideExternalMessageAttachments(boolean hideExternalMessageAttachments) {
 
 		this.hideExternalMessageAttachments = hideExternalMessageAttachments;
+	}
+	
+	public boolean isShowExternalMessageAttachmentsForManager() {
+	
+		return showExternalMessageAttachmentsForManager;
+	}
+	
+	public void setShowExternalMessageAttachmentsForManager(boolean showExternalMessageAttachmentsForManager) {
+	
+		this.showExternalMessageAttachmentsForManager = showExternalMessageAttachmentsForManager;
 	}
 
 	public boolean isReadReceiptsEnabled() {

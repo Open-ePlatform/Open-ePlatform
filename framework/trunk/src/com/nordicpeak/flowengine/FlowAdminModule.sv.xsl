@@ -628,6 +628,7 @@
 	<xsl:variable name="i18n.hideInternalMessages">Stäng av interna noteringar</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessages">Stäng av meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.hideExternalMessageAttachments">Stäng av filuppladdningen i meddelandefunktionen</xsl:variable>
+	<xsl:variable name="i18n.showExternalMessageAttachmentsForManager">Tillåt enbart handläggare att ladda upp filer</xsl:variable>
 	<xsl:variable name="i18n.readReceiptsEnabled">Aktivera begäran om kvittens i meddelandefunktionen</xsl:variable>
 	<xsl:variable name="i18n.readReceiptsEnabledByDefault">Aktivera förval av Begär kvittens för detta meddelande</xsl:variable>
 	<xsl:variable name="i18n.Flow.hideFromUser">Dölj inskickade ärenden från mina sidor</xsl:variable>

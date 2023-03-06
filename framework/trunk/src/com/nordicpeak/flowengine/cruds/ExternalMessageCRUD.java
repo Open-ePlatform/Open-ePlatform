@@ -13,6 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.BaseFlowModule;
+import com.nordicpeak.flowengine.MessageHandler;
+import com.nordicpeak.flowengine.beans.ExternalMessage;
+import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
+import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
+import com.nordicpeak.flowengine.beans.Flow;
+import com.nordicpeak.flowengine.beans.FlowInstance;
+import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
+import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
+
 import se.unlogic.fileuploadutils.MultipartRequest;
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.exceptions.AccessDeniedException;
@@ -28,16 +39,6 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.RequestUtils;
 import se.unlogic.webutils.http.URIParser;
 import se.unlogic.webutils.validation.ValidationUtils;
-
-import com.nordicpeak.flowengine.BaseFlowModule;
-import com.nordicpeak.flowengine.MessageHandler;
-import com.nordicpeak.flowengine.beans.ExternalMessage;
-import com.nordicpeak.flowengine.beans.ExternalMessageAttachment;
-import com.nordicpeak.flowengine.beans.ExternalMessageReadReceipt;
-import com.nordicpeak.flowengine.beans.ExternalMessageReadReceiptAttachmentDownload;
-import com.nordicpeak.flowengine.beans.FlowInstance;
-import com.nordicpeak.flowengine.interfaces.FlowInstanceAccessController;
-import com.nordicpeak.flowengine.interfaces.MessageCRUDCallback;
 
 public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, ExternalMessageAttachment> {
 
@@ -91,14 +92,23 @@ public class ExternalMessageCRUD extends BaseMessageCRUD<ExternalMessage, Extern
 	public ExternalMessage create(String message, List<ExternalMessageAttachment> attachments, boolean readReceiptEnabled, User user, FlowInstance flowInstance, boolean postedByManager, List<ValidationError> validationErrors) {
 
 		ExternalMessage externalMessage = null;
+		Flow flow = flowInstance.getFlow();
 
-		if (attachments != null && flowInstance.getFlow().isHideExternalMessageAttachments()) {
+		boolean canAttachMessageAttachments = !flow.isHideExternalMessageAttachments() || flow.isShowExternalMessageAttachmentsForManager();
+		
+		if (attachments != null && !canAttachMessageAttachments) {
 
 			log.warn("User " + user + " tried adding an external message for flowinstance " + flowInstance + " with an attachment while attachments are disabled.");
 
 			validationErrors.add(new ValidationError("UnableToParseRequest"));
+			
+		} else if (attachments != null && (flow.isShowExternalMessageAttachmentsForManager() && !postedByManager)) {
+			
+				log.warn("User " + user + " (not a manager) tried adding an external message for flowinstance " + flowInstance + " with an attachment while attachments are only enabled for managers.");
+				
+				validationErrors.add(new ValidationError("UnableToParseRequest"));
 		}
-
+		
 		if (validationErrors.isEmpty()) {
 
 			externalMessage = new ExternalMessage();

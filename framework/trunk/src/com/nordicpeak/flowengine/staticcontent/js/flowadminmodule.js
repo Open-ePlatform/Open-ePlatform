@@ -523,6 +523,7 @@ $(function() {
 			$('#hideExternalMessageAttachments').parent().parent().toggle(!this.checked);
 			$('#readReceiptsEnabled').parent().parent().toggle(!this.checked);
 			$('#readReceiptsEnabledByDefault').parent().parent().toggle(!this.checked);
+			$("#showExternalMessageAttachmentsForManager").parent().parent().toggle(!this.checked);
 		
 		}).trigger('change');
 		
@@ -533,6 +534,18 @@ $(function() {
 			$('#readReceiptsEnabledByDefault').parent().parent().toggle(show);
 		
 		}).trigger('change');
+		
+		$("#hideExternalMessageAttachments").on("change", function() {
+			
+			const $checkbox = $("#showExternalMessageAttachmentsForManager");
+			
+			if ($(this)[0].checked) {
+				$checkbox.parent().parent().show();
+			} else {
+				$checkbox.parent().parent().hide();
+			}
+			
+		}).change();
 		
 		$("#hideFromUser").on("change", function(e) {
 			

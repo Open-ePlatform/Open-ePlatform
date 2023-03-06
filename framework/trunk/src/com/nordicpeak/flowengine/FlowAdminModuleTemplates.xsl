@@ -2865,6 +2865,21 @@
 					</div>
 				</div>
 				
+				<div class="floatleft full bigmarginbottom bigmarginleft">
+				
+					<div class="floatleft">
+						<xsl:call-template name="createCheckbox">
+							<xsl:with-param name="name" select="'showExternalMessageAttachmentsForManager'" />
+							<xsl:with-param name="id" select="'showExternalMessageAttachmentsForManager'" />
+							<xsl:with-param name="element" select="Flow" />
+						</xsl:call-template>
+						
+						<label for="showExternalMessageAttachmentsForManager">
+							<xsl:value-of select="$i18n.showExternalMessageAttachmentsForManager" />
+						</label>
+					</div>
+				</div>
+				
 				<div class="floatleft full bigmarginbottom margintop">
 					
 					<div class="floatleft">
