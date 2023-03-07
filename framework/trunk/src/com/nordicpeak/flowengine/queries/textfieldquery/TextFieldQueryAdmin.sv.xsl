@@ -13,6 +13,9 @@ Frågetypen Textfältsfråga används när användaren skall ange information i textfä
 	<xsl:variable name="java.fieldLayoutNewLine">En kolumn</xsl:variable>
 	<xsl:variable name="java.fieldLayoutNewLineFullWidth">En kolumn fullbredd</xsl:variable>
 	<xsl:variable name="java.fieldLayoutFloat">Två kolumner</xsl:variable>
+	<xsl:variable name="java.eventFieldAdded">skapade fält</xsl:variable>
+	<xsl:variable name="java.eventFieldUpdated">uppdaterade fält</xsl:variable>
+	<xsl:variable name="java.eventFieldRemoved">tog bort fält</xsl:variable>
 	
 	<xsl:variable name="i18n.BaseInfo">Grundinformation</xsl:variable>
 	<xsl:variable name="i18n.Layout">Layout</xsl:variable>

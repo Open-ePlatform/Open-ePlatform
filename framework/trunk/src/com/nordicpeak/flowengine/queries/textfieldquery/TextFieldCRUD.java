@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.nordicpeak.flowengine.beans.QueryDescriptor;
+
 import se.unlogic.hierarchy.core.beans.User;
 import se.unlogic.hierarchy.core.enums.CRUDAction;
 import se.unlogic.hierarchy.core.enums.EventTarget;
@@ -28,20 +30,18 @@ import se.unlogic.standardutils.xml.XMLUtils;
 import se.unlogic.webutils.http.BeanRequestPopulator;
 import se.unlogic.webutils.http.URIParser;
 
-import com.nordicpeak.flowengine.beans.QueryDescriptor;
-
 public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryProviderModule> {
 
 	protected AnnotatedDAOWrapper<TextField, Integer> textFieldDAO;
 
 	protected static EnumPopulator<FieldLayout> LAYOUT_POPULATOR = new EnumPopulator<FieldLayout>(FieldLayout.class);
-	
+
 	public TextFieldCRUD(AnnotatedDAOWrapper<TextField, Integer> textFieldDAO, BeanRequestPopulator<TextField> populator, String typeElementName, String typeLogName, String listMethodAlias, TextFieldQueryProviderModule callback) {
 
 		super(textFieldDAO, populator, typeElementName, typeLogName, listMethodAlias, callback);
 
 		this.textFieldDAO = textFieldDAO;
-		
+
 		setRequirePostForDelete(true);
 	}
 
@@ -49,6 +49,8 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 	protected ForegroundModuleResponse beanAdded(TextField bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		callback.getEventHandler().sendEvent(QueryDescriptor.class, new CRUDEvent<QueryDescriptor>(CRUDAction.UPDATE, (QueryDescriptor) bean.getQuery().getQueryDescriptor()), EventTarget.ALL);
+
+		callback.getFlowAdminModule().addFlowFamilyEvent(callback.getFlowAdminModule().getEventQueryUpdatedMessage() + " \"" + bean.getQuery().getQueryDescriptor().getName() + "\", " + callback.getEventFieldAdded() + " \"" + bean.getLabel() + "\"", bean.getQuery().getQueryDescriptor().getStep().getFlow(), user);
 
 		callback.redirectToQueryConfig(bean.getQuery(), req, res);
 
@@ -60,16 +62,19 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 
 		callback.getEventHandler().sendEvent(QueryDescriptor.class, new CRUDEvent<QueryDescriptor>(CRUDAction.UPDATE, (QueryDescriptor) bean.getQuery().getQueryDescriptor()), EventTarget.ALL);
 
+		callback.getFlowAdminModule().addFlowFamilyEvent(callback.getFlowAdminModule().getEventQueryUpdatedMessage() + " \"" + bean.getQuery().getQueryDescriptor().getName() + "\", " + callback.getEventFieldUpdated() + " \"" + bean.getLabel() + "\"", bean.getQuery().getQueryDescriptor().getStep().getFlow(), user);
+
 		callback.redirectToQueryConfig(bean.getQuery(), req, res);
 
 		return null;
 	}
 
-
 	@Override
 	protected ForegroundModuleResponse beanDeleted(TextField bean, HttpServletRequest req, HttpServletResponse res, User user, URIParser uriParser) throws Exception {
 
 		callback.getEventHandler().sendEvent(QueryDescriptor.class, new CRUDEvent<QueryDescriptor>(CRUDAction.UPDATE, (QueryDescriptor) bean.getQuery().getQueryDescriptor()), EventTarget.ALL);
+
+		callback.getFlowAdminModule().addFlowFamilyEvent(callback.getFlowAdminModule().getEventQueryUpdatedMessage() + " \"" + bean.getQuery().getQueryDescriptor().getName() + "\", " + callback.getEventFieldRemoved() + " \"" + bean.getLabel() + "\"", bean.getQuery().getQueryDescriptor().getStep().getFlow(), user);
 
 		callback.redirectToQueryConfig(bean.getQuery(), req, res);
 
@@ -85,7 +90,7 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 
 		TextField textField = textFieldDAO.getAnnotatedDAO().get(query);
 
-		if(textField != null && textField.getQuery() != null) {
+		if (textField != null && textField.getQuery() != null) {
 
 			textField.getQuery().init(callback.getFlowAdminModule().getQueryDescriptor(textField.getQuery().getQueryID()), null);
 
@@ -148,7 +153,7 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 
 		Integer sortIndex = query.executeQuery();
 
-		if(sortIndex == null){
+		if (sortIndex == null) {
 
 			return 0;
 		}
@@ -167,25 +172,25 @@ public class TextFieldCRUD extends IntegerBasedCRUD<TextField, TextFieldQueryPro
 
 		validatePopulation(bean);
 	}
-	
+
 	protected void validatePopulation(TextField bean) throws ValidationException {
-		
+
 		if (bean.getMinContentLength() != null && bean.getMinContentLength() > 255) {
-			
+
 			throw new ValidationException(new ValidationError("minContentLength", ValidationErrorType.TooLong));
 		}
-		
+
 		if (bean.getMaxContentLength() != null && bean.getMaxContentLength() > 255) {
-			
+
 			throw new ValidationException(new ValidationError("maxContentLength", ValidationErrorType.TooLong));
 		}
-		
-		if(!bean.isDisabled()) {
-			
+
+		if (!bean.isDisabled()) {
+
 			bean.setContainsPrice(false);
-		
-		}else {
-			
+
+		} else {
+
 			bean.setMaskFieldContent(false);
 		}
 	}
