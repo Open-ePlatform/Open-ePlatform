@@ -1243,7 +1243,7 @@ public class FlowInstanceAdminModule extends BaseFlowBrowserModule implements Fl
 		
 			for(FlowInstance instance : flowInstances) {
 				
-				if(!newStatus.getAcceptedStatusIDs().contains(instance.getStatus().getStatusID())) {
+				if(newStatus.getAcceptedStatusIDs() == null || !newStatus.getAcceptedStatusIDs().contains(instance.getStatus().getStatusID())) {
 					
 					return false;
 				}
