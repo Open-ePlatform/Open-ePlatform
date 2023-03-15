@@ -1003,7 +1003,7 @@
 			<xsl:if test="../../Flow/hideManagerDetails = 'false'">
 				<td data-title="{$i18n.Details}">
 					<xsl:choose>
-						<xsl:when test="Attributes/Attribute[Name='externalMessageID']">
+						<xsl:when test="Attributes/Attribute[Name='externalMessageID'] and Attributes/Attribute[Name='externalMessageFragment']">
 							<xsl:variable name="messageID" select="Attributes/Attribute[Name='externalMessageID']/Value"></xsl:variable>
 							<a class="messagelink" href="#messages-{$messageID}">
 								<xsl:value-of select="Attributes/Attribute[Name='externalMessageFragment']/Value"></xsl:value-of>

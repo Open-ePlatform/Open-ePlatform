@@ -14,15 +14,14 @@ public class ExternalMessageUtils {
 	
 	public static Map<String, String> getFlowInstanceEventAttributes(ExternalMessage externalMessage){
 		
-		if (externalMessage.isReadReceiptEnabled()) {
-			
-			return null;
-		}
-		
 		Map<String, String> eventAttributes = new HashMap<String, String>(2);
 		
 		eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE_ID, externalMessage.getMessageID().toString());
-		eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
+		
+		if (!externalMessage.isReadReceiptEnabled()) {
+			
+			eventAttributes.put(EVENT_ATTRIBUTE_EXTERNAL_MESSAGE, StringUtils.toLogFormat(externalMessage.getMessage(), 50));
+		}
 		
 		return eventAttributes;
 	}
