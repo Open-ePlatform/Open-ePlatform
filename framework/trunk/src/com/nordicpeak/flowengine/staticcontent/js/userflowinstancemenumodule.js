@@ -4,7 +4,15 @@ $(function() {
         e.stopPropagation();
         e.preventDefault();
 
-        $(this).parent().toggleClass('menu-active');
+        var $nav = $(this).parent();
+        
+        $nav.toggleClass('menu-active');
+        
+        if($nav.hasClass('menu-active')) {
+        	$(this).attr("aria-expanded", "true");
+        } else {
+        	$(this).attr("aria-expanded", "false");
+        }
         
     }).on('click', '[data-menu] li a', function(e) {
         e.stopPropagation();
