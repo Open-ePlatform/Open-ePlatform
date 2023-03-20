@@ -110,6 +110,16 @@ function initMessageTab(tabID, messagePanelID) {
 		
 		setActiveTab(tabID);
 	});
+	
+	$("#new-message form, #new-note form").on('submit',function(){
+		
+		var $this = $(this);
+		var value = $this.find("textarea").val();
+		if(value) {
+			$(this).find("input[type='submit']").attr('disabled','disabled');
+		}
+		
+	});
 }
 
 function setActiveTab(tabID) {
