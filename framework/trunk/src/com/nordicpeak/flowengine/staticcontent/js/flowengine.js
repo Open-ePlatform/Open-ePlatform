@@ -658,7 +658,7 @@ function loadFlowEngineScripts(scripts) {
 					
 					jQuery.ajax({
 						url: script.src,
-						accepts: script.type,
+						accepts: 'text/javascript',
 						async: true,
 						cache: false,
 						dataType: 'text', //Avoids automatic eval
