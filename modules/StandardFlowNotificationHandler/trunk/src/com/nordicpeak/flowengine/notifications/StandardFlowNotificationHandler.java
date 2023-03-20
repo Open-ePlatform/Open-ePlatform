@@ -787,6 +787,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 	@TextAreaSettingDescriptor(name = "Read receipt attachment downloaded email address (global)", description = "Global address to be notified when a new receipt attachment is downloaded", formatValidator = EmailPopulator.class)
 	private List<String> readReceiptAttachmentDownloadedGlobalEmailAddresses;
 
+	@ModuleSetting
+	@CheckboxSettingDescriptor(name = "Escape HTML for tag replacing when generating emails", description = "Controls if HTML should be escaped when replacing tags in generated emails.")
+	private boolean escapeHTMLForTagReplacing;
+	
 	@InstanceManagerDependency
 	protected PDFProvider pdfProvider;
 
@@ -2635,7 +2639,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setSubject(replaceSubjectTags(subject, tagReplacer, flowInstance));
 			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			systemInterface.getEmailHandler().send(email);
@@ -2756,7 +2760,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			email.setMessageContentType(SimpleEmail.HTML);
 			email.setSenderName(this.getEmailSenderName(flowInstance));
 			email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setSubject(replaceSubjectTags(subject, tagReplacer, flowInstance));
 			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			if (pdfFile != null && pdfFilename != null) {
@@ -2869,7 +2873,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					email.setMessageContentType(SimpleEmail.HTML);
 					email.setSenderName(this.getEmailSenderName(flowInstance));
 					email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
-					email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+					email.setSubject(replaceSubjectTags(subject, tagReplacer, flowInstance));
 					email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 					systemInterface.getEmailHandler().send(email);
@@ -2943,7 +2947,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				email.setSenderAddress(this.getEmailSenderAddress(flowInstance));
 			}
 
-			email.setSubject(replaceTags(subject, tagReplacer, flowInstance));
+			email.setSubject(replaceSubjectTags(subject, tagReplacer, flowInstance));
 			email.setMessage(EmailUtils.addMessageBody(replaceTags(message, tagReplacer, flowInstance)));
 
 			String generatedPDFFilename = null;
@@ -3091,7 +3095,17 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 		return true;
 	}
 
+	public String replaceSubjectTags(String subject, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
+
+		return replaceTags(subject, tagReplacer, flowInstance, false);
+	}
+	
 	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance) {
+		
+		return replaceTags(template, tagReplacer, flowInstance, escapeHTMLForTagReplacing);
+	}
+	
+	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance, boolean escapeHTML) {
 
 		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
 	}
