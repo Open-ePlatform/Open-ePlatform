@@ -13,10 +13,10 @@
 
 	<xsl:template match="Document">
 
-		<div id="MyPagesMenu" class="errand-menu buttons-in-desktop errand-page">
+		<div id="MyPagesMenu" role="navigation" class="errand-menu buttons-in-desktop errand-page">
 
-		  	<a href="#" class="btn btn-dark">
-		  		<span data-icon-after="_" data-icon-before="L">Mina sidor / <xsl:value-of select="ExtensionLink[Active]/name"/></span>
+		  	<a href="#" class="btn btn-dark" aria-haspopup="menu" aria-expanded="false">
+		  		<span data-icon-after="_">Mina sidor / <xsl:value-of select="ExtensionLink[Active]/name"/></span>
 		  	</a>
 	
 		  	<ul>
