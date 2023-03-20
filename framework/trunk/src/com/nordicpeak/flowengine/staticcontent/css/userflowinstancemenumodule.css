@@ -9,3 +9,33 @@
 		width: 79.6875%
 	}
 }
+
+@media screen and (max-width: 1004px) {
+	
+	.errand-menu {
+		background-color: #FFF;
+	}
+	
+	.errand-menu.buttons-in-desktop ul {
+		width: calc(100% - 2px);
+	}
+	
+	.errand-menu ul {
+		border: 1px solid #303030;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+	}
+	
+	.errand-menu ul li:last-child {
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+	}
+	
+	.errand-menu.buttons-in-desktop {
+		padding-bottom: 0;
+		margin-bottom: 0;
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+	
+}
