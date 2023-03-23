@@ -2670,12 +2670,12 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			return;
 		}
 
-		if (recipient == NotificationRecipient.OWNER && contact.getMobilePhone() == null) {
+		if (recipient == NotificationRecipient.OWNER && StringUtils.isEmpty(contact.getMobilePhone())) {
 
 			return;
 		}
 
-		if (recipient == NotificationRecipient.SIGNING_PARTY && signingParty.getMobilePhone() == null) {
+		if (recipient == NotificationRecipient.SIGNING_PARTY && StringUtils.isEmpty(signingParty.getMobilePhone())) {
 
 			return;
 		}
@@ -2789,7 +2789,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	public boolean sendContactSMS(ImmutableFlowInstance flowInstance, Contact contact, String message) {
 
-		if (!contact.isContactBySMS() || contact.getMobilePhone() == null || smsSender == null || message == null) {
+		if (!contact.isContactBySMS() || StringUtils.isEmpty(contact.getMobilePhone()) || smsSender == null || message == null) {
 
 			return false;
 		}
@@ -3069,7 +3069,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	public boolean sendGlobalSMS(ImmutableFlowInstance flowInstance, Contact contact, String recipient, String message) {
 
-		if (recipient == null || smsSender == null || message == null) {
+		if (StringUtils.isEmpty(recipient) || smsSender == null || message == null) {
 
 			return false;
 		}
