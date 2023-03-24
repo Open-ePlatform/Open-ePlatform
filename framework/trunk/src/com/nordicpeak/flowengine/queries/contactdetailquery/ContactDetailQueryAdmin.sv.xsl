@@ -60,7 +60,7 @@ Om användaren har skyddad identitet hämtas inga folkbokföringsuppgifter.
 	<xsl:variable name="i18n.FieldUpdate.Always">Alltid</xsl:variable>
 	<xsl:variable name="i18n.FieldUpdate.Ask">Valfritt</xsl:variable>
 	<xsl:variable name="i18n.FieldUpdate.Never">Aldrig</xsl:variable>
-	<xsl:variable name="i18n.ManagerUpdateAccess">Uppdatera kontaktuppgifter under mina uppgifter när handläggare ändrar i ärenden</xsl:variable>
+	<xsl:variable name="i18n.ManagerUpdateAccess">Uppdatera kontaktuppgifter under mina uppgifter när handläggare ändrar i ärenden eller lägger till ett nytt ärende åt en användare</xsl:variable>
 	
 	<xsl:variable name="i18n.AdvancedSettings">Avancerade inställningar</xsl:variable>
 	<xsl:variable name="i18n.setAsAttribute">Spara värden som attribut</xsl:variable>
