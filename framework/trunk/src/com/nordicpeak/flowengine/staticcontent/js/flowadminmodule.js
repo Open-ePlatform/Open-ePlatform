@@ -681,6 +681,7 @@ $(function() {
 		$this.parent().find("a.show-more").show();
 		
 		$("[data-rel = '" + $this.data("rel") + "']").addClass("hidden");
+		$("a.show-more").removeClass("hidden");
 	});
 	
 	$(document).on("click", "ul.steps li.step > .title", function(e) {
