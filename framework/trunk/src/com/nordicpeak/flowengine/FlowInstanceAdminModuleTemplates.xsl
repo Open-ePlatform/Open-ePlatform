@@ -18,7 +18,7 @@
 		/js/jquery.ui.touch.min.js
 		/js/jquery.blockui.js
 		/js/flowengine.helpdialog.js
-		/js/flowengine.js?v=1
+		/js/flowengine.js?v=2
 		/js/flowengine.step-navigator.js
 		/js/flowengine.tablesorter.js
 		/js/flowinstanceadminmodule.js?v=3
