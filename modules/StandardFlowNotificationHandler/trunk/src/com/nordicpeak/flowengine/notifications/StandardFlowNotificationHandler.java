@@ -2016,6 +2016,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 		FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(event.getFlowInstance().getFlow());
 
+		boolean sendPDFAttachmentsSeparately = false;
+		
 		if (!event.isSuppressUserNotifications()) {
 
 			Collection<Contact> contacts = getContacts(flowInstance);
@@ -2025,6 +2027,8 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				//Check which type of notification the contact should get
 				if (event.getPreviousStatus().getContentType() != ContentType.ARCHIVED && event.getFlowInstance().getStatus().getContentType() == ContentType.ARCHIVED) {
 
+					sendPDFAttachmentsSeparately = notificationSettings.isArchivedGlobalEmailPDFAttachmentSeparated();
+					
 					if (!flowInstance.getAttributeHandler().getPrimitiveBoolean(Constants.FLOW_INSTANCE_SUPPRESS_ARCHIVED_NOTIFICATION_ATTRIBUTE)) {
 
 						if (notificationSettings.isSendFlowInstanceArchivedUserEmail() || notificationSettings.isSendFlowInstanceArchivedUserSMS()) {
@@ -2078,7 +2082,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 				for (String email : managerGroupEmailRecipientAddresses) {
 
 					if (event.getUser() == null || !email.equals(event.getUser().getEmail())) {
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, false);
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getStatusChangedManagerGroupEmailSubject(), notificationSettings.getStatusChangedManagerGroupEmailMessage(), null, sendPDFAttachmentsSeparately);
 					}
 				}
 
@@ -2139,10 +2143,10 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 						options = new NotificationOptions(xmlFile);
 					}
-
+					
 					for (String email : notificationSettings.getFlowInstanceArchivedGlobalEmailAddresses()) {
 
-						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, false, options);
+						sendGlobalEmail(event.getSiteProfile(), flowInstance, posterContact, email, notificationSettings.getFlowInstanceArchivedGlobalEmailSubject(), notificationSettings.getFlowInstanceArchivedGlobalEmailMessage(), attachPDF ? pdfFile : null, notificationSettings.isArchivedGlobalEmailPDFAttachmentSeparated(), options);
 					}
 				}
 			}
@@ -2959,43 +2963,39 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			String generatedPDFFilename = null;
 			String generatedXMLFilename = null;
 
-			File xmlFile = options != null ? options.getXMLFile() : null;
-
-			if (pdfFile != null && xmlFile != null && !areValidAttachmentSizes(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile, xmlFile)) {
-
-				log.warn("Attachments for flow instance " + flowInstance + " exceed the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
-
-				// Prevents running of file attachment code blocks.
-				pdfFile = null;
-				xmlFile = null;
-			}
-
 			if (pdfFile != null && pdfFilename != null) {
-
+				
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
 
 					generatedPDFFilename = FileUtils.toValidHttpFilename(tagReplacer.replace(pdfFilename) + ".pdf");
-
-					if (flowInstance.getStatus().getContentType() == ContentType.ARCHIVED) {
-						FlowFamililyNotificationSettings notificationSettings = getNotificationSettings(flowInstance.getFlow());
-
-						if (notificationSettings.isArchivedGlobalEmailPDFAttachmentSeparated()) {
-
-							sendEmailWithPDFAttachments(email, pdfFile, generatedPDFFilename);
-						} else {
-
-							email.add(new FileAttachment(pdfFile, generatedPDFFilename));
-						}
-
+					
+					if (!sendPDFAttachmentsSeparately) {
+	
+						email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+	
 					} else {
+	
+						email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
 
-						if (!sendPDFAttachmentsSeparately) {
+						List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
 
-							email.add(new FileAttachment(pdfFile, generatedPDFFilename));
+						if (!CollectionUtils.isEmpty(attachments)) {
 
-						} else {
+							for (PDFByteAttachment attachment : attachments) {
 
-							sendEmailWithPDFAttachments(email, pdfFile, generatedPDFFilename);
+								String attachmentName;
+
+								if (attachment.getAttachmentName().equals(attachment.getFilename())) {
+
+									attachmentName = attachment.getFilename();
+
+								} else {
+
+									attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
+								}
+
+								email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
+							}
 						}
 					}
 
@@ -3004,8 +3004,11 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 					log.warn("PDF file for flow instance " + flowInstance + " exceeds the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
 				}
 
+
 			}
 
+			File xmlFile = options != null ? options.getXMLFile() : null;
+			
 			if (xmlFile != null && xmlFilename != null) {
 
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
@@ -3039,32 +3042,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 			log.error("Error generating/sending email " + email, e);
 		}
 
-	}
-
-	private void sendEmailWithPDFAttachments(SimpleEmail email, File pdfFile, String generatedPDFFilename) throws Exception {
-
-		email.add(new ByteArrayAttachment(pdfProvider.removePDFAttachments(pdfFile), MimeUtils.getMimeType(generatedPDFFilename), generatedPDFFilename));
-
-		List<PDFByteAttachment> attachments = pdfProvider.getPDFAttachments(pdfFile, true);
-
-		if (!CollectionUtils.isEmpty(attachments)) {
-
-			for (PDFByteAttachment attachment : attachments) {
-
-				String attachmentName;
-
-				if (attachment.getAttachmentName().equals(attachment.getFilename())) {
-
-					attachmentName = attachment.getFilename();
-
-				} else {
-
-					attachmentName = attachment.getAttachmentName() + " - " + attachment.getFilename();
-				}
-
-				email.add(new ByteArrayAttachment(attachment.getData(), MimeUtils.getMimeType(attachment.getFilename()), attachmentName));
-			}
-		}
 	}
 
 	public boolean sendGlobalSMS(ImmutableFlowInstance flowInstance, Contact contact, String recipient, String message) {
