@@ -2962,7 +2962,18 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			String generatedPDFFilename = null;
 			String generatedXMLFilename = null;
+			
+			File xmlFile = options != null ? options.getXMLFile() : null;
 
+			if (pdfFile != null && xmlFile != null && !areValidAttachmentSizes(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile, xmlFile)) {
+
+				log.warn("Attachments for flow instance " + flowInstance + " exceed the size limit of " + flowInstanceGlobalEmailAttachmentSizeLimit + " MB set for global email submit notifications and will not be attached to the generated email.");
+
+				// Prevents running of file attachment code blocks.
+				pdfFile = null;
+				xmlFile = null;
+			}
+			
 			if (pdfFile != null && pdfFilename != null) {
 				
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, pdfFile)) {
@@ -3007,8 +3018,6 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 			}
 
-			File xmlFile = options != null ? options.getXMLFile() : null;
-			
 			if (xmlFile != null && xmlFilename != null) {
 
 				if (isValidAttachmentSize(flowInstanceGlobalEmailAttachmentSizeLimit, xmlFile)) {
