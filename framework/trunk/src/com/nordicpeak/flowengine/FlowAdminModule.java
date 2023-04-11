@@ -4517,6 +4517,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} catch (Exception e) {
 
+				log.info("Unable to parse import data.", e);
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
 			} finally {
@@ -4569,6 +4570,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} catch (Exception e) {
 
+				log.info("Unable to parse import data.", e);
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
 			} finally {
@@ -4828,20 +4830,32 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 		Map<Integer, ImmutableStatus> statusConversionMap;
 
-		//Clear status ID's
+		Map<Integer, List<Integer>> acceptedStatusesMap;
+		
+		//Clear status ID's and create accepted statuses map on old statusID's
 		if (flow.getStatuses() != null) {
 
 			statusConversionMap = new HashMap<>(flow.getStatuses().size());
+			
+			acceptedStatusesMap = new HashMap<>(flow.getStatuses().size());
 
 			for (Status status : flow.getStatuses()) {
 
 				statusConversionMap.put(status.getStatusID(), status);
+				
+				if(!CollectionUtils.isEmpty(status.getAcceptedStatusIDs())) {
+					
+					acceptedStatusesMap.put(status.getStatusID(), status.getAcceptedStatusIDs());
+					status.setAcceptedStatusIDs(null);
+				}
+				
 				status.setStatusID(null);
 			}
 
 		} else {
 
 			statusConversionMap = null;
+			acceptedStatusesMap = null;
 		}
 
 		boolean familyUpdated = false;
@@ -4853,6 +4867,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			if (relatedFlow == null) {
 
 				daoFactory.getFlowDAO().add(flow, transactionHandler, ADD_NEW_FLOW_AND_FAMILY_RELATION_QUERY);
+				// After flow is written to DB, statuses are updated with new ID's and by reference also the statuses id's in statusConversionMap
 
 			} else {
 
@@ -4876,25 +4891,30 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 			if(statusConversionMap != null) {
 				
 				boolean updateStatuses = false;
-				
-				for(Status status : flow.getStatuses()) {
+
+				if(acceptedStatusesMap != null) {
 					
-					if(status.getAcceptedStatusIDs() != null) {
+					for(Integer oldStatusID : acceptedStatusesMap.keySet()) {
 						
-						List<Integer> newAcceptedStatusIDs = new ArrayList<Integer>();
+						ImmutableStatus newStatus = statusConversionMap.get(oldStatusID);
 						
-						for(Integer oldAcceptedStatusID : status.getAcceptedStatusIDs()) {
+						// Loop through the list of this status's accepted status ID's to update to new ID's
+						for(Integer oldAcceptedStatusID : acceptedStatusesMap.get(oldStatusID)) {
 							
-							ImmutableStatus newStatus = statusConversionMap.get(oldAcceptedStatusID);
+							Integer newAcceptedStatusID = statusConversionMap.get(oldAcceptedStatusID).getStatusID();
 							
-							newAcceptedStatusIDs.add(newStatus.getStatusID());
-						}
-						
-						if(!CollectionUtils.isEmpty(newAcceptedStatusIDs)) {
-							
-							status.setAcceptedStatusIDs(newAcceptedStatusIDs);
-							
-							updateStatuses = true;
+							//Add accepted status ID to the flows status's list of accepted status ID's
+							for(Status flowStatus : flow.getStatuses()) {
+								
+								if(flowStatus.getStatusID().equals(newStatus.getStatusID())) {
+									
+									List<Integer> flowStatusAcceptedStatuses = CollectionUtils.addAndInstantiateIfNeeded(flowStatus.getAcceptedStatusIDs(), newAcceptedStatusID);
+									
+									flowStatus.setAcceptedStatusIDs(flowStatusAcceptedStatuses);
+									
+									updateStatuses = true;
+								}
+							}
 						}
 					}
 				}
@@ -5247,6 +5267,7 @@ public class FlowAdminModule extends BaseFlowBrowserModule implements AdvancedCR
 
 			} catch (FileUploadException e) {
 
+				log.info("Unable to parse import data.", e);
 				validationException = new ValidationException(new ValidationError("UnableToParseRequest"));
 
 			} finally {
