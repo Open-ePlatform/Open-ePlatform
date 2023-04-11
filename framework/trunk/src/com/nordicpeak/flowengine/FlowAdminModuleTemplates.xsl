@@ -32,7 +32,7 @@
 		/js/flowengine.helpdialog.js
 		/js/flowengine.js?v=2
 		/js/flowengine.step-navigator.js
-		/js/flowadminmodule.js?v=22
+		/js/flowadminmodule.js?v=23
 		/js/jquery.ui.datepicker-sv.js
 		/js/flowengine.tablesorter.js
 		/js/flowengine.tablefilter.js
