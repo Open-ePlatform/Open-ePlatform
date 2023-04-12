@@ -1,6 +1,7 @@
 package com.nordicpeak.flowengine.queries.contactdetailquery;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -620,6 +621,20 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					log.info("User " + user + " updating user profile");
 					
 					req.getSession(true).setAttribute("user", user);
+					
+					Timestamp lastLogin = poster.getLastLogin();
+
+					mutableUser.setLastLogin(poster.getCurrentLogin());
+
+					try {
+						systemInterface.getUserHandler().updateUser(mutableUser, false, false, false);
+
+					} catch (Exception e) {
+
+						log.error("Unable to update last login for user " + user, e);
+					}
+
+					mutableUser.setLastLogin(lastLogin);
 					
 					this.systemInterface.getUserHandler().updateUser(mutableUser, false, false, userAttributeHandler != null);
 					
