@@ -625,18 +625,15 @@ public class ContactDetailQueryProviderModule extends BaseQueryProviderModule<Co
 					Timestamp lastLogin = poster.getLastLogin();
 
 					mutableUser.setLastLogin(poster.getCurrentLogin());
-
-					try {
-						systemInterface.getUserHandler().updateUser(mutableUser, false, false, false);
-
-					} catch (Exception e) {
-
-						log.error("Unable to update last login for user " + user, e);
-					}
-
-					mutableUser.setLastLogin(lastLogin);
 					
-					this.systemInterface.getUserHandler().updateUser(mutableUser, false, false, userAttributeHandler != null);
+					try {
+						
+						this.systemInterface.getUserHandler().updateUser(mutableUser, false, false, userAttributeHandler != null);
+
+					} finally {
+
+						mutableUser.setLastLogin(lastLogin);
+					}
 					
 					systemInterface.getEventHandler().sendEvent(User.class, new UserUpdatedEvent(mutableUser), EventTarget.ALL);
 					
