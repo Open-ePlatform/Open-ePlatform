@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1546,46 +1547,25 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		}
 
 		if (extensionList != null) {
-
-			int globalIdx = 0;
-			int extensionIdx = 0;
-			while (extensionIdx < extensionList.size()) {
-
-				IntegerEntry globalEntry = globalList.get(globalIdx);
-				IntegerEntry extensionEntry = extensionList.get(extensionIdx);
-
-				int weekDiff = globalEntry.getId() - extensionEntry.getId();
-
-				if (weekDiff == 0) { // Add
-
-					globalEntry.setValue(globalEntry.getValue() + extensionEntry.getValue());
-
-					extensionIdx++;
-
-					if (globalIdx + 1 < globalList.size()) {
-						globalIdx++;
-					}
-
-				} else if (weekDiff > 0) { // Insert
-
-					globalList.add(globalIdx, extensionEntry);
-					globalIdx++;
-					extensionIdx++;
-
-				} else { // idDiff < 0
-
-					if (globalIdx + 1 < globalList.size()) { // Skip
-
-						globalIdx++;
-
-					} else { // Append
-
-						globalList.add(extensionEntry);
-						globalIdx++;
-						extensionIdx++;
-					}
+			
+			TreeMap<Integer, IntegerEntry> entryMap = new TreeMap<>();
+			
+			for (IntegerEntry entry : globalList) {
+				entryMap.put(entry.getId(), entry);
+			}
+			
+			for (IntegerEntry entry : extensionList) {
+				IntegerEntry existingValue = entryMap.get(entry.getId());
+				
+				if (existingValue == null) {
+					entryMap.put(entry.getId(), entry);
+				}
+				else {
+					existingValue.setValue(existingValue.getValue() + entry.getValue());
 				}
 			}
+			
+			return new ArrayList<IntegerEntry>(entryMap.values());
 		}
 		
 		return globalList;
@@ -1598,49 +1578,27 @@ public class StatisticsModule extends AnnotatedForegroundModule implements Runna
 		}
 
 		if (extensionList != null) {
-
-			int globalIdx = 0;
-			int extensionIdx = 0;
-			while (extensionIdx < extensionList.size()) {
-
-				Entry<String, Integer> globalEntry = globalList.get(globalIdx);
-				Entry<String, Integer> extensionEntry = extensionList.get(extensionIdx);
-
-				int weekDiff = globalEntry.getKey().compareTo(extensionEntry.getKey());
-
-				if (weekDiff == 0) { // Add
-
-					globalEntry.setValue(globalEntry.getValue() + extensionEntry.getValue());
-
-					extensionIdx++;
-
-					if (globalIdx + 1 < globalList.size()) {
-						globalIdx++;
-					}
-
-				} else if (weekDiff > 0) { // Insert
-
-					globalList.add(globalIdx, extensionEntry);
-					globalIdx++;
-					extensionIdx++;
-
-				} else { // idDiff < 0
-
-					if (globalIdx + 1 < globalList.size()) { // Skip
-
-						globalIdx++;
-
-					} else { // Append
-
-						globalList.add(extensionEntry);
-						globalIdx++;
-						extensionIdx++;
-					}
+			
+			TreeMap<String, Entry<String, Integer>> entryMap = new TreeMap<>();
+			
+			for (Entry<String, Integer> entry : globalList) {
+				entryMap.put(entry.getKey(), entry);
+			}
+			
+			for (Entry<String, Integer> entry : extensionList) {
+				Entry<String, Integer> existingValue = entryMap.get(entry.getKey());
+				
+				if (existingValue == null) {
+					entryMap.put(entry.getKey(), entry);
+				}
+				else {
+					existingValue.setValue(existingValue.getValue() + entry.getValue());
 				}
 			}
+			
+			return new ArrayList<Entry<String, Integer>>(entryMap.values());
 		}
 		
 		return globalList;
 	}
-	
 }
