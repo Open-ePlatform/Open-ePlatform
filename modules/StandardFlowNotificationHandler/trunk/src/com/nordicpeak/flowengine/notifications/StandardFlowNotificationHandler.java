@@ -3099,7 +3099,7 @@ public class StandardFlowNotificationHandler extends AnnotatedForegroundModule i
 
 	public String replaceTags(String template, TagReplacer tagReplacer, ImmutableFlowInstance flowInstance, boolean escapeHTML) {
 
-		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler());
+		return AttributeTagUtils.replaceTags(tagReplacer.replace(template), flowInstance.getAttributeHandler(), escapeHTML);
 	}
 
 	public List<User> getFlowFamilyManagers(ImmutableFlowInstance flowInstance) throws SQLException {
