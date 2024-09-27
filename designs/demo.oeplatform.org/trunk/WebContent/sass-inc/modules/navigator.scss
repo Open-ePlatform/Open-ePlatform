@@ -1,0 +1,39 @@
+.navigator {
+	list-style: none;
+	padding: 22px $padLR;
+	margin: 0;
+
+	li {
+		float: left;
+		font-weight: 600;
+
+		a {
+			border-bottom: 1px dotted $mainForegroundColor;
+
+			&:hover {
+				border-bottom: 1px dotted $mainAccentColor;				
+			}
+		}
+
+		&:after {
+			font-family: 'riges-icons';
+			content: '>';
+			speak: none;
+			font-weight: normal;
+			font-variant: normal;
+			text-transform: none;
+			line-height: 1;
+			margin: 0 5px;
+			font-size: 11px;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		&.active {
+			font-weight: 400;
+
+			&:after {
+				display: none;
+			}
+		}
+	}
+}

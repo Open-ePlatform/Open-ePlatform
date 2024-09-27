@@ -1,0 +1,103 @@
+.panel-wrapper {
+	position: relative;
+	background: #cacaca;
+	clear: both;
+
+	&.follow,
+	&.yellow {
+		background: #ffef9f;
+		border-bottom: 1px solid #cacaca;
+		z-index: 201;
+		top: 0;
+		left: 0;
+		width: 100%;
+	}
+
+	&.yellow .inner .current-step {
+		font-weight: 300;
+	}
+	
+	&.official {
+		background: transparent;
+
+		.inner .buttons {
+			padding-left: 0;
+		}	
+	}
+
+	&.follow {
+		// display: none !important;
+		position: fixed;
+		font-weight: 600;
+	}
+
+	.inner {
+		@include clearfix();
+		max-width: 1280px;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 16px 0;
+		position: relative;
+
+			.current-step {
+				float: left;
+				display: table-cell;
+				vertical-align: middle;
+				height: auto;
+				font-size: 16px;
+				font-weight: 600;
+				padding: 0 10% 0 5%;
+				margin-right: 53px;
+			}
+
+			.buttons {
+				position: absolute;
+				top: 50%;
+				margin-top: -16px;
+				padding: 0 !important;
+				right: 5%;
+				
+				.btn {
+					padding: 10px 9px 9px;
+					margin: 0 0 10px 0;
+
+					&:hover {
+						padding: 9px 9px 9px;
+					}
+				}
+				
+			}
+
+
+		.buttons {
+			@include clearfix();
+			padding: 0 4.0625% 0;
+			min-height: 43px;
+
+			.btn {
+				float: left;
+				margin: 0 10px 10px 0;
+
+				span {
+			
+					&:before {
+						margin-top: 1px;
+					}
+
+					&:after {
+						margin-top: 2px;
+					}
+				}
+			}
+		}
+	}
+
+	&.edit-indicator {
+		background: #fffae1;
+
+		.inner {
+			padding: 14px 0;
+			text-align: center;
+		}
+	}
+}
