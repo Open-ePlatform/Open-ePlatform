@@ -1,0 +1,52 @@
+i {
+	position: relative;
+	font-family: 'riges-icons';
+	font-style: normal;
+	font-size: 11px;
+	line-height: 1;
+
+	&[title] {
+		cursor: pointer;
+
+		&:hover {
+			color: $mainAccentColor;
+		}
+	}
+
+	&.inline {
+		margin-right: 5px;
+	}
+
+	&.xl {
+		font-family: 'riges-icons-xl';
+		font-size: 33px;
+	}
+
+	&.icon-blue {
+		color: $mainAccentColor;
+		margin-right: 0;
+	}
+
+	&.icon-red {
+		color: #c73434;
+		margin-right: 0;
+	}
+
+	&.icon-green {
+		color: #1d8034;
+	}
+
+	&.sender {
+
+		&:before, &:after {
+			margin-top: 6px;
+		}
+	}
+
+	&.official {
+
+		&:before, &:after {
+			margin-top: 11px;
+		}
+	}
+}

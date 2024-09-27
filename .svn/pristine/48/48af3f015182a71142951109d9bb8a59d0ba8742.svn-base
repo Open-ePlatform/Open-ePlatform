@@ -1,0 +1,47 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `stop_queries` (
+				  `queryID` int(10) unsigned NOT NULL,
+				  `description` text,
+				  `helpText` varchar(45) DEFAULT NULL,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `stop_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL,
+				  `queryID` int(10) unsigned NOT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_stop_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_stop_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `stop_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `stop_queries` MODIFY COLUMN `helpText` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>	
+			
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `stop_queries` ADD COLUMN `displayValidationError` BOOLEAN NOT NULL AFTER `helpText`;
+			]]>
+		</Query>
+			<Query>
+			<![CDATA[
+				UPDATE `stop_queries` SET `displayValidationError` = true;
+			]]>
+		</Query>	
+	</Script>		
+			
+</DBScripts>

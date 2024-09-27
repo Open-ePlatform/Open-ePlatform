@@ -1,0 +1,80 @@
+{
+   "units":"m",
+   "outputFormat":"$outputFormat",
+   "layout":"$layout",
+   "srs":"$srs",
+   "dpi":$dpi,
+   "attribution": "Kartan har ingen rättsverkan du kan alltså INTE se exakta gränser i denna karttjänst ©Lantmäteriet Geodatasamverkan",
+   "layers":[
+      {
+         "baseURL":"https://extmap.sundsvall.se/geoserver/wms",
+         "opacity":1,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "$baseLayer"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ]
+      },
+      {
+         "baseURL":"https://extmap.sundsvall.se/geoserver/wms",
+         "opacity":1,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "Lantmateriet:fastighet_granser"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ],
+         "customParams":{
+            "TRANSPARENT":true
+         }
+      },
+      {
+         "type":"Vector",
+         "styles":{
+            "Point": {
+                "pointRadius": 4,
+                "graphicName": "square",
+                "fillColor": "#ffffff",
+                "fillOpacity": 1,
+                "strokeWidth": 1,
+                "strokeOpacity": 1,
+                "strokeColor": "#2969bf"
+            },
+            "Line": {
+            	"strokeWidth": 3,
+            	"strokeColor": "#2969bf",
+				"strokeOpacity": 1
+            },
+            "Polygon": {
+                "strokeWidth": 3,
+                "strokeOpacity": 1,
+                "strokeColor": "#29bf4c",
+                "fillColor": "#e8ffee",
+                "fillOpacity": 0.4
+            }
+            $labelStyles
+         },
+         "styleProperty":"_style",
+         "geoJson":{
+            "type":"FeatureCollection",
+            "features": $features
+         },
+         "name":"Drawings",
+         "opacity":1
+      }
+   ],
+   "pages":[
+      {
+         "center": $center,
+         "scale": $scale,
+         "rotation": 0
+      }
+   ]
+}

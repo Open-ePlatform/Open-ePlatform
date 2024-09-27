@@ -1,0 +1,63 @@
+@CHARSET "ISO-8859-1";
+
+.checkboxquery .floatnone {
+	float: none;
+}
+
+.checkboxquery span.html-description {
+	padding-bottom: 12px;
+}
+.checkboxquery span.html-description > p {
+	margin-bottom: 0;
+}
+
+.checkboxquery .validationerror {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+} 
+
+.checkboxquery .validationerror.commonerror {
+	margin-top: 8px;
+	margin-bottom: 0;
+} 
+
+.checkboxquery .validationerror i {
+	margin: unset;
+	margin-right: 5px;
+	
+	display: inline-block;
+	position: relative;
+	right: 0;
+	bottom: 0;
+	width: unset;
+	height: unset;
+}
+
+.checkboxquery .help {
+	float: right;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.checkboxquery legend.heading-wrapper {
+	width: auto;
+}
+
+@media screen and (min-width: 767.1px) and (max-width: 1004px) {
+	
+	.checkboxquery .alternative.thirty {
+		width: 50%;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	
+	.checkboxquery .alternative.thirty, .checkboxquery .alternative.fifty {
+		width: 100%;
+	}
+	
+	.checkboxquery .help {
+		position: relative;
+	}
+}

@@ -1,0 +1,22 @@
+@CHARSET "ISO-8859-1";
+
+#PersonDataInformer .alternative {
+	white-space: nowrap;
+}
+
+#PersonDataInformer .alternative label{
+	white-space: normal;
+}
+
+#PersonDataInformer fieldset {
+	padding-top: 0px;
+}
+
+	#PersonDataInformer fieldset i {
+		display: inline;
+	}
+
+#PersonDataInformer .alternative input[type=checkbox] {
+    vertical-align: top;
+    margin-top: 15px!important;
+}

@@ -1,0 +1,624 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups` (
+					`activityGroupID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`startStatus` VARCHAR(255) NOT NULL,
+					`completeStatus` VARCHAR(255) NOT NULL,
+					`denyStatus` VARCHAR(255) NULL DEFAULT NULL,
+					`useApproveDeny` TINYINT UNSIGNED NOT NULL,
+					`appendCommentsToExternalMessages` TINYINT UNSIGNED NOT NULL,
+					`sendActivityGroupStartedEmail` TINYINT UNSIGNED NOT NULL,
+					`activityGroupStartedEmailSubject` VARCHAR(255) NULL DEFAULT NULL,
+					`activityGroupStartedEmailMessage` TEXT NULL,
+					`userDescriptionTemplate` VARCHAR(255) NULL DEFAULT NULL,
+					PRIMARY KEY (`activityGroupID`),
+					INDEX `flowFamilyID` (`flowFamilyID`)
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activities` (
+					`activityID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(10) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`description` TEXT NULL,
+					`attributeName` VARCHAR(255) NULL DEFAULT NULL,
+					`invert` TINYINT(1) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`),
+					INDEX `FK_flowapproval_activities_1` (`activityGroupID`),
+					CONSTRAINT `FK_flowapproval_activities_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_groups` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`groupID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `groupID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_groups_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_attribute_values` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`value` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `value`),
+					CONSTRAINT `FK_flowapproval_activity_attribute_values_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`completed` DATETIME NULL DEFAULT NULL,
+					`denied` TINYINT UNSIGNED NOT NULL,
+					`completingUserID` INT(10) UNSIGNED NULL DEFAULT NULL,
+					`comment` TEXT NULL,
+					PRIMARY KEY (`activityProgressID`),
+					INDEX `FK_flowapproval_activity_progress_1` (`activityID`),
+					INDEX `flowInstanceID` (`flowInstanceID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`	ADD COLUMN `globalEmailAddress` VARCHAR(255) NULL AFTER `invert`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `sortIndex` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `flowFamilyID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `responsibleUserAttributeName` VARCHAR(255) NULL DEFAULT NULL AFTER `attributeName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_users` ADD COLUMN `fallback` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `userID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `responsibleAttributedUserID` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `completingUserID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `reminderAfterXDays` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `sendActivityGroupStartedEmail`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `automaticReminderSent` TINYINT UNSIGNED NOT NULL AFTER `comment`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` MODIFY COLUMN `sortIndex` INT(10) UNSIGNED NOT NULL DEFAULT 0;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `shortDescription` VARCHAR(255) NULL DEFAULT NULL AFTER `name`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` a JOIN `flowapproval_activitygroups` g ON (a.activityGroupID = g.activityGroupID) SET a.shortDescription = g.userDescriptionTemplate;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` DROP COLUMN `userDescriptionTemplate`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_resp_user_attribute` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`attributeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `attributeName`),
+					CONSTRAINT `FK_flowapproval_activity_resp_user_attribute_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_resp_user_attribute` (activityID, attributeName)
+					SELECT activityID, responsibleUserAttributeName FROM flowapproval_activities WHERE responsibleUserAttributeName IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress_resp_attr_users` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`userID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityProgressID`, `userID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_resp_attr_users_1` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_progress_resp_attr_users` (activityProgressID, userID)
+					SELECT activityProgressID, responsibleAttributedUserID FROM flowapproval_activity_progress WHERE responsibleAttributedUserID IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` DROP COLUMN `responsibleUserAttributeName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` DROP COLUMN `responsibleAttributedUserID`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `showFlowInstance` TINYINT(1) UNSIGNED NOT NULL AFTER `description`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `approvedText` VARCHAR(255) NULL DEFAULT NULL AFTER `denyStatus`,
+					ADD COLUMN `deniedText` VARCHAR(255) NULL DEFAULT NULL AFTER `approvedText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `allowRestarts` TINYINT(3) UNSIGNED NOT NULL AFTER `appendCommentsToExternalMessages`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_rounds` (
+					`activityRoundID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(10) UNSIGNED NOT NULL,
+					`flowInstanceID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`completed` DATETIME NULL,
+					`cancelled` DATETIME NULL,
+					PRIMARY KEY (`activityRoundID`) USING BTREE,
+					INDEX `FK_flowapproval_activity_rounds_1` (`activityGroupID`) USING BTREE,
+					CONSTRAINT `FK_flowapproval_activity_rounds_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_rounds` (activityGroupID, flowInstanceID, added)
+				SELECT a.activityGroupID, p.flowInstanceID, MIN(p.added)
+				FROM flowapproval_activity_progress p
+					INNER JOIN flowapproval_activities a ON p.activityID = a.activityID
+				GROUP BY a.activityGroupID, p.flowInstanceID;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress` ADD COLUMN `activityRoundID` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `activityProgressID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activity_progress` p
+				INNER JOIN flowapproval_activities a ON p.activityID = a.activityID
+				INNER JOIN flowapproval_activity_rounds r ON p.flowInstanceID = r.flowInstanceID AND r.activityGroupID = a.activityGroupID
+				SET p.activityRoundID = r.activityRoundID; 
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activity_rounds` r
+				LEFT JOIN flowapproval_activity_progress p ON p.activityRoundID = r.activityRoundID AND p.completed IS NULL
+				SET r.completed = (SELECT MAX(completed) FROM flowapproval_activity_progress x WHERE x.activityRoundID = r.activityRoundID)
+				WHERE p.activityProgressID IS NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress`
+					CHANGE COLUMN `activityRoundID` `activityRoundID` INT(10) UNSIGNED NOT NULL AFTER `activityProgressID`,
+					DROP COLUMN `flowInstanceID`,
+					ADD CONSTRAINT `FK_flowapproval_activity_progress_2` FOREIGN KEY (`activityRoundID`) REFERENCES `flowapproval_activity_rounds` (`activityRoundID`) ON UPDATE CASCADE ON DELETE CASCADE;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_progress`
+				 ADD COLUMN `signingData` TEXT NULL AFTER `automaticReminderSent`,
+				 ADD COLUMN `signedDate` DATETIME NULL DEFAULT NULL AFTER `signingData`,
+				 ADD COLUMN `signedChecksum` VARCHAR(255) NULL DEFAULT NULL AFTER `signedDate`,
+				 ADD COLUMN `signatureData` TEXT NULL AFTER `signedChecksum`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `requireSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `allowRestarts`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `requireSigning` TINYINT(1) UNSIGNED NOT NULL AFTER `showFlowInstance`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` DROP COLUMN `requireSigning`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_rounds` ADD COLUMN `pdf` TINYINT UNSIGNED NOT NULL AFTER `cancelled`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `onlyRestartIfActivityChanges` TINYINT(3) UNSIGNED NOT NULL AFTER `allowRestarts`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `allowSkip` TINYINT(3) UNSIGNED NOT NULL AFTER `denyStatus`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `onlyUseGlobalNotifications` TINYINT(1) UNSIGNED NOT NULL AFTER `globalEmailAddress`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `sendActivityGroupCompletedEmail` TINYINT(3) UNSIGNED NOT NULL AFTER `activityGroupStartedEmailMessage`,
+					ADD COLUMN `activityGroupCompletedEmailSubject` VARCHAR(255) NULL DEFAULT NULL AFTER `sendActivityGroupCompletedEmail`,
+					ADD COLUMN `activityGroupCompletedEmailMessage` TEXT(65535) NULL DEFAULT NULL AFTER `activityGroupCompletedEmailSubject`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups_notify_completed` (
+				`activityGroupID` INTEGER UNSIGNED NOT NULL,
+				`email` VARCHAR(255) NOT NULL,
+				PRIMARY KEY (`activityGroupID`,`email`),
+				CONSTRAINT `FK_flowapproval_activitygroups_notify_completed_1` FOREIGN KEY `FK_flowapproval_activitygroups_notify_completed_1` (`activityGroupID`)
+					REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON DELETE CASCADE ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `activityGroupCompletedEmailAttachPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `sendActivityGroupCompletedEmail`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `suppressChangeStatusManagerNotifications` TINYINT(1) UNSIGNED NOT NULL AFTER `activityGroupCompletedEmailMessage`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups`
+					ADD COLUMN `activityGroupCompletedEmailAttachFlowInstancePDF` TINYINT(1) UNSIGNED NOT NULL AFTER `activityGroupCompletedEmailAttachPDF`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="19">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`
+					ADD COLUMN `requireComment` TINYINT(1) UNSIGNED NOT NULL AFTER `requireSigning`;
+			]]>
+		</Query>
+	</Script>
+
+	<Script version="20">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_reminders` (
+					`reminderID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`added` DATETIME NOT NULL,
+					`reminderType` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'latin1_swedish_ci',
+					`userID` INT(11) UNSIGNED,
+					PRIMARY KEY (`reminderID`) USING BTREE,
+					INDEX `FK__flowapproval_activity_progress` (`activityProgressID`) USING BTREE,
+					CONSTRAINT `FK__flowapproval_activity_progress` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB
+				;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="21">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities`
+					ADD COLUMN `allowManagersToAssignOwner` TINYINT(1) UNSIGNED NOT NULL AFTER `onlyUseGlobalNotifications`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_assignable_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_assignable_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_assignable_groups` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`groupID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `groupID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_assignable_groups_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="22">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `hideFlowinstanceIDInPDF` BOOLEAN NOT NULL AFTER `suppressChangeStatusManagerNotifications`;				
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="23">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `pdfDownloadActivation` BOOLEAN NOT NULL DEFAULT 0 AFTER `showFlowInstance`;				
+			]]>
+		</Query>
+	</Script>
+	<Script version="24">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `active` BOOLEAN NOT NULL DEFAULT 0 AFTER `showFlowInstance`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` SET `active`=1;				
+			]]>
+		</Query>
+	</Script>
+	<Script version="25">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activities` ADD COLUMN `whenToComment` VARCHAR(50) AFTER `requireComment`;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `flowapproval_activities` SET `whenToComment`='ALWAYS' where `requireComment`='1';				
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="26">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_groups` ADD COLUMN `fallback` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `groupID`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_resp_group_attribute` (
+					`activityID` INT(10) UNSIGNED NOT NULL,
+					`attributeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`activityID`, `attributeName`),
+					CONSTRAINT `FK_flowapproval_activity_resp_group_attribute_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_progress_resp_attr_groups` (
+					`activityProgressID` INT(10) UNSIGNED NOT NULL,
+					`groupID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityProgressID`, `groupID`),
+					CONSTRAINT `FK_flowapproval_activity_progress_resp_attr_groups_1` FOREIGN KEY (`activityProgressID`) REFERENCES `flowapproval_activity_progress` (`activityProgressID`)
+					 ON UPDATE CASCADE
+					 ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	<Script version="27">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_groups` DROP COLUMN `fallback`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="28">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activity_group_fallback_users` (
+					`activityID` INT(11) UNSIGNED NOT NULL,
+					`userID` INT(11) UNSIGNED NOT NULL,
+					PRIMARY KEY (`activityID`, `userID`),
+					INDEX `activityID` (`activityID`),
+					CONSTRAINT `FK_flowapproval_activity_group_fallback_users_1` FOREIGN KEY (`activityID`) REFERENCES `flowapproval_activities` (`activityID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	<Script version="29">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_group_fallback_users` RENAME TO flowapproval_activity_fallback_users;
+			]]>
+		</Query>
+	</Script>
+	<Script version="30">
+		<Query>
+			<![CDATA[
+				INSERT INTO `flowapproval_activity_fallback_users` (`activityID`, `userID`) SELECT `activityID`, `userID` FROM `flowapproval_activity_users` WHERE fallback=1;				
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				DELETE FROM `flowapproval_activity_users` WHERE fallback=1;				
+			]]>
+		</Query>
+	</Script>
+	<Script version="31">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activity_users` DROP COLUMN fallback;			
+			]]>
+		</Query>
+	</Script>
+	<Script version="32">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `flowapproval_activitygroups` ADD COLUMN `appendCommentsToInternalMessages` TINYINT(1) UNSIGNED NOT NULL AFTER `appendCommentsToExternalMessages`;			
+			]]>
+		</Query>
+	</Script>
+	<Script version="33">
+		<Query>
+			<![CDATA[
+				 ALTER TABLE `flowapproval_activities` ADD COLUMN `whenToCommentErrorMessage` VARCHAR(255) AFTER `whenToComment`;	
+			]]>
+		</Query>
+	</Script>
+	<Script version="34">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `flowapproval_activitygroups_message_templates` (
+					`templateID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`activityGroupID` INT(11) UNSIGNED NOT NULL,
+					`name` VARCHAR(255) NOT NULL,
+					`message` TEXT NOT NULL,
+					PRIMARY KEY (`templateID`),
+					INDEX `FK_flowapproval_activitygroups_message_templates_1` (`activityGroupID`),
+					CONSTRAINT `FK_flowapproval_activitygroups_message_templates_1` FOREIGN KEY (`activityGroupID`) REFERENCES `flowapproval_activitygroups` (`activityGroupID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+</DBScripts>

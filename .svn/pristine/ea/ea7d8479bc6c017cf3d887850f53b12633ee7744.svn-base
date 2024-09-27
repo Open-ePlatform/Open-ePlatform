@@ -1,0 +1,136 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_map_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  `pointName` VARCHAR(255),
+				  `minimumScale` INTEGER,
+				  PRIMARY KEY (`queryID`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_map_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL,
+				  `queryID` int(10) unsigned NOT NULL,
+				  `propertyUnitDesignation` varchar(255) DEFAULT NULL,
+				  `propertyUnitNumber` int(10) unsigned DEFAULT NULL,
+				  `extent` varchar(255) DEFAULT NULL,
+				  `epsg` varchar(15) DEFAULT NULL,
+				  `xCoordinate` double DEFAULT NULL,
+				  `yCoordinate` double DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_pud_map_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_pud_map_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `pud_map_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` ADD COLUMN `visibleBaseLayer` VARCHAR(255) AFTER `epsg`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_queries` DROP COLUMN `pointName`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_queries` ADD COLUMN `startInstruction` TEXT AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` ADD COLUMN `smallPNG` BLOB AFTER `visibleBaseLayer`, ADD COLUMN `largePNG` MEDIUMBLOB AFTER `smallPNG`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` MODIFY COLUMN `smallPNG` MEDIUMBLOB DEFAULT NULL, MODIFY COLUMN `largePNG` LONGBLOB DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` CHANGE COLUMN `smallPNG` `firstMapImage` MEDIUMBLOB DEFAULT NULL,
+				 CHANGE COLUMN `largePNG` `secondMapImage` LONGBLOB DEFAULT NULL,
+				 ADD COLUMN `thirdMapImage` LONGBLOB AFTER `secondMapImage`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` ADD COLUMN `firstMapImageDpi` INTEGER UNSIGNED AFTER `yCoordinate`,
+				 ADD COLUMN `firstMapImageScale` INTEGER UNSIGNED AFTER `firstMapImageDpi`,
+				 ADD COLUMN `firstMapImageLayout` VARCHAR(255) AFTER `firstMapImageScale`,
+				 ADD COLUMN `firstMapImageFormat` VARCHAR(255) AFTER `firstMapImageLayout`,
+				 ADD COLUMN `secondMapImageDpi` INTEGER UNSIGNED AFTER `firstMapImageFormat`,
+				 ADD COLUMN `secondMapImageScale` INTEGER UNSIGNED AFTER `secondMapImageDpi`,
+				 ADD COLUMN `secondMapImageLayout` VARCHAR(255) AFTER `secondMapImageScale`,
+				 ADD COLUMN `secondMapImageFormat` VARCHAR(255) AFTER `secondMapImageLayout`,
+				 ADD COLUMN `thirdMapImageDpi` INTEGER UNSIGNED AFTER `secondMapImageFormat`,
+				 ADD COLUMN `thirdMapImageScale` INTEGER UNSIGNED AFTER `thirdMapImageDpi`,
+				 ADD COLUMN `thirdMapImageLayout` VARCHAR(255) AFTER `thirdMapImageScale`,
+				 ADD COLUMN `thirdMapImageFormat` VARCHAR(255) AFTER `thirdMapImageLayout`;
+			]]>
+		</Query>
+	</Script>	
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				UPDATE pud_map_query_instances SET firstMapImageDpi = 127, firstMapImageScale = 400, firstMapImageLayout = 'OH_PNG', firstMapImageFormat = 'png' WHERE firstMapImage IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE pud_map_query_instances SET secondMapImageDpi = 56, secondMapImageScale = 1000, secondMapImageLayout = 'OH_PNG_LARGE', secondMapImageFormat = 'png' WHERE secondMapImage IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE pud_map_query_instances SET thirdMapImageDpi = 127, thirdMapImageScale = 400, thirdMapImageLayout = 'OEP_A4_Landscape', thirdMapImageFormat = 'pdf' WHERE thirdMapImage IS NOT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_queries`
+					ADD COLUMN `setAsAttribute` tinyint(1) unsigned NOT NULL AFTER `minimumScale`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_map_query_instances` ADD COLUMN `propertyObjectIdentity` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

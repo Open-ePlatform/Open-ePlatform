@@ -1,0 +1,23 @@
+@charset "ISO-8859-1";
+
+.textareaquery .floatnone {
+	float: none;
+}
+
+.textareaquery .validationerror {
+	display: flex;
+	align-items: center;
+	margin-top: 8px;
+} 
+
+.textareaquery .validationerror i {
+	margin: unset;
+	margin-right: 5px;
+	
+	display: inline-block;
+	position: relative;
+	right: 0;
+	bottom: 0;
+	width: unset;
+	height: unset;
+}
