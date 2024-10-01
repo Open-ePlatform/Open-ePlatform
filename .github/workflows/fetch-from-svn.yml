@@ -12,9 +12,9 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      # Checkout code from SVN
+      - name: Checkout current repo
+        uses: actions/checkout@v4
       - name: Checkout SVN repo
         run: svn co svn://svn.nordicpeak.com/openeplatform .
-      # Commit all changed files to this GIT repository
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
