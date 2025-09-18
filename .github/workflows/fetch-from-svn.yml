@@ -30,7 +30,7 @@ jobs:
             --trunk=trunk \
             --no-metadata \
             --prefix=svn/ \
-            svn://svn.nordicpeak.com/filearchive \
+            svn://svn.nordicpeak.com/openeplatform \
             svn-mirror
 
       # Push till GitHub
