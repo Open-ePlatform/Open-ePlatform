@@ -20,23 +20,24 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y git subversion git-svn perl
 
-      # Skapa katalog för SVN-klonen
-      - name: Setup mirror directory
-        run: mkdir svn-mirror
-
-      # Klona SVN-repo med standard layout
-      - name: Clone SVN repository
+      # Initiera git-svn repo
+      - name: Init git-svn repository
         run: |
-          git svn clone --stdlayout --no-metadata --prefix=svn/ svn://svn.nordicpeak.com/openeplatform svn-mirror
+          git svn init --stdlayout --prefix=svn/ svn://svn.nordicpeak.com/openeplatform svn-mirror
 
-      # Byt till katalogen
+      # Hämta alla SVN-revisioner
+      - name: Fetch SVN revisions
+        run: |
+          cd svn-mirror
+          git svn fetch
+
+      # Skapa main från trunk
       - name: Map trunk to main
         run: |
           cd svn-mirror
-          # Skapa main från svn/trunk
-          git checkout -b main svn/trunk
+          git checkout -b main remotes/trunk
 
-      # Lägg till GitHub som remote med token för autentisering
+      # Lägg till GitHub som remote
       - name: Add GitHub remote
         run: |
           cd svn-mirror
@@ -48,15 +49,19 @@ jobs:
           cd svn-mirror
           git push --set-upstream origin main
 
-      # Push alla övriga SVN brancher och taggar
-      - name: Push other branches and tags
+      # Push övriga SVN brancher
+      - name: Push SVN branches
         run: |
           cd svn-mirror
           for branch in $(git for-each-ref --format='%(refname:short)' refs/remotes/svn/branches); do
             git checkout -b "${branch#svn/branches/}" "$branch"
             git push --set-upstream origin "${branch#svn/branches/}"
           done
-          # Push tags
+
+      # Push SVN tags
+      - name: Push SVN tags
+        run: |
+          cd svn-mirror
           git for-each-ref --format='%(refname:short)' refs/remotes/svn/tags | while read tag; do
             git tag "${tag#svn/tags/}" "$tag"
             git push origin "${tag#svn/tags/}"
