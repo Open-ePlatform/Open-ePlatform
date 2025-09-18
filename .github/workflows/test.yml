@@ -6,25 +6,39 @@ on:
   schedule:
   # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
     - cron: "0 1 * * *"
+    
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04  # äldre Ubuntu med kompatibel Git/git-svn
 
     steps:
-      - name: Checkout GitHub repository
-        uses: actions/checkout@v4
+      # Installera Git, SVN och git-svn
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y git subversion git-svn perl
 
-      - name: Install SVN
-        run: sudo apt-get install -y subversion
+      # Skapa katalog för SVN-kloning
+      - name: Create mirror directory
+        run: mkdir svn-mirror
 
+      # Klona SVN-repo med standard layout
       - name: Clone SVN repository
         run: |
-          git svn clone --stdlayout --authors-file=authors.txt svn://svn.nordicpeak.com/openeplatform
+          git svn clone --stdlayout --no-metadata --prefix=svn/ svn://svn.nordicpeak.com/openeplatform svn-mirror
 
+      # Lägg till GitHub som remote
+      - name: Add GitHub remote
+        run: |
+          cd svn-mirror
+          git remote add origin https://github.com/${{ github.repository }}.git
+
+      # Push alla grenar och taggar till GitHub
       - name: Push to GitHub
         run: |
-          cd filearchive
-          git remote add origin https://github.com/Open-ePlatform/Open-ePlatform.git
+          cd svn-mirror
           git push --all origin
           git push --tags origin
           
