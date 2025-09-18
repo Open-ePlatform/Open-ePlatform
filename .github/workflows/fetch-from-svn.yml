@@ -7,19 +7,24 @@ on:
   schedule:
   # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
     - cron: "0 1 * * *"
-
 jobs:
-  fetch:
+  mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Install subversion
-        run: sudo apt-get install subversion
-      - name: Checkout current repo
-        uses: actions/checkout@v4
-      - name: Checkout SVN repo
-        run: svn co svn://svn.nordicpeak.com/openeplatform
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Install git-svn
+        run: sudo apt-get update && sudo apt-get install git-svn
+      - name: Fetch SVN as Git
+        run: |
+          git svn clone \
+            --trunk=trunk \
+            --authors-file=.github/authors.txt \
+            svn://svn.nordicpeak.com/openeplatform \
+            repo-mirror
+      - name: Push to GitHub
+        run: |
+          cd repo-mirror
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          git push --mirror origin
  
   # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
   workflow-keepalive:
