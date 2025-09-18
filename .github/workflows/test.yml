@@ -1,0 +1,39 @@
+name: Fetch from SVN-repo
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  schedule:
+  # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
+    - cron: "0 1 * * *"
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v4
+
+      - name: Install SVN
+        run: sudo apt-get install -y subversion
+
+      - name: Clone SVN repository
+        run: |
+          git svn clone --stdlayout --authors-file=authors.txt svn://svn.nordicpeak.com/openeplatform
+
+      - name: Push to GitHub
+        run: |
+          cd filearchive
+          git remote add origin https://github.com/Open-ePlatform/Open-ePlatform.git
+          git push --all origin
+          git push --tags origin
+          
+  # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
