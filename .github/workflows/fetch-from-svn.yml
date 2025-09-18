@@ -9,37 +9,18 @@ on:
     - cron: "0 1 * * *"
 
 jobs:
-  mirror:
-    runs-on: ubuntu-22.04
-
+  fetch:
+    runs-on: ubuntu-latest
     steps:
-      # Installera git-svn
-      - name: Install git-svn
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git-svn subversion
-
-      # Skapa katalog för spegling
-      - name: Setup mirror
-        run: mkdir svn-mirror
-
-      # Klona SVN-trunk som Git
-      - name: Clone SVN repo
-        run: |
-          git svn clone \
-            --trunk=trunk \
-            --no-metadata \
-            --prefix=svn/ \
-            svn://svn.nordicpeak.com/openeplatform \
-            svn-mirror
-
-      # Push till GitHub
-      - name: Push to GitHub
-        run: |
-          cd svn-mirror
-          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
-          git push --mirror origin
- 
+      - name: Install subversion
+        run: sudo apt-get install subversion
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+      - name: Checkout SVN repo
+        run: svn co svn://svn.nordicpeak.com/openeplatform 
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        
   # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
   workflow-keepalive:
     if: github.event_name == 'schedule'
