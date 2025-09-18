@@ -1,0 +1,18 @@
+@charset "ISO-8859-1";
+
+#add-person {
+	margin-top: 7px;
+}
+
+#person-error {
+	border: 1px solid transparent;
+	border-radius: .25rem;
+	color: #721c24;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+	padding: .75rem 1.25rem;
+}
+
+.marginright {
+	margin-right: 5px;
+}

@@ -1,0 +1,40 @@
+@CHARSET "ISO-8859-1";
+
+table thead.sortable tr th {
+	background-repeat: no-repeat;
+	background-position: right 2px center;
+	cursor: pointer;
+}
+table thead.sortable th:hover {
+	text-decoration: underline;
+}
+
+table thead.sortable tr .tablesorter-headerAsc {
+	text-decoration: underline;
+}
+
+table thead.sortable tr .tablesorter-headerAsc div:after {
+	background-image: url(../pics/asc.png);
+	padding-right: 15px;
+	content: " ";
+	background-repeat: no-repeat;
+	background-position-y: 9px;
+	margin-left: 9px;
+}
+
+table thead.sortable tr .tablesorter-headerDesc {
+	text-decoration: underline;
+}
+
+table thead.sortable tr .tablesorter-headerDesc div:after {
+	background-image: url(../pics/desc.png);
+	padding-right: 15px;
+	content: " ";
+	background-repeat: no-repeat;
+	background-position-y: 9px;
+	margin-left: 9px;
+}
+
+table thead.sortable tr .no-icon {
+	background-image: none;
+}
