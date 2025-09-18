@@ -6,15 +6,26 @@ on:
   workflow_dispatch:
   schedule:
   # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
-  - cron: "0 1 * * *"
+    - cron: "0 1 * * *"
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
+      - name: Install subversion
+        run: sudo apt-get install subversion
       - name: Checkout current repo
         uses: actions/checkout@v4
       - name: Checkout SVN repo
-        run: svn co svn://svn.nordicpeak.com/openeplatform .
+        run: svn co svn://svn.nordicpeak.com/openeplatform
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
+ 
+  # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
