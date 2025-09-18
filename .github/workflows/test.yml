@@ -29,12 +29,11 @@ jobs:
         run: |
           git svn clone --stdlayout --no-metadata --prefix=svn/ svn://svn.nordicpeak.com/openeplatform svn-mirror
 
-      # Lägg till GitHub som remote
       - name: Add GitHub remote
         run: |
           cd svn-mirror
-          git remote add origin https://github.com/${{ github.repository }}.git
-
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+    
       # Push alla grenar och taggar till GitHub
       - name: Push to GitHub
         run: |
