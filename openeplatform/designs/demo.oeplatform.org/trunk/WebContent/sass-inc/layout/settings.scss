@@ -1,0 +1,62 @@
+.settings {
+	article {
+		padding: 0 27px 10px;
+
+		.italic {
+			display: block;
+			padding: 0 22px 10px 0;
+			font-size: 16px;
+		}
+
+		&.buttons {
+			padding: 10px 27px 0;
+		}
+	}
+}
+
+/* ========== MOBILE ========== */
+
+@include media($tablet) {
+	
+	.settings {
+
+		article {
+
+			&.buttons {
+				text-align: right;
+				
+				.btn {
+					display: inline-block;
+				}
+			}
+		}
+	}
+}
+
+@include media($mobile) {
+	
+	.settings {
+		padding: 0 0 10px;
+
+		article {
+			padding: 0 5% 10px;
+
+			&.buttons {
+				padding: 0 5%;
+
+				.btn {
+					width: 100%;
+					margin: 10px 0 0;
+
+					&:first-child {
+						margin: 0;
+					}
+				}
+			}
+
+			.heading-wrapper {
+				padding: 0;
+			}
+		}
+	}
+}

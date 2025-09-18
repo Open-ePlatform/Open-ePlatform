@@ -1,0 +1,141 @@
+@font-face {
+	font-family: 'riges-icons';
+	src:url('../fonts/riges.eot');
+	src:url('../fonts/riges.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/riges.woff') format('woff'),
+		url('../fonts/riges.ttf') format('truetype'),
+		url('../fonts/riges.svg#riges-icons') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'riges-icons-xl';
+	src:url('../fonts/riges.eot');
+	src:url('../fonts/riges.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/riges.woff') format('woff'),
+		url('../fonts/riges.ttf') format('truetype'),
+		url('../fonts/riges.svg#riges-icons-xl') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+
+[data-icon-after]:after {
+	vertical-align: top;
+	display: inline-block;
+	font-family: 'riges-icons';
+	content: attr(data-icon-after);
+	speak: none;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	margin-left: 4px;
+	margin-top: 4px;
+	font-size: 11px;
+	-webkit-font-smoothing: antialiased;
+	line-height: 1;
+}
+
+[data-icon-before]:before {
+	vertical-align: top;
+	display: inline-block;
+	font-family: 'riges-icons';
+	content: attr(data-icon-before);
+	speak: none;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	margin-right: 4px;
+	margin-top: 4px;
+	font-size: 11px;
+	-webkit-font-smoothing: antialiased;
+	line-height: 1;
+}
+
+
+/* Use the following CSS code if you want to have a class per icon */
+/*
+Instead of a list of all class selectors,
+you can use the generic selector below, but it's slower:
+[class*="icon-"] {
+*/
+.icon-arrow, .icon-arrow-2, .icon-arrow-3, .icon-close, .icon-arrow-4, .icon-star, .icon-error, .icon-checkmark, .icon-user, .icon-external-link, .icon-lock-2, .icon-unread-message, .icon-message, .icon-help, .icon-plus, .icon-edit, .icon-search_small, .icon-list, .icon-checkmark-2, .icon-search, .icon-edit-2, .icon-message-2, .icon-list-2 {
+	font-family: 'riges-icons';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+.icon-arrow:before {
+	content: "\5e";
+}
+.icon-arrow-2:before {
+	content: "\3c";
+}
+.icon-arrow-3:before {
+	content: "\5f";
+}
+.icon-close:before {
+	content: "\78";
+}
+.icon-arrow-4:before {
+	content: "\3e";
+}
+.icon-star:before {
+	content: "\2a";
+}
+.icon-error:before {
+	content: "\21";
+}
+.icon-checkmark:before {
+	content: "\63";
+}
+.icon-user:before {
+	content: "\75";
+}
+.icon-external-link:before {
+	content: "\65";
+}
+.icon-lock-2:before {
+	content: "\6c";
+}
+.icon-unread-message:before {
+	content: "\4d";
+}
+.icon-message:before {
+	content: "\6d";
+}
+.icon-help:before {
+	content: "\3f";
+}
+.icon-plus:before {
+	content: "\2b";
+}
+.icon-edit:before {
+	content: "\77";
+}
+.icon-search_small:before {
+	content: "\73";
+}
+.icon-list:before {
+	content: "\6f";
+}
+.icon-checkmark-2:before {
+	content: "\43";
+}
+.icon-search:before {
+	content: "\53";
+}
+.icon-edit-2:before {
+	content: "\57";
+}
+.icon-message-2:before {
+	content: "\52";
+}
+.icon-list-2:before {
+	content: "\4f";
+}

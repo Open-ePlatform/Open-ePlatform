@@ -1,0 +1,39 @@
+@import "neat/neat-helpers";
+
+// Grid settings
+$column: 92px;
+$gutter: 16px;
+$grid-columns: 12;
+$max-width: 1280px;
+$padLR: 27px;
+
+// Breakpoints
+$mobile-sm: new-breakpoint(max-width 490px 4);
+$mobile: new-breakpoint(max-width 767px 4);
+$tablet-lg: new-breakpoint(max-width 1204px 8);
+$tablet: new-breakpoint(max-width 1004px 8);
+$custom-menu: new-breakpoint(max-width 767px 8);
+$desktop-lg: new-breakpoint(max-width 1280px 12);
+
+$desktop-sm: new-breakpoint(min-width 500px 12);
+$desktop: new-breakpoint(min-width 1005px 12);
+
+$visual-grid: false;
+$border-box-sizing: false;
+
+// Typography and colors
+
+$headerForegroundColor: #FF0000;
+$headerBackgroundColor: #66FF00;
+
+$footerTextColor: #BBFFEE;
+
+$entryPointTitleColor: #CECECE;
+
+$mainForegroundColor: #424242;
+$mainBackgroundColor: #f7f7f7;
+$mainHoverBackgroundColor: #6d6d6d;
+$secondaryBackgroundColor: #f7f7f7;
+$mainBorderColor: #e7e7e7;
+$mainAccentColor: #2969bf;
+$mainShadowColor: #cfcfcf;

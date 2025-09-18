@@ -1,0 +1,225 @@
+{
+    "name": "Förhandsbesked",
+    "maxExtent": [
+        487000,
+        6887000,
+        749144,
+        7149144
+    ],
+    "resolutions": [ 280, 140, 70, 28, 14, 7, 4.2, 2.8, 1.4, 0.56, 0.28, 0.14, 0.112, 0.056 ],
+    "autoClearDrawLayer": false,
+    "drawStyle": {
+    	"default": {
+			"Point": {
+                "pointRadius": 4,
+                "graphicName": "square",
+                "fillColor": "#ffffff",
+                "fillOpacity": 1,
+                "strokeWidth": 1,
+                "strokeOpacity": 1,
+                "strokeColor": "#2969bf"
+            },
+            "Line": {
+            	"strokeWidth": 3,
+            	"strokeColor": "#2969bf",
+				"strokeOpacity": 1
+            },
+            "Polygon": {
+                "strokeWidth": 3,
+                "strokeOpacity": 1,
+                "strokeColor": "#29bf4c",
+                "fillColor": "#e8ffee",
+                "fillOpacity": 0.4
+            }
+        },
+        "select": {
+            "strokeWidth": 3,
+            "strokeOpacity": 1,
+            "fillColor": "#deecff",
+            "fillOpacity": 0.4,
+            "strokeColor": "#2969bf"
+        },
+        "temporary": {
+            "strokeWidth": 3,
+            "strokeOpacity": 0.75,
+            "fillColor": "#ff00ff",
+            "fillOpacity": 0,
+            "strokeColor": "#ff00ff"
+        }
+	},
+    "extent": [
+        608114,
+        6910996,
+        641846,
+        6932596
+    ],
+    "controls": [
+        "Navigation",
+        "KeyboardDefaults"
+    ],
+    "layers": [
+        {
+            "name": "Flygfoto",
+            "url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+            "params": {
+                "layers": "Lantmateriet:Ortofoto50_25cm",
+                "format": "image/jpeg"
+            },
+            "options": {
+            	"isBaseLayer": true,
+            	"displayInLayerSwitcher": false
+            }
+        },
+        {
+            "name": "Karta",
+            "url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+            "params": {
+                "layers": "Lantmateriet:topowebbkartan_nedtonad",
+                "format": "image/png"
+            },
+            "options": {
+            	"isBaseLayer": true,
+            	"displayInLayerSwitcher": false
+            }
+        },
+		{
+            "name": "Fastighetsgränser",
+			"wms": {
+				"url": "https://extmap.sundsvall.se/geoserver/gwc/service/wms",
+				"params": {
+					"layers": "Lantmateriet:fastighet_granser",
+					"format": "image/png",
+					"transparent": true
+				},
+				"options": {
+					"isBaseLayer": false,
+					"visibility": true,
+					"displayInLayerSwitcher": false
+				}
+			}
+		}
+    ],
+    "tools": [
+    	{
+    		"type": "MeasureLine",
+    		"tooltip": "Mät sträcka"
+    	},
+    	{
+    		"type": "MeasureArea",
+    		"tooltip": "Mät area"
+    	},
+    	{
+    		"type": "DeleteMeasure",
+    		"tooltip": "Ta bort mätning(ar)"
+    	},
+        {
+            "itemId": "SetPUD",
+            "type": "DrawGeometry",
+            "geometry": "Point",
+    		"tooltip": "Välj fastighet",
+    		"iconCls": "action-drawpin",
+    		"activate": true,
+    		"attributes": {
+        		"state": "PUD",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+            }
+        },
+        {
+        	"itemId": "DrawFree",
+ 			"type": "DrawGeometry",
+ 			"tooltip": "Rita tomtyta",
+ 			"disabled": true,
+ 			"attributes": {
+        		"state": "GEOMETRY",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+            }
+ 		},
+        {
+            "itemId": "DrawObject",
+            "type": "DrawObject",
+            "objectConfig": {
+                "type": "R"
+            },
+            "tooltip": "Rita byggnad",
+            "iconCls": "action-draw-R",
+            "disabled": true,
+            "attributes": {
+        		"state": "GEOMETRY",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+            }
+        },
+ 		{
+ 			"itemId": "DrawPath",
+ 			"type": "DrawGeometry",
+ 			"geometry": "Path",
+ 			"tooltip": "Rita väganslutning",
+ 			"disabled": true,
+			"iconCls": "action-drawline",
+ 			"attributes": {
+        		"state": "GEOMETRY",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+            }
+ 		},
+        {
+			"itemId" : "ModifyGeometry",
+			"type": "ModifyGeometry",
+			"reshape": true,
+			"tooltip": "Redigera objekt",
+			"disabled": true,
+			"attributes": {  
+        		"state": "GEOMETRY",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+			}
+		},
+		{
+			"type": "DeleteGeometry",
+			"tooltip": "Ta bort valt objekt/geometri",
+			"disabled": true,
+			"attributes": {  
+        		"state": "GEOMETRY",
+        		"metadata": {
+        			"state": {
+        				"hidden": true
+        			}
+        		}
+			}
+		}
+    ],
+    "gui": {
+        "map": {},
+        "toolbar": {},
+        "baseLayers": {},
+        "layers": false,
+        "searchFastighet": true,
+        "zoomTools": {},
+        "figurConfig": {},
+        "objectConfig": true,
+        "searchCoordinate": false
+    },
+    "attribution": "Kartan har ingen rättsverkan du kan alltså INTE se exakta gränser i denna karttjänst ©Lantmäteriet Geodatasamverkan",
+    "mapMessages": {
+    	"PUD_ZOOMSCALE_MESSAGE": "Du måste zooma i kartan för att kunna börja sätta ut fastigheten tillräcklig precision.",
+    	"GEOMETRY_ZOOMSCALE_MESSAGE": "Du måste zooma i kartan för att kunna sätta ut objekt med tillräcklig precision.",
+    	"PUD_FINISHED_MESSAGE": "Du har nu valt fastighet och kan gå vidare med att rita ut tomtgräns, byggnad och väganslutning. Välj verktyg i verktygsfältet."
+    }
+}

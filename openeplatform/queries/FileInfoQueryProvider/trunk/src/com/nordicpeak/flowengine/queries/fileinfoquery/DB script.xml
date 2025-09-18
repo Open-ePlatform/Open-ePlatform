@@ -1,0 +1,48 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `fileinfo_queries` (
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`description` TEXT NULL,
+					`helpText` TEXT NULL,
+					`hideTitle` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
+					`hideBackground` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
+					`dontSetPopulated` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
+					PRIMARY KEY (`queryID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `fileinfo_query_instances` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`queryInstanceID`),
+					INDEX `FK_fileinfo_query_instances_1` (`queryID`),
+					CONSTRAINT `FK_fileinfo_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `fileinfo_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `fileinfo_files` (
+					`fileID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					`size` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`fileID`),
+					INDEX `FK_fileinfo_files_1` (`queryID`),
+					CONSTRAINT `FK_fileinfo_files_1` FOREIGN KEY (`queryID`) REFERENCES `fileinfo_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+					
+</DBScripts>
