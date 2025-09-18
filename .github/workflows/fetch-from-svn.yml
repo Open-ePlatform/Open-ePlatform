@@ -7,29 +7,19 @@ on:
   schedule:
   # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
     - cron: "0 1 * * *"
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
-
     steps:
       - name: Install subversion
-        run: sudo apt-get update && sudo apt-get install -y subversion
-
-      - name: Checkout GitHub repo
+        run: sudo apt-get install subversion
+      - name: Checkout current repo
         uses: actions/checkout@v4
-
-      - name: Export SVN
-        run: svn export --force svn://svn.nordicpeak.com/filearchive ./filearchive
-
-      - name: Get latest SVN commit message
-        id: svnmsg
-        run: |
-          echo "SVN_MSG=$(svn log -l 1 svn://svn.nordicpeak.com/filearchive --quiet --non-interactive | sed -n '2p')" >> $GITHUB_ENV
-
+      - name: Checkout SVN repo
+        run: svn co svn://svn.nordicpeak.com/filearchive 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "${{ env.SVN_MSG }}"
  
   # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
   workflow-keepalive:
