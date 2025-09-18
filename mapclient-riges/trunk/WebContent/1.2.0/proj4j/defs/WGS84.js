@@ -1,1 +1,0 @@
-Proj4js.defs["WGS84"] = "+proj=longlat +datum=WGS84 +no_defs";
